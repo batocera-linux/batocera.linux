@@ -200,7 +200,7 @@ libretro:
                     "Before NMI": Before NMI
                     "After NMI":  After NMI
             mesen-s_superfx_overclock:
-                prompt:      SUPERFX OVERCLOCK
+                prompt:      SUPER FX OVERCLOCK
                 description: Enhancement. Reduces slowdown in mode 7 games.
                 choices:
                     "100%":  100%
@@ -505,7 +505,7 @@ libretro:
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Skipping it can break some games.
+                description: Enhancement. Skipping it can break some games.
                 choices:
                     "Off":        "true"
                     "On":         "false"
@@ -589,7 +589,7 @@ libretro:
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Skipping it can break some games.
+                description: Enhancement. Skipping it can break some games.
                 choices:
                     "Off":        "true"
                     "On":         "false"
@@ -707,8 +707,8 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
-                prompt:      CROSSHAIR (LIGHTGUN)
-                description: Show crosshair if playing with a lightgun device.
+                prompt:      SHOW LIGHTGUN CROSSHAIRS
+                description: Lightgun device must be selected on at least one port.
                 choices:
                     "Off":                                enabled
                     "On":                                 disabled
@@ -880,7 +880,7 @@ libretro:
                     "6":   6
             reicast_force_wince:
                 prompt:      FORCE WINDOWS CE MODE
-                description: Enable full MMU emulation for Windows CE games
+                description: Required for some games.
                 choices:
                     "Off": disabled
                     "On":  enabled
@@ -959,13 +959,12 @@ libretro:
       cfeatures:
             gb_bootloader:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Show BIOS animation when starting content
                 choices:
                     "Off":                     disabled
                     "On":                      enabled
             gb_mix_frames:
-                prompt:      GHOSTING EFFECT
-                description: Simulate LCD ghosting effects
+                prompt:      LCD GHOSTING EFFECT
+                description: Required for certain visual effects.
                 choices:
                     "Off":                     disabled
                     "Simple (Accurate)":       mix
@@ -977,7 +976,7 @@ libretro:
                 cfeatures:
                     gbc_color_correction:
                         prompt:      COLOR CORRECTION
-                        description: Adjusts output colors to imitate real hardware
+                        description: Simulate LCD color inaccuracy.
                         choices:
                             "Off":             disabled
                             "On":              always
@@ -985,7 +984,7 @@ libretro:
                 cfeatures:
                     gb_colorization:
                         prompt:      COLORIZATION
-                        description: Set the Game Boy palettes to use
+                        description: Set the color palette to use.
                         choices:
                             "Off":                              none
                             "GB - Smart Coloring":              GB - SmartColor
@@ -1066,14 +1065,13 @@ libretro:
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        prompt:      SHOW LIGHTGUN CROSSHAIR
-                        description: Shows crosshairs for Menacer and Justifiers devices
+                        prompt:      SHOW LIGHTGUN CROSSHAIRS
+                        description: Lightgun device must be selected on at least one port.
                         choices:
                             "Off":        disabled
                             "On":         enabled
                     controller1_md:
                         prompt:      CONTROLLER 1 TYPE
-                        description: Select 3 or 6 button controller, mouse or Multitap
                         choices:
                             #"None":                          0
                             "Joypad Auto":                   1
@@ -1087,7 +1085,7 @@ libretro:
                             "Mouse":                         2
                     controller2_md:
                         prompt:      CONTROLLER 2 TYPE
-                        description: Select controller, Multitap, mouse or Gun
+                        description: Lightguns can only be used in port 2.
                         choices:
                             #"None":                          0
                             "Joypad Auto":                   1
@@ -1113,20 +1111,19 @@ libretro:
                             "RGB (crisp image)":                      rgb
                     ym2413:
                         prompt:      FM CHIP (YM2413)
-                        description: Enhanced sound output support for compatible games
+                        description: Enhanced sound output support for compatible games.
                         choices:
                             "Autodetect":  automatic
                             "Off":         disabled
                             "On (forced)": enabled
                     gun_cursor_ms:
-                        prompt:      SHOW LIGHTGUN CROSSHAIR
-                        description: Shows crosshairs for Light Phaser device
+                        prompt:      SHOW LIGHTGUN CROSSHAIRS
+                        description: Lightgun device must be selected on at least one port.
                         choices:
                             "Off":        disabled
                             "On":         enabled
                     controller1_ms:
                         prompt:      CONTROLLER 1 TYPE
-                        description: Select 2 button controller, Lightgun or Multitap
                         choices:
                             #"None":                          0
                             #"Joypad Auto":                   1
@@ -1138,7 +1135,6 @@ libretro:
                             #"Graphic Board":                 262
                     controller2_ms:
                         prompt:      CONTROLLER 2 TYPE
-                        description: Select 2 button controller, Lightgun or Multitap
                         choices:
                             #"None":                          0
                             #"Joypad Auto":                   1
@@ -1152,13 +1148,13 @@ libretro:
                 cfeatures:
                     lcd_filter:
                         prompt:      LCD GHOSTING FILTER
-                        description: Simulate LCD ghosting effects
+                        description: Required for certain visual effects.
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     gg_extra:
                         prompt:      EXTENDED SCREEN
-                        description: Extend the game screen area like on a Master System
+                        description: Extend the game screen area, similar to the Master System.
                         choices:
                             "Off":       disabled
                             "On":        enabled
@@ -1180,8 +1176,8 @@ libretro:
       features: [netplay, autosave, latency_reduction]
       cfeatures:
             mame_cpu_overclock:
-                prompt:      CPU OVERCLOCK
-                description: Minimize in-game slowdowns of some games
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces console slowdown. Causes issues in some games.
                 choices:
                     "default":        default
                     "30":             30
@@ -1273,13 +1269,13 @@ libretro:
       cfeatures:
             beetle_psx_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Show BIOS animation when starting content
+                description: Enhancement. Skipping it can break some games.
                 choices:
                     "Off":        enabled
                     "On":         disabled
             beetle_psx_cpu_freq_scale:
-                prompt:      OVERCLOCKING (CPU HEAVY)
-                description: Can eliminate slowdown and improve frame rates
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces console slowdown. Causes issues in some games.
                 choices:
                     "50%":          50%
                     "60%":          60%
@@ -1393,7 +1389,6 @@ libretro:
       cfeatures:
             skip_bios_mgba:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Show BIOS animation when starting content
                 choices:
                     "Off": ON
                     "On":  OFF
@@ -1646,8 +1641,8 @@ libretro:
                     "SVideo (color bleeding only)":           svideo
                     "RGB (crisp image)":                      rgb
             nestopia_overclock:
-                prompt:      CPU OVERCLOCK
-                description: Minimize ingame slowdowns of some games (Contra Force)
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces console slowdown. Causes issues in some games.
                 choices:
                     "Off":                  1x
                     "2x":                   2x
@@ -1820,8 +1815,8 @@ libretro:
                     "Off":                         disabled
                     "On":                          enabled
             o2em_mix_frames:
-                prompt:      GHOSTING EFFECT
-                description: Simulate CRT phosphor ghosting effects
+                prompt:      CRT GHOSTING EFFECT
+                description: Required for certain visual effects.
                 choices:
                     "Off":                         disabled
                     "Simple":                      mix
@@ -1853,8 +1848,8 @@ libretro:
                     "320x240":         disabled
                     "640x480":         enabled
             cpu_overclock:
-                prompt:      CPU OVERCLOCK
-                description: Improve frame rates in many games (like NFS)
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces console slowdown. Causes issues in some games.
                 choices:
                     "1.0x (12.50Mhz)": 1.0x (12.50Mhz)
                     "1.1x (13.75Mhz)": 1.1x (13.75Mhz)
@@ -1993,7 +1988,7 @@ libretro:
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Show the BIOS animation when starting (breaks some games)
+                description: Off is safer, On for specific games.
                 choices:
                     "Off":              disabled
                     "On":               enabled
@@ -2095,7 +2090,7 @@ libretro:
                     "On":   dotmatrix
             pokemini_lcdmode:
                 prompt:      LCD GHOSTING EFFECTS
-                description: Simulate the LCD ghosting effect
+                description: Required for certain visual effects.
                 choices:
                     "Off":  3shades
                     "On":   analog
@@ -2136,8 +2131,8 @@ libretro:
                      "Orange - Hokage Orange":         hokage_orange
                      "Pink - Blossom Pink":            blossom_pink
             watara_ghosting:
-                prompt:      GHOSTING EFFECT
-                description: Simulation of LCD ghosting effects
+                prompt:      LCD GHOSTING EFFECT
+                description: Required for certain visual effects.
                 choices:
                     "Off":                            0
                     "1 Frame":                        1
@@ -2198,7 +2193,7 @@ libretro:
                     "More compatible": compatible
                     "Cycle-exact":     exact
             cpu_multiplier:
-                prompt:      CPU MULTIPLIER (OVERCLOCK)
+                prompt:      CPU CLOCK
                 description: Works with 'Cycle-exact' mode and for a few games
                 choices:
                     "Default by model":        0
@@ -2210,7 +2205,7 @@ libretro:
                     "42.56 MHz":               12
                     "56.75 MHz":               16
             cpu_throttle:
-                prompt:      CPU SPEED (OVERCLOCK)
+                prompt:      CPU SPEED
                 description: Ignored with 'Cycle-exact'
                 choices:
                     "-90%":    -900.0
@@ -2417,7 +2412,7 @@ libretro:
       features: [latency_reduction, padtokeyboard]
       cfeatures:
             px68k_cpuspeed:
-                prompt:      CPU SPEED (OVERCLOCK)
+                prompt:      CPU CLOCK
                 description: Can be used to slow down games that run too fast
                 choices:
                     "10Mhz":              10Mhz
@@ -2478,7 +2473,7 @@ libretro:
                     "N88 BASIC V1S":        N88 V1S
                     "N BASIC":              N
             q88_cpu_clock:
-                prompt:      CPU CLOCK (OVERCLOCK)
+                prompt:      CPU CLOCK
                 description: Many games run too fast, reduces slowdown on Ys series
                 choices:
                     "1 MHz (Underclock)":   1
@@ -2546,8 +2541,8 @@ libretro:
                     "compatible": compatible
                     "max":        max
             overclock_superfx:
-                prompt:      SUPER-FX OVERCLOCKING
-                description: Improve performance on slow devices or cause errors
+                prompt:      SUPER FX OVERCLOCK
+                description: Enhancement. Reduces slowdown in mode 7 games.
                 choices:
                     "50%":        50%
                     "60%":        60%
@@ -2610,8 +2605,8 @@ libretro:
                     "compatible": compatible
                     "max":        max
             2010_overclock_superfx:
-                prompt:      SUPER-FX OVERCLOCKING
-                description: Improve performance on slow devices, but can cause glitches
+                prompt:      SUPER FX OVERCLOCK
+                description: Enhancement. Reduces slowdown in mode 7 games.
                 choices:
                     "5 MHz (Underclock)":   5 MHz (Underclock)
                     "8 MHz (Underclock)":   8 MHz (Underclock)
@@ -3023,7 +3018,7 @@ libretro:
                     "On":       enabled
             bios_vj:
                 prompt:      SHOW BIOS BOOTLOGO
-                description: Show animation when starting (breaks some games)
+                description: Off is safer, On for specific games.
                 choices:
                     "Off":      disabled
                     "On":       enabled
@@ -3750,7 +3745,7 @@ pcsx2:
                 "Software":    13
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
-            description: Show the BIOS animation when starting content. Off is safer, On for specific games.
+            description: Off is safer, On for specific games.
             choices:
                 "Off":         0
                 "On":          1
@@ -4033,8 +4028,8 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
-            prompt:      CROSSHAIRS
-            description: Enable crosshairs in shooting games for the selected players
+            prompt:      SHOW LIGHTGUN CROSSHAIRS
+            description: Enable crosshairs in shooting games for the selected players.
             choices:
                 "None":     0
                 "P1 only":  1
