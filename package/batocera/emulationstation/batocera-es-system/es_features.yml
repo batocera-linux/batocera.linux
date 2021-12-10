@@ -552,13 +552,13 @@ libretro:
                     "JINC2":      JINC2
                     "xBR":        xBR
             duckstation_widescreen_hack:
-                prompt:      WIDESCREEN HACK
-                description: Only works with a 16/9 ratio and bezels disabled.
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        "false"
                     "On":         "true"
             duckstation_CropMode:
-                prompt:      CROP MODE
+                prompt:      CROP OVERSCAN
                 description: Zooms in to hide black borders. Borders are different per game.
                 choices:
                     "Off":                "None"
@@ -636,13 +636,13 @@ libretro:
                     "JINC2":      JINC2
                     "xBR":        xBR
             duckstation_widescreen_hack:
-                prompt:      WIDESCREEN HACK
-                description: Only works with a 16/9 ratio and bezels disabled.
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        "false"
                     "On":         "true"
             duckstation_CropMode:
-                prompt:      CROP MODE
+                prompt:      CROP OVERSCAN
                 description: Zooms in to hide black borders. Borders are different per game.
                 choices:
                     "Off":                "None"
@@ -677,7 +677,7 @@ libretro:
       cfeatures:
             fbneo-cpu-speed-adjust:
                 prompt:      CPU CLOCK
-                description: Can fix native system slowdowns in some games
+                description: Can fix slowdown. Only works on some drivers.
                 choices:
                     "30%":        30%
                     "40%":        40%
@@ -701,14 +701,14 @@ libretro:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance, at the cost of choppy motion.
                 choices:
-                    "No skipping":                         0
-                    "Skip rendering of 1 frames out of 2": 1
-                    "Skip rendering of 2 frames out of 3": 2
-                    "Skip rendering of 3 frames out of 4": 3
-                    "Skip rendering of 4 frames out of 5": 4
+                    "No skipping": 0
+                    "1":           1
+                    "2":           2
+                    "3":           3
+                    "4":           4
             fbneo-lightgun-hide-crosshair:
                 prompt:      CROSSHAIR (LIGHTGUN)
-                description: Show crosshair if playing with a lightgun device
+                description: Show crosshair if playing with a lightgun device.
                 choices:
                     "Off":                                enabled
                     "On":                                 disabled
@@ -716,8 +716,7 @@ libretro:
             neogeo:
                 cfeatures:
                     fbneo-neogeo-mode-switch:
-                        prompt:      NEOGEO MODE
-                        description: Load appropriate Bios depending on your choice
+                        prompt:      NEO GEO BIOS
                         choices:
                             "Console AES World":                   AES Asia
                             "Console AES Japan":                   AES Japan
@@ -727,7 +726,6 @@ libretro:
                             "Arcade Universe BIOS (Cheats)":       Universe BIOS
                     fbneo-memcard-mode:
                         prompt:      MEMORY CARD MODE
-                        description: Change the behavior for the memory card
                         choices:
                             "Off":                                disabled
                             "Shared":                             shared
@@ -743,7 +741,7 @@ libretro:
                     "On":                   enabled
             fceumm_cropoverscan:
                 prompt:      CROP OVERSCAN
-                description: Crops out video edge hidden under bezel of analog TV
+                description: Zooms in to hide black borders. Borders are different per game.
                 choices:
                     "None":                 none
                     "Horizontal":           h
@@ -751,7 +749,7 @@ libretro:
                     "Both":                 both
             fceumm_palette:
                 prompt:      COLOR PALETTE
-                description: Choose which color palette is going to be used
+                description: Can be used to simulate colors of particular displays.
                 choices:
                     "default":              default
                     "asqrealc":             asqrealc
@@ -780,29 +778,28 @@ libretro:
                     "SVideo (color bleeding only)":           svideo
                     "RGB (crisp image)":                      rgb
             fceumm_sndquality:
-                prompt:      SOUND QUALITY (HIGHER DEVICES)
-                description: Increase sound quality for games using expansion audio
+                prompt:      SOUND QUALITY
+                description: Only supported games. Higher settings increase system requirements.
                 choices:
                     "Low":                  Low
                     "High":                 High
                     "Very High":            Very High
             fceumm_overclocking:
-                prompt:      PPU OVERCLOCKING
-                description: Minimize ingame slowdowns of some games (Contra Force)
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces console slowdown. Causes issues in some games.
                 choices:
                     "disabled":             disabled
                     "2x-Postrender":        2x-Postrender
                     "2x-VBlank":            2x-VBlank
             controller1_nes:
                 prompt:      CONTROLLER 1 TYPE
-                description: Select NES Gamepad or Gun (must use a mouse)
                 choices:
                     "Autodetect":           1
                     "NES Gamepad":          513
                     "NES Zapper":           258
             controller2_nes:
                 prompt:      CONTROLLER 2 TYPE
-                description: Select NES Gamepad, Paddle or Gun (must use a mouse)
+                description: Paddle can only be used in port 2.
                 choices:
                     "Autodetect":           1
                     "NES Gamepad":          513
@@ -813,10 +810,10 @@ libretro:
       cfeatures:
             reicast_synchronous_rendering:
                 prompt:      SYNCHRONOUS RENDERING
-                description: Wait for the GPU to render frames instead of skipping
+                description: Can avoid flashing screen issues. Significant performance cost.
                 choices:
                     "Off": disabled
-                    "On": enabled
+                    "On":  enabled
             reicast_internal_resolution:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -840,13 +837,13 @@ libretro:
                     "7680x5760":  7680x5760
             reicast_mipmapping:
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
-                description: Smooths out textures on 3D objects
+                description: Smooth textures on distant 3D objects based on angle.
                 choices:
                     "Off": disabled
                     "On":  enabled
             reicast_anisotropic_filtering:
                 prompt:      ANISOTROPIC FILTERING
-                description: Enhance the quality of distant perspective textures
+                description: Improves clarity of distant textures when mip-mapping is enabled.
                 choices:
                     "Off": off
                     "2x":  2
@@ -889,19 +886,18 @@ libretro:
                     "On":  enabled
             reicast_widescreen_cheats:
                 prompt:      WIDESCREEN CHEAT (PRIORITY)
-                description: You must use a 16/9 RATIO and disable BEZEL
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off": disabled
                     "On":  enabled
             reicast_widescreen_hack:
-                prompt:      WIDESCREEN HACK
-                description: You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off": disabled
                     "On":  enabled
             controller1_dc:
                 prompt:      CONTROLLER 1 TYPE
-                description: Select Gamepad, Keyboard, Mouse or Light Gun
                 choices:
                     "Gamepad":   1
                     "Keyboard":  3
@@ -909,7 +905,6 @@ libretro:
                     "Light Gun": 4
             controller2_dc:
                 prompt:      CONTROLLER 2 TYPE
-                description: Select Gamepad, Keyboard, Mouse or Light Gun
                 choices:
                     "Gamepad":   1
                     "Keyboard":  3
@@ -917,7 +912,6 @@ libretro:
                     "Light Gun": 4
             controller3_dc:
                 prompt:      CONTROLLER 3 TYPE
-                description: Select Gamepad, Keyboard, Mouse or Light Gun
                 choices:
                     "Gamepad":   1
                     "Keyboard":  3
@@ -925,7 +919,6 @@ libretro:
                     "Light Gun": 4
             controller4_dc:
                 prompt:      CONTROLLER 4 TYPE
-                description: Select Gamepad, Keyboard, Mouse or Light Gun
                 choices:
                     "Gamepad":   1
                     "Keyboard":  3
@@ -936,7 +929,7 @@ libretro:
                 cfeatures:
                     screen_rotation_atomiswave:
                         prompt:      SCREEN ORIENTATION
-                        description: Rotate screen for some arcade games
+                        description: Useful for certain arcade games.
                         choices:
                             "Horizontal": horizontal
                             "Vertical":   vertical
@@ -944,7 +937,7 @@ libretro:
                 cfeatures:
                     screen_rotation_naomi:
                         prompt:      SCREEN ORIENTATION
-                        description: Rotate screen for some arcade games
+                        description: Useful for certain arcade games.
                         choices:
                             "Horizontal": horizontal
                             "Vertical":   vertical
@@ -956,8 +949,8 @@ libretro:
       features: [autosave, latency_reduction, padtokeyboard]
       cfeatures:
             fuse_hide_border:
-                prompt:      ZOOM (HIDE BORDER)
-                description: Make the game fill the entire screen area
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Off":  disabled
                     "On":   enabled
@@ -1325,8 +1318,8 @@ libretro:
                     "8x":         8x
                     "16x":        16x
             beetle_psx_widescreen_hack:
-                prompt:      WIDESCREEN HACK
-                description: You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -1512,8 +1505,8 @@ libretro:
                     "3840x2160": 3840x2160
                     "7680x4320": 7680x4320
             mupen64plus-aspect:
-                prompt:      WIDESCREEN HACK
-                description: You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":       4:3
                     "On":        16:9 adjusted
@@ -1534,7 +1527,7 @@ libretro:
                     "16x":        16
             mupen64plus-txFilterMode:
                 prompt:      TEXTURE FILTERING
-                description: Smooths out textures on 3D objects
+                description: Smooth textures on 3D objects.
                 choices:
                     "Off":        None
                     "Smooth 1":   Smooth filtering 1
@@ -1623,7 +1616,7 @@ libretro:
                     "On":                   enabled
             nestopia_cropoverscan:
                 prompt:      CROP OVERSCAN
-                description: Crops out video edge hidden under bezel of analog TV
+                description: Zooms in to hide black borders. Borders are different per game.
                 choices:
                     "None":                 none
                     "Horizontal":           h
@@ -1822,7 +1815,7 @@ libretro:
                     "On":                          enabled
             o2em_crop_overscan:
                 prompt:      CROP OVERSCAN
-                description: Remove the border around the edges of the screen
+                description: Zooms in to hide black borders.
                 choices:
                     "Off":                         disabled
                     "On":                          enabled
@@ -1909,14 +1902,14 @@ libretro:
                     "2880x2160": 2880x2160
                     "5760x4320": 5760x4320
             parallel-n64-aspectratiohint:
-                prompt:      WIDESCREEN
-                description: Break aspect ratio and strech image
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":   normal
                     "On":    widescreen
             parallel-n64-filtering:
                 prompt:      TEXTURE FILTERING
-                description: Smooths out textures on 3D objetcs
+                description: Smooth textures on 3D objects.
                 choices:
                     "Automatic":   automatic
                     "N64 3-point": N64 3-point
@@ -2073,7 +2066,7 @@ libretro:
                     "On":              enabled
             picodrive_cropoverscan:
                 prompt:      CROP OVERSCAN
-                description: Crops out video edge hidden under bezel of analog TV
+                description: Zooms in to hide black borders.
                 choices:
                     "Off":             disabled
                     "On":              enabled
@@ -2254,8 +2247,8 @@ libretro:
                     "High 720p":        hires
                     "Super-high 1440p": superhires
             zoom_mode:
-                prompt:      ZOOM MODE
-                description: Crops the borders to fit various host screens
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Off":            none
                     "Autofit screen": automatic
@@ -2910,8 +2903,8 @@ libretro:
                     "PAL 50Hz - 312/576px":     pal
                     "NTSC 60Hz - 262/492px":    ntsc
             zoom_mode_c64:
-                prompt:      ZOOM MODE
-                description: Crops the borders to fit various host screens
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Off":                      none
                     "small":                    small
@@ -2992,8 +2985,8 @@ libretro:
                     "PAL 50Hz - 312/576px":     pal
                     "NTSC 60Hz - 262/492px":    ntsc
             zoom_mode_c64:
-                prompt:      ZOOM MODE
-                description: Crops the borders to fit various host screens
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Off":              none
                     "small":            small
@@ -3285,7 +3278,7 @@ dolphin:
                 "On":  1
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
-            description: Enhance the quality of distant perspective textures
+            description: Improves clarity of distant textures.
             choices:
                 "Off": 0
                 "2x":  1
@@ -3325,8 +3318,8 @@ dolphin:
                 "Off": 0
                 "On":  1
         widescreen_hack:
-            prompt:      WIDESCREEN HACK
-            description: You must use a 16/9 RATIO to work
+            prompt:      WIDESCREEN HACK (GLITCHY)
+            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
                 "Off": 0
                 "On":  1
@@ -3512,15 +3505,15 @@ duckstation:
                 "xBR":                           xBR
                 "xBR (no edge blending)":        xBRBinAlpha
         duckstation_CropMode:
-            prompt:      CROP MODE
+            prompt:      CROP OVERSCAN
             description: Zooms in to hide black borders. Borders are different per game.
             choices:
                 "Off":                           "None"
                 "Only Overscan Area":            "Overscan"
                 "All Borders":                   "Borders"
         duckstation_widescreen_hack:
-            prompt:      WIDESCREEN HACK
-            description: Only works with a 16/9 ratio and bezels disabled.
+            prompt:      WIDESCREEN HACK (GLITCHY)
+            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
                 "Off":                           0
                 "On":                            1
@@ -3667,7 +3660,7 @@ mupen64plus:
                 "5":                    5
         mupen64plus_Mipmapping:
             prompt:      TEXTURE MIP-MAPPING (BLUR)
-            description: Smooths out textures on 3D objects
+            description: Smooth textures on distant 3D objects based on angle.
             choices:
                 "Off":                  0
                 "nearest":              1
@@ -3675,7 +3668,7 @@ mupen64plus:
                 "trilinear":            3
         mupen64plus_Anisotropic:
             prompt:      ANISOTROPIC FILTERING
-            description: Enhance distant perspective textures (when using mip-mapping)
+            description: Improves clarity of distant textures when mip-mapping is enabled.
             choices:
                 "Off":                  0
                 "2x":                   2
@@ -3774,7 +3767,7 @@ pcsx2:
                 "7x 2880p 5K": 7
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
-            description: Enhance the quality of distant perspective textures
+            description: Improves clarity of distant textures.
             choices:
                 "Off":         0
                 "2x":          2
@@ -3822,7 +3815,7 @@ pcsx2:
                 "On":       enabled
         EmuCore_EnableWideScreenPatches:
             prompt:      WIDESCREEN PATCHES
-            description: You must use a 16/9 RATIO and disable BEZEL
+            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
                 "Off":      disabled
                 "On":       enabled
@@ -3932,7 +3925,7 @@ ppsspp:
                 "On":                   True
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
-            description: Enhance the quality of distant perspective textures
+            description: Improves clarity of distant textures.
             choices:
                 "Off":                  0
                 "2x":                   1
@@ -4034,8 +4027,8 @@ supermodel:
                 "Off":      0
                 "On":       1
         wideScreen:
-            prompt:      ENABLE WIDESCREEN
-            description: Enable widescreen (may cause rendering issues)
+            prompt:      WIDESCREEN HACK (GLITCHY)
+            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
                 "Off":      0
                 "On":       1
@@ -4080,7 +4073,7 @@ vice:
   cfeatures:
         noborder:
             prompt:      ZOOM (HIDE BORDERS)
-            description: Display only 200 scanlines, effectively removing borders on many games
+            description: Hides borders on many games. Some games used the borders.
             choices:
                 "NO (DEFAULT)": 0
                 "YES":          1
@@ -4696,8 +4689,8 @@ model2emu:
                 "Off":      0
                 "On":       1
         enableMIP:
-            prompt:      ENABLE MIPMAP
-            description: Enables Direct3D Automipmap generation
+            prompt:      ENABLE MIP-MAP
+            description: Enables Direct3D Automip-map generation
             choices:
                 "Off":      0
                 "On":       1
@@ -4708,7 +4701,7 @@ model2emu:
                 "Off":      0
                 "On":       1
         fullscreenAA:
-            prompt:      ENABLE FULL SCREEN ANTIALIASING
+            prompt:      ENABLE FULL SCREEN ANTI-ALIASING
             description: Enable full screen antialiasing in Direct3D.
             choices:
                 "Off":      0
