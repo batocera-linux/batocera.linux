@@ -505,8 +505,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
-                    "Off":        "true"
-                    "On":         "false"
+                    "Show":        "false"
+                    "Skip":        "true"
             gpu_software:
                 prompt:      USE SOFTWARE RENDERING
                 description: More accurate emulation, but slower.
@@ -589,8 +589,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
-                    "Off":        "true"
-                    "On":         "false"
+                    "Show":        "false"
+                    "Skip":        "true"
             gpu_software:
                 prompt:      USE SOFTWARE RENDERING
                 description: More accurate emulation, but slower.
@@ -958,8 +958,8 @@ libretro:
             gb_bootloader:
                 prompt:      SHOW BIOS BOOTLOGO
                 choices:
-                    "Off":                     disabled
-                    "On":                      enabled
+                    "Show":                     enabled
+                    "Skip":                     disabled
             gb_mix_frames:
                 prompt:      LCD GHOSTING EFFECT
                 description: Required for certain visual effects.
@@ -1267,8 +1267,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
-                    "Off":        enabled
-                    "On":         disabled
+                    "Show":         disabled
+                    "Skip":         enabled
             beetle_psx_cpu_freq_scale:
                 prompt:      OVERCLOCK (UNSTABLE)
                 description: Enhancement. Reduces system slowdown. Causes issues in some games.
@@ -1386,8 +1386,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Requires BIOS file to be present.
                 choices:
-                    "Off": ON
-                    "On":  OFF
+                    "Show":  OFF
+                    "Skip":  ON
       systems:
             gb:
                 cfeatures:
@@ -1977,8 +1977,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Off is safer, On for specific games.
                 choices:
-                    "Off":              disabled
-                    "On":               enabled
+                    "Show":               enabled
+                    "Skip":               disabled
             frameskip_pcsx:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance, at the cost of choppy motion.
@@ -1988,8 +1988,8 @@ libretro:
                     "2":                2
                     "3":                3
             neon_enhancement:
-                prompt:      ENHANCED RESOLUTION (32-BIT ONLY)
-                description: Double the resolution. No effect on 64-bit machines.
+                prompt:      ENHANCED RENDERING RESOLUTION (32-BIT ONLY)
+                description: Double the rendering resolution. No effect on 64-bit machines.
                 choices:
                     "Off":              disabled
                     "On":               enabled
@@ -2991,8 +2991,8 @@ libretro:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Off is safer, On for specific games.
                 choices:
-                    "Off":      disabled
-                    "On":       enabled
+                    "Show":       enabled
+                    "Skip":       disabled
             doom_res_hack:
                 prompt:      DOOM RES HACK
                 description: Enable for Doom to run at its correct resolution.
@@ -3425,10 +3425,10 @@ duckstation:
                 "On":                            1
         duckstation_PatchFastBoot:
             prompt:      SHOW BIOS BOOTLOGO
-            description: Enhancement. Skipping it can break some games.
+            description: Skipping it can break some games.
             choices:
-                "Off":                           1
-                "On":                            0
+                "Show":                            0
+                "Skip":                            1
         duckstation_resolution_scale:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -3720,8 +3720,8 @@ pcsx2:
             prompt:      SHOW BIOS BOOTLOGO
             description: Off is safer, On for specific games.
             choices:
-                "Off":         0
-                "On":          1
+                "Show":         1
+                "Skip":         0
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -3839,17 +3839,17 @@ ppsspp:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                #"Automatic (1:1)":      0
-                "1x 480x272":           1
-                "2x 960x544":           2
-                "3x 720p":              3
-                "4x 1080p":             4
-                "5x 2400x1360":         5
-                "6x 1620p 3K":          6
-                "7x 3360x1904":         7
-                "8x 2160p 4K":          8
-                "9x 4320x2448":         9
-                "10x 4800x2720":        10
+                #"Automatic (1:1)":        0
+                "1x (480x272)":           1
+                "2x (960x544)":           2
+                "3x (720p)":              3
+                "4x (1080p)":             4
+                "5x (2400x1360)":         5
+                "6x (1620p)":             6
+                "7x (3360x1904)":         7
+                "8x (2160p 4K)":          8
+                "9x (4320x2448)":         9
+                "10x (4800x2720)":        10
         frameskip:
             prompt:      FRAMESKIP
             description: Skip frames to improve performance, at the cost of choppy motion.
@@ -3921,7 +3921,7 @@ rpcs3:
   cfeatures:
         gui:
             prompt:      GRAPHICAL USER INTERFACE
-            description: Display the user interface
+            description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
             choices:
                 "Off":      0
                 "On":       1
@@ -3933,7 +3933,7 @@ rpcs3:
                 "Vulkan":   Vulkan
         spudecoder:
             prompt:      SPU DECODER
-            description: LLVM used by default. Use ASMJIT if game crashes; then Interpreter (fast) if still crashing.
+            description: If game crashes, try ASMJIT. If still crashing, try Interpreter (fast).
             choices:
                 "Recompiler (LLVM)":      Recompiler (LLVM)
                 "Recompiler (ASMJIT)":    Recompiler (ASMJIT)
@@ -3950,13 +3950,13 @@ easyrpg:
   cfeatures:
         testplay:
             prompt:      TEST PLAY
-            description: Enable the debug menu and the walk-through-walls button
+            description: Enable the debug menu and the walk-through-walls button.
             choices:
                 "Off":                           0
                 "On":                            1
         encoding:
             prompt:      GAME REGION (ENCODING)
-            description: Needed by some games to use special characters
+            description: Needed by some games that use special unicode characters.
             choices:
                 "Autodetect (Recommended)":      autodetect
                 "European (Western)":            1252
@@ -3984,13 +3984,13 @@ supermodel:
   cfeatures:
         engine3D:
             prompt:      3D ENGINE
-            description: Enable the legacy or the new 3D engine (choose legacy for older GPUs)
+            description: Enable the legacy or the new 3D engine (choose legacy for older GPUs).
             choices:
                 "Legacy3D": legacy3d
                 "New3D":    new3d
         quadRendering:
             prompt:      QUAD RENDERING
-            description: Enable proper quad rendering (for higher end systems)
+            description: Enable proper quad rendering (for higher end systems).
             choices:
                 "Off":      0
                 "On":       1
@@ -4009,20 +4009,20 @@ supermodel:
                 "P2 only":  2
                 "P1 & P2":  3
         forceFeedback:
-            prompt:      ENABLE FORCE FEEDBACK
-            description: Enable force feedback for supported controllers with Linux drivers
+            prompt:      RUMBLE
+            description: Only some games feature rumble. Not compatible with all controllers.
             choices:
                 "Off":      0
                 "On":       1
         pedalSwap:
             prompt:      MODERN PEDAL CONTROLS
-            description: Moves Accel/Brake to triggers and gear shift to shoulder buttons or right stick
+            description: Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down.
             choices:
                 "Off":      0
                 "On":       1
         ppcFreq:
             prompt:      ADJUST POWERPC FREQUENCY
-            description: Change the speed of the emulated PowerPC chip (fixes some issues)
+            description: Change the speed of the emulated PowerPC chip (fixes some issues).
             choices:
                 "25":           25
                 "50 (Default)": 50
@@ -4051,8 +4051,7 @@ tsugaru:
   shared: [hud]
   cfeatures:
         cdrom_speed:
-            prompt:      CDROM SPEED
-            description: CD-ROM reading speed
+            prompt:      CD-ROM SPEED
             choices:
                 "AUTO (DEFAULT)": auto
                 "1X":             1
@@ -4061,7 +4060,7 @@ tsugaru:
                 "8X":             8
         386dx:
             prompt:      FORCE 386DX CPU
-            description: Force emulator to 386DX (required by some games)
+            description: Required by some games.
             choices:
                 "NO (DEFAULT)":   0
                 "YES":            1
@@ -4101,7 +4100,7 @@ mame:
                 "HQ4X":            hq4x
         switchres:
             prompt:      CRT SWITCHRES
-            description: CRT monitor SwitchRes support
+            description: Allows the use of switchres profiles if present.
             choices:
                 "Off":             0
                 "On":              1
@@ -4114,7 +4113,7 @@ mame:
                 "Rotate 270":      autorol
         altdpad:
             prompt:      ALT DPAD MODE
-            description: If the D-Pad does not work properly
+            description: If the D-Pad is oriented incorrectly for your controller.
             choices:
                 "Off (Default)":    0
                 "DS3 Orientation":  1
@@ -4124,7 +4123,7 @@ mame:
             cfeatures:
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4132,7 +4131,7 @@ mame:
             cfeatures:
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4140,7 +4139,7 @@ mame:
             cfeatures:
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4148,40 +4147,39 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Cartridge default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cartridge":   cart
                         "Cassette":    cass
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
        fm7:
             cfeatures:
                 altmodel:
-                    prompt:      ALTERNATE MODEL
-                    description: Type of FM-7 to emulate
+                    prompt:      FM-7 MODEL
                     choices:
                         "FM-7":     fm7
                         "FM-77AV":  fm77av
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Disk 1 default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4189,7 +4187,7 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Floppy 1 default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette":       cass
                         "ROM (Slot 1)":   rom1
@@ -4200,13 +4198,13 @@ mame:
                         "Disk (Drive 2)": flop2
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4214,7 +4212,7 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Cassette 1 default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette 1":         cass1
                         "Cassette 2":         cass2
@@ -4226,13 +4224,13 @@ mame:
                         "Cartridge (Slot 4)": cart4
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4240,20 +4238,20 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Cartridge default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette 1":  cass1
                         "Cassette 2":  cass2
                         "Cartridge":   cart
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4261,19 +4259,19 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Cartridge default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette":    cass
                         "Cartridge":   cart
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4281,19 +4279,19 @@ mame:
             cfeatures:
                 altromtype:
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file (Cartridge default)
+                    description: Type of ROM file to load.
                     choices:
                         "Cassette":    cass
                         "Cartridge":   cart
                 enableui:
                     prompt:      UI KEYS
-                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    description: Open with hotkey + D-pad up or Scroll Lock in-game.
                     choices:
                         "Off at Start": 0
                         "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM CONFIG
-                    description: Enable per-game custom configuration via MAME menu
+                    description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
                         "Off": 0
@@ -4303,104 +4301,102 @@ wine:
   shared: [hud]
   cfeatures:
         dxvk:
-            prompt:      DXVK
-            description: Converts the DirectX 9/10/11/12 calls to Vulkan
+            prompt:      DXVK FEATURE
+            description: Converts DirectX 9/10/11/12 calls to Vulkan.
             choices:
                 "Off": 0
                 "On":  1
         dxvk_hud:
             prompt:      DXVK HUD
-            description: See your FPS and version of Vulkan API/driver
+            description: See your FPS and version of Vulkan API/driver.
             choices:
                 "Off": 0
                 "On":  1
         esync:
             prompt:      ESYNC
-            description: Can increase performance for games that stress the CPU
+            description: Can increase performance for games that stress the CPU.
             choices:
                 "Off": 0
                 "On":  1
         fsync:
             prompt:      FSYNC
-            description: Can improve frame rate and responsiveness
+            description: Can improve frame rate and responsiveness.
             choices:
                 "Off": 0
                 "On":  1
         pba:
             prompt:      PBA
-            description: Vastly improves the speed of buffer maps
+            description: Vastly improves the speed of buffer maps.
             choices:
                 "Off": 0
                 "On":  1
         fsr:
-            prompt:      FSR
-            description: AMD FidelityFX Super Resolution uses advanced scaling technologies to boost your fps
+            prompt:      FIDELITY FX SUPER RESOLUTION
+            description: Renders game at a lower res then upscales to increase FPS.
             choices:
                 "Off": 0
                 "On":  1
         nvapi:
             prompt:      NVAPI
-            description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU
+            description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU.
             choices:
                 "Off": 0
                 "On":  1
         fps_limit:
             prompt:      FPS LIMITER
-            description: Allows you to limit fps to 60
+            description: Allows you to limit FPS to 60.
             choices:
                 "Off": 0
                 "On":  1
         mf:
-            prompt:      MF
-            description: Install Media Foundation
+            prompt:      INSTALL MEDIA FOUNDATION
             choices:
                 "Off": 0
                 "On":  1
         virtual_desktop:
             prompt:      VIRTUAL DESKTOP
-            description: Define the resolution and a new dedicated window
+            description: Define the resolution and a new dedicated window.
             choices:
                 "Off": 0
                 "On":  1
         force_mouse:
             prompt:      ENABLE MOUSE
-            description: Force mouse in games
+            description: Force mouse in games.
             choices:
                 "Off": 0
                 "On":  1
         allow_xim:
             prompt:      ENABLE XIM
-            description: Enable XIM support
+            description: Enable XIM support.
             choices:
                 "Off": 0
                 "On":  1
         no_write_watch:
             prompt:      NO WRITE WATCH
-            description: Disable support for memory write watches in ntdll
+            description: Disable support for memory write watches in ntdll.
             choices:
                 "Off": 0
                 "On":  1
         force_large_adress:
             prompt:      FORCE LARGE ADDRESS
-            description: Force WINE to run games with large address
+            description: Force WINE to run games with large addresses.
             choices:
                 "Off": 0
                 "On":  1
         heap_delay_free:
             prompt:      HEAP DELAY FREE
-            description: Delay freeing some memory
+            description: Delay freeing some memory.
             choices:
                 "Off": 0
                 "On":  1
         hide_nvidia_gpu:
             prompt:      HIDE NVIDIA GPU
-            description: Force Nvidia GPUs to always be reported as AMD GPUs
+            description: Force Nvidia GPUs to always be reported as AMD GPUs.
             choices:
                 "Off": 0
                 "On":  1
         wine_debug:
             prompt:      ENABLE DEBUG
-            description: Enable wine debug
             choices:
                 "Off": 0
                 "On":  1
@@ -4411,11 +4407,11 @@ solarus:
   cfeatures:
         joystick:
             prompt:      CONTROL CHOICE
-            description: Choose which pad to control your hero
+            description: Choose which pad to control your hero.
             choices:
                 "Joypad":           normal
-                "Left Joystick":    joystick1
-                "Right Joystick":   joystick2
+                "Left stick":       joystick1
+                "Right stick":      joystick2
 
 mugen:
   features: [padtokeyboard, decoration]
@@ -4423,25 +4419,25 @@ mugen:
   cfeatures:
         esync:
             prompt:      ESYNC
-            description: Can increase performance for games that stress the CPU
+            description: Can increase performance for games that stress the CPU.
             choices:
                 "Off": 0
                 "On":  1
         fsync:
             prompt:      FSYNC
-            description: Can improve frame rates and responsiveness
+            description: Can improve frame rates and responsiveness.
             choices:
                 "Off": 0
                 "On":  1
         pba:
             prompt:      PBA
-            description: Vastly improves the speed of buffer maps
+            description: Vastly improves the speed of buffer maps.
             choices:
                 "Off": 0
                 "On":  1
         virtual_desktop:
             prompt:      VIRTUAL DESKTOP
-            description: Define the resolution and a new dedicated window
+            description: Define the resolution and a new dedicated window.
             choices:
                 "Off": 0
                 "On":  1
@@ -4459,20 +4455,20 @@ drastic:
   shared: [hud]
   cfeatures:
         drastic_hires:
-            prompt:      HI-RES
-            description: Improve the fidelity of 3D models
+            prompt:      ENHANCED RENDERING RESOLUTION
+            description: Enhancement. Double the rendering resolution. Makes 3D objects clearer.
             choices:
                 "Off": 0
                 "On":  1
         drastic_threaded:
             prompt:      THREADED 3D
-            description: Improves performance in 3D games (can cause glitches)
+            description: Improves performance in 3D games. Can cause glitches.
             choices:
                 "Off": 0
                 "On":  1
         drastic_fix2d:
             prompt:      FIX 2D SCREEN
-            description: Fix main 2D Screen to follow action
+            description: Fix main 2D screen to follow action.
             choices:
                 "Off": 0
                 "On":  1
@@ -4483,30 +4479,29 @@ xemu:
   cfeatures:
         scaling:
             prompt:      SCALING MODE
-            description: Choose the scaling mode for the game screen
+            description: Choose the scaling mode for the game screen.
             choices:
                 "Center":     center
                 "Scale":      scale
                 "Stretch":    stretch
                 "Widescreen": scale_ws169
         render:
-            prompt:       SCALING RENDER
-            description:  Choose the scaling render multiplier
+            prompt:       RENDERING RESOLUTION
             choices:
-                "x1 (640x480)":     1
-                "x2 (1280x960)":    2
-                "x3 (1920x1440)":   3
-                "x4 (2560x1920)":   4
-                "x5 (3200x2400)":   5
-                "x6 (3840x2880)":   6
-                "x7 (4480x3360)":   7
-                "x8 (5120x3840)":   8
+                "1x (640x480)":     1
+                "2x (1280x960)":    2
+                "3x (1920x1440)":   3
+                "4x (2560x1920)":   4
+                "5x (3200x2400)":   5
+                "6x (3840x2880)":   6
+                "7x (4480x3360)":   7
+                "8x (5120x3840)":   8
         xemu_bootanim:
-            prompt:      SKIP BOOT ANIMATION
-            description: Skip the on-boot Xbox animation
+            prompt:      SHOW BIOS BOOTLOGO
+            description: Enhancement.
             choices:
-                "Normal Boot":        "false"
-                "Skipped Logo Boot":  "true"
+                "Show":        "false"
+                "Skip":        "true"
 
 lexaloffle:
   features: [padtokeyboard, decoration]
@@ -4522,7 +4517,7 @@ sonic2013:
   cfeatures:
         language:
             prompt:      LANGUAGE
-            description: Change the game language
+            description: Change the game's language.
             choices:
                 "English":   0
                 "French":    1
@@ -4542,27 +4537,27 @@ sonic2013:
                 "On":   1
         scalingmode:
             prompt:      SCALING MODE
-            description: Screen scaling options
+            description: Can smooth the image.
             choices:
                 "Nearest Neighbour":    0
                 "Integer Scale":        1
                 "Sharp Bilinear":       2
                 "Regular Bilnear":      3
         hqmode:
-            prompt:      HQ Mode
-            description: Enable High Quality effects for special stages
+            prompt:      HQ MODE
+            description: Enable high quality effects for special stages.
             choices:
                 "Off":    0
                 "On":     1
         skipstart:
             prompt:      SKIP START MENU
-            description: Bypass the pre-game menu
+            description: Bypass the pre-game menu.
             choices:
                 "Off":    0
                 "On":     1
         devmenu:
             prompt:      DEV MENU
-            description: Modding and other advanced options
+            description: Access to modding and other advanced options.
             choices:
                 "Off":    0
                 "On":     1
@@ -4573,7 +4568,7 @@ soniccd:
   cfeatures:
         language:
             prompt:      LANGUAGE
-            description: Change the game language
+            description: Change the game's language.
             choices:
                 "English":  0
                 "French":   1
@@ -4589,7 +4584,7 @@ soniccd:
                 "On":   1
         scalingmode:
             prompt:      SCALING MODE
-            description: Screen scaling options
+            description: Can smooth the image.
             choices:
                 "Nearest Neighbour":    0
                 "Integer Scale":        1
@@ -4597,20 +4592,20 @@ soniccd:
                 "Regular Bilnear":      3
         hqmode:
             prompt:      HQ Mode
-            description: Enable high quality effects for special stages
+            description: Enable high quality effects for special stages.
             choices:
                 "Off":    0
                 "On":     1
         spindash:
             prompt:      SPINDASH TYPE
-            description: Spindash type
+            description: Both types require holding D-pad down during initial charge.
             choices:
-                "By Save":  -1
-                "Sonic 2":  0
-                "Sonic CD": 1
+                "By Save":              -1
+                "Sonic 2 (tap jump)":   0
+                "Sonic CD (hold jump)": 1
         devmenu:
             prompt:      DEV MENU
-            description: For modding and other advanced options
+            description: Access to modding and other advanced options.
             choices:
                 "Off":    0
                 "On":     1
@@ -4620,45 +4615,44 @@ model2emu:
   shared: [hud]
   cfeatures:
         screenRatio:
-            prompt:      SCREEN RATIO
-            description: Choose screen ratio (4:3 default)
+            prompt:      ASPECT RATIO
             choices:
                 "4:3":      0
                 "16:9":     1
                 "16:10":    2
         fakeGouraud:
             prompt:      FAKE GOURAUD
-            description: Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)
+            description: Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat).
             choices:
                 "Off":      0
                 "On":       1
         bilinearFiltering:
             prompt:      BILINEAR FILTERING
-            description: Smooths textures.
+            description: Smooth textures.
             choices:
                 "Off":      0
                 "On":       1
         trilinearFiltering:
             prompt:      TRILINEAR FILTERING
-            description: Enables mipmap usage and trilinear filtering (doesn't work with some games, DoA for example)
+            description: Enables mipmap usage and trilinear filtering. Doesn't work with some games.
             choices:
                 "Off":      0
                 "On":       1
         filterTilemaps:
             prompt:      FILTER TILEMAPS
-            description: Enables bilinear filtering on tilemaps (looks good, but can cause some stretch artifacts)
+            description: Enables bilinear filtering on tilemaps. Looks good, but can cause some stretch artifacts.
             choices:
                 "Off":      0
                 "On":       1
         forceManaged:
             prompt:      FORCE MANAGED
-            description: Forces the DX driver to use Managed textures instead of Dynamic
+            description: Forces the DX driver to use Managed textures instead of Dynamic.
             choices:
                 "Off":      0
                 "On":       1
         enableMIP:
             prompt:      ENABLE MIP-MAP
-            description: Enables Direct3D Automip-map generation
+            description: Enables Direct3D Automip-map generation.
             choices:
                 "Off":      0
                 "On":       1
@@ -4676,7 +4670,7 @@ model2emu:
                 "On":       1
         useRawInput:
             prompt:      ENABLE RAW INPUT
-            description: Read mouse through Rawinput, allowing 2 mice for 2 player shooting games
+            description: Read mouse through Rawinput, allowing 2 mice for 2 player shooting games.
             choices:
                 "Off":      0
                 "On":       1
