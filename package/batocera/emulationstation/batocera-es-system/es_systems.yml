@@ -7,11 +7,12 @@ snes:
   group:      snes
   emulators:
     libretro:
-      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]    }
+      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]      }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:snes
   comment_fr: |
