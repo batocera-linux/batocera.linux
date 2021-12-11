@@ -391,6 +391,9 @@ vitaquake2:
 wii:
   emulator: dolphin
   core:     dolphin
+    # Issue with decorations showing when they shouldn't on auto settings. This is a workaround.
+    options:
+      bezel: none
 wiiu:
   emulator: cemu
   core:     cemu
