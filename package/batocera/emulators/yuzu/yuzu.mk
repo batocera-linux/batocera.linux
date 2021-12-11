@@ -4,14 +4,18 @@
 #
 ################################################################################
 # Version.: Commits on Oct 12, 2021
-YUZU_VERSION = EA-2127
-YUZU_SITE = https://github.com/pineappleEA/pineapple-src.git
-#YUZU_VERSION = mainline-0-775
-#YUZU_SITE = https://github.com/yuzu-emu/yuzu-mainline.git
+#YUZU_VERSION = EA-2226
+#YUZU_SITE = https://github.com/pineappleEA/pineapple-src.git
+YUZU_VERSION = 429320aee8a0beab0081a61e6e3cfbc6bb754db2
+YUZU_SITE = https://github.com/yuzu-emu/yuzu.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
 YUZU_LICENSE = GPLv2
 YUZU_DEPENDENCIES = qt5base qt5tools qt5multimedia fmt boost ffmpeg zstd zlib libzip lz4 catch2 sdl2 opus
+
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+YUZU_DEPENDENCIES += host-glslang
+endif
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 YUZU_SUPPORTS_IN_SOURCE_BUILD = NO
