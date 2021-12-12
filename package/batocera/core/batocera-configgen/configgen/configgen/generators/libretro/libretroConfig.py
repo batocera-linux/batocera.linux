@@ -697,9 +697,6 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     else:
         bezel_stretch = False
 
-    # Needs to be outside of the if condition in case the bezel doesn't need adaption, otherwise it errors out if using system controllers as the tattoo.
-    output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
-
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -750,6 +747,10 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             except:
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
+        if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+            output_png = "/tmp/bezel_tattooed.png"
+            bezelsUtil.tatooImageAdapt(overlay_png_file, output_png_file, system)
+            overlay_png_file = output_png_file
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
@@ -758,11 +759,9 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
-
-    if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
-        output_png = "/tmp/bezel_tattooed.png"
-        bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
-        overlay_png_file = output_png_file
+        if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+            output_png = "/tmp/bezel_tattooed.png"
+            bezelsUtil.tatooImage(overlay_png_file, system)
 
     eslog.debug("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
