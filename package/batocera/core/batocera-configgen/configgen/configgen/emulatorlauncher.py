@@ -608,7 +608,7 @@ if __name__ == '__main__':
     parser.add_argument("-state_slot", help="state slot", type=str, required=False)
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
     parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
-    parser.add_argument("-gameinfoxml", help="game info xml", type=str, required=False)
+    parser.add_argument("-gameinfoxml", help="game info xml", type=str, nargs='?', default='/dev/null', required=False)
 
     args = parser.parse_args()
     try:
