@@ -15,6 +15,9 @@ eslog = get_logger(__name__)
 
 class LibretroGenerator(Generator):
 
+    def supportsInternalBezels(self):
+        return True
+
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, gameResolution):

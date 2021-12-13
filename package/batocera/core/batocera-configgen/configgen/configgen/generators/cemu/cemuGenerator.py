@@ -21,6 +21,9 @@ cemuSaves   = batoceraFiles.SAVES + '/cemu'
 
 class CemuGenerator(Generator):
 
+    def hasInternalMangoHUDCall(self):
+        return True
+
     def generate(self, system, rom, playersControllers, gameResolution):
         game_dir = cemuConfig + "/gameProfiles"
         resources_dir = cemuConfig + "/resources"
@@ -69,6 +72,8 @@ class CemuGenerator(Generator):
             commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe"]
         else:
             commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-f"]
+            if system.isOptSet('hud') and system.config["hud"] != "":
+               commandArray.insert(0, "mangohud")
 
         return Command.Command(
             array=commandArray,

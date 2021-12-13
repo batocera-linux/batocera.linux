@@ -13,6 +13,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/batocera-es-system.py \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/es_systems.yml        \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/es_features.yml       \
+		$(@D)/es_external_translations.h \
 		$(CONFIG_DIR)/.config \
 		$(@D)/es_systems.cfg \
 		$(@D)/es_features.cfg \

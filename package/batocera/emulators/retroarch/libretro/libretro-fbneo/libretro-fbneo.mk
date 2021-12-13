@@ -3,8 +3,8 @@
 # FBNEO
 #
 ################################################################################
-# Version.: Commits on Oct 17, 2021
-LIBRETRO_FBNEO_VERSION = e5dcae883a4289bcf88b1a02109ce83452c5e8bc
+# Version.: Commits on Dec 10, 2021
+LIBRETRO_FBNEO_VERSION = 7e4511e1526e381ae8a94f4cd83cfbcd0077202d
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -50,7 +50,7 @@ endif
 
 define LIBRETRO_FBNEO_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/burner/libretro -f Makefile platform="$(LIBRETRO_FBNEO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS) \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_FBNEO_VERSION) | cut -c 1-7)"
+        GIT_VERSION="$(shell echo $(LIBRETRO_FBNEO_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS

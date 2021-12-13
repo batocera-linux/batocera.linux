@@ -3,8 +3,8 @@
 # ZX81
 #
 ################################################################################
-# Version.: Commits on Oct 15, 2021
-LIBRETRO_81_VERSION = 30344d3499fdb301ee33de136f7b390bebe0756a
+# Version.: Commits on Dec 03, 2021
+LIBRETRO_81_VERSION = 7e8153cd5b88cd5cb23fb0c03c04e7c7d8a73159
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 LIBRETRO_81_LICENSE = GPLv3
 

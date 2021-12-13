@@ -16,6 +16,11 @@ eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
+    def getInGameRatio(self, config, gameResolution):
+        if getGfxRatioFromConfig(config, gameResolution) == "16:9":
+            return 16/9
+        return 4/3
+
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
 
@@ -26,6 +31,7 @@ class Pcsx2Generator(Generator):
         configureUI(pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
         configureVM(pcsx2ConfigDir, system)
         configureGFX(pcsx2ConfigDir, system)
+        configureGFXdx(pcsx2ConfigDir, system)
         configureAudio(pcsx2ConfigDir)
 
         if isAVX2:
@@ -222,18 +228,38 @@ def configureVM(config_directory, system):
     with open(configFileName, 'w') as configfile:
         pcsx2VMConfig.write(configfile)
 
-
 def configureGFX(config_directory, system):
-    configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
+    configFileName = "{}/{}".format(config_directory + "/inis", "GS.ini")
     if not os.path.exists(config_directory):
         os.makedirs(config_directory + "/inis")
     
     # Create the config file if it doesn't exist
     if not os.path.exists(configFileName):
         f = open(configFileName, "w")
-        f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
         f.close()
     
+    # Update settings
+    pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
+
+    # Internal resolution
+    if system.isOptSet('internal_resolution'):
+        pcsx2GFXSettings.save("upscale_multiplier", system.config["internal_resolution"])
+    else:
+        pcsx2GFXSettings.save("upscale_multiplier", "1")
+
+    pcsx2GFXSettings.write()
+
+def configureGFXdx(config_directory, system):
+    configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
+    if not os.path.exists(config_directory):
+        os.makedirs(config_directory + "/inis")
+
+    # Create the config file if it doesn't exist
+    if not os.path.exists(configFileName):
+        f = open(configFileName, "w")
+        f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
+        f.close()
+
     # Update settings
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
     pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")

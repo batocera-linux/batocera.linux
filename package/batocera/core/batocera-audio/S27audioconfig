@@ -11,10 +11,23 @@ apply_audioconfig() {
     PROFILE=$2
     VOLUME=$3
 
-    batocera-audio set             "${DEVICE}"  || return 1
-    batocera-audio set-profile     "${PROFILE}" || return 1
+    EXITCODE=0
+    if batocera-audio set "${DEVICE}"
+       then
+	   if ! batocera-audio set-profile "${PROFILE}"
+	   then
+	       EXITCODE=1
+	   fi
+    else
+	EXITCODE=1
+    fi
+
+    # always apply audio volume at last on the selected output
+    # but in case set ou set-profile fails, always set volume
+    # because in case the audio card doesn't exist,
+    # it is nice to have the volume applied on the default output
     batocera-audio setSystemVolume "${VOLUME}"  || return 1
-    return 0
+    return ${EXITCODE}
 }
 
 try_apply_audioconfig() {

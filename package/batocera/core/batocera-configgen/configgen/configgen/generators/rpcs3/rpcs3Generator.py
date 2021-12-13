@@ -111,3 +111,6 @@ class Rpcs3Generator(Generator):
             commandArray.append("--no-gui")
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+
+    def getInGameRatio(self, config, gameResolution):
+        return 16/9

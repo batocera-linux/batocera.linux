@@ -54,3 +54,6 @@ class PPSSPPGenerator(Generator):
     # Show mouse on screen for the Config Screen
     def getMouseMode(self, config):
         return True
+
+    def getInGameRatio(self, config, gameResolution):
+        return 16/9

@@ -8,4 +8,4 @@ then
     export DISPLAY=:0.0
 fi
 
-XDG_CONFIG_HOME=/userdata/system/configs /usr/PCSX/bin/PCSX2 --gs=/usr/PCSX/bin/plugins/libGSdx.so
+XDG_CONFIG_HOME=/userdata/system/configs LD_LIBRARY_PATH=/usr/PCSX/lib /usr/PCSX/bin/PCSX2

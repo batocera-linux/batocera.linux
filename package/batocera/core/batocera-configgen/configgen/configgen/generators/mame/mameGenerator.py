@@ -21,6 +21,9 @@ eslog = get_logger(__name__)
 
 class MameGenerator(Generator):
 
+    def supportsInternalBezels(self):
+        return True
+
     def generate(self, system, rom, playersControllers, gameResolution):
 
         # Extract "<romfile.zip>"

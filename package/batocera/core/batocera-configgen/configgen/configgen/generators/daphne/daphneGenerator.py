@@ -25,18 +25,28 @@ class DaphneGenerator(Generator):
 
         if os.path.isfile(singeFile):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
-                            "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen",
+                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
                             "-manymouse", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
-        elif system.config["ratio"] == "16/9":
-            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                            romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-ignore_aspect_ratio",
-                            "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen",
-                            "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
                             "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+
+        # Aspect ratio
+        if system.config["ratio"] == "4/3":
+            commandArray.append("-force_aspect_ratio")
+
+        # Invert required when screen is rotated
+        if gameResolution["width"] < gameResolution["height"]:
+            commandArray.extend(["-x", str(gameResolution["height"]), "-y", str(gameResolution["width"])])
+        else:
+            commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
+
+        # Backend - Default OpenGL
+        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
+            commandArray.append("-vulkan")
+        else:
+            commandArray.append("-opengl")
 
         # Disable Bilinear Filtering
         if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
@@ -57,6 +67,6 @@ class DaphneGenerator(Generator):
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
         if os.path.isfile(commandsFile):
             commandArray.extend(open(commandsFile,'r').read().split())
-        
+
         return Command.Command(array=commandArray)
- 
+

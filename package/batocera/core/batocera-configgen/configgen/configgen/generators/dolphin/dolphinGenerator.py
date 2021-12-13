@@ -139,8 +139,13 @@ class DolphinGenerator(Generator):
         if not dolphinGFXSettings.has_section("Hardware"):
             dolphinGFXSettings.add_section("Hardware")  
             
-        dolphinGFXSettings.set("Settings", "AspectRatio", str(getGfxRatioFromConfig(system.config, gameResolution)))
-
+        # Graphics setting Aspect Ratio
+        if system.isOptSet('dolphin_aspect_ratio'):
+            dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
+        else:
+            # set to zero, which is 'Auto' in Dolphin & Batocera
+            dolphinGFXSettings.set("Settings", "AspectRatio", '"0"')
+        
         # Show fps
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinGFXSettings.set("Settings", "ShowFPS", '"True"')
@@ -166,11 +171,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "wideScreenHack", '"False"')
 
         # Ubershaders (synchronous_ubershader by default)
-        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "synchronous":
-            if system.config["ubershaders"] == "synchronous_ubershader":
+        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
+            if system.config["ubershaders"] == "exclusive_ubershader":
                 dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"1"')
-            elif system.config["ubershaders"] == "asynchronous_ubershader":
+            elif system.config["ubershaders"] == "hybrid_ubershader":
                 dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"2"')
+            elif system.config["ubershaders"] == "skip_draw":
+                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"3"')
         else:
             dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"0"')
 
@@ -254,18 +261,6 @@ class DolphinGenerator(Generator):
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
-# Ratio
-def getGfxRatioFromConfig(config, gameResolution):
-    # 3: stretch ; 2: 4:3 ; 1: 16:9  ; 0: auto
-    if "ratio" in config:
-        if config["ratio"] == "4/3":
-            return 2
-        if config["ratio"] == "16/9":
-            return 1
-        if config["ratio"] == "full":
-            return 3
-    return 0
-
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
 # It may be used for something else, so set it anyway
 def getGameCubeLangFromEnvironment():
@@ -275,3 +270,17 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages[lang]
     else:
         return availableLanguages["en_US"]
+
+def getInGameRatio(self, config, gameResolution):
+    if config["ratio"] == "16/9":
+        return 16/9
+
+    if config["ratio"] == "full":
+        return gameResolution["width"] / gameResolution["height"]
+
+    if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
+        # Prefer Cheats than Hack
+        if not (system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats')):
+            return gameResolution["width"] / gameResolution["height"]
+
+    return 4/3
