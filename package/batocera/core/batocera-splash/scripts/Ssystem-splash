@@ -6,9 +6,27 @@
 do_start ()
 {
     image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
+    # Christmas time! Only true if month is December and date is less than 27.
+    if [ $(date +%m) -eq 12 -a $(date +%d) -lt 27 ]; then
+        image="/usr/share/batocera/splash/boot-logo-xmas-"$(batocera-resolution currentResolution)".png"
+        xmas=$(true)
+    fi
+    # Test if there isn't an appropriate resolution splash image.
     if ! [ -f "$image" ]; then
+        # If there isn't, use the basic logo.
         image="/usr/share/batocera/splash/boot-logo.png"
+        if $xmas; then
+            image="/usr/share/batocera/splash/boot-logo-xmas.png"
+            # If it doesn't exist for some reason, go back to using the basic logo.
+            [ -f "$image" ] || image="/usr/share/batocera/splash/boot-logo.png"
+        fi
+        # If that also doesn't exist for some reason, exit indicating an error.
         [ -f "$image" ] || exit 1
+    fi
+
+    # Copy the seasonal logo over to EmulationStation's resources.
+    if $xmas; then
+        cp /usr/share/batocera/splash/boot-logo-xmas.png /usr/share/emulationstation/resources/logo.png
     fi
 
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
