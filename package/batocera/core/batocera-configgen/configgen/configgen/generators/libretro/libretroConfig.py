@@ -749,7 +749,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
             output_png = "/tmp/bezel_tattooed.png"
-            bezelsUtil.tatooImageAdapt(overlay_png_file, output_png_file, system)
+            bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
             overlay_png_file = output_png_file
     else:
         if viewPortUsed:
@@ -761,7 +761,8 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
             output_png = "/tmp/bezel_tattooed.png"
-            bezelsUtil.tatooImage(overlay_png_file, system)
+            bezelsUtil.tatooImage(overlay_png_file, output_png, system)
+            overlay_png_file = output_png
 
     eslog.debug("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
