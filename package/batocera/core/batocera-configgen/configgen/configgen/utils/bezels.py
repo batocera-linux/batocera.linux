@@ -67,16 +67,7 @@ def fast_image_size(image_file):
 def resizeImage(input_png, output_png, screen_width, screen_height):
     imgin = Image.open(input_png)
     if imgin.mode != "RGBA":
-        # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
-        # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-        if not 'transparency' in imgin.info:
-            raise Exception("no transparent layer for the viewport, abort")
-        alpha = imgin.split()[-1]  # alpha from original palette + alpha
-        ix,iy = fast_image_size(input_png)
-        imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
-        imgnew.paste(alpha, (0,0,ix,iy))
-        imgout = imgin.resize((screen_width, screen_height), Image.ANTIALIAS)
-        imgout.save(output_png, mode="RGBA", format="PNG")
+        alphaPaste(input_png, output_png, imgin, fillcolor)
     else:
         imgout = imgin.resize((screen_width, screen_height), Image.ANTIALIAS)
         imgout.save(output_png, mode="RGBA", format="PNG")
@@ -98,16 +89,7 @@ def padImage(input_png, output_png, screen_width, screen_height, bezel_width, be
       borderh = yoffset // 2
   imgin = Image.open(input_png)
   if imgin.mode != "RGBA":
-      # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
-      # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-      if not 'transparency' in imgin.info:
-          raise Exception("no transparent layer for the viewport, abort")
-      alpha = imgin.split()[-1]  # alpha from original palette + alpha
-      ix,iy = fast_image_size(input_png)
-      imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
-      imgnew.paste(alpha, (0,0,ix,iy))
-      imgout = ImageOps.expand(imgnew, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
-      imgout.save(output_png, mode="RGBA", format="PNG")
+      alphaPaste(input_png, output_png, imgin, fillcolor)
   else:
       imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
       imgout.save(output_png, mode="RGBA", format="PNG")
@@ -133,9 +115,12 @@ def tatooImage(input_png, output_png, system):
           tattoo = Image.open(tattoo_file)
       except:
           eslog.error("Error opening custom file: {}".format('tattoo_file'))
+  # Open the existing bezel...
   back = Image.open(input_png)
-  tattoo = tattoo.convert("RGBA")
+  # Convert it otherwise it implodes later on...
   back = back.convert("RGBA")
+  tattoo = tattoo.convert("RGBA")
+  # Quickly grab the sizes.
   w,h = fast_image_size(input_png)
   tw,th = fast_image_size(tattoo_file)
   if system.isOptSet('bezel.resize_tattoo') and system.getOptBoolean('bezel.resize_tattoo') == False:
@@ -153,21 +138,38 @@ def tatooImage(input_png, output_png, system):
       pcent = float(tatwidth / tw)
       tatheight = int(float(th) * pcent)
       tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
-
+  # Grab the alpha masks for use later.
   alpha = back.split()[-1]
   alphatat = tattoo.split()[-1]
+  # Create a new blank canvas that is the same size as the bezel for later compositing (they are required to be the same size).
+  tattooCanvas = Image.new("RGBA", back.size)
   if system.isOptSet('bezel.tattoo_corner'):
       corner = system.config['bezel.tattoo_corner']
   else:
       corner = 'NW'
   if (corner.upper() == 'NE'):
-      back.paste(tattoo, (w-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
+      tattooCanvas.paste(tattoo, (w-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
   elif (corner.upper() == 'SE'):
-      back.paste(tattoo, (w-tatwidth,h-tatheight-20), alphatat)
+      tattooCanvas.paste(tattoo, (w-tatwidth,h-tatheight-20), alphatat)
   elif (corner.upper() == 'SW'):
-      back.paste(tattoo, (0,h-tatheight-20), alphatat)
+      tattooCanvas.paste(tattoo, (0,h-tatheight-20), alphatat)
   else: # default = NW
-      back.paste(tattoo, (0,20), alphatat)
+      tattooCanvas.paste(tattoo, (0,20), alphatat)
+  back = Image.alpha_composite(back, tattooCanvas)
+
   imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
   imgnew.paste(back, (0,0,w,h))
   imgnew.save(output_png, mode="RGBA", format="PNG")
+
+def alphaPaste(input_png, output_png, imgin, fillcolor):
+  imgin = Image.open(input_png)
+  # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
+  # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
+  if not 'transparency' in imgin.info:
+      raise Exception("no transparent pixels in the image, abort")
+  alpha = imgin.split()[-1]  # alpha from original palette + alpha
+  ix,iy = fast_image_size(input_png)
+  imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
+  imgnew.paste(alpha, (0,0,ix,iy))
+  imgout = ImageOps.expand(imgnew, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
+  imgout.save(output_png, mode="RGBA", format="PNG")
