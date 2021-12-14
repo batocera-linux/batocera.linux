@@ -1,0 +1,40 @@
+#!/bin/sh
+# Download seasonal splash images.
+
+start() {
+    SEASON=
+    # Happy New Year!
+    [ $(date +%m/%d) -eq 1/1 ] && SEASON=newyear
+    # Valentine's day
+    [ $(date +%m/%d) -eq 2/14 ] && SEASON=valentine
+    # Pi Day
+    [ $(date +%m/%d) -eq 3/14 ] && SEASON=pi
+    # Saint Patrick's day
+    [ $(date +%m/%d) -eq 3/17 ] && SEASON=stpatrick
+    # April Fools!
+    [ $(date +%m/%d) -eq 4/1 ] && SEASON=aprilfool
+    # Aurora Borealis
+    [ $(date +%m) -eq 6 && $(date +%d) -gt 6 -lt 18 ] && SEASON=steamedclams
+    # Batocera's anniversary.
+    [ $(date +%m/%d) -eq 6/21 ] && SEASON=anniversary
+    # Independence day
+    [ $(date +%m/%d) -eq 7/4 ] && SEASON=independence
+    # Aurora Australis
+    [ $(date +%m) -eq 9 && $(date +%d) -gt 6 -lt 18 ] && SEASON=australis
+    # International Talk Like a Pirate Day
+    [ $(date +%m/%d) -eq 9/19 ] && SEASON=pirate
+    # All Hallows' evening.
+    [ $(date +%m/%d) -eq 10/31 ] && SEASON=halloween
+    # Christmas time! Only true if month is December and date is less than 27.
+    [ $(date +%m) -eq 12 && $(date +%d) -lt 27 ] && SEASON=xmas
+    # Monkey day https://en.wikipedia.org/wiki/Monkey_Day
+    [ $(date +%m/%d) -eq 12/14 ] && SEASON=monkey
+    # Winter solstice
+    [ $(date +%m/%d) -eq 12/21 || $(date +%m/%d) -eq 12/22 ] && SEASON=solstice
+
+    # Check if it's a seasonal time of the year.
+    if [ -n "$SEASON" ]; then
+        if [ ! -e "/userdata/system/debug/logo-seasonal.png" ]; then
+            wget -O /userdata/system/debug/logo-seasonal.png https://raw.githubusercontent.com/Hew-ux/batocera-assets/main/splash-screens/seasonal/logo-${SEASON}.png
+        fi
+    fi

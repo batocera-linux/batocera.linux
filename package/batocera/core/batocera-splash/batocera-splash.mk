@@ -68,6 +68,7 @@ define BATOCERA_SPLASH_INSTALL_SCRIPT
     install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssplashscreencontrol        $(TARGET_DIR)/etc/init.d/S30splashscreencontrol
     install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/$(BATOCERA_SPLASH_SCRIPT)   $(TARGET_DIR)/etc/init.d/S28splash
     sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S28splash
+    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Sseasonalsplash             $(TARGET_DIR)/etc/init.d/S98seasonalsplash
 endef
 
 define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
@@ -78,13 +79,6 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png"         "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png"        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png"                    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x240.png"
-
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-xmas.png"       "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-xmas.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo480p-xmas.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-xmas-640x480.png"
-
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-xmas-3-2-480-rotate.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-xmas-320x480.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-xmas-16-9-480-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-xmas-480x854.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-xmas-240.png"               "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-xmas-320x240.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
