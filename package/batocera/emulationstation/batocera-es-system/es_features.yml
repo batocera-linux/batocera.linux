@@ -2253,6 +2253,12 @@ libretro:
                     "150%":       150
                     "170%":       170
                     "200%":       200
+            puae_batocera_keymap:
+                prompt:      BATOCERA KEY/HOTKEY MAPPINGS
+                description: Disable if custom mappings are not saved.
+                choices:
+                    "On":         enabled
+                    "Off":        disabled
       systems:
             amiga500:
                 cfeatures:
@@ -2902,6 +2908,12 @@ libretro:
                 choices:
                     "Off":                      disabled
                     "On":                       enabled
+            vice_batocera_keymap:
+                prompt:      BATOCERA KEY/HOTKEY MAPPINGS
+                description: Disable if custom mappings are not saved.
+                choices:
+                    "On":                       enabled
+                    "Off":                      disabled
     vice_x64sc:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
@@ -2970,6 +2982,12 @@ libretro:
                 choices:
                     "Off":              disabled
                     "On":               enabled
+            vice_batocera_keymap:
+                prompt:      BATOCERA KEY/HOTKEY MAPPINGS
+                description: Disable if custom mappings are not saved.
+                choices:
+                    "On":                       enabled
+                    "Off":                      disabled
     vice_xplus4:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
     vice_x128:
