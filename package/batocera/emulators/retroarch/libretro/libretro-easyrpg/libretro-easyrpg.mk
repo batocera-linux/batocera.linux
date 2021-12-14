@@ -3,9 +3,9 @@
 # LIBRETRO_EASYRPG
 #
 ################################################################################
-# Version.: Release 0.6.2.3
-LIBRETRO_EASYRPG_VERSION = 0.6.2.3
-LIBRETRO_EASYRPG_DEPENDENCIES = sdl2 zlib fmt libpng freetype mpg123 libvorbis opusfile sdl2_mixer pixman speexdsp libxmp wildmidi liblcf
+# Version.: Release 0.7.0
+LIBRETRO_EASYRPG_VERSION = 0.7.0
+LIBRETRO_EASYRPG_DEPENDENCIES = sdl2 zlib fmt libpng freetype mpg123 libvorbis opusfile pixman speexdsp libxmp wildmidi liblcf fluidsynth
 LIBRETRO_EASYRPG_LICENSE = MIT
 LIBRETRO_EASYRPG_SITE = https://github.com/EasyRPG/Player.git
 LIBRETRO_EASYRPG_GIT_SUBMODULES=YES
@@ -13,7 +13,7 @@ LIBRETRO_EASYRPG_SITE_METHOD=git
 
 LIBRETRO_EASYRPG_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_EASYRPG_CONF_OPTS += -DPLAYER_BUILD_LIBLCF=OFF
-LIBRETRO_EASYRPG_CONF_OPTS += -DPLAYER_TARGET_PLATFORM=libretro 
+LIBRETRO_EASYRPG_CONF_OPTS += -DPLAYER_TARGET_PLATFORM=libretro -DBUILD_SHARED_LIBS=ON
 
 LIBRETRO_EASYRPG_CONF_ENV += LDFLAGS="-lpthread -fPIC" CFLAGS="-fPIC" CXX_FLAGS="-fPIC"
 
