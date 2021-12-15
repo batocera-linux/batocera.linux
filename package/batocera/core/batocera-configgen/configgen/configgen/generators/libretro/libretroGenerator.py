@@ -227,10 +227,6 @@ class LibretroGenerator(Generator):
             romName = os.path.splitext(os.path.basename(rom))[0]
             rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
 
-        # The libretro core for EasyRPG requires to launch the RPG_RT.ldb file inside the .easyrpg folder
-        if system.name == 'easyrpg' and system.config['core'] == "easyrpg":
-            rom = rom + '/RPG_RT.ldb'
-        
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
