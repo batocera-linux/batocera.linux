@@ -104,42 +104,41 @@ def generateCoreSettings(coreSettings, system, rom):
         # Select Joystick Type
         coreSettings.save('vice_Controller',        '"joystick"')
         # Controller options for c64 are in libretroControllers.py
-        if not (system.isOptSet('vice_batocera_keymap') and system.config['vice_batocera_keymap'] == "disabled"):
-            c64_mapping = { 'a': "RETROK_SPACE",
-                    'aspect_ratio_toggle': "---",
-                    'b': "JOYSTICK_FIRE",
-                    'datasette_forward': "RETROK_RIGHT",
-                    'datasette_reset': "---",
-                    'datasette_rewind': "RETROK_LEFT",
-                    'datasette_start': "RETROK_UP",
-                    'datasette_stop': "RETROK_DOWN",
-                    'datasette_toggle_hotkeys': "---",
-                    'joyport_switch': "RETROK_F10",
-                    'l': "RETROK_ESCAPE",
-                    'l2': "RETROK_F11",
-                    'l3': "SWITCH_JOYPORT",
-                    'ld': "---",
-                    'll': "---",
-                    'lr': "---",
-                    'lu': "---",
-                    'r': "RETROK_PAGEUP",
-                    'r2': "RETROK_LSHIFT",
-                    'r3': "RETROK_F12",
-                    'rd': "RETROK_F7",
-                    'reset': "---",
-                    'rl': "RETROK_F3",
-                    'rr': "RETROK_F5",
-                    'ru': "RETROK_F1",
-                    'select': "TOGGLE_VKBD",
-                    'start': "RETROK_RETURN",
-                    'statusbar': "RETROK_F9",
-                    'vkbd': "---",
-                    'warp_mode': "RETROK_F11",
-                    'x': "RETROK_n",
-                    'y': "RETROK_y",
-                    'zoom_mode_toggle': "RETROK_F12"}
-            for key in c64_mapping:
-                coreSettings.save('vice_mapper_' + key, c64_mapping[key])
+        c64_mapping = { 'a': "RETROK_SPACE",
+                'aspect_ratio_toggle': "---",
+                'b': "JOYSTICK_FIRE",
+                'datasette_forward': "RETROK_RIGHT",
+                'datasette_reset': "---",
+                'datasette_rewind': "RETROK_LEFT",
+                'datasette_start': "RETROK_UP",
+                'datasette_stop': "RETROK_DOWN",
+                'datasette_toggle_hotkeys': "---",
+                'joyport_switch': "RETROK_F10",
+                'l': "RETROK_ESCAPE",
+                'l2': "RETROK_F11",
+                'l3': "SWITCH_JOYPORT",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "RETROK_PAGEUP",
+                'r2': "RETROK_LSHIFT",
+                'r3': "RETROK_F12",
+                'rd': "RETROK_F7",
+                'reset': "---",
+                'rl': "RETROK_F3",
+                'rr': "RETROK_F5",
+                'ru': "RETROK_F1",
+                'select': "TOGGLE_VKBD",
+                'start': "RETROK_RETURN",
+                'statusbar': "RETROK_F9",
+                'vkbd': "---",
+                'warp_mode': "RETROK_F11",
+                'x': "RETROK_n",
+                'y': "RETROK_y",
+                'zoom_mode_toggle': "RETROK_F12"}
+        for key in c64_mapping:
+            coreSettings.save('vice_mapper_' + key, c64_mapping[key])
 
         # Model type
         if system.isOptSet('c64_model'):
@@ -185,67 +184,66 @@ def generateCoreSettings(coreSettings, system, rom):
         # If you want to change them, you can add
         # some strings to batocera.conf by using
         # this syntax: SYSTEMNAME.retroarchcore.puae_mapper_BUTTONNAME=VALUE
-        if not (system.isOptSet('puae_batocera_keymap') and system.config['puae_batocera_keymap'] == "disabled"):
-            if (system.name != 'amigacd32') and not ( system.isOptSet('controller1_puae') and ( system.config['controller1_puae'] == "517" ) ) and not ( system.isOptSet('controller2_puae') and ( system.config['controller2_puae'] == "517" ) ):
-                # Controller mapping for A500 and A1200
-                uae_mapping = { 'aspect_ratio_toggle': "---",
-                    'mouse_toggle': "RETROK_RCTRL",
-                    'statusbar': "RETROK_F11",
-                    'vkbd': "---",
-                    'reset': "---",
-                    'zoom_mode_toggle': "RETROK_F12",
-                    'a': "---",
-                    'b': "---",
-                    'x': "RETROK_SPACE",
-                    'y': "RETROK_LCTRL",
-                    'l': "RETROK_ESCAPE",
-                    'l2': "MOUSE_LEFT_BUTTON",
-                    'l3': "SWITCH_JOYMOUSE",
-                    'ld': "---",
-                    'll': "---",
-                    'lr': "---",
-                    'lu': "---",
-                    'r': "RETROK_F1",
-                    'r2': "MOUSE_RIGHT_BUTTON",
-                    'r3': "TOGGLE_STATUSBAR",
-                    'rd': "---",
-                    'rl': "---",
-                    'rr': "---",
-                    'ru': "---",
-                    'select': "TOGGLE_VKBD",
-                    'start': "RETROK_RETURN",}
-                for key in uae_mapping:
-                    coreSettings.save('puae_mapper_' + key, uae_mapping[key])
-            else:
-                # Controller mapping for CD32
-                uae_mapping = { 'aspect_ratio_toggle': "---",
-                    'mouse_toggle': "RETROK_RCTRL",
-                    'statusbar': "RETROK_F11",
-                    'vkbd': "---",
-                    'reset': "---",
-                    'zoom_mode_toggle': "RETROK_F12",
-                    'a': "---",
-                    'b': "---",
-                    'x': "---",
-                    'y': "---",
-                    'l': "---",
-                    'l2': "MOUSE_LEFT_BUTTON",
-                    'l3': "SWITCH_JOYMOUSE",
-                    'ld': "---",
-                    'll': "---",
-                    'lr': "---",
-                    'lu': "---",
-                    'r': "---",
-                    'r2': "MOUSE_RIGHT_BUTTON",
-                    'r3': "TOGGLE_STATUSBAR",
-                    'rd': "---",
-                    'rl': "---",
-                    'rr': "---",
-                    'ru': "---",
-                    'select': "---",
-                    'start': "---",}
-                for key in uae_mapping:
-                    coreSettings.save('puae_mapper_' + key, uae_mapping[key])
+        if (system.name != 'amigacd32') and not ( system.isOptSet('controller1_puae') and ( system.config['controller1_puae'] == "517" ) ) and not ( system.isOptSet('controller2_puae') and ( system.config['controller2_puae'] == "517" ) ):
+            # Controller mapping for A500 and A1200
+            uae_mapping = { 'aspect_ratio_toggle': "---",
+                'mouse_toggle': "RETROK_RCTRL",
+                'statusbar': "RETROK_F11",
+                'vkbd': "---",
+                'reset': "---",
+                'zoom_mode_toggle': "RETROK_F12",
+                'a': "---",
+                'b': "---",
+                'x': "RETROK_SPACE",
+                'y': "RETROK_LCTRL",
+                'l': "RETROK_ESCAPE",
+                'l2': "MOUSE_LEFT_BUTTON",
+                'l3': "SWITCH_JOYMOUSE",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "RETROK_F1",
+                'r2': "MOUSE_RIGHT_BUTTON",
+                'r3': "TOGGLE_STATUSBAR",
+                'rd': "---",
+                'rl': "---",
+                'rr': "---",
+                'ru': "---",
+                'select': "TOGGLE_VKBD",
+                'start': "RETROK_RETURN",}
+            for key in uae_mapping:
+                coreSettings.save('puae_mapper_' + key, uae_mapping[key])
+        else:
+            # Controller mapping for CD32
+            uae_mapping = { 'aspect_ratio_toggle': "---",
+                'mouse_toggle': "RETROK_RCTRL",
+                'statusbar': "RETROK_F11",
+                'vkbd': "---",
+                'reset': "---",
+                'zoom_mode_toggle': "RETROK_F12",
+                'a': "---",
+                'b': "---",
+                'x': "---",
+                'y': "---",
+                'l': "---",
+                'l2': "MOUSE_LEFT_BUTTON",
+                'l3': "SWITCH_JOYMOUSE",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "---",
+                'r2': "MOUSE_RIGHT_BUTTON",
+                'r3': "TOGGLE_STATUSBAR",
+                'rd': "---",
+                'rl': "---",
+                'rr': "---",
+                'ru': "---",
+                'select': "---",
+                'start': "---",}
+            for key in uae_mapping:
+                coreSettings.save('puae_mapper_' + key, uae_mapping[key])
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
         # Amiga Model
