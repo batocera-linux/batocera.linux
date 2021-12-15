@@ -17,7 +17,16 @@ import subprocess
 from xml.dom import minidom
 from PIL import Image, ImageOps
 
-def generatePadsConfig(config, playersControllers, sysName, dpadMode, cfgPath, altButtons):
+def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButtons):
+    # config file
+    config = minidom.Document()
+    configFile = cfgPath + "default.cfg"
+    if os.path.exists(configFile):
+        try:
+            config = minidom.parse(configFile)
+        except:
+            pass # reinit the file
+    
     # Common controls
     mappings = {
         "JOYSTICK_UP":    "joystick1up",
@@ -330,9 +339,16 @@ def generatePadsConfig(config, playersControllers, sysName, dpadMode, cfgPath, a
                     xml_input_alt.appendChild(generateComboDirPortElement(config_alt, ':COL9', pad.index, "KEYBOARD", "LEFT", "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON11", "2", "2"))       # Left
                     xml_input_alt.appendChild(generateComboDirPortElement(config_alt, ':COL9', pad.index, "KEYBOARD", "UP", "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON13", "8", "8"))           # Up
                     xml_input_alt.appendChild(generateComboDirPortElement(config_alt, ':COL9', pad.index, "KEYBOARD", "RIGHT", "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON12", "128", "128")) # Right
-            
-            nplayer = nplayer + 1
-            
+        
+        nplayer = nplayer + 1
+        
+        # save the config file
+        #mameXml = open(configFile, "w")
+        # TODO: python 3 - workawround to encode files in utf-8
+        mameXml = codecs.open(configFile, "w", "utf-8")
+        dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+        mameXml.write(dom_string)
+        
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
         if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb") and writeConfig:
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
@@ -496,7 +512,6 @@ def input2definition(key, input, joycode, reversed, dpadMode):
             return "JOYCODE_{}_RXAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON3".format(joycode, joycode)
         if key == "joystick2right":
             return "JOYCODE_{}_RXAXIS_POS_SWITCH OR JOYCODE_{}_BUTTON2".format(joycode, joycode)
-    eslog.warning("unable to find input2definition for {} / {}".format(input.type, key))
     return "unknown"
 
 def getRoot(config, name):
