@@ -513,7 +513,7 @@ def hudConfig_protectStr(str):
 def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
     configstr = ""
 
-    if bezel != "":
+    if bezel != "" and bezel is not None:
         configstr = "background_image={}\nlegacy_layout=false\n".format(hudConfig_protectStr(bezel))
 
     if not system.isOptSet('hud'):
