@@ -273,7 +273,7 @@ class EsSystemConf:
             if m:
                 continue
 
-            fd.write("#define fake_gettext_external_" + str(n) + " _(\"" + tr.replace("\"", "\\\"") + "\")\n")
+            fd.write("#define fake_gettext_external_" + str(n) + " pgettext(\"game_options\", \"" + tr.replace("\"", "\\\"") + "\")\n")
             n = n+1
         fd.close()
 
