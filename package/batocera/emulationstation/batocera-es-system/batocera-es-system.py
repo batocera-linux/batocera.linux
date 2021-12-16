@@ -65,8 +65,9 @@ class EsSystemConf:
         es_system += "</systemList>\n"
         EsSystemConf.createEsSystem(es_system, esSystemFile)
 
-        toTranslate = {}
-        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch, toTranslate)
+        toTranslateOnArch = {}
+        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch, toTranslateOnArch)
+        toTranslate = EsSystemConf.findTranslations(featuresYaml)
 
         # remove blacklisted words
         backlistWords = {}
@@ -487,6 +488,62 @@ class EsSystemConf:
         featuresTxt += "</features>\n"
         es_features.write(featuresTxt)
         es_features.close()
+
+    # find all translation independantly of the arch
+    @staticmethod
+    def findTranslations(featuresYaml):
+        toTranslate = {}
+        features = ordered_load(open(featuresYaml, "r"))
+        for emulator in features:
+            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
+                if "cores" in features[emulator]:
+                    for core in features[emulator]["cores"]:
+                        if "cfeatures" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
+                            # core features
+                            if "cfeatures" in features[emulator]["cores"][core]:
+                               for cfeature in features[emulator]["cores"][core]["cfeatures"]:
+                                       description = ""
+                                       if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                           description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
+                                       EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
+                                       EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                       for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
+                                           EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
+                            # #############
+
+                            # systems in cores/core
+                            if "systems" in features[emulator]["cores"][core]:
+                               for system in features[emulator]["cores"][core]["systems"]:
+                                   if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
+                                       for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
+                                               description = ""
+                                               if "description" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
+                                                   description = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["description"]
+                                               EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
+                                               EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                               for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
+                                                   EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
+                if "systems" in features[emulator]:
+                    for system in features[emulator]["systems"]:
+                        if "cfeatures" in features[emulator]["systems"][system]:
+                            for cfeature in features[emulator]["systems"][system]["cfeatures"]:
+                                    description = ""
+                                    if "description" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
+                                        description = features[emulator]["systems"][system]["cfeatures"][cfeature]["description"]
+                                    EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
+                                    EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                    for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
+                                        EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
+                if "cfeatures" in features[emulator]:
+                    for cfeature in features[emulator]["cfeatures"]:
+                            description = ""
+                            if "description" in features[emulator]["cfeatures"][cfeature]:
+                                description = features[emulator]["cfeatures"][cfeature]["description"]
+                            EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cfeatures"][cfeature]["prompt"], { "emulator": emulator })
+                            EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator })
+                            for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
+                                EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator })
+        return toTranslate
 
     # Returns the extensions supported by the emulator
     @staticmethod
