@@ -30,7 +30,7 @@ class EsSystemConf:
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
-    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
+    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, esBlacklistedWordsFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
         rules = yaml.safe_load(open(rulesYaml, "r"))
         config = EsSystemConf.loadConfig(configFile)
         es_system = ""
@@ -67,6 +67,16 @@ class EsSystemConf:
 
         toTranslate = {}
         EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch, toTranslate)
+
+        # remove blacklisted words
+        backlistWords = {}
+        with open(esBlacklistedWordsFile) as fp:
+            line = fp.readline().rstrip('\n')
+            while line:
+                if line in toTranslate:
+                    del toTranslate[line]
+                line = fp.readline().rstrip('\n')
+        ###
 
         EsSystemConf.createEsTranslations(esTranslationFile, toTranslate)
 
@@ -573,6 +583,7 @@ if __name__ == "__main__":
     parser.add_argument("yml",           help="es_systems.yml definition file")
     parser.add_argument("features",      help="es_features.yml file")
     parser.add_argument("es_translations",  help="es_translations.h file")
+    parser.add_argument("blacklisted_words",  help="blacklisted_words.txt file")
     parser.add_argument("config",        help=".config buildroot file")
     parser.add_argument("es_systems",    help="es_systems.cfg emulationstation file")
     parser.add_argument("es_features",   help="es_features.cfg emulationstation file")
@@ -582,4 +593,4 @@ if __name__ == "__main__":
     parser.add_argument("romsdirtarget", help="emulationstation roms directory")
     parser.add_argument("arch", help="arch")
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
+    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.blacklisted_words, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
