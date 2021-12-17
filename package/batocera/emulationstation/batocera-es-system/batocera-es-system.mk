@@ -26,7 +26,10 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		mkdir -p $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales
 		echo "$(@D)/es_external_translations.h" | xgettext --language=C --add-comments=TRANSLATION -f - -o $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot --no-location --keyword=_
 		for PO in $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/*/batocera-es-system.po; do msgmerge -U --no-fuzzy-matching $${PO} $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot; done
+
+		# install staging
 		mkdir -p $(STAGING_DIR)/usr/share/batocera-es-system/locales
+		cp $(@D)/es_external_translations.h $(STAGING_DIR)/usr/share/batocera-es-system/
 		cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales $(STAGING_DIR)/usr/share/batocera-es-system
 endef
 
