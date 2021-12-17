@@ -17,7 +17,14 @@ import subprocess
 from xml.dom import minidom
 from PIL import Image, ImageOps
 
-def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButtons):
+def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButtons, customCfg):
+    if customCfg == 0:
+        overwriteMAME = True
+        overwriteSystem = True
+    else:
+        overwriteMAME = False
+        overwriteSystem = False
+    
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -26,6 +33,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
             config = minidom.parse(configFile)
         except:
             pass # reinit the file
+    else:
+        overwriteMAME = True
     
     # Common controls
     mappings = {
@@ -57,6 +66,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         #"BUTTON14": "",
         #"BUTTON15": ""
     }
+    print("Button layout = " + str(altButtons))
     # Buttons that change based on game/setting
     if altButtons == 1: # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
         mappings.update({"BUTTON1": "y"})
@@ -94,6 +104,23 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON4": "y"})
         mappings.update({"BUTTON5": "b"})
         mappings.update({"BUTTON6": "a"})
+    elif altButtons == 6: # Neo Geo Mini
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "b"})
+        mappings.update({"BUTTON3": "x"})
+        mappings.update({"BUTTON4": "a"})
+    elif altButtons == 7: # Neo Geo CD
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "a"})
+        mappings.update({"BUTTON3": "y"})
+        mappings.update({"BUTTON4": "x"})
+    elif altButtons == 8: # Neo Geo Fightstick
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "x"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "pageup"})
+        mappings.update({"BUTTON5": "y"})
+        mappings.update({"BUTTON6": "a"})
     
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_system     = getSection(config, xml_mameconfig, "system")
@@ -115,6 +142,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
             except:
                 pass # reinit the file
         elif not os.path.exists(configFile_alt):
+            overwriteSystem = True
             writeConfig = True
         else:
             writeConfig = False
@@ -321,12 +349,13 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         # save the config file
         #mameXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
-        mameXml = codecs.open(configFile, "w", "utf-8")
-        dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
-        mameXml.write(dom_string)
+        if overwriteMAME:
+            mameXml = codecs.open(configFile, "w", "utf-8")
+            dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+            mameXml.write(dom_string)
         
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb") and writeConfig:
+        if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb") and writeConfig and overwriteSystem:
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml_alt.write(dom_string_alt)

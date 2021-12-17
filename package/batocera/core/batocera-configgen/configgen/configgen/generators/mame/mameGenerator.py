@@ -200,41 +200,32 @@ class MameGenerator(Generator):
         if system.isOptSet("altlayout"):
             buttonLayout = system.config["altlayout"] # Option was manually selected
         else:
+            capcomList = set(open(batoceraFiles.mameCapcom).read().split())
+            mkList = set(open(batoceraFiles.mameMKombat).read().split())
+            kiList = set(open(batoceraFiles.mameKInstinct).read().split())
+            neogeoList = set(open(batoceraFiles.mameNeogeo).read().split())
+            
             romName = os.path.splitext(romBasename)[0]
-            if romName in [ "ts2", "ts2ja", "ts2j", "ts2ua", "ts2u", "kikaioh", "dstlka", "dstlk", "dstlkh", "dstlkur1", "dstlku", "hsf2a", "hsf2j1", "hsf2j", 
-                "hsf2", "jojojr2", "jojojr1", "jojoj", "jojobanr1", "jojobajr1", "jojoban", "jojobaj", "jojobaner1", "jojobar1", "jojobane", "jojoba", "jojonr2", 
-                "jojoar2", "jojonr1", "jojoar1", "jojon", "jojoa", "jojor2", "jojor1", "jojo", "jojour2", "jojour1", "jojou", "msha", "mshbr1", "mshb", "msh", "mshh", 
-                "mshjr1", "mshj", "mshu", "mshvsfa1", "mshvsfa", "mshvsfb1", "mshvsfb", "mshvsf", "mshvsfh", "mshvsfj2", "mshvsfj1", "mshvsfj", "mshvsfu1", "mshvsfu", 
-                "mvscar1", "mvsca", "mvscb", "mvscr1", "mvsc", "mvsch", "mvscjr1", "mvscj", "mvscjsing", "mvscur1", "mvscu", "nwarra", "nwarrb", "nwarr", "nwarrh", 
-                "nwarru", "plsmaswda", "plsmaswd", "redearthr1", "redearth", "ringdesta", "ringdestb", "ringdest", "ringdesth", "rvschoola", "rvschool", "rvschoolu", 
-                "jgakuen1", "jgakuen", "stargld2", "stargladj", "starglad", "sfa2", "sfa2ur1", "sfa2u", "sfa3b", "sfa3", "sfa3hr1", "sfa3h", "sfa3us", "sfa3ur1", 
-                "sfa3u", "sfar3", "sfar2", "sfar1", "sfa", "sfau", "sfexa", "sfex", "sfexj", "sfexu", "sfexpj1", "sfexpj", "sfexpu1", "sfexp", "sfex2a", "sfex2", 
-                "sfex2h", "sfex2j", "sfex2u1", "sfex2u", "sfex2pa", "sfex2p", "sfex2ph", "sfex2pj", "sfex2pu", "sf2ja", "sf2jc", "sf2jf", "sf2jh", "sf2j", "sf2j17", 
-                "sf2jl", "sf2ua", "sf2ub", "sf2ue", "sf2uc", "sf2ud", "sf2uf", "sf2ug", "sf2uh", "sf2ui", "sf2uk", "sf2um", "sf2em", "sf2en", "sf2ea", "sf2eb", "sf2ee", 
-                "sf2ed", "sf2ef", "sf2", "sf2hfj", "sf2ceja", "sf2cejb", "sf2cejc", "sf2cet", "sf2ceua", "sf2ceub", "sf2ceuc", "sf2ceea", "sf2ce", "sf2hfu", "sf2hf", 
-                "sfiii2n", "sfiii2j", "sfiii2", "sfiii3r1", "sfiii3", "sfiii3nr1", "sfiii3jr1", "sfiii3n", "sfiii3j", "sfiii3ur1", "sfiii3u", "sfiiin", "sfiiina", 
-                "sfiiia", "sfiii", "sfiiih", "sfiiij", "sfiiiu", "sfzar1", "sfza", "sfzbr1", "sfzb", "sfzhr1", "sfzh", "sfzjr2", "sfzjr1", "sfzj", "sfz2a", "sfz2br1", 
-                "sfz2b", "sfz2h", "sfz2jr1", "sfz2j", "sfz2n", "sfz2alr1", "sfz2al", "sfz2alb", "sfz2alh", "sfz2alj", "sfz3ar1", "sfz3a", "sfz3jr2", "sfz3jr1", "sfz3j", 
-                "smbombr1", "smbomb", "ssf2ta", "ssf2th", "ssf2tur1", "ssf2tu", "ssf2t", "ssf2xjr1r", "ssf2xjr1", "ssf2xj", "ssf2ar1", "ssf2a", "ssf2h", "ssf2jr2", 
-                "ssf2jr1", "ssf2j", "ssf2u", "ssf2r1", "ssf2", "ssf2tba", "ssf2tbh", "ssf2tbj1", "ssf2tbj", "ssf2tbu", "ssf2tbr1", "ssf2tb", "techromna", "techromn", 
-                "techromnu", "vhunt2r1", "vhunt2", "vhuntjr2", "vhuntjr1s", "vhuntjr1", "vhuntj", "vsav2", "vsava", "vsavb", "vsav", "vsavh", "vsavj", "vsavu", "vampjr1", 
-                "vampja", "vampj", "warzardr1", "warzard", "xmvsfar3", "xmvsfar2", "xmvsfar1", "xmvsfa", "xmvsfb", "xmvsfr1", "xmvsf", "xmvsfh", "xmvsfjr3", "xmvsfjr2", 
-                "xmvsfjr1", "xmvsfj", "xmvsfur2", "xmvsfur1", "xmvsfu", "xmcotaar2", "xmcotaar1", "xmcotaa", "xmcotab", "xmcotar1", "xmcota", "xmcotahr1", "xmcotah", 
-                "xmcotajr", "xmcotaj3", "xmcotaj2", "xmcotaj1", "xmcotaj", "xmcotau" ]:
+            if romName in capcomList:
                 buttonLayout = 1 # Capcom 6 button
-            elif romName in [ "mknifty666", "mknifty", "mkprot4", "mkprot8", "mkprot9", "mkrep", "mkla1", "mkla2", "mkla3", "mkla4", "mkr4", "mk", "mkyturboe",
-                "mkyturbo", "mktturbo", "mkyawdim", "mkyawdim2", "mkyawdim3", "mkyawdim4", "mk3p40", "mk3r10", "mk3r20", "mk3", "mk4b", "mk4a", "mk4", "mk2r11", "mk2r14",
-                "mk2r20", "mk2r21", "mk2r30", "mk2r31e", "mk2", "mk2r32e", "mk2r42", "mk2r91", "mk2chal", "umk3r10", "umk3r11", "umk3" ]:
+            elif romName in mkList:
                 buttonLayout = 2 # Mortal Kombat 5/6 button
-            elif romName in [ "kinst", "kinst2", "kinst2uk" ]:
-                buttonLayout = 3 # Killer Inistinct 6 button
+            elif romName in kiList:
+                buttonLayout = 3 # Killer Instinct 6 button
+            elif romName in  neogeoList:
+                buttonLayout = 6 # Neo Geo mini pad layout
             else:
                 buttonLayout = 0 # Default layout if it's not a recognized game
         
-        if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout)
+        if system.isOptSet("customcfg"):
+            overwriteCfg = system.config["customcfg"]
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messSysName[messMode], dpadMode, buttonLayout)
+            overwriteCfg = 0
+        
+        if messMode == -1:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, overwriteCfg)
+        else:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messSysName[messMode], dpadMode, buttonLayout, overwriteCfg)
         
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
