@@ -109,7 +109,8 @@ else
 	RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
-ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
+# Using libgo2 on RG552 is causing crash
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
 	RETROARCH_DEPENDENCIES += rockchip-rga
 endif
