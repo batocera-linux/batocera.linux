@@ -3,20 +3,75 @@
 # This is the BATOCERA system splash service
 # It shows the unique BATOCERA logo in early boot stage
 
+BOOTCONF="/boot/batocera-boot.conf"
+
+# Not called if user has set seasonal-splashes to false.
+seasonal ()
+{
+    # Refer to /lol/ for the table of seasons.
+    MONTH=$(date +%m)
+    DAY=$(date +%d)
+
+    SEASON=
+    case $MONTH in
+        1)
+            # Happy New Year!
+            (( $DAY == 1 )) && SEASON=newyear
+            ;;
+        2)
+            # Valentine's day
+            (( $DAY == 14 )) && SEASON=valentine
+            ;;
+        3)
+            # Pi Day
+            if (( $DAY == 14 )); then SEASON=pi
+            # Saint Patrick's day
+            elif (( $DAY == 17 )); then SEASON=stpatrick
+            fi
+            ;;
+        4)
+            # April Fools!
+            (( $DAY == 1 )) && SEASON=aprilfool
+            ;;
+        6)
+            # Aurora Borealis
+            if (( $DAY > 6 && $DAY < 18 )); then SEASON=steamedhams
+            # Batocera's anniversary.
+            elif (( $DAY == 21 )); then SEASON=anniversary
+            fi
+            ;;
+        7)
+            # Independence day
+            (( $DAY == 4 )) && SEASON=independence
+            ;;
+        9)
+            # Aurora Australis
+            if (( $DAY > 6 && $DAY < 18 )); then SEASON=australis
+            # International Talk Like a Pirate Day
+            elif (( $DAY == 19 )); then SEASON=pirate
+            fi
+            ;;
+        10)
+            # All Hallows' evening.
+            (( $DAY == 31 )) && SEASON=halloween
+            ;;
+        12)
+            # Christmas time! Only true if month is December and date is less than 27.
+            (( $DAY < 27 )) && SEASON=xmas
+            # Monkey day https://en.wikipedia.org/wiki/Monkey_Day
+            if (( $DAY == 14 )); then SEASON=monkey
+            # Winter solstice
+            elif (( $DAY == 21 || $DAY == 22 )); then SEASON=solstice
+            fi
+            ;;
+    esac
+}
+
 do_start ()
 {
-    # For special times of the year.
-    SEASON=
-    # Valentine's day
-    [ $(date +%m%d) -eq 214 ] && SEASON=valentine
-    # April Fools!
-    [ $(date +%m%d) -eq 41 ] && SEASON=aprilfool
-    # Batocera's anniversary.
-    [ $(date +%m%d) -eq 621 ] && SEASON=anniversary
-    # All Hallows' evening.
-    [ $(date +%m%d) -eq 1031 ] && SEASON=halloween
-    # Christmas time! Only true if month is December and date is less than 27.
-    [ $(date +%m) -eq 12 -a $(date +%d) -lt 27 ] && SEASON=xmas
+    if ! grep -qE '^[ ]*seasonal-splashes[ ]*=[ ]*false[ ]*$' "${BOOTCONF}"; then
+        seasonal
+    fi
 
 	# Check if it's a seasonal time of the year.
 	if [ -n "$SEASON" ]; then
