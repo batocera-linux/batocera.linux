@@ -153,7 +153,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WGET                                 # download tools
 	select BR2_PACKAGE_LIBCURL_CURL                         # download tools
 	select BR2_PACKAGE_CA_CERTIFICATES                      # ssl certificates
-	select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3326 # Used for screen rotation (SDL, Retroarch, Moonlight)
+	select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_RK3399 # Used for screen rotation (SDL, Retroarch (oga), Moonlight)
 
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
@@ -325,7 +325,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpizero2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
     default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"      if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"      if BR2_PACKAGE_BATOCERA_TARGET_RK3288
-	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64"     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/rg552"     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                            if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
 	default "orangepi-zero2"                                        if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	default "orangepi-pc"                                           if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC

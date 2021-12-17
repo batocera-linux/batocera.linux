@@ -1,0 +1,13 @@
+#!/bin/sh
+
+test "$1" != "start" && exit 0
+MODEL=$(cat /sys/firmware/devicetree/base/model)
+test "${MODEL}" != "Anbernic RG552" && exit 0
+
+# rg552 wifi
+echo 113 > /sys/class/gpio/export
+chmod 777 /sys/class/gpio/gpio113/direction
+echo out > /sys/class/gpio/gpio113/direction
+chmod 777 /sys/class/gpio/gpio113/value
+echo 1 > /sys/class/gpio/gpio113/value
+###
