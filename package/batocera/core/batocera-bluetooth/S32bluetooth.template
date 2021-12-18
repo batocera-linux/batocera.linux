@@ -49,7 +49,14 @@ case "$1" in
         else
             BLUETOOTHD_ARGS="--noplugin=sixaxispair"
         fi
-        start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+
+	debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
+	if test "${debug}" = 1
+	then
+	    start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
+	else
+	    start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+	fi
 
         if [ -n "${btaddr}" ]
         then
