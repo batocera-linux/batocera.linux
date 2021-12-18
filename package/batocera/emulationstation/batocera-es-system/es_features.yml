@@ -12,13 +12,43 @@ shared:
         "Game": game
         "Performances": perf
         "Custom": custom
+    runahead:
+      submenu:     LATENCY REDUCTION
+      prompt:      RUN-AHEAD FRAMES
+      description: Use run-ahead frames
+      choices:
+        "None": 0
+        "1": 1
+        "2": 2
+        "3": 3
+        "4": 4
+        "5": 5
+        "6": 6
+    secondinstance:
+      submenu:     LATENCY REDUCTION
+      prompt:      RUN-AHEAD USE SECOND INSTANCE
+      choices:
+        "On": 1
+        "Off": 0
+    video_frame_delay_auto:
+      submenu:     LATENCY REDUCTION
+      prompt:      AUTOMATIC FRAME DELAY
+      description: Automatically decrease frame delay temporarily to prevent frame drops.
+      choices:
+        "On": 1
+        "Off": 0
+    integerscale:
+      prompt:      INTEGER SCALING (PIXEL PERFECT)
+      choices:
+        "On": 1
+        "Off": 0
 
 global:
-  shared: [hud]
+  shared: [hud, runahead, secondinstance, video_frame_delay_auto, integerscale]
 
 libretro:
-  features: [ratio, smooth, shaders, pixel_perfect, decoration, game_translation]
-  shared: [hud]
+  features: [ratio, smooth, shaders, decoration, game_translation]
+  shared: [hud, runahead, secondinstance, video_frame_delay_auto, integerscale]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
