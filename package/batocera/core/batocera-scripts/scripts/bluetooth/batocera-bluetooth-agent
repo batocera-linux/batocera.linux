@@ -32,7 +32,7 @@ def logging_status(msg):
   with open("/var/run/bt_status", "w") as file:
     file.write(msg + "\n")
 
-def connect_device(path, address, properties, forceConnect):
+def connect_device(path, address, properties, forceConnect, typeInput, typeAudio):
   global gdiscovering
 
   devName = ""
@@ -59,8 +59,12 @@ def connect_device(path, address, properties, forceConnect):
   connected = rproperties["Connected"]
 
   # skip non input devices
-  if "Icon" not in properties or not (properties["Icon"].startswith("input") or properties["Icon"].startswith("audio-card")):
-    logging.info("Skipping device {}".format(getDevName(rproperties)));
+  if "Icon" not in properties:
+    logging.info("Skipping device {} (no type)".format(getDevName(rproperties)));
+    return
+
+  if not ( (typeInput and properties["Icon"].startswith("input")) or (typeAudio and properties["Icon"].startswith("audio-card")) ):
+    logging.info("Skipping device {} because of type {}".format(getDevName(rproperties), properties["Icon"]));
     return
 
   blacklistAddr, blacklistName = getBlacklistAddrAndName(properties)
@@ -229,6 +233,23 @@ def getShortDevName(properties):
 
   return "unknown"
 
+def getBluetoothWantedTypes():
+  if not os.path.isfile("/var/run/bt_types"):
+    logging.info("no bt_types file")
+    return True, True
+
+  with open("/var/run/bt_types", "r") as file:
+    btype = file.read()
+    logging.info("bt_type: {}".format(btype))
+
+  if btype == "":
+    return True, True
+  if btype == "pad":
+    return True, False
+  if btype == "audio":
+    return False, True
+  return False, False
+
 def interfaces_added(path, interfaces):
   global gdevices
 
@@ -245,7 +266,8 @@ def interfaces_added(path, interfaces):
     gdevices[path] = properties
 
   if "Address" in gdevices[path]:
-    connect_device(path, properties["Address"], gdevices[path], False)
+    typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, properties["Address"], gdevices[path], False, typeInput, typeAudio)
 
 def properties_changed(interface, changed, invalidated, path):
   global gdevices
@@ -264,7 +286,8 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
-    connect_device(path, gdevices[path]["Address"], gdevices[path], True)
+    typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, gdevices[path]["Address"], gdevices[path], True, typeInput, typeAudio)
     return
   
   # ok, it is now connected, what else ?
@@ -276,7 +299,8 @@ def properties_changed(interface, changed, invalidated, path):
     return
 
   if "Address" in gdevices[path]:
-    connect_device(path, gdevices[path]["Address"], gdevices[path], False)
+    typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, gdevices[path]["Address"], gdevices[path], False, typeInput, typeAudio)
 
 def merge2dicts(d1, d2):
   res = d1.copy()

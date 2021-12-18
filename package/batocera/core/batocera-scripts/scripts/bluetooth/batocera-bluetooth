@@ -75,12 +75,16 @@ do_unblacklist() {
 }
 
 do_trust() {
+    TRUSTTYPE=$1
     NPID=$(cat /var/run/bluetooth-agent.pid)
     test -z "${NPID}" && return 0
 
     touch "/var/run/bt_status" || retrun 1
     LAST_MSG=$(cat "/var/run/bt_status")
-    
+
+    # empty, audio, pad
+    echo "${TRUSTTYPE}" > /var/run/bt_types || return 1
+
     # start discovering
     kill -10 "${NPID}"
 
@@ -132,6 +136,12 @@ case "${ACTION}" in
 	;;
     "trust")
 	do_trust
+	;;
+    "trust-audio")
+	do_trust audio
+	;;
+    "trust-pad")
+	do_trust pad
 	;;
     "blacklist")
 	if test $# = 3
