@@ -23,6 +23,13 @@ eslog = get_logger(__name__)
 class MameGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
+        # Game list files
+        mameCapcom = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameCapcom.txt'
+        mameKInstinct = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameKInstinct.txt'
+        mameMKombat = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameMKombat.txt'
+        mameNeogeo = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameNeogeo.txt'
+        mameTwinstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameTwinstick.txt'
+        mameRotatedstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameRotatedstick.txt'
 
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
@@ -86,7 +93,13 @@ class MameGenerator(Generator):
         commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
         # MAME will create custom configs per game for MAME ROMs and MESS ROMs with no system attached (LCD games, TV games, etc.)
         # This will allow an alternate config path per game for MESS console/computer ROMs that may need additional config.
-        cfgPath = "/userdata/system/configs/mame/"
+        if system.name == "mame":
+            cfgPath = "/userdata/system/configs/mame/"
+        else:
+            cfgPath = "/userdata/system/configs/mame/" + system.name + "/"
+            if not os.path.exists(cfgPath):
+                os.makedirs(cfgPath)
+
         if system.isOptSet("pergamecfg") and system.getOptBoolean("pergamecfg"):
             if not messMode == -1:
                 if not messSysName[messMode] == "":
@@ -196,14 +209,16 @@ class MameGenerator(Generator):
         else:
             dpadMode = 0
         
-        # Controls for games with 5-6 buttons
+        # Controls for games with 5-6 buttons or other unusual controls
         if system.isOptSet("altlayout"):
             buttonLayout = system.config["altlayout"] # Option was manually selected
         else:
-            capcomList = set(open(batoceraFiles.mameCapcom).read().split())
-            mkList = set(open(batoceraFiles.mameMKombat).read().split())
-            kiList = set(open(batoceraFiles.mameKInstinct).read().split())
-            neogeoList = set(open(batoceraFiles.mameNeogeo).read().split())
+            capcomList = set(open(mameCapcom).read().split())
+            mkList = set(open(mameMKombat).read().split())
+            kiList = set(open(mameKInstinct).read().split())
+            neogeoList = set(open(mameNeogeo).read().split())
+            twinstickList = set(open(mameTwinstick).read().split())
+            qbertList = set(open(mameRotatedstick).read().split())
             
             romName = os.path.splitext(romBasename)[0]
             if romName in capcomList:
@@ -214,6 +229,10 @@ class MameGenerator(Generator):
                 buttonLayout = 3 # Killer Instinct 6 button
             elif romName in  neogeoList:
                 buttonLayout = 6 # Neo Geo mini pad layout
+            elif romName in  twinstickList:
+                buttonLayout = 9 # Virtual On layout
+            elif romName in  qbertList:
+                buttonLayout = 10 # Q*Bert stick settings
             else:
                 buttonLayout = 0 # Default layout if it's not a recognized game
         

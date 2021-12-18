@@ -121,6 +121,17 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON4": "pageup"})
         mappings.update({"BUTTON5": "y"})
         mappings.update({"BUTTON6": "a"})
+    elif altButtons == 9: # Twinstick with Buttons (Battle Zone, virtual On)
+        mappings.update({"BUTTON1": "l2"})
+        mappings.update({"BUTTON2": "pageup"})
+        mappings.update({"BUTTON3": "r2"})
+        mappings.update({"BUTTON4": "pagedown"})
+        mappings.update({"BUTTON5": "l3"})
+        mappings.update({"BUTTON6": "r3"})
+        mappings.update({"BUTTON7": ""})
+        mappings.update({"BUTTON8": ""})
+        mappings.update({"BUTTON9": ""})
+        mappings.update({"BUTTON10": ""})
     
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_system     = getSection(config, xml_mameconfig, "system")
@@ -170,11 +181,11 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
             
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
-                xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, dpadMode))
+                xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, dpadMode, altButtons))
             else:
                 rmapping = reverseMapping(mappings_use[mapping])
                 if rmapping in pad.inputs:
-                        xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, dpadMode))
+                        xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, dpadMode, altButtons))
                 
             # Special case for CD-i - doesn't use default controls, map special controller
             # Keep orginal mapping functions for menus etc, create system-specific config file dor CD-i.
@@ -371,14 +382,14 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(config, nplayer, padindex, mapping, key, input, reversed, dpadMode):
+def generatePortElement(config, nplayer, padindex, mapping, key, input, reversed, dpadMode, altButtons):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(input2definition(key, input, padindex + 1, reversed, dpadMode))
+    value = config.createTextNode(input2definition(key, input, padindex + 1, reversed, dpadMode, altButtons))
     xml_newseq.appendChild(value)
     return xml_port
 
@@ -392,7 +403,7 @@ def generateSpecialPortElement(config, tag, nplayer, padindex, mapping, key, inp
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(input2definition(key, input, padindex + 1, reversed, dpadMode))
+    value = config.createTextNode(input2definition(key, input, padindex + 1, reversed, dpadMode, 0))
     xml_newseq.appendChild(value)
     return xml_port
 
@@ -420,7 +431,7 @@ def generateComboPortElement(config, tag, padindex, mapping, kbkey, key, input, 
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode("KEYCODE_{} OR ".format(kbkey) + input2definition(key, input, padindex + 1, reversed, dpadMode))
+    value = config.createTextNode("KEYCODE_{} OR ".format(kbkey) + input2definition(key, input, padindex + 1, reversed, dpadMode, 0))
     xml_newseq.appendChild(value)
     return xml_port
 
@@ -444,7 +455,7 @@ def generateIncDecPortElement(config, tag, nplayer, padindex, mapping, inckey, d
     xml_newseq_dec.appendChild(decvalue)
     return xml_port
 
-def input2definition(key, input, joycode, reversed, dpadMode):
+def input2definition(key, input, joycode, reversed, dpadMode, altButtons):
     if input.type == "button":
         return "JOYCODE_{}_BUTTON{}".format(joycode, int(input.id)+1)
     elif input.type == "hat":
@@ -456,31 +467,61 @@ def input2definition(key, input, joycode, reversed, dpadMode):
             return "JOYCODE_{}_HAT1DOWN".format(joycode)
         elif input.value == "8":
             return "JOYCODE_{}_HAT1LEFT".format(joycode)
-    elif input.type == "axis":        
-        if key == "joystick1up" or key == "up":
-            if dpadMode == 0:
-                return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP".format(joycode, joycode)
-            else:
-                return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode)
-        if key == "joystick1down" or key == "down":
-            if dpadMode == 0:
-                return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN".format(joycode, joycode)
-            else:
-                return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode)
-        if key == "joystick1left" or key == "left":
-            if dpadMode == 0:
-                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT".format(joycode, joycode)
-            elif dpadMode == 1:
-                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15".format(joycode, joycode, joycode)
-            else:
-                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON11".format(joycode, joycode, joycode)
-        if key == "joystick1right" or key == "right":
-            if dpadMode == 0:
-                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT".format(joycode, joycode)
-            elif dpadMode == 1:
-                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16".format(joycode, joycode, joycode)
-            else:
-                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON12".format(joycode, joycode, joycode)
+    elif input.type == "axis":
+        if altButtons == 10: # Q*Bert Joystick
+            if key == "joystick1up" or key == "up":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_YAXIS_UP_SWITCH JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1UP JOYCODE_{}_HAT1RIGHT".format(joycode, joycode, joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_YAXIS_UP_SWITCH JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1UP JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON13 JOYCODE_{}_BUTTON16".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_YAXIS_UP_SWITCH JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1UP JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON13 JOYCODE_{}_BUTTON12".format(joycode, joycode, joycode, joycode, joycode, joycode)
+            if key == "joystick1down" or key == "down":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_YAXIS_DOWN_SWITCH JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1DOWN JOYCODE_{}_HAT1LEFT".format(joycode, joycode, joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_YAXIS_DOWN_SWITCH JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1DOWN JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON14 JOYCODE_{}_BUTTON15".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_YAXIS_DOWN_SWITCH JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1DOWN JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON14 JOYCODE_{}_BUTTON11".format(joycode, joycode, joycode, joycode, joycode, joycode)
+            if key == "joystick1left" or key == "left":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP".format(joycode, joycode, joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON11 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
+            if key == "joystick1right" or key == "right":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN".format(joycode, joycode, joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON12 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
+        else:        
+            if key == "joystick1up" or key == "up":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP".format(joycode, joycode)
+                else:
+                    return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode)
+            if key == "joystick1down" or key == "down":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN".format(joycode, joycode)
+                else:
+                    return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode)
+            if key == "joystick1left" or key == "left":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT".format(joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15".format(joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON11".format(joycode, joycode, joycode)
+            if key == "joystick1right" or key == "right":
+                if dpadMode == 0:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT".format(joycode, joycode)
+                elif dpadMode == 1:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16".format(joycode, joycode, joycode)
+                else:
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON12".format(joycode, joycode, joycode)
         if key == "joystick2up":
             return "JOYCODE_{}_RYAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON4".format(joycode, joycode)
         if key == "joystick2down":
