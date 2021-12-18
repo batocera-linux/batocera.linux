@@ -8,7 +8,6 @@ BOOTCONF="/boot/batocera-boot.conf"
 # Not called if user has set seasonal-splashes to false.
 seasonal ()
 {
-    # Refer to /lol/ for the table of seasons.
     MONTH=$(date +%m)
     DAY=$(date +%d)
 
@@ -69,7 +68,7 @@ seasonal ()
 
 do_start ()
 {
-    if ! grep -qE '^[ ]*seasonal-splashes[ ]*=[ ]*false[ ]*$' "${BOOTCONF}"; then
+    if ! grep -qE '^[ ]*splash.seasonal[ ]*=[ ]*false[ ]*$' "${BOOTCONF}"; then
         seasonal
     fi
 

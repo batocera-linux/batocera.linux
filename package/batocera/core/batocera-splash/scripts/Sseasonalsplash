@@ -1,40 +1,163 @@
 #!/bin/sh
 # Download seasonal splash images.
 
-start() {
-    SEASON=
-    # Happy New Year!
-    [ $(date +%m/%d) -eq 1/1 ] && SEASON=newyear
-    # Valentine's day
-    [ $(date +%m/%d) -eq 2/14 ] && SEASON=valentine
-    # Pi Day
-    [ $(date +%m/%d) -eq 3/14 ] && SEASON=pi
-    # Saint Patrick's day
-    [ $(date +%m/%d) -eq 3/17 ] && SEASON=stpatrick
-    # April Fools!
-    [ $(date +%m/%d) -eq 4/1 ] && SEASON=aprilfool
-    # Aurora Borealis
-    [ $(date +%m) -eq 6 && $(date +%d) -gt 6 -lt 18 ] && SEASON=steamedclams
-    # Batocera's anniversary.
-    [ $(date +%m/%d) -eq 6/21 ] && SEASON=anniversary
-    # Independence day
-    [ $(date +%m/%d) -eq 7/4 ] && SEASON=independence
-    # Aurora Australis
-    [ $(date +%m) -eq 9 && $(date +%d) -gt 6 -lt 18 ] && SEASON=australis
-    # International Talk Like a Pirate Day
-    [ $(date +%m/%d) -eq 9/19 ] && SEASON=pirate
-    # All Hallows' evening.
-    [ $(date +%m/%d) -eq 10/31 ] && SEASON=halloween
-    # Christmas time! Only true if month is December and date is less than 27.
-    [ $(date +%m) -eq 12 && $(date +%d) -lt 27 ] && SEASON=xmas
-    # Monkey day https://en.wikipedia.org/wiki/Monkey_Day
-    [ $(date +%m/%d) -eq 12/14 ] && SEASON=monkey
-    # Winter solstice
-    [ $(date +%m/%d) -eq 12/21 || $(date +%m/%d) -eq 12/22 ] && SEASON=solstice
+#SEASONSPLASHFOLDER=/userdata/system/debug/seasonal
+#SEASONSPLASHFOLDER=/boot/seasonal
+SEASONSPLASHFOLDER=/usr/share/batocera/splash/seasonal
 
+download()
+{
     # Check if it's a seasonal time of the year.
-    if [ -n "$SEASON" ]; then
-        if [ ! -e "/userdata/system/debug/logo-seasonal.png" ]; then
-            wget -O /userdata/system/debug/logo-seasonal.png https://raw.githubusercontent.com/Hew-ux/batocera-assets/main/splash-screens/seasonal/logo-${SEASON}.png
+    if [[ -n $SEASON1 || -n $SEASON2 ]]; then
+        if (( $ITSOVER1 )) && [[ -e ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}.png ]]; then
+            # Specifically delete outdated seasons' splash images.
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-640x480.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-320x480.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-480x854.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-320x240.png
+        elif [[ -n $SEASON1 ]] && [[ ! -e ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}.png ]]; then
+            # Download the splashes from the URL.
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}.png ${DOWNLOADURL}/logo-${SEASON1}.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-640x480.png ${DOWNLOADURL}/logo-${SEASON1}480p.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-320x480.png ${DOWNLOADURL}/logo-${SEASON1}-3-2-480-rotate.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-480x854.png ${DOWNLOADURL}/logo-${SEASON1}-16-9-480-rotate.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON1}-320x240.png ${DOWNLOADURL}/logo-${SEASON1}-240.png
         fi
+        if (( $ITSOVER2 )) && [[ -e ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}.png ]]; then
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-640x480.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-320x480.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-480x854.png
+            rm ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-320x240.png
+        elif [[ -n $SEASON2 ]] && [[ ! -e ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}.png ]]; then
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}.png ${DOWNLOADURL}/logo-${SEASON2}.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-640x480.png ${DOWNLOADURL}/logo-${SEASON2}480p.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-320x480.png ${DOWNLOADURL}/logo-${SEASON2}-3-2-480-rotate.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-480x854.png ${DOWNLOADURL}/logo-${SEASON2}-16-9-480-rotate.png
+            wget -O ${SEASONSPLASHFOLDER}/boot-logo-${SEASON2}-320x240.png ${DOWNLOADURL}/logo-${SEASON2}-240.png
+        fi
+    else; then
+        # Remove all boot logo pngs in the folder.
+        find ${SEASONSPLASHFOLDER} -type f -name "boot-logo-*.png" -exec rm "{}" \;
     fi
+    batocera-save-overlay
+}
+
+start()
+{
+    # Create folder if it doesn't exist.
+    [[ ! -e $SEASONSPLASHFOLDER ]] && mkdir $SEASONSPLASHFOLDER
+
+    DOWNLOADURL=https://raw.githubusercontent.com/Hew-ux/batocera-assets/main/splash-screens/seasonal
+    #DOWNLOADURL=https://raw.githubusercontent.com/batocera.linux/package/batocera/core/batocera-splash/images
+    MONTH=$(date +%m)
+    DAY=$(date +%d)
+
+    # Refer to system-splash for the actual days these seasonal splashes are active.
+    SEASON1=
+    SEASON2=
+    ITSOVER1=0
+    ITSOVER2=0
+    case $MONTH in
+        1)
+            # End of Chistmas.
+            (( $DAY < 5 )) && SEASON1=xmas && ITSOVER1=1
+            # Happy New Year!
+            if (( $DAY < 11 )); then
+                SEASON2=newyear
+                ITSOVER2=1
+            ;;
+        2)
+            # Valentine's day
+            if (( $DAY > 4 && $DAY < 24 )); then
+                SEASON1=valentine
+                (( $DAY > 14 && $DAY < 24 )) && ITSOVER1=1
+            fi
+            ;;
+        3)
+            # Pi Day
+            if (( $DAY > 4 && $DAY < 24 )); then
+                SEASON1=pi
+                (( $DAY > 14 && $DAY < 24 )) && ITSOVER1=1
+            # Saint Patrick's day
+            elif (( $DAY > 7 && $DAY < 27 )); then
+                SEASON2=stpatrick
+                (( $DAY > 17 && $DAY < 27 )) && ITSOVER2=1
+            fi
+            # April Fools!
+            if (( $DAY > 23 )); then
+                SEASON1=aprilfool
+            fi
+            ;;
+        4)
+            # April Fools!
+            if (( $DAY == 1 )); then
+                SEASON1=aprilfool
+                (( $DAY > 1 && $DAY < 11 )) && ITSOVER1=1
+            fi
+            ;;
+        5)
+            # Aurora Borealis
+            if (( $DAY > 24 )); then
+                SEASON1=steamedhams
+            fi
+            ;;
+        6)
+            # Aurora Borealis
+            if (( $DAY >= 1 && $DAY < 18 )); then
+                SEASON1=steamedhams
+                (( $DAY > 18 && $DAY > 28 )) && ITSOVER1=1
+            # Batocera's anniversary.
+            elif (( $DAY > 11 && $DAY < 31 )); then
+                SEASON2=anniversary
+                (( $DAY > 21 && $DAY < 31 )) && ITSOVER2
+            fi
+            ;;
+        7)
+            # Independence day
+            (( $DAY == 4 )) && SEASON1=independence
+            ;;
+        9)
+            # Aurora Australis
+            if (( $DAY > 6 && $DAY < 18 )); then SEASON1=australis
+            # International Talk Like a Pirate Day
+            elif (( $DAY == 19 )); then SEASON1=pirate
+            fi
+            ;;
+        10)
+            # All Hallows' evening.
+            (( $DAY == 31 )) && SEASON1=halloween
+            ;;
+        12)
+            # Christmas time!
+            SEASON1=xmas
+            # Monkey day https://en.wikipedia.org/wiki/Monkey_Day
+            if (( $DAY > 4 && $DAY < 21 )); then
+                SEASON2=monkey
+            # Winter solstice
+            elif (( $DAY > 17 )); then
+                SEASON2=solstice
+            fi
+            (( $DAY > 14 )) && ITSOVER2=1
+            ;;
+    esac
+    download
+}
+
+case "$1" in
+    start)
+        if ! grep -qE '^[ ]*splash.seasonal[ ]*=[ ]*false[ ]*$' "${BOOTCONF}"; then
+            start
+        else; then
+            # Remove all the existing pngs if present, immediately exit if there is no folder.
+            find ${SEASONSPLASHFOLDER} -type f -name "*.png" -exec rm "{}" \; || exit 0
+            # Nuke the folder too.
+            rmdir $SEASONSPLASHFOLDER
+        fi
+        ;;
+    *)
+        echo "Checks if it's a seasonal date, then downloads special splash images. Depends on batocera-boot setting. Usage: $0 {start}"
+        exit 1
+        ;;
+esac
