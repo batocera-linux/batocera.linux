@@ -12,20 +12,27 @@ index 65ccc55..bf4e3aa 100644
  LIBTOOL = @LIBTOOL@
  INSTALL = @INSTALL@
 diff --git a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-index 55a53df..21fb124 100644
+index 55a53df..99cc725 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-@@ -34,6 +34,9 @@
+@@ -29,11 +29,16 @@
+ #include "SDL_kmsdrmopengles.h"
+ #include "SDL_kmsdrmdyn.h"
+ #include <errno.h>
++#include<stdbool.h>
+ 
+ #ifndef EGL_PLATFORM_GBM_MESA
  #define EGL_PLATFORM_GBM_MESA 0x31D7
  #endif
  
 +extern rga_info_t src_info;
 +extern rga_info_t dst_info;
++extern bool batocera_rotate;
 +
  /* EGL implementation of SDL OpenGL support */
  
  void
-@@ -92,6 +95,7 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
+@@ -92,6 +97,7 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
      SDL_VideoData *viddata = ((SDL_VideoData *)_this->driverdata);
      KMSDRM_FBInfo *fb_info;
      int ret = 0;
@@ -33,48 +40,53 @@ index 55a53df..21fb124 100644
  
      /* Always wait for the previous issued flip before issuing a new one,
         even if you do async flips. */
-@@ -135,12 +139,26 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
+@@ -135,7 +141,30 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
      }
  
      /* Get an actual usable fb for the next front buffer. */
 -    fb_info = KMSDRM_FBFromBO(_this, windata->next_bo);
-+    if (src_info.fd) {
-+        close(src_info.fd);
-+    }
-+    src_info.fd = KMSDRM_gbm_bo_get_fd(windata->next_bo);
-+    dst_info.fd = viddata->rga_buffer_prime_fds[viddata->rga_buffer_index];
-+    if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0) {
-+        SDL_LogError(SDL_LOG_CATEGORY_VIDEO,
-+                        "Failed to rga blit\n");
-+    }
++    if (!batocera_rotate){
++        fb_info = KMSDRM_FBFromBO(_this, windata->next_bo);
++    } else {
++        if (src_info.fd) {
++            close(src_info.fd);
++        }
++        src_info.fd = KMSDRM_gbm_bo_get_fd(windata->next_bo);
++        dst_info.fd = viddata->rga_buffer_prime_fds[viddata->rga_buffer_index];
++        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0) {
++            SDL_LogError(SDL_LOG_CATEGORY_VIDEO,
++                            "Failed to rga blit\n");
++        }
 +
-+    rga_buffer = viddata->rga_buffers[viddata->rga_buffer_index];
-+    fb_info = KMSDRM_FBFromBO(_this, rga_buffer);
++        rga_buffer = viddata->rga_buffers[viddata->rga_buffer_index];
++        fb_info = KMSDRM_FBFromBO(_this, rga_buffer);
++
++        if (!fb_info) {
++         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not get a framebuffer");
++         return 0;
++        }
++    
++        viddata->rga_buffer_index = (viddata->rga_buffer_index + 1) % RGA_BUFFERS_MAX;
++    }
 +    
      if (!fb_info) {
          SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not get a framebuffer");
          return 0;
-     }
- 
-+    viddata->rga_buffer_index = (viddata->rga_buffer_index + 1) % RGA_BUFFERS_MAX;
-+
-     if (!windata->bo) {
-         /* On the first swap, immediately present the new front buffer. Before
-            drmModePageFlip can be used the CRTC has to be configured to use
 diff --git a/src/video/kmsdrm/SDL_kmsdrmsym.h b/src/video/kmsdrm/SDL_kmsdrmsym.h
-index ea3d8d1..d3b123b 100644
+index ea3d8d1..550e642 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmsym.h
 +++ b/src/video/kmsdrm/SDL_kmsdrmsym.h
-@@ -121,6 +121,7 @@ SDL_KMSDRM_SYM(struct gbm_surface *,gbm_surface_create,(struct gbm_device *gbm,
+@@ -121,7 +121,7 @@ SDL_KMSDRM_SYM(struct gbm_surface *,gbm_surface_create,(struct gbm_device *gbm,
  SDL_KMSDRM_SYM(void,gbm_surface_destroy,(struct gbm_surface *surf))
  SDL_KMSDRM_SYM(struct gbm_bo *,gbm_surface_lock_front_buffer,(struct gbm_surface *surf))
  SDL_KMSDRM_SYM(void,gbm_surface_release_buffer,(struct gbm_surface *surf, struct gbm_bo *bo))
+-
 +SDL_KMSDRM_SYM(int,gbm_bo_get_fd,(struct gbm_bo *bo))
  
- 
  #undef SDL_KMSDRM_MODULE
+ #undef SDL_KMSDRM_SYM
 diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-index cedc739..f585a69 100644
+index fbc2c96..0a759b3 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
 @@ -44,6 +44,7 @@
@@ -85,17 +97,26 @@ index cedc739..f585a69 100644
  #include "SDL_kmsdrmvulkan.h"
  #include <sys/stat.h>
  #include <sys/param.h>
-@@ -71,6 +72,9 @@ static SDL_bool openbsd69orgreater = SDL_FALSE;
+@@ -51,6 +52,7 @@
+ #include <dirent.h>
+ #include <poll.h>
+ #include <errno.h>
++#include<stdbool.h>
+ 
+ #ifdef __OpenBSD__
+ static SDL_bool openbsd69orgreater = SDL_FALSE;
+@@ -71,6 +73,10 @@ static SDL_bool openbsd69orgreater = SDL_FALSE;
  #define EGL_PLATFORM_GBM_MESA 0x31D7
  #endif
  
 +rga_info_t src_info = {0};
 +rga_info_t dst_info = {0};
++int batocera_rotate=false;
 +
  static int
  check_modestting(int devindex)
  {
-@@ -332,6 +336,46 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
+@@ -332,6 +338,46 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
      SDL_free(fb_info);
  }
  
@@ -110,15 +131,15 @@ index cedc739..f585a69 100644
 +
 +    l_frameHeight = frameHeight;
 +    if(l_frameHeight % 32 != 0) {
-+      l_frameHeight = (frameHeight + 32) & (~31);
++    l_frameHeight = (frameHeight + 32) & (~31);
 +    }
 +
 +    // create buffers for RGA with adjusted stride
 +    for (int i = 0; i < RGA_BUFFERS_MAX; ++i)
 +    {
 +        viddata->rga_buffers[i] = KMSDRM_gbm_bo_create(viddata->gbm_dev,
-+              frameWidth, l_frameHeight,
-+              GBM_FORMAT_XRGB8888, GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
++            frameWidth, l_frameHeight,
++            GBM_FORMAT_XRGB8888, GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
 +        assert(viddata->rga_buffers[i]);
 +
 +        viddata->rga_buffer_prime_fds[i] = KMSDRM_gbm_bo_get_fd(viddata->rga_buffers[i]);
@@ -142,79 +163,128 @@ index cedc739..f585a69 100644
  KMSDRM_FBInfo *
  KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
  {
-@@ -704,8 +748,8 @@ void KMSDRM_AddDisplay (_THIS, drmModeConnector *connector, drmModeRes *resource
+@@ -545,6 +591,10 @@ void KMSDRM_AddDisplay (_THIS, drmModeConnector *connector, drmModeRes *resource
+     int i, j;
+     int ret = 0;
+ 
++    if ( access( "/var/run/rk-rotation", F_OK ) != -1) {
++        batocera_rotate=true;
++    }
++    
+     /* Reserve memory for the new display's driverdata. */
+     dispdata = (SDL_DisplayData *) SDL_calloc(1, sizeof(SDL_DisplayData));
+     if (!dispdata) {
+@@ -686,8 +736,14 @@ void KMSDRM_AddDisplay (_THIS, drmModeConnector *connector, drmModeRes *resource
      modedata->mode_index = mode_index;
  
      display.driverdata = dispdata;
 -    display.desktop_mode.w = dispdata->mode.hdisplay;
 -    display.desktop_mode.h = dispdata->mode.vdisplay;
-+    display.desktop_mode.w = dispdata->mode.vdisplay;
-+    display.desktop_mode.h = dispdata->mode.hdisplay;
++    if (!batocera_rotate) {
++        display.desktop_mode.w = dispdata->mode.hdisplay;
++        display.desktop_mode.h = dispdata->mode.vdisplay;
++    } else {
++        display.desktop_mode.w = dispdata->mode.vdisplay;
++        display.desktop_mode.h = dispdata->mode.hdisplay;
++    }
++    
      display.desktop_mode.refresh_rate = dispdata->mode.vrefresh;
      display.desktop_mode.format = SDL_PIXELFORMAT_ARGB8888;
      display.desktop_mode.driverdata = modedata;
-@@ -980,7 +1024,7 @@ KMSDRM_DirtySurfaces(SDL_Window *window) {
+@@ -962,7 +1018,12 @@ KMSDRM_DirtySurfaces(SDL_Window *window) {
         or SetWindowFullscreen, send a fake event for now since the actual
         recreation is deferred */
      KMSDRM_GetModeToSet(window, &mode);
 -    SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED, mode.hdisplay, mode.vdisplay);
-+    SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED, mode.vdisplay, mode.hdisplay);
++    if (!batocera_rotate) {
++        SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED, mode.hdisplay, mode.vdisplay);
++    } else {
++        SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED, mode.vdisplay, mode.hdisplay);
++    }
++    
  }
  
  /* This determines the size of the fb, which comes from the GBM surface
-@@ -1016,13 +1060,13 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
+@@ -998,14 +1059,27 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
         mode that's set in sync with what SDL_video.c thinks is set */
      KMSDRM_GetModeToSet(window, &dispdata->mode);
  
 -    display->current_mode.w = dispdata->mode.hdisplay;
 -    display->current_mode.h = dispdata->mode.vdisplay;
-+    display->current_mode.w = dispdata->mode.vdisplay;
-+    display->current_mode.h = dispdata->mode.hdisplay;
++    if (!batocera_rotate) {
++        display->current_mode.w = dispdata->mode.hdisplay;
++        display->current_mode.h = dispdata->mode.vdisplay;
++    } else {
++        display->current_mode.w = dispdata->mode.vdisplay;
++        display->current_mode.h = dispdata->mode.hdisplay;
++    }
++    
      display->current_mode.refresh_rate = dispdata->mode.vrefresh;
      display->current_mode.format = SDL_PIXELFORMAT_ARGB8888;
  
-     windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
--                      dispdata->mode.hdisplay, dispdata->mode.vdisplay,
-+                      dispdata->mode.vdisplay, dispdata->mode.hdisplay,
+-    windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
++    if (!batocera_rotate) {
++        windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
+                       dispdata->mode.hdisplay, dispdata->mode.vdisplay,
                        surface_fmt, surface_flags);
++    } else {
++        windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
++                      dispdata->mode.vdisplay, dispdata->mode.hdisplay,
++                      surface_fmt, surface_flags);
++    }
++    
  
      if (!windata->gs) {
-@@ -1046,7 +1090,7 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
+         return SDL_SetError("Could not create GBM surface");
+@@ -1027,8 +1101,13 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
+     egl_context = (EGLContext)SDL_GL_GetCurrentContext();
      ret = SDL_EGL_MakeCurrent(_this, windata->egl_surface, egl_context);
  
-     SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED,
--                        dispdata->mode.hdisplay, dispdata->mode.vdisplay);
+-    SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED,
++    if (!batocera_rotate) {
++        SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED,
+                         dispdata->mode.hdisplay, dispdata->mode.vdisplay);
++    } else {
++        SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESIZED,
 +                        dispdata->mode.vdisplay, dispdata->mode.hdisplay);
++    }
  
      windata->egl_surface_dirty = SDL_FALSE;
  
-@@ -1151,8 +1195,8 @@ KMSDRM_GetDisplayModes(_THIS, SDL_VideoDisplay * display)
+@@ -1114,8 +1193,13 @@ KMSDRM_GetDisplayModes(_THIS, SDL_VideoDisplay * display)
              modedata->mode_index = i;
          }
  
 -        mode.w = conn->modes[i].hdisplay;
 -        mode.h = conn->modes[i].vdisplay;
-+        mode.w = conn->modes[i].vdisplay;
-+        mode.h = conn->modes[i].hdisplay;
++        if (!batocera_rotate) {
++            mode.w = conn->modes[i].hdisplay;
++            mode.h = conn->modes[i].vdisplay;
++        } else {
++            mode.w = conn->modes[i].vdisplay;
++            mode.h = conn->modes[i].hdisplay;
++        }
          mode.refresh_rate = conn->modes[i].vrefresh;
          mode.format = SDL_PIXELFORMAT_ARGB8888;
          mode.driverdata = modedata;
-@@ -1264,6 +1308,14 @@ KMSDRM_DestroyWindow(_THIS, SDL_Window *window)
+@@ -1227,6 +1311,16 @@ KMSDRM_DestroyWindow(_THIS, SDL_Window *window)
      /*********************************************************************/
      SDL_free(window->driverdata);
      window->driverdata = NULL;
 +
-+    for (int i = 0; i < RGA_BUFFERS_MAX; ++i) {
-+        close(viddata->rga_buffer_prime_fds[i]);
++    if (batocera_rotate) {
++        for (int i = 0; i < RGA_BUFFERS_MAX; ++i) {
++            close(viddata->rga_buffer_prime_fds[i]);
++        }
++        if (src_info.fd) {
++            close(src_info.fd);
++        }
++        c_RkRgaDeInit();
 +    }
-+    if (src_info.fd) {
-+        close(src_info.fd);
-+    }
-+    c_RkRgaDeInit();
  }
  
  /**********************************************************************/
-@@ -1283,6 +1335,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+@@ -1246,6 +1340,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
      NativeDisplayType egl_display;
      drmModeModeInfo *mode;
      int ret = 0;
@@ -222,18 +292,20 @@ index cedc739..f585a69 100644
  
      /* Allocate window internal data */
      windata = (SDL_WindowData *)SDL_calloc(1, sizeof(SDL_WindowData));
-@@ -1391,6 +1444,9 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+@@ -1354,6 +1449,11 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
      SDL_SetMouseFocus(window);
      SDL_SetKeyboardFocus(window);
  
-+    data = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
-+    KMSDRM_InitRotateBuffer(_this, data->mode.hdisplay, data->mode.vdisplay);
-+
++    if (batocera_rotate) {
++        data = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
++        KMSDRM_InitRotateBuffer(_this, data->mode.hdisplay, data->mode.vdisplay);
++    }
++    
      /* Tell the app that the window has moved to top-left. */
      SDL_SendWindowEvent(window, SDL_WINDOWEVENT_MOVED, 0, 0);
  
 diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.h b/src/video/kmsdrm/SDL_kmsdrmvideo.h
-index b172eb9..c4bd1f5 100644
+index b172eb9..d3086f8 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.h
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.h
 @@ -32,6 +32,10 @@
@@ -254,7 +326,7 @@ index b172eb9..c4bd1f5 100644
 +    struct gbm_bo* rga_buffers[RGA_BUFFERS_MAX];
 +    int rga_buffer_prime_fds[RGA_BUFFERS_MAX];
 +    int rga_buffer_index;
-+  
++
  } SDL_VideoData;
  
  
