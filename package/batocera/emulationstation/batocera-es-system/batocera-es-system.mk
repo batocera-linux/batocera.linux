@@ -25,6 +25,9 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		# translations
 		mkdir -p $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales
 		echo "$(@D)/es_external_translations.h" | xgettext --language=C --add-comments=TRANSLATION -f - -o $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot --no-location --keyword=_
+		# remove the pot creation date always changing
+		sed -i '/^"POT-Creation-Date: /d' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot
+
 		for PO in $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/*/batocera-es-system.po; do msgmerge -U --no-fuzzy-matching $${PO} $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot; done
 
 		# install staging

@@ -10,7 +10,7 @@ BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
 BATOCERA_EMULATIONSTATION_GIT_SUBMODULES = YES
 BATOCERA_EMULATIONSTATION_LICENSE = MIT, Apache-2.0
-BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer libfreeimage freetype alsa-lib libcurl vlc rapidjson pulseaudio-utils batocera-es-system
+BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer libfreeimage freetype alsa-lib libcurl vlc rapidjson pulseaudio-utils batocera-es-system host-gettext
 # install in staging for debugging (gdb)
 BATOCERA_EMULATIONSTATION_INSTALL_STAGING = YES
 # BATOCERA_EMULATIONSTATION_OVERRIDE_SRCDIR = /sources/batocera-emulationstation
@@ -81,7 +81,7 @@ endef
 
 define BATOCERA_EMULATIONSTATION_EXTERNAL_POS
 	cp $(STAGING_DIR)/usr/share/batocera-es-system/es_external_translations.h $(@D)/es-app/src
-	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; do if test -e $$P/batocera-es-system.po; then cat $$P/batocera-es-system.po >> $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; fi; done
+	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; do if test -e $$P/batocera-es-system.po; then cp $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp && $(HOST_DIR)/bin/msgcat $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp $$P/batocera-es-system.po > $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; fi; done
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
