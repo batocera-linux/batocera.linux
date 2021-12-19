@@ -11,7 +11,7 @@ BATOCERA_AUDIO_SOURCE=
 # this one is important because the package erase the default pipewire config files, so it must be built after it
 BATOCERA_AUDIO_DEPENDENCIES = pipewire
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 ALSA_SUFFIX = "-rk3326"
 PIPEWIRECONF_SUFFIX = "-rk3326"
 else
@@ -56,7 +56,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 
 	# pipewire-alsa
 	ln -sft $(TARGET_DIR)/etc/alsa/conf.d \
-		/usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf 
+		/usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf
 	install -Dm644 /dev/null $(TARGET_DIR)/usr/share/pipewire/media-session.d/with-alsa
 
 	# pipewire-media-session config: disable dbus device reservation

@@ -18,7 +18,7 @@ ifneq ($(BR2_PACKAGE_MESA3D),y)
 MALI_G31_GBM_CONF_OPTS += -Dkhr-header=true
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 # See https://wiki.odroid.com/odroid_go_advance/application_note/vulkan_on_rk3326
 MALI_G31_GBM_EXTRA_DOWNLOADS=https://dn.odroid.com/RK3326/ODROID-GO-Advance/rk3326_r13p0_gbm_with_vulkan_and_cl.zip
 

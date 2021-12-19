@@ -12,18 +12,12 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default y
 endif
 
-if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	bool "rockchip_targets"
 	default y
 	help
 		Selected when a Rockchip platform is being built
-endif
-
-if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE || BR2_PACKAGE_BATOCERA_TARGET_RK3326
-	config BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
-	bool "any RK3326"
-	default y
 endif
 
 if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_VIM2 || BR2_PACKAGE_BATOCERA_TARGET_S922X
@@ -165,7 +159,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBCEC                               # libcec
 	select BR2_PACKAGE_EDID_DECODE                          # edid monitor/tv support
 	select BR2_PACKAGE_READ_EDID                            # edid monitor/tv support
-	select BR2_PACKAGE_XOW                                  if !BR2_PACKAGE_BATOCERA_TARGET_RK3399 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY # xbox receiver (require linux >= 4.5)
+	select BR2_PACKAGE_XOW                                  if !BR2_PACKAGE_BATOCERA_TARGET_RK3399 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # xbox receiver (require linux >= 4.5)
 	select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
 	select BR2_SYSTEM_ENABLE_NLS                            # locales
 	select BR2_PACKAGE_ACPID                                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -217,7 +211,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 	select BR2_PACKAGE_RTL8723BU        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # at least for pc
 	select BR2_PACKAGE_RTL8188EU        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # at least for pc
@@ -239,7 +233,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                             !BR2_PACKAGE_BATOCERA_TARGET_RK3288             && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC        && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_CHA                && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 	# s905 tv-box firmwares
 	select BR2_PACKAGE_FIRMWARE_WLAN_AML    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
@@ -323,8 +317,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi3"                                      if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                      if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "raspberrypi/rpizero2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
-    default "rockchip/rk3326"                                       if BR2_PACKAGE_BATOCERA_TARGET_RK3326
-	default "rockchip/gameforce"                                    if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+    default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"      if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"      if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64"     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                            if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
@@ -365,9 +358,6 @@ config BR2_PACKAGE_BATOCERA_TARGET_S922X
 
 config BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	bool "rk3326"
-
-config BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
-    bool "gameforce"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905
 	bool "s905"
@@ -530,7 +520,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY     && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
@@ -608,10 +598,10 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 													BR2_PACKAGE_BATOCERA_TARGET_S905GEN2    || \
 													BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
 													BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-													BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY  || \
+													BR2_PACKAGE_BATOCERA_TARGET_RK3326      || \
 													BR2_PACKAGE_BATOCERA_TARGET_S922X
 
-	select BR2_PACKAGE_DRASTIC                  if  BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY )
+	select BR2_PACKAGE_DRASTIC                  if  BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3326 )
 
 	select BR2_PACKAGE_MELONDS                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
@@ -655,9 +645,9 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 	bool "batocera.linux MS/DOS emulation packages"
 
-	select BR2_PACKAGE_DOSBOX                   if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+	select BR2_PACKAGE_DOSBOX                   if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
-	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY && \
+	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
@@ -827,7 +817,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
 	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
@@ -841,11 +831,11 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	select BR2_PACKAGE_LIBRETRO_PCSX                if  !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
     select BR2_PACKAGE_LIBRETRO_BEETLE_PSX          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 
 	# Saturn
@@ -859,7 +849,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2   && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S812       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912		&& \
@@ -899,7 +889,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905   	&& \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905GEN3   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 
 	# Atari Jaguar
@@ -912,7 +902,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY     && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912
