@@ -153,6 +153,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # force notification messages
     retroarchConfig['video_font_enable'] = '"true"'
 
+    # prevent displaying "QUICK MENU" with "No Items" after DOSBox Pure, TyrQuake and PrBoom games exit
+    retroarchConfig['load_dummy_on_core_shutdown'] = '"false"'
+
     ## Specific choices
     if(system.config['core'] in coreToP1Device):
         retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
