@@ -369,7 +369,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     return exitCode
 
 def getHudBezel(system, rom, gameResolution):
-    if 'bezel' not in system.config or system.config['bezel'] == "":
+    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none":
         return None
 
     eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
