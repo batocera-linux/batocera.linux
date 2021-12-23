@@ -76,13 +76,13 @@ case "${ACTION}" in
 	;;
     "setMode")
 	MODE=$1
-	RATE=$2
 
 	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
 	then
 	    SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
 	    f_minTomaxResolution "${SPMODE}"
 	else # normal mode
+	    RATE=$2
 	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
 	    xrandr --output "${OUTPUT}" --mode "${MODE}" --rate "${RATE}"
 	fi
