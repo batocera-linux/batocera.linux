@@ -75,6 +75,19 @@ case "${ACTION}" in
 	    xrandr --output "${OUTPUT}" --mode "${MODE}"
 	fi
 	;;
+	"setRate")
+	RATE=$1
+	MODE=$(xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++)
+
+	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
+	then
+	    SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
+	    f_minTomaxResolution "${SPMODE}"
+	else
+	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+	    xrandr --output "${OUTPUT}" --mode "${MODE}" --rate "${RATE}"
+	fi
+	;;
     "currentMode")
 	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
 	;;
