@@ -91,21 +91,38 @@ class MameGenerator(Generator):
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
         commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
+
+        # Set custom config path if option is selected or default path if not
+        if system.isOptSet("customcfg"):
+            customCfg = system.getOptBoolean("customcfg")
+        else:
+            customCfg = False
+
+        if system.name == "mame":
+            if customCfg:
+                cfgPath = "/userdata/system/configs/mame/custom/"
+            else:
+                cfgPath = "/userdata/system/configs/mame/"
+            if not os.path.exists("/userdata/system/configs/mame/"):
+                os.makedirs("/userdata/system/configs/mame/")    
+        else:
+            if customCfg:
+                cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/custom/"
+            else:
+                cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode] + "/"
+            if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
+                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")    
+        if not os.path.exists(cfgPath):
+            os.makedirs(cfgPath)
+
         # MAME will create custom configs per game for MAME ROMs and MESS ROMs with no system attached (LCD games, TV games, etc.)
         # This will allow an alternate config path per game for MESS console/computer ROMs that may need additional config.
-        if system.name == "mame":
-            cfgPath = "/userdata/system/configs/mame/"
-        else:
-            cfgPath = "/userdata/system/configs/mame/" + system.name + "/"
-            if not os.path.exists(cfgPath):
-                os.makedirs(cfgPath)
-
         if system.isOptSet("pergamecfg") and system.getOptBoolean("pergamecfg"):
             if not messMode == -1:
                 if not messSysName[messMode] == "":
                     if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
-                        os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")
-                    cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode] + "/" + romBasename + "/"
+                        os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode]+ "/")
+                    cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/" + romBasename + "/"
                     if not os.path.exists(cfgPath):
                         os.makedirs(cfgPath)
         commandArray += [ "-cfg_directory"   ,    cfgPath ]
@@ -114,6 +131,7 @@ class MameGenerator(Generator):
         commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
         commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
         commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
+        commandArray += [ "-noreadconfig"]
 
         # TODO These paths are not handled yet
         # TODO -homepath            path to base folder for plugin data (read/write)
@@ -235,16 +253,11 @@ class MameGenerator(Generator):
                 buttonLayout = 10 # Q*Bert stick settings
             else:
                 buttonLayout = 0 # Default layout if it's not a recognized game
-        
-        if system.isOptSet("customcfg"):
-            overwriteCfg = system.config["customcfg"]
-        else:
-            overwriteCfg = 0
-        
+                
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, overwriteCfg)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messSysName[messMode], dpadMode, buttonLayout, overwriteCfg)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messSysName[messMode], dpadMode, buttonLayout, customCfg)
         
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
