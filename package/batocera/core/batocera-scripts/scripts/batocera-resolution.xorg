@@ -61,10 +61,22 @@ case "${ACTION}" in
     "listModes")
 	echo "max-1920x1080:maximum 1920x1080"
 	echo "max-640x480:maximum 640x480"
-	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
+	#xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
+	for item in $(xrandr -q | grep "   " | sed -e s+'\*'+''+ | sed -e s+'\+'+''+ | sed -e s+' '+'-'+g | xargs -n1)
+	do
+	    LINE=$(echo $item | sed -e s+'-'+' '+g)
+	    RES=$(echo $LINE | awk {'print $1'})
+	    for subitem in $LINE
+	    do
+	        if [[ ! $(echo $subitem | grep "x") ]]; then
+	            echo $RES $subitem:$RES $subitem Hz
+	        fi
+	    done
+	done
 	;;
     "setMode")
 	MODE=$1
+	RATE=$2
 
 	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
 	then
@@ -72,7 +84,7 @@ case "${ACTION}" in
 	    f_minTomaxResolution "${SPMODE}"
 	else # normal mode
 	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-	    xrandr --output "${OUTPUT}" --mode "${MODE}"
+	    xrandr --output "${OUTPUT}" --mode "${MODE}" --rate "${RATE}"
 	fi
 	;;
     "currentMode")
