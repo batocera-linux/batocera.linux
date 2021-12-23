@@ -69,7 +69,7 @@ case "${ACTION}" in
 	    for subitem in $LINE
 	    do
 	        if [[ ! $(echo $subitem | grep "x") ]]; then
-	            echo $RES $subitem:$RES $subitem Hz
+	            echo $RES $subitem Hz:$RES $subitem Hz
 	        fi
 	    done
 	done
