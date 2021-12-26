@@ -32,6 +32,7 @@ PYGEN="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/emulationstation/batocera-
 HTML_GEN="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/emulationstation/batocera-es-system/batocera_systemsReport.html"
 DEFAULTSDIR="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-configgen/configs"
 mkdir -p "${BATOCERA_BINARIES_DIR}" || exit 1
+echo python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${DEFAULTSDIR}" "${TMP_CONFIGS}"
 python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${DEFAULTSDIR}" "${TMP_CONFIGS}" > "${BATOCERA_BINARIES_DIR}/batocera_systemsReport.json" || exit 1
 cp "${HTML_GEN}" "${BATOCERA_BINARIES_DIR}" || exit 1
 
