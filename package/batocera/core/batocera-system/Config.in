@@ -122,6 +122,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WPA_SUPPLICANT_WPA3                  # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_NL80211               # wpa_supplicant driver
 	select BR2_PACKAGE_WPA_SUPPLICANT_WEXT                  # wpa_supplicant driver
+	select BR2_PACKAGE_WIRELESS_REGDB                       # wireless regulatory DB
+	select BR2_PACKAGE_IW                                   # wireless country config for regulatoryDB
 	select BR2_PACKAGE_DROPBEAR                             # ssh server
 	select BR2_PACKAGE_PM_UTILS                             # suspend
 	select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
