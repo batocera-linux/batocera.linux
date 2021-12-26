@@ -51,7 +51,7 @@ libretro:
   shared: [hud, runahead, secondinstance, video_frame_delay_auto, integerscale]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+      archs_include: [x86, x86_64, rpi4, rk3326]
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan is better, when supported.
       choices:
@@ -3188,7 +3188,7 @@ daphne:
   shared: [hud]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
@@ -3228,7 +3228,7 @@ dolphin:
   shared: [hud]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
@@ -3422,7 +3422,7 @@ duckstation:
                 "Per 1s, 90s total (990MB|180MB)":    90
                 "Per 1s, 120s total (1320MB|240MB)":  120
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
@@ -3859,7 +3859,7 @@ ppsspp:
   shared: [hud]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
@@ -4107,7 +4107,7 @@ mame:
                 "Accel":           accel
                 "OpenGL":          opengl
         bgfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      BGFX GRAPHICS API
             description: Depends on video mode being set to BGFX. Vulkan is better, when supported.
             choices:
