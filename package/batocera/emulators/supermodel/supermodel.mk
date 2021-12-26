@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SUPERMODEL_VERSION = r865
+SUPERMODEL_VERSION = r874
 SUPERMODEL_SITE = https://svn.code.sf.net/p/model3emu/code/trunk
 SUPERMODEL_SITE_METHOD=svn
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libglew libzip sdl2_net
@@ -16,7 +16,7 @@ define SUPERMODEL_BUILD_CMDS
 	$(SED) "s|CXX = g++|CXX = $(TARGET_CXX)|g" $(@D)/Makefile
 	$(SED) "s|LD = gcc|LD = $(TARGET_CC)|g" $(@D)/Makefile
 	$(SED) "s|sdl2-config|$(STAGING_DIR)/usr/bin/sdl2-config|g" $(@D)/Makefile
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile NET_BOARD=1 VERBOSE=1
 endef
 
 define SUPERMODEL_INSTALL_TARGET_CMDS
