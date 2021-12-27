@@ -87,13 +87,8 @@ do
     fi
 done
 
-# ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
-if mkdir -p /userdata/system/ssh
-then
-    test -e /userdata/system/ssh/dropbear_ed25519_host_key || dropbearkey -t ed25519 -f /userdata/system/ssh/dropbear_ed25519_host_key
-    test -e /userdata/system/ssh/dropbear_ecdsa_host_key   || dropbearkey -t ecdsa   -f /userdata/system/ssh/dropbear_ecdsa_host_key
-    test -e /userdata/system/ssh/dropbear_rsa_host_key     || dropbearkey -t rsa     -f /userdata/system/ssh/dropbear_rsa_host_key
-fi
+# ssh : create directory, but not keys because lack of entropy, dropbear will automatically generate key on client connection
+mkdir -p /userdata/system/ssh
 
 # udev : create a link for rules persistance
 mkdir -p /userdata/system/udev/rules.d
