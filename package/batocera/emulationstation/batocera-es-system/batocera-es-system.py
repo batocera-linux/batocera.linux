@@ -362,7 +362,10 @@ class EsSystemConf:
                                        submenustr = ""
                                        if "submenu" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
                                            submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"])))
-                                       featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
+                                       presetstr = ""
+                                       if "preset" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                           presetstr = " preset=\"{}\"".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["preset"])
+                                       featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\"{}\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description), EsSystemConf.protectXml(presetstr))
                                        EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                        EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
                                        for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
@@ -393,7 +396,10 @@ class EsSystemConf:
                                                submenustr = ""
                                                if "submenu" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
                                                    submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"]))
-                                               featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
+                                               presetstr = ""
+                                               if "preset" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
+                                                   presetstr = " preset=\"{}\"".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["preset"])
+                                               featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description), EsSystemConf.protectXml(presetstr))
                                                EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                                EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
                                                for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
@@ -434,7 +440,10 @@ class EsSystemConf:
                                     submenustr = ""
                                     if "submenu" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
                                         submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"]))
-                                    featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
+                                    presetstr = ""
+                                    if "preset" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
+                                        presetstr = " preset=\"{}\"".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["preset"])
+                                    featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\"{}>\n".format(EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description), EsSystemConf.protectXml(presetstr))
                                     EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                     EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
@@ -460,7 +469,10 @@ class EsSystemConf:
                             submenustr = ""
                             if "submenu" in features[emulator]["cfeatures"][cfeature]:
                                 submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["submenu"]))
-                            featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
+                            presetstr = ""
+                            if "preset" in features[emulator]["cfeatures"][cfeature]:
+                                presetstr = " preset=\"{}\"".format(features[emulator]["cfeatures"][cfeature]["preset"])
+                            featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\"{}>\n".format(EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description), EsSystemConf.protectXml(presetstr))
                             EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cfeatures"][cfeature]["prompt"], { "emulator": emulator })
                             EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator })
                             for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
