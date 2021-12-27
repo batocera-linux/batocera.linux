@@ -1600,7 +1600,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
                     coreSettings.save('duckstation_GPU.Renderer', "Vulkan")
-                elif system.config["gfxbackend"] == "opengl":
+                elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
                     coreSettings.save('duckstation_GPU.Renderer', "OpenGL")
                 else:
                     coreSettings.save('duckstation_GPU.Renderer', "Auto")

@@ -187,11 +187,21 @@ class LibretroGenerator(Generator):
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
 
+        # Certain platforms will default to glcore instead of gl
+        # Make sure we pick the right shader
+        with open("/usr/share/batocera/batocera.arch") as fb:
+            arch = fb.readline().strip()
+        if arch in ["x86", "x86_64", "rpi4", "rk3326", "gameforce"] and (not system.isOptSet("gfxbackend") or system.config["gfxbackend"] != "opengl"):
+            defaultGLCore = True
+        else:
+            defailtGLCore = False
+
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
         renderConfig = system.renderconfig
         if 'shader' in renderConfig and renderConfig['shader'] != None:
-            if ( (system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan")
-                    or (system.config['core'] in libretroConfig.coreForceSlangShaders) ):
+            if ( (system.isOptSet("gfxbackend") and (system.config["gfxbackend"] == "vulkan" or system.config["gfxbackend"] == "glcore"))
+                    or (system.config['core'] in libretroConfig.coreForceSlangShaders)
+                    or (defaultGLCore)):
                 shaderFilename = renderConfig['shader'] + ".slangp"
             else:
                 shaderFilename = renderConfig['shader'] + ".glslp"

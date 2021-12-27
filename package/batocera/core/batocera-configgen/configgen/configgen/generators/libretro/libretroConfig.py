@@ -90,7 +90,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
-    retroarchConfig['audio_latency'] = '64'                     #best balance with audio perf
+    retroarchConfig['audio_latency'] = '64'                     # best balance with audio perf
     if (system.isOptSet("audio_latency")):
         retroarchConfig['audio_latency'] = system.config['audio_latency']
 
@@ -110,8 +110,15 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_rotation'] = '0'
 
-    if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
-        retroarchConfig['video_driver'] = '"vulkan"'
+    # Default graphics driver to GLCore on supported platforms, can override back to GL
+    if arch in ["x86", "x86_64", "rpi4", "rk3326", "gameforce"]:
+        retroarchConfig['video_driver'] = '"glcore"'
+
+    if system.isOptSet("gfxbackend"):
+        if system.config["gfxbackend"] == "vulkan":
+            retroarchConfig['video_driver'] = '"vulkan"'
+        elif system.config["gfxbackend"] == "opengl":
+            retroarchConfig['video_driver'] = '"gl"'
 
     if system.isOptSet('video_threaded') and system.getOptBoolean('video_threaded') == True:
         retroarchConfig['video_threaded'] = 'true'
