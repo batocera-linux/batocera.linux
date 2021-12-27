@@ -1,9 +1,0 @@
-diff --git a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
-index b3b5ffc..9a338db 100644
---- a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
-+++ b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
-@@ -2491,3 +2491,4 @@ static int kbase_tracking_page_setup(struct kbase_context *kctx, struct vm_area_
- 	return 0;
- }
- 
-+void mm_trace_rss_stat(struct mm_struct *mm, int member, long count) {}
