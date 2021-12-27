@@ -1,10 +1,10 @@
 ################################################################################
 #
-# nvidia-driver
+# batocera-nvidia-driver
 #
 ################################################################################
 
-BATOCERA_NVIDIA_DRIVER_VERSION = 495.44
+BATOCERA_NVIDIA_DRIVER_VERSION = 495.46
 BATOCERA_NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_DRIVER_VERSION)
 BATOCERA_NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_DRIVER_VERSION).run
