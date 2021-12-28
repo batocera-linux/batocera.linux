@@ -97,8 +97,8 @@ def generateCoreSettings(coreSettings, system, rom):
 
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
-        # Enable Datasette Hotkeys
-        coreSettings.save('vice_datasette_hotkeys', '"enabled"')
+        # Disable Datasette Hotkeys
+        coreSettings.save('vice_datasette_hotkeys', '"disabled"')
         # Not Read 'vicerc'
         coreSettings.save('vice_read_vicerc',       '"disabled"')
         # Select Joystick Type
@@ -107,12 +107,6 @@ def generateCoreSettings(coreSettings, system, rom):
         c64_mapping = { 'a': "RETROK_SPACE",
                 'aspect_ratio_toggle': "---",
                 'b': "JOYSTICK_FIRE",
-                'datasette_forward': "RETROK_RIGHT",
-                'datasette_reset': "---",
-                'datasette_rewind': "RETROK_LEFT",
-                'datasette_start': "RETROK_UP",
-                'datasette_stop': "RETROK_DOWN",
-                'datasette_toggle_hotkeys': "---",
                 'joyport_switch': "RETROK_F10",
                 'l': "RETROK_ESCAPE",
                 'l2': "RETROK_F11",
