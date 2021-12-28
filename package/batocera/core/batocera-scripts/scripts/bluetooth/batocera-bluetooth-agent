@@ -238,8 +238,9 @@ def getBluetoothWantedTypes():
     logging.info("no bt_types file")
     return True, True
 
+  btype = ""
   with open("/var/run/bt_types", "r") as file:
-    btype = file.read()
+    btype = file.read().strip()
     logging.info("bt_type: {}".format(btype))
 
   if btype == "":
