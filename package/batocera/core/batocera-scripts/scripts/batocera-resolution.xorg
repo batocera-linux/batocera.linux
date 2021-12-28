@@ -69,7 +69,7 @@ case "${ACTION}" in
 	    for subitem in $LINE
 	    do
 	        if [[ ! $(echo $subitem | grep "x") ]]; then
-	            echo $RES $subitem Hz:$RES $subitem Hz
+	            echo "${RES} ${subitem}:${RES} ${subitem}Hz"
 	        fi
 	    done
 	done
@@ -88,7 +88,18 @@ case "${ACTION}" in
 	fi
 	;;
     "currentMode")
-	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
+	#xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
+	for item in $(xrandr -q | grep "   " | sed -e s+'\+'+''+ | sed -e s+' '+'-'+g | xargs -n1)
+	do
+	    LINE=$(echo $item | sed -e s+'-'+' '+g)
+	    RES=$(echo $LINE | awk {'print $1'})
+	    for subitem in $LINE
+        do
+	        if [[ $(echo $subitem | grep "*") ]]; then
+	            echo $RES $subitem | sed -e s+'\*'+''+
+	        fi
+	    done
+	done
 	;;
     "currentResolution")
 	xrandr --currentResolution | tail -n1
