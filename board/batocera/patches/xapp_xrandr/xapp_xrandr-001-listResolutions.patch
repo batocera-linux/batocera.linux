@@ -1,8 +1,8 @@
 diff --git a/xrandr.c b/xrandr.c
-index 115dbcc..811091f 100644
+index fd1ec9a..14d9079 100644
 --- a/xrandr.c
 +++ b/xrandr.c
-@@ -2670,6 +2670,8 @@ main (int argc, char **argv)
+@@ -2683,6 +2683,8 @@ main (int argc, char **argv)
      Bool	modeit = False;
      Bool	propit = False;
      Bool	query_1 = False;
@@ -11,7 +11,7 @@ index 115dbcc..811091f 100644
      Bool        listConnectedOutputs = False;
      Bool	list_providers = False;
      Bool        provsetoutsource = False;
-@@ -3103,6 +3105,16 @@ main (int argc, char **argv)
+@@ -3155,6 +3157,16 @@ main (int argc, char **argv)
  	    query_1 = True;
  	    continue;
  	}
@@ -28,7 +28,7 @@ index 115dbcc..811091f 100644
  	if (!strcmp ("--newmode", argv[i]))
  	{
  	    umode_t  *m = calloc (1, sizeof (umode_t));
-@@ -3667,6 +3679,82 @@ main (int argc, char **argv)
+@@ -3719,6 +3731,83 @@ main (int argc, char **argv)
  	}
  	exit (0);
      }
@@ -60,10 +60,7 @@ index 115dbcc..811091f 100644
 +		  int k;
 +
 +		  if (mode_shown[j]) continue;
-+
 +		  jmode = find_mode_by_xid (output_info->modes[j]);
-+		  printf ("%ix%i ", jmode->width, jmode->height);
-+		  printf ("%s", jmode->name);
 +
 +		  for (k = j; k < output_info->nmode; k++)
 +		    {
@@ -73,10 +70,14 @@ index 115dbcc..811091f 100644
 +		      mode_shown[k] = True;
 +		      kmode->modeFlags |= ModeShown;
 +
++		      printf ("%ix%i.%.2f ", jmode->width, jmode->height, mode_refresh (kmode));
++		      printf ("%s %.2f Hz", jmode->name, mode_refresh (kmode));
++
 +		      if (kmode == output->mode_info)
 +			printf ("*");
++
++		      printf ("\n");
 +		    }
-+		  printf ("\n");
 +		}
 +	      free (mode_shown);
 +	    }
