@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# hide mouse cursor
+unclutter --noevents -b
+
+# disable dpms to prevent screen from blanking
+xset -dpms
+xset s off
+
+# allow coredumps for ES
+ulimit -H -c unlimited
+ulimit -S -c unlimited emulationstation
+
+# dbus launch is required for the gio/gvfs/trash:///...
+eval `dbus-launch --sh-syntax --exit-with-session`
+
+openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
