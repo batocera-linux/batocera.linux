@@ -44,7 +44,7 @@ f_minTomaxResolution() {
 	    if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
 	    then
 		OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-		xrandr --output "${OUTPUT}" --mode "${SUGGMODE}"
+		xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
 		exit 0
 	    fi
 	done
