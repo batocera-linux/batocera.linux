@@ -1,0 +1,18 @@
+--- a/makefile	2021-11-22 20:50:01.672511481 +0100
++++ b/makefile	2021-11-22 20:55:05.048448383 +0100
+@@ -10,12 +10,12 @@
+ CROSS_COMPILE ?=
+ CXX ?= g++
+ AR ?= ar
+-LDFLAGS = -shared
++LDFLAGS += -shared
+ FINAL_CXX=$(CROSS_COMPILE)$(CXX)
+ FINAL_AR=$(CROSS_COMPILE)$(AR)
+-CPPFLAGS = -O3 -Wall -Wextra
++CPPFLAGS += -O3 -Wall -Wextra
+ 
+-PKG_CONFIG=pkg-config
++PKG_CONFIG ?= pkg-config
+ INSTALL=install
+ 
+ DESTDIR ?=

@@ -33,14 +33,14 @@ diff -ur ./3rdparty/minimp3/minimp3.h /home/romain/batocera.linux/output/odroidn
 diff -ur ./makefile /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/makefile
 --- a/makefile	2020-10-27 02:00:36.000000000 +0100
 +++ b/makefile	2020-11-09 18:56:15.179960037 +0100
-@@ -33,6 +33,7 @@
+@@ -32,6 +32,7 @@
  # SDL2_MULTIAPI = 1
  # NO_USE_MIDI = 1
  # NO_USE_PORTAUDIO = 1
-+# NO_USE_BGFX_KHRONOS =
++# NO_USE_BGFX_KHRONOS = 1
+ # NO_USE_PULSEAUDIO = 1
  # USE_TAPTUN = 1
  # USE_PCAP = 1
- # USE_QTDEBUG = 1
 @@ -87,11 +87,13 @@
  # BUILDDIR = build
  # TARGETOS = windows
@@ -131,21 +131,22 @@ diff -ur ./scripts/genie.lua /home/romain/batocera.linux/output/odroidn2/build/m
 diff -ur ./scripts/src/3rdparty.lua /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/scripts/src/3rdparty.lua
 --- a/scripts/src/3rdparty.lua	2020-10-27 02:00:36.000000000 +0100
 +++ b/scripts/src/3rdparty.lua	2020-11-09 18:03:17.288620257 +0100
-@@ -1327,9 +1327,11 @@
+@@ -1263,9 +1263,14 @@
+ 		MAME_DIR .. "3rdparty/bx/include",
+ 		MAME_DIR .. "3rdparty/bimg/include",
+ 		MAME_DIR .. "3rdparty/bgfx/3rdparty/dxsdk/include",
+-		MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
  	}
  
- 	configuration { "not steamlink"}
--		includedirs {
--			MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
--		}
-+	        if not _OPTIONS["NO_USE_BGFX_KHRONOS"] then
-+			includedirs {
-+				MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
-+			}
-+		end
- 
++	if not _OPTIONS["NO_USE_BGFX_KHRONOS"] then
++		includedirs {
++			MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
++		}
++	end
++
  	configuration { "android-*"}
  		buildoptions {
+ 			"-Wno-macro-redefined",
 @@ -2121,8 +2123,12 @@
  	configuration { "mingw*"}
  		includedirs {
@@ -230,40 +231,21 @@ diff -ur ./scripts/toolchain.lua /home/romain/batocera.linux/output/odroidn2/bui
  			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/libcxx/include",
  			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/include",
  			"$(ANDROID_NDK_ROOT)/sysroot/usr/include",
-@@ -1112,10 +1132,17 @@
+@@ -712,10 +712,17 @@
  		}
  
- 	configuration { "linux-* or rpi" }
--		postbuildcommands {
--			"$(SILENT) echo Stripping symbols.",
--			"$(SILENT) strip -s \"$(TARGET)\""
--		}
+ 	configuration { "linux-*" }
 +		if _OPTIONS['STRIP']~=nil then
-+			postbuildcommands {
-+				"$(SILENT) echo Stripping symbols.",
-+				"$(SILENT) " .. _OPTIONS['STRIP'] .. " -s \"$(TARGET)\""
-+			}
-+		else
-+			postbuildcommands {
-+				"$(SILENT) echo Stripping symbols.",
-+				"$(SILENT) strip -s \"$(TARGET)\""
-+			}
-+		end
++		postbuildcommands {
++			"$(SILENT) echo Stripping symbols.",
++			"$(SILENT) " .. _OPTIONS['STRIP'] .. " -s \"$(TARGET)\""
++		}
++	else
+ 		postbuildcommands {
+ 			"$(SILENT) echo Stripping symbols.",
+ 			"$(SILENT) strip -s \"$(TARGET)\""
+ 		}
++	end
  
  	configuration { "mingw*", "x64" }
  		postbuildcommands {
-diff -ur ./src/osd/modules/render/drawbgfx.cpp /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/src/osd/modules/render/drawbgfx.cpp
---- a/src/osd/modules/render/drawbgfx.cpp	2020-10-27 02:00:36.000000000 +0100
-+++ b/src/osd/modules/render/drawbgfx.cpp	2020-11-09 18:45:54.759139263 +0100
-@@ -169,7 +169,11 @@
- 	}
- 
- #   if BX_PLATFORM_LINUX || BX_PLATFORM_BSD || BX_PLATFORM_RPI
-+#ifdef SDLMAME_NO_X11
-+	return nullptr;
-+#else
- 	return (void*)wmi.info.x11.window;
-+#endif
- #   elif BX_PLATFORM_OSX
- 	return wmi.info.cocoa.window;
- #   elif BX_PLATFORM_WINDOWS
