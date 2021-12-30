@@ -133,10 +133,10 @@ function print_help() {
 cat << EOF
 batocera-makepkg: makes a pacman package for a Batocera system.
 usage:
-batocera-makepkg [-f] [-h] [PKGINFO_FILE]
+batocera-makepkg [-f] [-h]
   -f : force overwrite output package
   -h : describes available options
-  [PKGINFO_FILE] : if not provided, use .PKGINFO
+You need to have a .PKGINFO file in the running directory to get your package created.
 EOF
 exit
 }
@@ -153,9 +153,7 @@ function main() {
 		    esac
 		    shift
 	    done
-	    CONFIGFILE="$1"
-	    [[ -f "$CONFIGFILE" ]] && cp "$CONFIGFILE" "$INFO"
-	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO or no argument given." >&2; exit 1; }
+	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO, aborting." >&2; exit 1; }
 
 	    for mandatory in pkgname pkgver pkgdesc arch group ; do
 		    check_argument "$mandatory"
