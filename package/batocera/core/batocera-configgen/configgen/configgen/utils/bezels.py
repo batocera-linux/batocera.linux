@@ -2,6 +2,8 @@ import os
 import batoceraFiles
 import struct
 from PIL import Image, ImageOps
+from .logger import get_logger
+eslog = get_logger(__name__)
 
 def getBezelInfos(rom, bezel, systemName):
     # by order choose :
@@ -47,6 +49,7 @@ def getBezelInfos(rom, bezel, systemName):
                                 bezel_game = True
                                 if not os.path.exists(overlay_png_file):
                                     return None
+    eslog.debug("Original bezel file used: {}".format(overlay_png_file))
     return { "png": overlay_png_file, "info": overlay_info_file, "specific_to_game": bezel_game }
 
 # Much faster than PIL Image.size
@@ -66,6 +69,7 @@ def fast_image_size(image_file):
 
 def resizeImage(input_png, output_png, screen_width, screen_height):
     imgin = Image.open(input_png)
+    eslog.debug("Resizing bezel: image mode {}".format(imgin.mode))
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
     else:
@@ -91,7 +95,7 @@ def padImage(input_png, output_png, screen_width, screen_height, bezel_width, be
   if imgin.mode != "RGBA":
       alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
   else:
-      imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
+      imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
       imgout.save(output_png, mode="RGBA", format="PNG")
 
 def tatooImage(input_png, output_png, system):
@@ -102,19 +106,19 @@ def tatooImage(input_png, output_png, system):
               tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening controller overlay: {}".format('tattoo_file'))
+          eslog.error("Error opening controller overlay: {}".format(tattoo_file))
   elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
       try:
           tattoo_file = system.config['bezel.tattoo_file']
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening custom file: {}".format('tattoo_file'))
+          eslog.error("Error opening custom file: {}".format(tattoo_file))
   else:
       try:
           tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening custom file: {}".format('tattoo_file'))
+          eslog.error("Error opening custom file: {}".format(tattoo_file))
   # Open the existing bezel...
   back = Image.open(input_png)
   # Convert it otherwise it implodes later on...
@@ -126,6 +130,7 @@ def tatooImage(input_png, output_png, system):
   if system.isOptSet('bezel.resize_tattoo') and system.getOptBoolean('bezel.resize_tattoo') == False:
       # Maintain the image's original size.
       # Failsafe for if the image is too large.
+      tatwidth,tatheight = tw,th
       if tw > w or th > h:
           # Limit width to that of the bezel and crop the rest.
           pcent = float(w / tw)
