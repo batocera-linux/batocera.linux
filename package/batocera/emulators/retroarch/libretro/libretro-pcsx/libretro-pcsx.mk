@@ -3,8 +3,8 @@
 # PCSXREARMED
 #
 ################################################################################
-# Version.: Commits on Nov 10, 2021
-LIBRETRO_PCSX_VERSION = 589bd99ba31de8216624dbf0cbbc016f0663ce3d
+# Version.: Commits on Dec 21, 2021
+LIBRETRO_PCSX_VERSION = 12fc12797064599dfca2d44043d5c02a949711ef
 LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 LIBRETRO_PCSX_LICENSE = GPLv2
 
@@ -20,17 +20,13 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 LIBRETRO_PCSX_PLATFORM = rpi2
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    ifeq ($(BR2_arm),y)
-        LIBRETRO_PCSX_PLATFORM = rpi3
-    else
-        LIBRETRO_PCSX_PLATFORM = rpi3_64
-    endif
+LIBRETRO_PCSX_PLATFORM = rpi3_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_PCSX_PLATFORM = rpi4_64
 
-else ifeq ($(BR2_aarch64),y)
-LIBRETRO_PCSX_PLATFORM = unix
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+LIBRETRO_PCSX_PLATFORM = rk3326
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5),y)
 LIBRETRO_PCSX_PLATFORM = h5
@@ -43,6 +39,9 @@ LIBRETRO_PCSX_PLATFORM = rpi2
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
 LIBRETRO_PCSX_PLATFORM = rpi2
+
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_PCSX_PLATFORM = unix
 endif
 
 define LIBRETRO_PCSX_BUILD_CMDS
