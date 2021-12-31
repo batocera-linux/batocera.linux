@@ -1,0 +1,20 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index c2fc9d0..a9d891b 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -363,6 +363,15 @@ else ifeq ($(platform), rpi4_64)
+         fpic := -fPIC
+         CFLAGS += -march=armv8-a+crc+simd -mtune=cortex-a72 -ftree-vectorize
+ 
++#RK3326 with a 64bit GNU/Linux OS
++else ifeq ($(platform), rk3326)
++	TARGET := $(TARGET_NAME)_libretro.so
++	ARCH := arm64
++	BUILTIN_GPU = unai
++	DYNAREC = ari64
++	fpic := -fPIC
++	CFLAGS += -march=armv8-a+crc+simd -mtune=cortex-a35 -ftree-vectorize
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ # Help at https://modmyclassic.com/comp
