@@ -367,6 +367,21 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
 
+    ## ZX Spectrum
+    if (system.config['core'] == 'fuse'):
+        if system.isOptSet('controller1_zxspec'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_zxspec']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '769'                               #Sinclair 1 controller - most used on games
+        if system.isOptSet('controller2_zxspec'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_zxspec']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller 
+        if system.isOptSet('controller3_zxspec'):
+            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
+        else:
+            retroarchConfig['input_libretro_device_p3'] = '0'
+
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
