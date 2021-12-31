@@ -712,16 +712,8 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             output_png_file = "/tmp/bezel_game_adapted.png"
             create_new_bezel_file = True
         else:
-            create_new_bezel_file = False
+            # The logic to cache system bezels is not true anymore now that we have tattoos
             output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
-            if os.path.exists(output_png_file) is False:
-                create_new_bezel_file = True
-            else:
-                if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
-                    create_new_bezel_file = True
-        # fast way of checking the size of a png
-        oldwidth, oldheight = bezelsUtil.fast_image_size(output_png_file)
-        if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
             create_new_bezel_file = True
 
         if bezel_stretch:
