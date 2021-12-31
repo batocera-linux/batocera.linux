@@ -2279,6 +2279,12 @@ libretro:
                     "150%":       150
                     "170%":       170
                     "200%":       200
+            pad_options:
+                prompt:      JUMP ON B
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":    disabled
+                    "On":     jump
       systems:
             amiga500:
                 cfeatures:
@@ -2300,12 +2306,6 @@ libretro:
                         choices:
                             "Off":    disabled
                             "On":     config
-                    pad_options:
-                        prompt:      JUMP ON B
-                        description: Makes second fire button press up instead.
-                        choices:
-                            "Off":    disabled
-                            "On":     jump
                     disable_joystick:
                         prompt:      DISABLE EMULATOR JOYSTICK
                         description: Passes all physical keyboard events for Pad2Key.
