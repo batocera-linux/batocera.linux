@@ -305,6 +305,13 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
         else:
             coreSettings.save('puae_mouse_speed', '"200"')
+        # Jump on B
+        if system.isOptSet('pad_options'):
+            coreSettings.save('puae_retropad_options', system.config['pad_options'])
+        elif system.name == 'amigacdtv':
+            coreSettings.save('puae_retropad_options', '"disabled"')
+        else:
+            coreSettings.save('puae_retropad_options', '"jump"')
 
         if (system.name == 'amiga500') or (system.name == 'amiga1200'):
             # Floppy Turbo Speed
@@ -322,11 +329,6 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('puae_use_whdload_prefs', system.config['whdload'])
             else:
                 coreSettings.save('puae_use_whdload_prefs', '"config"')
-            # Jump on B
-            if system.isOptSet('pad_options'):
-                coreSettings.save('puae_retropad_options', system.config['pad_options'])
-            else:
-                coreSettings.save('puae_retropad_options', '"jump"')
             # Disable Emulator Joystick for Pad2Key
             if system.isOptSet('disable_joystick'):
                 coreSettings.save('puae_physical_keyboard_pass_through', system.config['disable_joystick'])
@@ -874,6 +876,8 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('gambatte_gbc_color_correction', system.config['gbc_color_correction'])
             else:
                 coreSettings.save('gambatte_gbc_color_correction', '"disabled"')
+        elif (system.name == 'gb'):
+            coreSettings.save('gambatte_gbc_color_correction', '"disabled"')
 
         if (system.name == 'gb'):
             # GB: Colorization of GB games
