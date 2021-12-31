@@ -3,8 +3,8 @@
 # DOSBOX PURE
 #
 ################################################################################
-# Version.: Commits on Oct 20, 2021
-LIBRETRO_DOSBOX_PURE_VERSION = 0.20
+# Version.: Commits on Dec 13, 2021
+LIBRETRO_DOSBOX_PURE_VERSION = 0.21
 LIBRETRO_DOSBOX_PURE_SITE = $(call github,schellingb,dosbox-pure,$(LIBRETRO_DOSBOX_PURE_VERSION))
 LIBRETRO_DOSBOX_PURE_LICENSE = GPLv2
 
