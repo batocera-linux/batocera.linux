@@ -48,6 +48,8 @@ wifi_configure_all() {
 wifi_enable() {
     # WLAN enabled?
     settingsWlan="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.enabled)"
+    settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
+    [ -n "$settingsCountry" ] && /usr/sbin/iw reg set "$settingsCountry"
     if [ "$settingsWlan" != "1" ];then
 	connmanctl disable wifi 2>/dev/null
 	return

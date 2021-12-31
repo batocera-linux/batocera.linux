@@ -160,6 +160,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # force notification messages
     retroarchConfig['video_font_enable'] = '"true"'
 
+    # prevent displaying "QUICK MENU" with "No Items" after DOSBox Pure, TyrQuake and PrBoom games exit
+    retroarchConfig['load_dummy_on_core_shutdown'] = '"false"'
+
     ## Specific choices
     if(system.config['core'] in coreToP1Device):
         retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
@@ -751,7 +754,8 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
             try:
                 bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
-            except:
+            except Exception as e:
+                eslog.debug("Failed to create the adapated image: {}".format(e))
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":

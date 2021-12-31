@@ -57,6 +57,9 @@ class EsSystemConf:
             arch = configFile.replace("config_", "")
             config = EsSystemConf.loadConfig(configsDir + "/" + configFile)
             archSystemsConfig = yaml.safe_load(open(defaultsDir + "/configgen-defaults-" + arch + ".yml", "r"))
+            # case when there is no arch file
+            if archSystemsConfig is None:
+                archSystemsConfig = {}
             result_systems = {}
             boards = EsSystemConf.find_boards_from_config(config)
             for system in rules:

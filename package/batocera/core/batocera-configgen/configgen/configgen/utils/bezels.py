@@ -67,7 +67,7 @@ def fast_image_size(image_file):
 def resizeImage(input_png, output_png, screen_width, screen_height):
     imgin = Image.open(input_png)
     if imgin.mode != "RGBA":
-        alphaPaste(input_png, output_png, imgin, fillcolor)
+        alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
     else:
         imgout = imgin.resize((screen_width, screen_height), Image.ANTIALIAS)
         imgout.save(output_png, mode="RGBA", format="PNG")
@@ -89,7 +89,7 @@ def padImage(input_png, output_png, screen_width, screen_height, bezel_width, be
       borderh = yoffset // 2
   imgin = Image.open(input_png)
   if imgin.mode != "RGBA":
-      alphaPaste(input_png, output_png, imgin, fillcolor)
+      alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
   else:
       imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
       imgout.save(output_png, mode="RGBA", format="PNG")
@@ -161,7 +161,8 @@ def tatooImage(input_png, output_png, system):
   imgnew.paste(back, (0,0,w,h))
   imgnew.save(output_png, mode="RGBA", format="PNG")
 
-def alphaPaste(input_png, output_png, imgin, fillcolor):
+def alphaPaste(input_png, output_png, imgin, fillcolor, screensize):
+  # screensize=(screen_width, screen_height)
   imgin = Image.open(input_png)
   # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
   # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
@@ -171,5 +172,5 @@ def alphaPaste(input_png, output_png, imgin, fillcolor):
   ix,iy = fast_image_size(input_png)
   imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
   imgnew.paste(alpha, (0,0,ix,iy))
-  imgout = ImageOps.expand(imgnew, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
+  imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")

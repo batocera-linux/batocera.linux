@@ -18,13 +18,6 @@ from xml.dom import minidom
 from PIL import Image, ImageOps
 
 def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButtons, customCfg):
-    if customCfg == 0:
-        overwriteMAME = True
-        overwriteSystem = True
-    else:
-        overwriteMAME = False
-        overwriteSystem = False
-    
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -33,6 +26,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
             config = minidom.parse(configFile)
         except:
             pass # reinit the file
+    if os.path.exists(configFile) and customCfg:
+        overwriteMAME = False
     else:
         overwriteMAME = True
     
@@ -66,7 +61,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         #"BUTTON14": "",
         #"BUTTON15": ""
     }
-    print("Button layout = " + str(altButtons))
+
     # Buttons that change based on game/setting
     if altButtons == 1: # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
         mappings.update({"BUTTON1": "y"})
@@ -146,21 +141,26 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb"):
         config_alt = minidom.Document()
         configFile_alt = cfgPath + sysName + ".cfg"
-        if os.path.exists(configFile_alt) and cfgPath == "/userdata/system/configs/mame/":
-            writeConfig = True
+        if os.path.exists(configFile_alt) and cfgPath == "/userdata/system/configs/mame/" + sysName + "/":            
             try:
                 config_alt = minidom.parse(configFile_alt)
             except:
                 pass # reinit the file
-        elif not os.path.exists(configFile_alt):
-            overwriteSystem = True
-            writeConfig = True
+        elif os.path.exists(configFile_alt):
+            try:
+                config_alt = minidom.parse(configFile_alt)
+            except:
+                pass # reinit the file
+        if cfgPath == "/userdata/system/configs/mame/" + sysName + "/":
+            perGameCfg = False
         else:
-            writeConfig = False
-            try:
-                config_alt = minidom.parse(configFile_alt)
-            except:
-                pass # reinit the file
+            perGameCfg = True
+        if os.path.exists(configFile_alt) and (customCfg or perGameCfg):
+            overwriteSystem = False
+        else:
+            overwriteSystem = True
+
+
         xml_mameconfig_alt = getRoot(config_alt, "mameconfig")
         xml_system_alt = getSection(config_alt, xml_mameconfig_alt, "system")
         xml_system_alt.setAttribute("name", sysName)
@@ -366,7 +366,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
             mameXml.write(dom_string)
         
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb") and writeConfig and overwriteSystem:
+        if sysName in ("cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb") and overwriteSystem:
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml_alt.write(dom_string_alt)
@@ -446,12 +446,12 @@ def generateIncDecPortElement(config, tag, nplayer, padindex, mapping, inckey, d
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
-    incvalue = config.createTextNode(input2definition(inckey, mappedinput, padindex + 1, reversed, dpadMode))
+    incvalue = config.createTextNode(input2definition(inckey, mappedinput, padindex + 1, reversed, dpadMode, 0))
     xml_newseq_inc.appendChild(incvalue)
     xml_newseq_dec = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_dec)
     xml_newseq_dec.setAttribute("type", "decrement")
-    decvalue = config.createTextNode(input2definition(deckey, mappedinput, padindex + 1, reversed, dpadMode))
+    decvalue = config.createTextNode(input2definition(deckey, mappedinput, padindex + 1, reversed, dpadMode, 0))
     xml_newseq_dec.appendChild(decvalue)
     return xml_port
 
@@ -487,16 +487,16 @@ def input2definition(key, input, joycode, reversed, dpadMode, altButtons):
                 if dpadMode == 0:
                     return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP".format(joycode, joycode, joycode, joycode)
                 elif dpadMode == 1:
-                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON15 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
                 else:
-                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON11 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                    return "JOYCODE_{}_XAXIS_LEFT_SWITCH JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1LEFT JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON11 JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode, joycode, joycode, joycode)
             if key == "joystick1right" or key == "right":
                 if dpadMode == 0:
                     return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN".format(joycode, joycode, joycode, joycode)
                 elif dpadMode == 1:
-                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON16 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
                 else:
-                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON12 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
+                    return "JOYCODE_{}_XAXIS_RIGHT_SWITCH JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1RIGHT JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON12 JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode, joycode, joycode, joycode)
         else:        
             if key == "joystick1up" or key == "up":
                 if dpadMode == 0:

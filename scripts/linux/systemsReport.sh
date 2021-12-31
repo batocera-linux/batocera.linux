@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHS="odroidxu4 rpi1 rpi2 rpi3 rpi4 rk3288 rk3326 rk3399 s905 s905gen3 s912 s922x x86_64 x86 tritium-h5 orangepi-pc cha gameforce"
+ARCHS="odroidxu4 rpi1 rpi2 rpi3 rpi4 rk3288 rk3326 rk3399 s905 s905gen3 s912 s922x x86_64 x86 tritium-h5 orangepi-pc cha"
 
 BR_DIR=$1
 BATOCERA_BINARIES_DIR=$2
@@ -32,6 +32,7 @@ PYGEN="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/emulationstation/batocera-
 HTML_GEN="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/emulationstation/batocera-es-system/batocera_systemsReport.html"
 DEFAULTSDIR="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-configgen/configs"
 mkdir -p "${BATOCERA_BINARIES_DIR}" || exit 1
+echo python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${DEFAULTSDIR}" "${TMP_CONFIGS}"
 python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${DEFAULTSDIR}" "${TMP_CONFIGS}" > "${BATOCERA_BINARIES_DIR}/batocera_systemsReport.json" || exit 1
 cp "${HTML_GEN}" "${BATOCERA_BINARIES_DIR}" || exit 1
 

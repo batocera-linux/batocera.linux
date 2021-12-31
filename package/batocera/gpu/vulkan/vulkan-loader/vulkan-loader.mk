@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_LOADER_VERSION = v1.2.196
+VULKAN_LOADER_VERSION = v1.2.200
 
 VULKAN_LOADER_SITE =  $(call github,KhronosGroup,Vulkan-Loader,$(VULKAN_LOADER_VERSION))
 VULKAN_LOADER_DEPENDENCIES = vulkan-headers

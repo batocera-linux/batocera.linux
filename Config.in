@@ -69,6 +69,7 @@ menu "System"
 
   menu "Network"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821ce/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8723ds/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8192eu/Config.in"
   endmenu
 

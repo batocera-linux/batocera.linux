@@ -38,7 +38,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4=y
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,hardkernel,linux,faeb665a41b53ebb386e69fe737ccf0707aaf07b)/faeb665a41b53ebb386e69fe737ccf0707aaf07b.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,shantigilbert,hardkernel-linux,d167de7358c9c53d5e6592978f7cdde7674c420b)/d167de7358c9c53d5e6592978f7cdde7674c420b.tar.gz"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig.config"
@@ -47,7 +47,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-odroidgo2-linux rockchip/rk3326-odroidgo2-linux-v11 rockchip/rk3326-odroidgo3-linux"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-gameforce-linux rockchip/rk3326-odroidgo2-linux rockchip/rk3326-odroidgo2-linux-v11 rockchip/rk3326-odroidgo3-linux"
 BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/dts/rk3326-rg351p-linux.dts"
 
 # System
@@ -73,14 +73,16 @@ BR2_PACKAGE_PYTHON3_PY_PYC=y
 BR2_PACKAGE_PYTHON_HASHLIB=y
 BR2_PACKAGE_LUA_5_1=y
 
-# OGA specific (bootloader)
+# Bootloader
 BR2_PACKAGE_UBOOT_ODROID_GOA=y
+BR2_PACKAGE_UBOOT_GAMEFORCE=y
 
 # batocera splash screen
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Controller
 BR2_PACKAGE_XBOXDRV=y
+BR2_PACKAGE_UINPUT_JOYSTICK=y
 
 # Batocera
 #BR2_PACKAGE_BATOCERA_DEV=y
