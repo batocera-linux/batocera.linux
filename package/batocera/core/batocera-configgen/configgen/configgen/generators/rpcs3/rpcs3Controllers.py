@@ -7,13 +7,9 @@ from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 def generateControllerConfig(system, controllers, rom):
-    generateConfigInputYml(controllers)
-    generateInputConfigs(controllers)
-
-def generateConfigInputYml(controllers):
-    configFileName = "{}/{}".format(batoceraFiles.CONF, "rpcs3/config_input.yml")
-    if not path.isdir(batoceraFiles.CONF + "/rpcs3"):
-        os.makedirs(batoceraFiles.CONF + "/rpcs3")
+    if not path.isdir(batoceraFiles.CONF + "/rpcs3/input_configs/global"):
+        os.makedirs(batoceraFiles.CONF + "/rpcs3/input_configs/global")
+    configFileName = "{}/{}/Default.yml".format(batoceraFiles.CONF, "rpcs3/input_configs/global")
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     nplayer = 1
@@ -22,28 +18,12 @@ def generateConfigInputYml(controllers):
             f.write("Player {} Input:\n".format(nplayer))
             f.write("  Handler: Evdev\n")
             f.write("  Device: {}\n".format(pad.dev))
-            f.write("  Profile: pad{}\n".format(nplayer))
-        nplayer += 1
-    for i in range(nplayer, 8):
-        f.write("Player {} Input:\n".format(i))
-        f.write("  Handler: \"Null\"\n")
-        f.write("  Device: \"Null\"\n")
-        f.write("  Profile: Default Profile\n")
-    f.close()
-
-def generateInputConfigs(controllers):
-    if not path.isdir(batoceraFiles.CONF + "/rpcs3/InputConfigs/Evdev"):
-        os.makedirs(batoceraFiles.CONF + "/rpcs3/InputConfigs/Evdev")
-    nplayer = 1
-    for controller, pad in sorted(controllers.items()):
-        if nplayer <= 7:
-            configFileName = "{}/{}/pad{}.yml".format(batoceraFiles.CONF, "rpcs3/InputConfigs/Evdev", nplayer)
-            f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+            f.write("  Config:\n")
             for inputIdx in pad.inputs:
                 input = pad.inputs[inputIdx]
                 key = rpcs3_mappingKey(input.name)
                 if key is not None:
-                    f.write("{}: {}\n".format(key, rpcs3_mappingValue(input.name, input.type, input.code, int(input.value))))
+                    f.write("    {}: {}\n".format(key, rpcs3_mappingValue(input.name, input.type, input.code, int(input.value))))
                 else:
                     eslog.warning("no rpcs3 mapping found for {}".format(input.name))
 
@@ -52,13 +32,13 @@ def generateInputConfigs(controllers):
                     reversedName = rpcs3_reverseMapping(input.name)
                     key = rpcs3_mappingKey(reversedName)
                     if key is not None:
-                        f.write("{}: {}\n".format(key, rpcs3_mappingValue(reversedName, input.type, input.code, int(input.value)*-1)))
+                        f.write("    {}: {}\n".format(key, rpcs3_mappingValue(reversedName, input.type, input.code, int(input.value)*-1)))
                     else:
                         eslog.warning("no rpcs3 mapping found for {}".format(input.name))
                     
             rpcs3_otherKeys(f, controller)
-            f.close()
         nplayer += 1
+        f.close()
 
 def rpcs3_reverseMapping(name):
     if name == "joystick1up":
