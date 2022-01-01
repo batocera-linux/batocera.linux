@@ -2903,7 +2903,9 @@ libretro:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
-                    "Off":                      none
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
                     "small":                    small
                     "medium":                   medium
                     "maximum":                  maximum

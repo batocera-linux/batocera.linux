@@ -119,7 +119,6 @@ def generateCoreSettings(coreSettings, system, rom):
                 'lu': "---",
                 'r': "RETROK_PAGEUP",
                 'r2': "RETROK_LSHIFT",
-                'r3': "RETROK_F12",
                 'rd': "RETROK_F7",
                 'reset': "---",
                 'rl': "RETROK_F3",
@@ -128,11 +127,10 @@ def generateCoreSettings(coreSettings, system, rom):
                 'select': "TOGGLE_VKBD",
                 'start': "RETROK_RETURN",
                 'statusbar': "RETROK_F9",
-                'vkbd': "---",
+                'vkbd': "RETROK_F12",
                 'warp_mode': "RETROK_F11",
                 'x': "RETROK_n",
-                'y': "RETROK_y",
-                'zoom_mode_toggle': "RETROK_F12"}
+                'y': "RETROK_y" }
         for key in c64_mapping:
             coreSettings.save('vice_mapper_' + key, c64_mapping[key])
 
@@ -148,9 +146,12 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vice_aspect_ratio', '"pal"')
         # Zoom Mode
         if system.isOptSet('zoom_mode_c64'):
-            coreSettings.save('vice_zoom_mode', system.config['zoom_mode_c64'])
+            if system.config['zoom_mode_c64'] == 'automatic':
+                coreSettings.save('vice_zoom_mode', '"auto"')
+            else:
+                coreSettings.save('vice_zoom_mode', system.config['zoom_mode_c64'])
         else:
-            coreSettings.save('vice_zoom_mode', '"medium"')
+            coreSettings.save('vice_zoom_mode', '"auto_disable"')
         # External palette
         if system.isOptSet('external_palette'):
             coreSettings.save('vice_external_palette', system.config['external_palette'])
