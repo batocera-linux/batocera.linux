@@ -97,6 +97,8 @@ def generateCoreSettings(coreSettings, system, rom):
 
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
+        # Enable Automatic Load Warp
+        coreSettings.save('vice_autoloadwarp',      '"enabled"')
         # Disable Datasette Hotkeys
         coreSettings.save('vice_datasette_hotkeys', '"disabled"')
         # Not Read 'vicerc'
