@@ -91,11 +91,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
 
-    glxCmd = 'glxinfo | grep "OpenGL version"'
-    glOutput = subprocess.check_output(glxCmd, shell=True).decode(sys.stdout.encoding)    
-    glString = glOutput.split()
-    glVersion = float(glString[3])
-    print("OpenGL Version: " + str(glVersion))
+    try:
+        glxCmd = 'glxinfo | grep "OpenGL version"'
+        glOutput = subprocess.check_output(glxCmd, shell=True).decode(sys.stdout.encoding)    
+        glString = glOutput.split()
+        glVersion = float(glString[3])        
+    except:
+        glVersion = 1
     if glVersion >= 3.1:
         defaultGFXDriver = "glcore"
     else:
