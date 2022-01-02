@@ -1,30 +1,30 @@
 diff --git a/bauh/gems/flatpak/__init__.py b/bauh/gems/flatpak/__init__.py
-index 4c1839d..f3141c0 100644
+index 0f6ec4c..31d32b0 100644
 --- a/bauh/gems/flatpak/__init__.py
 +++ b/bauh/gems/flatpak/__init__.py
-@@ -7,7 +7,7 @@ from bauh.api.constants import CONFIG_PATH
+@@ -9,7 +9,7 @@ from bauh.api.paths import CONFIG_DIR
  from bauh.commons import resource
  
  ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
--SUGGESTIONS_FILE = 'https://raw.githubusercontent.com/vinifmor/bauh-files/master/flatpak/suggestions.txt'
-+SUGGESTIONS_FILE = 'https://updates.batocera.org/flatpak.suggestions'
- CONFIG_FILE = '{}/flatpak.yml'.format(CONFIG_PATH)
- CONFIG_DIR = '{}/flatpak'.format(CONFIG_PATH)
- UPDATES_IGNORED_FILE = '{}/updates_ignored.txt'.format(CONFIG_DIR)
+-SUGGESTIONS_FILE = f'https://raw.githubusercontent.com/vinifmor/{__app_name__}-files/master/flatpak/suggestions.txt'
++SUGGESTIONS_FILE = f'https://updates.batocera.org/flatpak.suggestions'
+ CONFIG_FILE = f'{CONFIG_DIR}/flatpak.yml'
+ FLATPAK_CONFIG_DIR = f'{CONFIG_DIR}/flatpak'
+ UPDATES_IGNORED_FILE = f'{FLATPAK_CONFIG_DIR}/updates_ignored.txt'
 diff --git a/bauh/gems/flatpak/controller.py b/bauh/gems/flatpak/controller.py
-index 10c8ed0..3febbaa 100644
+index d0bff64..9b221c1 100644
 --- a/bauh/gems/flatpak/controller.py
 +++ b/bauh/gems/flatpak/controller.py
-@@ -344,6 +344,7 @@ class FlatpakManager(SoftwareManager):
-         flatpak_config = self.configman.get_config()
+@@ -378,6 +378,7 @@ class FlatpakManager(SoftwareManager):
+         if not self.context.root_user:
+             flatpak_config = self.configman.get_config()
+             install_level = flatpak_config['installation_level']
++            install_level = "system" # force
+         else:
+             install_level = 'system'
  
-         install_level = flatpak_config['installation_level']
-+        install_level = "system" # force
- 
-         if install_level is not None:
-             self.logger.info("Default Flaptak installation level defined: {}".format(install_level))
 diff --git a/bauh/view/qt/apps_table.py b/bauh/view/qt/apps_table.py
-index 712e61f..99084b1 100644
+index 92afff8..824fdbf 100644
 --- a/bauh/view/qt/apps_table.py
 +++ b/bauh/view/qt/apps_table.py
 @@ -9,6 +9,7 @@ from PyQt5.QtGui import QPixmap, QIcon, QCursor
@@ -35,7 +35,7 @@ index 712e61f..99084b1 100644
  
  from bauh.api.abstract.cache import MemoryCache
  from bauh.api.abstract.model import PackageStatus, CustomSoftwareAction
-@@ -520,18 +521,18 @@ class PackagesTable(QTableWidget):
+@@ -521,18 +522,18 @@ class PackagesTable(QTableWidget):
          toolbar.setObjectName('app_actions')
          toolbar.add_space()
  
@@ -66,7 +66,7 @@ index 712e61f..99084b1 100644
  
          settings = self.has_any_settings(pkg)
  
-@@ -539,32 +540,41 @@ class PackagesTable(QTableWidget):
+@@ -540,32 +541,41 @@ class PackagesTable(QTableWidget):
              def handle_custom_actions():
                  self.show_pkg_actions(pkg)
  
@@ -141,7 +141,7 @@ index 1f25570..85f1f82 100644
  
          self.img_idx = 0
 diff --git a/bauh/view/qt/window.py b/bauh/view/qt/window.py
-index 0204a51..8561873 100755
+index f7064c2..6444fc7 100755
 --- a/bauh/view/qt/window.py
 +++ b/bauh/view/qt/window.py
 @@ -177,8 +177,8 @@ class ManageWindow(QWidget):
@@ -186,7 +186,7 @@ index 0204a51..8561873 100755
          self.bt_upgrade = QPushButton()
          self.bt_upgrade.setProperty('root', 'true')
          self.bt_upgrade.setObjectName('bt_upgrade')
-@@ -359,43 +359,68 @@ class ManageWindow(QWidget):
+@@ -359,43 +359,66 @@ class ManageWindow(QWidget):
          self.container_bottom.layout().addWidget(new_spacer())
  
          if config['suggestions']['enabled']:
@@ -198,8 +198,6 @@ index 0204a51..8561873 100755
 +            #                     i18n=i18n,
 +            #                     tooltip=self.i18n['manage_window.bt.suggestions.tooltip'])
 +            #bt_sugs.setObjectName('suggestions')
-+            #self.container_bottom.layout().addWidget(bt_sugs)
-+            #self.comp_manager.register_component(BT_SUGGESTIONS, bt_sugs)
 +
 +            bt_sugs = QPushButton()
 +            bt_sugs.setObjectName('bt_suggest')
@@ -210,16 +208,16 @@ index 0204a51..8561873 100755
 +            bt_sugs.setText("Suggestions")
 +            bt_sugs.clicked.connect(self._begin_load_suggestions)
 +            bt_sugs.sizePolicy().setRetainSizeWhenHidden(True)
++            
              self.container_bottom.layout().addWidget(bt_sugs)
              self.comp_manager.register_component(BT_SUGGESTIONS, bt_sugs)
--
+ 
 -        bt_themes = IconButton(self.show_themes,
 -                               i18n=self.i18n,
 -                               tooltip=self.i18n['manage_window.bt_themes.tip'])
 -        bt_themes.setObjectName('themes')
 -        self.container_bottom.layout().addWidget(bt_themes)
 -        self.comp_manager.register_component(BT_THEMES, bt_themes)
-+            
 +        #bt_themes = IconButton(self.show_themes,
 +        #                       i18n=self.i18n,
 +        #                       tooltip=self.i18n['manage_window.bt_themes.tip'])
@@ -227,7 +225,7 @@ index 0204a51..8561873 100755
 +        #self.container_bottom.layout().addWidget(bt_themes)
 +        #self.comp_manager.register_component(BT_THEMES, bt_themes)
  
-         self.custom_actions = manager.get_custom_actions()
+         self.custom_actions = [a for a in manager.gen_custom_actions()]
 -        bt_custom_actions = IconButton(action=self.show_custom_actions,
 -                                       i18n=self.i18n,
 -                                       tooltip=self.i18n['manage_window.bt_custom_actions.tip'])
@@ -254,11 +252,11 @@ index 0204a51..8561873 100755
 +        #                               i18n=self.i18n,
 +        #                               tooltip=self.i18n['manage_window.bt_custom_actions.tip'])
 +        #bt_custom_actions.setObjectName('custom_actions')
-+
++        #
 +        #bt_custom_actions.setVisible(bool(self.custom_actions))
 +        #self.container_bottom.layout().addWidget(bt_custom_actions)
 +        #self.comp_manager.register_component(BT_CUSTOM_ACTIONS, bt_custom_actions)
-+
++        #
 +        #bt_settings = IconButton(action=self.show_settings,
 +        #                         i18n=self.i18n,
 +        #                         tooltip=self.i18n['manage_window.bt_settings.tooltip'])
@@ -284,11 +282,10 @@ index 0204a51..8561873 100755
 +        bt_close.sizePolicy().setRetainSizeWhenHidden(True)
 +        self.container_bottom.layout().addWidget(bt_close)
 +        self.comp_manager.register_component(BT_SUGGESTIONS, bt_close)
-+
  
          self.layout.addWidget(self.container_bottom)
  
-@@ -437,8 +462,8 @@ class ManageWindow(QWidget):
+@@ -437,8 +460,8 @@ class ManageWindow(QWidget):
  
          self.thread_load_installed = NotifyInstalledLoaded()
          self.thread_load_installed.signal_loaded.connect(self._finish_loading_installed)
@@ -299,7 +296,7 @@ index 0204a51..8561873 100755
          self._register_groups()
  
      def _register_groups(self):
-@@ -844,7 +869,8 @@ class ManageWindow(QWidget):
+@@ -844,7 +867,8 @@ class ManageWindow(QWidget):
              if len(self.pkgs) == 0 and len(self.pkgs_available) == 0:
                  self.label_displayed.setText('')
              else:
