@@ -1492,6 +1492,76 @@ msgstr ""
 "多くのゲームの境界線を非表示にします。一部のゲームは境界線を使用していまし"
 "た。"
 
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "CONTROLLER TYPE 1"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Sinclair 1 controller set to AUTO."
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse, libretro/mame078plus, libretro/puae, libretro/puae, ...
+msgctxt "game_options"
+msgid "Retropad"
+msgstr "パッド"
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Cursor Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Kempston Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Sinclair 1 Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Sinclair 2 Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Timex 1 Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Timex 2 Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse, libretro/fuse
+msgctxt "game_options"
+msgid "Fuller Joystick"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "CONTROLLER TYPE 2"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Sinclair 2 controller set to AUTO."
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "KEYBOARD SUPPORT"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Set controller 1 and 2 to None to use it standalone."
+msgstr ""
+
 #. TRANSLATION: libretro/gambatte, libretro/potator
 msgctxt "game_options"
 msgid "LCD GHOSTING EFFECT"
@@ -1502,15 +1572,10 @@ msgctxt "game_options"
 msgid "Required for certain visual effects."
 msgstr "特定の視覚効果に必要です。"
 
-#. TRANSLATION: libretro/gambatte
+#. TRANSLATION: libretro/gambatte, libretro/o2em
 msgctxt "game_options"
-msgid "Simple (Accurate)"
-msgstr "シンプル（正確）"
-
-#. TRANSLATION: libretro/gambatte
-msgctxt "game_options"
-msgid "Simple (Fast)"
-msgstr "シンプル（最速）"
+msgid "Simple"
+msgstr "シンプル"
 
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
@@ -1771,11 +1836,6 @@ msgstr "入力(使用する)インターフェース"
 msgctxt "game_options"
 msgid "Keyboard shortcuts unavailable if passing through the keyboard."
 msgstr "キーボードパススルーは、ＫＢショートカットは使用できません"
-
-#. TRANSLATION: libretro/mame078plus, libretro/puae, libretro/puae, libretro/puae, libretro/puae
-msgctxt "game_options"
-msgid "Retropad"
-msgstr "パッド"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
@@ -2381,11 +2441,6 @@ msgstr "ズームインして黒い境界線を非表示にします。"
 msgctxt "game_options"
 msgid "CRT GHOSTING EFFECT"
 msgstr "CRT ゴーストエフェクト"
-
-#. TRANSLATION: libretro/o2em
-msgctxt "game_options"
-msgid "Simple"
-msgstr "シンプル"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
@@ -3034,6 +3089,16 @@ msgstr "全体のマウス速度に影響します。"
 
 #. TRANSLATION: libretro/puae, libretro/puae
 msgctxt "game_options"
+msgid "JUMP ON B"
+msgstr "Bでジャンプだ"
+
+#. TRANSLATION: libretro/puae, libretro/puae
+msgctxt "game_options"
+msgid "Makes second fire button press up instead."
+msgstr "代わりに2番目のボタンを有効にします"
+
+#. TRANSLATION: libretro/puae, libretro/puae
+msgctxt "game_options"
 msgid "FLOPPY TURBO SPEED"
 msgstr "フロッピー　ターボ速度"
 
@@ -3061,16 +3126,6 @@ msgstr "WHDLOADランチャー"
 msgctxt "game_options"
 msgid "Enable launching pre-installed WHDLoad installs."
 msgstr "プリインストールのWHDLoadインストール起動を有効にします"
-
-#. TRANSLATION: libretro/puae, libretro/puae
-msgctxt "game_options"
-msgid "JUMP ON B"
-msgstr "Bでジャンプだ"
-
-#. TRANSLATION: libretro/puae, libretro/puae
-msgctxt "game_options"
-msgid "Makes second fire button press up instead."
-msgstr "代わりに2番目のボタンを有効にします"
 
 #. TRANSLATION: libretro/puae, libretro/puae
 msgctxt "game_options"
@@ -6072,6 +6127,14 @@ msgctxt "game_options"
 msgid ""
 "Read mouse through Rawinput, allowing 2 mice for 2 player shooting games."
 msgstr "2人用のシューティングゲームで２つ同時にマウスを使用できるようにします"
+
+#~ msgctxt "game_options"
+#~ msgid "Simple (Accurate)"
+#~ msgstr "シンプル（正確）"
+
+#~ msgctxt "game_options"
+#~ msgid "Simple (Fast)"
+#~ msgstr "シンプル（最速）"
 
 #~ msgctxt "game_options"
 #~ msgid ""

@@ -6,6 +6,7 @@
         * add: Support for Piboy DMG "https://www.experimentalpi.com/PiBoy-DMG--Kit_p_18.html"
         * add: Support for Pixelcade Arcade Marquee display "http://pixelcade.org/"
         * add: bezels (decorations) for all (or almost all) emulators -- x86_64 only for the moment
+        * add: brand new bezels for most systems, by Duimon -- additional sets from Duimon in the content downloader
         * add: in game head up display (performances: such as fps, gpu and cpu temperature, gpu information, or game: box, game name) -- x86_64 only for the moment
         * add: language: Hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
@@ -29,6 +30,7 @@
         * add: pyserial for x86 builds to support devices with gpio - i.e. latte panda.
         * add: wifi country code option (2-letter code like wifi.country=US in batocera.conf)
         * add: Mega Bezel shaders by HyperspaceMadness
+        * add: libretro-vice x64sc, xplus4 (for Commodore Plus4), x128 (Commodore 128), xvic (VIC-20), xpet (PET)
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -68,7 +70,7 @@
         * es: option to disable auto-incrementing savestate slots
         * es: advanced system options can now be translated
         * bump: RetroArch 1.9.14 + updated libretro cores
-        * bump: libretro-mame (0.237)
+        * bump: libretro-mame (0.238)
         * bump: kernel to 5.15 (x86_64)
         * bump: gcc to 11
         * bump: llvm to 13
@@ -86,7 +88,9 @@
         * bump: duckstation
         * bump: ppsspp (and libretro-ppsspp) to v1.12.3
         * bump: Sonic Retro (sonic2013 & soniccd)
-        * bump: Daphne to v2.6.20
+        * bump: Daphne to v2.6.21
+        * bump: Vice to v3.6
+        * bump: ScummVM to v2.5.1
         * bump: Sega Model 3 emulator to v874
         * bump: easyrpg to 0.7.0 (standalone + libretro core, support .zip now)
         * bump: MelonDS - requires updated bios & firmware files

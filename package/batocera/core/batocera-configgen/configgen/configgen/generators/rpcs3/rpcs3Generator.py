@@ -10,6 +10,7 @@ from os import environ
 import configparser
 import yaml
 import json
+import re
 from . import rpcs3Controllers
 
 class Rpcs3Generator(Generator):
@@ -106,11 +107,27 @@ class Rpcs3Generator(Generator):
             romBasename = path.basename(rom)
             romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], romName]
-
         if system.isOptSet("gui") and system.getOptBoolean("gui") == False:
             commandArray.append("--no-gui")
+
+        # firmware not installed and available : instead of starting the game, install it
+        if Rpcs3Generator.getFirmwareVersion() is None:
+          if os.path.exists("/userdata/bios/PS3UPDAT.PUP"):
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--installfw", "/userdata/bios/PS3UPDAT.PUP"]
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
     def getInGameRatio(self, config, gameResolution):
         return 16/9
+
+    def getFirmwareVersion():
+        try:
+            with open("/userdata/system/configs/rpcs3/dev_flash/vsh/etc/version.txt", 'r') as stream:
+                lines = stream.readlines()
+            for line in lines:
+                matches = re.match("^release:(.*):", line)
+                if matches:
+                    return matches[1]
+        except:
+            return None
+        return None
