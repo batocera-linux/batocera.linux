@@ -29,6 +29,7 @@
         * add: batocera-bluetooth can now blacklist devices
         * add: pyserial for x86 builds to support devices with gpio - i.e. latte panda.
         * add: wifi country code option (2-letter code like wifi.country=US in batocera.conf)
+        * add: Mega Bezel shaders by HyperspaceMadness
         * add: libretro-vice x64sc, xplus4 (for Commodore Plus4), x128 (Commodore 128), xvic (VIC-20), xpet (PET)
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
@@ -54,6 +55,7 @@
         * change: Devilutionx and Steam games can be closed with hotkey+start
         * change: -fastboot is no longer a default parameter for Singe games
         * change: updated splash screen
+        * change: Retroarch will default to glcore instread of gl if OpenGL 3.1 or higher is available
         * es: English spelling/grammar overhaul, multiple option names updated
         * es: added Xemu widescreen and render scale in advanced options
         * es: added Dolphin Ubershaders and SSAA in advanced options
