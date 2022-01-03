@@ -130,19 +130,19 @@ def tatooImage(input_png, output_png, system):
   if system.isOptSet('bezel.resize_tattoo') and system.getOptBoolean('bezel.resize_tattoo') == False:
       # Maintain the image's original size.
       # Failsafe for if the image is too large.
-      tatwidth,tatheight = tw,th
       if tw > w or th > h:
           # Limit width to that of the bezel and crop the rest.
           pcent = float(w / tw)
-          tatheight = int(float(th) * pcent)
+          th = int(float(th) * pcent)
           # Resize the tattoo to the calculated size.
-          tattoo = tattoo.resize((w,tatheight), Image.ANTIALIAS)
+          tattoo = tattoo.resize((w,th), Image.ANTIALIAS)
   else:
       # Resize to be slightly smaller than the bezel's column.
-      tatwidth = int(225/1920 * w)
-      pcent = float(tatwidth / tw)
-      tatheight = int(float(th) * pcent)
-      tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+      twtemp = int(225/1920 * w)
+      pcent = float(twtemp / tw)
+      th = int(float(th) * pcent)
+      tattoo = tattoo.resize((twtemp,th), Image.ANTIALIAS)
+      tw = twtemp
   # Grab the alpha masks for use later.
   alpha = back.split()[-1]
   alphatat = tattoo.split()[-1]
@@ -153,11 +153,11 @@ def tatooImage(input_png, output_png, system):
   else:
       corner = 'NW'
   if (corner.upper() == 'NE'):
-      tattooCanvas.paste(tattoo, (w-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
+      tattooCanvas.paste(tattoo, (w-tw,20), alphatat) # 20 pixels vertical margins (on 1080p)
   elif (corner.upper() == 'SE'):
-      tattooCanvas.paste(tattoo, (w-tatwidth,h-tatheight-20), alphatat)
+      tattooCanvas.paste(tattoo, (w-tw,h-th-20), alphatat)
   elif (corner.upper() == 'SW'):
-      tattooCanvas.paste(tattoo, (0,h-tatheight-20), alphatat)
+      tattooCanvas.paste(tattoo, (0,h-th-20), alphatat)
   else: # default = NW
       tattooCanvas.paste(tattoo, (0,20), alphatat)
   back = Image.alpha_composite(back, tattooCanvas)
