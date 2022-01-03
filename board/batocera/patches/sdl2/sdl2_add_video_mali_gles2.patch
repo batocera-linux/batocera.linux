@@ -1,0 +1,125 @@
+MRFIXIT: Allow GLES HW Acceleration on Mali Mali blobs
+
+--- a/configure
++++ b/configure
+@@ -886,6 +886,7 @@
+ enable_video_directfb
+ enable_directfb_shared
+ enable_video_kmsdrm
++enable_video_mali
+ enable_kmsdrm_shared
+ enable_video_dummy
+ enable_video_offscreen
+@@ -22228,6 +22229,10 @@
+ 
+         video_kmsdrm=no
+ 
++    if  test x$enable_video_mali = xyes; then
++$as_echo "#define SDL_VIDEO_DRIVER_MALI 1" >>confdefs.h
++            SUMMARY_video="${SUMMARY_video} mali"
++    fi
+ 
+ pkg_failed=no
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libdrm >= 1.4.82" >&5
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -2290,6 +2290,15 @@
+             video_kmsdrm=yes
+         fi
+ 
++        AC_ARG_ENABLE(video-mali,
++        [AS_HELP_STRING([--enable-video-mali], 
++	       [use Mali video driver [default=no]])],
++	      , enable_video_mali=yes)
++        if test x$enable_video = xyes && x$enable_video_mali = xyes; then
++            AC_DEFINE(SDL_VIDEO_DRIVER_MALI, 1, [ ])
++            SUMMARY_video="${SUMMARY_video} mali"
++        fi
++
+         if test x$video_kmsdrm = xyes; then
+             AC_ARG_ENABLE(kmsdrm-shared,
+ [AS_HELP_STRING([--enable-kmsdrm-shared], [dynamically load kmsdrm support [default=yes]])],
+@@ -2343,7 +2353,9 @@ CheckGLX()
+         AC_MSG_RESULT($video_opengl_glx)
+         if test x$video_opengl_glx = xyes; then
+             AC_DEFINE(SDL_VIDEO_OPENGL, 1, [ ])
+-            AC_DEFINE(SDL_VIDEO_OPENGL_GLX, 1, [ ])
++#
++# Disable GLX on MALI platform to make sure SDL loads OpenGLES2 with HW acceleration
++#            AC_DEFINE(SDL_VIDEO_OPENGL_GLX, 1, [ ])
+         fi
+     fi
+ }
+
+--- a/include/SDL_config.h.in
++++ b/include/SDL_config.h.in
+@@ -375,6 +375,7 @@
+ #undef SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_LIBDECOR
+ #undef SDL_VIDEO_DRIVER_X11
+ #undef SDL_VIDEO_DRIVER_RPI
++#undef SDL_VIDEO_DRIVER_MALI
+ #undef SDL_VIDEO_DRIVER_KMSDRM
+ #undef SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC
+ #undef SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC_GBM
+
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -508,6 +511,22 @@ SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_displa
+          * Therefore SDL_EGL_GetVersion() shouldn't work with uninitialized display.
+          * - it actually doesn't work on Android that has 1.5 egl client
+          * - it works on desktop X11 (using SDL_VIDEO_X11_FORCE_EGL=1) */
++#if defined(SDL_VIDEO_DRIVER_MALI)
++	if (SDL_EGL_HasExtension(_this, SDL_EGL_CLIENT_EXTENSION, "EGL_EXT_platform_base")) {
++	    _this->egl_data->eglGetPlatformDisplayEXT = SDL_EGL_GetProcAddress(_this, "eglGetPlatformDisplayEXT");
++	     if (_this->egl_data->eglGetPlatformDisplayEXT) {
++		 _this->egl_data->egl_display = _this->egl_data->eglGetPlatformDisplayEXT(platform, native_display, NULL);
++	     } else {
++		 if (_this->egl_data->eglGetPlatformDisplay) {
++		     _this->egl_data->egl_display = _this->egl_data->eglGetPlatformDisplay(platform, native_display, NULL);
++		  }
++	     }
++	} else {
++	     if (_this->egl_data->eglGetPlatformDisplay) {
++		 _this->egl_data->egl_display = _this->egl_data->eglGetPlatformDisplay(platform, native_display, NULL);
++	     }
++	}
++#else
+         SDL_EGL_GetVersion(_this);
+ 
+         if (_this->egl_data->egl_version_major == 1 && _this->egl_data->egl_version_minor == 5) {
+@@ -524,6 +543,8 @@ SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_displa
+                 }
+             }
+         }
++
++#endif
+     }
+ #endif
+     /* Try the implementation-specific eglGetDisplay even if eglGetPlatformDisplay fails */
+ 
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -41,7 +41,7 @@ KMSDRM_GLES_DefaultProfileConfig(_THIS, int *mask, int *major, int *minor)
+ {
+     /* if SDL was _also_ built with the Raspberry Pi driver (so we're
+        definitely a Pi device), default to GLES2. */
+-#if SDL_VIDEO_DRIVER_RPI
++#if defined(SDL_VIDEO_DRIVER_RPI) || defined(SDL_VIDEO_DRIVER_MALI)
+     *mask = SDL_GL_CONTEXT_PROFILE_ES;
+     *major = 2;
+     *minor = 0;
+
+--- a/src/video/kmsdrm/SDL_kmsdrmsym.h
++++ b/src/video/kmsdrm/SDL_kmsdrmsym.h
+@@ -104,7 +104,10 @@ SDL_KMSDRM_SYM(unsigned int,gbm_bo_get_width,(struct gbm_bo *bo))
+ SDL_KMSDRM_SYM(unsigned int,gbm_bo_get_height,(struct gbm_bo *bo))
+ SDL_KMSDRM_SYM(uint32_t,gbm_bo_get_stride,(struct gbm_bo *bo))
+ SDL_KMSDRM_SYM(uint32_t,gbm_bo_get_format,(struct gbm_bo *bo))
++#ifndef SDL_VIDEO_DRIVER_MALI
++// this is not needed if you have MALI wrapper for mali
+ SDL_KMSDRM_SYM(uint32_t,gbm_bo_get_offset,(struct gbm_bo *bo, int plane))
++#endif
+ SDL_KMSDRM_SYM(union gbm_bo_handle,gbm_bo_get_handle,(struct gbm_bo *bo))
+ SDL_KMSDRM_SYM(int,gbm_bo_write,(struct gbm_bo *bo, const void *buf, size_t count))
+ SDL_KMSDRM_SYM(struct gbm_device *,gbm_bo_get_device,(struct gbm_bo *bo))
