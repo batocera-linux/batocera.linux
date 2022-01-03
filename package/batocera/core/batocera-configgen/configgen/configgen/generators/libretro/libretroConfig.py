@@ -427,7 +427,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
         else:
             retroarchConfig['video_aspect_ratio_auto'] = 'true'
-            retroarchConfig['aspect_ratio_index'] = ''
+            retroarchConfig['aspect_ratio_index'] = '22'
 
     # Rewind option
     retroarchConfig['rewind_enable'] = 'false'
