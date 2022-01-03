@@ -31,6 +31,7 @@
         * add: wifi country code option (2-letter code like wifi.country=US in batocera.conf)
         * add: Mega Bezel shaders by HyperspaceMadness
         * add: libretro-vice x64sc, xplus4 (for Commodore Plus4), x128 (Commodore 128), xvic (VIC-20), xpet (PET)
+        * add: batocera-resolution can now adjust refresh rate on xorg (PC x86_64)
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -43,6 +44,7 @@
         * fix: pcsx2 no longer has a white border for 4:3 games
         * fix: sega model 2 crashing & controller issues - moved to proton.
         * change: RPi3 default audio buffer to 96ms, gb/gbc to 196ms
+        * change: RPi3/4 default PSX emulator back to libretro: PSXReARMed
         * change: MAME no-nag patch (x86_64)
         * change: Option for MAME controllers that use buttons as D-Pad directions (DS3, X360 dongle) (x86_64)
         * change: Option for MAME special game controls (auto-set by ROM by default, manually selectable per game or system) (x86_64)
