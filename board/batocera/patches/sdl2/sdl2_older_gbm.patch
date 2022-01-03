@@ -1,0 +1,70 @@
+diff --git a/configure.ac b/configure.ac
+index fe846e3..ef8738d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2258,7 +2258,7 @@ CheckKMSDRM()
+         video_kmsdrm=no
+ 
+         PKG_CHECK_MODULES([LIBDRM], [libdrm >= 1.4.82], libdrm_avail=yes, libdrm_avail=no)
+-        PKG_CHECK_MODULES([LIBGBM], [gbm >= 11.1.0], libgbm_avail=yes, libgbm_avail=no)
++        PKG_CHECK_MODULES([LIBGBM], [gbm >= 9.0.0], libgbm_avail=yes, libgbm_avail=no)
+ 
+         if test x$libdrm_avail = xyes -a x$libgbm_avail = xyes; then
+             video_kmsdrm=yes
+diff --git a/configure b/configure
+index 0bb606f..840050d 100755
+--- a/configure
++++ b/configure
+@@ -22231,19 +22231,19 @@ $as_echo "yes" >&6; }
+ fi
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gbm >= 11.1.0" >&5
+-$as_echo_n "checking for gbm >= 11.1.0... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gbm >= 9.0.0" >&5
++$as_echo_n "checking for gbm >= 9.0.0... " >&6; }
+ 
+ if test -n "$LIBGBM_CFLAGS"; then
+     pkg_cv_LIBGBM_CFLAGS="$LIBGBM_CFLAGS"
+  elif test -n "$PKG_CONFIG"; then
+     if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gbm >= 11.1.0\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "gbm >= 11.1.0") 2>&5
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gbm >= 9.0.0\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "gbm >= 9.0.0") 2>&5
+   ac_status=$?
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+-  pkg_cv_LIBGBM_CFLAGS=`$PKG_CONFIG --cflags "gbm >= 11.1.0" 2>/dev/null`
++  pkg_cv_LIBGBM_CFLAGS=`$PKG_CONFIG --cflags "gbm >= 9.0.0" 2>/dev/null`
+ 		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+@@ -22255,12 +22255,12 @@ if test -n "$LIBGBM_LIBS"; then
+     pkg_cv_LIBGBM_LIBS="$LIBGBM_LIBS"
+  elif test -n "$PKG_CONFIG"; then
+     if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gbm >= 11.1.0\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "gbm >= 11.1.0") 2>&5
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gbm >= 9.0.0\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "gbm >= 9.0.0") 2>&5
+   ac_status=$?
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+-  pkg_cv_LIBGBM_LIBS=`$PKG_CONFIG --libs "gbm >= 11.1.0" 2>/dev/null`
++  pkg_cv_LIBGBM_LIBS=`$PKG_CONFIG --libs "gbm >= 9.0.0" 2>/dev/null`
+ 		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+@@ -22281,9 +22281,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        LIBGBM_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gbm >= 11.1.0" 2>&1`
++	        LIBGBM_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gbm >= 9.0.0" 2>&1`
+         else
+-	        LIBGBM_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gbm >= 11.1.0" 2>&1`
++	        LIBGBM_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gbm >= 9.0.0" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$LIBGBM_PKG_ERRORS" >&5
