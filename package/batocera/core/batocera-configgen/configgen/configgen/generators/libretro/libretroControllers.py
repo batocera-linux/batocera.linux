@@ -27,7 +27,7 @@ systemToSwapDisable = {'amigacd32', 'amigacdtv', 'naomi', 'atomiswave', 'megadri
 
 # Write a configuration for a specified controller
 # Warning, function used by amiberry because it reads the same retroarch formatting
-def writeControllersConfig(retroconfig, system, controllers):
+def writeControllersConfig(retroconfig, system, controllers, lightgun):
     # Map buttons to the corresponding retroarch specials keys
     retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'a': 'reset', 'start': 'exit_emulator', \
                          'up': 'state_slot_increase', 'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
@@ -55,7 +55,7 @@ def writeControllersConfig(retroconfig, system, controllers):
         del retroarchspecials['b']
 
     for controller in controllers:
-        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials)
+        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials, lightgun)
     writeHotKeyConfig(retroconfig, controllers)
 
 # Remove all controller configurations
@@ -73,8 +73,8 @@ def writeHotKeyConfig(retroconfig, controllers):
 
 
 # Write a configuration for a specified controller
-def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials):
-    generatedConfig = generateControllerConfig(controller, retroarchspecials, system)
+def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials, lightgun):
+    generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
@@ -83,7 +83,7 @@ def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarc
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller, retroarchspecials, system):
+def generateControllerConfig(controller, retroarchspecials, system, lightgun):
 # Map an emulationstation button name to the corresponding retroarch name
     retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
@@ -108,12 +108,13 @@ def generateControllerConfig(controller, retroarchspecials, system):
             input = controller.inputs[btnkey]
             config['input_player%s_%s_%s' % (controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
                 input)
-    for btnkey in retroarchGunbtns: # Gun Mapping
-        btnvalue = retroarchGunbtns[btnkey]
-        if btnkey in controller.inputs:
-            input = controller.inputs[btnkey]
-            config['input_player%s_gun_%s_%s' % (controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
-                input)
+    if lightgun:
+        for btnkey in retroarchGunbtns: # Gun Mapping
+            btnvalue = retroarchGunbtns[btnkey]
+            if btnkey in controller.inputs:
+                input = controller.inputs[btnkey]
+                config['input_player%s_gun_%s_%s' % (controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+                    input)
     for dirkey in retroarchdirs:
         dirvalue = retroarchdirs[dirkey]
         if dirkey in controller.inputs:
