@@ -70,3 +70,6 @@ class DaphneGenerator(Generator):
 
         return Command.Command(array=commandArray)
 
+    def getInGameRatio(self, config, gameResolution):
+        return 4/3
+
