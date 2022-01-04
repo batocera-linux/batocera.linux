@@ -32,8 +32,8 @@ class LibretroGenerator(Generator):
                 libretroRetroarchCustom.generateRetroarchCustom()
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
-            if system.isOptSet['lightgun_map']:
-                lightgun = system.getOptBoolean['lightgun_map']
+            if system.isOptSet('lightgun_map'):
+                lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
                 if system.config['core'] == "mame":

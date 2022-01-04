@@ -121,9 +121,10 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun):
             input = controller.inputs[dirkey]
             config['input_player%s_%s_%s' % (controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
                 input)
-            # Gun Mapping
-            config['input_player%s_gun_dpad_%s_%s' % (controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
-                input)
+            if lightgun:
+                # Gun Mapping
+                config['input_player%s_gun_dpad_%s_%s' % (controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+                    input)
     for jskey in retroarchjoysticks:
         jsvalue = retroarchjoysticks[jskey]
         if jskey in controller.inputs:
