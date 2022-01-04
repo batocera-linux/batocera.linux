@@ -73,7 +73,7 @@ def resizeImage(input_png, output_png, screen_width, screen_height):
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
     else:
-        imgout = imgin.resize((screen_width, screen_height), Image.ANTIALIAS)
+        imgout = imgin.resize((screen_width, screen_height), Image.BICUBIC)
         imgout.save(output_png, mode="RGBA", format="PNG")
 
 def padImage(input_png, output_png, screen_width, screen_height, bezel_width, bezel_height):
@@ -135,13 +135,13 @@ def tatooImage(input_png, output_png, system):
           pcent = float(w / tw)
           th = int(float(th) * pcent)
           # Resize the tattoo to the calculated size.
-          tattoo = tattoo.resize((w,th), Image.ANTIALIAS)
+          tattoo = tattoo.resize((w,th), Image.BICUBIC)
   else:
       # Resize to be slightly smaller than the bezel's column.
       twtemp = int((225/1920) * w)
       pcent = float(twtemp / tw)
       th = int(float(th) * pcent)
-      tattoo = tattoo.resize((twtemp,th), Image.ANTIALIAS)
+      tattoo = tattoo.resize((twtemp,th), Image.BICUBIC)
       tw = twtemp
   # Create a new blank canvas that is the same size as the bezel for later compositing (they are required to be the same size).
   tattooCanvas = Image.new("RGBA", back.size)
