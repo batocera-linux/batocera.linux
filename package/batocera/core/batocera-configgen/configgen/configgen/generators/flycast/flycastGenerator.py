@@ -6,6 +6,7 @@ from generators.Generator import Generator
 import shutil
 import os.path
 import configparser
+import controllersConfig
 from shutil import copyfile
 from os.path import dirname
 from os.path import isdir
@@ -102,4 +103,7 @@ class FlycastGenerator(Generator):
         # VMU will be in $XDG_DATA_HOME because it needs rw access -> /userdata/saves/dreamcast
         # BIOS will be in $XDG_DATA_DIRS
         # controller cfg files are set with an absolute path, so no worry
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.flycastSaves, "XDG_DATA_DIRS":batoceraFiles.flycastBios})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
+            "XDG_DATA_HOME":batoceraFiles.flycastSaves,
+            "XDG_DATA_DIRS":batoceraFiles.flycastBios,
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
