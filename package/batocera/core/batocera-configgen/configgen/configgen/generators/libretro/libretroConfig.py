@@ -92,17 +92,21 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
 
     try:
-        glxCmd = 'glxinfo | grep "OpenGL version"'
-        glOutput = subprocess.check_output(glxCmd, shell=True).decode(sys.stdout.encoding)    
-        glString = glOutput.split()
-        glVersion = float(glString[3])        
+        glxVerCmd = 'glxinfo | grep "OpenGL version"'
+        glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)    
+        glVerString = glVerOutput.split()
+        glVersion = float(glVerString[3])
+        glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
+        glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)        
+        glVendString = glVendOutput.split()
+        glVendor = glVendString[3].casefold()
     except:
         glVersion = 1
-    if glVersion >= 3.1:
+        glVendor = "unknown"
+    if glVersion >= 3.1 and glVendor in ["nvidia", "amd"]:  
         defaultGFXDriver = "glcore"
     else:
         defaultGFXDriver = "gl"
-
     if system.isOptSet("gfxbackend"):
         if system.config["gfxbackend"] == "vulkan":
             retroarchConfig['video_driver'] = '"vulkan"'

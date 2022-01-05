@@ -190,13 +190,18 @@ class LibretroGenerator(Generator):
             configToAppend.append(overlayFile)
 
         try:
-            glxCmd = 'glxinfo | grep "OpenGL version"'
-            glOutput = subprocess.check_output(glxCmd, shell=True).decode(sys.stdout.encoding)        
-            glString = glOutput.split()
-            glVersion = float(glString[3])
+            glxVerCmd = 'glxinfo | grep "OpenGL version"'
+            glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)    
+            glVerString = glVerOutput.split()
+            glVersion = float(glVerString[3])
+            glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
+            glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)        
+            glVendString = glVendOutput.split()
+            glVendor = glVendString[3].casefold()
         except:
             glVersion = 1
-        if glVersion >= 3.1:
+            glVendor = "unknown"
+        if glVersion >= 3.1 and glVendor in ["nvidia", "amd"]:
             defaultGLCore = True
         else:
             defaultGLCore = False
