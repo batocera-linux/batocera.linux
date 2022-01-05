@@ -50,16 +50,17 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("Graphics", "ShowFPSCounter", "0")
 
     # Frameskip
-    iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not pourcent
-    iniConfig.set("Graphics", "AutoFrameSkip", "False")
-    if system.isOptSet("frameskip"):
-        if system.config["frameskip"] == "automatic":
-            iniConfig.set("Graphics", "AutoFrameSkip", "True")
-            iniConfig.set("Graphics", "FrameSkip",     "1")
-        else:
-            iniConfig.set("Graphics", "FrameSkip", str(system.config["frameskip"]))
+    iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not percent
+    if system.isOptSet("frameskip") and not system.config["frameskip"] == "automatic":
+        iniConfig.set("Graphics", "FrameSkip", str(system.config["frameskip"]))
     else:
-        iniConfig.set("Graphics", "FrameSkip",     "0")
+        iniConfig.set("Graphics", "FrameSkip", "2")
+
+    # Auto frameskip
+    if system.isOptSet("autoframeskip") and system.getOptBoolean("autoframeskip") == False:
+        iniConfig.set("Graphics", "AutoFrameSkip", "False")
+    else:
+        iniConfig.set("Graphics", "AutoFrameSkip", "True")
 
     # VSync Interval
     if system.isOptSet('vsyncinterval') and system.getOptBoolean('vsyncinterval') == False:

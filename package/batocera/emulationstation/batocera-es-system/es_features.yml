@@ -3911,12 +3911,17 @@ ppsspp:
             description: Skip frames to improve performance, at the cost of choppy motion.
             choices:
                 "Off":                  0
-                "Autodetect":           automatic
                 "1":                    1
                 "2":                    2
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        autoframeskip:
+            prompt:      AUTO FRAMESKIP
+            description: Automatically reduce frameskip if the system has spare overhead.
+            choices:
+                "On":                   1
+                "Off":                  0
         vsyncinterval:
             prompt:      VSYNC INTERVAL
             description: Enable for more fluidity, disable if screen tearing.
