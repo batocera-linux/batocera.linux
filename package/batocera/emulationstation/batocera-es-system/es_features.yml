@@ -2909,6 +2909,12 @@ libretro:
                     "small":                    small
                     "medium":                   medium
                     "maximum":                  maximum
+            button_options_c64:
+                prompt:      JUMP ON A
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":                      disabled
+                    "On":                       jump
             vice_joyport:
                 prompt:      CONTROLLER PORT
                 description: Most games use port 2, some use port 1.

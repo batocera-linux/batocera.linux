@@ -160,6 +160,11 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vice_external_palette', system.config['external_palette'])
         else:
             coreSettings.save('vice_external_palette', '"colodore"')
+        # Button options
+        if system.isOptSet('button_options_c64'):
+            coreSettings.save('vice_retropad_options', '"' + system.config['button_options_c64'] + '"')
+        else:
+            coreSettings.save('vice_retropad_options', '"jump"')
         # Select Controller Port
         if system.isOptSet('vice_joyport'):
             coreSettings.save('vice_joyport', '"' + system.config['vice_joyport'] + '"')
