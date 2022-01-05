@@ -105,10 +105,12 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('vice_read_vicerc',       '"disabled"')
         # Select Joystick Type
         coreSettings.save('vice_Controller',        '"joystick"')
+        # Disable Turbo Fire
+        coreSettings.save('vice_turbo_fire',        '"disabled"')
         # Controller options for c64 are in libretroControllers.py
-        c64_mapping = { 'a': "RETROK_SPACE",
+        c64_mapping = { 'a': "---",
                 'aspect_ratio_toggle': "---",
-                'b': "JOYSTICK_FIRE",
+                'b': "---",
                 'joyport_switch': "RETROK_F10",
                 'l': "RETROK_ESCAPE",
                 'l2': "RETROK_F11",
@@ -129,8 +131,9 @@ def generateCoreSettings(coreSettings, system, rom):
                 'statusbar': "RETROK_F9",
                 'vkbd': "RETROK_F12",
                 'warp_mode': "RETROK_F11",
-                'x': "RETROK_n",
-                'y': "RETROK_y" }
+                'turbo_fire_toggle': "RETROK_RCTRL",
+                'x': "RETROK_RCTRL",
+                'y': "RETROK_SPACE" }
         for key in c64_mapping:
             coreSettings.save('vice_mapper_' + key, c64_mapping[key])
 
