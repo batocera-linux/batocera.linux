@@ -9,6 +9,12 @@ from . import daphneControllers
 
 class DaphneGenerator(Generator):
 
+    def __init__(self):
+        # Singe games do not work when bezels are on.
+        # Will also want to hide them unless running in 4/3, every other ratio fills the screen
+        # Default to bezels not hidden, hide if Singe game or not 4/3
+        self.hideBezels = False
+
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
         if not os.path.exists(os.path.dirname(batoceraFiles.daphneConfig)):
@@ -27,13 +33,16 @@ class DaphneGenerator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
                             "-manymouse", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+            self.hideBezels = True
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
                             "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
 
         # Aspect ratio
-        if system.config["ratio"] == "4/3":
+        if system.isOptSet["daphne_ratio"] and system.config["daphne_ratio"] == "stretch":
+            self.hideBezels = True
+        else:
             commandArray.append("-force_aspect_ratio")
 
         # Invert required when screen is rotated
@@ -71,5 +80,7 @@ class DaphneGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution):
-        return 4/3
-
+        if self.hideBezels:
+            return 16/9
+        else:
+            return 4/3
