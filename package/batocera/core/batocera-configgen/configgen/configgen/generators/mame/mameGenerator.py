@@ -229,7 +229,7 @@ class MameGenerator(Generator):
         
         # Controls for games with 5-6 buttons or other unusual controls
         if system.isOptSet("altlayout"):
-            buttonLayout = system.config["altlayout"] # Option was manually selected
+            buttonLayout = int(system.config["altlayout"]) # Option was manually selected
         else:
             capcomList = set(open(mameCapcom).read().split())
             mkList = set(open(mameMKombat).read().split())
