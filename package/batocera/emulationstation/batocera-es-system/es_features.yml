@@ -3787,10 +3787,10 @@ pcsx2:
                 "Software":    13
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
-            description: Off is safer, On for specific games.
+            description: Some games have issues when the animation is shown, others require it.
             choices:
-                "Show":         1
-                "Skip":         0
+                "Show (specific games)": 1
+                "Skip (safer)":          0
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -3904,6 +3904,12 @@ ppsspp:
             choices:
                 "OpenGL":               0 (OPENGL)
                 "Vulkan":               3 (VULKAN)
+        rendering_mode:
+            prompt:      RENDERING MODE
+            description: Skip buffer disables auto frameskip and renders at display output resolution.
+            choices:
+                "Buffered rendering":   1
+                "Skip buffer effects":  0
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.

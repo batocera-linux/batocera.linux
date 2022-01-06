@@ -53,26 +53,35 @@ def createPPSSPPConfig(iniConfig, system):
     iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not percent
     if system.isOptSet("frameskip") and not system.config["frameskip"] == "automatic":
         iniConfig.set("Graphics", "FrameSkip", str(system.config["frameskip"]))
+    elif system.isOptSet('rendering_mode') and system.getOptBoolean('rendering_mode') == False:
+        iniConfig.set("Graphics", "FrameSkip", "0")
     else:
         iniConfig.set("Graphics", "FrameSkip", "2")
 
-    # Auto frameskip
-    if system.isOptSet("autoframeskip") and system.getOptBoolean("autoframeskip") == False:
+    # Buffered rendering
+    if system.isOptSet('rendering_mode') and system.getOptBoolean('rendering_mode') == False:
+        iniConfig.set("Graphics", "RenderingMode", "0")
+        # Have to force autoframeskip off here otherwise PPSSPP sets rendering mode back to 1.
         iniConfig.set("Graphics", "AutoFrameSkip", "False")
     else:
-        iniConfig.set("Graphics", "AutoFrameSkip", "True")
+        iniConfig.set("Graphics", "RenderingMode", "1")
+        # Both internal resolution and auto frameskip are dependent on buffered rendering being on, only check these if the user is actually using buffered rendering.
+        # Internal Resolution
+        if system.isOptSet('internal_resolution'):
+            iniConfig.set("Graphics", "InternalResolution", str(system.config["internal_resolution"]))
+        else:
+            iniConfig.set("Graphics", "InternalResolution", "1")
+        # Auto frameskip
+        if system.isOptSet("autoframeskip") and system.getOptBoolean("autoframeskip") == False:
+            iniConfig.set("Graphics", "AutoFrameSkip", "False")
+        else:
+            iniConfig.set("Graphics", "AutoFrameSkip", "True")
 
     # VSync Interval
     if system.isOptSet('vsyncinterval') and system.getOptBoolean('vsyncinterval') == False:
         iniConfig.set("Graphics", "VSyncInterval", "False")
     else:
         iniConfig.set("Graphics", "VSyncInterval", "True")
-
-    # Internal Resolution
-    if system.isOptSet('internal_resolution'):
-        iniConfig.set("Graphics", "InternalResolution", str(system.config["internal_resolution"]))
-    else:
-        iniConfig.set("Graphics", "InternalResolution", "1")
 
     # Texture Scaling Level
     if system.isOptSet('texture_scaling_level'):
