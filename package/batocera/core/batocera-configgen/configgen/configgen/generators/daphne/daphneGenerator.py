@@ -40,7 +40,7 @@ class DaphneGenerator(Generator):
                             "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
 
         # Aspect ratio
-        if system.isOptSet["daphne_ratio"] and system.config["daphne_ratio"] == "stretch":
+        if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
             self.hideBezels = True
         else:
             commandArray.append("-force_aspect_ratio")
