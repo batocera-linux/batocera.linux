@@ -43,6 +43,12 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
 
+    # Buffered rendering
+    if system.isOptSet('rendering_mode') and system.getOptBoolean('rendering_mode') == False:
+        iniConfig.set("Graphics", "RenderingMode", "0")
+    else:
+        iniConfig.set("Graphics", "RenderingMode", "1")
+
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
         iniConfig.set("Graphics", "ShowFPSCounter", "3") # 1 for Speed%, 2 for FPS, 3 for both
