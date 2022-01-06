@@ -123,6 +123,21 @@ class AmiberryGenerator(Generator):
                 commandArray.append("-s")
                 commandArray.append("gfx_linemode=double")
 
+            # video resolution
+            if system.isOptSet("resolution"):
+                if system.config['resolution'] == 'lores':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=lores")
+                elif system.config['resolution'] == 'superhires':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=superhires")
+                elif system.config['resolution'] == 'hires':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=hires")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_resolution=hires")
+
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
