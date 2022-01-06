@@ -3126,14 +3126,19 @@ amiberry:
                 "SINGLE":                      none
                 "DOUBLE":                      double
                 "SCANLINES":                   scanlines
-  cfeatures:
+        resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Manually define which internal resolution to use. AUTO = High
+            choices:
+                "Low":                         lores
+                "High":                        hires
+                "Super high":                  superhires
         flickerfixer:
             prompt:      REMOVE INTERLACE ARTIFACTS
             description: Fix flickering in a static screen like Workbench.
             choices:
                 "ON":                          true
                 "OFF":                         false
-  cfeatures:
         auto_height:
             prompt:      AUTO HEIGHT
             description: Resize automatically screen height.
