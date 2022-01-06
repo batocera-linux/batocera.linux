@@ -91,13 +91,32 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
-            # display line mode
-            commandArray.append("-s")
-            commandArray.append("gfx_linemode=double")
-
             # remove interlace artifacts
-            commandArray.append("-s")
-            commandArray.append("gfx_flickerfixer=true")
+            if system.isOptSet("flickerfixer") and system.config['flickerfixer'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("gfx_flickerfixer=true")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_flickerfixer=false")
+
+            # auto height
+            if system.isOptSet("auto_height") and system.config['auto_height'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("amiberry.gfx_auto_height=true")
+            else:
+                commandArray.append("-s")
+                commandArray.append("amiberry.gfx_auto_height=false")
+
+            # line mode
+            if system.isOptSet("linemode") and system.config['linemode'] == 'none':
+                commandArray.append("-s")
+                commandArray.append("gfx_linemode=none")
+            elif system.config['linemode'] == 'scanlines':
+                commandArray.append("-s")
+                commandArray.append("gfx_linemode=scanlines")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_linemode=double")
 
             # display vertical centering
             commandArray.append("-s")
