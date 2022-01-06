@@ -3118,6 +3118,28 @@ libretro:
 amiberry:
   features: [ratio, padtokeyboard, decoration]
   shared: [hud]
+  cfeatures:
+        linemode:
+            prompt:      LINE MODE
+            description: Adjust screen line draw mode.
+            choices:
+                "SINGLE":                      none
+                "DOUBLE":                      double
+                "SCANLINES":                   scanlines
+  cfeatures:
+        flickerfixer:
+            prompt:      REMOVE INTERLACE ARTIFACTS
+            description: Fix flickering in a static screen like Workbench.
+            choices:
+                "ON":                          enabled
+                "OFF":                         disabled
+  cfeatures:
+        auto_height:
+            prompt:      AUTO HEIGHT
+            description: Resize automatically screen height.
+            choices:
+                "ON":                          enabled
+                "OFF":                         disabled
 
 cannonball:
   features: [ratio, decoration]
