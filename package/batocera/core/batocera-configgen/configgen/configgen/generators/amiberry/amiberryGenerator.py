@@ -7,6 +7,7 @@ from generators.Generator import Generator
 import controllersConfig
 import os.path
 import zipfile
+import configparser
 from settings.unixSettings import UnixSettings
 from generators.libretro import libretroControllers
 from os.path import dirname
@@ -92,13 +93,74 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
-            # display line mode
-            commandArray.append("-s")
-            commandArray.append("gfx_linemode=double")
-
             # remove interlace artifacts
-            commandArray.append("-s")
-            commandArray.append("gfx_flickerfixer=true")
+            if system.isOptSet("amiberry_flickerfixer") and system.config['amiberry_flickerfixer'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("gfx_flickerfixer=true")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_flickerfixer=false")
+
+            # auto height
+            if system.isOptSet("amiberry_auto_height") and system.config['amiberry_auto_height'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("amiberry.gfx_auto_height=true")
+            else:
+                commandArray.append("-s")
+                commandArray.append("amiberry.gfx_auto_height=false")
+
+            # line mode
+            if system.isOptSet("amiberry_linemode"):
+                if system.config['amiberry_linemode'] == 'none':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=none")
+                elif system.config['amiberry_linemode'] == 'scanlines':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=scanlines")
+                elif system.config['amiberry_linemode'] == 'double':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=double")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_linemode=double")
+
+            # video resolution
+            if system.isOptSet("amiberry_resolution"):
+                if system.config['amiberry_resolution'] == 'lores':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=lores")
+                elif system.config['amiberry_resolution'] == 'superhires':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=superhires")
+                elif system.config['amiberry_resolution'] == 'hires':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_resolution=hires")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_resolution=hires")
+
+            # Scaling method
+            if system.isOptSet("amiberry_scalingmethod"):
+                if system.config['amiberry_scalingmethod'] == 'automatic':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=false")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=-1")
+                elif system.config['amiberry_scalingmethod'] == 'smooth':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=true")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=1")
+                elif system.config['amiberry_scalingmethod'] == 'pixelated':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=true")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=0")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_lores_mode=false")
+                commandArray.append("-s")
+                commandArray.append("amiberry.scaling_method=-1")
 
             # display vertical centering
             commandArray.append("-s")

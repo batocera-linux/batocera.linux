@@ -3118,6 +3118,40 @@ libretro:
 amiberry:
   features: [ratio, padtokeyboard, decoration]
   shared: [hud]
+  cfeatures:
+        amiberry_linemode:
+            prompt:      LINE MODE
+            description: Adjust screen line draw mode.
+            choices:
+                "SINGLE":                      none
+                "DOUBLE":                      double
+                "SCANLINES":                   scanlines
+        amiberry_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Manually define which internal resolution to use. AUTO = High.
+            choices:
+                "Low":                         lores
+                "High":                        hires
+                "Super high":                  superhires
+        amiberry_scalingmethod:
+            prompt:      SCALING METHOD
+            description: Change pixel scaling and filtering method.
+            choices:
+                "Automatic":                   automatic
+                "Pixelated (Nearest)":         pixelated
+                "Smooth (Linear)":             smooth
+        amiberry_flickerfixer:
+            prompt:      REMOVE INTERLACE ARTIFACTS
+            description: Fix flickering in a static screen like Workbench.
+            choices:
+                "ON":                          true
+                "OFF":                         false
+        amiberry_auto_height:
+            prompt:      AUTO HEIGHT
+            description: Resize automatically screen height.
+            choices:
+                "ON":                          true
+                "OFF":                         false
 
 cannonball:
   features: [ratio, decoration]
