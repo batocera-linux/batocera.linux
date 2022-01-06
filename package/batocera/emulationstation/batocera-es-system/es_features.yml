@@ -3128,11 +3128,18 @@ amiberry:
                 "SCANLINES":                   scanlines
         resolution:
             prompt:      VIDEO RESOLUTION
-            description: Manually define which internal resolution to use. AUTO = High
+            description: Manually define which internal resolution to use. AUTO = High.
             choices:
                 "Low":                         lores
                 "High":                        hires
                 "Super high":                  superhires
+        scalingmethod:
+            prompt:      SCALING METHOD
+            description: Change pixel scaling and filtering method.
+            choices:
+                "Automatic":                   automatic
+                "Pixelated (Nearest)":         pixelated
+                "Smooth (Linear)":             smooth
         flickerfixer:
             prompt:      REMOVE INTERLACE ARTIFACTS
             description: Fix flickering in a static screen like Workbench.
