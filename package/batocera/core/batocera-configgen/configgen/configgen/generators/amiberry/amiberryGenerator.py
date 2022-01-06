@@ -109,12 +109,16 @@ class AmiberryGenerator(Generator):
                 commandArray.append("amiberry.gfx_auto_height=false")
 
             # line mode
-            if system.isOptSet("linemode") and system.config['linemode'] == 'none':
-                commandArray.append("-s")
-                commandArray.append("gfx_linemode=none")
-            elif system.config['linemode'] == 'scanlines':
-                commandArray.append("-s")
-                commandArray.append("gfx_linemode=scanlines")
+            if system.isOptSet("linemode"):
+                if system.config['linemode'] == 'none':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=none")
+                elif system.config['linemode'] == 'scanlines':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=scanlines")
+                elif system.config['linemode'] == 'double':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_linemode=double")
             else:
                 commandArray.append("-s")
                 commandArray.append("gfx_linemode=double")
