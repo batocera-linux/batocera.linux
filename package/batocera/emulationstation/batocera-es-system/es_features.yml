@@ -3898,7 +3898,7 @@ ppsspp:
                 "Vulkan":               3 (VULKAN)
         rendering_mode:
             prompt:      RENDERING MODE
-            description: Skipping buffered effects is faster, but certain effects may be missing.
+            description: Skip buffer disables auto frameskip and renders at display output resolution.
             choices:
                 "Buffered rendering":   1
                 "Skip buffer effects":  0
