@@ -93,7 +93,7 @@ class AmiberryGenerator(Generator):
             commandArray.append("joyport2=")
 
             # remove interlace artifacts
-            if system.isOptSet("flickerfixer") and system.config['flickerfixer'] == 'true':
+            if system.isOptSet("amiberry_flickerfixer") and system.config['amiberry_flickerfixer'] == 'true':
                 commandArray.append("-s")
                 commandArray.append("gfx_flickerfixer=true")
             else:
@@ -101,7 +101,7 @@ class AmiberryGenerator(Generator):
                 commandArray.append("gfx_flickerfixer=false")
 
             # auto height
-            if system.isOptSet("auto_height") and system.config['auto_height'] == 'true':
+            if system.isOptSet("amiberry_auto_height") and system.config['amiberry_auto_height'] == 'true':
                 commandArray.append("-s")
                 commandArray.append("amiberry.gfx_auto_height=true")
             else:
@@ -109,14 +109,14 @@ class AmiberryGenerator(Generator):
                 commandArray.append("amiberry.gfx_auto_height=false")
 
             # line mode
-            if system.isOptSet("linemode"):
-                if system.config['linemode'] == 'none':
+            if system.isOptSet("amiberry_linemode"):
+                if system.config['amiberry_linemode'] == 'none':
                     commandArray.append("-s")
                     commandArray.append("gfx_linemode=none")
-                elif system.config['linemode'] == 'scanlines':
+                elif system.config['amiberry_linemode'] == 'scanlines':
                     commandArray.append("-s")
                     commandArray.append("gfx_linemode=scanlines")
-                elif system.config['linemode'] == 'double':
+                elif system.config['amiberry_linemode'] == 'double':
                     commandArray.append("-s")
                     commandArray.append("gfx_linemode=double")
             else:
@@ -124,14 +124,14 @@ class AmiberryGenerator(Generator):
                 commandArray.append("gfx_linemode=double")
 
             # video resolution
-            if system.isOptSet("resolution"):
-                if system.config['resolution'] == 'lores':
+            if system.isOptSet("amiberry_resolution"):
+                if system.config['amiberry_resolution'] == 'lores':
                     commandArray.append("-s")
                     commandArray.append("gfx_resolution=lores")
-                elif system.config['resolution'] == 'superhires':
+                elif system.config['amiberry_resolution'] == 'superhires':
                     commandArray.append("-s")
                     commandArray.append("gfx_resolution=superhires")
-                elif system.config['resolution'] == 'hires':
+                elif system.config['amiberry_resolution'] == 'hires':
                     commandArray.append("-s")
                     commandArray.append("gfx_resolution=hires")
             else:
@@ -139,18 +139,18 @@ class AmiberryGenerator(Generator):
                 commandArray.append("gfx_resolution=hires")
 
             # Scaling method
-            if system.isOptSet("scalingmethod"):
-                if system.config['scalingmethod'] == 'automatic':
+            if system.isOptSet("amiberry_scalingmethod"):
+                if system.config['amiberry_scalingmethod'] == 'automatic':
                     commandArray.append("-s")
                     commandArray.append("gfx_lores_mode=false")
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=-1")
-                elif system.config['scalingmethod'] == 'smooth':
+                elif system.config['amiberry_scalingmethod'] == 'smooth':
                     commandArray.append("-s")
                     commandArray.append("gfx_lores_mode=true")
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=1")
-                elif system.config['scalingmethod'] == 'pixelated':
+                elif system.config['amiberry_scalingmethod'] == 'pixelated':
                     commandArray.append("-s")
                     commandArray.append("gfx_lores_mode=true")
                     commandArray.append("-s")
