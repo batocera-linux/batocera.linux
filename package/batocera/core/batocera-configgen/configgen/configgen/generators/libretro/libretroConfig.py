@@ -11,6 +11,7 @@ import subprocess
 from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
+import utils.videoMode as videoMode
 
 eslog = get_logger(__name__)
 sys.path.append(
@@ -91,19 +92,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
 
-    try:
-        glxVerCmd = 'glxinfo | grep "OpenGL version"'
-        glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)    
-        glVerString = glVerOutput.split()
-        glVersion = float(glVerString[3])
-        glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
-        glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)        
-        glVendString = glVendOutput.split()
-        glVendor = glVendString[3].casefold()
-    except:
-        glVersion = 1
-        glVendor = "unknown"
-    if glVersion >= 3.1 and glVendor in ["nvidia", "amd"]:  
+    if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
         defaultGFXDriver = "glcore"
     else:
         defaultGFXDriver = "gl"
