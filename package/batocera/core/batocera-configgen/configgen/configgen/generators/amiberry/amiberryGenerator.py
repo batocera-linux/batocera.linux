@@ -4,6 +4,7 @@ import Command
 import batoceraFiles
 import shutil
 from generators.Generator import Generator
+import controllersConfig
 import os.path
 import zipfile
 from settings.unixSettings import UnixSettings
@@ -108,7 +109,8 @@ class AmiberryGenerator(Generator):
             commandArray.append("sound_max_buff=4096")
 
             os.chdir("/usr/share/amiberry")
-            return Command.Command(array=commandArray)
+            return Command.Command(array=commandArray,env={
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
         # otherwise, unknown format
         return Command.Command(array=[])
 
