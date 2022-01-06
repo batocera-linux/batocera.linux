@@ -138,6 +138,29 @@ class AmiberryGenerator(Generator):
                 commandArray.append("-s")
                 commandArray.append("gfx_resolution=hires")
 
+            # Scaling method
+            if system.isOptSet("scalingmethod"):
+                if system.config['scalingmethod'] == 'automatic':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=false")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=-1")
+                elif system.config['scalingmethod'] == 'smooth':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=true")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=1")
+                elif system.config['scalingmethod'] == 'pixelated':
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=true")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=0")
+            else:
+                commandArray.append("-s")
+                commandArray.append("gfx_lores_mode=false")
+                commandArray.append("-s")
+                commandArray.append("amiberry.scaling_method=-1")
+
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
