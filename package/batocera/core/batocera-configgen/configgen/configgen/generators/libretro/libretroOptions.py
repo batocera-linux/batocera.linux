@@ -97,22 +97,20 @@ def generateCoreSettings(coreSettings, system, rom):
 
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
-        # Enable Datasette Hotkeys
-        coreSettings.save('vice_datasette_hotkeys', '"enabled"')
+        # Enable Automatic Load Warp
+        coreSettings.save('vice_autoloadwarp',      '"enabled"')
+        # Disable Datasette Hotkeys
+        coreSettings.save('vice_datasette_hotkeys', '"disabled"')
         # Not Read 'vicerc'
         coreSettings.save('vice_read_vicerc',       '"disabled"')
         # Select Joystick Type
         coreSettings.save('vice_Controller',        '"joystick"')
+        # Disable Turbo Fire
+        coreSettings.save('vice_turbo_fire',        '"disabled"')
         # Controller options for c64 are in libretroControllers.py
-        c64_mapping = { 'a': "RETROK_SPACE",
+        c64_mapping = { 'a': "---",
                 'aspect_ratio_toggle': "---",
-                'b': "JOYSTICK_FIRE",
-                'datasette_forward': "RETROK_RIGHT",
-                'datasette_reset': "---",
-                'datasette_rewind': "RETROK_LEFT",
-                'datasette_start': "RETROK_UP",
-                'datasette_stop': "RETROK_DOWN",
-                'datasette_toggle_hotkeys': "---",
+                'b': "---",
                 'joyport_switch': "RETROK_F10",
                 'l': "RETROK_ESCAPE",
                 'l2': "RETROK_F11",
@@ -123,7 +121,6 @@ def generateCoreSettings(coreSettings, system, rom):
                 'lu': "---",
                 'r': "RETROK_PAGEUP",
                 'r2': "RETROK_LSHIFT",
-                'r3': "RETROK_F12",
                 'rd': "RETROK_F7",
                 'reset': "---",
                 'rl': "RETROK_F3",
@@ -132,11 +129,11 @@ def generateCoreSettings(coreSettings, system, rom):
                 'select': "TOGGLE_VKBD",
                 'start': "RETROK_RETURN",
                 'statusbar': "RETROK_F9",
-                'vkbd': "---",
+                'vkbd': "RETROK_F12",
                 'warp_mode': "RETROK_F11",
-                'x': "RETROK_n",
-                'y': "RETROK_y",
-                'zoom_mode_toggle': "RETROK_F12"}
+                'turbo_fire_toggle': "RETROK_RCTRL",
+                'x': "RETROK_RCTRL",
+                'y': "RETROK_SPACE" }
         for key in c64_mapping:
             coreSettings.save('vice_mapper_' + key, c64_mapping[key])
 
@@ -152,14 +149,22 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vice_aspect_ratio', '"pal"')
         # Zoom Mode
         if system.isOptSet('zoom_mode_c64'):
-            coreSettings.save('vice_zoom_mode', system.config['zoom_mode_c64'])
+            if system.config['zoom_mode_c64'] == 'automatic':
+                coreSettings.save('vice_zoom_mode', '"auto"')
+            else:
+                coreSettings.save('vice_zoom_mode', system.config['zoom_mode_c64'])
         else:
-            coreSettings.save('vice_zoom_mode', '"medium"')
+            coreSettings.save('vice_zoom_mode', '"auto_disable"')
         # External palette
         if system.isOptSet('external_palette'):
             coreSettings.save('vice_external_palette', system.config['external_palette'])
         else:
             coreSettings.save('vice_external_palette', '"colodore"')
+        # Button options
+        if system.isOptSet('button_options_c64'):
+            coreSettings.save('vice_retropad_options', '"' + system.config['button_options_c64'] + '"')
+        else:
+            coreSettings.save('vice_retropad_options', '"jump"')
         # Select Controller Port
         if system.isOptSet('vice_joyport'):
             coreSettings.save('vice_joyport', '"' + system.config['vice_joyport'] + '"')
