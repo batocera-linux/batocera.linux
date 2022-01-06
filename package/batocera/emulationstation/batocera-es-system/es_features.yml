@@ -3131,15 +3131,15 @@ amiberry:
             prompt:      REMOVE INTERLACE ARTIFACTS
             description: Fix flickering in a static screen like Workbench.
             choices:
-                "ON":                          enabled
-                "OFF":                         disabled
+                "ON":                          true
+                "OFF":                         false
   cfeatures:
         auto_height:
             prompt:      AUTO HEIGHT
             description: Resize automatically screen height.
             choices:
-                "ON":                          enabled
-                "OFF":                         disabled
+                "ON":                          true
+                "OFF":                         false
 
 cannonball:
   features: [ratio, decoration]
