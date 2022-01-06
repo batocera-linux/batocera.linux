@@ -6,6 +6,7 @@ import shutil
 from generators.Generator import Generator
 import os.path
 import zipfile
+import configparser
 from settings.unixSettings import UnixSettings
 from generators.libretro import libretroControllers
 from os.path import dirname
