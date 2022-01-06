@@ -58,11 +58,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
+def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution, gfxBackend):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
+def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -92,19 +92,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
 
-    if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
-        defaultGFXDriver = "glcore"
-    else:
-        defaultGFXDriver = "gl"
-    if system.isOptSet("gfxbackend"):
-        if system.config["gfxbackend"] == "vulkan":
-            retroarchConfig['video_driver'] = '"vulkan"'
-        elif system.config["gfxbackend"] == "glcore":
-            retroarchConfig['video_driver'] = '"glcore"'
-        elif system.config["gfxbackend"] == "opengl":
-            retroarchConfig['video_driver'] = '"gl"'
-    else:
-        retroarchConfig['video_driver'] = '"' + defaultGFXDriver + '"'  # needed for the ozone menu
+    retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
 
     retroarchConfig['audio_latency'] = '64'                     # best balance with audio perf
     if (system.isOptSet("audio_latency")):
