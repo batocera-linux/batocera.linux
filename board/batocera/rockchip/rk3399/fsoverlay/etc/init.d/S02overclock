@@ -14,7 +14,7 @@ then
     MODEL=$(cat /sys/firmware/devicetree/base/model)
 
     case "${MODEL}" in
-	"Pine64 RockPro64 v2.1")
+	"Pine64 RockPro64 v2.1"|"Anbernic RG552")
 	    do_overclock_rockpro64
 	    ;;
     esac

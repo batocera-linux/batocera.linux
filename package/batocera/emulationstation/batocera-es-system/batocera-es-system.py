@@ -36,6 +36,8 @@ class EsSystemConf:
         es_system = ""
 
         archSystemsConfig = yaml.safe_load(open(archSystemsConfigFile, "r"))
+        if archSystemsConfig is None:
+            archSystemsConfig = {}
         systemsConfig     = yaml.safe_load(open(systemsConfigFile, "r"))
 
         es_system += "<?xml version=\"1.0\"?>\n"
