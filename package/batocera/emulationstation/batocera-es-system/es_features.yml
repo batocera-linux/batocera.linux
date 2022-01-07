@@ -3988,8 +3988,78 @@ duckstation:
                 "NeGcon (Rumble)":               NeGcon
 
 flycast:
-  features: [ratio, decoration]
+  features: [decoration]
   shared: [hud]
+  cfeatures:
+    flycast_ratio:
+      prompt:      SCREEN RATIO
+      description: Choose which screen ratio you want to use.
+      choices:
+        "Default":    no
+        "Widescreen": yes
+    flycast_render_resolution:
+      prompt:      RENDER RESOLUTION
+      description: Choose which internal rendering resolution you want to use.
+      choices:
+        "320x240 (Half)":   240
+        "640x480 (Native)": 480
+        "960x720 (x1.5)":   720
+        "1280x960 (x2)":    960
+        "1600x1200 (x2.5)": 1200
+        "1920x1440 (x3)":   1440
+        "2560x1920 (x4)":   1920
+        "2880x2160 (x4.5)": 2160
+    flycast_renderer:
+      prompt:      GRAPHICS API
+      description: Choose your graphics renderer.
+      choices:
+        "OpenGL (Default)": 0
+        "Vulkan":           4
+    flycast_rotate:
+      prompt:      ROTATE SCREEN 90 DEGREES
+      description: Rotate the screen by 90 degrees.
+      choices:
+        "Normal": no
+        "Rotate": yes
+  systems:
+        dreamcast:
+            flycast_language:
+              prompt:      CHOOSE DREAMCAST LANGUAGE
+              description: Choose the emulator language.
+              choices:
+                "Japanese": 0
+                "English":  1
+                "German":   2
+                "French":   3
+                "Spanish":  4
+                "Italian":  5
+                "Default":  6
+            flycast_region:
+              prompt:      CHOOSE DREAMCAST CONSOLE REGION
+              description: Choose your console region.
+              choices:
+                "Japan":   0
+                "USA":     1
+                "Europe":  2
+                "Default": 3
+            flycast_loadstate:
+              prompt:      ENABLE AUTO LOAD STATES
+              description: Enable Dreamcast auto load states.
+              choices:
+                "Off (Default)": no
+                "On"           : yes
+            flycast_savestate:
+              prompt:      ENABLE AUTO SAVE STATES
+              description: Enable Dreamcast auto saves states.
+              choices:
+                "Off (Default)": no
+                "On"           : yes
+            flycast_winCE:
+              prompt:      FORCE WINDOWS CE
+              description: Forces Dreamcast Windows CE mode on.
+              choices:
+                "Off (Default)": no
+                "On"           : yes
 
 fpinball:
   features: [ratio, decoration]
