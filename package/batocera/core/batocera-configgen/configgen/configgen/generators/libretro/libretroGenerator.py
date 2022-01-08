@@ -196,8 +196,7 @@ class LibretroGenerator(Generator):
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
         renderConfig = system.renderconfig
         if 'shader' in renderConfig and renderConfig['shader'] != None:
-            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan')
-                    or (system.config['core'] in libretroConfig.coreForceSlangShaders)
+            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
                 shaderFilename = renderConfig['shader'] + ".slangp"
             else:
                 shaderFilename = renderConfig['shader'] + ".glslp"
@@ -241,8 +240,7 @@ class LibretroGenerator(Generator):
             
         return Command.Command(array=commandArray)
 
-
-    def getGFXBackend(system)
+def getGFXBackend(system):
         core = system.config['core']
         # Start with the selected option
         # Pick glcore or gl based on drivers if not selected

@@ -75,7 +75,12 @@ libretro:
         choices:
             "On":   "true"
             "Off":  "false"
-
+    video_allow_rotate:
+        prompt:      ALLOW ROTATION
+        description: Allow cores to set rotation.
+        choices:
+            "On":   "true"
+            "Off":  "false"
   cores:
     '81':
       features: [netplay, rewind, autosave, padtokeyboard]
