@@ -1,18 +1,20 @@
 {
     "actions_player1": [
         {
-            "trigger": "joystick2",
+            "trigger": ["joystick2"],
             "type": "mouse"
         },
         {
-            "trigger": "l2",
+            "trigger": ["l2"],
             "type": "key",
-            "target": "BTN_LEFT"
+            "target": [ "BTN_LEFT" ],
+            "description": "Mouse Left Button"
         },
         {
-            "trigger": "r2",
+            "trigger": ["r2"],
             "type": "key",
-            "target": "BTN_RIGHT"
+            "target": [ "BTN_RIGHT" ],
+            "description": "Mouse Right Button"
         }
     ]
 }
