@@ -113,16 +113,16 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             retroarchConfig['video_rotation'] = "1"
     else:
         retroarchConfig['video_rotation'] = '0'
-    
+
     if system.isOptSet('video_threaded') and system.getOptBoolean('video_threaded') == True:
         retroarchConfig['video_threaded'] = 'true'
     else:
         retroarchConfig['video_threaded'] = 'false'
 
-    if system.isOptSet('video_allow_rotate') and system.getOptBoolean('video_allow_rotate') == True:
-        retroarchConfig['video_allow_rotate'] = 'true'
+    if system.isOptSet('video_allow_rotate') and system.getOptBoolean('video_allow_rotate') == False:
+        retroarchConfig['video_allow_rotate'] = 'false'
     else:
-        retroarchConfig['video_allow_rotate'] = 'false'    
+        retroarchConfig['video_allow_rotate'] = 'true'    
 
     # required at least for vulkan (to get the correct resolution)
     retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
