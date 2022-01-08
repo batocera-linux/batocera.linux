@@ -63,28 +63,28 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     }
 
     # Buttons that change based on game/setting
-    if altButtons == 1: # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
+    if altButtons == "sfsnes": # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
         mappings.update({"BUTTON1": "y"})
         mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pageup"})
         mappings.update({"BUTTON4": "b"})
         mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "pagedown"})
-    elif altButtons == 2: # MK 6-button Mapping (Based on Mortal Kombat 3 for SNES)
+    elif altButtons == "mksnes": # MK 6-button Mapping (Based on Mortal Kombat 3 for SNES)
         mappings.update({"BUTTON1": "y"})
         mappings.update({"BUTTON2": "pageup"})
         mappings.update({"BUTTON3": "x"})
         mappings.update({"BUTTON4": "b"})
         mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "pagedown"})
-    elif altButtons == 3: # KI 6-button Mapping (Based on Killer Instinct for SNES)
+    elif altButtons == "kisnes": # KI 6-button Mapping (Based on Killer Instinct for SNES)
         mappings.update({"BUTTON1": "pageup"})
         mappings.update({"BUTTON2": "y"})
         mappings.update({"BUTTON3": "x"})
         mappings.update({"BUTTON4": "pagedown"})
         mappings.update({"BUTTON5": "b"})
         mappings.update({"BUTTON6": "a"})
-    elif altButtons == 4: # Capcom 6-button Mapping (the "modern fightstick" layout used in SFIV and above)
+    elif altButtons == "sfstick": # Capcom 6-button Mapping (the "modern fightstick" layout used in SFIV and above)
         mappings.update({"BUTTON1": "y"})
         mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pagedown"})
@@ -92,31 +92,47 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "r2"})
         mappings.update({"BUTTON8": "pageup"})
-    elif altButtons == 5: # Genesis-style controller layout
+    elif altButtons == "mkstick": # A stick layout attempting to replicate the MK3 control panel
+        mappings.update({"BUTTON1": "x"})
+        mappings.update({"BUTTON2": "pagedown"})
+        mappings.update({"BUTTON3": "pageup"})
+        mappings.update({"BUTTON4": "a"})
+        mappings.update({"BUTTON5": "l2"})
+        mappings.update({"BUTTON6": "b"})
+        mappings.update({"BUTTON7": "y"})
+        mappings.update({"BUTTON8": "r2"})
+    elif altButtons == "megadrive": # Genesis-style controller layout
         mappings.update({"BUTTON1": "pageup"})
         mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pagedown"})
         mappings.update({"BUTTON4": "y"})
         mappings.update({"BUTTON5": "b"})
         mappings.update({"BUTTON6": "a"})
-    elif altButtons == 6: # Neo Geo Mini
+    elif altButtons == "mkmegadrive": # Genesis-style controller layout (Mortal Kombat 3 version)
+        mappings.update({"BUTTON1": "pageup"})
+        mappings.update({"BUTTON2": "b"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "y"})
+        mappings.update({"BUTTON5": "a"})
+        mappings.update({"BUTTON6": "x"})
+    elif altButtons == "neomini": # Neo Geo Mini
         mappings.update({"BUTTON1": "y"})
         mappings.update({"BUTTON2": "b"})
         mappings.update({"BUTTON3": "x"})
         mappings.update({"BUTTON4": "a"})
-    elif altButtons == 7: # Neo Geo CD
+    elif altButtons == "neoccd": # Neo Geo CD
         mappings.update({"BUTTON1": "b"})
         mappings.update({"BUTTON2": "a"})
         mappings.update({"BUTTON3": "y"})
         mappings.update({"BUTTON4": "x"})
-    elif altButtons == 8: # Neo Geo Fightstick
+    elif altButtons == "neostick": # Neo Geo Fightstick
         mappings.update({"BUTTON1": "b"})
         mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pagedown"})
         mappings.update({"BUTTON4": "pageup"})
         mappings.update({"BUTTON5": "y"})
         mappings.update({"BUTTON6": "a"})
-    elif altButtons == 9: # Twinstick with Buttons (Battle Zone, virtual On)
+    elif altButtons == "twinstick": # Twinstick with Buttons (Battle Zone, virtual On)
         mappings.update({"BUTTON1": "l2"})
         mappings.update({"BUTTON2": "pageup"})
         mappings.update({"BUTTON3": "r2"})
@@ -127,6 +143,15 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON8": ""})
         mappings.update({"BUTTON9": ""})
         mappings.update({"BUTTON10": ""})
+    elif altButtons == "fightstick": # Generic 8-button Fightstick
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "a"})
+        mappings.update({"BUTTON3": "r2"})
+        mappings.update({"BUTTON4": "l2"})
+        mappings.update({"BUTTON5": "y"})
+        mappings.update({"BUTTON6": "x"})
+        mappings.update({"BUTTON7": "pagedown"})
+        mappings.update({"BUTTON8": "pageup"})
     
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_system     = getSection(config, xml_mameconfig, "system")
@@ -468,7 +493,7 @@ def input2definition(key, input, joycode, reversed, dpadMode, altButtons):
         elif input.value == "8":
             return "JOYCODE_{}_HAT1LEFT".format(joycode)
     elif input.type == "axis":
-        if altButtons == 10: # Q*Bert Joystick
+        if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
                 if dpadMode == 0:
                     return "JOYCODE_{}_YAXIS_UP_SWITCH JOYCODE_{}_XAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1UP JOYCODE_{}_HAT1RIGHT".format(joycode, joycode, joycode, joycode)
