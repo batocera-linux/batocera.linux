@@ -26,6 +26,9 @@ ln -sf "/userdata/cheats" "${TARGET_DIR}/usr/share/batocera/datainit/cheats/cust
 # we don't want the kodi startup script
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
+# we have custom urandom scripts
+rm -f "${TARGET_DIR}/etc/init.d/S20urandom" || exit 1
+
 # acpid requires /var/run, so, requires S03populate
 if test -e "${TARGET_DIR}/etc/init.d/S02acpid"
 then

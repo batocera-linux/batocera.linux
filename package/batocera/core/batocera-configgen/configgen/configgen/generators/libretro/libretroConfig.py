@@ -124,6 +124,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     else:
         retroarchConfig['video_allow_rotate'] = 'true'    
 
+    # variable refresh rate
+    if system.isOptSet("vrr_runloop_enable") and system.getOptBoolean("vrr_runloop_enable") == False:
+        retroarchConfig['vrr_runloop_enable'] = 'false'
+    else:
+        retroarchConfig['vrr_runloop_enable'] = 'true'
+
     # required at least for vulkan (to get the correct resolution)
     retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
     retroarchConfig['video_fullscreen_y'] = gameResolution["height"]
@@ -588,6 +594,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         retroarchConfig['menu_widget_scale_factor_windowed'] = '2.0000'
     else:
         retroarchConfig['video_font_size'] = '32'
+        retroarchConfig['menu_widget_scale_auto'] = 'true'
         # don't force any so that the user can choose
         #retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions

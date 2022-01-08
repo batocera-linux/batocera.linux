@@ -85,9 +85,12 @@ class MameGenerator(Generator):
         commandArray += [ "-fontpath",     "/usr/bin/mame/" ]               # Fonts can be left on ROM filesystem
         commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
         commandArray += [ "-pluginspath", "/usr/bin/mame/plugins/" ]
-        commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path or cheat.7z file ?
         commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
         commandArray += [ "-artpath",       "/userdata/decorations/;/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/mame/artwork/" ] # first for systems ; second for overlays
+
+        # Enable cheats
+        commandArray += [ "-cheat" ]
+        commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path containing the cheat.7z file
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
         commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
@@ -229,7 +232,7 @@ class MameGenerator(Generator):
         
         # Controls for games with 5-6 buttons or other unusual controls
         if system.isOptSet("altlayout"):
-            buttonLayout = system.config["altlayout"] # Option was manually selected
+            buttonLayout = int(system.config["altlayout"]) # Option was manually selected
         else:
             capcomList = set(open(mameCapcom).read().split())
             mkList = set(open(mameMKombat).read().split())
