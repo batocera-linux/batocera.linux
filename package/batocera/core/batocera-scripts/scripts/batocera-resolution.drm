@@ -12,6 +12,8 @@ f_usage() {
     echo "${0} setMode <MODE>" >&2
     echo "${0} currentMode" >&2
     echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
+    echo "${0} setOutput <output>" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
 }
@@ -63,7 +65,7 @@ f_minTomaxResolution() {
 	fi
 	# if current resolution is ok, keep it
 	read CURRENTWIDTH CURRENTHEIGHT <<< $(f_listModes "current" | sed -e s+"^\([^:]*\):[^ ]* \([0-9]*\)x\([0-9]*\) \([0-9]*\)\(.*\)$"+"\2 \3"+)
-	
+
 	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
 	then
 	    exit 0
@@ -125,8 +127,26 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	MODE=$1
-	echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
+	echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ -e s+"^$"+"0"+ > /var/run/drmConn
 	echo 0 > /var/run/drmMode # reset the drmMode
+
+	# force no hdmi if it is unplugged
+	NEWCONN=$(cat /var/run/drmConn)
+	HDMISTATUS=$(cat /sys/class/gpio/gpio54/value)
+	if test "${NEWCONN}" = 1 -a "${HDMISTATUS}" = 1
+	then
+	    echo 0 > /var/run/drmConn
+	fi
+
+	# rotation
+	NEWCONN=$(cat /var/run/drmConn)
+	if test "${NEWCONN}" = 0
+	then
+	    touch /var/run/rk-rotation
+	else
+	    rm -f /var/run/rk-rotation
+	fi
+
 	f_minTomaxResolution
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")
