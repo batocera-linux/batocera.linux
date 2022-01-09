@@ -130,6 +130,8 @@ case "${ACTION}" in
 	echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ -e s+"^$"+"0"+ > /var/run/drmConn
 	echo 0 > /var/run/drmMode # reset the drmMode
 
+	### TEMPORARY HACK, not TO KEEP
+	
 	# force no hdmi if it is unplugged
 	NEWCONN=$(cat /var/run/drmConn)
 	HDMISTATUS=$(cat /sys/class/gpio/gpio54/value)
@@ -146,6 +148,8 @@ case "${ACTION}" in
 	else
 	    rm -f /var/run/rk-rotation
 	fi
+
+	###
 
 	f_minTomaxResolution
 	;;
