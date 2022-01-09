@@ -5,24 +5,16 @@
             "type": "mouse"
         },
         {
-            "trigger": "x",
+            "trigger": ["pageup"],
             "type": "key",
-            "target": "KEY_SPACE"
+            "target": [ "BTN_LEFT" ],
+            "description": "Mouse Left Button"
         },
         {
-            "trigger": "y",
+            "trigger": ["pagedown"],
             "type": "key",
-            "target": "KEY_ENTER"
-        },
-        {
-            "trigger": "l2",
-            "type": "key",
-            "target": "BTN_LEFT"
-        },
-        {
-            "trigger": "r2",
-            "type": "key",
-            "target": "BTN_RIGHT"
+            "target": [ "BTN_RIGHT" ],
+            "description": "Mouse Right Button"
         }
     ]
 }
