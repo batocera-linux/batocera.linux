@@ -53,7 +53,7 @@ index 3706f2e..876179c 100644
 +	  int drmConnRead;
 +	  if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +	    if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	      if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
++	      if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
 +		drmConn = drmConnRead;
 +	      }
 +	    }
@@ -84,7 +84,7 @@ index 3706f2e..876179c 100644
 +	  int drmConnRead;
 +	  if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +	    if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	      if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
++	      if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
 +		drmConn = drmConnRead;
 +	      }
 +	    }
@@ -173,7 +173,7 @@ index b0b380c..ff85e60 100644
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
++	 if(drmConnRead>=0 && drmConn<(uint)drm_resources->count_connectors) {
 +	   drmConn = drmConnRead;
 +	 }
 +       }
@@ -211,7 +211,7 @@ index 0e7a321..ff11fac 100644
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
++	 if(drmConnRead>=0 && drmConn<resources->count_connectors) {
 +	   drmConn = drmConnRead;
 +	 }
 +       }

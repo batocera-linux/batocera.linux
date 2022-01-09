@@ -18,7 +18,7 @@ index 55efc47..b96768f 100644
 +    int drmConnRead;
 +    if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +      if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++	if(drmConnRead>=0 && drmConn<drm->drm_resources->count_connectors) {
 +	  drmConn = drmConnRead;
 +	}
 +      }
