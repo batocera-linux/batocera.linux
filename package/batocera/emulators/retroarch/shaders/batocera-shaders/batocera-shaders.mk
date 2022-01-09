@@ -45,9 +45,9 @@ endif
 BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
 
 ifeq ($(BATOCERA_SHADERS_SYSTEM),x86)
-	BATOCERA_SHADERS_SETS=retro scanlines enhanced curvature zfast flatten-glow mega-bezel mega-bezel-lite mega-bezel-ultralite
+	BATOCERA_SHADERS_SETS=sharp-bilinear-simple retro scanlines enhanced curvature zfast flatten-glow mega-bezel mega-bezel-lite mega-bezel-ultralite
 else
-	BATOCERA_SHADERS_SETS=retro scanlines enhanced curvature zfast flatten-glow
+	BATOCERA_SHADERS_SETS=sharp-bilinear-simple retro scanlines enhanced curvature zfast flatten-glow
 endif
 
 define BATOCERA_SHADERS_INSTALL_TARGET_CMDS

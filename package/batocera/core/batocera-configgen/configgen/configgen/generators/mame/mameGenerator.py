@@ -23,14 +23,6 @@ eslog = get_logger(__name__)
 class MameGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        # Game list files
-        mameCapcom = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameCapcom.txt'
-        mameKInstinct = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameKInstinct.txt'
-        mameMKombat = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameMKombat.txt'
-        mameNeogeo = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameNeogeo.txt'
-        mameTwinstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameTwinstick.txt'
-        mameRotatedstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameRotatedstick.txt'
-
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
@@ -230,32 +222,7 @@ class MameGenerator(Generator):
         else:
             dpadMode = 0
         
-        # Controls for games with 5-6 buttons or other unusual controls
-        if system.isOptSet("altlayout"):
-            buttonLayout = int(system.config["altlayout"]) # Option was manually selected
-        else:
-            capcomList = set(open(mameCapcom).read().split())
-            mkList = set(open(mameMKombat).read().split())
-            kiList = set(open(mameKInstinct).read().split())
-            neogeoList = set(open(mameNeogeo).read().split())
-            twinstickList = set(open(mameTwinstick).read().split())
-            qbertList = set(open(mameRotatedstick).read().split())
-            
-            romName = os.path.splitext(romBasename)[0]
-            if romName in capcomList:
-                buttonLayout = 1 # Capcom 6 button
-            elif romName in mkList:
-                buttonLayout = 2 # Mortal Kombat 5/6 button
-            elif romName in kiList:
-                buttonLayout = 3 # Killer Instinct 6 button
-            elif romName in  neogeoList:
-                buttonLayout = 6 # Neo Geo mini pad layout
-            elif romName in  twinstickList:
-                buttonLayout = 9 # Virtual On layout
-            elif romName in  qbertList:
-                buttonLayout = 10 # Q*Bert stick settings
-            else:
-                buttonLayout = 0 # Default layout if it's not a recognized game
+        buttonLayout = getMameControlScheme(system, romBasename)
                 
         if messMode == -1:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
@@ -431,3 +398,62 @@ class MameGenerator(Generator):
             return int(iwidth), int(iheight), int(irotate)
 
         raise Exception("display element not found")
+
+def getMameControlScheme(system, romBasename):
+    # Game list files
+    mameCapcom = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameCapcom.txt'
+    mameKInstinct = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameKInstinct.txt'
+    mameMKombat = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameMKombat.txt'
+    mameNeogeo = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameNeogeo.txt'
+    mameTwinstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameTwinstick.txt'
+    mameRotatedstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameRotatedstick.txt'
+
+    # Controls for games with 5-6 buttons or other unusual controls
+    if system.isOptSet("altlayout"):
+        controllerType = system.config["altlayout"] # Option was manually selected
+    else:
+        controllerType = "auto"
+
+    if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
+        return controllerType
+    else:
+        capcomList = set(open(mameCapcom).read().split())
+        mkList = set(open(mameMKombat).read().split())
+        kiList = set(open(mameKInstinct).read().split())
+        neogeoList = set(open(mameNeogeo).read().split())
+        twinstickList = set(open(mameTwinstick).read().split())
+        qbertList = set(open(mameRotatedstick).read().split())
+            
+        romName = os.path.splitext(romBasename)[0]
+        if romName in capcomList:
+            if controllerType in [ "auto", "snes" ]:
+                return "sfsnes"
+            elif controllerType == "megadrive":
+                return "megadrive"
+            elif controllerType == "fightstick":
+                return "sfstick"
+        elif romName in mkList:
+            if controllerType in [ "auto", "snes" ]:
+                return "mksnes"
+            elif controllerType == "megadrive":
+                return "mkmegadrive"
+            elif controllerType == "fightstick":
+                return "mkstick"
+        elif romName in kiList:
+            if controllerType in [ "auto", "snes" ]:
+                return "kisnes"
+            elif controllerType == "megadrive":
+                return "megadrive"
+            elif controllerType == "fightstick":
+                return "sfstick"
+        elif romName in  neogeoList:
+            return "neomini"
+        elif romName in  twinstickList:
+            return "twinstick"
+        elif romName in  qbertList:
+            return "qbert"
+        else:
+            if controllerType == "fightstick":
+                return "fightstick"
+
+    return "default"

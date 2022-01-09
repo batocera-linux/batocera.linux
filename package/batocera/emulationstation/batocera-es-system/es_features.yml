@@ -4427,34 +4427,28 @@ mame:
                     prompt:      SPECIAL CONTROL LAYOUTS
                     description: Controls for 5/6 button games and other unique controls
                     choices:
-                        "Default Only":                 0
-                        "Street Fighter (SNES)":        1
-                        "Street Fighter (Modern)":      4
-                        "Mortal Kombat (SNES)":         2
-                        "Killer Instinct (SNES)":       3
-                        "Genesis 6-Button (Retroarch)": 5
-                        "Neo Geo (Neo Geo Mini Pad)":   6
-                        "Neo Geo (Neo Geo CD Pad)":     7
-                        "Neo Geo (Offset Fightstick)":  8
-                        "Twin Stick with Triggers":     9
-                        "Rotated 4-Way Stick (Q*Bert)": 10
+                        "Default Only":                 "default"
+                        "SNES Style":                   "snes"
+                        "Genesis/Megadrive Style":      "megadrive"
+                        "Modern Fightstick Style":      "fightstick"
+                        "Neo Geo Mini Pad":             "neomini"
+                        "Neo Geo CD Pad":               "neocd"
+                        "Twin Stick with Triggers":     "twinstick"
+                        "Rotated 4-Way Stick (Q*Bert)": "qbert"
        neogeo: 
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS
                     description: Controls for 5/6 button games and other unique controls
                     choices:
-                        "Default Only":                 0
-                        "Street Fighter (SNES)":        1
-                        "Street Fighter (Modern)":      4
-                        "Mortal Kombat (SNES)":         2
-                        "Killer Instinct (SNES)":       3
-                        "Genesis 6-Button (Retroarch)": 5
-                        "Neo Geo (Neo Geo Mini Pad)":   6
-                        "Neo Geo (Neo Geo CD Pad)":     7
-                        "Neo Geo (Offset Fightstick)":  8
-                        "Twin Stick with Triggers":     9
-                        "Rotated 4-Way Stick (Q*Bert)": 10  
+                        "Default Only":                 "default"
+                        "SNES Style":                   "snes"
+                        "Genesis/Megadrive Style":      "megadrive"
+                        "Modern Fightstick Style":      "fightstick"
+                        "Neo Geo Mini Pad":             "neomini"
+                        "Neo Geo CD Pad":               "neocd"
+                        "Twin Stick with Triggers":     "twinstick"
+                        "Rotated 4-Way Stick (Q*Bert)": "qbert" 
 
 wine:
   features: [padtokeyboard, decoration]
