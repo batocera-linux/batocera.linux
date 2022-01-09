@@ -316,6 +316,12 @@ static int modeset_prepare(int fd, int do_current)
 			continue;
 		}
 
+		if(conn->connection == DRM_MODE_DISCONNECTED) {
+		  connType = conntype2str(conn->connector_type);
+		  fprintf(stderr, "connector %s disconnected\n", connType);
+		  continue;
+		}
+
 		/* create a device structure */
 		dev = malloc(sizeof(*dev));
 		memset(dev, 0, sizeof(*dev));
