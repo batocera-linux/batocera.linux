@@ -3152,6 +3152,18 @@ amiberry:
             choices:
                 "ON":                          true
                 "OFF":                         false
+        amiberry_jump_as_east_p1:
+            prompt:     JUMP ON EAST BUTTON - P1
+            description: Makes second fire button press up instead (for P1).
+            choices:
+                "ON":                          true
+                "OFF":                         false
+        amiberry_jump_as_east_p2:
+            prompt:      JUMP ON EAST BUTTON - P2
+            description: Makes second fire button press up instead (for P2).
+            choices:
+                "ON":                          true
+                "OFF":                         false
 
 cannonball:
   features: [ratio, decoration]
