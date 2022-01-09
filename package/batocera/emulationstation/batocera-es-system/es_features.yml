@@ -75,6 +75,12 @@ libretro:
         choices:
             "On":   "true"
             "Off":  "false"
+    video_allow_rotate:
+        prompt:      ALLOW ROTATION
+        description: Allow cores to set rotation.
+          choices:
+              "On":   "true"
+              "Off":  "false"
     lightgun_map:
         prompt:      CONTROLLER TO LIGHTGUN
         description: Map controller inputs to lightgun inputs
