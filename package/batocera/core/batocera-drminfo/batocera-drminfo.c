@@ -264,14 +264,39 @@ static int crtc_cmp(drmModeModeInfo *a, drmModeModeInfo *b) {
   return -1;
 }
 
+// batocera : must return a single word for parsing by batocera-resolution.drm
+static char* conntype2str(uint32_t type) {
+  if(type == DRM_MODE_CONNECTOR_VGA)  	     return "VGA";
+  if(type == DRM_MODE_CONNECTOR_DVII) 	     return "DVII";
+  if(type == DRM_MODE_CONNECTOR_DVID) 	     return "DVID";
+  if(type == DRM_MODE_CONNECTOR_DVIA) 	     return "DVIA";
+  if(type == DRM_MODE_CONNECTOR_Composite)   return "COMPOSITE";
+  if(type == DRM_MODE_CONNECTOR_SVIDEO)      return "SVIDEO";
+  if(type == DRM_MODE_CONNECTOR_LVDS)        return "LVDS";
+  if(type == DRM_MODE_CONNECTOR_Component)   return "COMPONENT";
+  if(type == DRM_MODE_CONNECTOR_9PinDIN)     return "9PINDIN";
+  if(type == DRM_MODE_CONNECTOR_DisplayPort) return "DISPLAYPORT";
+  if(type == DRM_MODE_CONNECTOR_HDMIA) 	     return "HDMIA";
+  if(type == DRM_MODE_CONNECTOR_HDMIB) 	     return "HDMIB";
+  if(type == DRM_MODE_CONNECTOR_TV)    	     return "TV";
+  if(type == DRM_MODE_CONNECTOR_eDP)   	     return "EDP";
+  if(type == DRM_MODE_CONNECTOR_VIRTUAL)     return "VIRTUAL";
+  if(type == DRM_MODE_CONNECTOR_DSI) 	     return "DSI";
+  if(type == DRM_MODE_CONNECTOR_DPI) 	     return "DPI";
+  //if(type == DRM_MODE_CONNECTOR_WRITEBACK)   return "WRITEBACK";
+  //if(type == DRM_MODE_CONNECTOR_SPI)         return "SPI";
+  return "OUTPUT"; // unknown
+}
+
 static int modeset_prepare(int fd, int do_current)
 {
 	drmModeRes *res;
 	drmModeConnector *conn;
-	unsigned int i;
+	unsigned int i, j;
 	struct modeset_dev *dev;
 	int ret;
 	drmModeCrtc *live_crtc;
+	char* connType;
 
 	/* retrieve resources */
 	res = drmModeGetResources(fd);
@@ -310,31 +335,35 @@ static int modeset_prepare(int fd, int do_current)
 		}
 
 		// batocera
+		connType = conntype2str(conn->connector_type);
+
 		if(do_current == 1) {
 		  live_crtc = drmModeGetCrtc(fd, dev->crtc);
-		  for (i = 0; (int)i < conn->count_modes; i++) {
-		    if(crtc_cmp(&live_crtc->mode, conn->modes+i) == 0) {
-		      printf("%i:%dx%d %uHz (%s)\n",
-			     i,
-			     conn->modes[i].hdisplay,
-			     conn->modes[i].vdisplay,
-			     conn->modes[i].vrefresh,
-			     conn->modes[i].name);
+		  for (j = 0; (int)j < conn->count_modes; j++) {
+		    if(crtc_cmp(&live_crtc->mode, conn->modes+j) == 0) {
+		      printf("%d.%d:%s %dx%d %uHz (%s)\n",
+			     i, j,
+			     connType,
+			     conn->modes[j].hdisplay,
+			     conn->modes[j].vdisplay,
+			     conn->modes[j].vrefresh,
+			     conn->modes[j].name);
 		    }
 		  }
 		}
 
 		if(do_current == 0) {
-		  for (i = 0; (int)i < conn->count_modes; i++) {
-		    printf("%d:%dx%d %uHz (%s)\n",
-			   i,
-			   conn->modes[i].hdisplay,
-			   conn->modes[i].vdisplay,
-			   conn->modes[i].vrefresh,
-			   conn->modes[i].name);
+		  for (j = 0; (int)j < conn->count_modes; j++) {
+		    printf("%d.%d:%s %dx%d %uHz (%s)\n",
+			   i, j,
+			   connType,
+			   conn->modes[j].hdisplay,
+			   conn->modes[j].vdisplay,
+			   conn->modes[j].vrefresh,
+			   conn->modes[j].name);
 		  }
 		}
-		//
+		
 
 		/* free connector data and link device into global list */
 		drmModeFreeConnector(conn);
