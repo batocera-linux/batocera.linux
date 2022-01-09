@@ -170,6 +170,69 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("sound_max_buff=4096")
 
+
+            ## Custom Input mapping (you customize your mapping by using Amiberry menu and 
+            ## save config with the same rom file name. Can override games settings used on ES)
+            ## L2 and R2 triggers aren't supported yet. They will be implemented in the emulator in the future
+
+            if (system.name != 'amigacd32'):
+                # Normal controls
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_west=Space")                                           # WEST
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_north=Left Alt")                                       # NORTH
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_select=ESC")                                           # SELECT
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_start=Return")                                         # START
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_left_stick=F1")                                        # L3
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_right_stick=CTRL")                                     # R3
+                # Hotkey combos
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_east=Reset emulation")                               # HOTKEY + EAST
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_west=Quick save state")                              # HOTKEY + WEST
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_north=Quick restore state")                          # HOTKEY + NORTH
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_left_shoulder=Swap joystick ports")                  # HOTKEY + L1
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_right_shoulder=Warp mode")                           # HOTKEY + R1
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_left_stick=Pause emulation")                         # HOTKEY + L3
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_hotkey_right_stick=Hard reset emulation")                   # HOTKEY + R3
+            else:
+                # Normal controls
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_west=none")                                            # WEST OR Y
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_north=none")                                           # NORTH OR X
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_select=none")                                          # SELECT
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_start=none")                                           # START
+
+            # JUMP AS EAST BUTTON - Player 1
+            if system.isOptSet("amiberry_jump_as_east_p1") and system.config['amiberry_jump_as_east_p1'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_east=Joy2 Up")
+            else:
+                commandArray.append("-s")
+                commandArray.append("joyport1_amiberry_custom_none_east=none")
+
+
+            # JUMP AS EAST BUTTON - Player 2
+            if system.isOptSet("amiberry_jump_as_east_p2") and system.config['amiberry_jump_as_east_p2'] == 'true':
+                commandArray.append("-s")
+                commandArray.append("joyport0_amiberry_custom_none_east=Joy1 Up")
+            else:
+                commandArray.append("-s")
+                commandArray.append("joyport0_amiberry_custom_none_east=none")
+
+
             os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray,env={
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
