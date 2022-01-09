@@ -207,15 +207,15 @@ class AmiberryGenerator(Generator):
             else:
                 # Normal controls
                 commandArray.append("-s")
-                commandArray.append("joyport1_amiberry_custom_none_west=none")                                            # WEST OR Y
+                commandArray.append("joyport1_amiberry_custom_none_west=none")                                            # WEST
                 commandArray.append("-s")
-                commandArray.append("joyport1_amiberry_custom_none_north=none")                                           # NORTH OR X
+                commandArray.append("joyport1_amiberry_custom_none_north=none")                                           # NORTH
                 commandArray.append("-s")
                 commandArray.append("joyport1_amiberry_custom_none_select=none")                                          # SELECT
                 commandArray.append("-s")
                 commandArray.append("joyport1_amiberry_custom_none_start=none")                                           # START
 
-            # JUMP AS EAST BUTTON - Player 1
+            # JUMP ON EAST BUTTON - Player 1
             if system.isOptSet("amiberry_jump_as_east_p1") and system.config['amiberry_jump_as_east_p1'] == 'true':
                 commandArray.append("-s")
                 commandArray.append("joyport1_amiberry_custom_none_east=Joy2 Up")
@@ -224,7 +224,7 @@ class AmiberryGenerator(Generator):
                 commandArray.append("joyport1_amiberry_custom_none_east=none")
 
 
-            # JUMP AS EAST BUTTON - Player 2
+            # JUMP ON EAST BUTTON - Player 2
             if system.isOptSet("amiberry_jump_as_east_p2") and system.config['amiberry_jump_as_east_p2'] == 'true':
                 commandArray.append("-s")
                 commandArray.append("joyport0_amiberry_custom_none_east=Joy1 Up")
