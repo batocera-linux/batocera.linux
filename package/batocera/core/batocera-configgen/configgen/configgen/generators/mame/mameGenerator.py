@@ -222,7 +222,7 @@ class MameGenerator(Generator):
         else:
             dpadMode = 0
         
-        
+        buttonLayout = getMameControlScheme(system, romBasename)
                 
         if messMode == -1:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
@@ -399,7 +399,7 @@ class MameGenerator(Generator):
 
         raise Exception("display element not found")
 
-def getMameControlScheme(system, romBaseName)
+def getMameControlScheme(system, romBasename):
     # Game list files
     mameCapcom = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameCapcom.txt'
     mameKInstinct = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameKInstinct.txt'
