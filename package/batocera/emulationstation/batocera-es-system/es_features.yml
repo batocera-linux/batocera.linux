@@ -2981,8 +2981,8 @@ libretro:
       features: [rewind, autosave, padtokeyboard]
       cfeatures:
             c64_model:
-                prompt:      COMPUTER MODEL
-                description: Automatic switches region per file path tags.
+                prompt:      MODEL TYPE
+                description: Automatically switches region per file path tags
                 choices:
                     "C64 PAL Automatic":        C64 PAL auto
                     "C64 NTSC Automatic":       C64 NTSC auto
@@ -3002,23 +3002,23 @@ libretro:
                 prompt:      COLOR FILTER
                 description: Can be used to simulate colors of particular displays.
                 choices:
-                    "default":          default
-                    "colodore":         colodore
-                    "pepto-pal":        pepto-pal
-                    "pepto-ntsc":       pepto-ntsc
-                    "pepto-ntsc-sony":  pepto-ntsc-sony
-                    "cjam":             cjam
-                    "c64hq":            c64hq
-                    "c64s":             c64s
-                    "ccs64":            ccs64
-                    "community-colors": community-colors
-                    "deekay":           deekay
-                    "frodo":            frodo
-                    "godot":            godot
-                    "pc64":             pc64
-                    "ptoing":           ptoing
-                    "rgb":              rgb
-                    "vice":             vice
+                    "default":                  default
+                    "colodore":                 colodore
+                    "pepto-pal":                pepto-pal
+                    "pepto-ntsc":               pepto-ntsc
+                    "pepto-ntsc-sony":          pepto-ntsc-sony
+                    "cjam":                     cjam
+                    "c64hq":                    c64hq
+                    "c64s":                     c64s
+                    "ccs64":                    ccs64
+                    "community-colors":         community-colors
+                    "deekay":                   deekay
+                    "frodo":                    frodo
+                    "godot":                    godot
+                    "pc64":                     pc64
+                    "ptoing":                   ptoing
+                    "rgb":                      rgb
+                    "vice":                     vice
             aspect_ratio:
                 prompt:      ASPECT RATIO
                 description: Change the output resolution ratio.
@@ -3029,22 +3029,43 @@ libretro:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
-                    "Off":              none
-                    "small":            small
-                    "medium":           medium
-                    "maximum":          maximum
-            JoyPort:
-                prompt:      JOYSTICK PORT
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            button_options_c64:
+                prompt:      JUMP ON A
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":                      disabled
+                    "On":                       jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
                 description: Most games use port 2, some use port 1.
                 choices:
-                    "Port 1":           Port 1
-                    "Port 2":           Port 2
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
             keyboard_pass_through:
                 prompt:      KEYBOARD PASSTHROUGH
                 description: Keyboard shortcuts unavailable if passing through the keyboard.
                 choices:
-                    "Off":              disabled
-                    "On":               enabled
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_xplus4:
       features: [rewind, autosave, padtokeyboard]
     vice_x128:
