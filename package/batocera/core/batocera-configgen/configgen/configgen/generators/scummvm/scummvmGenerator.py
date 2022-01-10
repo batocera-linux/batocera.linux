@@ -2,9 +2,9 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
+import controllersConfig
 import os.path
 import glob
-
 
 class ScummVMGenerator(Generator):
 
@@ -23,15 +23,26 @@ class ScummVMGenerator(Generator):
         else:
           # rom is a file: split in directory and file name
           romPath = os.path.dirname(rom)
+          # Get rom name without extension
           romName = os.path.splitext(os.path.basename(rom))[0]
-        # Get rom name without extension
+
+        # pad number
+        nplayer = 1
+        for playercontroller, pad in sorted(playersControllers.items()):
+            if nplayer == 1:
+                id=pad.index
+            nplayer += 1
+
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                         "-f",
-                        "--joystick=0", 
+                        "--joystick={}".format(id),
                         "--screenshotspath="+batoceraFiles.screenshotsDir, 
                         "--extrapath=/usr/share/scummvm",
                         "--savepath="+batoceraFiles.scummvmSaves,
                         "--path=""{}""".format(romPath)]
         commandArray.append("""{}""".format(romName))
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray,env={
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+        })
+

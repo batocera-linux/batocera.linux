@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Preserve random seed across reboot. See urandom(4).
+#
+
+case "$1" in
+  start)
+    if seed="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf randomseed)"
+    then
+      printf "Restoring random seed: "
+      echo $seed | xxd -r -ps > /dev/urandom
+      echo "done."
+    fi
+    ;;
+  stop)
+    printf "Saving random seed: "
+    mount -o remount,rw /boot
+    /usr/bin/batocera-settings-set -f /boot/batocera-boot.conf randomseed `xxd -ps -l 512 -c 512 /dev/urandom`
+    mount -o remount,ro /boot
+    echo "done."
+    ;;
+  *)
+    echo "usage: $0 {start|stop}"
+    ;;
+esac
+
+exit 0

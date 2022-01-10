@@ -75,7 +75,18 @@ libretro:
         choices:
             "On":   "true"
             "Off":  "false"
-
+    video_allow_rotate:
+        prompt:      ALLOW ROTATION
+        description: Allow cores to set rotation.
+          choices:
+              "On":   "true"
+              "Off":  "false"
+    lightgun_map:
+        prompt:      CONTROLLER TO LIGHTGUN
+        description: Map controller inputs to lightgun inputs
+        choices:
+            "On":   "true"
+            "Off":  "false"
   cores:
     '81':
       features: [netplay, rewind, autosave, padtokeyboard]
@@ -2285,7 +2296,7 @@ libretro:
                 description: Hides borders on many games. Some games use the borders.
                 choices:
                     "Off":            none
-                    "Autofit screen": automatic
+                    "Auto zoom":      automatic
                     "minimum":        minimum
                     "smaller":        smaller
                     "small":          small
@@ -2929,10 +2940,18 @@ libretro:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
-                    "Off":                      none
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
                     "small":                    small
                     "medium":                   medium
                     "maximum":                  maximum
+            button_options_c64:
+                prompt:      JUMP ON A
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":                      disabled
+                    "On":                       jump
             vice_joyport:
                 prompt:      CONTROLLER PORT
                 description: Most games use port 2, some use port 1.
@@ -3105,6 +3124,40 @@ libretro:
 amiberry:
   features: [ratio, padtokeyboard, decoration]
   shared: [hud]
+  cfeatures:
+        amiberry_linemode:
+            prompt:      LINE MODE
+            description: Adjust screen line draw mode.
+            choices:
+                "SINGLE":                      none
+                "DOUBLE":                      double
+                "SCANLINES":                   scanlines
+        amiberry_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Manually define which internal resolution to use. AUTO = High.
+            choices:
+                "Low":                         lores
+                "High":                        hires
+                "Super high":                  superhires
+        amiberry_scalingmethod:
+            prompt:      SCALING METHOD
+            description: Change pixel scaling and filtering method.
+            choices:
+                "Automatic":                   automatic
+                "Pixelated (Nearest)":         pixelated
+                "Smooth (Linear)":             smooth
+        amiberry_flickerfixer:
+            prompt:      REMOVE INTERLACE ARTIFACTS
+            description: Fix flickering in a static screen like Workbench.
+            choices:
+                "ON":                          true
+                "OFF":                         false
+        amiberry_auto_height:
+            prompt:      AUTO HEIGHT
+            description: Resize automatically screen height.
+            choices:
+                "ON":                          true
+                "OFF":                         false
 
 cannonball:
   features: [ratio, decoration]
@@ -3774,10 +3827,10 @@ pcsx2:
                 "Software":    13
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
-            description: Off is safer, On for specific games.
+            description: Some games have issues when the animation is shown, others require it.
             choices:
-                "Show":         1
-                "Skip":         0
+                "Show (specific games)": 1
+                "Skip (safer)":          0
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -3891,6 +3944,12 @@ ppsspp:
             choices:
                 "OpenGL":               0 (OPENGL)
                 "Vulkan":               3 (VULKAN)
+        rendering_mode:
+            prompt:      RENDERING MODE
+            description: Skip buffer disables auto frameskip and renders at display output resolution.
+            choices:
+                "Buffered rendering":   1
+                "Skip buffer effects":  0
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -3911,12 +3970,17 @@ ppsspp:
             description: Skip frames to improve performance, at the cost of choppy motion.
             choices:
                 "Off":                  0
-                "Autodetect":           automatic
                 "1":                    1
                 "2":                    2
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        autoframeskip:
+            prompt:      AUTO FRAMESKIP
+            description: Automatically reduce frameskip if the system has spare overhead.
+            choices:
+                "On":                   1
+                "Off":                  0
         vsyncinterval:
             prompt:      VSYNC INTERVAL
             description: Enable for more fluidity, disable if screen tearing.
@@ -4363,34 +4427,28 @@ mame:
                     prompt:      SPECIAL CONTROL LAYOUTS
                     description: Controls for 5/6 button games and other unique controls
                     choices:
-                        "Default Only":                 0
-                        "Street Fighter (SNES)":        1
-                        "Street Fighter (Modern)":      4
-                        "Mortal Kombat (SNES)":         2
-                        "Killer Instinct (SNES)":       3
-                        "Genesis 6-Button (Retroarch)": 5
-                        "Neo Geo (Neo Geo Mini Pad)":   6
-                        "Neo Geo (Neo Geo CD Pad)":     7
-                        "Neo Geo (Offset Fightstick)":  8
-                        "Twin Stick with Triggers":     9
-                        "Rotated 4-Way Stick (Q*Bert)": 10
+                        "Default Only":                 "default"
+                        "SNES Style":                   "snes"
+                        "Genesis/Megadrive Style":      "megadrive"
+                        "Modern Fightstick Style":      "fightstick"
+                        "Neo Geo Mini Pad":             "neomini"
+                        "Neo Geo CD Pad":               "neocd"
+                        "Twin Stick with Triggers":     "twinstick"
+                        "Rotated 4-Way Stick (Q*Bert)": "qbert"
        neogeo: 
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS
                     description: Controls for 5/6 button games and other unique controls
                     choices:
-                        "Default Only":                 0
-                        "Street Fighter (SNES)":        1
-                        "Street Fighter (Modern)":      4
-                        "Mortal Kombat (SNES)":         2
-                        "Killer Instinct (SNES)":       3
-                        "Genesis 6-Button (Retroarch)": 5
-                        "Neo Geo (Neo Geo Mini Pad)":   6
-                        "Neo Geo (Neo Geo CD Pad)":     7
-                        "Neo Geo (Offset Fightstick)":  8
-                        "Twin Stick with Triggers":     9
-                        "Rotated 4-Way Stick (Q*Bert)": 10  
+                        "Default Only":                 "default"
+                        "SNES Style":                   "snes"
+                        "Genesis/Megadrive Style":      "megadrive"
+                        "Modern Fightstick Style":      "fightstick"
+                        "Neo Geo Mini Pad":             "neomini"
+                        "Neo Geo CD Pad":               "neocd"
+                        "Twin Stick with Triggers":     "twinstick"
+                        "Rotated 4-Way Stick (Q*Bert)": "qbert" 
 
 wine:
   features: [padtokeyboard, decoration]
