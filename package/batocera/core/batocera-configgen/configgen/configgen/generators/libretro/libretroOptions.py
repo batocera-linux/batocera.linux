@@ -181,7 +181,68 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
-    # TODO: Add core options for C128 / C16Plus4 / Vic20 / Pet
+    # Commodore 128
+    if (system.config['core'] == 'vice_x128'):
+
+        # Activate Jiffydos
+        coreSettings.save('vice_jiffydos',          '"enabled"')
+        # Enable Automatic Load Warp
+        coreSettings.save('vice_autoloadwarp',      '"enabled"')
+        # Disable Datasette Hotkeys
+        coreSettings.save('vice_datasette_hotkeys', '"disabled"')
+        # Not Read 'vicerc'
+        coreSettings.save('vice_read_vicerc',       '"disabled"')
+        # Select Joystick Type
+        coreSettings.save('vice_Controller',        '"joystick"')
+        # Disable Turbo Fire
+        coreSettings.save('vice_turbo_fire',        '"disabled"')
+
+        # Model type
+        if system.isOptSet('c128_model'):
+            coreSettings.save('vice_c128_model', '"' + system.config['c128_model'] + '"')
+        else:
+            coreSettings.save('vice_c128_model', '"C128 PAL"')
+        # Aspect Ratio
+        if system.isOptSet('vice_aspect_ratio'):
+            coreSettings.save('vice_aspect_ratio', system.config['vice_aspect_ratio'])
+        else:
+            coreSettings.save('vice_aspect_ratio', '"pal"')
+        # Zoom Mode
+        if system.isOptSet('vice_zoom_mode'):
+            if system.config['vice_zoom_mode'] == 'automatic':
+                coreSettings.save('vice_zoom_mode', '"auto"')
+            else:
+                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+        else:
+            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+        # External palette
+        if system.isOptSet('vice_external_palette'):
+            coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
+        else:
+            coreSettings.save('vice_external_palette', '"colodore"')
+        # Button options
+        if system.isOptSet('vice_retropad_options'):
+            coreSettings.save('vice_retropad_options', '"' + system.config['vice_retropad_options'] + '"')
+        else:
+            coreSettings.save('vice_retropad_options', '"disabled"')
+        # Select Controller Port
+        if system.isOptSet('vice_joyport'):
+            coreSettings.save('vice_joyport', '"' + system.config['vice_joyport'] + '"')
+        else:
+            coreSettings.save('vice_joyport', '"2"')
+        # Select Controller Type
+        if system.isOptSet('vice_joyport_type'):
+            coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+        else:
+            coreSettings.save('vice_joyport_type', '"1"')
+        # Keyboard Pass-through for Pad2Key
+        if system.isOptSet('vice_keyboard_pass_through'):
+            coreSettings.save('vice_physical_keyboard_pass_through', system.config['vice_keyboard_pass_through'])
+        else:
+            coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
+
+
+    # TODO: Add core options for C16Plus4 / Vic20 / Pet
 
     # Commodore AMIGA
     if (system.config['core'] == 'puae'):
