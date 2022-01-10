@@ -787,6 +787,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Fujistu FM-Towns computers range
 	select BR2_PACKAGE_TSUGARU              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # FMTowns
 
+	# Macintosh
+	select BR2_PACKAGE_LIBRETRO_MINIVMAC	# ALL
+
 	help
 		Old computers
 
