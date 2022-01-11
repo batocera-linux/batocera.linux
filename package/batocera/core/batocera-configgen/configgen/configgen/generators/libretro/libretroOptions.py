@@ -143,26 +143,26 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('vice_c64_model', '"C64 PAL auto"')
         # Aspect Ratio
-        if system.isOptSet('aspect_ratio'):
-            coreSettings.save('vice_aspect_ratio', system.config['aspect_ratio'])
+        if system.isOptSet('vice_aspect_ratio'):
+            coreSettings.save('vice_aspect_ratio', system.config['vice_aspect_ratio'])
         else:
             coreSettings.save('vice_aspect_ratio', '"pal"')
         # Zoom Mode
-        if system.isOptSet('zoom_mode_c64'):
-            if system.config['zoom_mode_c64'] == 'automatic':
+        if system.isOptSet('vice_zoom_mode'):
+            if system.config['vice_zoom_mode'] == 'automatic':
                 coreSettings.save('vice_zoom_mode', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['zoom_mode_c64'])
+                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
         else:
             coreSettings.save('vice_zoom_mode', '"auto_disable"')
         # External palette
-        if system.isOptSet('external_palette'):
-            coreSettings.save('vice_external_palette', system.config['external_palette'])
+        if system.isOptSet('vice_external_palette'):
+            coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
         else:
             coreSettings.save('vice_external_palette', '"colodore"')
         # Button options
-        if system.isOptSet('button_options_c64'):
-            coreSettings.save('vice_retropad_options', '"' + system.config['button_options_c64'] + '"')
+        if system.isOptSet('vice_retropad_options'):
+            coreSettings.save('vice_retropad_options', '"' + system.config['vice_retropad_options'] + '"')
         else:
             coreSettings.save('vice_retropad_options', '"jump"')
         # Select Controller Port
@@ -176,7 +176,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
-        if system.isOptSet('keyboard_pass_through'):
+        if system.isOptSet('vice_keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
