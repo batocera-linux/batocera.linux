@@ -16,7 +16,7 @@ eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
-    def getInGameRatio(self, config, gameResolution):
+    def getInGameRatio(self, config, gameResolution, rom):
         if getGfxRatioFromConfig(config, gameResolution) == "16:9":
             return 16/9
         return 4/3
