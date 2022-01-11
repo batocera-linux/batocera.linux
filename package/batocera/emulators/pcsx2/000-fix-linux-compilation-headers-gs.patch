@@ -60,17 +60,3 @@ index d9decd7..ade53b9 100644
 +#include "../GS.h"
  #include "System.h"
  #include "System/SysThreads.h"
- 
-diff --git a/pcsx2/gui/CpuUsageProvider.cpp b/pcsx2/gui/CpuUsageProvider.cpp
-index d5db2b1..17fd536 100644
---- a/pcsx2/gui/CpuUsageProvider.cpp
-+++ b/pcsx2/gui/CpuUsageProvider.cpp
-@@ -22,7 +22,7 @@
- #include "System/SysThreads.h"
- #endif
- 
--#include "GS.h"
-+#include "../GS.h"
- #include "MTVU.h"
- 
- void AllPCSX2Threads::LoadWithCurrentTimes()
