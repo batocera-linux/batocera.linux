@@ -1,0 +1,9 @@
+config BR2_PACKAGE_ETHTOOL
+        bool "ethtool"
+        default y
+        help
+          ethtool is a small utility for examining and tuning your
+          ethernet-based network interface
+
+          https://www.kernel.org/pub/software/network/ethtool/
+
