@@ -355,6 +355,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
+    ## Wonder Swan & Wonder Swan Color
+    if (system.config['core'] == "mednafen_wswan"):             # Beetle Wonderswan
+        # If set manually, proritize that.
+        # Otherwise, set to portrait for games listed as 90 degrees, manual (default) if not.
+        if not system.isOptSet('wswan_rotate_display'):
+            wswanGameRotation = videoMode.getGameSpecial(system.name, rom)
+            if wswanGameRotation == "90":
+                wswanOrientation = "portrait"
+            else:
+                wswanOrientation = "manual"
+        else:
+            wswanOrientation = system.config['wswan_rotate_display']
+        retroarchConfig['wswan_rotate_display'] = wswanOrientation
 
     ## PORTS
     ## Quake

@@ -78,9 +78,9 @@ libretro:
     video_allow_rotate:
         prompt:      ALLOW ROTATION
         description: Allow cores to set rotation.
-          choices:
-              "On":   "true"
-              "Off":  "false"
+        choices:
+            "On":   "true"
+            "Off":  "false"
     lightgun_map:
         prompt:      CONTROLLER TO LIGHTGUN
         description: Map controller inputs to lightgun inputs
@@ -1450,6 +1450,14 @@ libretro:
                     "On":         enabled
     mednafen_wswan:
       features: [netplay, rewind, autosave, cheevos]
+      cfeatures:
+            wswan_rotate_display:
+                prompt:     DISPLAY ROTATION
+                decription: Initial orientation of the game & controls
+                choices:
+                    "Manual":       manual
+                    "Portrait":     portrait
+                    "Landscape":    landscape
     mgba:
       features: [rewind, autosave, cheevos]
       cfeatures:

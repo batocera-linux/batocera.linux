@@ -6,6 +6,7 @@ import re
 import time
 import subprocess
 import json
+import csv
 from .logger import get_logger
 
 eslog = get_logger(__name__)
@@ -72,3 +73,32 @@ def getGLVendor():
         return glVendor
     except:
         return "unknown"
+
+def getGameSpecial(systemName, rom):
+    # Returns an ID for games that need rotated bezels/shaders or have special art
+    # Vectrex will actually return an abbreviated game name for overlays, all others will return 0, 90, or 270 for rotation angle
+    # 0 will be ignored.
+    # Currently in use with bezels & libretro shaders
+    if not system.name in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex' ]:
+        return "0"
+
+    # Look for external file, exit if not set up
+    specialFile = '/usr/lib/python3.9/site-packages/configgen/datainit/special/' + system.name + '.csv'
+    if not os.path.exists(rotationFile):
+        return "0"
+
+    # Load the file, read it in
+    # Each file will be a csv with each row being the standard (ie No-Intro) filename, angle of rotation (90 or 270)
+    # Case indifferent, rom file name and filenames in list will be folded
+    specialList = csv.reader(specialFile, delimiter=';')
+    for row in specialList:
+        gameNames.append(row[0].casefold())
+        specialID.append(row[1])
+
+    romBasename = path.basename(rom)
+    romName = os.path.splitext(romBasename)[0]
+    romCompare = romName.casefold()
+    if romCompare in gameNames:
+        return str(specialID[gameNames.index(romCompare)])
+    else:
+        return "0"
