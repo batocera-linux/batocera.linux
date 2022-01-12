@@ -24,6 +24,7 @@
         * add: Gong, a libretro engine for Pong
         * add: enabled libretro-ppsspp for RPi3/4
         * add: libretro-ppsspp enabled on oga/ogs/gameforce
+        * add: x86_64: enable Parallel-RDP in Mupen64plus-Next
         * add: .m3u support for pico8 multicarts
         * add: syncthing and rclone
         * add: batocera-bluetooth can now blacklist devices
@@ -32,6 +33,8 @@
         * add: Mega Bezel shaders by HyperspaceMadness
         * add: libretro-vice x64sc, xplus4 (for Commodore Plus4), x128 (Commodore 128), xvic (VIC-20), xpet (PET)
         * add: batocera-resolution can now adjust refresh rate on xorg (PC x86_64)
+        * add: variable refresh rate enabled and on by default for libretro, turn off with global.retroarch.vrr_run_loop = 0
+        * add: miniVMac emulator for 68k-based Macintosh computers
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -91,7 +94,7 @@
         * bump: duckstation
         * bump: ppsspp (and libretro-ppsspp) to v1.12.3
         * bump: Sonic Retro (sonic2013 & soniccd)
-        * bump: Daphne to v2.6.21
+        * bump: Daphne to v2.8.0
         * bump: Vice to v3.6
         * bump: ScummVM to v2.5.1
         * bump: Sega Model 3 emulator to v874

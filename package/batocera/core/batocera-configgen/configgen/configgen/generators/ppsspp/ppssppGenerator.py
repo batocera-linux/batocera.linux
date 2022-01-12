@@ -55,5 +55,5 @@ class PPSSPPGenerator(Generator):
     def getMouseMode(self, config):
         return True
 
-    def getInGameRatio(self, config, gameResolution):
+    def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

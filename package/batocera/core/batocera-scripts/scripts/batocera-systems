@@ -270,6 +270,9 @@ systems = {
     # ---------- Zelda Classic ---------- #
     "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.data"  },
                                                   { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
+    # ---------- Apple Mac ---------- #
+    "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM"  },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM" } ] },
 }
 
 class BiosStatus:

@@ -430,7 +430,7 @@ def getHudBezel(system, rom, gameResolution):
     # if there is no information about top/bottom, assume default is 0
 
     ## the bezel left and right cover must be maximum
-    ingame_ratio = generators[system.config['emulator']].getInGameRatio(system.config, gameResolution)
+    ingame_ratio = generators[system.config['emulator']].getInGameRatio(system.config, gameResolution, rom)
     img_height = bezel_height
     img_width  = img_height * ingame_ratio
 

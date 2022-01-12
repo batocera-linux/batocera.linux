@@ -2641,3 +2641,13 @@ xrick:
     Put the data.zip in this directory.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
+
+macintosh:
+  name:       Macintosh
+  manufacturer: Apple
+  release: 1984
+  hardware: computer
+  extensions: [dsk, zip]
+  emulators:
+    libretro:
+      minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC] }

@@ -52,3 +52,23 @@ def changeMouse(mode):
         cmd = "unclutter-remote -h"
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
+
+def getGLVersion():
+    try:
+        glxVerCmd = 'glxinfo | grep "OpenGL version"'
+        glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)    
+        glVerString = glVerOutput.split()
+        glVersion = float(glVerString[3])
+        return glVersion
+    except:
+        return 0
+
+def getGLVendor():
+    try:
+        glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
+        glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)        
+        glVendString = glVendOutput.split()
+        glVendor = glVendString[3].casefold()
+        return glVendor
+    except:
+        return "unknown"

@@ -32,12 +32,32 @@ EOF
 	echo "Passphrase=${PSK}" >> "/var/lib/connman/batocera_wifi.config"
     fi
 
+    connmanctl disable wifi
+    sleep 1
+
+    N=0
+    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    while test $? -ne 0 -a $N -lt 5 # 5 tries
+    do
+        N=$((N+1))
+        sleep 1
+        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    done
+
     connmanctl enable wifi || return 1
     connmanctl scan   wifi || return 1
     return 0
 }
 
 do_disable() {
+    N=0
+    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    while test $? -ne 0 -a $N -lt 5 # 5 tries
+    do
+        N=$((N+1))
+        sleep 1
+        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    done
     connmanctl disable wifi
 }
 
@@ -46,6 +66,16 @@ do_start() {
     if [ "$settingsWlan" != "1" ];then
         return 0
     fi
+
+    N=0
+    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    while test $? -ne 0 -a $N -lt 5 # 5 tries
+    do
+        N=$((N+1))
+        sleep 1
+        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
+    done
+
     connmanctl enable wifi || return 1
     connmanctl scan   wifi || return 1
 }
