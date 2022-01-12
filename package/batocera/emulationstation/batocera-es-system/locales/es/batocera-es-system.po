@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-16 12:57+0100\n"
-"PO-Revision-Date: 2022-01-04 22:29+0100\n"
+"PO-Revision-Date: 2022-01-12 01:30+0100\n"
 "Last-Translator: pajarorrojo\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -51,17 +51,17 @@ msgstr "Personalizado"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD FRAMES"
-msgstr ""
+msgstr "FRAMES ANTICIPADOS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use run-ahead frames"
-msgstr ""
+msgstr "Usar frames anticipados"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD USE SECOND INSTANCE"
-msgstr ""
+msgstr "ANTICIPAR USO DE SEGUNDA INSTANCIA"
 
 #. TRANSLATION: shared, shared, shared, libretro/atari800, libretro/atari800, ...
 msgctxt "game_options"
@@ -76,17 +76,19 @@ msgstr "Off"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
-msgstr ""
+msgstr "RETRASO AUTOMÁTICO DE FRAMES"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Automatically decrease frame delay temporarily to prevent frame drops."
 msgstr ""
+"Reducir automáticamente el retraso de frames temporalmente para prevenir "
+"caídas de frames."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "INTEGER SCALING (PIXEL PERFECT)"
-msgstr ""
+msgstr "ESCALA INTEGRAL (PÍXELES PERFECTOS)"
 
 #. TRANSLATION: libretro/81, libretro/gambatte
 msgctxt "game_options"
@@ -111,7 +113,7 @@ msgstr "On (Forzado)"
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "WRX HIGH RESOLUTION"
-msgstr ""
+msgstr "WRX ALTA RESOLUCIÓN"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -171,12 +173,12 @@ msgstr "Usar una resolución alternativa. Necesario para algunos juegos."
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "JOYSTICK HACK (FOR ROBOTRON 2084)"
-msgstr ""
+msgstr "JOYSTICK TRUCADO (PARA ROBOTRON 2084)"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Treats the right analog stick as the second joystick."
-msgstr ""
+msgstr "Utilizar el stick derecho del mando como segundo joystick."
 
 #. TRANSLATION: libretro/bluemsx, libretro/fceumm, libretro/genesisplusgx, libretro/mednafen_supergrafx, libretro/nestopia, ...
 msgctxt "game_options"
@@ -485,7 +487,7 @@ msgstr "híbrido/anajo"
 #. TRANSLATION: libretro/desmume, libretro/fbneo, libretro/flycast, libretro/mame078plus, libretro/mgba, ...
 msgctxt "game_options"
 msgid "FRAMESKIP"
-msgstr ""
+msgstr "SALTO DE FRAMES"
 
 #. TRANSLATION: libretro/desmume, libretro/dosbox, libretro/fbneo, libretro/flycast, libretro/mame078plus, ...
 msgctxt "game_options"
@@ -559,7 +561,7 @@ msgstr "Aplicar un efecto de posprocesamiento."
 #. TRANSLATION: libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, libretro/duckstation, libretro/fceumm, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1 TYPE"
-msgstr ""
+msgstr "MANDO 1 (TIPO)"
 
 #. TRANSLATION: libretro/dosbox, libretro/dosbox
 msgctxt "game_options"
@@ -579,7 +581,7 @@ msgstr "Joystick (Analógico, 2 botones)"
 #. TRANSLATION: libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, libretro/duckstation, libretro/fceumm, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2 TYPE"
-msgstr ""
+msgstr "MANDO 1 (TIPO)"
 
 #. TRANSLATION: libretro/dosbox
 msgctxt "game_options"
@@ -1481,12 +1483,12 @@ msgstr "Pistola Lightgun"
 #. TRANSLATION: libretro/flycast, libretro/snes9x
 msgctxt "game_options"
 msgid "CONTROLLER 3 TYPE"
-msgstr "MANDO 3 TIPO"
+msgstr "MANDO 3 (TIPO)"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "CONTROLLER 4 TYPE"
-msgstr "MANDO 4 TIPO"
+msgstr "MANDO 4 (TIPO)"
 
 #. TRANSLATION: libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -1496,7 +1498,7 @@ msgstr "ORIENTACIÓN DE LA PANTALLA"
 #. TRANSLATION: libretro/flycast, libretro/flycast
 msgctxt "game_options"
 msgid "Useful for certain arcade games."
-msgstr ""
+msgstr "Útil para ciertos juegos de arcade."
 
 #. TRANSLATION: libretro/fuse, libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
@@ -4166,13 +4168,14 @@ msgstr ""
 #. TRANSLATION: libretro, cemu, dolphin, duckstation, pcsx2, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
-msgstr ""
+msgstr "API GRÁFICA"
 
 #. TRANSLATION: libretro, cemu, dolphin, duckstation, pcsx2, ...
 msgctxt "game_options"
 msgid ""
 "Choose which graphics API library to use. Vulkan is better, when supported."
 msgstr ""
+"Elije qué motor gráfico usar. Vulkan funciona mejor cuando es compatible."
 
 #. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
@@ -4197,17 +4200,17 @@ msgstr "LATENCIA DE AUDIO"
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "In milliseconds. Can reduce crackling/cutting out."
-msgstr ""
+msgstr "En milisegundos. Ayuda a reducir chasquidos y cortes."
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "THREADED VIDEO"
-msgstr ""
+msgstr "VIDEO MEJORADO"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "Improves performance at the cost of latency and more video stuttering."
-msgstr ""
+msgstr "Mejora el rendimiento a costa de latencia y más tirones."
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -5002,7 +5005,7 @@ msgstr "4M"
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "FRAMESKIP (GL64MK2 ONLY)"
-msgstr ""
+msgstr "SALTO DE FRAMES (SOLO GL64MK2 )"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
