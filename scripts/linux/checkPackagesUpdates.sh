@@ -122,7 +122,7 @@ PACKAGES_EMULATORS="amiberry
 					melonds
 					moonlight-embedded
 					pcsx2
-					pcsx2_avx2
+					pcsx2-avx2
 					ppsspp
 					python-pygame2
 					rpcs3

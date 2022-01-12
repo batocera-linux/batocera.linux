@@ -31,13 +31,12 @@ class Pcsx2Generator(Generator):
         configureUI(pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
         configureVM(pcsx2ConfigDir, system)
         configureGFX(pcsx2ConfigDir, system)
-        configureGFXdx(pcsx2ConfigDir, system)
         configureAudio(pcsx2ConfigDir)
 
         if isAVX2:
-            commandArray = ["/usr/PCSX_AVX2/bin/PCSX2", rom]
+            commandArray = ["/usr/pcsx2-avx2/bin/pcsx2", rom]
         else:
-            commandArray = ["/usr/PCSX/bin/PCSX2", rom]
+            commandArray = ["/usr/pcsx2/bin/pcsx2", rom]
 
         # Fullscreen
         commandArray.append("--fullscreen")
@@ -59,13 +58,12 @@ class Pcsx2Generator(Generator):
         env = {}
 
         if isAVX2:
-            env["LD_LIBRARY_PATH"] = "/usr/PCSX_AVX2/lib"
+            env["LD_LIBRARY_PATH"] = "/usr/pcsx2-avx2/lib"
         else:
-            env["LD_LIBRARY_PATH"] = "/usr/PCSX/lib"
+            env["LD_LIBRARY_PATH"] = "/usr/pcsx2/lib"
 
         env["XDG_CONFIG_HOME"] = batoceraFiles.CONF
         env["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
-
         env["SDL_PADSORDERCONFIG"] = controllersConfig.generateSdlGameControllerPadsOrderConfig(playersControllers)
 
         if arch == "x86":
@@ -92,10 +90,10 @@ def configureReg(config_directory):
         os.makedirs(config_directory)
     f = open(configFileName, "w")
     f.write("DocumentsFolderMode=User\n")
-    f.write("CustomDocumentsFolder=/usr/PCSX/bin\n")
+    f.write("CustomDocumentsFolder=/usr/pcsx2/bin\n")
     f.write("UseDefaultSettingsFolder=enabled\n")
     f.write("SettingsFolder=/userdata/system/configs/PCSX2/inis\n")
-    f.write("Install_Dir=/usr/PCSX/bin\n")
+    f.write("Install_Dir=/usr/pcsx2/bin\n")
     f.write("RunWizard=0\n")
     f.close()
 
@@ -236,35 +234,20 @@ def configureGFX(config_directory, system):
     # Create the config file if it doesn't exist
     if not os.path.exists(configFileName):
         f = open(configFileName, "w")
+        f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
         f.close()
     
     # Update settings
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
+    pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
+    pcsx2GFXSettings.save("osd_indicator_enabled", 1)
+    pcsx2GFXSettings.save("UserHacks", 1)
 
     # Internal resolution
     if system.isOptSet('internal_resolution'):
         pcsx2GFXSettings.save("upscale_multiplier", system.config["internal_resolution"])
     else:
         pcsx2GFXSettings.save("upscale_multiplier", "1")
-
-    pcsx2GFXSettings.write()
-
-def configureGFXdx(config_directory, system):
-    configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
-    if not os.path.exists(config_directory):
-        os.makedirs(config_directory + "/inis")
-
-    # Create the config file if it doesn't exist
-    if not os.path.exists(configFileName):
-        f = open(configFileName, "w")
-        f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
-        f.close()
-
-    # Update settings
-    pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
-    pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
-    pcsx2GFXSettings.save("osd_indicator_enabled", 1)
-    pcsx2GFXSettings.save("UserHacks", 1)
 
     # ShowFPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
@@ -277,12 +260,6 @@ def configureGFXdx(config_directory, system):
         pcsx2GFXSettings.save("Renderer", system.config["gfxbackend"])
     else:
         pcsx2GFXSettings.save("Renderer", "12")
-
-    # Internal resolution
-    if system.isOptSet('internal_resolution'):
-        pcsx2GFXSettings.save("upscale_multiplier", system.config["internal_resolution"])
-    else:
-        pcsx2GFXSettings.save("upscale_multiplier", "1")
 
     # Skipdraw Hack
     if system.isOptSet('skipdraw'):
