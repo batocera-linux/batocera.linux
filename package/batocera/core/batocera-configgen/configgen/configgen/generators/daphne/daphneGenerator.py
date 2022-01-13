@@ -33,8 +33,7 @@ class DaphneGenerator(Generator):
                             "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
 
         # Aspect ratio
-        if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
-        else:
+        if not (system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch"):
             commandArray.append("-force_aspect_ratio")
 
         # Invert required when screen is rotated
@@ -74,7 +73,10 @@ class DaphneGenerator(Generator):
     def getInGameRatio(self, config, gameResolution, rom):
         romName = os.path.splitext(os.path.basename(rom))[0]        
         singeFile = rom + "/" + romName + ".singe"
-        if (system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch") or os.path.isfile(singeFile):
+        if "daphne_ratio" in config:
+            if config['daphne_ratio'] == "stretch":
+                return 16/9
+        if os.path.isfile(singeFile):
             return 16/9
         else:
             return 4/3
