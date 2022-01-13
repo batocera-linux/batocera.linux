@@ -36,9 +36,9 @@ def generateControllerConfig(system, controllers, rom):
                     else:
                         eslog.warning("no rpcs3 mapping found for {}".format(input.name))
                     
-            rpcs3_otherKeys(f, controller)
-        nplayer += 1
-        f.close()
+    rpcs3_otherKeys(f, controller)
+    nplayer += 1
+    f.close()
 
 def rpcs3_reverseMapping(name):
     if name == "joystick1up":
