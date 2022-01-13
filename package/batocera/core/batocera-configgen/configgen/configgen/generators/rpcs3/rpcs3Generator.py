@@ -79,7 +79,7 @@ class Rpcs3Generator(Generator):
 
         # Set the Default Core Values we need
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
-        rpcs3ymlconfig["Core"]['SPU Cache'] = False
+        rpcs3ymlconfig["Core"]['SPU Cache'] = True
         rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     
  
         rpcs3ymlconfig["Video"]['Frame limit'] = 60
