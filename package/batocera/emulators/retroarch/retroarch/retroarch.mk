@@ -105,7 +105,7 @@ else
 	RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
 	RETROARCH_DEPENDENCIES += rockchip-rga
 endif
