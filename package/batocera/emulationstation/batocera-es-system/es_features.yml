@@ -37,6 +37,13 @@ shared:
       choices:
         "On": 1
         "Off": 0
+    vrr_runloop_enable:
+      submenu:     LATENCY REDUCTION
+      prompt:      VARIABLE REFRESH RATE
+      description: Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR.
+      choices:
+        "On": 1
+        "Off": 0
     integerscale:
       prompt:      INTEGER SCALING (PIXEL PERFECT)
       choices:
