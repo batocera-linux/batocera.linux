@@ -54,7 +54,7 @@ global:
   shared: [hud, runahead, secondinstance, video_frame_delay_auto, integerscale]
 
 libretro:
-  features: [ratio, smooth, shaders, decoration, runahead, secondinstance, video_frame_delay_auto, game_translation]
+  features: [ratio, smooth, shaders, decoration, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, game_translation]
   shared: [hud, integerscale]
   cfeatures:
     gfxbackend:
