@@ -209,21 +209,26 @@ class MameGenerator(Generator):
                 if system.name == "fm7" and system.isOptSet("altromtype") and system.config["altromtype"] == "cass":
                     commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\\n' ]
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
-                if system.isOptSet("altromtype"):
+                # Mac will auto change floppy 1 to 2 if a boot disk is enabled
+                if system.isOptSet("altromtype") and system.name != "macintosh":
                     commandArray += [ "-" + system.config["altromtype"] ]
+                elif system.name == "macintosh" and system.isOptSet("bootdisk"):
+                    if system.config["altromtype"] == "flop1" or not system.isOptSet("altromtype"):
+                        commandArray += [ "-flop2" ]
+                    else:
+                        commandArray += [ "-" + messRomType[messMode] ]
                 else:
                     commandArray += [ "-" + messRomType[messMode] ]
+                
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
+
                 # Boot disk for Macintosh
-                # Will use Floppy 2 or Hard Drive, depending on the disk.
+                # Will use Floppy 1 or Hard Drive, depending on the disk.
                 if system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.config["bootdisk"] in [ "sys608", "sys701", "sys75" ]
-                        bootType = "-flop2"
-                        if os.path.exists("/userdata/bios/" + bootdisk + ".zip"):
-                            bootDisk = "/userdata/bios/" + bootdisk + ".zip"
-                        else:
-                            bootDisk = "/userdata/bios/" + bootdisk + ".7z"
+                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                        bootType = "-flop1"                        
+                        bootDisk = "/userdata/bios/" + bootdisk + ".img"
                     else:
                         bootType = "-hard"
                         bootDisk =     bootDisk = "/userdata/bios/" + bootdisk + ".chd"

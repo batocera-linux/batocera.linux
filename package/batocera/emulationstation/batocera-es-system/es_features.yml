@@ -4617,6 +4617,48 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
+       macintosh:
+            cfeatures:
+                altmodel:
+                    prompt:      MAC MODEL
+                    choices:
+                        "Mac 128k (2 LD Floppies)":              mac128k
+                        "Mac 512k (2 LD Floppies)":              mac512k
+                        "Mac Plus (2 LD Floppies/HDD)":          macplus
+                        "Mac SE (2 LD Floppies/HDD)":            macse
+                        "Mac Classic (2 HD Floppies/HDD)":       macclasc
+                        "Mac II (Color, 2 HD Floppies/CD/HDD)":  mac2fdhd
+                        "Mac IIx (Color, 2 HD Floppies/CD/HDD)": maciix
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Disk":       flop1
+                        "CD":         cdrm
+                        "Hard Drive": hard
+                bootdisk:
+                    prompt:      BOOT DISK
+                    description: Select a boot disk or hard drive if needed
+                    choices:
+                        "System 3.0 (LD Floppy)":    macos3
+                        "System 6.0.8 (LD Floppy)":  macos608
+                        "System 7.0.1 (HD Floppy)":  macos701
+                        "System 7.5 (HD Floppy)":    macos75
+                        "System 6.0.8 (Hard Drive)": mac608
+                        "System 7.0.1 (Hard Drive)": mac701
+                        "System 7.5.5 (Hard Drive)": mac755
+                enableui:
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
        bbc:
             cfeatures:
                 altromtype:

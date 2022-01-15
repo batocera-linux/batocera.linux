@@ -584,7 +584,7 @@ class EsSystemConf:
                         for ext in emulatorData[core]["incompatible_extensions"]:
                             if incompatible_extensionsTxt != "":
                                 incompatible_extensionsTxt += " "
-                            incompatible_extensionsTxt += "." + ext.lower()
+                            incompatible_extensionsTxt += "." + str(ext).lower()
                         incompatible_extensionsTxt = " incompatible_extensions=\"" + incompatible_extensionsTxt + "\""
 
                     if emulator == defaultEmulator and core == defaultCore:
