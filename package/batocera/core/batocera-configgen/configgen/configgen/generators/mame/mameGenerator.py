@@ -28,22 +28,10 @@ class MameGenerator(Generator):
         romDirname  = path.dirname(rom)
 
         # Generate userdata folders if needed
-        if not os.path.exists("/userdata/system/configs/mame/"):
-            os.makedirs("/userdata/system/configs/mame/")
-        if not os.path.exists("/userdata/saves/mame/"):
-            os.makedirs("/userdata/saves/mame/")
-        if not os.path.exists("/userdata/saves/mame/nvram/"):
-            os.makedirs("/userdata/saves/mame/nvram")
-        if not os.path.exists("/userdata/saves/mame/cfg/"):
-            os.makedirs("/userdata/saves/mame/cfg/")
-        if not os.path.exists("/userdata/saves/mame/input/"):
-            os.makedirs("/userdata/saves/mame/input/")
-        if not os.path.exists("/userdata/saves/mame/state/"):
-            os.makedirs("/userdata/saves/mame/state/")
-        if not os.path.exists("/userdata/saves/mame/diff/"):
-            os.makedirs("/userdata/saves/mame/diff/")
-        if not os.path.exists("/userdata/saves/mame/comments/"):
-            os.makedirs("/userdata/saves/mame/comments/")
+        mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
+        for path in mamePaths:
+            if not os.path.exists("/userdata/" + mamePaths(path) + "/"):
+                os.makedirs("/userdata/" + mamePaths(path) + "/")
 
         # Define systems that will use the MESS executable instead of MAME
         messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "plugnplay", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates" ]
@@ -127,9 +115,9 @@ class MameGenerator(Generator):
         commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
         commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]        
         commandArray += [ "-homepath" ,           "/userdata/saves/mame/plugins/" ]
-        commandArray += [ "-ctrlrpath" ,          "/userdata/systems/configs/mame/ctrlr/" ]
-        commandArray += [ "-inipath" ,            "/userdata/systems/configs/mame/ini/" ]
-        commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs" ]
+        commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
+        commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
+        commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
         commandArray += [ "-pluginspath" ,        "/userdata/saves/mame/plugins/" ]
 
         # TODO These paths are not handled yet
