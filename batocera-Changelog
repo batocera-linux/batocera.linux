@@ -35,6 +35,8 @@
         * add: batocera-resolution can now adjust refresh rate on xorg (PC x86_64)
         * add: variable refresh rate enabled and on by default for libretro, turn off with global.retroarch.vrr_run_loop = 0
         * add: miniVMac emulator for 68k-based Macintosh computers
+	* add: ethtool v5.10 (package taken from Buildroot)
+	* add: Wake On LAN (WoL) enabled by default via udev rule
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
