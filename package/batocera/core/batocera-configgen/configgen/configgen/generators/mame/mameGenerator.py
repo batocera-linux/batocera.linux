@@ -46,13 +46,13 @@ class MameGenerator(Generator):
             os.makedirs("/userdata/saves/mame/comments/")
 
         # Define systems that will use the MESS executable instead of MAME
-        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "tvgames", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates" ]
+        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "tvgames", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
         # If it needs a system name defined, use it here. Add a blank string if it does not (ie non-arcade, non-system ROMs)
-        messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco", "socrates" ]
+        messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco", "socrates", "maciix" ]
         # For systems with a MAME system name, the type of ROM that needs to be passed on the command line (cart, tape, cdrm, etc)
         # If there are multiple ROM types (ie a computer w/disk & tape), select the default or primary type here.
-        messRomType = [ "", "", "cdrm", "cart", "", "cart", "cart", "cart", "cart", "cart1", "flop1", "cart", "cart", "flop", "cass", "cart", "flop1", "cass", "cass1", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "cart" ]
-        messAutoRun = [ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 'mload""\\n', "", "", "", "", "", "", "", "", "" ]
+        messRomType = [ "", "", "cdrm", "cart", "", "cart", "cart", "cart", "cart", "cart1", "flop1", "cart", "cart", "flop", "cass", "cart", "flop1", "cass", "cass1", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "flop1" ]
+        messAutoRun = [ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 'mload""\\n', "", "", "", "", "", "", "", "", "", "" ]
         
         # Identify the current system, select MAME or MESS as needed.
         try:
@@ -215,6 +215,19 @@ class MameGenerator(Generator):
                     commandArray += [ "-" + messRomType[messMode] ]
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
+                # Boot disk for Macintosh
+                # Will use Floppy 2 or Hard Drive, depending on the disk.
+                if system.name == "macintosh" and system.isOptSet("bootdisk"):
+                    if system.config["bootdisk"] in [ "sys608", "sys701", "sys75" ]
+                        bootType = "-flop2"
+                        if os.path.exists("/userdata/bios/" + bootdisk + ".zip"):
+                            bootDisk = "/userdata/bios/" + bootdisk + ".zip"
+                        else:
+                            bootDisk = "/userdata/bios/" + bootdisk + ".7z"
+                    else:
+                        bootType = "-hard"
+                        bootDisk =     bootDisk = "/userdata/bios/" + bootdisk + ".chd"
+                    commandArray += [ bootType, bootDisk ]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):

@@ -2647,7 +2647,14 @@ macintosh:
   manufacturer: Apple
   release: 1984
   hardware: computer
-  extensions: [dsk, zip]
+  extensions: [dsk, zip, 7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, dc42, woz, 2mg, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi]
   emulators:
     libretro:
-      minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC] }
+      minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC], incompatible_extensions: [7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, dc42, woz, 2mg, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME requires BIOS files maciix.zip & macfdhd.zip or .7z in either macintosh or BIOS folder.
+          Boot floppies are sys608.zip, sys701.zip, sys75.zip
+          Bootable hard drives are mac608.chd, mac701.chd, mac755.chd
+          Optionally supports other mac models mac128k, mac512k, macplus, macse, macclasc with BIOS files
