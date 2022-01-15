@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-957-ge3e5bd9
+REDREAM_VERSION = 1.5.0-986-g499d5a0
 REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz
 REDREAM_SITE = https://github.com/liberodark/redream-repo/releases/download/1.0
 # REDREAM_SITE = https://redream.io/download
