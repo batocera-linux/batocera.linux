@@ -192,6 +192,18 @@ class MameGenerator(Generator):
                     commandArray += [ system.config["altmodel"] ]
                 else:
                     commandArray += [ messSysName[messMode] ]
+
+                # Boot disk for Macintosh
+                # Will use Floppy 1 or Hard Drive, depending on the disk.
+                if system.name == "macintosh" and system.isOptSet("bootdisk"):
+                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                        bootType = "-flop1"                        
+                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
+                    else:
+                        bootType = "-hard"
+                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
+                    commandArray += [ bootType, bootDisk ]
+
                 # Autostart computer games where applicable
                 # Generic boot if only one type is available
                 if messAutoRun[messMode] != "":
@@ -206,33 +218,30 @@ class MameGenerator(Generator):
                     else:
                         commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\\n*exec !boot\\n' ]
                 # fm7 boots floppies, needs cassette loading
-                if system.name == "fm7" and system.isOptSet("altromtype") and system.config["altromtype"] == "cass":
-                    commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\\n' ]
+                if system.name == "fm7" and system.isOptSet("altromtype"):
+                    if system.config["altromtype"] == "cass":
+                        commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\\n' ]
+
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
                 # Mac will auto change floppy 1 to 2 if a boot disk is enabled
                 if system.isOptSet("altromtype") and system.name != "macintosh":
                     commandArray += [ "-" + system.config["altromtype"] ]
                 elif system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.config["altromtype"] == "flop1" or not system.isOptSet("altromtype"):
-                        commandArray += [ "-flop2" ]
+                    if system.isOptSet("altromtype") and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                        if system.config["altromtype"] == "flop1":
+                            commandArray += [ "-flop2" ]
+                        else:
+                            commandArray += [ "-" + messRomType[messMode] ]
                     else:
-                        commandArray += [ "-" + messRomType[messMode] ]
+                        if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                            commandArray += [ "-flop2" ]
+                        else:
+                            commandArray += [ "-" + messRomType[messMode] ]
                 else:
                     commandArray += [ "-" + messRomType[messMode] ]
                 
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
-
-                # Boot disk for Macintosh
-                # Will use Floppy 1 or Hard Drive, depending on the disk.
-                if system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                        bootType = "-flop1"                        
-                        bootDisk = "/userdata/bios/" + bootdisk + ".img"
-                    else:
-                        bootType = "-hard"
-                        bootDisk =     bootDisk = "/userdata/bios/" + bootdisk + ".chd"
-                    commandArray += [ bootType, bootDisk ]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):
