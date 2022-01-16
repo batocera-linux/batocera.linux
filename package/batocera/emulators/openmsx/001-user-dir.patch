@@ -1,5 +1,5 @@
 diff --git a/src/file/FileOperations.cc b/src/file/FileOperations.cc
-index 5d8093d558..4ae94d28c6 100644
+index 5d8093d558..3c213f4eb3 100644
 --- a/src/file/FileOperations.cc
 +++ b/src/file/FileOperations.cc
 @@ -430,7 +430,7 @@ const string& getUserOpenMSXDir()
@@ -7,7 +7,7 @@ index 5d8093d558..4ae94d28c6 100644
  		return strCat(SDL_AndroidGetExternalStoragePath(), "/openMSX");
  #else
 -		return expandTilde("~/.openMSX");
-+		return expandTilde("~/configs/openmsx");
++		return expandTilde("/userdata/system/configs/openmsx");
  #endif
  	}();
  	return OPENMSX_DIR;
