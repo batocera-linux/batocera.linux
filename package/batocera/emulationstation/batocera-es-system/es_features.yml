@@ -3570,9 +3570,15 @@ citra:
                 "On":                    1
 
 daphne:
-  features: [ratio, padtokeyboard, decoration]
+  features: [padtokeyboard, decoration]
   shared: [hud]
   cfeatures:
+        daphne_ratio:
+            prompt:      ASPECT RATIO
+            description: Not all games support Stretch, depending on the video files.
+            choices:
+                "Original":                   original
+                "Stretch":                    stretch
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS BACKEND
