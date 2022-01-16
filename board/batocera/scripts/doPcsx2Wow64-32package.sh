@@ -71,10 +71,10 @@ fi
 
 # libs32
 echo "libs..."
-for BIN in "${G_TARGETDIR}/usr/PCSX/bin/PCSX2" \
-"${G_TARGETDIR}/usr/PCSX_AVX2/bin/PCSX2" \
-"${G_TARGETDIR}/usr/PCSX/bin/plugins/"*.so \
-"${G_TARGETDIR}/usr/PCSX_AVX2/bin/plugins/"*.so \
+for BIN in "${G_TARGETDIR}/usr/pcsx2/bin/pcsx22" \
+"${G_TARGETDIR}/usr/pcsx2-avx2/bin/pcsx22" \
+"${G_TARGETDIR}/usr/pcsx2/bin/plugins/"*.so \
+"${G_TARGETDIR}/usr/pcsx2-avx2/bin/plugins/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"*
 do
@@ -87,9 +87,9 @@ cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 echo "binaries..."
 mkdir -p "${TMPOUT}/usr"                              || exit 1
 echo "  PCSX/"
-cp -pr "${G_TARGETDIR}/usr/PCSX"      "${TMPOUT}/usr" || exit 1
-echo "  PCSX_AVX2/"
-cp -pr "${G_TARGETDIR}/usr/PCSX_AVX2" "${TMPOUT}/usr" || exit 1
+cp -pr "${G_TARGETDIR}/usr/pcsx2"      "${TMPOUT}/usr" || exit 1
+echo "  pcsx2-avx2/"
+cp -pr "${G_TARGETDIR}/usr/pcsx2-avx2" "${TMPOUT}/usr" || exit 1
 
 # dri
 echo "dri..."

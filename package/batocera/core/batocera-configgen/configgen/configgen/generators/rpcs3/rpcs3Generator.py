@@ -117,7 +117,7 @@ class Rpcs3Generator(Generator):
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
-    def getInGameRatio(self, config, gameResolution):
+    def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
 
     def getFirmwareVersion():

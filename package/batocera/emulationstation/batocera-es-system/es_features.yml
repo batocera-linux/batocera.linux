@@ -79,8 +79,8 @@ libretro:
         prompt:      ALLOW ROTATION
         description: Allow cores to set rotation.
         choices:
-            "On":   "true"
-            "Off":  "false"
+              "On":   "true"
+              "Off":  "false"
     lightgun_map:
         prompt:      CONTROLLER TO LIGHTGUN
         description: Map controller inputs to lightgun inputs
@@ -2901,7 +2901,7 @@ libretro:
       cfeatures:
             c64_model:
                 prompt:      MODEL TYPE
-                description: Automatically switches region per file path tags
+                description: Automatic switches region per file path tags
                 choices:
                     "C64 PAL Automatic":        C64 PAL auto
                     "C64 NTSC Automatic":       C64 NTSC auto
@@ -2917,7 +2917,7 @@ libretro:
                     #"Educator 64 NTSC":         PET64 NTSC
                     "C64 Games System PAL":     C64 GS PAL
                     "C64 Japanese NTSC":        C64 JAP NTSC
-            external_palette:
+            vice_external_palette:
                 prompt:      COLOR FILTER
                 description: Can be used to simulate colors of particular displays.
                 choices:
@@ -2938,13 +2938,13 @@ libretro:
                     "ptoing":                   ptoing
                     "rgb":                      rgb
                     "vice":                     vice
-            aspect_ratio:
+            vice_aspect_ratio:
                 prompt:      ASPECT RATIO
                 description: Change the output resolution ratio.
                 choices:
                     "PAL 576x312px":     pal
                     "NTSC 492x262px":    ntsc
-            zoom_mode_c64:
+            vice_zoom_mode:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
@@ -2954,7 +2954,7 @@ libretro:
                     "small":                    small
                     "medium":                   medium
                     "maximum":                  maximum
-            button_options_c64:
+            vice_retropad_options:
                 prompt:      JUMP ON A
                 description: Makes second fire button press up instead.
                 choices:
@@ -2979,7 +2979,7 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
-            keyboard_pass_through:
+            vice_keyboard_pass_through:
                 prompt:      KEYBOARD PASSTHROUGH
                 description: Keyboard shortcuts unavailable if passing through the keyboard.
                 choices:
@@ -2989,8 +2989,8 @@ libretro:
       features: [rewind, autosave, padtokeyboard]
       cfeatures:
             c64_model:
-                prompt:      COMPUTER MODEL
-                description: Automatic switches region per file path tags.
+                prompt:      MODEL TYPE
+                description: Automatic switches region per file path tags
                 choices:
                     "C64 PAL Automatic":        C64 PAL auto
                     "C64 NTSC Automatic":       C64 NTSC auto
@@ -3006,61 +3006,368 @@ libretro:
                     #"Educator 64 NTSC":         PET64 NTSC
                     "C64 Games System PAL":     C64 GS PAL
                     "C64 Japanese NTSC":        C64 JAP NTSC
-            external_palette:
+            vice_external_palette:
                 prompt:      COLOR FILTER
                 description: Can be used to simulate colors of particular displays.
                 choices:
-                    "default":          default
-                    "colodore":         colodore
-                    "pepto-pal":        pepto-pal
-                    "pepto-ntsc":       pepto-ntsc
-                    "pepto-ntsc-sony":  pepto-ntsc-sony
-                    "cjam":             cjam
-                    "c64hq":            c64hq
-                    "c64s":             c64s
-                    "ccs64":            ccs64
-                    "community-colors": community-colors
-                    "deekay":           deekay
-                    "frodo":            frodo
-                    "godot":            godot
-                    "pc64":             pc64
-                    "ptoing":           ptoing
-                    "rgb":              rgb
-                    "vice":             vice
-            aspect_ratio:
+                    "default":                  default
+                    "colodore":                 colodore
+                    "pepto-pal":                pepto-pal
+                    "pepto-ntsc":               pepto-ntsc
+                    "pepto-ntsc-sony":          pepto-ntsc-sony
+                    "cjam":                     cjam
+                    "c64hq":                    c64hq
+                    "c64s":                     c64s
+                    "ccs64":                    ccs64
+                    "community-colors":         community-colors
+                    "deekay":                   deekay
+                    "frodo":                    frodo
+                    "godot":                    godot
+                    "pc64":                     pc64
+                    "ptoing":                   ptoing
+                    "rgb":                      rgb
+                    "vice":                     vice
+            vice_aspect_ratio:
                 prompt:      ASPECT RATIO
                 description: Change the output resolution ratio.
                 choices:
                     "PAL 576x312px":     pal
                     "NTSC 492x262px":    ntsc
-            zoom_mode_c64:
+            vice_zoom_mode:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
-                    "Off":              none
-                    "small":            small
-                    "medium":           medium
-                    "maximum":          maximum
-            JoyPort:
-                prompt:      JOYSTICK PORT
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_retropad_options:
+                prompt:      JUMP ON A
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":                      disabled
+                    "On":                       jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
                 description: Most games use port 2, some use port 1.
                 choices:
-                    "Port 1":           Port 1
-                    "Port 2":           Port 2
-            keyboard_pass_through:
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
+            vice_keyboard_pass_through:
                 prompt:      KEYBOARD PASSTHROUGH
                 description: Keyboard shortcuts unavailable if passing through the keyboard.
                 choices:
-                    "Off":              disabled
-                    "On":               enabled
-    vice_xplus4:
-      features: [rewind, autosave, padtokeyboard]
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_x128:
       features: [rewind, autosave, padtokeyboard]
+      cfeatures:
+            c128_model:
+                prompt:      MODEL TYPE
+                choices:
+                    "C128 PAL":            C128 PAL
+                    "C128 NTSC":           C128 NTSC
+                    "C128 DCR PAL":        C128 DCR PAL
+                    "C128 DCR NTSC":       C128 DCR NTSC
+            vice_external_palette:
+                prompt:      COLOR FILTER
+                description: Can be used to simulate colors of particular displays.
+                choices:
+                    "default":                  default
+                    "colodore":                 colodore
+                    "pepto-pal":                pepto-pal
+                    "pepto-ntsc":               pepto-ntsc
+                    "pepto-ntsc-sony":          pepto-ntsc-sony
+                    "cjam":                     cjam
+                    "c64hq":                    c64hq
+                    "c64s":                     c64s
+                    "ccs64":                    ccs64
+                    "community-colors":         community-colors
+                    "deekay":                   deekay
+                    "frodo":                    frodo
+                    "godot":                    godot
+                    "pc64":                     pc64
+                    "ptoing":                   ptoing
+                    "rgb":                      rgb
+                    "vice":                     vice
+            vice_aspect_ratio:
+                prompt:      ASPECT RATIO
+                description: Change the output resolution ratio.
+                choices:
+                    "PAL 576x312px":     pal
+                    "NTSC 492x262px":    ntsc
+            vice_zoom_mode:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_retropad_options:
+                prompt:      Button Options
+                description: RetroPad Face Button Options.
+                choices:
+                    "B = Fire":                 disabled
+                    "B = Fire, A = Up":         jump
+                    "Y = Fire":                 rotate
+                    "Y = Fire, B = Up":         rotate_jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
+                description: Most games use port 2, some use port 1.
+                choices:
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
+            vice_keyboard_pass_through:
+                prompt:      KEYBOARD PASSTHROUGH
+                description: Keyboard shortcuts unavailable if passing through the keyboard.
+                choices:
+                    "Off":                      disabled
+                    "On":                       enabled
+    vice_xplus4:
+      features: [rewind, autosave, padtokeyboard]
+      cfeatures:
+            plus4_model:
+                prompt:      MODEL TYPE
+                choices:
+                    "PLUS4 PAL":            PLUS4 PAL
+                    "PLUS4 NTSC":           PLUS4 NTSC
+                    "C16 PAL":              C16 PAL
+                    "C16 NTSC":             C16 NTSC
+                    "V364 NTSC":            V364 NTSC
+                    "232 NTSC":             232 NTSC
+            vice_plus4_external_palette:
+                prompt:      COLOR FILTER
+                description: Can be used to simulate colors of particular displays.
+                choices:
+                    "default":                  default
+                    "colodore_ted":             colodore_ted
+                    "yape-pal":                 yape-pal
+                    "yape-ntsc":                yape-ntsc
+            vice_aspect_ratio:
+                prompt:      ASPECT RATIO
+                description: Change the output resolution ratio.
+                choices:
+                    "PAL 576x312px":     pal
+                    "NTSC 492x262px":    ntsc
+            vice_zoom_mode:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_retropad_options:
+                prompt:      Button Options
+                description: RetroPad Face Button Options.
+                choices:
+                    "B = Fire":                 disabled
+                    "B = Fire, A = Up":         jump
+                    "Y = Fire":                 rotate
+                    "Y = Fire, B = Up":         rotate_jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
+                description: Most games use port 2, some use port 1.
+                choices:
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
+            vice_keyboard_pass_through:
+                prompt:      KEYBOARD PASSTHROUGH
+                description: Keyboard shortcuts unavailable if passing through the keyboard.
+                choices:
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_xvic:
       features: [rewind, autosave, padtokeyboard]
+      cfeatures:
+            vic20_model:
+                prompt:      MODEL TYPE
+                description: Automatic switches region per file path tags
+                choices:
+                    "VIC20 PAL Automatic":      VIC20 PAL auto
+                    "VIC20 NTSC Automatic":     VIC20 NTSC auto
+                    "VIC20 PAL":                VIC20 PAL
+                    "VIC20 NTSC":               VIC20 NTSC
+                    "Super VIC (+16K) NTSC":    VIC21
+            vice_vic20_external_palette:
+                prompt:      COLOR FILTER
+                description: Can be used to simulate colors of particular displays.
+                choices:
+                    "default":                  default
+                    "colodore_vic":             colodore_vic
+                    "mike-pal":                 mike-pal
+                    "mike-ntsc":                mike-ntsc
+                    "vice":                     vice
+            vice_aspect_ratio:
+                prompt:      ASPECT RATIO
+                description: Change the output resolution ratio.
+                choices:
+                    "PAL 576x312px":     pal
+                    "NTSC 492x262px":    ntsc
+            vice_zoom_mode:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_retropad_options:
+                prompt:      Button Options
+                description: RetroPad Face Button Options.
+                choices:
+                    "B = Fire":                 disabled
+                    "B = Fire, A = Up":         jump
+                    "Y = Fire":                 rotate
+                    "Y = Fire, B = Up":         rotate_jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
+                description: Most games use port 2, some use port 1.
+                choices:
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
+            vice_keyboard_pass_through:
+                prompt:      KEYBOARD PASSTHROUGH
+                description: Keyboard shortcuts unavailable if passing through the keyboard.
+                choices:
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_xpet:
       features: [rewind, autosave, padtokeyboard]
+      cfeatures:
+            pet_model:
+                prompt:      MODEL TYPE
+                choices:
+                    "8032":      8032
+                    "2001":      2001
+                    "3008":      3008
+                    "3016":      3016
+                    "3032":      3032
+                    "3032B":     3032B
+                    "4016":      4016
+                    "4032":      4032
+                    "4032B":     4032B
+                    "8096":      8096
+                    "8296":      8296
+                    "SUPERPET":  SUPERPET
+            vice_pet_external_palette:
+                prompt:      COLOR FILTER
+                description: Can be used to simulate colors of particular displays.
+                choices:
+                    "default":       default
+                    "green":         green
+                    "amber":         amber
+                    "white":         white
+            vice_aspect_ratio:
+                prompt:      ASPECT RATIO
+                description: Change the output resolution ratio.
+                choices:
+                    "PAL 576x312px":     pal
+                    "NTSC 492x262px":    ntsc
+            vice_zoom_mode:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Auto-disable zoom":        auto_disable
+                    "Auto zoom":                automatic
+                    "Off":                      disabled
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_retropad_options:
+                prompt:      Button Options
+                description: RetroPad Face Button Options.
+                choices:
+                    "B = Fire":                 disabled
+                    "B = Fire, A = Up":         jump
+                    "Y = Fire":                 rotate
+                    "Y = Fire, B = Up":         rotate_jump
+            vice_joyport:
+                prompt:      CONTROLLER PORT
+                description: Most games use port 2, some use port 1.
+                choices:
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
+            vice_keyboard_pass_through:
+                prompt:      KEYBOARD PASSTHROUGH
+                description: Keyboard shortcuts unavailable if passing through the keyboard.
+                choices:
+                    "Off":                      disabled
+                    "On":                       enabled
     virtualjaguar:
       features: [autosave, padtokeyboard, cheevos]
       cfeatures:
@@ -3271,9 +3578,15 @@ citra:
                 "On":                    1
 
 daphne:
-  features: [ratio, padtokeyboard, decoration]
+  features: [padtokeyboard, decoration]
   shared: [hud]
   cfeatures:
+        daphne_ratio:
+            prompt:      ASPECT RATIO
+            description: Not all games support Stretch, depending on the video files.
+            choices:
+                "Original":                   original
+                "Stretch":                    stretch
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS BACKEND
@@ -3833,6 +4146,7 @@ pcsx2:
             choices:
                 "OpenGL":      12
                 "Software":    13
+                "Vulkan":      14
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
@@ -4305,6 +4619,48 @@ mame:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
+                enableui:
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       macintosh:
+            cfeatures:
+                altmodel:
+                    prompt:      MAC MODEL
+                    choices:
+                        "Mac 128k (2 LD Floppies)":              mac128k
+                        "Mac 512k (2 LD Floppies)":              mac512k
+                        "Mac Plus (2 LD Floppies/HDD)":          macplus
+                        "Mac SE (2 LD Floppies/HDD)":            macse
+                        "Mac Classic (2 HD Floppies/HDD)":       macclasc
+                        "Mac II (Color, 2 HD Floppies/CD/HDD)":  mac2fdhd
+                        "Mac IIx (Color, 2 HD Floppies/CD/HDD)": maciix
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Disk":       flop1
+                        "CD":         cdrm
+                        "Hard Drive": hard
+                bootdisk:
+                    prompt:      BOOT DISK
+                    description: Select a boot disk or hard drive if needed
+                    choices:
+                        "System 3.0 (LD Floppy)":    macos3
+                        "System 6.0.8 (LD Floppy)":  macos608
+                        "System 7.0.1 (HD Floppy)":  macos701
+                        "System 7.5 (HD Floppy)":    macos75
+                        "System 6.0.8 (Hard Drive)": mac608
+                        "System 7.0.1 (Hard Drive)": mac701
+                        "System 7.5.5 (Hard Drive)": mac755
                 enableui:
                     prompt:      UI KEYS
                     description: Toggle with hotkey + D-pad up or Scroll Lock in-game.

@@ -207,6 +207,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-xrick/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-zc210/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-gong/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-minivmac/Config.in"
      endmenu
   endmenu
 
@@ -264,7 +265,7 @@ menu "Emulators"
   endmenu
 
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/pcsx2/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/pcsx2_avx2/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/pcsx2-avx2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-lutris/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-lutris-wow64_32/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-proton/Config.in"
@@ -276,7 +277,6 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/scummvm/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/vice/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/citra/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/citra-android/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/daphne/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/duckstation/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor4432/Config.in"
@@ -358,6 +358,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/syncthing/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/rclone/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/piboy/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-ethtool/Config.in"
 endmenu
 
 menu "Libraries"

@@ -25,6 +25,6 @@ class Generator(object):
     def hasInternalMangoHUDCall(self):
         return False
 
-    def getInGameRatio(self, config, gameResolution):
+    def getInGameRatio(self, config, gameResolution, rom):
         # put a default value, but it should be overriden by generators
         return 4/3

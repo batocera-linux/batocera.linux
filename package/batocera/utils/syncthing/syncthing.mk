@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SYNCTHING_VERSION = v1.18.4
+SYNCTHING_VERSION = v1.18.6
 SYNCTHING_SITE = $(call github,syncthing,syncthing,$(SYNCTHING_VERSION))
 SYNCTHING_LICENSE = MPLv2
 SYNCTHING_LICENSE_FILES = LICENSE

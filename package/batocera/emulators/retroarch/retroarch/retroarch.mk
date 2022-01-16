@@ -14,6 +14,10 @@ RETROARCH_INSTALL_STAGING = YES
 RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads --enable-ozone --enable-xmb --disable-discord
 RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking --enable-translate --enable-rgui --disable-cdrom
 
+ifeq ($(BR2_ENABLE_DEBUG),y)
+    RETROARCH_CONF_OPTS += --enable-debug
+endif
+
 ifeq ($(BR2_PACKAGE_FFMPEG),y)
 	RETROARCH_CONF_OPTS += --enable-ffmpeg
 	RETROARCH_DEPENDENCIES += ffmpeg
@@ -105,7 +109,7 @@ else
 	RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
 	RETROARCH_DEPENDENCIES += rockchip-rga
 endif
