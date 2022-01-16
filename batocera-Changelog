@@ -11,7 +11,7 @@
         * add: language: Hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
-        * add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, Plug and Play TV Games, Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
+        * add: Adventure Vision, CD-i, Macintosh, CreatiVision, PV-1000, Game.com, Gamate, Plug and Play TV Games, Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
         * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
         * add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
         * add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
@@ -35,6 +35,8 @@
         * add: batocera-resolution can now adjust refresh rate on xorg (PC x86_64)
         * add: variable refresh rate enabled and on by default for libretro, turn off with global.retroarch.vrr_run_loop = 0
         * add: miniVMac emulator for 68k-based Macintosh computers
+        * add: ethtool v5.10 (package taken from Buildroot)
+        * add: Wake On LAN (WoL) enabled by default via udev rule
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -56,10 +58,12 @@
         * change: The "amlogic/s905gen3/tvbox" image is now titled "amlogic/s905gen3/tvbox-gen3"
         * change: batocera-screenshot now save as PNG instead of JPG (x86_64)
         * change: Kodi re-enabled on RPi2
+        * change: libretro cores now use core-provided aspect ratio by default when decorations are disabled
         * change: enabled lr-picodrive for gamegear on the rpi1 build
+        * change: libretro cores now use sharp-bilinear-simple shader set instead of regular bilinear filtering
         * change: Devilutionx and Steam games can be closed with hotkey+start
         * change: -fastboot is no longer a default parameter for Singe games
-        * change: updated splash screen
+        * change: updated splash screen (credit Lichshield)
         * change: New default C64 game for initial install (Fix it Felix Jr. 64)
         * change: Retroarch will default to glcore instread of gl if OpenGL 3.1 or higher is available
         * es: English spelling/grammar overhaul, multiple option names updated
@@ -67,7 +71,9 @@
         * es: added Dolphin Ubershaders and SSAA in advanced options
         * es: added TV mode for wii in advanced options
         * es: added RPCS3 SPU decoder selection in advanced options
-        * es: added libretro video_frame_delay_auto to latency settings
+        * es: added multiple RPCS3 option in advanced settings
+        * es: added libretro video_frame_delay_auto and variable refresh rate to latency settings
+        * es: added multiple PPSSPP options to advanced settings
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
         * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx, sgb, satellaview and libretro/melonds
@@ -104,6 +110,7 @@
 		* bump: PCSX2 for Vulkan support
         * dev: odroidgoa renamed to rk3326 (Support for Anbernic RG351P, Odroid Go Advance, Odroid Go Super, Powkiddy RGB10 and RK2020)
         * dev: dts added to rpi4 (bcm2711-rpi-400 and bcm2711-rpi-cm4)
+        * dev: RPI's bump kernel to v5.15.x
 
 2021/09/30 - batocera.linux 32
         * warning: rpi3 is now running in 64-bit mode.

@@ -22,13 +22,31 @@ then
     exit 1
 fi
 
+# assume one card only for the moment
+# we should add the card...
+f_getConnectors() {
+    for GPU in /dev/dri/card*
+    do
+	batocera-drminfo "${GPU}" 2>/dev/null
+    done | cut -d '.' -f 1 | sort -u
+}
+
 f_checkVals() {
-    test ! -e /var/run/drmConn && echo 0 > /var/run/drmConn
-    test ! -e /var/run/drmMode && echo 0 > /var/run/drmMode
+    # check that the conn is available
+    CONN=$(cat /var/run/drmConn 2>/dev/null)
+    if echo "${CONN}" | grep -qE '^[0-9]+$'
+    then
+	if ! f_getConnectors | grep -qE "^${CONN}$"
+	then
+	    echo f_getConnectors | head -1 > /var/run/drmMode # take the first connector
+	fi
+    else
+	f_getConnectors | head -1 > /var/run/drmConn # take the first connector
+	echo 0 > /var/run/drmMode
+    fi
 }
 
 f_listModes() {
-    f_checkVals
     DRMCONN=$(cat /var/run/drmConn)
 
     if test "${1}" = "all"
@@ -43,7 +61,6 @@ f_listModes() {
 }
 
 f_currentResolution() {
-    f_checkVals
     DRMCONN=$(cat /var/run/drmConn)
     DRMMODE=$(cat /var/run/drmMode)
     f_listModes "all" | grep -E "^${DRMCONN}\.${DRMMODE}\." | head -1 | sed -e s+"^[^:]*:[^ ]* \([0-9]*x[0-9]*\) .*$"+"\1"+
@@ -62,8 +79,8 @@ f_minTomaxResolution() {
 		MAXHEIGHT=1080
 	fi
 	# if current resolution is ok, keep it
-	read CURRENTWIDTH CURRENTHEIGHT <<< $(f_listModes "current" | sed -e s+"^\([^:]*\):[^ ]* \([0-9]*\)x\([0-9]*\) \([0-9]*\)\(.*\)$"+"\2 \3"+)
-	
+	read CURRENTWIDTH CURRENTHEIGHT <<< $(f_currentResolution | sed -e s+"^\([0-9]*\)x\([0-9]*\)$"+"\1 \2"+)
+
 	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
 	then
 	    exit 0
@@ -81,7 +98,7 @@ f_minTomaxResolution() {
 
 		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
 		then
-                    echo "${SUGGMODE}" | cut -d "." -f 1 > /var/run/drmMode
+                    echo "${SUGGMODE}" | cut -d "." -f 2 > /var/run/drmMode
                     exit 0
 		fi
             done
@@ -89,10 +106,13 @@ f_minTomaxResolution() {
 
 case "${ACTION}" in
     "listModes")
+	f_checkVals
 	f_listModes "all"
 	;;
     "setMode")
 	MODE=$1
+
+	f_checkVals
 
 	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
 	then
@@ -102,7 +122,7 @@ case "${ACTION}" in
 	    # check that the mode is valid
 	    if f_listModes "all" | grep -qE "^${MODE}:"
 	    then
-		echo "${MODE}" | cut -d "." -f 1 > /var/run/drmMode
+		echo "${MODE}" | cut -d "." -f 2 > /var/run/drmMode
 	    else
 		echo "invalid mode ${MODE}" >&2
 	    fi
@@ -115,6 +135,7 @@ case "${ACTION}" in
 	f_listModes "all" | grep -E "^${DRMCONN}\.${DRMMODE}\." | cut -d ":" -f 1
 	;;
     "currentResolution")
+	f_checkVals
 	f_currentResolution
 	;;
     "listOutputs")
@@ -125,15 +146,15 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	MODE=$1
-	echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
-	echo 0 > /var/run/drmMode # reset the drmMode
-	f_minTomaxResolution
+	if test "${MODE}" != ""
+	   then
+	       echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
+	       echo 0 > /var/run/drmMode # reset the drmMode
+	fi
+	f_checkVals
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")
-	# first, give the current resolution as the default in case it is not reduced.
-	CURRENT=$(f_listModes "current" | head -1 | cut -d : -f 1)
-	echo "${CURRENT}" | cut -d "." -f 1 > /var/run/drmMode
-	# then minToMax
+	f_checkVals
 	f_minTomaxResolution "$1"
         ;;
     *)

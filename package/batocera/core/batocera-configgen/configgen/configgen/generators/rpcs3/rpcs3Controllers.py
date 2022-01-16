@@ -38,7 +38,7 @@ def generateControllerConfig(system, controllers, rom):
                     
             rpcs3_otherKeys(f, controller)
         nplayer += 1
-        f.close()
+    f.close()
 
 def rpcs3_reverseMapping(name):
     if name == "joystick1up":

@@ -2267,7 +2267,7 @@ cdi:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file cdimono1.zip or .7z in either cdi or BIOS folder.
+          Requires MAME BIOS file cdimono1.zip
 
 advision:
   name:       Adventure Vision
@@ -2279,7 +2279,7 @@ advision:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file advision.zip or .7z in either advision or BIOS folder.
+          Requires MAME BIOS file advision.zip
 
 plugnplay:
   name:       Plug and Play TV Games
@@ -2321,7 +2321,7 @@ gamate:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file gamate.zip or .7z in either gamate or BIOS folder.
+          Requires MAME BIOS file gamate.zip
 
 crvision:
   name:       CreatiVision
@@ -2333,7 +2333,7 @@ crvision:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file crvision.zip or .7z in either crvision or BIOS folder.
+          Requires MAME BIOS file crvision.zip
 
 gamecom:
   name:       Game.com
@@ -2345,7 +2345,7 @@ gamecom:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file gamecom.zip or .7z in either gamecom or BIOS folder.
+          Requires MAME BIOS file gamecom.zip
 
 gamepock:
   name:       Game Pocket Computer
@@ -2357,7 +2357,7 @@ gamepock:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file gamepock.zip or .7z in either gamepock or BIOS folder.
+          Requires MAME BIOS file gamepock.zip
 
 fm7:
   name:       FM-7
@@ -2369,8 +2369,7 @@ fm7:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file fm7.zip or .7z in either fm7 or BIOS folder.
-          Optionally fm77av.zip or .7z for FM-77AV support.
+          Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
 
 apfm1000:
   name:       APF M-1000
@@ -2382,7 +2381,7 @@ apfm1000:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file apfm1000.zip or .7z in either apfm or BIOS folder.
+          Requires MAME BIOS file apfm1000.zip
 
 bbc:
   name:       BBC Micro
@@ -2394,8 +2393,8 @@ bbc:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS files bbcb, bbc_acorn8271, & saa5050.zip or .7z in either bbc or BIOS folder.
-          Also sample pack bbc.zip or .7z in BIOS/mame/samples
+          Requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
+          Also sample pack bbc.zip in bios/mame/samples
 
 adam:
   name:       Coleco ADAM
@@ -2407,8 +2406,8 @@ adam:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires the following MAME BIOS files as zip or 7z in the adam or BIOS folder:
-          adam, adam_ddp, adam_fdc, adam_kb, & adam_prn
+          Requires the following MAME BIOS files:
+          adam.zip, adam_ddp.zip, adam_fdc.zip, adam_kb.zip, & adam_prn.zip
 
 arcadia:
   name:       Arcadia 2001
@@ -2430,7 +2429,7 @@ gmaster:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file gmaster.zip or .7z in either gmaster or BIOS folder.
+          Requires MAME BIOS file gmaster.zip
 
 astrocde:
   name:       Astrocade
@@ -2442,7 +2441,7 @@ astrocde:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file astrocde.zip or .7z in either astrocde or BIOS folder.
+          Requires MAME BIOS file astrocde.zip
 
 ti99:
   name:       TI-99
@@ -2454,7 +2453,7 @@ ti99:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file ti99_4a.zip or .7z in either ti99 or BIOS folder.
+          Requires MAME BIOS file ti99_4a.zip
           Cartridges need to be in .rpk format and unzipped - the MAME software list files (.bin) will not run properly.
 
 tutor:
@@ -2467,7 +2466,7 @@ tutor:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file tutor.zip or .7z in either tutor or BIOS folder.
+          Requires MAME BIOS file tutor.zip
           To get through the loading menu, R1 will move down and A/East will select.
 
 coco:
@@ -2480,7 +2479,7 @@ coco:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file coco.zip or .7z in either coco or BIOS folder.
+          Requires MAME BIOS file coco.zip
 
 switch:
   name:       Switch
@@ -2647,7 +2646,23 @@ macintosh:
   manufacturer: Apple
   release: 1984
   hardware: computer
-  extensions: [dsk, zip]
+  extensions: [dsk, zip, 7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi]
   emulators:
     libretro:
-      minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC] }
+      minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC], incompatible_extensions: [7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME requires a number of BIOS and device files, place in the bios folder in zip format.
+          Boot disks are from MAME's software lists, floppy images need to be extracted and renamed.
+          It is recommended to use a hard drive option if available, System 6.0.8 if not.
+          From mac_flop:
+          macos3.img = sytem tools.img from sys30.zip
+          macos608.img = system tools.img from sys608.zip
+          From mac_hdflop:
+          macos701 = disk tools.img from sys701.zip
+          macos75 = SSW750_DiskTools.img from sys75.zip
+          From mac_hdd:
+          mac601.chd, mac701.chd, and mac755.chd
+          lr-minivmac requires MacII.ROM and MacIIx.ROM.
+          If booting from a hard drive, floppies may not load at boot. For best results, make a copy of one of the bootable drives, load disks manually via the MAME menu, and copy or install them to the hard drive image.
