@@ -146,8 +146,11 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	MODE=$1
-	echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
-	echo 0 > /var/run/drmMode # reset the drmMode
+	if test "${MODE}" != ""
+	   then
+	       echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
+	       echo 0 > /var/run/drmMode # reset the drmMode
+	fi
 	f_checkVals
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")

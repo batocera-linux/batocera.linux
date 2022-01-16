@@ -56,10 +56,12 @@
         * change: The "amlogic/s905gen3/tvbox" image is now titled "amlogic/s905gen3/tvbox-gen3"
         * change: batocera-screenshot now save as PNG instead of JPG (x86_64)
         * change: Kodi re-enabled on RPi2
+        * change: libretro cores now use core-provided aspect ratio by default when decorations are disabled
         * change: enabled lr-picodrive for gamegear on the rpi1 build
+        * change: libretro cores now use sharp-bilinear-simple shader set instead of regular bilinear filtering
         * change: Devilutionx and Steam games can be closed with hotkey+start
         * change: -fastboot is no longer a default parameter for Singe games
-        * change: updated splash screen
+        * change: updated splash screen (credit Lichshield)
         * change: New default C64 game for initial install (Fix it Felix Jr. 64)
         * change: Retroarch will default to glcore instread of gl if OpenGL 3.1 or higher is available
         * es: English spelling/grammar overhaul, multiple option names updated
@@ -67,7 +69,9 @@
         * es: added Dolphin Ubershaders and SSAA in advanced options
         * es: added TV mode for wii in advanced options
         * es: added RPCS3 SPU decoder selection in advanced options
-        * es: added libretro video_frame_delay_auto to latency settings
+        * es: added multiple RPCS3 option in advanced settings
+        * es: added libretro video_frame_delay_auto and variable refresh rate to latency settings
+        * es: added multiple PPSSPP options to advanced settings
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
         * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx, sgb, satellaview and libretro/melonds

@@ -23,8 +23,8 @@ def defined(key, dict):
 
 
 # Warning the values in the array must be exactly at the same index than
-# https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L132
-ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
+# https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L188
+ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "9/16", "5/4", "6/5", "7/9", "8/3",
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom", "full"]
 
 # Define system emulated by bluemsx core
@@ -122,7 +122,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     if system.isOptSet('video_allow_rotate') and system.getOptBoolean('video_allow_rotate') == False:
         retroarchConfig['video_allow_rotate'] = 'false'
     else:
-        retroarchConfig['video_allow_rotate'] = 'true'    
+        retroarchConfig['video_allow_rotate'] = 'true'
 
     # variable refresh rate
     if system.isOptSet("vrr_runloop_enable") and system.getOptBoolean("vrr_runloop_enable") == False:
@@ -388,7 +388,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         if system.isOptSet('controller2_zxspec'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller 
+            retroarchConfig['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller
         if system.isOptSet('controller3_zxspec'):
             retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
         else:

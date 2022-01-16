@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if pregp xow; then
+if pgrep xow; then
     killall xow
 fi
 nohup /usr/bin/xow >/dev/null 2>&1 &
