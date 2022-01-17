@@ -63,6 +63,7 @@ class Evmapy():
                         known_buttons_names = {}
                         known_buttons_codes = {}
                         known_buttons_alias = {}
+                        known_axes_codes = {}
                         for index in pad.inputs:
                             input = pad.inputs[index]
                             if input.type == "button":
@@ -94,46 +95,48 @@ class Evmapy():
                                         "max": 1
                                     })
                             elif input.type == "axis":
-                                axisId = None
-                                axisName = None
-                                if input.name == "joystick1up" or input.name == "joystick1left":
-                                    axisId = "0"
-                                elif input.name == "joystick2up" or input.name == "joystick2left":
-                                    axisId = "1"
-                                if input.name == "joystick1up" or input.name == "joystick2up":
-                                    axisName = "Y"
-                                elif input.name == "joystick1left" or input.name == "joystick2left":
-                                    axisName = "X"
-                                elif input.name == "up" or input.name == "down":
-                                    axisId   = "BASE"
-                                    axisName = "Y"
-                                    if input.name == "up":
-                                        absbasey_positive =  int(input.value) >= 0
+                                if input.code not in known_axes_codes: # avoid duplicated value for axis (bad pad configuration that make evmappy to stop)
+                                    known_axes_codes[input.code] = True
+                                    axisId = None
+                                    axisName = None
+                                    if input.name == "joystick1up" or input.name == "joystick1left":
+                                        axisId = "0"
+                                    elif input.name == "joystick2up" or input.name == "joystick2left":
+                                        axisId = "1"
+                                    if input.name == "joystick1up" or input.name == "joystick2up":
+                                        axisName = "Y"
+                                    elif input.name == "joystick1left" or input.name == "joystick2left":
+                                        axisName = "X"
+                                    elif input.name == "up" or input.name == "down":
+                                        axisId   = "BASE"
+                                        axisName = "Y"
+                                        if input.name == "up":
+                                            absbasey_positive =  int(input.value) >= 0
+                                        else:
+                                            axisId = None # don't duplicate, configuration should be done for up
+                                    elif input.name == "left" or input.name == "right":
+                                        axisId   = "BASE"
+                                        axisName = "X"
+                                        if input.name == "left":
+                                            absbasex_positive = int(input.value) < 0
+                                        else:
+                                            axisId = None # don't duplicate, configuration should be done for left
                                     else:
-                                        axisId = None # don't duplicate, configuration should be done for up
-                                elif input.name == "left" or input.name == "right":
-                                    axisId   = "BASE"
-                                    axisName = "X"
-                                    if input.name == "left":
-                                        absbasex_positive = int(input.value) < 0
-                                    else:
-                                        axisId = None # don't duplicate, configuration should be done for left
-                                else:
-                                    axisId   = "_OTHERS_"
-                                    axisName = input.name
+                                        axisId   = "_OTHERS_"
+                                        axisName = input.name
 
-                                if ((axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"]) or axisId == "_OTHERS_") and input.code is not None:
-                                    axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
-                                    known_buttons_names["ABS" + axisId + axisName + ":min"] = True
-                                    known_buttons_names["ABS" + axisId + axisName + ":max"] = True
-                                    known_buttons_names["ABS" + axisId + axisName + ":val"] = True
+                                    if ((axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"]) or axisId == "_OTHERS_") and input.code is not None:
+                                        axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
+                                        known_buttons_names["ABS" + axisId + axisName + ":min"] = True
+                                        known_buttons_names["ABS" + axisId + axisName + ":max"] = True
+                                        known_buttons_names["ABS" + axisId + axisName + ":val"] = True
 
-                                    padConfig["axes"].append({
-                                        "name": "ABS" + axisId + axisName,
-                                        "code": int(input.code),
-                                        "min": axisMin,
-                                        "max": axisMax
-                                    })
+                                        padConfig["axes"].append({
+                                            "name": "ABS" + axisId + axisName,
+                                            "code": int(input.code),
+                                            "min": axisMin,
+                                            "max": axisMax
+                                        })
 
                         # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
                         padActionsPreDefined = padActionConfig["actions_player"+str(nplayer)]
