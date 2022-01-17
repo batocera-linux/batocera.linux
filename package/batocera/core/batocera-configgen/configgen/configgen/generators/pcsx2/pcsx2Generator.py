@@ -254,9 +254,15 @@ def configureGFX(config_directory, system):
 
     # ShowFPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
-        pcsx2GFXSettings.save("osd_monitor_enabled", 1)
+        pcsx2GFXSettings.save("OsdShowFPS", 1)
+        pcsx2GFXSettings.save("OsdShowGSStats", 1)
+        pcsx2GFXSettings.save("OsdShowCPU", 1)
+        pcsx2GFXSettings.save("OsdShowSpeed", 1)
     else:
-        pcsx2GFXSettings.save("osd_monitor_enabled", 0)
+        pcsx2GFXSettings.save("OsdShowFPS", 0)
+        pcsx2GFXSettings.save("OsdShowGSStats", 0)
+        pcsx2GFXSettings.save("OsdShowCPU", 0)
+        pcsx2GFXSettings.save("OsdShowSpeed", 0)
 
     # Graphical Backend
     if system.isOptSet('gfxbackend'):
