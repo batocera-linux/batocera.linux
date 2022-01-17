@@ -29,9 +29,9 @@ class MameGenerator(Generator):
 
         # Generate userdata folders if needed
         mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
-        for path in mamePaths:
-            if not os.path.exists("/userdata/" + mamePaths(path) + "/"):
-                os.makedirs("/userdata/" + mamePaths(path) + "/")
+        for checkPath in mamePaths:
+            if not os.path.exists("/userdata/" + checkPath + "/"):
+                os.makedirs("/userdata/" + checkPath + "/")
 
         # Define systems that will use the MESS executable instead of MAME
         messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "plugnplay", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
