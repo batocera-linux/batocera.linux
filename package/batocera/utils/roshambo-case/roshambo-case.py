@@ -18,7 +18,7 @@ POWER = 5
 LED = 7
 FAN = 8
 
-arch = subprocess.check_output(["batocera-es-swissknife", "--arch"]).strip().upper()
+arch = subprocess.check_output(["batocera-es-swissknife", "--arch"]).strip().upper().decode(encoding='UTF-8')
 
 # Tell the script if this is running on a ROCK64 or ROCKPRO64
 GPIO.setrock(arch)
