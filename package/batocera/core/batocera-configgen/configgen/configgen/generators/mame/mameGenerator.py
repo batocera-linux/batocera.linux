@@ -28,25 +28,13 @@ class MameGenerator(Generator):
         romDirname  = path.dirname(rom)
 
         # Generate userdata folders if needed
-        if not os.path.exists("/userdata/system/configs/mame/"):
-            os.makedirs("/userdata/system/configs/mame/")
-        if not os.path.exists("/userdata/saves/mame/"):
-            os.makedirs("/userdata/saves/mame/")
-        if not os.path.exists("/userdata/saves/mame/nvram/"):
-            os.makedirs("/userdata/saves/mame/nvram")
-        if not os.path.exists("/userdata/saves/mame/cfg/"):
-            os.makedirs("/userdata/saves/mame/cfg/")
-        if not os.path.exists("/userdata/saves/mame/input/"):
-            os.makedirs("/userdata/saves/mame/input/")
-        if not os.path.exists("/userdata/saves/mame/state/"):
-            os.makedirs("/userdata/saves/mame/state/")
-        if not os.path.exists("/userdata/saves/mame/diff/"):
-            os.makedirs("/userdata/saves/mame/diff/")
-        if not os.path.exists("/userdata/saves/mame/comments/"):
-            os.makedirs("/userdata/saves/mame/comments/")
+        mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
+        for path in mamePaths:
+            if not os.path.exists("/userdata/" + mamePaths(path) + "/"):
+                os.makedirs("/userdata/" + mamePaths(path) + "/")
 
         # Define systems that will use the MESS executable instead of MAME
-        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "tvgames", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
+        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "plugnplay", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
         # If it needs a system name defined, use it here. Add a blank string if it does not (ie non-arcade, non-system ROMs)
         messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco", "socrates", "maciix" ]
         # For systems with a MAME system name, the type of ROM that needs to be passed on the command line (cart, tape, cdrm, etc)
@@ -125,16 +113,15 @@ class MameGenerator(Generator):
         commandArray += [ "-state_directory" ,    "/userdata/saves/mame/state/" ]
         commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
         commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
-        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
-        commandArray += [ "-noreadconfig"]
+        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]        
+        commandArray += [ "-homepath" ,           "/userdata/saves/mame/plugins/" ]
+        commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
+        commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
+        commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
+        commandArray += [ "-pluginspath" ,        "/userdata/saves/mame/plugins/" ]
 
         # TODO These paths are not handled yet
-        # TODO -homepath            path to base folder for plugin data (read/write)
-        # TODO -ctrlrpath           path to controller definitions
-        # TODO -inipath             path to ini files
-        # TODO -crosshairpath       path to crosshair files
-        # TODO -pluginspath         path to plugin files
-        # TODO -swpath              path to loose software
+        # TODO -swpath              path to loose software - might use if we want software list MESS support
 
         # BGFX video engine : https://docs.mamedev.org/advanced/bgfx.html
         if system.isOptSet("video") and system.config["video"] == "bgfx":
@@ -162,6 +149,8 @@ class MameGenerator(Generator):
         if system.isOptSet("switchres") and system.getOptBoolean("switchres"):
             commandArray += [ "-modeline_generation" ]
             commandArray += [ "-changeres" ]
+            commandArray += [ "-modesetting" ]
+            commandArray += [ "-readconfig" ]
         else:
             commandArray += [ "-nomodeline_generation" ]
             commandArray += [ "-nochangeres" ]
