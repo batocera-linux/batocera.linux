@@ -36,7 +36,7 @@ class MameGenerator(Generator):
         # Define systems that will use the MESS executable instead of MAME
         messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "plugnplay", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
         # If it needs a system name defined, use it here. Add a blank string if it does not (ie non-arcade, non-system ROMs)
-        messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco", "socrates", "maciix" ]
+        messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco", "socrates", "maclc3" ]
         # For systems with a MAME system name, the type of ROM that needs to be passed on the command line (cart, tape, cdrm, etc)
         # If there are multiple ROM types (ie a computer w/disk & tape), select the default or primary type here.
         messRomType = [ "", "", "cdrm", "cart", "", "cart", "cart", "cart", "cart", "cart1", "flop1", "cart", "cart", "flop", "cass", "cart", "flop1", "cass", "cass1", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "flop1" ]
@@ -213,22 +213,24 @@ class MameGenerator(Generator):
 
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
                 # Mac will auto change floppy 1 to 2 if a boot disk is enabled
-                if system.isOptSet("altromtype") and system.name != "macintosh":
-                    commandArray += [ "-" + system.config["altromtype"] ]
-                elif system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.isOptSet("altromtype") and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                        if system.config["altromtype"] == "flop1":
-                            commandArray += [ "-flop2" ]
+                if system.name != "macintosh":
+                    if system.isOptSet("altromtype"):
+                        commandArray += [ "-" + system.config["altromtype"] ]
+                    else:
+                        commandArray += [ "-" + messRomType[messMode] ]
+                else:
+                    if system.isOptSet("bootdisk"):
+                        if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                            commandArray += [ "-flop2" ]                            
+                        elif system.isOptSet("altromtype"):
+                            commandArray += [ "-" + system.config["altromtype"] ]
                         else:
                             commandArray += [ "-" + messRomType[messMode] ]
                     else:
-                        if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                            commandArray += [ "-flop2" ]
+                        if system.isOptSet("altromtype"):
+                            commandArray += [ "-" + system.config["altromtype"] ]
                         else:
                             commandArray += [ "-" + messRomType[messMode] ]
-                else:
-                    commandArray += [ "-" + messRomType[messMode] ]
-                
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
         
