@@ -7,15 +7,18 @@ default:
     # menu retroarch
     retroarch.menu_driver: rgui
 
-mastersystem:
-  emulator: libretro
-  core:     picodrive
-megadrive:
-  emulator: libretro
-  core:     picodrive
-segacd:
-  emulator: libretro
-  core:     picodrive
 c64:
   emulator: libretro
   core:     vice_x64
+c20:
+  emulator: libretro
+  core:     vice_xvic
+c128:
+  emulator: libretro
+  core:     vice_x128
+cplus4:
+  emulator: libretro
+  core:     vice_xplus4
+pet:
+  emulator: libretro
+  core:     vice_xpet
