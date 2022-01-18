@@ -95,6 +95,8 @@ class Emulator():
         if os.path.exists(defaultarchyml):
             with open(defaultarchyml, 'r') as f:
                 systems_default_arch = yaml.load(f, Loader=yaml.FullLoader)
+                if systems_default_arch is None:
+                    systems_default_arch = {}
         dict_all = {}
 
         if "default" in systems_default:
