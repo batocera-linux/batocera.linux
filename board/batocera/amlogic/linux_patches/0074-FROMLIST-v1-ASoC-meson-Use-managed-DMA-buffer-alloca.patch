@@ -20,12 +20,12 @@ Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
  sound/soc/meson/aiu-fifo-spdif.c |  1 -
  sound/soc/meson/aiu-fifo.c       | 18 ++----------------
  3 files changed, 2 insertions(+), 18 deletions(-)
-
+ 
 diff --git a/sound/soc/meson/aiu-fifo-i2s.c b/sound/soc/meson/aiu-fifo-i2s.c
-index d91b0d874342..2388a2d0b3a6 100644
+index 2cbd12710..57e6e7160 100644
 --- a/sound/soc/meson/aiu-fifo-i2s.c
 +++ b/sound/soc/meson/aiu-fifo-i2s.c
-@@ -124,7 +124,6 @@ const struct snd_soc_dai_ops aiu_fifo_i2s_dai_ops = {
+@@ -143,7 +143,6 @@ const struct snd_soc_dai_ops aiu_fifo_i2s_dai_ops = {
  	.trigger	= aiu_fifo_i2s_trigger,
  	.prepare	= aiu_fifo_i2s_prepare,
  	.hw_params	= aiu_fifo_i2s_hw_params,
@@ -34,7 +34,7 @@ index d91b0d874342..2388a2d0b3a6 100644
  	.shutdown	= aiu_fifo_shutdown,
  };
 diff --git a/sound/soc/meson/aiu-fifo-spdif.c b/sound/soc/meson/aiu-fifo-spdif.c
-index 44eb6faacf44..2fb30f89bf7a 100644
+index 44eb6faac..2fb30f89b 100644
 --- a/sound/soc/meson/aiu-fifo-spdif.c
 +++ b/sound/soc/meson/aiu-fifo-spdif.c
 @@ -158,7 +158,6 @@ const struct snd_soc_dai_ops aiu_fifo_spdif_dai_ops = {
@@ -46,10 +46,10 @@ index 44eb6faacf44..2fb30f89bf7a 100644
  	.shutdown	= aiu_fifo_shutdown,
  };
 diff --git a/sound/soc/meson/aiu-fifo.c b/sound/soc/meson/aiu-fifo.c
-index aa88aae8e517..4ad23267cace 100644
+index 3efc3cad0..078b7ccb4 100644
 --- a/sound/soc/meson/aiu-fifo.c
 +++ b/sound/soc/meson/aiu-fifo.c
-@@ -99,11 +99,6 @@ int aiu_fifo_hw_params(struct snd_pcm_substream *substream,
+@@ -100,12 +100,7 @@ int aiu_fifo_hw_params(struct snd_pcm_substream *substream,
  	struct snd_soc_component *component = dai->component;
  	struct aiu_fifo *fifo = dai->playback_dma_data;
  	dma_addr_t end;
@@ -58,10 +58,12 @@ index aa88aae8e517..4ad23267cace 100644
 -	ret = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
 -	if (ret < 0)
 -		return ret;
- 
+-
++	
  	/* Setup the fifo boundaries */
  	end = runtime->dma_addr + runtime->dma_bytes - fifo->fifo_block;
-@@ -124,12 +119,6 @@ int aiu_fifo_hw_params(struct snd_pcm_substream *substream,
+ 	snd_soc_component_write(component, fifo->mem_offset + AIU_MEM_START,
+@@ -125,11 +120,6 @@ int aiu_fifo_hw_params(struct snd_pcm_substream *substream,
  	return 0;
  }
  
@@ -70,11 +72,10 @@ index aa88aae8e517..4ad23267cace 100644
 -{
 -	return snd_pcm_lib_free_pages(substream);
 -}
--
+ 
  static irqreturn_t aiu_fifo_isr(int irq, void *dev_id)
  {
- 	struct snd_pcm_substream *playback = dev_id;
-@@ -187,15 +176,12 @@ void aiu_fifo_shutdown(struct snd_pcm_substream *substream,
+@@ -188,8 +178,6 @@ void aiu_fifo_shutdown(struct snd_pcm_substream *substream,
  int aiu_fifo_pcm_new(struct snd_soc_pcm_runtime *rtd,
  		     struct snd_soc_dai *dai)
  {
@@ -83,6 +84,9 @@ index aa88aae8e517..4ad23267cace 100644
  	struct snd_card *card = rtd->card->snd_card;
  	struct aiu_fifo *fifo = dai->playback_dma_data;
  	size_t size = fifo->pcm->buffer_bytes_max;
+@@ -199,9 +187,8 @@ int aiu_fifo_pcm_new(struct snd_soc_pcm_runtime *rtd,
+ 	if (ret)
+ 		return ret;
  
 -	snd_pcm_lib_preallocate_pages(substream,
 -				      SNDRV_DMA_TYPE_DEV,
@@ -92,6 +96,3 @@ index aa88aae8e517..4ad23267cace 100644
  
  	return 0;
  }
--- 
-2.31.1
-
