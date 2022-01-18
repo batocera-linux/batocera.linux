@@ -1155,6 +1155,8 @@ msx1:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1216,6 +1218,8 @@ msx2:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1277,6 +1281,8 @@ msx2+:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1337,6 +1343,8 @@ msxturbor:
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -2281,8 +2289,8 @@ advision:
   comment_en: |
           Requires MAME BIOS file advision.zip
 
-tvgames:
-  name:       TV Games
+plugnplay:
+  name:       Plug and Play TV Games
   manufacturer: Various
   release: 2002
   hardware: console
@@ -2640,9 +2648,9 @@ xrick:
     Put the data.zip in this directory.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
-
+    
 macintosh:
-  name:       Macintosh
+  name: Macintosh
   manufacturer: Apple
   release: 1984
   hardware: computer
@@ -2666,3 +2674,211 @@ macintosh:
           mac601.chd, mac701.chd, and mac755.chd
           lr-minivmac requires MacII.ROM and MacIIx.ROM.
           If booting from a hard drive, floppies may not load at boot. For best results, make a copy of one of the bootable drives, load disks manually via the MAME menu, and copy or install them to the hard drive image.
+
+naomi2:
+  name: Naomi 2
+  manufacturer: Sega
+  release: 2000
+  hardware: arcade
+  extensions: [zip]
+  platform: naomi2, arcade
+  emulators:
+    demul:
+      demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+  comment_en: |
+    ---------------------------------
+    ## NAOMI 2 IMPORTANT INFO ##
+    ---------------------------------
+
+    You can now play Naomi 2 games using Demul & Wine.
+    Roms should be stored in the appropriate naomi2 directory.
+    You will need a Naomi 2 bios, please add the naomi2.zip file to your bios directory.
+
+    Performance depends on your x86_64 system hardware.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    -----------
+    First Start
+    -----------
+
+    You need to run a ROM at least once AND be connected to the internet.
+    This creates the directory structure & installs the associated Windows libraries for Wine.
+
+    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
+
+    -----------
+    Controllers
+    -----------
+
+    Currently controllers cannot be configured using the desktop app.
+    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
+    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+
+    Note: Future consideration:
+
+    Demul uses decimal for pad configuration in the padDemul.ini
+    To determine the decimal we have to convert the hexadecimal to decimal.
+    You can edit arcade controls they're under the [JAMMAx_x] headings depending on the number of controllers.
+
+    Controller 1 = 0x100 & 0x200 for the buttons & the 2x analog sticks.
+    Controller 2 = 0x101 & 0x201 etc.
+    
+    Device input hex codes are listed in the appropriate linux kernel input.h depending on the controller type.
+    i.e. A gamepad's 'start' button is 0x13b
+    Therefore controller 1's start button is 0100013b in hex or 16777531 in decimal.
+    Controller 2 would be 0101013b / 16843067 accordingly.
+
+    ------------
+    Service Menu
+    ------------
+
+    Note: Keyboard required.
+    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+
+    Enjoy Naomi 2 games under Linux!
+
+hikaru:
+  name: Hikaru
+  manufacturer: Sega
+  release: 1999
+  hardware: arcade
+  extensions: [zip]
+  platform: hikaru, arcade
+  emulators:
+    demul:
+      demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+  comment_en: |
+    ---------------------------------
+    ## HIKARU IMPORTANT INFO ##
+    ---------------------------------
+
+    You can now play Sega Hikaru games using Demul & Wine.
+    Roms should be stored in the appropriate hikaru directory.
+    You will need a Hikaru bios, please add the hikaru.zip file to your bios directory.
+
+    Performance depends on your x86_64 system hardware.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    -----------
+    First Start
+    -----------
+
+    You need to run a ROM at least once AND be connected to the internet.
+    This creates the directory structure & installs the associated Windows libraries for Wine.
+
+    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
+
+    -----------
+    Controllers
+    -----------
+
+    Currently controllers cannot be configured using the desktop app.
+    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
+    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+
+    ------------
+    Service Menu
+    ------------
+
+    Note: Keyboard required.
+    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+
+    Enjoy Sega Hikaru games under Linux!
+
+gaelco:
+  name: Gaelco
+  manufacturer: Sega
+  release: 1999
+  hardware: arcade
+  extensions: [zip]
+  platform: gaelco, arcade
+  emulators:
+    demul:
+      demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+  comment_en: |
+    ---------------------------------
+    ## GAELCO IMPORTANT INFO ##
+    ---------------------------------
+
+    You can now play Sega Gaelco games using Demul & Wine.
+    Roms should be stored in the appropriate gaelco directory.
+
+    Performance depends on your x86_64 system hardware.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    -----------
+    First Start
+    -----------
+
+    You need to run a ROM at least once AND be connected to the internet.
+    This creates the directory structure & installs the associated Windows libraries for Wine.
+
+    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
+
+    -----------
+    Controllers
+    -----------
+
+    Currently controllers cannot be configured using the desktop app.
+    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
+    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+
+    ------------
+    Service Menu
+    ------------
+
+    Note: Keyboard required.
+    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+
+    Enjoy Sega Gaelco games under Linux!
+
+cave3rd:
+  name: Cave CV1000
+  manufacturer: Sega
+  release: 2004
+  hardware: arcade
+  extensions: [zip]
+  platform: gaelcocave3rd, arcade
+  emulators:
+    demul:
+      demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+  comment_en: |
+    ---------------------------------
+    ## GAELCO IMPORTANT INFO ##
+    ---------------------------------
+
+    You can now play Sega Cave CV1000 games using Demul & Wine.
+    Roms should be stored in the appropriate cave3rd directory.
+
+    Performance depends on your x86_64 system hardware.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    -----------
+    First Start
+    -----------
+
+    You need to run a ROM at least once AND be connected to the internet.
+    This creates the directory structure & installs the associated Windows libraries for Wine.
+
+    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
+
+    -----------
+    Controllers
+    -----------
+
+    Currently controllers cannot be configured using the desktop app.
+    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
+    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+
+    ------------
+    Service Menu
+    ------------
+
+    Note: Keyboard required.
+    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+
+    Enjoy Sega Cave CV1000 games under Linux!

@@ -11,7 +11,7 @@
         * add: language: Hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
-        * add: Adventure Vision, CD-i, Macintosh, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
+        * add: Adventure Vision, CD-i, Macintosh, CreatiVision, PV-1000, Game.com, Gamate, Plug and Play TV Games, Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
         * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
         * add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
         * add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
@@ -37,6 +37,7 @@
         * add: miniVMac emulator for 68k-based Macintosh computers
         * add: ethtool v5.10 (package taken from Buildroot)
         * add: Wake On LAN (WoL) enabled by default via udev rule
+		* add: demul emulator for running Sega - Naomi 2, Hikaru, Gaelco & Cave CV1000 games - requires Wine - (x86_64)
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -103,7 +104,7 @@
         * bump: Daphne to v2.8.0
         * bump: Vice to v3.6
         * bump: ScummVM to v2.5.1
-        * bump: Sega Model 3 emulator to v874
+        * bump: Sega Model 3 emulator to v876
         * bump: easyrpg to 0.7.0 (standalone + libretro core, support .zip now)
         * bump: MelonDS - requires updated bios & firmware files
         * bump: NVidia driver for x86_64 (495.46)

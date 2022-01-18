@@ -65,6 +65,8 @@ from generators.samcoupe.samcoupeGenerator import SamcoupeGenerator
 from generators.abuse.abuseGenerator import AbuseGenerator
 from generators.cdogs.cdogsGenerator import CdogsGenerator
 from generators.hcl.hclGenerator import HclGenerator
+from generators.openmsx.openmsxGenerator import OpenmsxGenerator
+from generators.demul.demulGenerator import DemulGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -136,6 +138,8 @@ generators = {
     'abuse': AbuseGenerator(),
     'cdogs': CdogsGenerator(),
     'hcl': HclGenerator(),
+    'openmsx': OpenmsxGenerator(),
+    'demul': DemulGenerator(),
     #'play': PlayGenerator(),
 }
 

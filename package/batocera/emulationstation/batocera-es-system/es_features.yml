@@ -37,6 +37,13 @@ shared:
       choices:
         "On": 1
         "Off": 0
+    vrr_runloop_enable:
+      submenu:     LATENCY REDUCTION
+      prompt:      VARIABLE REFRESH RATE
+      description: Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR.
+      choices:
+        "On": 1
+        "Off": 0
     integerscale:
       prompt:      INTEGER SCALING (PIXEL PERFECT)
       choices:
@@ -44,11 +51,11 @@ shared:
         "Off": 0
 
 global:
-  shared: [hud, runahead, secondinstance, video_frame_delay_auto, integerscale]
+  shared: [hud, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, integerscale]
 
 libretro:
   features: [ratio, smooth, shaders, decoration, runahead, secondinstance, video_frame_delay_auto, game_translation]
-  shared: [hud, integerscale]
+  shared: [hud, vrr_runloop_enable, integerscale]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4, rk3326]
@@ -157,7 +164,7 @@ libretro:
     beetle-saturn:
       features: [netplay, autosave, cheevos]
     fmsx:
-       features: [netplay, rewind, autosave]
+       features: [netplay, rewind, autosave, cheevos]
     bluemsx:
       features: [rewind, autosave, padtokeyboard, cheevos]
       cfeatures:
@@ -5234,3 +5241,25 @@ abuse:
 cdogs:
   features: [padtokeyboard, decoration]
   shared: [hud]
+
+openmsx:
+  features: [padtokeyboard, decoration]
+  shared: [hud]
+
+demul:
+  features: []
+  shared: []
+  cfeatures:
+        demulRatio:
+            prompt:      GAME ASPECT RATIO
+            description: Set the default aspect ratio.
+            choices:
+                "Stretch":       0
+                "4:3 (Default)": 1
+                "16:9":          2
+        demulVSync:
+            prompt:      VSYNC
+            description: Set vsync on to avoid tearing.
+            choices:
+                "Off": 0
+                "On":  1

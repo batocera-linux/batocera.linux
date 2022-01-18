@@ -106,6 +106,13 @@ ifeq ($(BR2_PACKAGE_YUZU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += yuzu.png
 endif
 
+# demul
+ifeq ($(BR2_PACKAGE_DEMUL),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-demul
+  BATOCERA_DESKTOPAPPS_APPS    += demul-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += demul.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

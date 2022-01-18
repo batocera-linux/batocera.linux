@@ -235,6 +235,8 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/drastic/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lexaloffle-pico8/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/simcoupe/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openmsx/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/demul/Config.in"
 
   menu "ports"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/devilutionx/Config.in"
