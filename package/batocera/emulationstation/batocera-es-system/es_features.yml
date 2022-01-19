@@ -4634,14 +4634,16 @@ mame:
             cfeatures:
                 altmodel:
                     prompt:      MAC MODEL
+                    description: Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for Color)
                     choices:
-                        "Mac 128k (2 LD Floppies)":              mac128k
-                        "Mac 512k (2 LD Floppies)":              mac512k
-                        "Mac Plus (2 LD Floppies/HDD)":          macplus
-                        "Mac SE (2 LD Floppies/HDD)":            macse
-                        "Mac Classic (2 HD Floppies/HDD)":       macclasc
-                        "Mac II (Color, 2 HD Floppies/CD/HDD)":  mac2fdhd
-                        "Mac IIx (Color, 2 HD Floppies/CD/HDD)": maciix
+                        "Mac 128k (128kb RAM, 2 LD Floppies)":                       mac128k
+                        "Mac 512k (512kb RAM, 2 LD Floppies)":                       mac512k
+                        "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)":                     macplus
+                        "Mac SE (4Mb RAM, 2 LD Floppies/HDD)":                       macse
+                        "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)":                  macclasc
+                        "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":             mac2fdhd
+                        "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":            maciix
+                        "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)": maclc3
                 altromtype:
                     prompt:      MEDIA TYPE
                     description: Type of ROM file to load.
