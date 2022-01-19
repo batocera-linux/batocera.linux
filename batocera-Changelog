@@ -37,7 +37,8 @@
         * add: miniVMac emulator for 68k-based Macintosh computers
         * add: ethtool v5.10 (package taken from Buildroot)
         * add: Wake On LAN (WoL) enabled by default via udev rule
-		* add: demul emulator for running Sega - Naomi 2, Hikaru, Gaelco & Cave CV1000 games - requires Wine - (x86_64)
+        * add: demul emulator for running Sega - Naomi 2, Hikaru, Gaelco & Cave CV1000 games - requires Wine - (x86_64)
+        * add: OpenMSX (x86_64)
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -84,12 +85,13 @@
         * es: advanced system options can now be translated
         * bump: RetroArch 1.9.14 + updated libretro cores
         * bump: libretro-mame (0.238)
+        * bump: mame (0.239)
         * bump: kernel to 5.15 (x86_64)
         * bump: gcc to 11
         * bump: llvm to 13
         * bump: vulkan to 1.2.200
         * bump: br to 2021.08
-        * bump: Flatpak to 1.12.2
+        * bump: Flatpak to 1.12.3
         * bump: Ruffle
         * bump: lightspark
         * bump: Lutris to 6.14-4
@@ -108,7 +110,7 @@
         * bump: easyrpg to 0.7.0 (standalone + libretro core, support .zip now)
         * bump: MelonDS - requires updated bios & firmware files
         * bump: NVidia driver for x86_64 (495.46)
-		* bump: PCSX2 for Vulkan support
+        * bump: PCSX2 for Vulkan support
         * dev: odroidgoa renamed to rk3326 (Support for Anbernic RG351P, Odroid Go Advance, Odroid Go Super, Powkiddy RGB10 and RK2020)
         * dev: dts added to rpi4 (bcm2711-rpi-400 and bcm2711-rpi-cm4)
         * dev: RPI's bump kernel to v5.15.x
