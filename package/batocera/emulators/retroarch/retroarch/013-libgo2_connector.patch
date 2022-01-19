@@ -1,0 +1,42 @@
+diff --git a/deps/libgo2/src/display.c b/deps/libgo2/src/display.c
+index cedf3c4..7cfbbe0 100644
+--- a/deps/libgo2/src/display.c
++++ b/deps/libgo2/src/display.c
+@@ -164,26 +164,8 @@ go2_display_t* go2_display_create()
+ 
+     result->connector_id = connector->connector_id;
+ 
+-
+-    // Find prefered mode
+-    drmModeModeInfo* mode;
+-    for (i = 0; i < connector->count_modes; i++)
+-    {
+-        drmModeModeInfo *current_mode = &connector->modes[i];
+-        if (current_mode->type & DRM_MODE_TYPE_PREFERRED)
+-        {
+-            mode = current_mode;
+-            break;
+-        }
+-
+-        mode = NULL;
+-    }
+-
+-    if (!mode)
+-    {
+-        printf("DRM_MODE_TYPE_PREFERRED not found.\n");
+-        goto err_03;
+-    }
++    // Batocera
++    drmModeModeInfo* mode = &connector->modes[0];
+ 
+     result->mode = *mode;
+     result->width = mode->hdisplay;
+@@ -1227,7 +1209,7 @@ go2_context_t* go2_context_create(go2_display_t* display, int width, int height,
+     }
+ 
+ 
+-    result->eglSurface = eglCreateWindowSurface(result->eglDisplay, eglConfig, (EGLNativeWindowType)result->gbmSurface, NULL);	
++    result->eglSurface = eglCreateWindowSurface(result->eglDisplay, eglConfig, (EGLNativeWindowType)result->gbmSurface, NULL);
+     if (result->eglSurface == EGL_NO_SURFACE)
+     {
+         printf("eglCreateWindowSurface failed\n");
