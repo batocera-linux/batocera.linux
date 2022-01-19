@@ -431,7 +431,7 @@ def generateCoreSettings(coreSettings, system, rom):
                 'zoom_mode_toggle': "RETROK_F12",
                 'a': "---",
                 'b': "---",
-                'x': "RETROK_LCTRL",
+                'x': "RETROK_LALT",
                 'y': "RETROK_SPACE",
                 'l': "RETROK_ESCAPE",
                 'l2': "MOUSE_LEFT_BUTTON",
