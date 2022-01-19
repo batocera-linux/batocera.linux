@@ -204,10 +204,12 @@ class LibretroGenerator(Generator):
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
         renderConfig = system.renderconfig
         gameSpecial = videoMode.getGameSpecial(system.name, rom)
-        if gameSpecial == 0:
+        print("Special game bezel/shader = " + str(gameSpecial))
+        print("Will be looking for " + ('shader-' + str(gameSpecial)))
+        if gameSpecial == "0":
             gameShader = renderConfig['shader']
         else:
-            if renderConfig['shader-' + str(gameSpecial)] != None:
+            if ('shader-' + str(gameSpecial)) in renderConfig:
                 gameShader = renderConfig['shader-' + str(gameSpecial)]
             else:
                 gameShader = renderConfig['shader']
