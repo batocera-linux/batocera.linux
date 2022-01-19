@@ -246,6 +246,8 @@ gba:
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
       gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP] }
+    nba:
+      nba:   { requireAnyOf: [BR2_PACKAGE_NBA] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gba
   comment_fr: |

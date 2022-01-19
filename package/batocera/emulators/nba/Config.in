@@ -1,0 +1,10 @@
+config BR2_PACKAGE_NBA
+	bool "nba"
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+        select BR2_PACKAGE_LIBGLEW
+
+	help
+	  A highly accurate Nintendo Game Boy Advance emulator.
+
+	  https://github.com/nba-emu/NanoBoyAdvance
