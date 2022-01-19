@@ -3,8 +3,8 @@
 # mali-midgard-module
 #
 ################################################################################
-# Version.: Commits on Nov 6, 2021
-MALI_MIDGARD_MODULE_VERSION = 4d72a50cd76e2cdeef25fec113e3f6b3396f6e3c
+# Version.: Commits on Jan 10, 2022
+MALI_MIDGARD_MODULE_VERSION = 2c2accf67356463ee661627b8705429256011dcb
 MALI_MIDGARD_MODULE_SITE = $(call github,LibreELEC,mali-midgard,$(MALI_MIDGARD_MODULE_VERSION))
 
 MALI_MIDGARD_MODULE_MODULE_MAKE_OPTS = \
