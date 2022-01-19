@@ -1,0 +1,14 @@
+config BR2_PACKAGE_RAINE
+	bool "raine"
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+        select BR2_PACKAGE_SDL2_NET
+        select BR2_PACKAGE_SDL2_IMAGE
+        select BR2_PACKAGE_SDL2_TTF
+        select BR2_PACKAGE_MUPARSER
+
+	help
+	  A multiple arcade emulator focused on 680x0/z80 machines like
+          NeoCD and Neo Geo, C version
+
+	  https://github.com/zelurker/raine

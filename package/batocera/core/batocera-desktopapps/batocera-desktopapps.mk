@@ -113,6 +113,13 @@ ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_ICONS   += demul.png
 endif
 
+# raine
+ifeq ($(BR2_PACKAGE_RAINE),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-raine
+  BATOCERA_DESKTOPAPPS_APPS    += raine-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += raine.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

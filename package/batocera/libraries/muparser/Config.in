@@ -1,0 +1,8 @@
+config BR2_PACKAGE_MUPARSER
+        bool "muparser"
+        depends on BR2_x86_64
+
+        help
+          muparser fast math parser library
+
+          https://github.com/beltoforion/muparser
