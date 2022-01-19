@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PLAY_VERSION = cd4da52ada0aebc892031cb1479a9e524e56a6ab
+PLAY_VERSION = 0.48
 PLAY_SITE = https://github.com/jpd002/Play-.git
 PLAY_LICENSE = BSD
 PLAY_DEPENDENCIES = qt5base qt5x11extras xserver_xorg-server libglew vulkan-headers vulkan-loader
@@ -26,10 +26,6 @@ define PLAY_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -D $(@D)/Source/ui_qt/Play \
 		$(TARGET_DIR)/usr/bin/play-emu
-	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so \
-		$(TARGET_DIR)/usr/lib/libchdr.so
-	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so.0.1 \
-		$(TARGET_DIR)/usr/lib/libchdr.so.0.1
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/CodeGen/libCodeGen.so \
 		$(TARGET_DIR)/usr/lib/libCodeGen.so
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/Framework/libFramework.so \
