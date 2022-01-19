@@ -552,7 +552,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
     # Naomi and Atomiswave
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
-    # Sega - Naomi 2, HIkaru, Gaelco & Cave CV1000
+    # Demul emulator - multiple Sega arcade systems
 	select BR2_PACKAGE_DEMUL			    if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
                                                 BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 

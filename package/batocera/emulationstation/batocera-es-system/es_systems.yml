@@ -394,6 +394,8 @@ dreamcast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     redream:
       redream:        { requireAnyOf: [BR2_PACKAGE_REDREAM]          }
+    demul:
+      demul:          { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:dreamcast
   comment_fr: |
@@ -411,6 +413,8 @@ naomi:
       flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
     flycast:
       flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
+    demul:
+      demul:    { requireAnyOf: [BR2_PACKAGE_DEMUL]             }
 
 atomiswave:
   name:       Atomiswave
@@ -424,6 +428,8 @@ atomiswave:
       flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
     flycast:
       flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
+    demul:
+      demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
 
 megadrive:
   name:       Sega Megadrive
@@ -2680,7 +2686,7 @@ naomi2:
   manufacturer: Sega
   release: 2000
   hardware: arcade
-  extensions: [zip]
+  extensions: [zip, 7z]
   platform: naomi2, arcade
   emulators:
     demul:
@@ -2743,7 +2749,7 @@ hikaru:
   manufacturer: Sega
   release: 1999
   hardware: arcade
-  extensions: [zip]
+  extensions: [zip, 7z]
   platform: hikaru, arcade
   emulators:
     demul:
@@ -2792,7 +2798,7 @@ gaelco:
   manufacturer: Sega
   release: 1999
   hardware: arcade
-  extensions: [zip]
+  extensions: [zip, 7z]
   platform: gaelco, arcade
   emulators:
     demul:
@@ -2840,8 +2846,8 @@ cave3rd:
   manufacturer: Sega
   release: 2004
   hardware: arcade
-  extensions: [zip]
-  platform: gaelcocave3rd, arcade
+  extensions: [zip, 7z]
+  platform: cave3rd, arcade
   emulators:
     demul:
       demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
