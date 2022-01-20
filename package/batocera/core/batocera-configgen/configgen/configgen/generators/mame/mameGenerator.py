@@ -257,10 +257,10 @@ class MameGenerator(Generator):
             bezelSet = system.config['bezel']            
         if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):            
             bezelSet = None
-        #try:
-        MameGenerator.writeBezelConfig(bezelSet, system, rom)
-        #except:
-        #    MameGenerator.writeBezelConfig(None, system, rom)
+        try:
+            MameGenerator.writeBezelConfig(bezelSet, system, rom)
+        except:
+            MameGenerator.writeBezelConfig(None, system, rom)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
@@ -318,11 +318,11 @@ class MameGenerator(Generator):
 
         # copy the png inside        
         if os.path.exists(bz_infos["layout"]):
-            print("Layout file in use")
             os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
             pngFile = os.path.split(bz_infos["png"])[1]
             os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)
         else:
+            pngFile = "default.png"
             os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
             if os.path.exists(bz_infos["info"]):
                 bzInfoFile = open(bz_infos["info"], "r")
@@ -393,7 +393,7 @@ class MameGenerator(Generator):
                 except:
                     eslog.error("Error opening custom file: {}".format('tattoo_file'))
             output_png_file = "/tmp/bezel_tattooed.png"
-            back = Image.open(tmpZipDir + "/default.png")
+            back = Image.open(tmpZipDir + "/" + pngFile)
             tattoo = tattoo.convert("RGBA")
             back = back.convert("RGBA")
             tw,th = bezelsUtil.fast_image_size(tattoo_file)
@@ -420,10 +420,10 @@ class MameGenerator(Generator):
             imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
             try:
-                os.remove(tmpZipDir + "/default.png")
+                os.remove(tmpZipDir + "/" + pngFile)
             except:
                 pass
-            os.symlink(output_png_file, tmpZipDir + "/default.png")
+            os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
 
     @staticmethod
     def getMameMachineSize(machine, tmpdir):
