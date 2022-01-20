@@ -252,19 +252,15 @@ class MameGenerator(Generator):
         
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
-            bezelSet = None
-            print("Test: No Bezel In Config")
+            bezelSet = None            
         else:
-            bezelSet = system.config['bezel']
-            print("Test: Bezel in Config - " + bezelSet)
-        if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
-            print("Test: Bezels Forced Off")
+            bezelSet = system.config['bezel']            
+        if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):            
             bezelSet = None
-        # try:
-        MameGenerator.writeBezelConfig(bezelSet, system, rom)
-        # except:
-        #    print("Test: Exception Thrown")
-        #    MameGenerator.writeBezelConfig(None, system, rom)
+        try:
+            MameGenerator.writeBezelConfig(bezelSet, system, rom)
+        except:
+            MameGenerator.writeBezelConfig(None, system, rom)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
@@ -305,13 +301,11 @@ class MameGenerator(Generator):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
-        print("Test: Will make bezel in" + tmpZipDir)
         # clean, in case no bezel is set, and in case we want to recreate it
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
 
         if bezelSet is None:
-            print("Test: Bezel is None")
             return
 
         # let's generate the zip file
@@ -322,47 +316,57 @@ class MameGenerator(Generator):
         if bz_infos is None:
             return
 
-        print("Test: Bezel Info - " + bz_infos["png"] + ", " + bz_infos["info"])
         # copy the png inside
         os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
-
-        if os.path.exists(bz_infos["info"]):
-            bzInfoFile = open(bz_infos["info"], "r")
-            bzInfoText = bzInfoFile.readlines()            
-            for infoLine in bzInfoText:
-                if len(infoLine) > 7:
-                    infoLineClean = (infoLine.replace('"', '')).rstrip(",\n").lstrip()
-                    infoLineData = infoLineClean.split(":")
-                    print("Test: Info Line - " + infoLineData[0] + ", " + infoLineData[1])
-                    if infoLineData[0].lower() == "width":
-                        img_width = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "height":
-                        img_height = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "top":
-                        bz_y = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "left":
-                        bz_x = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "bottom":
-                        bz_bottom = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "right":
-                        bz_right = int(infoLineData[1])
-                    elif infoLineData[0].lower() == "opacity":
-                        bz_alpha = float(infoLineData[1])
-            bzInfoFile.close()
-            bz_width = img_width - bz_x - bz_right
-            bz_height = img_height - bz_y - bz_bottom
+        if os.path.exists(bz_infos["layout"]):
+            os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")        
         else:
-            img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
-            _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
-
-            # assumes that all bezels are setup for 4:3H or 3:4V aspects
-            if rotate == 270 or rotate == 90:
-                bz_width = int(img_height * (3 / 4))
+            if os.path.exists(bz_infos["info"]):
+                bzInfoFile = open(bz_infos["info"], "r")
+                bzInfoText = bzInfoFile.readlines()            
+                for infoLine in bzInfoText:
+                    if len(infoLine) > 7:
+                        infoLineClean = (infoLine.replace('"', '')).rstrip(",\n").lstrip()
+                        infoLineData = infoLineClean.split(":")
+                        if infoLineData[0].lower() == "width":
+                            img_width = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "height":
+                            img_height = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "top":
+                            bz_y = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "left":
+                            bz_x = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "bottom":
+                            bz_bottom = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "right":
+                            bz_right = int(infoLineData[1])
+                        elif infoLineData[0].lower() == "opacity":
+                            bz_alpha = float(infoLineData[1])
+                bzInfoFile.close()
+                bz_width = img_width - bz_x - bz_right
+                bz_height = img_height - bz_y - bz_bottom
             else:
-                bz_width = int(img_height * (4 / 3))
-            bz_height = img_height
-            bz_x = int((img_width - bz_width) / 2)
-            bz_y = 0
+                img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
+                _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
+
+                # assumes that all bezels are setup for 4:3H or 3:4V aspects
+                if rotate == 270 or rotate == 90:
+                    bz_width = int(img_height * (3 / 4))
+                else:
+                    bz_width = int(img_height * (4 / 3))
+                bz_height = img_height
+                bz_x = int((img_width - bz_width) / 2)
+                bz_y = 0
+
+            f = open(tmpZipDir + "/default.lay", 'w')
+            f.write("<mamelayout version=\"2\">\n")
+            f.write("<element name=\"bezel\"><image file=\"default.png\" /></element>\n")
+            f.write("<view name=\"bezel\">\n")
+            f.write("<screen index=\"0\"><bounds x=\"" + str(bz_x) + "\" y=\"" + str(bz_y) + "\" width=\"" + str(bz_width) + "\" height=\"" + str(bz_height) + "\" /></screen>\n")
+            f.write("<element ref=\"bezel\"><bounds x=\"0\" y=\"0\" width=\"" + str(img_width) + "\" height=\"" + str(img_height) + "\" alpha=\"" + str(bz_alpha) + "\" /></element>\n")
+            f.write("</view>\n")
+            f.write("</mamelayout>\n")
+            f.close()
 
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
             if system.config['bezel.tattoo'] == 'system':
@@ -417,16 +421,6 @@ class MameGenerator(Generator):
             except:
                 pass
             os.symlink(output_png_file, tmpZipDir + "/default.png")
-
-        f = open(tmpZipDir + "/default.lay", 'w')
-        f.write("<mamelayout version=\"2\">\n")
-        f.write("<element name=\"bezel\"><image file=\"default.png\" /></element>\n")
-        f.write("<view name=\"bezel\">\n")
-        f.write("<screen index=\"0\"><bounds x=\"" + str(bz_x) + "\" y=\"" + str(bz_y) + "\" width=\"" + str(bz_width) + "\" height=\"" + str(bz_height) + "\" /></screen>\n")
-        f.write("<bezel element=\"bezel\"><bounds x=\"0\" y=\"0\" width=\"" + str(img_width) + "\" height=\"" + str(img_height) + "\" alpha=\"" + str(bz_alpha) + "\" /></bezel>\n")        
-        f.write("</view>\n")
-        f.write("</mamelayout>\n")
-        f.close()
 
     @staticmethod
     def getMameMachineSize(machine, tmpdir):

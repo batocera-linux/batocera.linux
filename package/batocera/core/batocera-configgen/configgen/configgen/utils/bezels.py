@@ -23,18 +23,22 @@ def getBezelInfos(rom, bezel, systemName):
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
+    overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".lay"
     bezel_game = True
     if not os.path.exists(overlay_png_file):
         overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
         overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
+        overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".lay"
         bezel_game = True
         if not os.path.exists(overlay_png_file):
             overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
             overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
+            overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".lay"
             bezel_game = True
             if not os.path.exists(overlay_png_file):
                 overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
                 overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
+                overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".lay"
                 bezel_game = True
                 if not os.path.exists(overlay_png_file):
                     if gameSpecial != 0:
@@ -73,7 +77,7 @@ def getBezelInfos(rom, bezel, systemName):
                                             if not os.path.exists(overlay_png_file):
                                               return None
     eslog.debug("Original bezel file used: {}".format(overlay_png_file))
-    return { "png": overlay_png_file, "info": overlay_info_file, "specific_to_game": bezel_game }
+    return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "specific_to_game": bezel_game }
 
 # Much faster than PIL Image.size
 def fast_image_size(image_file):
