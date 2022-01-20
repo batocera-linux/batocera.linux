@@ -257,10 +257,10 @@ class MameGenerator(Generator):
             bezelSet = system.config['bezel']            
         if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):            
             bezelSet = None
-        try:
-            MameGenerator.writeBezelConfig(bezelSet, system, rom)
-        except:
-            MameGenerator.writeBezelConfig(None, system, rom)
+        #try:
+        MameGenerator.writeBezelConfig(bezelSet, system, rom)
+        #except:
+        #    MameGenerator.writeBezelConfig(None, system, rom)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
@@ -316,11 +316,14 @@ class MameGenerator(Generator):
         if bz_infos is None:
             return
 
-        # copy the png inside
-        os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
+        # copy the png inside        
         if os.path.exists(bz_infos["layout"]):
-            os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")        
+            print("Layout file in use")
+            os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
+            pngFile = os.path.split(bz_infos["png"])[1]
+            os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)
         else:
+            os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
             if os.path.exists(bz_infos["info"]):
                 bzInfoFile = open(bz_infos["info"], "r")
                 bzInfoText = bzInfoFile.readlines()            

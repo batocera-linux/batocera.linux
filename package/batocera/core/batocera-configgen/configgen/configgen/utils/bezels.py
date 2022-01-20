@@ -44,35 +44,43 @@ def getBezelInfos(rom, bezel, systemName):
                     if gameSpecial != 0:
                       overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".info"
                       overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".png"
+                      overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".lay"
                       bezel_game = False
                     if not os.path.exists(overlay_png_file):
                         overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
                         overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
+                        overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".lay"
                         bezel_game = False
                         if not os.path.exists(overlay_png_file):
                             if gameSpecial != 0:
                               overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".info"
                               overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".png"
+                              overlay_layout_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + "-" + str(gameSpecial) + ".lay"
                               bezel_game = False
                             if not os.path.exists(overlay_png_file):
                                 overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
                                 overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
+                                overlay_layout_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".lay"
                                 bezel_game = False
                                 if not os.path.exists(overlay_png_file):
                                     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default-" + str(gameSpecial) + ".info"
                                     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default-" + str(gameSpecial) + ".png"
+                                    overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/default-" + str(gameSpecial) + ".lay"
                                     bezel_game = True
                                     if not os.path.exists(overlay_png_file):
                                       overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
                                       overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
+                                      overlay_layout_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.lay"
                                       bezel_game = True
                                       if not os.path.exists(overlay_png_file):
                                           overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default-" + str(gameSpecial) + ".info"
                                           overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default-" + str(gameSpecial) + ".png"
+                                          overlay_layout_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default-" + str(gameSpecial) + ".lay"
                                           bezel_game = True
                                           if not os.path.exists(overlay_png_file):
                                             overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
                                             overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
+                                            overlay_layout_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.lay"
                                             bezel_game = True
                                             if not os.path.exists(overlay_png_file):
                                               return None
