@@ -154,6 +154,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON8": "pageup"})
     
     xml_mameconfig = getRoot(config, "mameconfig")
+    xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
     xml_system     = getSection(config, xml_mameconfig, "system")
     xml_system.setAttribute("name", "default")
 
