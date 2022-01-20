@@ -56,7 +56,7 @@ class AmiberryGenerator(Generator):
                 commandArray.append("amiberry.floppy_path="+rom[0:romPathIndex])
 
             # controller
-            libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
+            libretroControllers.writeControllersConfig(retroconfig, system, playersControllers, True)
             retroconfig.write()
 
             if not os.path.exists(batoceraFiles.amiberryRetroarchInputsDir):
