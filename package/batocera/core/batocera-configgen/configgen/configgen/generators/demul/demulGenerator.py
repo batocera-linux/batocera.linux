@@ -56,10 +56,41 @@ class DemulGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/vcrun2010.done", "w") as f:
                 f.write("done")
-              
+
+        # determine what system to define for demul
+        # -run=<name>		run specified system (dc, naomi, awave, hikaru, gaelco, cave3rd)
+        if "naomi" in rom:
+            demulsystem = "naomi"
+        elif "hikaru" in rom:
+            demulsystem = "hikaru"
+        elif "gaelco" in rom:
+            demulsystem = "gaelco"
+        elif "cave3rd" in rom:
+            demulsystem = "cave3rd"
+        elif "dreamcast" in rom:
+            demulsystem = "dc"
+        elif "atomiswave" in rom:
+            demulsystem = "awave"
+
+        # remove the rom path & extension to simplify the rom name when needed
+        # -rom=<romname>	run specified system rom from the rom path defined in Demul.ini
+        # or -image=<full image path> for dreamcast
+        if demulsystem == "naomi":
+            if "naomi2" in rom:
+                romname = rom.replace("/userdata/roms/naomi2/", "")
+            else:
+                romname = rom.replace("/userdata/roms/naomi/", "")
+        elif demulsystem == "hikaru":
+            romname = rom.replace("/userdata/roms/hikaru/", "")
+        elif demulsystem == "gaelco":
+            romname = rom.replace("/userdata/roms/gaelco/", "")
+        elif demulsystem == "cave3rd":
+            romname = rom.replace("/userdata/roms/cave3rd/", "")
+        elif demulsystem == "awave":
+            romname = rom.replace("/userdata/roms/atomiswave/", "")
+
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
-
         configFileName = emupath + "/Demul.ini"
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
@@ -70,35 +101,72 @@ class DemulGenerator(Generator):
             except:
                 pass
         
-        if not os.path.isfile(configFileName):
-            # add rom & bios paths to Demul.ini
-            nvram = Path("/userdata/saves/demul/demul/nvram/")
-            nvram_path_on_windows = PureWindowsPath(nvram)
-            roms0 = Path("/userdata/roms/naomi2/")
-            roms0_path_on_windows = PureWindowsPath(roms0)
-            roms1 = Path("/userdata/bios/")
-            roms1_path_on_windows = PureWindowsPath(roms1)
-            plugins = Path("/userdata/saves/demul/demul/plugins/")
-            plugins_path_on_windows = PureWindowsPath(plugins)
+        # add rom & bios paths to Demul.ini
+        nvram = Path("/userdata/saves/demul/demul/nvram/")
+        nvram_path_on_windows = PureWindowsPath(nvram)
+        roms0 = Path("/userdata/roms/naomi2/")
+        roms0_path_on_windows = PureWindowsPath(roms0)
+        roms1 = Path("/userdata/bios/")
+        roms1_path_on_windows = PureWindowsPath(roms1)
+        roms2 = Path("/userdata/roms/hikaru")
+        roms2_path_on_windows = PureWindowsPath(roms2)
+        roms3 = Path("/userdata/roms/gaelco")
+        roms3_path_on_windows = PureWindowsPath(roms3)
+        roms4 = Path("/userdata/roms/cave3rd")
+        roms4_path_on_windows = PureWindowsPath(roms4)
+        roms5 = Path("/userdata/roms/dreamcast")
+        roms5_path_on_windows = PureWindowsPath(roms5)
+        roms6 = Path("/userdata/roms/atomiswave")
+        roms6_path_on_windows = PureWindowsPath(roms6)
+        roms7 = Path("/userdata/roms/naomi")
+        roms7_path_on_windows = PureWindowsPath(roms7)
+        plugins = Path("/userdata/saves/demul/demul/plugins/")
+        plugins_path_on_windows = PureWindowsPath(plugins)
             
-            if not Config.has_section("files"):
-                Config.add_section("files")
-            Config.set("files", "nvram", "Z:{}".format(nvram_path_on_windows))
-            Config.set("files", "roms0", "Z:{}".format(roms0_path_on_windows))
-            Config.set("files", "romsPathsCount", "2")
-            Config.set("files", "roms1", "Z:{}".format(roms1_path_on_windows))
+        if not Config.has_section("files"):
+            Config.add_section("files")
+        Config.set("files", "nvram", "Z:{}".format(nvram_path_on_windows))
+        Config.set("files", "roms0", "Z:{}".format(roms0_path_on_windows))
+        Config.set("files", "romsPathsCount", "8")
+        Config.set("files", "roms1", "Z:{}".format(roms1_path_on_windows))
+        Config.set("files", "roms2", "Z:{}".format(roms2_path_on_windows))
+        Config.set("files", "roms3", "Z:{}".format(roms3_path_on_windows))
+        Config.set("files", "roms4", "Z:{}".format(roms4_path_on_windows))
+        Config.set("files", "roms5", "Z:{}".format(roms5_path_on_windows))
+        Config.set("files", "roms6", "Z:{}".format(roms6_path_on_windows))
+        Config.set("files", "roms7", "Z:{}".format(roms7_path_on_windows))
 
-            if not Config.has_section("plugins"):
-                Config.add_section("plugins")
-            Config.set("plugins", "directory", "Z:{}".format(plugins_path_on_windows))
-            Config.set("plugins", "gdr", "gdrCHD.dll")
-            Config.set("plugins", "gpu", "gpuDX11.dll")
-            Config.set("plugins", "spu", "spuDemul.dll")
-            Config.set("plugins", "pad", "padDemul.dll")
-            Config.set("plugins", "net", "netDemul.dll")
+        if not Config.has_section("plugins"):
+            Config.add_section("plugins")
+        Config.set("plugins", "directory", "Z:{}".format(plugins_path_on_windows))
+        Config.set("plugins", "gpu", "gpuDX11.dll")
+        Config.set("plugins", "spu", "spuDemul.dll")
+        Config.set("plugins", "pad", "padDemul.dll")
+        Config.set("plugins", "net", "netDemul.dll")
 
-            with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
-                Config.write(configfile)
+        # dreamcast needs the full path & cdi or gdi image extensions
+        # check if we need to change the gdr plugin.
+        if demulsystem == "dc":
+            if ".chd" in rom:
+                Config.set("plugins", "gdr", "gdrCHD.dll")
+            else:
+                Config.set("plugins", "gdr", "gdrImage.dll")
+        # demul supports zip & 7zip romset extensions
+        elif ".zip" in romname:
+            smplromname = romname.replace(".zip", "")
+            Config.set("plugins", "gdr", "gdrImage.dll")
+        elif ".7z" in romname:
+            smplromname = romname.replace(".7z", "")
+            Config.set("plugins", "gdr", "gdrImage.dll")
+
+        with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
+            Config.write(configfile)
+
+        # add the windows rom path if dreamcast
+        if demulsystem == "dc":
+            dcrom_windows = PureWindowsPath(rom)
+            # add Z:
+            dcpath = "Z:{}".format(dcrom_windows)
 
         # adjust fullscreen & resolution to gpuDX11.ini
         configFileName = emupath + "/gpuDX11.ini"
@@ -137,34 +205,15 @@ class DemulGenerator(Generator):
 
         #padDemul.ini
 
-        # -run=<name>		run specified system (dc, naomi, awave, hikaru, gaelco, cave3rd)
-        # -rom=<romname>	run specified system rom from the rom path defined in Demul.ini
-        
-        if "naomi2" in rom:
-            demulsystem = "naomi"
-        elif "hikaru" in rom:
-            demulsystem = "hikaru"
-        elif "gaelco" in rom:
-            demulsystem = "gaelco"
-        elif "cave3rd" in rom:
-            demulsystem = "cave3ed"
-        
-        # now run the emulator
+        # now setup the command array for the emulator
         commandArray = ["/usr/wine/proton/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/userdata/saves/demul/demul/demul.exe"]
-        # other options tbd - hard coded for naomi for now
+        # add system to command array
         commandArray.extend(["-run={}".format(demulsystem)])
-        # now simplify the rom name
-        if demulsystem == "naomi":
-            romname = rom.replace("/userdata/roms/naomi2/", "")
-        elif demulsystem == "hikaru":
-            romname = rom.replace("/userdata/roms/hikaru/", "")
-        elif demulsystem == "gaelco":
-            romname = rom.replace("/userdata/roms/gaelco/", "")
-        elif demulsystem == "cave3rd":
-            romname = rom.replace("/userdata/roms/cave3rd/", "")
-        
-        smplromname = romname.replace(".zip", "")
-        commandArray.extend(["-rom={}".format(smplromname)])
+        # add rom to the command array if not dreamcast
+        if demulsystem == "dc":
+            commandArray.extend(["-image={}".format(dcpath)])
+        else:
+            commandArray.extend(["-rom={}".format(smplromname)])
 
         return Command.Command(
             array=commandArray,
