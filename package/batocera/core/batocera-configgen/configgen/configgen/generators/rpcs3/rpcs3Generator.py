@@ -153,24 +153,14 @@ class Rpcs3Generator(Generator):
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
     def getInGameRatio(self, config, gameResolution, rom):
-        # Open the configuration file and see what aspect ratio has been set.
-        with open(batoceraFiles.rpcs3config, 'r') as stream:
-            rpcs3ymlconfig = yaml.safe_load(stream)
-
         # If stretchy-boy mode has been set, just assume the display resolution is the aspect ratio.
-        # String version required as rpcs3 stores settings without quotes like an animal.
-        if str(rpcs3ymlconfig["Video"]['Stretch To Display Area']) == "True":
+        if config.isOptSet("stretchtodisplayarea") and config.getOptBoolean("stretchtodisplayarea"):
             return gameResolution["width"] / gameResolution["height"]
 
-        # Check if the aspect ratio key exists first.
-        if 'Aspect ratio' in rpcs3ymlconfig["Video"]:
-            if str(rpcs3ymlconfig["Video"]['Aspect ratio']) == "16:9":
-                return 16/9
-
-            if str(rpcs3ymlconfig["Video"]['Aspect ratio']) == "4:3":
-                return 4/3
+        # Check if the aspect ratio key exists.
+        if config.isOptSet("tv_mode"):
+            return config['tvmode']
         else:
-            # There can be instances where the aspect ratio isn't set (such as on auto). Here would be the same code/passed on value from system.isOptSet("tv_mode") but for now we will simply assume 16/9.
             return 16/9
 
     def getFirmwareVersion():
