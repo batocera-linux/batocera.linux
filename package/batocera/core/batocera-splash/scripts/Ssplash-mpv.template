@@ -76,8 +76,13 @@ do_videostart ()
         mpv_video="${mpv_video} --vf=scale=${resize}"
     fi
 
+    # MPV_OPTS can be set differently for some boards to work
+    MPV_OPTS=
+    MODELOPTS=/etc/opts.$(cat /sys/firmware/devicetree/base/model)
+    test -e "${MODELOPTS}" && . "${MODELOPTS}"
+
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"
+    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video ${MPV_OPTS} "$video"
 }
 
 case "$1" in
