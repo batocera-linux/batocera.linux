@@ -154,29 +154,6 @@ case "${ACTION}" in
 	       echo 0 > /var/run/drmMode # reset the drmMode
 	fi
 	f_checkVals
-
-	### TEMPORARY HACK, not TO KEEP
-	
-	# force no hdmi if it is unplugged
-	NEWCONN=$(cat /var/run/drmConn)
-	HDMISTATUS=$(cat /sys/class/gpio/gpio54/value)
-	if test "${NEWCONN}" = 1 -a "${HDMISTATUS}" = 1
-	then
-	    echo 0 > /var/run/drmConn
-	fi
-
-	# rotation
-	NEWCONN=$(cat /var/run/drmConn)
-	if test "${NEWCONN}" = 0
-	then
-	    touch /var/run/rk-rotation
-	else
-	    rm -f /var/run/rk-rotation
-	fi
-
-	###
-
-	f_minTomaxResolution
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")
 	f_checkVals
