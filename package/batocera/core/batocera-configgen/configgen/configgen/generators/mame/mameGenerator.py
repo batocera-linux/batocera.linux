@@ -69,7 +69,7 @@ class MameGenerator(Generator):
         commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
         commandArray += [ "-pluginspath", "/usr/bin/mame/plugins/" ]
         commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
-        commandArray += [ "-artpath",       "/userdata/decorations/;/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/mame/artwork/" ] # first for systems ; second for overlays
+        commandArray += [ "-artpath",       "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/" ] # first for systems ; second for overlays
 
         # Enable cheats
         commandArray += [ "-cheat" ]
@@ -258,9 +258,12 @@ class MameGenerator(Generator):
         if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):            
             bezelSet = None
         try:
-            MameGenerator.writeBezelConfig(bezelSet, system, rom)
+            if messMode != -1:
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode])
+            else:
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "")
         except:
-            MameGenerator.writeBezelConfig(None, system, rom)
+            MameGenerator.writeBezelConfig(None, system, rom, "")
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
@@ -297,10 +300,13 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom):
+    def writeBezelConfig(bezelSet, system, rom, messSys):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
-        tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
+        if messSys == "":
+            tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
+        else:
+                tmpZipDir = "/var/run/mame_artwork/" + messSys # ok, no need to zip, a folder is taken too
         # clean, in case no bezel is set, and in case we want to recreate it
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
