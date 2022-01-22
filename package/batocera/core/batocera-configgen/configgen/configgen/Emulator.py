@@ -15,7 +15,7 @@ class Emulator():
         self.name = name
 
         # read the configuration from the system name
-        self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml")
+        self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml", "/usr/share/batocera/configgen/configgen-defaults-arch-" + Emulator.getArchModel() + ".yml")
         if "emulator" not in self.config or self.config["emulator"] == "":
             eslog.error("no emulator defined. exiting.")
             raise Exception("No emulator found")
@@ -90,16 +90,27 @@ class Emulator():
                 dct[k] = merge_dct[k]
 
     @staticmethod
-    def get_generic_config(system, defaultyml, defaultarchyml):
+    def get_generic_config(system, defaultyml, defaultarchyml, defaultarchmodelyml = None):
+        eslog.debug("reading conf from : {}".format(defaultyml))
         with open(defaultyml, 'r') as f:
             systems_default = yaml.load(f, Loader=yaml.FullLoader)
 
         systems_default_arch = {}
         if os.path.exists(defaultarchyml):
+            eslog.debug("reading conf from : {}".format(defaultarchyml))
             with open(defaultarchyml, 'r') as f:
                 systems_default_arch = yaml.load(f, Loader=yaml.FullLoader)
                 if systems_default_arch is None:
                     systems_default_arch = {}
+
+        systems_default_arch_model = {}
+        if defaultarchmodelyml is not None and os.path.exists(defaultarchmodelyml):
+            eslog.debug("reading conf from : {}".format(defaultarchmodelyml))
+            with open(defaultarchmodelyml, 'r') as f:
+                systems_default_arch_model = yaml.load(f, Loader=yaml.FullLoader)
+                if systems_default_arch_model is None:
+                    systems_default_arch_model = {}
+
         dict_all = {}
 
         if "default" in systems_default:
@@ -108,17 +119,23 @@ class Emulator():
         if "default" in systems_default_arch:
             Emulator.dict_merge(dict_all, systems_default_arch["default"])
 
+        if "default" in systems_default_arch_model:
+            Emulator.dict_merge(dict_all, systems_default_arch_model["default"])
+
         if system in systems_default:
             Emulator.dict_merge(dict_all, systems_default[system])
 
         if system in systems_default_arch:
             Emulator.dict_merge(dict_all, systems_default_arch[system])
 
+        if system in systems_default_arch_model:
+            Emulator.dict_merge(dict_all, systems_default_arch_model[system])
+
         return dict_all
 
     @staticmethod
-    def get_system_config(system, defaultyml, defaultarchyml):
-        dict_all = Emulator.get_generic_config(system, defaultyml, defaultarchyml)
+    def get_system_config(system, defaultyml, defaultarchyml, defaultarchmodelyml):
+        dict_all = Emulator.get_generic_config(system, defaultyml, defaultarchyml, defaultarchmodelyml)
 
         # options are in the yaml, not in the system structure
         # it is flat in the batocera.conf which is easier for the end user, but i prefer not flat in the yml files
@@ -186,3 +203,11 @@ class Emulator():
             self.config['showFPS'] = False
             self.config['uimode'] = "Full"
 
+    def getArchModel():
+        try:
+            with open("/sys/firmware/devicetree/base/model") as f:
+                contents = f.readlines()
+                return contents[0].strip(" \t\r\n\0")
+        except:
+            pass
+        return "unknown"
