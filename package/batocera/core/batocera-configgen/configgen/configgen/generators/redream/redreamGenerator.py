@@ -8,6 +8,9 @@ import os
 import batoceraFiles
 import filecmp
 import codecs
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 redream_file = "/usr/bin/redream"
 redreamConfig = batoceraFiles.CONF + "/redream"
