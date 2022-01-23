@@ -7,6 +7,7 @@ import configparser
 import os.path
 import httplib2
 import json
+import controllersConfig
 from utils.logger import get_logger
 from os import environ
 
@@ -279,7 +280,8 @@ class DuckstationGenerator(Generator):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
+        env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb",
+               "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)}
         return Command.Command(array=commandArray, env=env)
 
 
