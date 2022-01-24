@@ -5255,14 +5255,13 @@ demul:
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
-            description: Set the default aspect ratio.
             choices:
                 "Stretch":       0
                 "4:3 (Default)": 1
                 "16:9":          2
         demulVSync:
             prompt:      VSYNC
-            description: Set vsync on to avoid tearing.
+            description: Fix screen tearing.
             choices:
                 "Off": 0
                 "On":  1
