@@ -9,13 +9,13 @@ shared:
       description: Show context-sensitive info over the game.
       choices:
         "None": none
-        "Game": game
-        "Performances": perf
+        "Game info/art": game
+        "Performance": perf
         "Custom": custom
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
-      description: Use run-ahead frames
+      description: Enables run-ahead. Doubles CPU requirements. High numbers can result in visible jitter.
       choices:
         "None": 0
         "1": 1
@@ -26,14 +26,15 @@ shared:
         "6": 6
     secondinstance:
       submenu:     LATENCY REDUCTION
-      prompt:      RUN-AHEAD USE SECOND INSTANCE
+      prompt:      USE SECOND INSTANCE FOR RUN-AHEAD
+      description: Can prevent audio skips on button presses when using run-ahead.
       choices:
         "On": 1
         "Off": 0
     video_frame_delay_auto:
       submenu:     LATENCY REDUCTION
       prompt:      AUTOMATIC FRAME DELAY
-      description: Automatically decrease frame delay temporarily to prevent frame drops.
+      description: Automatically decrease frame delay temporarily to prevent frame drops. Can introduce stuttering.
       choices:
         "On": 1
         "Off": 0
