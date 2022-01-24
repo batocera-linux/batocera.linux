@@ -90,9 +90,9 @@ class Rpcs3Generator(Generator):
 
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
         if system.isOptSet("tv_mode"):
-            if system.config['tvmode'] == '4/3':
+            if system.config['tv_mode'] == '4/3':
                 rpcs3ymlconfig["Video"]['Aspect ratio'] = '4:3'
-            elif system.config['tvmode'] == '16/9':
+            elif system.config['tv_mode'] == '16/9':
                 rpcs3ymlconfig["Video"]['Aspect ratio'] = '16:9'
         else:
             # This is where the code that automatically works out the ratio of your screen and applies the respective aspect ratio would go.
@@ -154,13 +154,13 @@ class Rpcs3Generator(Generator):
 
     def getInGameRatio(self, config, gameResolution, rom):
         # If stretchy-boy mode has been set, just assume the display resolution is the aspect ratio.
-        if config.isOptSet("stretchtodisplayarea") and config.getOptBoolean("stretchtodisplayarea"):
-            return gameResolution["width"] / gameResolution["height"]
+        #if config.isOptSet("stretchtodisplayarea") and config.getOptBoolean("stretchtodisplayarea"):
+            #return gameResolution["width"] / gameResolution["height"]
 
         # Check if the aspect ratio key exists.
-        if config.isOptSet("tv_mode"):
-            return config['tvmode']
-        else:
+        #if config.isOptSet("tv_mode"):
+            #return config['tv_mode']
+        #else:
             return 16/9
 
     def getFirmwareVersion():
