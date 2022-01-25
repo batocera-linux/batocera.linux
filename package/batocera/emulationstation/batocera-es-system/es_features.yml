@@ -4372,8 +4372,8 @@ rpcs3:
             prompt:      GRAPHICAL USER INTERFACE
             description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
             choices:
-                "Off":      0
-                "On":       1
+                "Off":   0
+                "On":    1
         gfxbackend:
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
@@ -4382,12 +4382,47 @@ rpcs3:
                 "Vulkan":   Vulkan
         spudecoder:
             prompt:      SPU DECODER
-            description: If game crashes, try ASMJIT. If still crashing, try Interpreter (fast).
+            description: If game crashes, try ASMJIT. If still crashing, try Fast Interpreter.
             choices:
-                "Recompiler (LLVM)":      Recompiler (LLVM)
-                "Recompiler (ASMJIT)":    Recompiler (ASMJIT)
-                "Interpreter (fast)":     Interpreter (fast)
-                "Interpreter (precise)":  Interpreter (precise)
+                "LLVM Recompiler":      Recompiler (LLVM)
+                "ASMJIT Recompiler":    Recompiler (ASMJIT)
+                "Fast Interpreter":     Interpreter (fast)
+                "Precise Interpreter":  Interpreter (precise)
+        tv_mode:
+            prompt:      TV MODE
+            description: PS3's internal ratio setting. Some games only support 16/9.
+            choices:
+                "16:9":  16/9
+                "4:3":   4/3
+        framelimit:
+            prompt:      ADDITIONAL FRAMELIMIT
+            description: Most games already have an internal framelimit. Minor performance cost.
+            choices:
+                "Off (faster, unstable)":  Off
+                "59.94":                   59.94
+                "50":                      50
+                "60":                      60
+                "30":                      30
+        shadermode:
+            prompt:      SHADER MODE
+            description: Only Async (skip draw) avoids freezing while compiling shaders.
+            choices:
+                "Legacy (laggy)":                   Shader Recompiler
+                "Async (skip draw, recommended)":   Async Shader Recompiler
+                "Async with interp. (hybrid)":      Async with Shader Interpreter
+                "Interpreter only (experimental)":  Shader Interpreter only
+        vsync:
+            prompt:      VSYNC
+            description: Can fix screen tearing on unorthodox displays (most LCDs don't need this).
+            choices:
+                "Off":         0
+                "On (slower)": 1
+        stretchtodisplayarea:
+            prompt:      STRETCH TO DISPLAY AREA
+            description: Distorts the output to fill the display fully.
+            choices:
+                "Off":   0
+                "On":    1
 
 scummvm:
   features: [ratio, padtokeyboard, decoration]

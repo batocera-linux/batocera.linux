@@ -49,7 +49,7 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig = {}
         if os.path.isfile(batoceraFiles.rpcs3config):
             with open(batoceraFiles.rpcs3config, 'r') as stream:
-                rpcs3ymlconfig = yaml.load(stream)
+                rpcs3ymlconfig = yaml.safe_load(stream)
 
         if rpcs3ymlconfig is None: # in case the file is empty
             rpcs3ymlconfig = {}
@@ -79,16 +79,50 @@ class Rpcs3Generator(Generator):
 
         # Set the Default Core Values we need
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
-        rpcs3ymlconfig["Core"]['SPU Cache'] = False
-        rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     
- 
-        rpcs3ymlconfig["Video"]['Frame limit'] = 60
+        rpcs3ymlconfig["Core"]['SPU Cache'] = False # When SPU Cache is True, game performance decreases signficantly. Force it to off.
+        rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True
 
         # gfx backend
         if system.isOptSet("gfxbackend"):
             rpcs3ymlconfig["Video"]['Renderer'] = system.config["gfxbackend"]
         else:
             rpcs3ymlconfig["Video"]['Renderer'] = 'OpenGL' # Vulkan
+
+        # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
+        if system.isOptSet("tv_mode"):
+            if system.config['tv_mode'] == '4/3':
+                rpcs3ymlconfig["Video"]['Aspect ratio'] = '4:3'
+            elif system.config['tv_mode'] == '16/9':
+                rpcs3ymlconfig["Video"]['Aspect ratio'] = '16:9'
+        else:
+            # This is where the code that automatically works out the ratio of your screen and applies the respective aspect ratio would go.
+            # For now, we will simply remove the key if it exists, thus using RPCS3's default setting.
+            if 'Aspect ratio' in rpcs3ymlconfig["Video"]:
+                del rpcs3ymlconfig["Video"]['Aspect ratio']
+
+        # Shader compilation
+        if system.isOptSet("shadermode"):
+            rpcs3ymlconfig["Video"]['Shader Mode'] = system.config['shadermode']
+        else:
+            # RPCS3's default "Async Shader Recompiler" has visual glitches, however it's the only setting which doesn't cause the screen to freeze whenever new graphics are on screen. If RPCS3 ever fixes the "Async with Shader Interpreter" option, it would be the preferred option for this setting.
+            rpcs3ymlconfig["Video"]['Shader Mode'] = str("Async Shader Recompiler")
+
+        # Vsync defaults to off because ??? it's faster? Not sure why, but not changing it.
+        if system.isOptSet("vsync") and system.getOptBoolean("vsync"):
+            rpcs3ymlconfig["Video"]['VSync'] = True
+        else:
+            rpcs3ymlconfig["Video"]['VSync'] = False
+
+        # Stretch to display area
+        if system.isOptSet("stretchtodisplayarea") and system.getOptBoolean("stretchtodisplayarea"):
+            rpcs3ymlconfig["Video"]['Stretch To Display Area'] = True
+        else:
+            rpcs3ymlconfig["Video"]['Stretch To Display Area'] = False
+
+        if system.isOptSet("framelimit"):
+            rpcs3ymlconfig["Video"]['Frame limit'] = system.config['framelimit']
+        else:
+            rpcs3ymlconfig["Video"]['Frame limit'] = 60
 
         rpcs3ymlconfig["Audio"]['Renderer'] = 'OpenAL' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
         rpcs3ymlconfig["Audio"]['Audio Channels'] = 'Downmix to Stereo'
@@ -107,6 +141,7 @@ class Rpcs3Generator(Generator):
             romBasename = path.basename(rom)
             romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], romName]
+
         if system.isOptSet("gui") and system.getOptBoolean("gui") == False:
             commandArray.append("--no-gui")
 
@@ -118,7 +153,15 @@ class Rpcs3Generator(Generator):
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
     def getInGameRatio(self, config, gameResolution, rom):
-        return 16/9
+        # If stretchy-boy mode has been set, just assume the display resolution is the aspect ratio.
+        #if config.isOptSet("stretchtodisplayarea") and config.getOptBoolean("stretchtodisplayarea"):
+            #return gameResolution["width"] / gameResolution["height"]
+
+        # Check if the aspect ratio key exists.
+        #if config.isOptSet("tv_mode"):
+            #return config['tv_mode']
+        #else:
+            return 16/9
 
     def getFirmwareVersion():
         try:
