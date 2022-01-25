@@ -15,22 +15,29 @@ index 305098f..ea7443f 100644
  
  void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
 diff --git a/Core/System.cpp b/Core/System.cpp
-index 04070c6..b5da56f 100644
+index 04070c614..21577787d 100644
 --- a/Core/System.cpp
 +++ b/Core/System.cpp
-@@ -586,32 +586,25 @@ CoreParameter &PSP_CoreParameter() {
+@@ -586,26 +586,27 @@ CoreParameter &PSP_CoreParameter() {
  }
  
  Path GetSysDirectory(PSPDirectories directoryType) {
 -	Path memStickDirectory = g_Config.memStickDirectory;
 -	Path pspDirectory;
 -	if (memStickDirectory.GetFilename() == "PSP") {
--		// Let's strip this off, to easily allow choosing a root directory named "PSP" on Android.
++    // batocera - set config directories
++	Path memStickDirectory = Path("/userdata/saves/psp/");
++ 	Path pspDirectory = Path("/userdata/system/configs/ppsspp/PSP/");
++	//if (memStickDirectory.GetFilename() == "PSP") {
+ 		// Let's strip this off, to easily allow choosing a root directory named "PSP" on Android.
 -		pspDirectory = memStickDirectory;
 -	} else {
 -		pspDirectory = memStickDirectory / "PSP";
 -	}
-+	Path pspDirectory = Path("/userdata/saves/psp/");
++		//pspDirectory = memStickDirectory;
++	//} else {
++		//pspDirectory = memStickDirectory / "PSP";
++	//}
  
  	switch (directoryType) {
  	case DIRECTORY_PSP:
@@ -41,22 +48,32 @@ index 04070c6..b5da56f 100644
  	case DIRECTORY_GAME:
  		return pspDirectory / "GAME";
  	case DIRECTORY_SAVEDATA:
- 		return pspDirectory / "SAVEDATA";
+-		return pspDirectory / "SAVEDATA";
++		return memStickDirectory / "SAVEDATA";
  	case DIRECTORY_SCREENSHOT:
 -		return pspDirectory / "SCREENSHOT";
 +		return Path("/userdata/screenshots/");
  	case DIRECTORY_SYSTEM:
  		return pspDirectory / "SYSTEM";
  	case DIRECTORY_PAUTH:
--		return memStickDirectory / "PAUTH";  // This one's at the root...
-+		return pspDirectory / "PAUTH";  // This one's at the root...
- 	case DIRECTORY_EXDATA:
--		return memStickDirectory / "EXDATA";  // This one's traditionally at the root...
-+		return pspDirectory / "EXDATA";  // This one's traditionally at the root...
+@@ -615,9 +616,9 @@ Path GetSysDirectory(PSPDirectories directoryType) {
  	case DIRECTORY_DUMP:
  		return pspDirectory / "SYSTEM/DUMP";
  	case DIRECTORY_SAVESTATE:
-@@ -630,7 +623,7 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+-		return pspDirectory / "PPSSPP_STATE";
++		return memStickDirectory / "PPSSPP_STATE";
+ 	case DIRECTORY_CACHE:
+-		return pspDirectory / "SYSTEM/CACHE";
++		return Path("/userdata/system/.cache/ppsspp/");
+ 	case DIRECTORY_TEXTURES:
+ 		return pspDirectory / "TEXTURES";
+ 	case DIRECTORY_PLUGINS:
+@@ -626,20 +627,20 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+ 		if (!g_Config.appCacheDirectory.empty()) {
+ 			return g_Config.appCacheDirectory;
+ 		}
+-		return pspDirectory / "SYSTEM/CACHE";
++		return Path("/userdata/system/.cache/ppsspp/");
  	case DIRECTORY_VIDEO:
  		return pspDirectory / "VIDEO";
  	case DIRECTORY_AUDIO:
@@ -65,6 +82,17 @@ index 04070c6..b5da56f 100644
  	case DIRECTORY_CUSTOM_SHADERS:
  		return pspDirectory / "shaders";
  
+ 	case DIRECTORY_MEMSTICK_ROOT:
+-		return g_Config.memStickDirectory;
++		return memStickDirectory;
+ 	// Just return the memory stick root if we run into some sort of problem.
+ 	default:
+ 		ERROR_LOG(FILESYS, "Unknown directory type.");
+-		return g_Config.memStickDirectory;
++		return pspDirectory;
+ 	}
+ }
+
 diff --git a/SDL/SDLJoystick.cpp b/SDL/SDLJoystick.cpp
 index c129ac8..94ea3f8 100644
 --- a/SDL/SDLJoystick.cpp
@@ -100,3 +128,12 @@ index 4bb1c42..15abbd0 100644
  	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/games/ppsspp/assets")));
  #endif
  
+@@ -568,7 +568,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
+ 	else // Just in case
+ 		config = "./config";
+ 
+-	g_Config.memStickDirectory = Path(config) / "ppsspp";
++	g_Config.memStickDirectory = Path("/userdata/saves/psp/");
+ 	g_Config.flash0Directory = File::GetExeDirectory() / "assets/flash0";
+ 	if (getenv("HOME") != nullptr) {
+ 		g_Config.defaultCurrentDirectory = Path(getenv("HOME"));
