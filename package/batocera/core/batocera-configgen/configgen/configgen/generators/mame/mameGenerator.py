@@ -116,7 +116,7 @@ class MameGenerator(Generator):
         commandArray += [ "-state_directory" ,    "/userdata/saves/mame/state/" ]
         commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
         commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
-        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]        
+        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
         commandArray += [ "-homepath" ,           "/userdata/saves/mame/plugins/" ]
         commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
         commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
@@ -252,10 +252,10 @@ class MameGenerator(Generator):
         
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
-            bezelSet = None            
+            bezelSet = None
         else:
-            bezelSet = system.config['bezel']            
-        if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):            
+            bezelSet = system.config['bezel']
+        if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
             bezelSet = None
         try:
             if messMode != -1:
@@ -306,7 +306,7 @@ class MameGenerator(Generator):
         if messSys == "":
             tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
         else:
-                tmpZipDir = "/var/run/mame_artwork/" + messSys # ok, no need to zip, a folder is taken too
+            tmpZipDir = "/var/run/mame_artwork/" + messSys # ok, no need to zip, a folder is taken too
         # clean, in case no bezel is set, and in case we want to recreate it
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
@@ -332,7 +332,8 @@ class MameGenerator(Generator):
             os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
             if os.path.exists(bz_infos["info"]):
                 bzInfoFile = open(bz_infos["info"], "r")
-                bzInfoText = bzInfoFile.readlines()            
+                bzInfoText = bzInfoFile.readlines()
+                bz_alpha = 1.0 # Just in case it's not set in the info file
                 for infoLine in bzInfoText:
                     if len(infoLine) > 7:
                         infoLineClean = (infoLine.replace('"', '')).rstrip(",\n").lstrip()
@@ -366,6 +367,7 @@ class MameGenerator(Generator):
                 bz_height = img_height
                 bz_x = int((img_width - bz_width) / 2)
                 bz_y = 0
+                bz_alpha = 1.0
 
             f = open(tmpZipDir + "/default.lay", 'w')
             f.write("<mamelayout version=\"2\">\n")
