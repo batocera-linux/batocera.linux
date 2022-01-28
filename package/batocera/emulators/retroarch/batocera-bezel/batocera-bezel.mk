@@ -18,11 +18,11 @@ define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
 	cp -r $(@D)/arcade_1980s_vertical     $(TARGET_DIR)/usr/share/batocera/datainit/decorations
 	cp -r $(@D)/arcade_vertical_default   $(TARGET_DIR)/usr/share/batocera/datainit/decorations
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles
+	# we don't have all systems with no_curve_night yet, so we copy first the "classic" bezels
 	cp -r $(@D)/default_unglazed/*               $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	cp -r $(@D)/default_nocurve_night/default.*  $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	cp -r $(@D)/default_nocurve_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
-
-	# (cd $(TARGET_DIR)/usr/share/batocera/datainit/decorations && ln -sf default_nocurve_night consoles) # not every system yet, hence the previous 3 lines
+	(cd $(TARGET_DIR)/usr/share/batocera/datainit/decorations && ln -sf consoles default)
 
 	echo -e "You can find help on how to customize decorations: \n" \
 		> $(TARGET_DIR)/usr/share/batocera/datainit/decorations/readme.txt
