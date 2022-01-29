@@ -3,6 +3,7 @@
 
 import RPi.GPIO as GPIO
 import os
+import subprocess
 from multiprocessing import Process
 
 #initialize pins
@@ -21,7 +22,12 @@ def init():
 def poweroff():
 	while True:
 		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		os.system("shutdown -h now")
+		output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
+		if output:
+			os.system("batocera-es-swissknife --emukill")
+			os.system("batocera-es-swissknife --shutdown")
+		else:
+			os.system("shutdown -h now")
 
 if __name__ == "__main__":
 	#initialize GPIO settings
