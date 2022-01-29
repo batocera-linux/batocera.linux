@@ -1,11 +1,10 @@
 ################################################################################
 #
-# VULKAN_HEADERS
+# vulkan-headers
 #
 ################################################################################
 
-VULKAN_HEADERS_VERSION = v1.2.200
-
+VULKAN_HEADERS_VERSION = v1.3.204
 VULKAN_HEADERS_SITE =  $(call github,KhronosGroup,Vulkan-Headers,$(VULKAN_HEADERS_VERSION))
 VULKAN_HEADERS_DEPENDENCIES = 
 VULKAN_HEADERS_INSTALL_STAGING = YES
