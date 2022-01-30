@@ -106,7 +106,9 @@ endef
 define FLYCAST_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-flycast.elf \
 		$(TARGET_DIR)/usr/bin/flycast
+	# evmapy files
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/flycast/*.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))
-

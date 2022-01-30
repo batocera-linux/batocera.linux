@@ -42,6 +42,8 @@ class FlycastGenerator(Generator):
             
             # Write its mapping file
             controllerConfigFile = flycastControllers.generateControllerConfig(controller)
+            # write the arcade file variant (atomiswave & naomi)
+            flycastControllers.generateArcadeControllerConfig(controller)
             
             # set the evdev_device_id_X
             Config.set("input", 'evdev_device_id_' + controller.player, eventNum)
@@ -87,13 +89,18 @@ class FlycastGenerator(Generator):
         # vmuA1
         if not isfile(batoceraFiles.flycastVMUA1):
             if not isdir(dirname(batoceraFiles.flycastVMUA1)):
+                os.mkdir(batoceraFiles.flycastSaves)
                 os.mkdir(dirname(batoceraFiles.flycastVMUA1))
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA1)
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
             if not isdir(dirname(batoceraFiles.flycastVMUA2)):
+                os.mkdir(batoceraFiles.flycastSaves)
                 os.mkdir(dirname(batoceraFiles.flycastVMUA2))
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
+        
+        # point to vulkan icd's in preferred order.
+        gpu_icd = "/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/intel_icd.x86_64.json"
 
         # the command to run  
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
@@ -106,4 +113,6 @@ class FlycastGenerator(Generator):
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
             "XDG_DATA_HOME":batoceraFiles.flycastSaves,
             "XDG_DATA_DIRS":batoceraFiles.flycastBios,
+            "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
+            "VK_ICD_FILENAMES":gpu_icd,
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
