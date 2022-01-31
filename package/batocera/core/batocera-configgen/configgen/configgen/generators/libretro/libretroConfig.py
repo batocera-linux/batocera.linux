@@ -125,10 +125,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         retroarchConfig['video_allow_rotate'] = 'true'
 
     # variable refresh rate
-    if system.isOptSet("vrr_runloop_enable") and system.getOptBoolean("vrr_runloop_enable") == False:
-        retroarchConfig['vrr_runloop_enable'] = 'false'
-    else:
+    if system.isOptSet("vrr_runloop_enable") and system.getOptBoolean("vrr_runloop_enable") == True:
         retroarchConfig['vrr_runloop_enable'] = 'true'
+    else:
+        retroarchConfig['vrr_runloop_enable'] = 'false'
 
     # required at least for vulkan (to get the correct resolution)
     retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
