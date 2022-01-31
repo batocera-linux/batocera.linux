@@ -36,9 +36,8 @@ f_minTomaxResolution() {
     # select the first one valid
     # is it the best ? or should we loop to search the first with the same ratio ?
     xrandr --listModes | grep -vE "\*$" |
-	while read SUGGRESOLUTIONRATE SUGGMODE
+	while read SUGGRESOLUTION SUGGMODE
 	do
-	    SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
 	    SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
 	    SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
 	    if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
@@ -62,7 +61,7 @@ case "${ACTION}" in
     "listModes")
 	echo "max-1920x1080:maximum 1920x1080"
 	echo "max-640x480:maximum 640x480"
-	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
+	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
 	;;
     "setMode")
 	MODE=$1
@@ -73,20 +72,11 @@ case "${ACTION}" in
 	    f_minTomaxResolution "${SPMODE}"
 	else # normal mode
 	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-
-	    # let the old format widthxheight and the new one widthxheight.hz
-	    if echo "${MODE}" | grep "\."
-	    then
-		PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
-		PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
-		xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
-	    else
-		xrandr --output "${OUTPUT}" --mode "${MODE}"
-	    fi
+	    xrandr --output "${OUTPUT}" --mode "${MODE}"
 	fi
 	;;
     "currentMode")
-	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
+	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
 	;;
     "currentResolution")
 	xrandr --currentResolution | tail -n1
