@@ -500,6 +500,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             retroarchConfig['cheevos_enable'] = 'true'
             retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
             retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
+            retroarchConfig['cheevos_token'] = "" # clear the token, otherwise, it may fail (possibly a ra bug)
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
