@@ -262,7 +262,7 @@ def getGFXBackend(system):
         # Pick glcore or gl based on drivers if not selected
         if system.isOptSet("gfxbackend"):
             backend = system.config["gfxbackend"]
-        elif system.core == 'duckstation' and system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
+        elif core == 'duckstation' and system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
             return "software"
         else:
             if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
