@@ -335,6 +335,8 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
             iniConfig.add_section(section)
     
     iniConfig.set("NO_SECTION","EnablePresets","disabled")
+    # manually allow speed hacks
+    iniConfig.set("NO_SECTION","EnableSpeedHacks","enabled")
     iniConfig.set("ProgramLog", "Visible",     "disabled")
     iniConfig.set("Filenames",  "BIOS",        biosFile)
     iniConfig.set("GSWindow",   "AspectRatio", resolution)
