@@ -560,8 +560,8 @@ libretro:
                 prompt:      USE SOFTWARE RENDERING
                 description: More accurate emulation, but slower.
                 choices:
-                    "Off":        False
-                    "On":         True
+                    "Off":        "false"
+                    "On":         "true"
             duckstation_resolution_scale:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -644,8 +644,8 @@ libretro:
                 prompt:      USE SOFTWARE RENDERING
                 description: More accurate emulation, but slower.
                 choices:
-                    "Off":        False
-                    "On":         True
+                    "Off":        "false"
+                    "On":         "true"
             duckstation_resolution_scale:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
