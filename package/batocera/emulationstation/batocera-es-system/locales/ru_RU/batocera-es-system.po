@@ -4212,13 +4212,11 @@ msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "ГРАФИЧЕСКИЙ API"
 
-#. TRANSLATION: libretro, cemu, dolphin, duckstation, pcsx2, ...
+#. TRANSLATION: libretro
 msgctxt "game_options"
 msgid ""
-"Choose which graphics API library to use. Vulkan is better, when supported."
+"Choose which graphics API library to use. Vulkan may not work for every core."
 msgstr ""
-"Выберите, какую API библиотеку использовать. Vulkan лучше, если "
-"поддерживается."
 
 #. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
@@ -4377,6 +4375,14 @@ msgstr ""
 "Улучшает масштабирование спрайтов и рендеринг дорог. Не влияет на спрайт "
 "автомобиля."
 
+#. TRANSLATION: cemu, dolphin, duckstation, pcsx2, ppsspp, ...
+msgctxt "game_options"
+msgid ""
+"Choose which graphics API library to use. Vulkan is better, when supported."
+msgstr ""
+"Выберите, какую API библиотеку использовать. Vulkan лучше, если "
+"поддерживается."
+
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "ASYNC SHADER (VULKAN ONLY)"
@@ -4432,7 +4438,7 @@ msgctxt "game_options"
 msgid "Native (400x240)"
 msgstr "Родное (400x240)"
 
-#. TRANSLATION: citra, dolphin, duckstation, pcsx2, sonic2013, ...
+#. TRANSLATION: citra, dolphin, duckstation, pcsx2, rpcs3, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -5523,30 +5529,104 @@ msgstr "SPU ДЕКОДЕР"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "If game crashes, try ASMJIT. If still crashing, try Interpreter (fast)."
+msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
-"Если игра вылетает, попробуйте ASMJIT. Если сбой всё ещё происходит, "
-"попробуйте Интерпретатор (быстро)."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Recompiler (LLVM)"
-msgstr "Рекомпилятор (LLVM)"
+msgid "LLVM Recompiler"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Recompiler (ASMJIT)"
-msgstr "Рекомпилятор (ASMJIT)"
+msgid "ASMJIT Recompiler"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Interpreter (fast)"
-msgstr "Интерпретатор (быстро)"
+msgid "Fast Interpreter"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Interpreter (precise)"
-msgstr "Интерпретатор (точно)"
+msgid "Precise Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TV MODE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3's internal ratio setting. Some games only support 16/9."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ADDITIONAL FRAMELIMIT"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Most games already have an internal framelimit. Minor performance cost."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Off (faster, unstable)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SHADER MODE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Only Async (skip draw) avoids freezing while compiling shaders."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Legacy (laggy)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async (skip draw, recommended)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async with interp. (hybrid)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Interpreter only (experimental)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Can fix screen tearing on unorthodox displays (most LCDs don't need this)."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "On (slower)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRETCH TO DISPLAY AREA"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Distorts the output to fill the display fully."
+msgstr ""
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -6643,6 +6723,29 @@ msgstr "4:3 (по умолчанию)"
 msgctxt "game_options"
 msgid "Set vsync on to avoid tearing."
 msgstr "Включите vsync, чтобы избежать разрывов."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "If game crashes, try ASMJIT. If still crashing, try Interpreter (fast)."
+#~ msgstr ""
+#~ "Если игра вылетает, попробуйте ASMJIT. Если сбой всё ещё происходит, "
+#~ "попробуйте Интерпретатор (быстро)."
+
+#~ msgctxt "game_options"
+#~ msgid "Recompiler (LLVM)"
+#~ msgstr "Рекомпилятор (LLVM)"
+
+#~ msgctxt "game_options"
+#~ msgid "Recompiler (ASMJIT)"
+#~ msgstr "Рекомпилятор (ASMJIT)"
+
+#~ msgctxt "game_options"
+#~ msgid "Interpreter (fast)"
+#~ msgstr "Интерпретатор (быстро)"
+
+#~ msgctxt "game_options"
+#~ msgid "Interpreter (precise)"
+#~ msgstr "Интерпретатор (точно)"
 
 #~ msgctxt "game_options"
 #~ msgid "Mac 128k (2 LD Floppies)"

@@ -4170,10 +4170,10 @@ msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr ""
 
-#. TRANSLATION: libretro, cemu, dolphin, duckstation, pcsx2, ...
+#. TRANSLATION: libretro
 msgctxt "game_options"
 msgid ""
-"Choose which graphics API library to use. Vulkan is better, when supported."
+"Choose which graphics API library to use. Vulkan may not work for every core."
 msgstr ""
 
 #. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
@@ -4328,6 +4328,12 @@ msgid ""
 "sprite."
 msgstr ""
 
+#. TRANSLATION: cemu, dolphin, duckstation, pcsx2, ppsspp, ...
+msgctxt "game_options"
+msgid ""
+"Choose which graphics API library to use. Vulkan is better, when supported."
+msgstr ""
+
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "ASYNC SHADER (VULKAN ONLY)"
@@ -4383,7 +4389,7 @@ msgctxt "game_options"
 msgid "Native (400x240)"
 msgstr ""
 
-#. TRANSLATION: citra, dolphin, duckstation, pcsx2, sonic2013, ...
+#. TRANSLATION: citra, dolphin, duckstation, pcsx2, rpcs3, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr ""
@@ -5452,27 +5458,103 @@ msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "If game crashes, try ASMJIT. If still crashing, try Interpreter (fast)."
+msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Recompiler (LLVM)"
+msgid "LLVM Recompiler"
 msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Recompiler (ASMJIT)"
+msgid "ASMJIT Recompiler"
 msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Interpreter (fast)"
+msgid "Fast Interpreter"
 msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Interpreter (precise)"
+msgid "Precise Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TV MODE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3's internal ratio setting. Some games only support 16/9."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ADDITIONAL FRAMELIMIT"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Most games already have an internal framelimit. Minor performance cost."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Off (faster, unstable)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SHADER MODE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Only Async (skip draw) avoids freezing while compiling shaders."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Legacy (laggy)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async (skip draw, recommended)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async with interp. (hybrid)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Interpreter only (experimental)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Can fix screen tearing on unorthodox displays (most LCDs don't need this)."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "On (slower)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRETCH TO DISPLAY AREA"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Distorts the output to fill the display fully."
 msgstr ""
 
 #. TRANSLATION: easyrpg
