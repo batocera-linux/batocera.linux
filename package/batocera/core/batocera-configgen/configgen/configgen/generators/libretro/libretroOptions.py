@@ -1835,18 +1835,18 @@ def generateCoreSettings(coreSettings, system, rom):
 
     if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
-        if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software") == True:
-            coreSettings.save('duckstation_GPU.Renderer', "Software")
+        if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
+            coreSettings.save('duckstation_GPU.Renderer', '"Software"')
         else:
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
-                    coreSettings.save('duckstation_GPU.Renderer', "Vulkan")
+                    coreSettings.save('duckstation_GPU.Renderer', '"Vulkan"')
                 elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
                     coreSettings.save('duckstation_GPU.Renderer', "OpenGL")
                 else:
-                    coreSettings.save('duckstation_GPU.Renderer', "Auto")
+                    coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
             else:
-                coreSettings.save('duckstation_GPU.Renderer', "Auto")
+                coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
 
         # Show official Bootlogo
         if system.isOptSet('duckstation_PatchFastBoot'):
