@@ -556,8 +556,8 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
     # Demul emulator - multiple Sega arcade systems
-	#select BR2_PACKAGE_DEMUL			    if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-        #                                        BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_DEMUL			    if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
+                                                BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 
 	# Laserdic emulation
 	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
