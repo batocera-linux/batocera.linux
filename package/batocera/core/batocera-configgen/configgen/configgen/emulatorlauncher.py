@@ -17,6 +17,7 @@ from generators.mupen.mupenGenerator import MupenGenerator
 from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
 from generators.flycast.flycastGenerator import FlycastGenerator
 from generators.dolphin.dolphinGenerator import DolphinGenerator
+from generators.dolphin_triforce.dolphinTriforceGenerator import DolphinTriforceGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
@@ -95,6 +96,7 @@ generators = {
     'amiberry': AmiberryGenerator(),
     'flycast': FlycastGenerator(),
     'dolphin': DolphinGenerator(),
+    'dolphin_triforce': DolphinTriforceGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),

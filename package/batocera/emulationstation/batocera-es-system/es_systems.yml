@@ -1529,6 +1529,21 @@ gamecube:
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:gamecube
 
+triforce:
+  name:       Triforce
+  manufacturer: Namco, Sega, Nintendo
+  release: 2003
+  hardware: arcade
+  extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
+  platform:   triforce, arcade
+  emulators:
+    dolphin_triforce:
+      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
+  comment_en: |
+    Triforce is an arcade machine based on the GameCube's hardware. This build only supports booting Mario Kart GP 2.
+
+    For the most up-to-date information, visit https://wiki.batocera.org/systems:triforce
+
 wii:
   name:       Nintendo Wii
   manufacturer: Nintendo
