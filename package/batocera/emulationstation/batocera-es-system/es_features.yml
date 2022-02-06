@@ -4915,6 +4915,18 @@ mame:
                         "Off": 0
        ti99:
             cfeatures:
+                ti99_32kram:
+                    prompt:      32K RAM EXPANSION
+                    description: 32k RAM expansion card installed
+                    choices:
+                        "Enabled (Default)": 1
+                        "Disabled":          0
+                ti99_speech:
+                    prompt:      SPEECH MODULE
+                    description: Speech module installed
+                    choices:
+                        "Enabled (Default)": 1
+                        "Disabled":          0    
                 altromtype:
                     prompt:      MEDIA TYPE
                     description: Type of ROM file to load.

@@ -17,6 +17,7 @@ import subprocess
 from xml.dom import minidom
 from PIL import Image, ImageOps
 from . import mameControllers
+import csv
 
 eslog = get_logger(__name__)
 
@@ -36,14 +37,19 @@ class MameGenerator(Generator):
             if not os.path.exists("/userdata/" + checkPath + "/"):
                 os.makedirs("/userdata/" + checkPath + "/")
 
-        # Define systems that will use the MESS executable instead of MAME
-        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision", "plugnplay", "megaduck", "crvision", "gamate", "pv1000", "gamecom" , "fm7", "xegs", "gamepock", "aarch", "atom", "apfm1000", "bbc", "camplynx", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99", "tutor", "coco", "socrates", "macintosh" ]
-        # If it needs a system name defined, use it here. Add a blank string if it does not (ie non-arcade, non-system ROMs)
-        messSysName = [ "", "", "cdimono1", "advision", "", "megaduck", "crvision", "gamate", "pv1000", "gamecom", "fm7", "xegs", "gamepock", "aa310", "atom", "apfm1000", "bbcb", "lynx48k", "adam", "arcadia", "supracan", "gmaster", "astrocde", "ti99_4a", "tutor", "coco3", "socrates", "maclc3" ]
-        # For systems with a MAME system name, the type of ROM that needs to be passed on the command line (cart, tape, cdrm, etc)
-        # If there are multiple ROM types (ie a computer w/disk & tape), select the default or primary type here.
-        messRomType = [ "", "", "cdrm", "cart", "", "cart", "cart", "cart", "cart", "cart1", "flop1", "cart", "cart", "flop", "cass", "cart", "flop1", "cass", "cass1", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "cart", "flop1" ]
-        messAutoRun = [ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 'mload""\\n', "", "", "", "", "", "", "", "", "", "" ]
+        messDataFile = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/messSystems.csv'
+        openFile = open(messDataFile, 'r')
+        messSystems = []
+        messSysName = []
+        messRomType = []
+        messAutoRun = []
+        with openFile:
+            messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
+            for row in messDataList:
+                messSystems.append(row[0])
+                messSysName.append(row[1])
+                messRomType.append(row[2])
+                messAutoRun.append(row[3])
         
         # Identify the current system, select MAME or MESS as needed.
         try:
@@ -236,6 +242,14 @@ class MameGenerator(Generator):
                             commandArray += [ "-" + messRomType[messMode] ]
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
+
+                #TI-99 32k RAM expansion & speech modules - enabled by default
+                if system.name == "ti99":
+                    commandArray += [ "-ioport", "peb" ]
+                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                        commandArray += ["-ioport:peb:slot2", "32kmem"]
+                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
+                        commandArray += ["-ioport:peb:slot3", "speech"]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):

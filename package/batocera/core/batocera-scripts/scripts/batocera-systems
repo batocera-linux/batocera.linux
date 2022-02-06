@@ -348,7 +348,10 @@ systems = {
                                                 { "md5": "7f1864c3dac31c86e2ae6ce43ccead07", "zippedFile": "994a_grom1.u501", "file": "bios/ti99_4a.zip"},
                                                 { "md5": "a1f77a07243a334e13509a89bff944f2", "zippedFile": "994a_grom2.u502", "file": "bios/ti99_4a.zip"},
                                                 { "md5": "6f495eef767b3f2821a2ec32d0047891", "zippedFile": "994a_rom_hb.u610", "file": "bios/ti99_4a.zip"},
-                                                { "md5": "0dcb961cf84c69b2171a565427c7c6c7", "zippedFile": "994a_rom_lb.u611", "file": "bios/ti99_4a.zip"} ] },
+                                                { "md5": "0dcb961cf84c69b2171a565427c7c6c7", "zippedFile": "994a_rom_lb.u611", "file": "bios/ti99_4a.zip"},
+                                                { "md5": "", "file": "bios/ti99_speech.zip"  },
+                                                { "md5": "491c1195f6345cb6b725096b69d81ec9", "zippedFile": "cd2325a.u2a", "file": "bios/ti99_speech.zip"},
+                                                { "md5": "206daf498ac5d0141de1d47d38afd899", "zippedFile": "cd2326a.u2b", "file": "bios/ti99_speech.zip"} ] },
 
     # ---------- Bally Astrocade ---------- #
     "astrocde":   { "name": "Bally Astrocade", "biosFiles":  [ { "md5": "", "file": "bios/astrocde.zip"  },
@@ -465,7 +468,12 @@ systems = {
 
     # ---------- Hikaru ---------- #
     "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip" },
-                                                { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"}, ] },
+                                                { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
+
+    # ---------- GCE Vectrex ---------- #
+    "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
 }
 
 class BiosStatus:

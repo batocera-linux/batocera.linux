@@ -1075,6 +1075,9 @@ vectrex:
   emulators:
     libretro:
       vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 
 lutro:
   name:       Lutro
