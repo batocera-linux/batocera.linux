@@ -113,7 +113,7 @@ do
 
     test -x /userdata/system/custom-es-config && /userdata/system/custom-es-config
 
-    ###################
+    #######################
     ## ES splash screens ##
     ## idea: https://github.com/batocera-linux/batocera.linux/pull/5241
     ES_SPLASH=
@@ -123,25 +123,22 @@ do
 
     if [ "${ES_LOADBAR}" != "0" ] && [ "${ES_SEASON}" != "0" ]
     then
-        #[ $(date +%m) -eq 12 -a $(date +%d) -gt 20 ] && ES_SEASON=xmas
-        #[ $(date +%m%d) -eq 401 ]                    && ES_SEASON=aprilfool
-        #[ $(date +%m%d) -eq 621 ]                    && ES_SEASON=anniversary
+        today=$(date +%m%d)
+        [ $today -eq 1031 -o $today -eq 1101 ]        && ES_SEASON=halloween
+        [ $(date +%m) -eq 12 -a $(date +%d) -gt 20 ]  && ES_SEASON=xmas
+        #[ $today -eq 1231 -o $today -eq 101 ]         && ES_SEASON=newyear
+        #[ $today -eq 401 ]                            && ES_SEASON=aprilfool
+        #[ $(date +%m%d) -eq 621 ]                     && ES_SEASON=anniversary
         # add more
         if [ -n "${ES_SEASON}" ]; then
             ES_SPLASH="--splash-image /usr/share/batocera/splash/season-${ES_SEASON}.png"
         fi
     fi
 
-    ## Use Framebuffer as picture overlay, you can see it if you load a ROM or shutdown ES
-    ES_FBPICTURE=$(/usr/bin/batocera-settings-get es.fbpicture.enabled)
-    if [ "${ES_FBPICTURE}" == "1" ]; then    
-        test -e /dev/fb0 && fbv -f -e -i "/usr/share/batocera/splash/boot-logo.png"
-    fi
-    
     ###################
     # launch automatically a game only the first time
     if test ${GAMELAUNCH} = 1
-       then
+    then
        GAMELAUNCHOPT=
     else
         GAMELAUNCHOPT="--no-startup-game"
