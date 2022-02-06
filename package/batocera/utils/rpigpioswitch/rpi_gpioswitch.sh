@@ -518,7 +518,7 @@ function deskpipro_start()
 function deskpipro_stop()
 {
     echo "*** Stopping DeskPi Pro Case Fan ***"
-    /usr/bin/fanStop
+    /usr/bin/fanStop && /usr/bin/safecutoffpower
 }
 
 function deskpipro_config()
