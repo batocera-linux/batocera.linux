@@ -1,0 +1,31 @@
+diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
+index b701cda86d0c..855012e83fa4 100644
+--- a/drivers/gpu/drm/drm_vblank.c
++++ b/drivers/gpu/drm/drm_vblank.c
+@@ -285,6 +285,7 @@ static void drm_update_vblank_count(struct drm_device *dev, unsigned int pipe,
+ 	int count = DRM_TIMESTAMP_MAXRETRIES;
+ 	int framedur_ns = vblank->framedur_ns;
+ 	u32 max_vblank_count = drm_max_vblank_count(dev, pipe);
++	struct drm_crtc *crtc = drm_crtc_from_index(dev, pipe);
+ 
+ 	/*
+ 	 * Interrupts were disabled prior to this call, so deal with counter
+@@ -303,12 +304,17 @@ static void drm_update_vblank_count(struct drm_device *dev, unsigned int pipe,
+ 		rc = drm_get_last_vbltimestamp(dev, pipe, &t_vblank, in_vblank_irq);
+ 	} while (cur_vblank != __get_vblank_counter(dev, pipe) && --count > 0);
+ 
+-	if (max_vblank_count) {
++	/* We can't use the hw counter for interlace modes */
++	if (max_vblank_count && !(crtc->hwmode.flags & DRM_MODE_FLAG_INTERLACE)) {
+ 		/* trust the hw counter when it's around */
+ 		diff = (cur_vblank - vblank->last) & max_vblank_count;
+ 	} else if (rc && framedur_ns) {
+ 		u64 diff_ns = ktime_to_ns(ktime_sub(t_vblank, vblank->time));
+ 
++		/* Make sure we don't have a negative diff, if so discard it */
++		if (t_vblank < vblank->time)
++			return;
++
+ 		/*
+ 		 * Figure out how many vblanks we've missed based
+ 		 * on the difference in the timestamps and the
