@@ -60,13 +60,13 @@ flycastArcadeMapping = { 'a' :             {'button': 'btn_b'},
                          'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'}
 }
 
-sections = { 'emulator' : ['mapping_name', 'btn_menu'],
+sections = { 'emulator' : ['mapping_name'],
              'dreamcast' : ['btn_a', 'btn_b', 'btn_c', 'btn_z', 'btn_x', 'btn_y', 'btn_start', 'axis_x', 'axis_y', 'axis_trigger_left', 'axis_trigger_right', 'btn_dpad1_left', 'btn_dpad1_right', 'btn_dpad1_up', 'btn_dpad1_down', 'btn_dpad2_left', 'btn_dpad2_right', 'btn_dpad2_up', 'btn_dpad2_down'],
              'compat' : ['axis_dpad1_x', 'axis_dpad1_y', 'btn_trigger_left', 'btn_trigger_right', 'axis_dpad2_x', 'axis_dpad2_y', 'axis_x_inverted', 'axis_y_inverted', 'axis_trigger_left_inverted', 'axis_trigger_right_inverted']
 
 }
 
-arcadesections = { 'emulator' : ['mapping_name', 'btn_menu'],
+arcadesections = { 'emulator' : ['mapping_name'],
              'dreamcast' : ['btn_a', 'btn_b', 'btn_c', 'btn_d', 'btn_z', 'btn_x', 'btn_y', 'btn_start', 'axis_x', 'axis_y', 'axis_trigger_left', 'axis_trigger_right', 'btn_dpad1_left', 'btn_dpad1_right', 'btn_dpad1_up', 'btn_dpad1_down', 'btn_dpad2_left', 'btn_dpad2_right', 'btn_dpad2_up', 'btn_dpad2_down'],
              'compat' : ['axis_dpad1_x', 'axis_dpad1_y', 'btn_trigger_left', 'btn_trigger_right', 'axis_dpad2_x', 'axis_dpad2_y', 'axis_x_inverted', 'axis_y_inverted', 'axis_trigger_left_inverted', 'axis_trigger_right_inverted']
 
@@ -90,6 +90,8 @@ def generateControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
+    Config.set("emulator", "btn_escape", "")
+    Config.set("emulator", "btn_menu", "")
     
     l2_r2_flag = False
     if 'r2' in controller.inputs:
@@ -148,6 +150,8 @@ def generateArcadeControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
+    Config.set("emulator", "btn_escape", "")
+    Config.set("emulator", "btn_menu", "")
     
     l2_r2_flag = False
     if 'r2' in controller.inputs:

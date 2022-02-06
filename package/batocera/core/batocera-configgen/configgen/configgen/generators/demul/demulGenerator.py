@@ -11,6 +11,7 @@ import shutil
 import stat
 import configparser
 from pathlib import Path, PureWindowsPath
+from distutils.dir_util import copy_tree
 
 eslog = get_logger(__name__)
 
@@ -19,6 +20,7 @@ class DemulGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/demul"
         emupath = wineprefix + "/demul"
+        bottlewinpath = wineprefix + "/drive_c/windows" 
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
@@ -26,37 +28,10 @@ class DemulGenerator(Generator):
         # copy demulemu to /userdata for rw & emulator directory creation reasons
         if not os.path.exists(emupath):
             shutil.copytree("/usr/demul", emupath)
-        
-        # get directx11
-        if not os.path.exists(wineprefix + "/d3dx11_43.done"):
-            cmd = ["/usr/wine/winetricks", "d3dx11_43"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with open(wineprefix + "/d3dx11_43.done", "w") as f:
-                f.write("done")
-
-        # get Visual C ++ 2010 Redistributable Package
-        if not os.path.exists(wineprefix + "/vcrun2010.done"):
-            cmd = ["/usr/wine/winetricks", "-q", "vcrun2010"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with open(wineprefix + "/vcrun2010.done", "w") as f:
-                f.write("done")
-
+            # add dxvk dll's
+            copy_tree("/usr/wine/dxvk/x64/", bottlewinpath + "/system32/")
+            copy_tree("/usr/wine/dxvk/x32/", bottlewinpath + "/syswow64/")
+                            
         # determine what system to define for demul
         # -run=<name>		run specified system (dc, naomi, awave, hikaru, gaelco, cave3rd)
         if "naomi" in rom:
@@ -94,10 +69,11 @@ class DemulGenerator(Generator):
         configFileName = emupath + "/Demul.ini"
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
+
         if os.path.exists(configFileName):
             try:
-                with io.open(configFileName, 'r', encoding='utf_8_sig') as fp:
-                    Config.readfp(fp)
+                with open(configFileName, 'r', encoding='utf_8_sig') as fp:
+                    Config.read_file(fp)
             except:
                 pass
         
@@ -139,10 +115,14 @@ class DemulGenerator(Generator):
         if not Config.has_section("plugins"):
             Config.add_section("plugins")
         Config.set("plugins", "directory", "Z:{}".format(plugins_path_on_windows))
-        Config.set("plugins", "gpu", "gpuDX11.dll")
         Config.set("plugins", "spu", "spuDemul.dll")
         Config.set("plugins", "pad", "padDemul.dll")
         Config.set("plugins", "net", "netDemul.dll")
+        # gaelco won't work with the new DX11 plugin
+        if demulsystem == "gaelco":
+            Config.set("plugins", "gpu", "gpuDX11old.dll")
+        else:
+            Config.set("plugins", "gpu", "gpuDX11.dll")
 
         # dreamcast needs the full path & cdi or gdi image extensions
         # check if we need to change the gdr plugin.
@@ -169,13 +149,16 @@ class DemulGenerator(Generator):
             dcpath = "Z:{}".format(dcrom_windows)
 
         # adjust fullscreen & resolution to gpuDX11.ini
-        configFileName = emupath + "/gpuDX11.ini"
+        if demulsystem == "gaelco":
+            configFileName = emupath + "/gpuDX11old.ini"
+        else:
+            configFileName = emupath + "/gpuDX11.ini"
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
         if os.path.exists(configFileName):
             try:
-                with io.open(configFileName, 'r', encoding='utf_8_sig') as fp:
-                    Config.readfp(fp)
+                with open(configFileName, 'r', encoding='utf_8_sig') as fp:
+                    Config.read_file(fp)
             except:
                 pass
         
@@ -186,8 +169,13 @@ class DemulGenerator(Generator):
         # set resolution
         if not Config.has_section("resolution"):
             Config.add_section("resolution")
-        Config.set("resolution", "Width", str(gameResolution["width"]))
-        Config.set("resolution", "Height", str(gameResolution["height"]))
+        # force 640x480 on gaelco
+        if demulsystem == "gaelco":
+            Config.set("resolution", "Width", "640")
+            Config.set("resolution", "Height", "480")
+        else:
+            Config.set("resolution", "Width", str(gameResolution["width"]))
+            Config.set("resolution", "Height", str(gameResolution["height"]))
 
         # now set the batocera options
         if system.isOptSet("demulRatio"):
@@ -202,11 +190,9 @@ class DemulGenerator(Generator):
      
         with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
             Config.write(configfile)
-
-        #padDemul.ini
-
+              
         # now setup the command array for the emulator
-        commandArray = ["/usr/wine/proton/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/userdata/saves/demul/demul/demul.exe"]
+        commandArray = ["/usr/wine/proton/bin/wine", "/userdata/saves/demul/demul/demul.exe"]
         # add system to command array
         commandArray.extend(["-run={}".format(demulsystem)])
         # add rom to the command array if not dreamcast
@@ -221,6 +207,7 @@ class DemulGenerator(Generator):
                 "WINEPREFIX": wineprefix,
                 "LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine",
                 "LIBGL_DRIVERS_PATH": "/lib32/dri",
+                "WINEDLLOVERRIDES": "d3d11=n",
                 # hum pw 0.2 and 0.3 are hardcoded, not nice
                 "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
                 "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"

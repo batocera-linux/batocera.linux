@@ -58,14 +58,59 @@ class FlycastGenerator(Generator):
 
         if not Config.has_section("config"):
             Config.add_section("config")
-        # wide screen mode
-        if system.config["ratio"] == "16/9":
-            Config.set("config", "rend.WideScreen", "1")
-        # seems buggy + works only in 60hz on my side, so don't apply it automatically
-        #elif system.config["ratio"] == "auto" and gameResolution["width"] / float(gameResolution["height"]) >= (16.0 / 9.0) - 0.1: # let a marge
-        #    Config.set("config", "WideScreen", "1")
+        if not Config.has_section("window"):
+            Config.add_section("window")
+        # ensure we are always fullscreen
+        Config.set("window", "fullscreen", "yes")
+        # set video resolution
+        Config.set("window", "width", str(gameResolution["width"]))
+        Config.set("window", "height", str(gameResolution["height"]))
+        # set render resolution - default 480 (Native)
+        if system.isOptSet("flycast_render_resolution"):
+            Config.set("config", "rend.Resolution", str(system.config["flycast_render_resolution"]))
         else:
-            Config.set("config", "rend.WideScreen", "0")
+            Config.set("config", "rend.Resolution", "480")
+        # wide screen mode - default off
+        if system.config["flycast_ratio"]:
+            Config.set("config", "rend.WideScreen", str(system.config["flycast_ratio"]))
+        else:
+            Config.set("config", "rend.WideScreen", "no")
+        # rotate option - default off
+        if system.isOptSet("flycast_rotate"):
+            Config.set("config", "rend.Rotate90", str(system.config["flycast_rotate"]))
+        else:
+            Config.set("config", "rend.Rotate90", "no")
+        # renderer - default: OpenGL
+        if system.isOptSet("flycast_renderer"):
+            Config.set("config", "pvr.rend", str(system.config["flycast_renderer"]))
+        else:
+            Config.set("config", "pvr.rend", "0")
+        
+        # dreamcast specifics
+        # language
+        if system.isOptSet("flycast_language"):
+            Config.set("config", "Dreamcast.Language", str(system.config["flycast_language"]))
+        else:
+            Config.set("config", "Dreamcast.Language", "1")
+        # region
+        if system.isOptSet("flycast_region"):
+            Config.set("config", "Dreamcast.Region", str(system.config["flycast_language"]))
+        else:
+            Config.set("config", "Dreamcast.Region", "1")
+        # save / load states
+        if system.isOptSet("flycast_loadstate"):
+            Config.set("config", "Dreamcast.AutoLoadState", str(system.config["flycast_loadstate"]))
+        else:
+            Config.set("config", "Dreamcast.AutoLoadState", "no")
+        if system.isOptSet("flycast_savestate"):
+            Config.set("config", "Dreamcast.AutoSaveState", str(system.config["flycast_savestate"]))
+        else:
+            Config.set("config", "Dreamcast.AutoSaveState", "no")
+        # windows CE
+        if system.isOptSet("flycast_winCE"):
+            Config.set("config", "Dreamcast.ForceWindowsCE", str(system.config["flycast_winCE"]))
+        else:
+            Config.set("config", "Dreamcast.ForceWindowsCE", "no")
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:
@@ -99,8 +144,14 @@ class FlycastGenerator(Generator):
                 os.mkdir(dirname(batoceraFiles.flycastVMUA2))
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
         
-        # point to vulkan icd's in preferred order.
-        gpu_icd = "/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/intel_icd.x86_64.json"
+        # flycast vulkan workaround - manually point to vulkan icd's in preferred order.
+        # pi4
+        broadcom_icd = "/usr/share/vulkan/icd.d/broadcom_icd.cortex-a72.json"
+        if os.path.exists(broadcom_icd):
+            gpu_icd = broadcom_icd
+        # x86_64
+        else:
+            gpu_icd = "/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/intel_icd.x86_64.json"
 
         # the command to run  
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
@@ -115,4 +166,5 @@ class FlycastGenerator(Generator):
             "XDG_DATA_DIRS":batoceraFiles.flycastBios,
             "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
             "VK_ICD_FILENAMES":gpu_icd,
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+            })
+#"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
