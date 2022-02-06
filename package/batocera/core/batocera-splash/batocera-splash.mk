@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 5.2
+BATOCERA_SPLASH_VERSION = 6.0
 BATOCERA_SPLASH_SOURCE=
 BATOCERA_SYSTEM_GIT_VERSION = $(shell git log -n 1 --pretty=format:"%h")
 
@@ -64,7 +64,7 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
     mkdir -p $(TARGET_DIR)/etc/init.d
-    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssystem-splash              $(TARGET_DIR)/etc/init.d/S03system-splash
+    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssystem-splash              $(TARGET_DIR)/etc/init.d/S75system-splash
     install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssplashscreencontrol        $(TARGET_DIR)/etc/init.d/S30splashscreencontrol
     install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/$(BATOCERA_SPLASH_SCRIPT)   $(TARGET_DIR)/etc/init.d/S28splash
     sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S28splash
@@ -78,6 +78,9 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png"               "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x240.png"
+
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/season-xmas.png"            "${TARGET_DIR}/usr/share/batocera/splash/season-xmas.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/season-halloween.png"       "${TARGET_DIR}/usr/share/batocera/splash/season-halloween.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
