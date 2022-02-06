@@ -4050,9 +4050,14 @@ moonlight:
   shared: [hud]
 
 mupen64plus:
-  features: [ratio, decoration]
+  features: [decoration]
   shared: [hud]
   cfeatures:
+        mupen64plus_ratio:
+            prompt:      GAME ASPECT RATIO
+            choices:
+                "4:3":   4/3
+                "16:9":  16/9
         mupen64plus_frameskip:
             prompt:      FRAMESKIP (GL64MK2 ONLY)
             description: Skip frames to improve performance, at the cost of choppy motion.
