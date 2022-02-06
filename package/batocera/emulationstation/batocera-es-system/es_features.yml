@@ -4456,8 +4456,77 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  features: [decoration]
+  features: []
   shared: [hud]
+  cfeatures:
+      redreamResolution:
+          prompt:      GAME RESOLUTION
+          description: Choose your rendered resolution (Requires personal redream.key file).
+          choices:
+              "640x480":            1
+              "1280x960 (Default)": 2
+              "1920x1440":          3
+              "2560x1920":          4
+              "3200x2400":          5
+              "3840x2880":          6
+      redreamRatio:
+          prompt:      ASPECT RATIO
+          description: Choose your preferred aspect ratio.
+          choices:
+              "4:3 (Default)": "4:3"
+              "16:9":          "16:9"
+              "Stretch":       stretch
+      redreamFrameSkip:
+          prompt:      FRAMESKIP
+          description: Enable auto frameskipping for performance on lower-end systems.
+          choices:
+              "Off (Default)" : 0
+              "On"            : 1
+      redreamVsync:
+          prompt:      VSYNC
+          description: Enable vertical sync to avoid tearing in some cases.
+          choices:
+              "Off (Default)": 0
+              "On"           : 1
+      redreamPolygon:
+          prompt:      POLYGON SORT ACCURACY
+          description: Choose the amount of polygon sort accuracy (Higher may cause artifacts).
+          choices:
+              "Per-strip (Default)":   0
+              "Per-pixel (32 layers)": 32
+              "Per-pixel (64 layers)": 64
+      redreamRegion:
+          prompt:      REGION
+          description: Choose the Dreamcast console region.
+          choices:
+              "USA (Default)": usa
+              "Europe":        europe
+              "Japan":         japan
+      redreamLanguage:
+          prompt:      LANGUAGE
+          description: Choose the Dreamcast console language.
+          choices:
+              "English (Default)": english
+              "German":            german
+              "French":            french
+              "Spanish":           spanish
+              "Italian":           italian
+              "Japanese":          japanese
+      redreamBroadcast:
+          prompt:      BROADCAST
+          description: Choose broadcast standard (for older TV's).
+          choices:
+              "NTSC (Default)": ntsc
+              "PAL":            pal
+              "PAL_M":          pal_m
+              "PAL_N":          pal_n
+      redreamCable:
+          prompt:      CABLE
+          description: Choose cable type for the TV.
+          choices:
+              "VGA (Default)": vga
+              "RGB":           rgb
+              "Composite":     composite
 
 sdlpop:
   features: [ratio, padtokeyboard, decoration]
