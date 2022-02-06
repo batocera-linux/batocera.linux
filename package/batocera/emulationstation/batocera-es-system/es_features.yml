@@ -4881,6 +4881,15 @@ mame:
                         "Off": 0
        coco:
             cfeatures:
+                altmodel:
+                    prompt:      COLOR COMPUTER MODEL
+                    description: Select the model of Color Computer to emulate
+                    choices:
+                        "Color Computer":                    coco
+                        "Color Computer 2":                  coco2
+                        "Color Computer 2B":                 coco2b
+                        "Color Computer 3 (NTSC) (Default)": coco3
+                        "Color Computer 3 (PAL)":            coco3p
                 altromtype:
                     prompt:      MEDIA TYPE
                     description: Type of ROM file to load.
