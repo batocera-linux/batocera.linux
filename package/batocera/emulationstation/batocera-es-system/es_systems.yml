@@ -2506,6 +2506,8 @@ switch:
   emulators:
     yuzu:
       yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
+    ryujinx:
+      ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
   name:       Quake II
