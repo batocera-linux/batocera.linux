@@ -166,4 +166,5 @@ class FlycastGenerator(Generator):
             "XDG_DATA_DIRS":batoceraFiles.flycastBios,
             "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
             "VK_ICD_FILENAMES":gpu_icd,
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+            })
+#"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
