@@ -30,13 +30,13 @@ msgstr "Нет"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Game"
-msgstr "Игра"
+msgid "Game info/art"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Performances"
-msgstr "Производительность"
+msgid "Performance"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -50,13 +50,20 @@ msgstr "КАДРЫ ОБГОНА (RUN-AHEAD)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Use run-ahead frames"
-msgstr "ИСП. КАДРЫ ОБГОНА"
+msgid ""
+"Enables run-ahead. Doubles CPU requirements. High numbers can result in "
+"visible jitter."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "RUN-AHEAD USE SECOND INSTANCE"
-msgstr "ИСП. ВТОРУЮ ИНСТАНЦИЮ ДЛЯ ОБГОНА"
+msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Can prevent audio skips on button presses when using run-ahead."
+msgstr ""
 
 #. TRANSLATION: shared, shared, shared, shared, libretro/atari800, ...
 msgctxt "game_options"
@@ -75,9 +82,10 @@ msgstr "АВТОМАТИЧЕСКАЯ ЗАДЕРЖКА КАДРА"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Automatically decrease frame delay temporarily to prevent frame drops."
+msgid ""
+"Automatically decrease frame delay temporarily to prevent frame drops. Can "
+"introduce stuttering."
 msgstr ""
-"Автоматически уменьшает задержку кадров, чтобы предотвратить пропуск кадров."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -2218,7 +2226,7 @@ msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "Может изменить язык некоторых игр."
 
-#. TRANSLATION: libretro/neocd
+#. TRANSLATION: libretro/neocd, redream
 msgctxt "game_options"
 msgid "Japan"
 msgstr "Япония"
@@ -2228,7 +2236,7 @@ msgctxt "game_options"
 msgid "USA"
 msgstr "США"
 
-#. TRANSLATION: libretro/neocd
+#. TRANSLATION: libretro/neocd, redream
 msgctxt "game_options"
 msgid "Europe"
 msgstr "Европа"
@@ -2975,7 +2983,7 @@ msgctxt "game_options"
 msgid "Help games which are too quick or that have bugs."
 msgstr "Помогает слишком быстрым играм или в которых есть ошибки."
 
-#. TRANSLATION: libretro/puae, duckstation, openbor
+#. TRANSLATION: libretro/puae, duckstation, flycast, openbor
 msgctxt "game_options"
 msgid "Normal"
 msgstr "Нормальный "
@@ -3045,7 +3053,7 @@ msgctxt "game_options"
 msgid "Ignored with 'Cycle-exact'."
 msgstr "Игнорируется с 'Cycle-exact'."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, flycast
 msgctxt "game_options"
 msgid "Default"
 msgstr "По умолчанию"
@@ -4207,7 +4215,7 @@ msgid "Allows up to 7 or 12 controllers in supported games."
 msgstr ""
 "Позволяет использовать до 7 или 12 контроллеров в поддерживаемых играх."
 
-#. TRANSLATION: libretro, cemu, dolphin, duckstation, pcsx2, ...
+#. TRANSLATION: libretro, cemu, dolphin, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "ГРАФИЧЕСКИЙ API"
@@ -4498,7 +4506,7 @@ msgctxt "game_options"
 msgid "Original"
 msgstr "Оригинал"
 
-#. TRANSLATION: daphne, openbor, xemu, demul
+#. TRANSLATION: daphne, openbor, redream, xemu, demul
 msgctxt "game_options"
 msgid "Stretch"
 msgstr "Растянуть"
@@ -5011,12 +5019,102 @@ msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (вибрация)"
 
+#. TRANSLATION: flycast, openbor
+msgctxt "game_options"
+msgid "SCREEN RATIO"
+msgstr "СООТНОШЕНИЕ ЭКРАНА"
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Choose which screen ratio you want to use."
+msgstr ""
+
+#. TRANSLATION: flycast, xemu
+msgctxt "game_options"
+msgid "Widescreen"
+msgstr "Широкоэкранный"
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "RENDER RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Choose which internal rendering resolution you want to use."
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "320x240 (Half)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "640x480 (Native)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "960x720 (x1.5)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "1280x960 (x2)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "1600x1200 (x2.5)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "1920x1440 (x3)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "2560x1920 (x4)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "2880x2160 (x4.5)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Choose your graphics renderer."
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "OpenGL (Default)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "ROTATE SCREEN 90 DEGREES"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Rotate the screen by 90 degrees."
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Rotate"
+msgstr ""
+
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "MODEL"
 msgstr "МОДЕЛЬ"
 
-#. TRANSLATION: hatari, sonic2013, soniccd
+#. TRANSLATION: hatari, redream, sonic2013, soniccd
 msgctxt "game_options"
 msgid "LANGUAGE"
 msgstr "ЯЗЫК"
@@ -5080,6 +5178,11 @@ msgstr "2M"
 msgctxt "game_options"
 msgid "4M"
 msgstr "4M"
+
+#. TRANSLATION: mupen64plus, demul
+msgctxt "game_options"
+msgid "GAME ASPECT RATIO"
+msgstr "СООТНОШЕНИЕ СТОРОН ИГРЫ"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -5148,11 +5251,6 @@ msgstr "Зеркальный"
 msgctxt "game_options"
 msgid "DISABLE 4MB EXPANSION RAM PACK"
 msgstr "ОТКЛЮЧИТЬ 4MB EXPANSION RAM PACK"
-
-#. TRANSLATION: openbor
-msgctxt "game_options"
-msgid "SCREEN RATIO"
-msgstr "СООТНОШЕНИЕ ЭКРАНА"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -5703,6 +5801,172 @@ msgctxt "game_options"
 msgid "Baltic"
 msgstr "Baltic"
 
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "GAME RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose your rendered resolution (Requires personal redream.key file)."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "1280x960 (Default)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose your preferred aspect ratio."
+msgstr ""
+
+#. TRANSLATION: redream, demul
+msgctxt "game_options"
+msgid "4:3 (Default)"
+msgstr "4:3 (по умолчанию)"
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Enable auto frameskipping for performance on lower-end systems."
+msgstr ""
+
+#. TRANSLATION: redream, redream, mame
+msgctxt "game_options"
+msgid "Off (Default)"
+msgstr "Выкл (по умолчанию)"
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Enable vertical sync to avoid tearing in some cases."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "POLYGON SORT ACCURACY"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid ""
+"Choose the amount of polygon sort accuracy (Higher may cause artifacts)."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Per-strip (Default)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Per-pixel (32 layers)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Per-pixel (64 layers)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "REGION"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose the Dreamcast console region."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "USA (Default)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose the Dreamcast console language."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "English (Default)"
+msgstr ""
+
+#. TRANSLATION: redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "German"
+msgstr "German"
+
+#. TRANSLATION: redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "French"
+msgstr "French"
+
+#. TRANSLATION: redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Spanish"
+msgstr "Spanish"
+
+#. TRANSLATION: redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Italian"
+msgstr "Italian"
+
+#. TRANSLATION: redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Japanese"
+msgstr "Japanese"
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "BROADCAST"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose broadcast standard (for older TV's)."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "NTSC (Default)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "PAL_M"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "PAL_N"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "CABLE"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Choose cable type for the TV."
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "VGA (Default)"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "RGB"
+msgstr ""
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "Composite"
+msgstr ""
+
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "3D ENGINE"
@@ -6066,6 +6330,41 @@ msgctxt "game_options"
 msgid "Cartridge (Slot 4)"
 msgstr "Картридж (Слот 4)"
 
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "COLOR COMPUTER MODEL"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Select the model of Color Computer to emulate"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Color Computer"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Color Computer 2"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Color Computer 2B"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Color Computer 3 (NTSC) (Default)"
+msgstr ""
+
+#. TRANSLATION: mame/pcsx2
+msgctxt "game_options"
+msgid "Color Computer 3 (PAL)"
+msgstr ""
+
 #. TRANSLATION: mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
 msgid "SPECIAL CONTROL LAYOUTS"
@@ -6195,11 +6494,6 @@ msgstr "АЛЬТЕРНАТИВНЫЙ РЕЖИМ КРЕСТОВИНЫ"
 msgctxt "game_options"
 msgid "If the D-Pad is oriented incorrectly for your controller."
 msgstr "Если крестовина неправильно ориентирована для вашего контроллера."
-
-#. TRANSLATION: mame
-msgctxt "game_options"
-msgid "Off (Default)"
-msgstr "Выкл (по умолчанию)"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -6456,11 +6750,6 @@ msgstr "Масштаб"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "Widescreen"
-msgstr "Широкоэкранный"
-
-#. TRANSLATION: xemu
-msgctxt "game_options"
 msgid "Enhancement."
 msgstr "Улучшенный."
 
@@ -6473,31 +6762,6 @@ msgstr "Изменяет язык игры."
 msgctxt "game_options"
 msgid "English"
 msgstr "English"
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "French"
-msgstr "French"
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "Italian"
-msgstr "Italian"
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "German"
-msgstr "German"
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "Spanish"
-msgstr "Spanish"
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "Japanese"
-msgstr "Japanese"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -6514,7 +6778,7 @@ msgctxt "game_options"
 msgid "Chinese"
 msgstr "Chinese"
 
-#. TRANSLATION: sonic2013
+#. TRANSLATION: sonic2013, demul
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "Исправляет разрыв экрана."
@@ -6704,25 +6968,36 @@ msgstr ""
 "Считывает мышь через Rawinput, что позволяет использовать 2 мыши в шутерах "
 "для 2 игроков."
 
-#. TRANSLATION: demul
-msgctxt "game_options"
-msgid "GAME ASPECT RATIO"
-msgstr "СООТНОШЕНИЕ СТОРОН ИГРЫ"
+#~ msgctxt "game_options"
+#~ msgid "Game"
+#~ msgstr "Игра"
 
-#. TRANSLATION: demul
-msgctxt "game_options"
-msgid "Set the default aspect ratio."
-msgstr "Установите соотношение сторон по умолчанию."
+#~ msgctxt "game_options"
+#~ msgid "Performances"
+#~ msgstr "Производительность"
 
-#. TRANSLATION: demul
-msgctxt "game_options"
-msgid "4:3 (Default)"
-msgstr "4:3 (по умолчанию)"
+#~ msgctxt "game_options"
+#~ msgid "Use run-ahead frames"
+#~ msgstr "ИСП. КАДРЫ ОБГОНА"
 
-#. TRANSLATION: demul
-msgctxt "game_options"
-msgid "Set vsync on to avoid tearing."
-msgstr "Включите vsync, чтобы избежать разрывов."
+#~ msgctxt "game_options"
+#~ msgid "RUN-AHEAD USE SECOND INSTANCE"
+#~ msgstr "ИСП. ВТОРУЮ ИНСТАНЦИЮ ДЛЯ ОБГОНА"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Automatically decrease frame delay temporarily to prevent frame drops."
+#~ msgstr ""
+#~ "Автоматически уменьшает задержку кадров, чтобы предотвратить пропуск "
+#~ "кадров."
+
+#~ msgctxt "game_options"
+#~ msgid "Set the default aspect ratio."
+#~ msgstr "Установите соотношение сторон по умолчанию."
+
+#~ msgctxt "game_options"
+#~ msgid "Set vsync on to avoid tearing."
+#~ msgstr "Включите vsync, чтобы избежать разрывов."
 
 #~ msgctxt "game_options"
 #~ msgid ""
