@@ -71,7 +71,7 @@ class FlycastGenerator(Generator):
         else:
             Config.set("config", "rend.Resolution", "480")
         # wide screen mode - default off
-        if system.config["flycast_ratio"]:
+        if system.isOptSet("flycast_ratio"):
             Config.set("config", "rend.WideScreen", str(system.config["flycast_ratio"]))
         else:
             Config.set("config", "rend.WideScreen", "no")
@@ -167,4 +167,3 @@ class FlycastGenerator(Generator):
             "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
             "VK_ICD_FILENAMES":gpu_icd,
             })
-#"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
