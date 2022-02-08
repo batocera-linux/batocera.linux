@@ -851,6 +851,19 @@ atari800:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
+xegs:
+  name:       Atari XE Game System
+  manufacturer: Atari
+  release: 1987
+  hardware: computer
+  extensions: [atr, dsk, xfd, bin, rom, car, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file xegs.zip
+          Software list mode recommended
+
 atari2600:
   name:       Atari 2600
   manufacturer: Atari
@@ -2352,6 +2365,43 @@ crvision:
   comment_en: |
           Requires MAME BIOS file crvision.zip
 
+socrates:
+  name:       Socrates
+  manufacturer: VTech
+  release: 1988
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file socrates.zip
+          Software list mode recommended
+
+vsmile:
+  name:       V.Smile
+  manufacturer: VTech
+  release: 2005
+  hardware: console
+  extensions: [u1, u3, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file vsmile.zip
+
+supracan:
+  name:       Super A'Can
+  manufacturer: Funtech Entertainment
+  release: 1995
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Sound support is preliminary
+
 gamecom:
   name:       Game.com
   manufacturer: Tiger Electronics
@@ -2388,6 +2438,32 @@ fm7:
   comment_en: |
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
 
+archimedes:
+  name:       Archimedes
+  manufacturer: Acorn Computers
+  release: 1987
+  hardware: computer
+  extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file aa310.zip, and archimedes_keyboard.zip
+          Using software list mode is recommended.
+
+atom:
+  name:       Archimedes
+  manufacturer: Acorn Computers
+  release: 1979
+  hardware: computer
+  extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file atom.zip
+          Using software list mode is recommended.
+
 apfm1000:
   name:       APF M-1000
   manufacturer: APF Electronics
@@ -2412,6 +2488,19 @@ bbc:
   comment_en: |
           Requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Also sample pack bbc.zip in bios/mame/samples
+
+camplynx:
+  name:       Lynx
+  manufacturer: Camputers
+  release: 1983
+  hardware: computer
+  extensions: [wav, tap, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files lynx128k.zip, lynx96k.zip, lynx48k.zip
+          Using software list mode is recommended.
 
 adam:
   name:       Coleco ADAM
@@ -2471,7 +2560,7 @@ ti99:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file ti99_4a.zip
-          Cartridges need to be in .rpk format and unzipped - the MAME software list files (.bin) will not run properly.
+          Cartridges need to be in .rpk format and unzipped if not using software lists.
 
 tutor:
   name:       Tomy Tutor

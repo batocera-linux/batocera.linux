@@ -30,6 +30,7 @@ class MameGenerator(Generator):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
+        softDir = "/var/run/mame_software/"
 
         # Generate userdata folders if needed
         mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
@@ -60,6 +61,10 @@ class MameGenerator(Generator):
             commandArray =  [ "/usr/bin/mame/mame" ]
         else:
             commandArray =  [ "/usr/bin/mame/mess" ]
+            if system.isOptSet("softList") and system.config["softList"] != "none":
+                softList = system.config["softList"]
+            else:
+                softList = ""
         
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
@@ -128,6 +133,9 @@ class MameGenerator(Generator):
         commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
         commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
         commandArray += [ "-pluginspath" ,        "/userdata/saves/mame/plugins/" ]
+        if softList != "":
+            commandArray += [ "-swpath" ,        softDir ]
+            commandArray += [ "-hashpath" ,      "/usr/bin/mame/hash" ]
 
         # TODO These paths are not handled yet
         # TODO -swpath              path to loose software - might use if we want software list MESS support
@@ -191,16 +199,60 @@ class MameGenerator(Generator):
                 else:
                     commandArray += [ messSysName[messMode] ]
 
-                # Boot disk for Macintosh
-                # Will use Floppy 1 or Hard Drive, depending on the disk.
-                if system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                        bootType = "-flop1"                        
-                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
+                if softList == "none":
+                    # Boot disk for Macintosh
+                    # Will use Floppy 1 or Hard Drive, depending on the disk.
+                    if system.name == "macintosh" and system.isOptSet("bootdisk"):
+                        if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                            bootType = "-flop1"
+                            bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
+                        else:
+                            bootType = "-hard"
+                            bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
+                        commandArray += [ bootType, bootDisk ]
+
+                    # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
+                    # Mac will auto change floppy 1 to 2 if a boot disk is enabled
+                    if system.name != "macintosh":
+                        if system.isOptSet("altromtype"):
+                            commandArray += [ "-" + system.config["altromtype"] ]
+                        else:
+                            commandArray += [ "-" + messRomType[messMode] ]
                     else:
-                        bootType = "-hard"
-                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
-                    commandArray += [ bootType, bootDisk ]
+                        if system.isOptSet("bootdisk"):
+                            if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                                commandArray += [ "-flop2" ]
+                            elif system.isOptSet("altromtype"):
+                                commandArray += [ "-" + system.config["altromtype"] ]
+                            else:
+                                commandArray += [ "-" + messRomType[messMode] ]
+                        else:
+                            if system.isOptSet("altromtype"):
+                                commandArray += [ "-" + system.config["altromtype"] ]
+                            else:
+                                commandArray += [ "-" + messRomType[messMode] ]
+                    # Use the full filename for MESS ROMs
+                    commandArray += [ rom ]
+                else:
+                    # Prepare software lists
+                    if os.path.exists(softDir + softList):
+                        os.unlink(softDir + softList)
+                    if not os.path.exists(softDir):
+                        os.makedirs(softDir)
+                    subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
+                    if softList in subdirSoftList:
+                        os.symlink(os.pardir(romDirname), softDir + softList, True)
+                    else:
+                        os.symlink(romDirname, softDir + softList, True)
+                    commandArray += [ os.path.splitext(romBasename)[0] ]
+
+                #TI-99 32k RAM expansion & speech modules - enabled by default
+                if system.name == "ti99":
+                    commandArray += [ "-ioport", "peb" ]
+                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                        commandArray += ["-ioport:peb:slot2", "32kmem"]
+                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
+                        commandArray += ["-ioport:peb:slot3", "speech"]
 
                 # Autostart computer games where applicable
                 # Generic boot if only one type is available
@@ -219,37 +271,6 @@ class MameGenerator(Generator):
                 if system.name == "fm7" and system.isOptSet("altromtype"):
                     if system.config["altromtype"] == "cass":
                         commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\\n' ]
-
-                # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
-                # Mac will auto change floppy 1 to 2 if a boot disk is enabled
-                if system.name != "macintosh":
-                    if system.isOptSet("altromtype"):
-                        commandArray += [ "-" + system.config["altromtype"] ]
-                    else:
-                        commandArray += [ "-" + messRomType[messMode] ]
-                else:
-                    if system.isOptSet("bootdisk"):
-                        if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                            commandArray += [ "-flop2" ]                            
-                        elif system.isOptSet("altromtype"):
-                            commandArray += [ "-" + system.config["altromtype"] ]
-                        else:
-                            commandArray += [ "-" + messRomType[messMode] ]
-                    else:
-                        if system.isOptSet("altromtype"):
-                            commandArray += [ "-" + system.config["altromtype"] ]
-                        else:
-                            commandArray += [ "-" + messRomType[messMode] ]
-                # Use the full filename for MESS ROMs
-                commandArray += [ rom ]
-
-                #TI-99 32k RAM expansion & speech modules - enabled by default
-                if system.name == "ti99":
-                    commandArray += [ "-ioport", "peb" ]
-                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
-                        commandArray += ["-ioport:peb:slot2", "32kmem"]
-                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
-                        commandArray += ["-ioport:peb:slot3", "speech"]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):
@@ -336,7 +357,7 @@ class MameGenerator(Generator):
         if bz_infos is None:
             return
 
-        # copy the png inside        
+        # copy the png inside
         if os.path.exists(bz_infos["layout"]):
             os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
             pngFile = os.path.split(bz_infos["png"])[1]
