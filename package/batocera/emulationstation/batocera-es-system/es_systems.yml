@@ -2448,11 +2448,11 @@ archimedes:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file aa310.zip, and archimedes_keyboard.zip
+          Requires MAME BIOS files aa310.zip and archimedes_keyboard.zip
           Using software list mode is recommended.
 
 atom:
-  name:       Archimedes
+  name:       Atom
   manufacturer: Acorn Computers
   release: 1979
   hardware: computer
@@ -2462,6 +2462,19 @@ atom:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file atom.zip
+          Using software list mode is recommended.
+
+electron:
+  name:       Electron
+  manufacturer: Acorn Computers
+  release: 1983
+  hardware: computer
+  extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files electron.zip, electron64.zip, electron_plus1.zip, electron_plus3.zip
           Using software list mode is recommended.
 
 apfm1000:

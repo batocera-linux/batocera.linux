@@ -31,6 +31,7 @@ class MameGenerator(Generator):
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
         softDir = "/var/run/mame_software/"
+        softList = ""
 
         # Generate userdata folders if needed
         mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
@@ -78,7 +79,7 @@ class MameGenerator(Generator):
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
         commandArray += [ "-fontpath",     "/usr/bin/mame/" ]               # Fonts can be left on ROM filesystem
         commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
-        commandArray += [ "-pluginspath", "/usr/bin/mame/plugins/" ]
+        commandArray += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
         commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
         commandArray += [ "-artpath",       "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/" ] # first for systems ; second for overlays
 
@@ -132,7 +133,6 @@ class MameGenerator(Generator):
         commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
         commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
         commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
-        commandArray += [ "-pluginspath" ,        "/userdata/saves/mame/plugins/" ]
         if softList != "":
             commandArray += [ "-swpath" ,        softDir ]
             commandArray += [ "-hashpath" ,      "/usr/bin/mame/hash" ]
@@ -189,6 +189,7 @@ class MameGenerator(Generator):
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messMode == -1:
             commandArray += [ romBasename ]
+            commandArray += [ "-plugins", "-plugin", "hiscore" ]
         else:
             if messSysName[messMode] == "":
                 commandArray += [ romBasename ]

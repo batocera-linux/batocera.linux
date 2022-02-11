@@ -4841,6 +4841,15 @@ mame:
                         "Don't Use (Default)":            none
                         "Acorn Archimedes floppy images": archimedes
                         "Acorn Archimedes hard disks":    archimedes_hdd
+                        "Acorn Archimedes ROM images":    archimedes_rom
+                altmodel:
+                    prompt:      ARCHIMEDES MODEL
+                    description: Select model to emulate
+                    choices:
+                        "Archimedes 310":             aa310
+                        "BBC A3000":                  aa3000
+                        "Archimedes 440/1 (Default)": aa4401
+                        "Archimedes 540":             aa540
                 enableui:
                     prompt:      UI KEYS
                     description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
@@ -4944,9 +4953,9 @@ mame:
                 altmodel:
                     prompt:      LYNX MODEL
                     choices:
-                        "Lynx 128k": lynx128k
-                        "Lynx 96k":  lynx96k
-                        "Lynx 48k":  lynx48k
+                        "Lynx 128k (Default)": lynx128k
+                        "Lynx 96k":            lynx96k
+                        "Lynx 48k":            lynx48k
                 enableui:
                     prompt:      UI KEYS
                     description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
@@ -5023,6 +5032,34 @@ mame:
                     choices:
                         "Cartridge":   cart
                         "Cassette":    cass
+                pergamecfg:
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       electron:
+            cfeatures:
+                softList:
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":            none
+                        "Acorn Archimedes floppy images": archimedes
+                        "Acorn Archimedes hard disks":    archimedes_hdd
+                        "Acorn Archimedes ROM images":    archimedes_rom
+                altmodel:
+                    prompt:      ARCHIMEDES MODEL
+                    description: Select model to emulate
+                    choices:
+                        "Electron w/64k Master RAM Board (default)": electron64
+                        "Electron":                                  electron
+                enableui:
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
                 pergamecfg:
                     prompt:      CUSTOM GAME CONFIG
                     description: Enable per-game custom configuration via MAME menu.
