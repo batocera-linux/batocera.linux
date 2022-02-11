@@ -17,12 +17,9 @@ eslog = get_logger(__name__)
 class Pcsx2Generator(Generator):
 
     def getInGameRatio(self, config, gameResolution, rom):
-        return 16/9
-
-        # ratio option seems broken with last pcsx2 version
-        #if getGfxRatioFromConfig(config, gameResolution) == "16:9":
-        #    return 16/9
-        #return 4/3
+        if getGfxRatioFromConfig(config, gameResolution) == "16:9" or (getGfxRatioFromConfig(config, gameResolution) == "Stretch" and gameResolution["width"] / float(gameResolution["height"]) > ((16.0 / 9.0) - 0.1)):
+            return 16/9
+        return 4/3
 
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
@@ -80,11 +77,11 @@ class Pcsx2Generator(Generator):
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9
-    if "ratio" in config:
-        if config["ratio"] == "4/3" or (config["ratio"] == "auto" and gameResolution["width"] / float(gameResolution["height"]) < (16.0 / 9.0) - 0.1): # let a marge):
-            return "4:3"
-        else:
+    if "pcsx2_tv_mode" in config:
+        if config["pcsx2_tv_mode"] == "16/9":
             return "16:9"
+        elif config["pcsx2_tv_mode"] == "Stretch":
+            return "Stretch"
     return "4:3"
 
 def configureReg(config_directory):
@@ -340,6 +337,8 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     iniConfig.set("ProgramLog", "Visible",     "disabled")
     iniConfig.set("Filenames",  "BIOS",        biosFile)
     iniConfig.set("GSWindow",   "AspectRatio", resolution)
+    # Zoom: 100 = fit to screen, 0 = fill the screen, anywhere between = custom
+    iniConfig.set("GSWindow", "Zoom", "100")
 
     # Save the ini file
     if not os.path.exists(os.path.dirname(configFileName)):

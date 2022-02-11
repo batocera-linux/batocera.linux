@@ -4221,7 +4221,7 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  features: [ratio, decoration]
+  features: [decoration]
   shared: [hud]
   cfeatures:
         gfxbackend:
@@ -4231,6 +4231,13 @@ pcsx2:
                 "OpenGL":      12
                 "Software":    13
                 "Vulkan":      14
+        pcsx2_tv_mode:
+            prompt:      TV MODE
+            description: PS2's internal ratio setting. Some games only support 4/3.
+            choices:
+                "4:3":     4/3
+                "16:9":    16/9
+                "Stretch": Stretch
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
