@@ -21,4 +21,12 @@ define DOLPHIN_TRIFORCE_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0555 "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/dolphin-triforce.AppImage" "${TARGET_DIR}/usr/bin/dolphin-triforce.AppImage"
 endef
 
+# Hotkeys
+define DOLPHIN_TRIFORCE_EVMAP
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/triforce/triforce.dolphin.keys \
+		$(TARGET_DIR)/usr/share/evmapy
+endef
+
 $(eval $(generic-package))

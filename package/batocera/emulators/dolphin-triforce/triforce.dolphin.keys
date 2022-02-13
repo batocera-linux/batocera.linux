@@ -1,0 +1,22 @@
+{
+    "actions_player1": [
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": "killall -9 dolphin-triforce",
+            "description": "Exit emulator"
+        },
+        {
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": ["KEY_LEFTALT", "KEY_ENTER"],
+            "description": "Open Dolphin-triforce's menu"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "Screenshot"
+        }
+    ]
+}

@@ -44,6 +44,14 @@ class DolphinTriforceGenerator(Generator):
         if "ISOPaths" not in dolphinTriforceSettings["General"]:
             dolphinTriforceSettings.set("General", "ISOPath0", "/userdata/roms/triforce")
             dolphinTriforceSettings.set("General", "ISOPaths", "1")
+        if "GCMPathes" not in dolphinTriforceSettings["General"]:
+            dolphinTriforceSettings.set("General", "GCMPath0", "/userdata/roms/triforce")
+            dolphinTriforceSettings.set("General", "GCMPathes", "1")
+
+        # Save file location
+        if "MemcardAPath" not in dolphinTriforceSettings["Core"]:
+            dolphinTriforceSettings.set("Core", "MemcardAPath", "/userdata/saves/dolphin-triforce/GC/MemoryCardA.USA.raw")
+            dolphinTriforceSettings.set("Core", "MemcardBPath", "/userdata/saves/dolphin-triforce/GC/MemoryCardB.USA.raw")
 
         # Draw or not FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
@@ -64,7 +72,7 @@ class DolphinTriforceGenerator(Generator):
         dolphinTriforceSettings.set("Interface", "ConfirmStop", "False")
 
         # only 1 window (fixes exit and gui display)
-        dolphinTriforceSettings.set("Display", "RenderToMain", "True")
+        dolphinTriforceSettings.set("Display", "RenderToMain", "False")
         dolphinTriforceSettings.set("Display", "Fullscreen", "True")
 
         # Enable Cheats
@@ -232,13 +240,132 @@ class DolphinTriforceGenerator(Generator):
         with open(batoceraFiles.dolphinTriforceGfxIni, 'w') as configfile:
             dolphinTriforceGFXSettings.write(configfile)
 
-        commandArray = ["dolphin-triforce.AppImage", "-e", rom]
-        if system.isOptSet('platform'):
-            commandArray = ["dolphin-triforce.AppImage-nogui", "-p", system.config["platform"], "-e", rom]
+        ## game settings ##
 
+        # These cheat files are required to launch Triforce games, and thus should always be present and enabled.
+
+        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings):
+            os.makedirs(batoceraFiles.dolphinTriforceGameSettings)
+
+        # GGPE01 Mario Kart GP 1
+
+        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini"):
+            dolphinTriforceGameSettingsGGPE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", "w")
+            dolphinTriforceGameSettingsGGPE01.write("""[OnFrame]
+$1 credits
+0x80690AC0:dword:0x00000001
+$Emulation Bug Fixes
+0x800319D0:dword:0x60000000
+0x80031BF0:dword:0x60000000
+0x80031BFC:dword:0x60000000
+0x800BE10C:dword:0x4800002C
+0x800790A0:dword:0x98650025
+[OnFrame_Enabled]
+$1 credits
+$Emulation Bug Fixes
+""")
+            dolphinTriforceGameSettingsGGPE01.close()
+
+        # GGPE02 Mario Kart GP 2
+
+        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE02.ini"):
+            dolphinTriforceGameSettingsGGPE02 = open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE02.ini", "w")
+            dolphinTriforceGameSettingsGGPE02.write("""[Display]
+ProgressiveScan = 0
+[Wii]
+Widescreen = False
+DisableWiimoteSpeaker = 0
+[Video]
+PH_SZNear = 1
+[EmuState]
+EmulationStateId = 3
+[OnFrame]
+$DI Seed Blanker
+0x80000000:dword:0x00000000
+0x80000004:dword:0x00000000
+0x80000008:dword:0x00000000
+$DVDInquiry Patchok
+0x80286388:dword:0x3C602100
+0x8028638C:dword:0x4E800020
+$Ignore CMD Encryption
+0x80285CD0:dword:0x93A30008
+0x80285CD4:dword:0x93C3000C
+0x80285CD8:dword:0x93E30010
+$Disable CARD
+0x80073BF4:dword:0x98650023
+0x80073C10:dword:0x98650023
+$Disable CAM
+0x80073BD8:dword:0x98650025
+$Seat Loop patch
+0x800BE10C:dword:0x4800002C
+$Stuck loop patch
+0x8002E100:dword:0x60000000
+$60times Loop patch
+0x8028B5D4:dword:0x60000000
+$GameTestMode Patch
+0x8002E340:dword:0x60000000
+0x8002E34C:dword:0x60000000
+$SeatLoopPatch
+0x80084FC4:dword:0x4800000C
+0x80085000:dword:0x60000000
+$99 credits
+0x80690AC0:dword:0x00000063
+[OnFrame_Enabled]
+$DI Seed Blanker
+$DVDInquiry Patchok
+$Ignore CMD Encryption
+$Disable CARD
+$Disable CAM
+$Seat Loop patch
+$Stuck loop patch
+$60times Loop patch
+$GameTestMode Patch
+$SeatLoopPatch
+$99 credits
+""")
+            dolphinTriforceGameSettingsGGPE02.close()
+        
+        # # Cheats aren't in key = value format, so the allow_no_value option is needed.
+        # dolphinTriforceGameSettingsGGPE01 = configparser.ConfigParser(interpolation=None, allow_no_value=True,delimiters=';')
+        # # To prevent ConfigParser from converting to lower case
+        # dolphinTriforceGameSettingsGGPE01.optionxform = str
+        # if os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini"):
+            # dolphinTriforceGameSettingsGGPE01.read(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini")
+
+        # # GGPE01 sections
+        # if not dolphinTriforceGameSettingsGGPE01.has_section("OnFrame"):
+            # dolphinTriforceGameSettingsGGPE01.add_section("OnFrame")
+        # if not dolphinTriforceGameSettingsGGPE01.has_section("OnFrame_Enabled"):
+            # dolphinTriforceGameSettingsGGPE01.add_section("OnFrame_Enabled")
+
+        # # GGPE01 cheats
+        # if "$1 credits" not in dolphinTriforceGameSettingsGGPE01["OnFrame"]:
+            # dolphinTriforceGameSettingsGGPE01.set("OnFrame", "$1 credits\n0x80690AC0:dword:0x00000001")
+        # if "$Emulation Bug Fixes" not in dolphinTriforceGameSettingsGGPE01["OnFrame"]:
+            # dolphinTriforceGameSettingsGGPE01.set("OnFrame", "$Emulation Bug Fixes\n0x800319D0:dword:0x60000000\n0x80031BF0:dword:0x60000000\n0x80031BFC:dword::0x60000000\n0x800BE10C:dword:0x4800002C\n0x800790A0:dword:0x98650025")
+        # if "$1 credits" not in dolphinTriforceGameSettingsGGPE01["OnFrame_Enabled"]:
+            # dolphinTriforceGameSettingsGGPE01.set("OnFrame_Enabled", "$1 credits")
+        # if "$Emulation Bug Fixes" not in dolphinTriforceGameSettingsGGPE01["OnFrame_Enabled"]:
+            # dolphinTriforceGameSettingsGGPE01.set("OnFrame_Enabled", "$Emulation Bug Fixes")
+
+        # # Save GGPE01.ini
+        # with open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", 'w') as configfile:
+            # dolphinTriforceGameSettingsGGPE01.write(configfile)
+
+        commandArray = ["dolphin-triforce.AppImage", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
+        if system.isOptSet('platform'):
+            commandArray = ["dolphin-triforce.AppImage-nogui", "-U", "/userdata/system/configs/dolphin-triforce", "-p", system.config["platform"], "-e", rom]
+
+        # No environment variables work for now, paths are coded in above.
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+        #return Command.Command(array=commandArray)
             
     def getInGameRatio(self, config, gameResolution, rom):
+        if 'dolphin_aspect_ratio' in config:
+            if config['dolphin_aspect_ratio'] == "1":
+                return 16/9
+            elif config['dolphin_aspect_ratio'] == "3" and (gameResolution["width"] / float(gameResolution["height"]) > ((16.0 / 9.0) - 0.1)):
+                return 16/9
         return 4/3
 
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
