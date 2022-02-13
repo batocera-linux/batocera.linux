@@ -5,7 +5,7 @@
 ################################################################################
 
 # Wine Mono addon (required)
-WINE_MONO_LUTRIS_VERSION = 6.3.0
+WINE_MONO_LUTRIS_VERSION = 7.0.0
 WINE_MONO_LUTRIS_SOURCE = wine-mono-$(WINE_MONO_LUTRIS_VERSION)-x86.tar.xz
 WINE_MONO_LUTRIS_SITE = https://dl.winehq.org/wine/wine-mono/$(WINE_MONO_LUTRIS_VERSION)
 

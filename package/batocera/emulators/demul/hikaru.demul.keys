@@ -7,6 +7,12 @@
             "description": "Exit the emulator"
         },
         {
+            "trigger": ["hotkey", "a"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_ENTER" ],
+            "description": "Set to full screen"
+        },
+        {
             "trigger": "start",
             "type": "key",
             "target": "KEY_0",

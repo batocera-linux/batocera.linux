@@ -2,6 +2,7 @@ default:
   emulator:
   core:
   options:
+    shaderset: sharp-bilinear-simple
     hud_support: true
     video_frame_delay_auto: true
 
@@ -99,3 +100,9 @@ coco:
 macintosh:
   emulator: mame
   core:     mame
+gaelco:
+  options:
+    videomode: max-640x480
+hikaru:
+  options:
+    videomode: max-640x480

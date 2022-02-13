@@ -323,7 +323,19 @@ systems = {
 
     # ---------- Tandy Color Conputer ---------- #
     "coco":   { "name": "Tandy Color Computer", "biosFiles":  [ { "md5": "", "file": "bios/coco.zip"  },
-                                                { "md5": "a74f3d95b395dad7cdca19d560eeea74", "zippedFile": "bas10.rom", "file": "bios/coco.zip"} ] },
+                                                { "md5": "a74f3d95b395dad7cdca19d560eeea74", "zippedFile": "bas10.rom", "file": "bios/coco.zip"},
+                                                { "md5": "", "file": "bios/coco2.zip" },
+                                                { "md5": "c933316c7d939532a13648850c1c2aa6", "zippedFile": "bas12.rom", "file": "bios/coco2.zip"},
+                                                { "md5": "21070aa0496142b886c562bf76d7c113", "zippedFile": "extbas11.rom", "file": "bios/coco2.zip"},
+                                                { "md5": "", "file": "bios/coco2b.zip"  },
+                                                { "md5": "c2fc43556eb6b7b25bdf5955bd9df825", "zippedFile": "bas13.rom", "file": "bios/coco2b.zip"},
+                                                { "md5": "21070aa0496142b886c562bf76d7c113", "zippedFile": "extbas11.rom", "file": "bios/coco2.zip"},
+                                                { "md5": "", "file": "bios/coco3.zip"  },
+                                                { "md5": "7233c6c429f3ce1c7392f28a933e0b6f", "zippedFile": "coco3.rom", "file": "bios/coco3.zip"},
+                                                { "md5": "", "file": "bios/coco3p.zip"  },
+                                                { "md5": "4ae57e5a8e7494e5485446fefedb580b", "zippedFile": "coco3p.rom", "file": "bios/coco3p.zip"},
+                                                { "md5": "", "file": "bios/coco_fdc_v11.zip"  },
+                                                { "md5": "8cab28f4b7311b8df63c07bb3b59bfd5", "zippedFile": "disk11.rom", "file": "bios/coco_fdc_v11.zip"} ] },
 
     # ---------- Tomy Tutor ---------- #
     "tutor":   { "name": "Tomy Tutor", "biosFiles":  [ { "md5": "", "file": "bios/tutor.zip"  },
@@ -452,7 +464,8 @@ systems = {
     "naomi2":   { "name": "Naomi 2", "biosFiles":  [ { "md5": "fc7c2b9363a1e21b9ad42003e165598c", "file": "bios/naomi2.zip"  } ] },
 
     # ---------- Hikaru ---------- #
-    "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip"  } ] },
+    "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip" },
+                                                { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"}, ] },
 }
 
 class BiosStatus:

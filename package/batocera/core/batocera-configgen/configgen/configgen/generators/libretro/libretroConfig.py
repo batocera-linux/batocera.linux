@@ -258,16 +258,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
 
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
-        if system.name != 'dreamcast':
-            retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-            retroarchConfig['input_player2_analog_dpad_mode'] = '3'
-            retroarchConfig['input_player3_analog_dpad_mode'] = '3'
-            retroarchConfig['input_player4_analog_dpad_mode'] = '3'
-        else:
-            retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-            retroarchConfig['input_player2_analog_dpad_mode'] = '1'
-            retroarchConfig['input_player3_analog_dpad_mode'] = '1'
-            retroarchConfig['input_player4_analog_dpad_mode'] = '1'
         if system.isOptSet('controller1_dc'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
         else:
@@ -500,6 +490,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             retroarchConfig['cheevos_enable'] = 'true'
             retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
             retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
+            retroarchConfig['cheevos_token'] = "" # clear the token, otherwise, it may fail (possibly a ra bug)
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'

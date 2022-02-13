@@ -2521,6 +2521,8 @@ switch:
   emulators:
     yuzu:
       yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
+    ryujinx:
+      ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
   name:       Quake II
@@ -2711,12 +2713,14 @@ naomi2:
     ## NAOMI 2 IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Naomi 2 games using Demul & Wine.
+    You can now play Naomi 2 games using Demul with Wine.
     Roms should be stored in the appropriate naomi2 directory.
     You will need a Naomi 2 bios, please add the naomi2.zip file to your bios directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2774,12 +2778,14 @@ hikaru:
     ## HIKARU IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Hikaru games using Demul & Wine.
+    You can now play Sega Hikaru games using Demul with Wine.
     Roms should be stored in the appropriate hikaru directory.
     You will need a Hikaru bios, please add the hikaru.zip file to your bios directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2823,11 +2829,13 @@ gaelco:
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Gaelco games using Demul & Wine.
+    You can now play Sega Gaelco games using Demul with Wine.
     Roms should be stored in the appropriate gaelco directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2871,11 +2879,13 @@ cave3rd:
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Cave CV1000 games using Demul & Wine.
+    You can now play Sega Cave CV1000 games using Demul with Wine.
     Roms should be stored in the appropriate cave3rd directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start

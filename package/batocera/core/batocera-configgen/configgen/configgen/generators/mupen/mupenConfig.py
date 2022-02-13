@@ -63,20 +63,21 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Video-Glide64mk2", "Version", "1")
 
     # Widescreen Mode -> ONLY for GLIDE64 & MK2
-    if system.config["ratio"] == "16/9":
-        # Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
-        # Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
-        iniConfig.set("Video-Glide64mk2", "aspect", "1")
-        # GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
-        iniConfig.set("Video-GLideN64",   "AspectRatio", "2")
-    elif system.config["ratio"] == "4/3":
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "0")
-        iniConfig.set("Video-Glide64mk2", "aspect", "0")
-        iniConfig.set("Video-GLideN64",   "AspectRatio", "1")
+    if system.isOptSet("mupen64plus_ratio"):
+        if system.config["mupen64plus_ratio"] == "16/9":
+            # Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
+            iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
+            # Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original
+            iniConfig.set("Video-Glide64mk2", "aspect", "1")
+            # GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
+            iniConfig.set("Video-GLideN64",   "AspectRatio", "2")
+        else:
+            iniConfig.set("Video-Glide64mk2", "adjust_aspect", "0")
+            iniConfig.set("Video-Glide64mk2", "aspect", "0")
+            iniConfig.set("Video-GLideN64",   "AspectRatio", "1")
     else:
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
-        iniConfig.set("Video-Glide64mk2", "aspect", "2")
+        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "-1")
+        iniConfig.set("Video-Glide64mk2", "aspect", "-1")
         iniConfig.set("Video-GLideN64",   "AspectRatio", "3")
 
     # Textures Mip-Mapping (Filtering)
