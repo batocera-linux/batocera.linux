@@ -60,6 +60,12 @@ class MameGenerator(Generator):
             messMode = -1
         if messMode == -1:
             commandArray =  [ "/usr/bin/mame/mame" ]
+        elif system.name == "vgmplay":
+            commandArray =  [ "/usr/bin/mame/vgmplay" ]
+            if system.isOptSet("softList") and system.config["softList"] != "none":
+                softList = system.config["softList"]
+            else:
+                softList = ""
         else:
             commandArray =  [ "/usr/bin/mame/mess" ]
             if system.isOptSet("softList") and system.config["softList"] != "none":
@@ -135,7 +141,7 @@ class MameGenerator(Generator):
         commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
         if softList != "":
             commandArray += [ "-swpath" ,        softDir ]
-            commandArray += [ "-hashpath" ,      "/usr/bin/mame/hash" ]
+            commandArray += [ "-hashpath" ,      softDir + "hash/" ]
 
         # TODO These paths are not handled yet
         # TODO -swpath              path to loose software - might use if we want software list MESS support
@@ -178,6 +184,10 @@ class MameGenerator(Generator):
             commandArray += [ "-autoror" ]
         if system.isOptSet("rotation") and system.config["rotation"] == "autorol":
             commandArray += [ "-autorol" ]
+
+        # Artwork crop
+        if system.isOptSet("artworkcrop") and system.getOptBoolean("artworkcrop"):
+            commandArray += [ "-artwork_crop" ]
         
         # UI enable - for computer systems, the default sends all keys to the emulated system.
         # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
@@ -187,7 +197,7 @@ class MameGenerator(Generator):
         
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
-        if messMode == -1:
+        if messMode == -1 and not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             commandArray += [ romBasename ]
             commandArray += [ "-plugins", "-plugin", "hiscore" ]
         else:
@@ -200,7 +210,7 @@ class MameGenerator(Generator):
                 else:
                     commandArray += [ messSysName[messMode] ]
 
-                if softList == "none":
+                if softList == "":
                     # Boot disk for Macintosh
                     # Will use Floppy 1 or Hard Drive, depending on the disk.
                     if system.name == "macintosh" and system.isOptSet("bootdisk"):
@@ -236,16 +246,24 @@ class MameGenerator(Generator):
                     commandArray += [ rom ]
                 else:
                     # Prepare software lists
-                    if os.path.exists(softDir + softList):
-                        os.unlink(softDir + softList)
-                    if not os.path.exists(softDir):
-                        os.makedirs(softDir)
-                    subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
-                    if softList in subdirSoftList:
-                        os.symlink(os.pardir(romDirname), softDir + softList, True)
-                    else:
-                        os.symlink(romDirname, softDir + softList, True)
-                    commandArray += [ os.path.splitext(romBasename)[0] ]
+                    if softList != "":
+                        if not os.path.exists(softDir):
+                            os.makedirs(softDir)                    
+                        for fileName in os.listdir(softDir):
+                            checkFile = os.path.join(softDir, fileName)
+                            if os.path.islink(checkFile):
+                                os.unlink(checkFile)
+                            if os.path.isdir(checkFile):
+                                shutil.rmtree(checkFile)
+                        if not os.path.exists(softDir + "hash/"):
+                            os.makedirs(softDir + "hash/")
+                        os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
+                        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
+                        if softList in subdirSoftList:
+                            os.symlink(os.pardir(romDirname), softDir + softList, True)
+                        else:
+                            os.symlink(romDirname, softDir + softList, True)
+                        commandArray += [ os.path.splitext(romBasename)[0] ]
 
                 #TI-99 32k RAM expansion & speech modules - enabled by default
                 if system.name == "ti99":
@@ -256,22 +274,33 @@ class MameGenerator(Generator):
                         commandArray += ["-ioport:peb:slot3", "speech"]
 
                 # Autostart computer games where applicable
-                # Generic boot if only one type is available
-                if messAutoRun[messMode] != "":
-                    commandArray += [ "-autoboot_delay", "2", "-autoboot_command", messAutoRun[messMode] ]
                 # bbc has different boots for floppy & cassette, no special boot for carts
                 if system.name == "bbc":
-                    if system.isOptSet("altromtype"):
-                        if system.config["altromtype"] == "cass":
-                            commandArray += [ '-autoboot_delay', '2', '-autoboot_command', '*tape\\nchain""\\n' ]
-                        elif left(system.config["altromtype"], 4) == "flop":
-                            commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\\n*exec !boot\\n' ]
+                    if system.isOptSet("altromtype") or softList != "":
+                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                            commandArray += [ '-autoboot_delay', '2', '-autoboot_command', '*tape\nchain""\n' ]
+                        elif left(system.config["altromtype"], 4) == "flop" or softList[-4:] == "flop":
+                            commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
                     else:
-                        commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\\n*exec !boot\\n' ]
+                        commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
                 # fm7 boots floppies, needs cassette loading
-                if system.name == "fm7" and system.isOptSet("altromtype"):
-                    if system.config["altromtype"] == "cass":
-                        commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\\n' ]
+                elif system.name == "fm7":
+                    if system.isOptSet("altromtype") or softList != "":
+                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                            commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\n' ]
+                else:
+                    # Check for an override file, otherwise use generic (if it exists)
+                    autoRunCmd = messAutoRun[messMode]
+                    autoRunFile = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/' + softList + '_autoload.csv'
+                    if os.path.exists(autoRunFile):
+                        openARFile = open(autoRunFile, 'r')
+                        with openARFile:
+                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                            for row in autoRunList:
+                                if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
+                                    autoRunCmd = row[1] + "\\n"
+                    if autoRunCmd != "":
+                        commandArray += [ "-autoboot_delay", "3", "-autoboot_command", autoRunCmd ]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):
@@ -359,7 +388,19 @@ class MameGenerator(Generator):
             return
 
         # copy the png inside
-        if os.path.exists(bz_infos["layout"]):
+        if os.path.exists(bz_infos["mamezip"]):
+            if messSys == "":
+                artFile = "/var/run/mame_artwork/" + romBase + ".zip"
+            else:
+                artFile = "/var/run/mame_artwork/" + messSys + ".zip"
+            if os.path.exists(artFile):
+                if os.islink(artFile):
+                    os.unlink(artFile)
+                else:
+                    os.remove(artFile)
+            os.symlink(bz_infos["mamezip"], artFile)
+            return
+        elif os.path.exists(bz_infos["layout"]):
             os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
             pngFile = os.path.split(bz_infos["png"])[1]
             os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)

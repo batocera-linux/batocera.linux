@@ -4719,15 +4719,17 @@ mame:
             prompt:      BGFX VIDEO FILTER
             description: Apply a post-processing effect.
             choices:
-                "Off":             null
-                "Bilinear":        default
-                "CRT Geom":        crt-geom
-                "CRT Geom Deluxe": crt-geom-deluxe
-                "Super Eagle":     eagle
-                "HLSL":            hlsl
-                "HQ2X":            hq2x
-                "HQ3X":            hq3x
-                "HQ4X":            hq4x
+                "Off":                         null
+                "Bilinear":                    default
+                "CRT Geom":                    crt-geom
+                "CRT Geom Deluxe":             crt-geom-deluxe
+                "CRT Geom Deluxe (RGB)":       crt-geom-deluxe-rgb
+                "CRT Geom Deluxe (Composite)": crt-geom-deluxe-composite
+                "Super Eagle":                 eagle
+                "HLSL":                        hlsl
+                "HQ2X":                        hq2x
+                "HQ3X":                        hq3x
+                "HQ4X":                        hq4x
         switchres:
             prompt:      CRT SWITCHRES
             description: Allows the use of switchres profiles if present.
@@ -4741,6 +4743,12 @@ mame:
                 "Off":             null
                 "Rotate 90":       autoror
                 "Rotate 270":      autorol
+        artworkcrop:
+            prompt:      ARTWORK CROP
+            description: Crop artwork to only unused space, keeping the game as large as possible.
+            choices:
+                "Off (Default)": 0
+                "On":            1
         altdpad:
             prompt:      ALT DPAD MODE
             description: If the D-Pad is oriented incorrectly for your controller.
@@ -5044,12 +5052,13 @@ mame:
                     prompt:      SOFTWARE LIST
                     description: Use MAME software lists to identify ROM
                     choices:
-                        "Don't Use (Default)":            none
-                        "Acorn Archimedes floppy images": archimedes
-                        "Acorn Archimedes hard disks":    archimedes_hdd
-                        "Acorn Archimedes ROM images":    archimedes_rom
+                        "Don't Use (Default)":       none
+                        "Acorn Electron Disks":      electron_flop
+                        "Acorn Electron Cassettes":  electron_cass
+                        "Acorn Electron Cartridges": electron_cart
+                        "Acron Electron ROMs":       electron_rom
                 altmodel:
-                    prompt:      ARCHIMEDES MODEL
+                    prompt:      ELECTRON MODEL
                     description: Select model to emulate
                     choices:
                         "Electron w/64k Master RAM Board (default)": electron64
@@ -5256,7 +5265,7 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
-       superacan:
+       supracan:
             cfeatures:
                 softList:
                     prompt:      SOFTWARE LIST
@@ -5349,6 +5358,20 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
+       vgmplay:
+            cfeatures:
+                softList:
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":    none
+                        "Video Game Music Files": vgmplay
+                pergamecfg:
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
        vsmile:
             cfeatures:
                 softList:
@@ -5408,6 +5431,12 @@ mame:
                         "Neo Geo CD Pad":               "neocd"
                         "Twin Stick with Triggers":     "twinstick"
                         "Rotated 4-Way Stick (Q*Bert)": "qbert"
+                hiscoreplugin:
+                    prompt:      HIGH SCORE PLUGIN
+                    description: Emable or disable high score saving
+                    choices:
+                        "Enabled (Default)": 1
+                        "Disabled":          0
        neogeo: 
             cfeatures:
                 altlayout:
@@ -5421,7 +5450,13 @@ mame:
                         "Neo Geo Mini Pad":             "neomini"
                         "Neo Geo CD Pad":               "neocd"
                         "Twin Stick with Triggers":     "twinstick"
-                        "Rotated 4-Way Stick (Q*Bert)": "qbert" 
+                        "Rotated 4-Way Stick (Q*Bert)": "qbert"
+                hiscoreplugin:
+                    prompt:      HIGH SCORE PLUGIN
+                    description: Emable or disable high score saving
+                    choices:
+                        "Enabled (Default)": 1
+                        "Disabled":          0
 
 wine:
   features: [padtokeyboard, decoration]

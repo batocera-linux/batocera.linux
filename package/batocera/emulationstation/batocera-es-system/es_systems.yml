@@ -2427,7 +2427,7 @@ gamepock:
           Requires MAME BIOS file gamepock.zip
 
 fm7:
-  name:       FM-7
+  name:       Fujitsu FM-7
   manufacturer: Fujitsu
   release: 1982
   hardware: computer
@@ -2439,7 +2439,7 @@ fm7:
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
 
 archimedes:
-  name:       Archimedes
+  name:       Acorn Archimedes
   manufacturer: Acorn Computers
   release: 1987
   hardware: computer
@@ -2450,9 +2450,10 @@ archimedes:
   comment_en: |
           Requires MAME BIOS files aa310.zip and archimedes_keyboard.zip
           Using software list mode is recommended.
+          Double-click the floppy drive in the lower left to open the contents, double-click the app/game to run it.
 
 atom:
-  name:       Atom
+  name:       Acorn Atom
   manufacturer: Acorn Computers
   release: 1979
   hardware: computer
@@ -2462,10 +2463,11 @@ atom:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file atom.zip
-          Using software list mode is recommended.
+          Using software list mode is recommended. Software list cassettes don't work but floppies do.
+          Disks will automatically show contents, if the program isn't auto-launched, type the program name followed by a double quote (mapped to shift-2) and hit enter to run.
 
 electron:
-  name:       Electron
+  name:       Acorn Electron
   manufacturer: Acorn Computers
   release: 1983
   hardware: computer
@@ -2475,7 +2477,8 @@ electron:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS files electron.zip, electron64.zip, electron_plus1.zip, electron_plus3.zip
-          Using software list mode is recommended.
+          Using software list mode (cassette) is recommended.
+          Tapes should auto-load, use the MAME menu to stop/play/rewind if needed.
 
 apfm1000:
   name:       APF M-1000
@@ -2503,7 +2506,7 @@ bbc:
           Also sample pack bbc.zip in bios/mame/samples
 
 camplynx:
-  name:       Lynx
+  name:       Camputers Lynx
   manufacturer: Camputers
   release: 1983
   hardware: computer
@@ -2599,6 +2602,22 @@ coco:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file coco.zip
+
+vgmplay:
+  name:       Video Game Music Player
+  manufacturer: Various
+  release: 1980
+  hardware: computer
+  extensions: [vgm, vgz, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Software lists recommended. QSound can be CPU-intensive.
+          From MAME:
+          VGMRIPS.net VGM Archive located at http://vgmrips.net/pack
+          Current Archives available at http://vgmrips.net/files/VGMRips_all_of_them_20170815.zip
+          and http://vgmrips.net/files/VGMRips_all_of_them_20180807-update.zip
 
 switch:
   name:       Switch
