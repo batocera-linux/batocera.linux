@@ -45,6 +45,8 @@ do_badgeines() {
 
 # ---- MAIN ----
 echo "Starting the upgrade..."
+echo "Cleaning up files..."
+test -f "/userdata/system/upgrade/upgrade_message.txt" && rm -f "/userdata/system/upgrade/upgrade_message.txt"
 
 # --- Prepare update URLs ---
 
@@ -141,7 +143,7 @@ fi
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
 do_upgmsg "Backing up config files ..." 0.5
-BOOTFILES="config.txt batocera-boot.conf"
+BOOTFILES="batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"
