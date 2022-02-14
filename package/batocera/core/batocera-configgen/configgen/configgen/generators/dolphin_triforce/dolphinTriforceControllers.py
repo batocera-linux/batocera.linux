@@ -57,15 +57,15 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 gamecubeMapping.update(res)
                 line = cconfig.readline()
 
-    generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "Config/GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
+    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, "Config/GCPadNew.ini")
     if os.path.isfile(configFileName):
         os.remove(configFileName)
 
 def generateHotkeys(playersControllers):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "Hotkeys.ini")
+    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, "Config/Hotkeys.ini")
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     hotkeysMapping = {
@@ -82,7 +82,7 @@ def generateHotkeys(playersControllers):
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
             f.write("[Hotkeys1]" + "\n")
-            f.write("Device = evdev/0/" + pad.realName.strip() + "\n")
+            f.write("Device = SDL/0/" + pad.realName.strip() + "\n")
 
             # Search the hotkey button
             hotkey = None
@@ -113,7 +113,7 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, filename)
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     nsamepad = 0
@@ -130,7 +130,7 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
         double_pads[pad.realName.strip()] = nsamepad+1
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
-        f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
+        f.write("Device = SDL/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad):
@@ -182,7 +182,7 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
             f.write("Rumble/Motor = Weak\n")
 
 def generateControllerConfig_any_from_profiles(f, pad):
-    for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
+    for profileFile in glob.glob("/userdata/system/configs/dolphin-triforce/Config/Profiles/GCPad/*.ini"):
         try:
             eslog.debug("Looking profile : {}".format(profileFile))
             profileConfig = configparser.ConfigParser(interpolation=None)
@@ -194,7 +194,7 @@ def generateControllerConfig_any_from_profiles(f, pad):
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
-                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
+                if deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.realName.strip():
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
@@ -213,14 +213,12 @@ def write_key(f, keyname, input_type, input_id, input_value, input_global_id, re
     if input_type == "button":
         f.write("Button " + str(input_id))
     elif input_type == "hat":
-        if input_value == "1" or input_value == "4":        # up or down
-            f.write("Axis " + str(int(input_global_id)+1))
-        else:
-            f.write("Axis " + str(input_global_id))
-        if input_value == "1" or input_value == "8":        # up or left
-            f.write("-")
-        else:
-            f.write("+")
+        if input_value == "1":        # up
+            f.write("Hat 0 N")
+        elif input_value == "4": # down
+            f.write("Hat 0 S")
+        elif input_value == "8": # left
+            f.write("Hat 0 W")
     elif input_type == "axis":
         if (reverse and input_value == "-1") or (not reverse and input_value == "1"):
             f.write("Axis " + str(input_id) + "+")

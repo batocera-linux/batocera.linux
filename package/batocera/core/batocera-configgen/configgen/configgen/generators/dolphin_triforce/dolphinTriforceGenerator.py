@@ -18,7 +18,33 @@ class DolphinTriforceGenerator(Generator):
         if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinTriforceData + "/StateSaves")
 
-        dolphinTriforceControllers.generateControllerConfig(system, playersControllers, rom)
+        #dolphinTriforceControllers.generateControllerConfig(system, playersControllers, rom)
+        # Workaround to at least have X-input controllers working by default
+        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/Config/GCPadNew.ini"):
+            dolphinTriforceGCPad = open(batoceraFiles.dolphinTriforceConfig + "/Config/GCPadNew.ini", "w")
+            dolphinTriforceGCPad.write("""[GCPad1]
+Device = SDL/0/Microsoft X-Box 360 pad
+Buttons/A = `Button 0`
+Buttons/B = `Button 2`
+Buttons/Y = `Button 1`
+Buttons/Z = `Button 5`
+Buttons/Start = `Button 7`
+Main Stick/Up = `Axis 1-`
+Main Stick/Down = `Axis 1+`
+Main Stick/Left = `Axis 0-`
+Main Stick/Right = `Axis 0+`
+C-Stick/Up = `Axis 4-`
+C-Stick/Down = `Axis 4+`
+C-Stick/Left = `Axis 3-`
+C-Stick/Right = `Axis 3+`
+Triggers/L-Analog = `Axis 2-+`
+Triggers/R-Analog = `Axis 5-+`
+D-Pad/Up = `Hat 0 N`
+D-Pad/Down = `Hat 0 S`
+D-Pad/Left = `Hat 0 W`
+D-Pad/Right = `Hat 0 E`
+""")
+            dolphinTriforceGCPad.close()
 
         ## dolphin.ini ##
 
