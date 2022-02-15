@@ -17,6 +17,7 @@ import subprocess
 from xml.dom import minidom
 from PIL import Image, ImageOps
 from . import mameControllers
+from pathlib import Path
 import csv
 
 eslog = get_logger(__name__)
@@ -32,6 +33,7 @@ class MameGenerator(Generator):
         romDirname  = path.dirname(rom)
         softDir = "/var/run/mame_software/"
         softList = ""
+        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
 
         # Generate userdata folders if needed
         mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
@@ -79,7 +81,10 @@ class MameGenerator(Generator):
         if messMode == -1:
             commandArray += [ "-rompath",      romDirname ]
         else:
-            commandArray += [ "-rompath",      romDirname + ";/userdata/bios/;/userdata/roms/mame/" ]
+            if softList in subdirSoftList:
+                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/;/userdata/roms/mame/;/var/run/mame_software/" ]
+            else:
+                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/;/userdata/roms/mame/" ]
 
         # MAME various paths we can probably do better
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
@@ -258,12 +263,13 @@ class MameGenerator(Generator):
                         if not os.path.exists(softDir + "hash/"):
                             os.makedirs(softDir + "hash/")
                         os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
-                        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
                         if softList in subdirSoftList:
-                            os.symlink(os.pardir(romDirname), softDir + softList, True)
+                            romPath = Path(romDirname)
+                            os.symlink(str(romPath.parents[0]), softDir + softList, True)
+                            commandArray += [ os.path.basename(romDirname), "-verbose" ]
                         else:
                             os.symlink(romDirname, softDir + softList, True)
-                        commandArray += [ os.path.splitext(romBasename)[0] ]
+                            commandArray += [ os.path.splitext(romBasename)[0] ]
 
                 #TI-99 32k RAM expansion & speech modules - enabled by default
                 if system.name == "ti99":
