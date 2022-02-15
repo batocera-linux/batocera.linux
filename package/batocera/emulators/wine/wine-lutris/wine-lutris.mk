@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-#WINE_LUTRIS_VERSION = lutris-6.21-6 = 3f5f3f977a8096dc6f60d08e88c8bfe79c0f2504 # fails to download otherwise
-WINE_LUTRIS_VERSION = 3f5f3f977a8096dc6f60d08e88c8bfe79c0f2504
+# Version.: Commits on Feb 14, 2022 - lutris-7.1
+WINE_LUTRIS_VERSION = cb3e2c222f5112b2561c0e2139538a7f59b01a53
 WINE_LUTRIS_SITE = $(call github,lutris,wine,$(WINE_LUTRIS_VERSION))
 WINE_LUTRIS_LICENSE = LGPL-2.1+
 WINE_LUTRIS_DEPENDENCIES = host-bison host-flex host-wine-lutris
@@ -19,7 +19,7 @@ endef
 WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
-WINE_LUTRIS_CONF_OPTS = \
+WINE_LUTRIS_CONF_OPTS = CPPFLAGS="-DMPG123_NO_LARGENAME=1" \
 	--with-wine-tools=../host-wine-lutris-$(WINE_LUTRIS_VERSION) \
 	--disable-tests \
 	--without-capi \
