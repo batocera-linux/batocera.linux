@@ -269,23 +269,32 @@ class DolphinGenerator(Generator):
         dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)
 
         dolphin_aspect_ratio = dolphinGFXSettings.get("Settings", "AspectRatio")
-        wii_tv_mode = 0 #gamecube workaround
+        # What if we're playing a GameCube game with the widescreen patch or not?
+        if 'widescreen_hack' in config and config["widescreen_hack"] == "1":
+            wii_tv_mode = 1
+        else:
+            wii_tv_mode = 0
+
         try:
             wii_tv_mode = dolphinSYSCONF.getRatioFromConfig(config, gameResolution)
         except:
             pass
-                
+
+        # Auto
         if dolphin_aspect_ratio == "0":
             if wii_tv_mode == 1:
                 return 16/9
             return 4/3
-            
+
+        # Forced 16:9
         if dolphin_aspect_ratio == "1":
             return 16/9
-        
+
+        # Forced 4:3
         if dolphin_aspect_ratio == "2":
             return 4/3
-            
+
+        # Stretched (thus depends on physical screen geometry)
         if dolphin_aspect_ratio == "3":
             return gameResolution["width"] / gameResolution["height"]
                 

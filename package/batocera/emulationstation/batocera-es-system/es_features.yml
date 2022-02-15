@@ -3655,7 +3655,7 @@ dolphin:
                 "7x (4480x3696)":       7
                 "8x 5K (5120x4224)":    8
         dolphin_aspect_ratio:
-            prompt:      ASPECT RATIO
+            prompt:      GAME ASPECT RATIO
             description: The final output image, unrelated to the Wii's emulated NAND setting.
             choices:
                 "Force 16:9": 1
@@ -3727,12 +3727,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        widescreen_hack:
-            prompt:      WIDESCREEN HACK (GLITCHY)
-            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
-            choices:
-                "Off": 0
-                "On":  1
         enable_cheats:
             prompt:      ENABLE CHEATS
             description: To use game cheats or 16/9 Aspect Ratio Fix codes.
@@ -3776,6 +3770,14 @@ dolphin:
                 "On":  1
 
   systems:
+    gamecube:
+        cfeatures:
+            widescreen_hack:
+                prompt:      WIDESCREEN HACK (GLITCHY)
+                description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+                choices:
+                    "Off": 0
+                    "On":  1
     wii:
         cfeatures:
             tv_mode:
@@ -4221,7 +4223,7 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  features: [ratio, decoration]
+  features: [decoration]
   shared: [hud]
   cfeatures:
         gfxbackend:
@@ -4231,6 +4233,13 @@ pcsx2:
                 "OpenGL":      12
                 "Software":    13
                 "Vulkan":      14
+        pcsx2_tv_mode:
+            prompt:      TV MODE
+            description: PS2's internal ratio setting. Some games only support 4/3.
+            choices:
+                "4:3":     4/3
+                "16:9":    16/9
+                "Stretch": Stretch
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
