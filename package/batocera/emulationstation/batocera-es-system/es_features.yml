@@ -3,15 +3,145 @@
 
 shared:
   cfeatures:
+    videomode:
+      prompt: VIDEO MODE
+      preset: videomodes
+    ratio:
+      prompt: GAME ASPECT RATIO
+      choices:
+        "4/3":           "4/3"
+        "16/9":          "16/9"
+        "Full":          "full"
+        "16/10":         "16/10"
+        "16/15":         "16/15"
+        "21/9":          "21/9"
+        "1/1":           "1/1"
+        "2/1":           "2/1"
+        "3/2":           "3/2"
+        "3/4":           "3/4"
+        "4/1":           "4/1"
+        "9/16":          "9/16"
+        "5/4":           "5/4"
+        "6/5":           "6/5"
+        "7/9":           "7/9"
+        "8/3":           "8/3"
+        "8/7":           "8/7"
+        "19/12":         "19/12"
+        "19/14":         "19/14"
+        "30/17":         "30/17"
+        "32/9":          "32/9"
+        "Config":        "config"
+        "Square pixel":  "squarepixel"
+        "Core provided": "core"
+        "Custom":        "custom"
+    rewind:
+      prompt: REWIND
+      choices:
+        "On":  1
+        "Off": 0
+    autosave:
+      prompt: AUTO SAVE/LOAD
+      choices:
+        "On":  1
+        "Off": 0
+    shaderset:
+      prompt: SHADER SET
+      submenu: GAME RENDERING
+      preset: shaderset
+    smooth:
+      prompt: SMOOTH GAMES (BILINEAR FILTERING)
+      submenu: GAME RENDERING
+      choices:
+        "On":  1
+        "Off": 0
+    integerscale:
+      prompt:      INTEGER SCALING (PIXEL PERFECT)
+      submenu: GAME RENDERING
+      choices:
+        "On": 1
+        "Off": 0
+    bezel:
+      prompt: DECORATION SET
+      submenu: DECORATIONS
+      preset: bezel
+    bezel_stretch:
+      prompt: STRETCH BEZELS (4K & ULTRAWIDE)
+      submenu: DECORATIONS
+      choices:
+        "On":  1
+        "Off": 0
     hud:
-      archs_include: [x86, x86_64]
+      archs_include: [x86, x86_64, rpi4]
       prompt:      HEADS UP DISPLAY
       description: Show context-sensitive info over the game.
+      submenu: DECORATIONS
       choices:
         "None": none
         "Game info/art": game
         "Performance": perf
         "Custom": custom
+    bezel.tattoo:
+      prompt: SHOW TATTOO OVER BEZEL
+      submenu: DECORATIONS
+      description: Show an image overlaid on top of the bezel.
+      choices:
+        "NO": "0"
+        "SYSTEM CONTROLLERS": system
+        "CUSTOM IMAGE": custom
+    bezel.tattoo_corner:
+      prompt: TATTOO CORNER
+      submenu: DECORATIONS
+      choices:
+        "NORTH WEST": "NW"
+        "NORTH EAST": "NE"
+        "SOUTH EAST": "SE"
+        "SOUTH WEST": "SW"
+    bezel.tattoo_file:
+      prompt: "CUSTOM .PNG IMAGE PATH"
+      submenu: DECORATIONS
+      preset: folder
+    bezel.resize_tattoo:
+      prompt: RESIZE TATTOO
+      description: Shrink/expand tattoo to fit within the bezel's border.
+      submenu: DECORATIONS
+      preset: switchon
+    ai_service_enabled:
+      prompt: ENABLE AI TRANSLATION SERVICE
+      submenu: AI GAME TRANSLATION
+      preset: switchoff
+    ai_target_lang:
+      prompt: TARGET LANGUAGE
+      submenu: AI GAME TRANSLATION
+      choices:
+        "ENGLISH":   "En"
+        "FRANÇAIS":  "Fr"
+        "PORTUGUES": "Pt"
+        "DEUTSCH":   "De"
+        "GREEK":     "El"
+        "ESPAÑOL":   "Es"
+        "CZECH":     "Cs"
+        "DANISH":    "Da"
+        "CROATIAN":  "Hr"
+        "HUNGARIAN": "Hu"
+        "ITALIANO":  "It"
+        "JAPANESE":  "Ja"
+        "KOREAN":    "Ko"
+        "DUTCH":     "Nl"
+        "NORWEGIAN": "Nn"
+        "POLISH":    "Po"
+        "ROMANIAN":  "Ro"
+        "РУССКИЙ":   "Ru"
+        "SVENSKA":   "Sv"
+        "TÜRKÇE":    "Tr"
+        "简体中文":  "Zh"
+    ai_service_url:
+      prompt: AI TRANSLATION SERVICE URL
+      submenu: AI GAME TRANSLATION
+      preset: input
+    ai_service_pause:
+      prompt: PAUSE ON TRANSLATED SCREEN
+      submenu: AI GAME TRANSLATION
+      preset: switchoff
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
@@ -45,18 +175,12 @@ shared:
       choices:
         "On": 1
         "Off": 0
-    integerscale:
-      prompt:      INTEGER SCALING (PIXEL PERFECT)
-      choices:
-        "On": 1
-        "Off": 0
 
 global:
-  shared: [hud, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, integerscale]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable]
 
 libretro:
-  features: [ratio, smooth, shaders, decoration, runahead, secondinstance, video_frame_delay_auto, game_translation]
-  shared: [hud, vrr_runloop_enable, integerscale]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, integerscale, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4, rk3326]
@@ -67,6 +191,7 @@ libretro:
         "GLCore": glcore
         "Vulkan": vulkan
     audio_latency:
+      group: ADVANCED OPTIONS
       prompt:      AUDIO LATENCY
       description: In milliseconds. Can reduce crackling/cutting out.
       choices:
@@ -78,18 +203,21 @@ libretro:
         "16":     16
         "8":      8
     video_threaded:
+        group: ADVANCED OPTIONS
         prompt:      THREADED VIDEO
         description: Improves performance at the cost of latency and more video stuttering.
         choices:
             "On":   "true"
             "Off":  "false"
     video_allow_rotate:
+        group: ADVANCED OPTIONS
         prompt:      ALLOW ROTATION
         description: Allow cores to set rotation.
         choices:
               "On":   "true"
               "Off":  "false"
     lightgun_map:
+        group: ADVANCED OPTIONS
         prompt:      CONTROLLER TO LIGHTGUN
         description: Map controller inputs to lightgun inputs
         choices:
@@ -97,7 +225,8 @@ libretro:
             "Off":  "false"
   cores:
     '81':
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             81_chroma_81:
                 prompt:      COLORIZATION
@@ -163,11 +292,14 @@ libretro:
                             "Off":     disabled
                             "On":      enabled
     beetle-saturn:
-      features: [netplay, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [autosave]
     fmsx:
-       features: [netplay, rewind, autosave, cheevos]
+       features: [netplay, cheevos]
+       shared: [rewind, autosave]
     bluemsx:
-      features: [rewind, autosave, padtokeyboard, cheevos]
+      features: [padtokeyboard, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             bluemsx_nospritelimits:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -176,11 +308,14 @@ libretro:
                     "Off": OFF
                     "On":  ON
     bsnes:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     bsnes_hd:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     cap32:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             cap32_model:
                 prompt:      CPC MODEL
@@ -197,7 +332,8 @@ libretro:
                     "512KB":   512
                     "576+KB":  576
     mesen-s:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             mesen-s_ntsc_filter:
                 prompt:      BLARGG NTSC FILTER
@@ -259,11 +395,12 @@ libretro:
                     "500%":  500%
                     "1000%": 1000%
     citra:
-      features: [rewind, autosave]
+      shared: [rewind, autosave]
     daphne:
       features: [padtokeyboard]
     desmume:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             internal_resolution_desmume:
                 prompt:      RENDERING RESOLUTION
@@ -330,7 +467,8 @@ libretro:
                     "8":   8
                     "9":   9
     melonds:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             melonds_boot_directly:
                 prompt:      SKIP DS SYSTEM MENU
@@ -352,8 +490,7 @@ libretro:
                     "hybrid top ratio 3":    Hybrid Top-Ratio3
                     "hybrid bottom ratio 2": Hybrid Bottom-Ratio2
                     "hybrid bottom ratio 3": Hybrid Bottom-Ratio3
-    dolphin:
-      features: []
+    #dolphin:
     dosbox:
       features: [padtokeyboard]
       cfeatures:
@@ -549,7 +686,8 @@ libretro:
                     "Both Joysticks (4 Axes, 4 Btns)":                      2049
                     "Custom Keyboard Binds (best for Pad2Key)":             3
     swanstation:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -633,7 +771,8 @@ libretro:
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
     duckstation:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -718,10 +857,10 @@ libretro:
                     "Namco GunCon":                  260
                     "PlayStation Mouse":             258
                     "NeGcon":                        773
-    easyrpg:
-      features: []
+    #easyrpg:
     fbneo:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 prompt:      CPU CLOCK
@@ -779,7 +918,8 @@ libretro:
                             "Shared":                             shared
                             "Per-game":                           per-game
     fceumm:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -854,7 +994,7 @@ libretro:
                     "NES Zapper":           258
                     "Arkanoid paddle":      514
     flycast:
-      features: [autosave]
+      shared: [autosave]
       cfeatures:
             reicast_synchronous_rendering:
                 prompt:      SYNCHRONOUS RENDERING
@@ -990,11 +1130,13 @@ libretro:
                             "Horizontal": horizontal
                             "Vertical":   vertical
     freeintv:
-      features: [padtokeyboard, autosave, cheevos]
+      features: [padtokeyboard, cheevos]
+      shared: [autosave]
     freechaf:
-      features: [rewind]
+      shared: [rewind]
     fuse:
-      features: [autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [autosave]
       cfeatures:
             fuse_hide_border:
                 prompt:      ZOOM (HIDE BORDERS)
@@ -1035,7 +1177,8 @@ libretro:
                     "Off":                     0
                     "On":                      259
     gambatte:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             gb_bootloader:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1122,9 +1265,11 @@ libretro:
                             "TWB64 - Pack 1":                   TWB75 - WonderSwan
                             "TWB64 - Pack 2":                   TWB76 - Yellow Banana
     genesisplusgx-wide:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     genesisplusgx:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             gpgx_no_sprite_limit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -1238,19 +1383,23 @@ libretro:
                             "Off":       disabled
                             "On":        enabled
     gpsp:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
     handy:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     hatari:
-      features: [autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [autosave]
     imame4all:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
     kronos:
-      features: [autosave]
-    lutro:
-      features: []
+      shared: [autosave]
+    #lutro:
     mame:
-      features: [netplay, autosave]
+      features: [netplay]
+      shared: [autosave]
       cfeatures:
             mame_cpu_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
@@ -1296,7 +1445,8 @@ libretro:
                     "2560x1440":      2560x1440
                     "3840x2160":      3840x2160
     mame078plus:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
       cfeatures:
             mame2003-plus_analog:
                 prompt:      CONTROL MAPPING
@@ -1336,11 +1486,14 @@ libretro:
                     "Arcade Universe BIOS 4.0 (Cheats)":   unibios40
                     "Arcade Universe BIOS 3.3 (Cheats)":   unibios33
     mednafen_lynx:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     mednafen_ngp:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     mednafen_psx:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             beetle_psx_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1448,7 +1601,8 @@ libretro:
                     #"Justifier":                     516
                     "PlayStation Mouse":             258
     mednafen_supergrafx:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             sgx_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -1457,7 +1611,8 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     mednafen_wswan:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             wswan_rotate_display:
                 prompt:     DISPLAY ROTATION
@@ -1467,7 +1622,8 @@ libretro:
                     "Portrait":     portrait
                     "Landscape":    landscape
     mgba:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             skip_bios_mgba:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1537,7 +1693,8 @@ libretro:
                             "9":  9
                             "10": 10
     mrboom:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
       cfeatures:
             mrboom-aspect:
                 prompt:      TEAM COLOR MODE
@@ -1553,7 +1710,8 @@ libretro:
                     "Off":    OFF
                     "On":     ON
     mupen64plus-next:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             mupen64plus-43screensize:
                 prompt:      4:3 RENDERING RESOLUTION
@@ -1660,7 +1818,7 @@ libretro:
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
     neocd:
-      features: [rewind, autosave]
+      shared: [rewind, autosave]
       cfeatures:
             neocd_region:
                 prompt:      CONSOLE REGION
@@ -1683,7 +1841,8 @@ libretro:
                     "Off":          Off
                     "On":           On
     nestopia:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
       cfeatures:
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -1736,7 +1895,8 @@ libretro:
                     "NTSC (NES)":           ntsc
                     "Famicom (FDS)":        famicom
     np2kai:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             np2kai_model:
                 prompt:      PC MODEL
@@ -1862,7 +2022,8 @@ libretro:
                     "Manual keyboard":              Manual Keyboard
                     "Atari Joypad":                 Atari Joypad
     o2em:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             o2em_bios:
                 prompt:      EMULATED SYSTEM
@@ -1914,7 +2075,8 @@ libretro:
                     "80%":                         80
                     "90%":                         90
     opera:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             high_resolution:
                 prompt:      RENDERING RESOLUTION
@@ -1954,7 +2116,8 @@ libretro:
                     "Dinopark Tycoon":   timing_hack3
                     "Microcosm":         timing_hack5
     parallel_n64:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             parallel-n64-screensize:
                 prompt:      RENDERING RESOLUTION
@@ -2019,7 +2182,8 @@ libretro:
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
     pce:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
       cfeatures:
             pce_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2033,7 +2197,8 @@ libretro:
                     "PCE Joypad": 1
                     "PCE Mouse":  2
     pce_fast:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             pce_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2047,7 +2212,8 @@ libretro:
                     "PCE Joypad": 1
                     "PCE Mouse":  2
     pcfx:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             pcfx_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2056,7 +2222,8 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pcsx_rearmed:
-      features: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -2122,7 +2289,8 @@ libretro:
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
     picodrive:
-      features: [netplay,         autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [autosave]
       cfeatures:
             picodrive_sprlim:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2147,9 +2315,11 @@ libretro:
                     "Joypad 3 Button": 3 button pad
                     "Joypad 6 Button": 6 button pad
     pocketsnes:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
     pokemini:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             pokemini_lcdfilter:
                 prompt:      LCD FILTER
@@ -2164,7 +2334,8 @@ libretro:
                     "Off":  3shades
                     "On":   analog
     potator:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             watara_palette:
                 prompt:      COLOR PALETTE
@@ -2212,9 +2383,10 @@ libretro:
                     "7 Frames":                       7
                     "8 Frames":                       8
     ppsspp:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
     prboom:
-      features: [rewind, autosave]
+      shared: [rewind, autosave]
       cfeatures:
             prboom-resolution:
                 prompt:      RENDERING RESOLUTION
@@ -2235,9 +2407,11 @@ libretro:
                     "Gamepad Modern":     773
                     "Keyboard + Mouse":   3
     prosystem:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
     puae:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             puae_model:
                 prompt:      AMIGA MODEL
@@ -2527,7 +2701,8 @@ libretro:
                     "Megadrive (8 Buttons)":     CPSF-MD (8 Buttons)
                     "Super Famicom (8 Buttons)": CPSF-SFC (8 Buttons)
     quasi88:
-      features: [netplay, rewind, autosave, padtokeyboard, cheevos]
+      features: [netplay, padtokeyboard, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             q88_basic_mode:
                 prompt:      PC MODEL
@@ -2585,15 +2760,18 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     snes9x:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             reduce_sprite_flicker:
+                group: ADVANCED OPTIONS
                 prompt:      REDUCE SPRITE FLICKERING (UNSTABLE)
                 description: Enhancement. Remove the thirty-two sprites per line limit. Crashes certain games.
                 choices:
                     "Off":        disabled
                     "On":         enabled
             reduce_slowdown:
+                group: ADVANCED OPTIONS
                 prompt:      OVERCLOCK (UNSTABLE)
                 description: Overclock the SNES CPU (Gradius 3, Super R-Type).
                 choices:
@@ -2602,6 +2780,7 @@ libretro:
                     "Compatible":            compatible
                     "Max (demanding games)": max
             overclock_superfx:
+                group: ADVANCED OPTIONS
                 prompt:      SUPER FX OVERCLOCK
                 description: Enhancement. Reduces slowdown in mode 7 games.
                 choices:
@@ -2620,6 +2799,7 @@ libretro:
                     "450%":       450%
                     "500%":       500%
             hires_blend:
+                group: ADVANCED OPTIONS
                 prompt:      BLEND HIGH-RES MODE
                 description: Blur high-res mode, allowing for better transparency effects.
                 choices:
@@ -2648,7 +2828,8 @@ libretro:
                     "SNES Gamepad":          1
                     "Konami Justifier (P2)": 772
     snes9x_next:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2696,9 +2877,11 @@ libretro:
                     "Konami Justifier":       516
                     "Dual Konami Justifiers": 772
     stella:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
     tgbdual:
-      features: [netplay, rewind, autosave]
+      features: [netplay]
+      shared: [rewind, autosave]
       cfeatures:
             sync_saves:
                 prompt:      SYNC SAVE FILES
@@ -2707,11 +2890,13 @@ libretro:
                     "On":   1
                     "Off":  0
     theodore:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
     tic80:
       features: [padtokeyboard]
     tyrquake:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             tyrquake_resolution:
                 prompt:      RENDERING RESOLUTION
@@ -2755,7 +2940,8 @@ libretro:
                     "Gamepad Modern":         773
                     "Keyboard + Mouse":       3
     vb:
-      features: [netplay, rewind, autosave, cheevos]
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             2d_color_mode:
                 prompt:      COLOR PALETTE (2D)
@@ -2779,7 +2965,8 @@ libretro:
                     "green/magenta":       green & magenta
                     "yellow/blue":         yellow & blue
     vba-m:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       systems:
             gb:
                 cfeatures:
@@ -2894,7 +3081,8 @@ libretro:
                             "115": 115
                             "120": 120
     vecx:
-      features: [rewind, autosave, cheevos]
+      features: [cheevos]
+      shared: [rewind, autosave]
       cfeatures:
             res_multi:
                 prompt:      RESOLUTION MULTIPLIER
@@ -2905,7 +3093,8 @@ libretro:
                     "3":    3
                     "4":    4
     vice_x64:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             c64_model:
                 prompt:      MODEL TYPE
@@ -2994,7 +3183,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     vice_x64sc:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             c64_model:
                 prompt:      MODEL TYPE
@@ -3083,7 +3273,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     vice_x128:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             c128_model:
                 prompt:      MODEL TYPE
@@ -3163,7 +3354,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     vice_xplus4:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             plus4_model:
                 prompt:      MODEL TYPE
@@ -3232,7 +3424,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     vice_xvic:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             vic20_model:
                 prompt:      MODEL TYPE
@@ -3302,7 +3495,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     vice_xpet:
-      features: [rewind, autosave, padtokeyboard]
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
       cfeatures:
             pet_model:
                 prompt:      MODEL TYPE
@@ -3377,7 +3571,8 @@ libretro:
                     "Off":                      disabled
                     "On":                       enabled
     virtualjaguar:
-      features: [autosave, padtokeyboard, cheevos]
+      features: [padtokeyboard, cheevos]
+      shared: [autosave]
       cfeatures:
             usefastblitter:
                 prompt:      FAST BLITTER (LESS COMPATIBLE)
@@ -3398,11 +3593,11 @@ libretro:
                     "Off":      disabled
                     "On":       enabled
     x1:
-      features: [rewind, autosave, padtokeyboard]
-    xash3d_fwgs:
-      features: []
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
+    #xash3d_fwgs:
     yabasanshiro:
-      features: [autosave]
+      shared: [autosave]
       cfeatures:
             resolution_mode:
                 prompt:      RENDERING RESOLUTION
@@ -3424,29 +3619,25 @@ libretro:
                     "Port1+2":  port12
 
     gong:
-      features: [autosave]
+      shared: [autosave]
 
-    ecwolf:
-      features: []
+    #ecwolf:
 
     emuscv:
-      features: [rewind, autosave]
+      shared: [rewind, autosave]
 
     uzem:
-      features: [rewind, autosave]
+      shared: [rewind, autosave]
 
-    play:
-      features: []
+    #play:
 
-    pcsx2:
-      features: []
-
+    #pcsx2:
 
 # Standalones
 
 amiberry:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         amiberry_linemode:
             prompt:      LINE MODE
@@ -3483,8 +3674,7 @@ amiberry:
                 "OFF":                         false
 
 cannonball:
-  features: [ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         highResolution:
             prompt:      HIGH RESOLUTION MODE
@@ -3494,8 +3684,7 @@ cannonball:
                 "On":  1
 
 cemu:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gfxbackend:
             prompt:      GRAPHICS API
@@ -3524,8 +3713,7 @@ cemu:
                 "5 Sideway Wiimote":           3
 
 citra:
-  features: [ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         citra_screen_layout:
             prompt:      SCREEN LAYOUT
@@ -3586,8 +3774,8 @@ citra:
                 "On":                    1
 
 daphne:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         daphne_ratio:
             prompt:      ASPECT RATIO
@@ -3628,12 +3816,11 @@ daphne:
                 "On":                           1
 
 devilutionx:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dolphin:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
@@ -3804,20 +3991,19 @@ dolphin:
                     "Wiimote Sideway + Nunchuk": in
 
 dosbox:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dosbox_staging:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dosbox-x:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 duckstation:
-  features: [videomode, ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         duckstation_rewind:
             prompt:      REWIND
@@ -3991,8 +4177,7 @@ duckstation:
                 "NeGcon (Rumble)":               NeGcon
 
 flycast:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
     flycast_ratio:
       prompt:      SCREEN RATIO
@@ -4066,16 +4251,15 @@ flycast:
             "On"           : yes
 
 fpinball:
-  features: [ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 fsuae:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 hatari:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         model:
             prompt:      MODEL
@@ -4112,20 +4296,17 @@ hatari:
                 4M:                  4
 
 linapple:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 melonds:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 moonlight:
-  features: [ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 mupen64plus:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         mupen64plus_ratio:
             prompt:      GAME ASPECT RATIO
@@ -4133,6 +4314,7 @@ mupen64plus:
                 "4:3":   4/3
                 "16:9":  16/9
         mupen64plus_frameskip:
+            group: ADVANCED OPTIONS
             prompt:      FRAMESKIP (GL64MK2 ONLY)
             description: Skip frames to improve performance, at the cost of choppy motion.
             choices:
@@ -4144,6 +4326,7 @@ mupen64plus:
                 "4":                    4
                 "5":                    5
         mupen64plus_Mipmapping:
+            group: ADVANCED OPTIONS
             prompt:      TEXTURE MIP-MAPPING (BLUR)
             description: Smooth textures on distant 3D objects based on angle.
             choices:
@@ -4152,6 +4335,7 @@ mupen64plus:
                 "bilinear":             2
                 "trilinear":            3
         mupen64plus_Anisotropic:
+            group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
             description: Enhancement. Improves clarity of distant textures when mip-mapping is enabled.
             choices:
@@ -4161,6 +4345,7 @@ mupen64plus:
                 "8x":                   8
                 "16x":                  16
         mupen64plus_AntiAliasing:
+            group: ADVANCED OPTIONS
             prompt:      ANTI-ALIASING (MSAA)
             description: Enhancement. Smooth out jagged edges on 3D object polygons.
             choices:
@@ -4170,6 +4355,7 @@ mupen64plus:
                 "8x":                   8
                 "16x":                  16
         mupen64plus_TextureEnhancement:
+            group: ADVANCED OPTIONS
             prompt:      TEXTURE UPSCALING (RICE ONLY)
             description: Upscale textures on 3D objects.
             choices:
@@ -4184,11 +4370,13 @@ mupen64plus:
                 "External":             8
                 "Mirrored":             9
         mupen64plus_LoadHiResTextures:
+            group: ADVANCED OPTIONS
             prompt:      LOAD CUSTOM TEXTURES
             choices:
                 "Off":                  "False"
                 "On":                   "True"
         mupen64plus_DisableExtraMem:
+            group: ADVANCED OPTIONS
             prompt:      DISABLE 4MB EXPANSION RAM PACK
             description: Required by some games.
             choices:
@@ -4196,8 +4384,7 @@ mupen64plus:
                 "On":                   "True"
 
 openbor:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         ratio:
             prompt:      SCREEN RATIO
@@ -4223,8 +4410,7 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gfxbackend:
             prompt:      GRAPHICS API
@@ -4349,8 +4535,7 @@ pcsx2:
                 "Port1+2":  port12
 
 ppsspp:
-  features: [rewind, ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
@@ -4443,16 +4628,14 @@ ppsspp:
                 "On":                   True
 
 pygame:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 reicast:
-  features: [ratio, decoration]
-  shared: [hud]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 rpcs3:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gui:
             prompt:      GRAPHICAL USER INTERFACE
@@ -4511,12 +4694,11 @@ rpcs3:
                 "On":    1
 
 scummvm:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 easyrpg:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         testplay:
             prompt:      TEST PLAY
@@ -4541,8 +4723,7 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  features: []
-  shared: [hud]
+  shared: [videomode, hud]
   cfeatures:
       redreamResolution:
           prompt:      GAME RESOLUTION
@@ -4614,12 +4795,11 @@ redream:
               "Composite":     composite
 
 sdlpop:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 supermodel:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         engine3D:
             prompt:      3D ENGINE
@@ -4671,12 +4851,11 @@ supermodel:
                 "150":          150
 
 cgenius:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 vice:
-  features: [ratio, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         noborder:
             prompt:      ZOOM (HIDE BORDERS)
@@ -4686,8 +4865,8 @@ vice:
                 "YES":          1
 
 tsugaru:
-  features: [pad2keyboard, decoration]
-  shared: [hud]
+  features: [pad2keyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         cdrom_speed:
             prompt:      CD-ROM SPEED
@@ -4705,8 +4884,8 @@ tsugaru:
                 "YES":            1
 
 mame:
-  features: [decoration, padtokeyboard]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         video:
             prompt:      VIDEO MODE
@@ -5023,8 +5202,8 @@ mame:
                         "Rotated 4-Way Stick (Q*Bert)": "qbert" 
 
 wine:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         dxvk:
             prompt:      DXVK FEATURE
@@ -5122,8 +5301,7 @@ wine:
                 "On":  1
 
 solarus:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         joystick:
             prompt:      CONTROL CHOICE
@@ -5134,8 +5312,8 @@ solarus:
                 "Right stick":      joystick2
 
 mugen:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         esync:
             prompt:      ESYNC
@@ -5163,16 +5341,15 @@ mugen:
                 "On":  1
 
 ruffle:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 lightspark:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 drastic:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         drastic_hires:
             prompt:      ENHANCED RENDERING RESOLUTION
@@ -5194,8 +5371,7 @@ drastic:
                 "On":  1
 
 xemu:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         scaling:
             prompt:      SCALING MODE
@@ -5224,16 +5400,15 @@ xemu:
                 "Skip":        "true"
 
 lexaloffle:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 ecwolf:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 sonic2013:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -5283,8 +5458,7 @@ sonic2013:
                 "On":     1
 
 soniccd:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -5331,8 +5505,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         screenRatio:
             prompt:      ASPECT RATIO
@@ -5396,64 +5569,62 @@ model2emu:
                 "On":       1
 
 gsplus:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 play:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 flatpak:
   features: [padtokeyboard]
-  shared: [hud]
+  shared: [videomode, hud]
 
 steam:
   features: [padtokeyboard]
-  shared: [hud]
+  shared: [videomode, hud]
 
 yuzu:
-  features: [videomode, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 ryujinx:
-  features: [videomode, padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 simcoupe:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 hcl:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 hurrican:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 openjazz:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 etekwar:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 abuse:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 cdogs:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 openmsx:
-  features: [padtokeyboard, decoration]
-  shared: [hud]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 demul:
-  features: []
-  shared: []
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
