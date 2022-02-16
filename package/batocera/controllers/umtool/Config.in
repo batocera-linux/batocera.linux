@@ -1,0 +1,11 @@
+config BR2_PACKAGE_UMTOOL
+    bool "umtool"
+    depends on BR2_PACKAGE_HAS_UDEV
+    select BR2_PACKAGE_JSON_C
+    select BR2_PACKAGE_LIBTOOL
+    select BR2_PACKAGE_LIBUSB
+    help
+        Command line tool for configuring Ultimarc arcade hardware
+
+        https://www.ultimarc.com
+        https://github.com/katie-snow/Ultimarc-linux

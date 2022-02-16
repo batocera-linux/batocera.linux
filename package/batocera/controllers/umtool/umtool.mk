@@ -1,17 +1,17 @@
 ################################################################################
 #
-# Ultimarc-linux
+# umtool
 #
 ################################################################################
 
-ULTIMARC_VERSION = 1665ad16a8fc4ca22181c54765fcc66650e299c3
-ULTIMARC_SITE = $(call github,katie-snow,Ultimarc-linux,$(ULTIMARC_VERSION))
-ULTIMARC_LICENSE = GPLv2
-ULTIMARC_DEPENDENCIES = json-c libusb libtool udev
-ULTIMARC_CONF_OPTS = --disable-shared
-ULTIMARC_AUTORECONF = YES
+UMTOOL_VERSION = 1665ad16a8fc4ca22181c54765fcc66650e299c3
+UMTOOL_SITE = $(call github,katie-snow,Ultimarc-linux,$(UMTOOL_VERSION))
+UMTOOL_LICENSE = GPLv2
+UMTOOL_DEPENDENCIES = json-c libusb libtool udev
+UMTOOL_CONF_OPTS = --disable-shared
+UMTOOL_AUTORECONF = YES
 
-define ULTIMARC_INSTALL_TARGET_CMDS
+define UMTOOL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/src/umtool/umtool $(TARGET_DIR)/usr/bin/umtool
 
     # out-of-the-box configs
