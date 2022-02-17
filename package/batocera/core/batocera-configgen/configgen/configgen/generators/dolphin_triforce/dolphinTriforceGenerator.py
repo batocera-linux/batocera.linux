@@ -26,7 +26,7 @@ class DolphinTriforceGenerator(Generator):
 Device = SDL/0/Microsoft X-Box 360 pad
 Buttons/A = `Button 0`
 Buttons/B = `Button 2`
-Buttons/Y = `Button 1`
+Buttons/X = `Button 3`
 Buttons/Z = `Button 5`
 Buttons/Start = `Button 7`
 Main Stick/Up = `Axis 1-`
@@ -278,17 +278,24 @@ D-Pad/Right = `Hat 0 E`
         if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini"):
             dolphinTriforceGameSettingsGGPE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", "w")
             dolphinTriforceGameSettingsGGPE01.write("""[OnFrame]
-$1 credits
-0x80690AC0:dword:0x00000001
-$Emulation Bug Fixes
-0x800319D0:dword:0x60000000
+$Disable crypto
+0x8023D828:dword:0x93A30008
+0x8023D82C:dword:0x93C3000C
+0x8023D830:dword:0x93E30010
+0x8023E088:dword:0x4E800020
+$Loop fix
+0x800790A0:dword:0x98650025
+0x8024F95C:dword:0x60000000
 0x80031BF0:dword:0x60000000
 0x80031BFC:dword:0x60000000
 0x800BE10C:dword:0x4800002C
-0x800790A0:dword:0x98650025
+0x8009F1E0:dword:0x60000000
+0x800319D0:dword:0x60000000
 [OnFrame_Enabled]
-$1 credits
-$Emulation Bug Fixes
+$Disable crypto
+$Loop fix
+[EmuState]
+EmulationIssues = AM-Baseboard
 """)
             dolphinTriforceGameSettingsGGPE01.close()
 
