@@ -13,6 +13,86 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+#. TRANSLATION: shared, mame
+msgctxt "game_options"
+msgid "VIDEO MODE"
+msgstr "ВИДЕО РЕЖИМ"
+
+#. TRANSLATION: shared, dolphin, mupen64plus, demul
+msgctxt "game_options"
+msgid "GAME ASPECT RATIO"
+msgstr "СООТНОШЕНИЕ СТОРОН ИГРЫ"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Full"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Config"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Square pixel"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Core provided"
+msgstr ""
+
+#. TRANSLATION: shared, shared
+msgctxt "game_options"
+msgid "Custom"
+msgstr "Пользовательский"
+
+#. TRANSLATION: shared, duckstation
+msgctxt "game_options"
+msgid "REWIND"
+msgstr "ПЕРЕМОТКА"
+
+#. TRANSLATION: shared, shared, shared, shared, shared, ...
+msgctxt "game_options"
+msgid "On"
+msgstr "Вкл"
+
+#. TRANSLATION: shared, shared, shared, shared, shared, ...
+msgctxt "game_options"
+msgid "Off"
+msgstr "Выкл"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUTO SAVE/LOAD"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "SHADER SET"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "INTEGER SCALING (PIXEL PERFECT)"
+msgstr "ЦЕЛОЕ МАСШТАБИРОВАНИЕ (ИДЕАЛЬНО)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "DECORATION SET"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
+msgstr ""
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "HEADS UP DISPLAY"
@@ -40,8 +120,88 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Custom"
-msgstr "Пользовательский"
+msgid "SHOW TATTOO OVER BEZEL"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Show an image overlaid on top of the bezel."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "NO"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "SYSTEM CONTROLLERS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "CUSTOM IMAGE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "TATTOO CORNER"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "NORTH WEST"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "NORTH EAST"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "SOUTH EAST"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "SOUTH WEST"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "CUSTOM .PNG IMAGE PATH"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "RESIZE TATTOO"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Shrink/expand tattoo to fit within the bezel's border."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "ENABLE AI TRANSLATION SERVICE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "TARGET LANGUAGE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AI TRANSLATION SERVICE URL"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "PAUSE ON TRANSLATED SCREEN"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -65,16 +225,6 @@ msgctxt "game_options"
 msgid "Can prevent audio skips on button presses when using run-ahead."
 msgstr ""
 
-#. TRANSLATION: shared, shared, shared, shared, libretro/atari800, ...
-msgctxt "game_options"
-msgid "On"
-msgstr "Вкл"
-
-#. TRANSLATION: shared, shared, shared, shared, libretro/81, ...
-msgctxt "game_options"
-msgid "Off"
-msgstr "Выкл"
-
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
@@ -97,11 +247,6 @@ msgctxt "game_options"
 msgid ""
 "Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR."
 msgstr ""
-
-#. TRANSLATION: shared
-msgctxt "game_options"
-msgid "INTEGER SCALING (PIXEL PERFECT)"
-msgstr "ЦЕЛОЕ МАСШТАБИРОВАНИЕ (ИДЕАЛЬНО)"
 
 #. TRANSLATION: libretro/81, libretro/gambatte
 msgctxt "game_options"
@@ -2226,17 +2371,17 @@ msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "Может изменить язык некоторых игр."
 
-#. TRANSLATION: libretro/neocd, redream
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream
 msgctxt "game_options"
 msgid "Japan"
 msgstr "Япония"
 
-#. TRANSLATION: libretro/neocd
+#. TRANSLATION: libretro/neocd, flycast/uzem
 msgctxt "game_options"
 msgid "USA"
 msgstr "США"
 
-#. TRANSLATION: libretro/neocd, redream
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream
 msgctxt "game_options"
 msgid "Europe"
 msgstr "Европа"
@@ -3053,7 +3198,7 @@ msgctxt "game_options"
 msgid "Ignored with 'Cycle-exact'."
 msgstr "Игнорируется с 'Cycle-exact'."
 
-#. TRANSLATION: libretro/puae, flycast
+#. TRANSLATION: libretro/puae, flycast/uzem, flycast/uzem, flycast
 msgctxt "game_options"
 msgid "Default"
 msgstr "По умолчанию"
@@ -4506,7 +4651,7 @@ msgctxt "game_options"
 msgid "Original"
 msgstr "Оригинал"
 
-#. TRANSLATION: daphne, openbor, redream, xemu, demul
+#. TRANSLATION: daphne, openbor, pcsx2, redream, xemu, ...
 msgctxt "game_options"
 msgid "Stretch"
 msgstr "Растянуть"
@@ -4561,12 +4706,12 @@ msgctxt "game_options"
 msgid "Invert joystick on flight games."
 msgstr "Инвертирует джойстик в играх с полетами."
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "WII TV MODE"
 msgstr "WII TV РЕЖИМ"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid ""
 "Wii NAND's aspect ratio setting. Most games support both ratios natively."
@@ -4574,48 +4719,48 @@ msgstr ""
 "Настройка соотношения сторон Wii NAND. Большинство игр изначально "
 "поддерживают оба соотношения."
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "EMULATE WIIMOTE"
 msgstr "ЭМУЛЯЦИЯ WIIMOTE"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "Сопоставьте свой контроллер с эмулируемым Wiimote."
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "CUSTOMIZE WIIMOTE & GAMEPAD"
 msgstr "НАСТРОЙКА WIIMOTE И ГЕЙМПАДА"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick."
 msgstr ""
 "Эмулирует Wiimote Sideway с помощью L2, Shake и Nunchuk на правом стике."
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Classic Controller"
 msgstr "Classic Controller"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway"
 msgstr "Wiimote Sideway"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Swing"
 msgstr "Wiimote Sideway + Swing"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Tilt"
 msgstr "Wiimote Sideway + Tilt"
 
-#. TRANSLATION: dolphin/pcsx2
+#. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote Sideway + Nunchuk"
@@ -4835,11 +4980,6 @@ msgstr "Эмуляция указателя Wiimote с помощью мыши."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "REWIND"
-msgstr "ПЕРЕМОТКА"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
 msgid "System requirements at native; (RAM|VRAM)."
 msgstr "Системные требования; (RAM|VRAM)"
 
@@ -5019,6 +5159,91 @@ msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (вибрация)"
 
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CHOOSE DREAMCAST LANGUAGE"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Choose the emulator language."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Japanese"
+msgstr "Japanese"
+
+#. TRANSLATION: flycast/uzem, sonic2013, soniccd
+msgctxt "game_options"
+msgid "English"
+msgstr "English"
+
+#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "German"
+msgstr "German"
+
+#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "French"
+msgstr "French"
+
+#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Spanish"
+msgstr "Spanish"
+
+#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Italian"
+msgstr "Italian"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CHOOSE DREAMCAST CONSOLE REGION"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Choose your console region."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "ENABLE AUTO LOAD STATES"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Enable Dreamcast auto load states."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, redream, redream, ...
+msgctxt "game_options"
+msgid "Off (Default)"
+msgstr "Выкл (по умолчанию)"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "ENABLE AUTO SAVE STATES"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Enable Dreamcast auto saves states."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "FORCE WINDOWS CE"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Forces Dreamcast Windows CE mode on."
+msgstr ""
+
 #. TRANSLATION: flycast, openbor
 msgctxt "game_options"
 msgid "SCREEN RATIO"
@@ -5179,11 +5404,6 @@ msgctxt "game_options"
 msgid "4M"
 msgstr "4M"
 
-#. TRANSLATION: mupen64plus, demul
-msgctxt "game_options"
-msgid "GAME ASPECT RATIO"
-msgstr "СООТНОШЕНИЕ СТОРОН ИГРЫ"
-
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "FRAMESKIP (GL64MK2 ONLY)"
@@ -5266,6 +5486,16 @@ msgstr "Простой 2x"
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
+
+#. TRANSLATION: pcsx2, rpcs3
+msgctxt "game_options"
+msgid "TV MODE"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "PS2's internal ratio setting. Some games only support 4/3."
+msgstr ""
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -5652,11 +5882,6 @@ msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "TV MODE"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
 msgid "PS3's internal ratio setting. Some games only support 16/9."
 msgstr ""
 
@@ -5831,11 +6056,6 @@ msgctxt "game_options"
 msgid "Enable auto frameskipping for performance on lower-end systems."
 msgstr ""
 
-#. TRANSLATION: redream, redream, mame
-msgctxt "game_options"
-msgid "Off (Default)"
-msgstr "Выкл (по умолчанию)"
-
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "Enable vertical sync to avoid tearing in some cases."
@@ -5891,31 +6111,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "English (Default)"
 msgstr ""
-
-#. TRANSLATION: redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "German"
-msgstr "German"
-
-#. TRANSLATION: redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "French"
-msgstr "French"
-
-#. TRANSLATION: redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Spanish"
-msgstr "Spanish"
-
-#. TRANSLATION: redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Italian"
-msgstr "Italian"
-
-#. TRANSLATION: redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Japanese"
-msgstr "Japanese"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -6096,331 +6291,326 @@ msgctxt "game_options"
 msgid "FORCE 386DX CPU"
 msgstr "ПРИНУДИТЕЛЬНО 386DX CPU"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "CUSTOM GAME CONFIG"
 msgstr "ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ ИГРЫ"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enable per-game custom configuration via MAME menu."
 msgstr ""
 "Включает пользовательскую конфигурацию для каждой игры через меню MAME."
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "MEDIA TYPE"
 msgstr "ТИП МЕДИА"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Type of ROM file to load."
 msgstr "Тип ROM файла для загрузки."
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge"
 msgstr "Картридж"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Кассета"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "FM-7 MODEL"
 msgstr "FM-7 MODEL"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 1)"
 msgstr "Disk (Drive 1)"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 2)"
 msgstr "Disk (Drive 2)"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "UI KEYS"
 msgstr "КНОПКИ ИНТЕРФЕЙСА"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Toggle with hotkey + D-pad up or Scroll Lock in-game."
 msgstr ""
 "Переключение с помощью хоткея + крестовины вверх или Scroll Lock в игре."
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Off at Start"
 msgstr "Выкл при старте"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, mame/pcsx2, ...
+#. TRANSLATION: mame/uzem, mame/uzem, mame/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "On at Start"
 msgstr "Вкл при старте"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "MAC MODEL"
 msgstr "MAC МОДЕЛЬ"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid ""
 "Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for "
 "Color)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac 128k (128kb RAM, 2 LD Floppies)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac 512k (512kb RAM, 2 LD Floppies)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac SE (4Mb RAM, 2 LD Floppies/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Disk"
 msgstr "Диск"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive"
 msgstr "Жесткий диск"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "BOOT DISK"
 msgstr "ЗАГРУЗОЧНЫЙ ДИСК"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
 msgstr "При необходимости выберите загрузочный диск или жёсткий диск."
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 3.0 (LD Floppy)"
 msgstr "System 3.0 (LD дискета)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (LD Floppy)"
 msgstr "System 6.0.8 (LD дискета)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (HD Floppy)"
 msgstr "System 7.0.1 (HD дискета)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 7.5 (HD Floppy)"
 msgstr "System 7.5 (HD дискета)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (Hard Drive)"
 msgstr "System 6.0.8 (жёсткий диск)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (Hard Drive)"
 msgstr "System 7.0.1 (жёсткий диск)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "System 7.5.5 (Hard Drive)"
 msgstr "System 7.0.1 (жёсткий диск)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 1)"
 msgstr "ROM (Слот 1)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 2)"
 msgstr "ROM (Слот 2)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 3)"
 msgstr "ROM (Слот 3)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 4)"
 msgstr "ROM (Слот 4)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "CUSTOM CONFIG"
 msgstr "ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 1"
 msgstr "Кассета 1"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 2"
 msgstr "Кассета 2"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 1)"
 msgstr "Картридж (Слот 1)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 2)"
 msgstr "Картридж (Слот 2)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 3)"
 msgstr "Картридж (Слот 3)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 4)"
 msgstr "Картридж (Слот 4)"
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "COLOR COMPUTER MODEL"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Select the model of Color Computer to emulate"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Color Computer"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2B"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (NTSC) (Default)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2
+#. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (PAL)"
 msgstr ""
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "SPECIAL CONTROL LAYOUTS"
 msgstr "СПЕЦИАЛЬНАЯ СХЕМА УПРАВЛЕНИЯ"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Controls for 5/6 button games and other unique controls"
 msgstr ""
 "Элементы управления для игр с 5/6 кнопками и другие уникальные элементы "
 "управления."
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Default Only"
 msgstr "Только по умолчанию"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "SNES Style"
 msgstr "Стиль SNES"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Genesis/Megadrive Style"
 msgstr "Стиль Genesis/Megadrive"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Modern Fightstick Style"
 msgstr "Стиль Modern Fightstick"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Neo Geo Mini Pad"
 msgstr "Neo Geo Mini Pad"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Neo Geo CD Pad"
 msgstr "Neo Geo CD Pad"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Twin Stick with Triggers"
 msgstr "Двойной стик с триггерами"
 
-#. TRANSLATION: mame/pcsx2, mame/pcsx2
+#. TRANSLATION: mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Rotated 4-Way Stick (Q*Bert)"
-
-#. TRANSLATION: mame
-msgctxt "game_options"
-msgid "VIDEO MODE"
-msgstr "ВИДЕО РЕЖИМ"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -6757,11 +6947,6 @@ msgstr "Улучшенный."
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "Изменяет язык игры."
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "English"
-msgstr "English"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
