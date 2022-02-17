@@ -27,6 +27,7 @@ class Emulator():
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
         systemSettings = recalSettings.loadAll(self.name)
+        folderSettings = recalSettings.loadAll(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
         gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]")
 
         # add some other options
@@ -37,6 +38,7 @@ class Emulator():
         # update config
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
+        Emulator.updateConfiguration(self.config, folderSettings)
         Emulator.updateConfiguration(self.config, gameSettings)
         self.updateFromESSettings()
         eslog.debug("uimode: {}".format(self.config['uimode']))
