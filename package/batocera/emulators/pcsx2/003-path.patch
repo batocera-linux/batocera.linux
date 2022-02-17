@@ -1,8 +1,8 @@
 diff --git a/pcsx2/gui/AppConfig.cpp b/pcsx2/gui/AppConfig.cpp
-index e87f42e..0bed0c3 100644
+index db789f2587..e4e4ecb068 100644
 --- a/pcsx2/gui/AppConfig.cpp
 +++ b/pcsx2/gui/AppConfig.cpp
-@@ -186,13 +186,12 @@ namespace PathDefs
+@@ -196,12 +196,12 @@ namespace PathDefs
  
  	wxDirName GetSnapshots()
  	{
@@ -13,12 +13,11 @@ index e87f42e..0bed0c3 100644
  	wxDirName GetBios()
  	{
 -		return GetDocuments() + Base::Bios();
--		;
 +		return wxDirName("/userdata/bios");
  	}
  
  	wxDirName GetCheats()
-@@ -212,7 +211,7 @@ namespace PathDefs
+@@ -225,7 +225,7 @@ namespace PathDefs
  
  	wxDirName GetSavestates()
  	{
