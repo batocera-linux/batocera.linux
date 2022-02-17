@@ -98,7 +98,7 @@ D-Pad/Right = `Hat 0 E`
         dolphinTriforceSettings.set("Interface", "ConfirmStop", "False")
 
         # only 1 window (fixes exit and gui display)
-        dolphinTriforceSettings.set("Display", "RenderToMain", "False")
+        dolphinTriforceSettings.set("Display", "RenderToMain", "True")
         dolphinTriforceSettings.set("Display", "Fullscreen", "True")
 
         # Enable Cheats
@@ -385,9 +385,9 @@ $99 credits
         # with open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", 'w') as configfile:
             # dolphinTriforceGameSettingsGGPE01.write(configfile)
 
-        commandArray = ["dolphin-triforce.AppImage", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
+        commandArray = ["dolphin-triforce.AppImage", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
         if system.isOptSet('platform'):
-            commandArray = ["dolphin-triforce.AppImage-nogui", "-U", "/userdata/system/configs/dolphin-triforce", "-p", system.config["platform"], "-e", rom]
+            commandArray = ["dolphin-triforce.AppImage-nogui", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-p", system.config["platform"], "-e", rom]
 
         # No environment variables work for now, paths are coded in above.
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
