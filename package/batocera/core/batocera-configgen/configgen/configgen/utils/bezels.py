@@ -18,8 +18,9 @@ def getBezelInfos(rom, bezel, systemName):
     # system name with special graphic in the system directory (gb-90.png)
     # system name in the system directory (gb.png)
     # default name (default.png)
-    # else return    
-    gameSpecial = getGameSpecial(systemName, rom)    
+    # else return
+    # mamezip files are for MAME-specific advanced artwork (bezels with overlays and backdrops, animated LEDs, etc)
+    gameSpecial = getGameSpecial(systemName, rom)
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
