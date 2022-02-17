@@ -15,20 +15,20 @@ index 305098f..ea7443f 100644
  
  void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
 diff --git a/Core/System.cpp b/Core/System.cpp
-index 04070c614..21577787d 100644
+index 31f720be2e..412930ac00 100644
 --- a/Core/System.cpp
 +++ b/Core/System.cpp
-@@ -586,26 +586,27 @@ CoreParameter &PSP_CoreParameter() {
+@@ -598,26 +598,27 @@ CoreParameter &PSP_CoreParameter() {
  }
  
  Path GetSysDirectory(PSPDirectories directoryType) {
--	Path memStickDirectory = g_Config.memStickDirectory;
+-	const Path &memStickDirectory = g_Config.memStickDirectory;
 -	Path pspDirectory;
--	if (memStickDirectory.GetFilename() == "PSP") {
+-	if (!strcasecmp(memStickDirectory.GetFilename().c_str(), "PSP")) {
 +    // batocera - set config directories
 +	Path memStickDirectory = Path("/userdata/saves/psp/");
 + 	Path pspDirectory = Path("/userdata/system/configs/ppsspp/PSP/");
-+	//if (memStickDirectory.GetFilename() == "PSP") {
++	//if (!strcasecmp(memStickDirectory.GetFilename().c_str(), "PSP")) {
  		// Let's strip this off, to easily allow choosing a root directory named "PSP" on Android.
 -		pspDirectory = memStickDirectory;
 -	} else {
@@ -56,7 +56,7 @@ index 04070c614..21577787d 100644
  	case DIRECTORY_SYSTEM:
  		return pspDirectory / "SYSTEM";
  	case DIRECTORY_PAUTH:
-@@ -615,9 +616,9 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+@@ -627,9 +628,9 @@ Path GetSysDirectory(PSPDirectories directoryType) {
  	case DIRECTORY_DUMP:
  		return pspDirectory / "SYSTEM/DUMP";
  	case DIRECTORY_SAVESTATE:
@@ -68,7 +68,7 @@ index 04070c614..21577787d 100644
  	case DIRECTORY_TEXTURES:
  		return pspDirectory / "TEXTURES";
  	case DIRECTORY_PLUGINS:
-@@ -626,20 +627,20 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+@@ -638,20 +639,20 @@ Path GetSysDirectory(PSPDirectories directoryType) {
  		if (!g_Config.appCacheDirectory.empty()) {
  			return g_Config.appCacheDirectory;
  		}

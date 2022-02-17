@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-WINE_LUTRIS_VERSION = lutris-6.21-6
+#WINE_LUTRIS_VERSION = lutris-6.21-6 = 3f5f3f977a8096dc6f60d08e88c8bfe79c0f2504 # fails to download otherwise
+WINE_LUTRIS_VERSION = 3f5f3f977a8096dc6f60d08e88c8bfe79c0f2504
 WINE_LUTRIS_SITE = $(call github,lutris,wine,$(WINE_LUTRIS_VERSION))
 WINE_LUTRIS_LICENSE = LGPL-2.1+
 WINE_LUTRIS_DEPENDENCIES = host-bison host-flex host-wine-lutris

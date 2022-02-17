@@ -35,24 +35,20 @@ do_push() {
 	case "${ftptarget}" in
 	    "beta")
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
-		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
 		;;
 	    "rc")
 		# pushing beta
 		echo_msg "${arch}" "pushing ${board} on beta*..."
-		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
 		
 		# pushing rc
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
-		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/stable/rc ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/stable/rc/"
 		;;
 	    "unstable")
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
-		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/unstable/last ; quit"
-		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/unstable/rc/last/"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/unstable/last/"
 		;;
 	    *)
 		echo_msg "${arch}" "invalid ftp target" >&2
