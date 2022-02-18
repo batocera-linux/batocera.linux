@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-# version 1.26.2d (2022-02-13)
+# version 1.26.2f (2022-02-18)
 CEMU_VERSION = 1.26.2
 CEMU_SOURCE = cemu_$(CEMU_VERSION).zip
 CEMU_SITE = https://cemu.info/releases
