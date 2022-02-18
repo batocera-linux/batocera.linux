@@ -37,6 +37,6 @@ class MupenGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if config["ratio"] == "16/9":
+        if ("mupen64plus_ratio" in config and config["mupen64plus_ratio"] == "16/9") or ("mupen64plus_ratio" not in config and "ratio" in config and config["ratio"] == "16/9"):
             return 16/9
         return 4/3
