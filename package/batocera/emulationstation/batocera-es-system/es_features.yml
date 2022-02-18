@@ -71,7 +71,7 @@ shared:
         "On":  1
         "Off": 0
     hud:
-      archs_include: [x86, x86_64, rpi4]
+      archs_exclude: [s905]
       prompt:      HEADS UP DISPLAY
       description: Show context-sensitive info over the game.
       submenu: DECORATIONS
