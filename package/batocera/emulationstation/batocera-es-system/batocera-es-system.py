@@ -361,6 +361,12 @@ class EsSystemConf:
             res += x
         return res
 
+    @staticmethod
+    def archValid(arch, obj):
+        if "archs_exclude" in obj and arch in obj["archs_exclude"]:
+            return false
+        return "archs_include" not in obj or arch in obj["archs_include"]
+
     # Write the information in the es_features.cfg file
     @staticmethod
     def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch, toTranslate):
@@ -391,12 +397,12 @@ class EsSystemConf:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(EsSystemConf.protectXml(core), EsSystemConf.protectXml(core_featuresTxt))
                             if "shared" in features[emulator]["cores"][core]:
                                 for shared in features[emulator]["cores"][core]["shared"]:
-                                    if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                                    if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
                                         featuresTxt += "        <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                             # core features
                             if "cfeatures" in features[emulator]["cores"][core]:
                                for cfeature in features[emulator]["cores"][core]["cfeatures"]:
-                                   if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
+                                   if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["cfeatures"][cfeature]):
                                        featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["cores"][core]["cfeatures"][cfeature], toTranslate, emulator, core)
                                    else:
                                        print("skipping core " + emulator + "/" + core + " cfeature " + cfeature)
@@ -412,13 +418,13 @@ class EsSystemConf:
                                    featuresTxt += "          <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
                                    if "shared" in features[emulator]["cores"][core]["systems"][system]:
                                        for shared in features[emulator]["cores"][core]["systems"][system]["shared"]:
-                                           if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                                           if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
                                                featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                                            else:
                                                print("skipping system " + emulator + "/" + system + " shared " + shared)
                                    if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
                                        for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
-                                           if "archs_include" not in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
+                                           if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]):
                                                featuresTxt += EsSystemConf.getXmlFeature(12, cfeature, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
                                            else:
                                                print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
@@ -438,13 +444,13 @@ class EsSystemConf:
                         featuresTxt += "      <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
                         if "shared" in features[emulator]["systems"][system]:
                             for shared in features[emulator]["systems"][system]["shared"]:
-                                if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                                if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
                                     featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                                 else:
                                     print("skipping system " + emulator + "/" + system + " shared " + shared)
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
-                                if "archs_include" not in features[emulator]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
+                                if EsSystemConf.archValid(arch, features[emulator]["systems"][system]["cfeatures"][cfeature]):
                                     featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
                                 else:
                                     print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
@@ -452,14 +458,14 @@ class EsSystemConf:
                     featuresTxt += "    </systems>\n"
                 if "shared" in features[emulator]:
                     for shared in features[emulator]["shared"]:
-                        if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                        if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
                             featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                         else:
                             print("skipping emulator " + emulator + " shared " + shared)
 
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
-                        if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
+                        if EsSystemConf.archValid(arch, features[emulator]["cfeatures"][cfeature]):
                             featuresTxt += EsSystemConf.getXmlFeature(4, cfeature, features[emulator]["cfeatures"][cfeature], toTranslate, emulator, None)
                         else:
                             print("skipping emulator " + emulator + " cfeature " + cfeature)
