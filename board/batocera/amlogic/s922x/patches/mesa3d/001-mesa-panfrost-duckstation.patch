@@ -1,0 +1,45 @@
+From 5e9c2e251f3453734cd3e9e066a1556e5dfd7d03 Mon Sep 17 00:00:00 2001
+From: Icecream95 <ixn@disroot.org>
+Date: Tue, 15 Feb 2022 20:40:41 +1300
+Subject: [PATCH] panfrost: Set dirty state more accurately
+
+PAN_DIRTY_STAGE_SSBO needs to be set during set_shader_buffers,
+otherwise we won't notice that the pointer is wrong until some other
+state changes.
+
+Call panfrost_dirty_state_all when doing resource shadowing, as the
+pointer to the resource changes and so existing descriptors will point
+to the wrong place.
+---
+ src/gallium/drivers/panfrost/pan_context.c  | 2 ++
+ src/gallium/drivers/panfrost/pan_resource.c | 3 +++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/src/gallium/drivers/panfrost/pan_context.c b/src/gallium/drivers/panfrost/pan_context.c
+index d7b2fd2ba11..f684cc9ba83 100644
+--- a/src/gallium/drivers/panfrost/pan_context.c
++++ b/src/gallium/drivers/panfrost/pan_context.c
+@@ -686,6 +686,8 @@ panfrost_set_shader_buffers(
+ 
+         util_set_shader_buffers_mask(ctx->ssbo[shader], &ctx->ssbo_mask[shader],
+                         buffers, start, count);
++
++        ctx->dirty_shader[shader] |= PAN_DIRTY_STAGE_SSBO;
+ }
+ 
+ static void
+diff --git a/src/gallium/drivers/panfrost/pan_resource.c b/src/gallium/drivers/panfrost/pan_resource.c
+index 372a02f794e..43ecb202fef 100644
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -1052,6 +1052,9 @@ panfrost_ptr_map(struct pipe_context *pctx,
+         }
+ 
+         if (create_new_bo) {
++                /* Make sure we re-emit any descriptors using this resource */
++                panfrost_dirty_state_all(ctx);
++
+                 /* If the BO is used by one of the pending batches or if it's
+                  * not ready yet (still accessed by one of the already flushed
+                  * batches), we try to allocate a new one to avoid waiting.
+

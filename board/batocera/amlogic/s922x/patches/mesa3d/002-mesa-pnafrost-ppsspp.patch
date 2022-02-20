@@ -1,0 +1,42 @@
+From 4656a90eaa14138d433b86682fa5de74c57c11c1 Mon Sep 17 00:00:00 2001
+From: Icecream95 <ixn@disroot.org>
+Date: Thu, 3 Mar 2022 20:59:53 +1300
+Subject: [PATCH] pan/bi: Don't encode the dual-source write from BLEND
+
+It isn't a real source, so don't assign a register to avoid invalid
+tuple encodings in case another instruction writes to the register.
+---
+ src/panfrost/bifrost/bi_pack.c      | 5 +++++
+ src/panfrost/bifrost/bifrost_isa.py | 3 +++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/src/panfrost/bifrost/bi_pack.c b/src/panfrost/bifrost/bi_pack.c
+index 58a8cb823e2..ba6876c8d2f 100644
+--- a/src/panfrost/bifrost/bi_pack.c
++++ b/src/panfrost/bifrost/bi_pack.c
+@@ -120,6 +120,11 @@ bi_assign_slots(bi_tuple *now, bi_tuple *prev)
+ 
+         if (now->add) {
+                 bi_foreach_src(now->add, src) {
++                        /* This is not a real source, we shouldn't assign a
++                         * slot for it. */
++                        if (now->add->op == BI_OPCODE_BLEND && src == 4)
++                                continue;
++
+                         if (!(src == 0 && read_dreg))
+                                 bi_assign_slot_read(&now->regs, (now->add)->src[src]);
+                 }
+diff --git a/src/panfrost/bifrost/bifrost_isa.py b/src/panfrost/bifrost/bifrost_isa.py
+index 63dd785d513..89e5d6f008f 100644
+--- a/src/panfrost/bifrost/bifrost_isa.py
++++ b/src/panfrost/bifrost/bifrost_isa.py
+@@ -143,6 +143,9 @@ def parse_instruction(ins, include_pseudo):
+         common['exact'] = parse_exact(ins)
+ 
+     for src in ins.findall('src'):
++        if src.attrib.get('pseudo', False) and not include_pseudo:
++            continue
++
+         mask = int(src.attrib['mask'], 0) if ('mask' in src.attrib) else 0xFF
+         common['srcs'].append([int(src.attrib['start'], 0), mask])
+
