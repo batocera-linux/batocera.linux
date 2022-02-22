@@ -175,7 +175,7 @@ def tatooImage(input_png, output_png, system):
   # Quickly grab the sizes.
   w,h = fast_image_size(input_png)
   tw,th = fast_image_size(tattoo_file)
-  if system.config['bezel.resize_tattoo'] == 0:
+  if "bezel.resize_tattoo" in system.config and system.config['bezel.resize_tattoo'] == 0:
       # Maintain the image's original size.
       # Failsafe for if the image is too large.
       if tw > w or th > h:
