@@ -921,7 +921,6 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
-                group: ADVANCED OPTIONS
                 prompt:      SHOW LIGHTGUN CROSSHAIRS
                 description: Lightgun device must be selected on at least one port.
                 choices:
@@ -2111,7 +2110,6 @@ libretro:
                     "NTSC":                        NTSC
                     "PAL":                         PAL
             o2em_swap_gamepads:
-                group: ADVANCED OPTIONS
                 prompt:      SWAP GAMEPADS
                 description: Some games accept input from port 2 instead of port 1.
                 choices:
@@ -2320,7 +2318,6 @@ libretro:
                     "2":                2
                     "3":                3
             neon_enhancement:
-                group: ADVANCED OPTIONS
                 prompt:      ENHANCED RENDERING RESOLUTION (32-BIT ONLY)
                 description: Double the rendering resolution. No effect on 64-bit machines.
                 choices:
@@ -5128,7 +5125,6 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
-            group: ADVANCED OPTIONS
             prompt:      SHOW LIGHTGUN CROSSHAIRS
             description: Enable crosshairs in shooting games for the selected players.
             choices:
