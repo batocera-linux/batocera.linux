@@ -1,0 +1,11 @@
+--- a/RSDKv4/Userdata.cpp	2022-02-11 04:23:32.000000000 -0500
++++ b/RSDKv4/Userdata.cpp	2022-02-23 14:17:42.796485533 -0500
+@@ -74,8 +74,6 @@
+     sprintf(buffer, "%s/%sSData.bin", redirectSave ? modsPath : gamePath, savePath);
+ #elif RETRO_PLATFORM == RETRO_iOS
+     sprintf(buffer, "%s/%sSData.bin", redirectSave ? modsPath : getDocumentsPath(), savePath);
+-#elif RETRO_PLATFORM == RETRO_LINUX
+-    sprintf(buffer, "%s/%sSData.bin", redirectSave ? modsPath : getXDGDataPath().c_str(), savePath);
+ #else
+     sprintf(buffer, "%s%sSData.bin", redirectSave ? modsPath : gamePath, savePath);
+ #endif

@@ -11,6 +11,10 @@ else
 	SONIC2013_VERSION = f9718af
 endif
 
+define SONIC2013_CONFIGURE_CMDS
+	-patch -d $(@D) -p1 < $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic2013/001-Userdata-fix.patch.x86
+endef
+
 define SONIC2013_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef
