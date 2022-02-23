@@ -1,10 +1,10 @@
 diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
-index a22f825..da4672f 100644
+index b416a53..70936a4 100644
 --- a/src/core/linux/SDL_udev.c
 +++ b/src/core/linux/SDL_udev.c
-@@ -192,12 +192,76 @@ SDL_UDEV_Quit(void)
-     }
- }
+@@ -48,6 +48,66 @@ static int SDL_UDEV_load_syms(void);
+ static SDL_bool SDL_UDEV_hotplug_update_available(void);
+ static void device_event(SDL_UDEV_deviceevent type, struct udev_device *dev);
  
 +struct joypad_udev_entry
 +{
@@ -66,21 +66,21 @@ index a22f825..da4672f 100644
 +   return strcmp_events(aa->devnode, bb->devnode);
 +}
 +
- void
- SDL_UDEV_Scan(void)
+ static SDL_bool
+ SDL_UDEV_load_sym(const char *fn, void **addr)
  {
-     struct udev_enumerate *enumerate = NULL;
+@@ -200,6 +260,10 @@ SDL_UDEV_Scan(void)
      struct udev_list_entry *devs = NULL;
--    struct udev_list_entry *item = NULL;  
-+    struct udev_list_entry *item = NULL;
-+
+     struct udev_list_entry *item = NULL;
+ 
 +    unsigned sorted_count = 0;
 +    struct joypad_udev_entry sorted[64];
 +    int i;
-     
++
      if (_this == NULL) {
          return;
-@@ -219,11 +283,28 @@ SDL_UDEV_Scan(void)
+     }
+@@ -220,11 +284,28 @@ SDL_UDEV_Scan(void)
          const char *path = _this->syms.udev_list_entry_get_name(item);
          struct udev_device *dev = _this->syms.udev_device_new_from_syspath(_this->udev, path);
          if (dev != NULL) {
