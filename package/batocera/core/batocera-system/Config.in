@@ -139,7 +139,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WPA_SUPPLICANT                       # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_CLI                   # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION    # wifi
-	select BR2_PACKAGE_WPA_SUPPLICANT_WIRED                 # wpa_supplicant driver
+	select BR2_PACKAGE_WPA_SUPPLICANT_WIRED                 if ! BR2_PACKAGE_BATOCERA_TARGET_RK3326 # wpa_supplicant driver
 	select BR2_PACKAGE_WPA_SUPPLICANT_WPA3                  # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_NL80211               # wpa_supplicant driver
 	select BR2_PACKAGE_WPA_SUPPLICANT_WEXT                  # wpa_supplicant driver
@@ -208,8 +208,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RCLONE                               if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sync files in the cloud
 
 	# RaspberryPi Firmwares
-	select BR2_PACKAGE_RPI_WIFI_FIRMWARE        if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi wifi firmware
-	select BR2_PACKAGE_RPI_BT_FIRMWARE          if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth firmware
+	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth and wifi firmware
 
 	# Case
 	select BR2_PACKAGE_GPICASE              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # retroflag gpicase
@@ -559,8 +558,8 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_X86
 	select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	help
@@ -648,8 +647,8 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_CITRA           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# PSP
-	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_LIBRETRO_PPSSPP          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	select BR2_PACKAGE_LIBRETRO_PPSSPP          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	# Neo Geo Pocket
 	select BR2_PACKAGE_LIBRETRO_BEETLE_NGP      # ALL
@@ -903,6 +902,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X
 
+    # Triforce
+    select BR2_PACKAGE_DOLPHIN_TRIFORCE             if  BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
 	# Microsoft XBOX
 	select BR2_PACKAGE_XEMU                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
@@ -1004,8 +1006,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Sonic Retro Engine
-	select BR2_PACKAGE_SONIC2013                    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_SONICCD                      if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_SONIC2013                    # ALL
+	select BR2_PACKAGE_SONICCD                      # ALL
 
 	# Super Cassette Vision
 	select BR2_PACKAGE_LIBRETRO_EMUSCV              # ALL

@@ -24,6 +24,13 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
 endif
 
+# dolphin-triforce
+ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin-triforce
+  BATOCERA_DESKTOPAPPS_APPS    += dolphin-triforce-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += dolphin-triforce.png
+endif
+
 # duckstation
 ifeq ($(BR2_PACKAGE_DUCKSTATION),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-duckstation
