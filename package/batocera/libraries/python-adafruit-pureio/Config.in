@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_ADAFRUIT_PUREIO
+	bool "python-adafruit-pureio"
+	help
+	  Pure python (i.e. no native extensions) access to Linux IO including
+	  I2C and SPI. Drop in replacement for smbus and spidev modules.
+
+	  https://pypi.org/project/Adafruit-PureIO
