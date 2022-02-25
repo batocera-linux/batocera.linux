@@ -2,7 +2,6 @@ config BR2_PACKAGE_DEMUL
     bool "demul"
     depends on BR2_x86_64
     depends on BR2_PACKAGE_WINE_PROTON
-    depends on BR2_PACKAGE_P7ZIP
     help
         Demul is Sega's multi-system game console and automaton emulator.
         Originally intended solely to emulate the Sega Dreamcast game console.
