@@ -52,6 +52,8 @@ PACKAGES_LIBRETRO="	libretro-81
 					libretro-mame2003-plus
 					libretro-mame2010
 					libretro-melonds
+					libretro-mesen
+					libretro-mesen-s
 					libretro-mgba
 					libretro-mrboom
 					libretro-mupen64plus-next

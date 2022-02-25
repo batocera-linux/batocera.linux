@@ -409,6 +409,9 @@ libretro:
                     "400%":  400%
                     "500%":  500%
                     "1000%": 1000%
+    mesen:
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
     citra:
       shared: [rewind, autosave]
     daphne:
