@@ -1,11 +1,14 @@
 config BR2_PACKAGE_MUPEN64PLUS_INPUT_SDL
-        bool "mupen 64 plus input sdl"
+    bool "mupen64plus-input-sdl"
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_PACKAGE_SDL2
 	depends on BR2_PACKAGE_ALSA_LIB
         help
-          mupen 64 plus inputsdl plugin
-	  https://github.com/mupen64plus/
+          Input plugin for Mupen64Plus v2.0 project using SDL.
+		  This is derived from the original Mupen64 blight_input plugin.
+	    
+		https://github.com/mupen64plus/
+		https://github.com/mupen64plus/mupen64plus-input-sdl
 
-comment "MUPEN64PLUS INPUT SLD needs a toolchain w/ C++, ALSA and SDL2"
+comment "MUPEN64PLUS_INPUT_SDL needs a toolchain w/ C++, ALSA and SDL2"
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2 || !BR2_PACKAGE_ALSA_LIB
