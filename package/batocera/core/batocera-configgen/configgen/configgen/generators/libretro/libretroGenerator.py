@@ -253,6 +253,11 @@ class LibretroGenerator(Generator):
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
+        # Use command line instead of ROM file for MAME variants
+        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+            dontAppendROM = True
+            commandArray.append("/var/run/lr-mame.cmd")
+
         if dontAppendROM == False:
             commandArray.append(rom)
             

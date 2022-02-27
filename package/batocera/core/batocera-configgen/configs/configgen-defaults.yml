@@ -23,6 +23,12 @@ default:
 abuse:
   emulator: abuse
   core:     abuse
+adam:
+  emulator: libretro
+  core:     mess
+advision:
+  emulator: libretro
+  core:     mess
 amiga500:
   emulator: libretro
   core:     puae
@@ -38,12 +44,24 @@ amigacdtv:
 amstradcpc:
   emulator: libretro
   core:     cap32
+apfm1000:
+  emulator: libretro
+  core:     mess
 apple2:
   emulator: gsplus
   core:     gsplus
 apple2gs:
   emulator: gsplus
   core:     gsplus
+arcadia:
+  emulator: libretro
+  core:     mess
+archimedes:
+  emulator: libretro
+  core:     mess
+astrocde:
+  emulator: libretro
+  core:     mess
 atari2600:
   emulator: libretro
   core:     stella
@@ -59,9 +77,15 @@ atari800:
 atarist:
   emulator: libretro
   core:     hatari
+atom:
+  emulator: libretro
+  core:     mess
 atomiswave:
   emulator: libretro
   core:     flycast
+bbc:
+  emulator: libretro
+  core:     mess
 c64:
   emulator: libretro
   core:     vice_x64
@@ -74,6 +98,9 @@ c128:
 c20:
   emulator: vice
   core:     xvic
+camplynx:
+  emulator: libretro
+  core:     mess
 cannonball:
   emulator: cannonball
   core:     cannonball
@@ -83,6 +110,9 @@ cavestory:
 cave3rd:
   emulator: demul
   core:     demul
+cdi:
+  emulator: libretro
+  core:     mess
 cdogs:
   emulator: cdogs
   core:     cdogs
@@ -92,9 +122,15 @@ cgenius:
 channelf:
   emulator: libretro
   core:     freechaf
+coco:
+  emulator: libretro
+  core:     mess
 colecovision:
   emulator: libretro
   core:     bluemsx
+crvision:
+  emulator: libretro
+  core:     mess
 
 # D-L
 
@@ -116,6 +152,9 @@ easyrpg:
 ecwolf:
   emulator: ecwolf
   core:     ecwolf
+electron:
+  emulator: libretro
+  core:     mess
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -128,23 +167,35 @@ flash:
 flatpak:
   emulator: flatpak
   core:     flatpak
+fm7:
+  emulator: libretro
+  core:     mess
 fmtowns:
   emulator: tsugaru
   core:     tsugaru
 gaelco:
   emulator: demul
   core:     demul
+gamate:
+  emulator: libretro
+  core:     mess
 gameandwatch:
   emulator: libretro
   core:     gw
   options:
     forceNoBezel: true
+gamecom:
+  emulator: libretro
+  core:     mess
 gamecube:
   emulator: dolphin
   core:     dolphin
 gamegear:
   emulator: libretro
   core:     genesisplusgx
+gamepock:
+  emulator: libretro
+  core:     mess
 gb:
   emulator: libretro
   core:     gambatte
@@ -160,6 +211,9 @@ gbc:
 gbc2players:
   emulator: libretro
   core:     tgbdual
+gmaster:
+  emulator: libretro
+  core:     mess
 gong:
   emulator: libretro
   core:     gong
@@ -205,6 +259,9 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     genesisplusgx
+megaduck:
+  emulator: libretro
+  core:     mess
 model2:
   emulator: model2emu
   core:     model2emu
@@ -298,6 +355,9 @@ pet:
 pico8:
   emulator: libretro
   core:     retro8
+plugnplay:
+  emulator: libretro
+  core:     mess
 pokemini:
   emulator: libretro
   core:     pokemini
@@ -318,6 +378,9 @@ psp:
 psx:
   emulator: libretro
   core:     pcsx_rearmed
+pv1000:
+  emulator: libretro
+  core:     mess
 pygame:
   emulator: pygame
   core:     pygame
@@ -357,6 +420,9 @@ sg1000:
 sgb:
   emulator: libretro
   core:     mgba
+socrates:
+  emulator: libretro
+  core:     mess
 solarus:
   emulator: solarus
   core:     solarus
@@ -369,6 +435,9 @@ steam:
 sufami:
   emulator: libretro
   core:     snes9x
+supracan:
+  emulator: libretro
+  core:     mess
 snes:
   emulator: libretro
   core:     snes9x
@@ -390,12 +459,18 @@ switch:
 thomson:
   emulator: libretro
   core:     theodore
+ti99:
+  emulator: libretro
+  core:     mess
 tic80:
   emulator: libretro
   core:     tic80
 triforce:
   emulator: dolphin_triforce
   core:     dolphin_triforce
+tutor:
+  emulator: libretro
+  core:     mess
 tyrquake:
   emulator: libretro
   core:     tyrquake
@@ -405,12 +480,18 @@ uzebox:
 vectrex:
   emulator: libretro
   core:     vecx
+vgmplay:
+  emulator: libretro
+  core:     mamevirtual
 virtualboy:
   emulator: libretro
   core:     vb
 vitaquake2:
   emulator: libretro
   core:     vitaquake2
+vsmile:
+  emulator: libretro
+  core:     mess
 wii:
   emulator: dolphin
   core:     dolphin
@@ -438,6 +519,9 @@ x68000:
 xash3d_fwgs:
   emulator: xash3d_fwgs
   core:     xash3d_fwgs
+xegs:
+  emulator: libretro
+  core:     mess
 xrick:
   emulator: libretro
   core:     xrick
