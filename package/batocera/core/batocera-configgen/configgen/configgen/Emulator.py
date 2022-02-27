@@ -84,7 +84,7 @@ class Emulator():
         :return: None
         """
         for k, v in merge_dct.items():
-            if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.Mapping)):
+            if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.abc.Mapping)):
                 Emulator.dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]
