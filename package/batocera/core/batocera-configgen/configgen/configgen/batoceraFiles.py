@@ -118,14 +118,14 @@ daphneSaves = SAVES + '/daphne'
 linappleConfigFile = CONF + '/linapple/linapple.conf'
 linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
 linapplaSaves = SAVES + '/apple2'
-linappleMasterDSK = '/usr/lib/python3.9/site-packages/configgen/datainit/linapple/Master.dsk'
+linappleMasterDSK = '/usr/share/batocera/configgen/data/linapple/Master.dsk'
 
 flycastCustom = CONF + '/flycast'
 flycastMapping = flycastCustom + '/mappings'
 flycastConfig = flycastCustom + '/emu.cfg'
 flycastSaves = SAVES + '/dreamcast'
 flycastBios = BIOS
-flycastVMUBlank = '/usr/lib/python3.9/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
+flycastVMUBlank = '/usr/share/batocera/configgen/data/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
 
