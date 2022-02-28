@@ -110,8 +110,10 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RG552),) # using libgo2 on RG552 is causing crash
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
 	RETROARCH_DEPENDENCIES += rockchip-rga
+endif
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)

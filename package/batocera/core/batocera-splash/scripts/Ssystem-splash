@@ -18,7 +18,13 @@ do_start ()
         sleep 0.25
         N=$((N+1))
     done
-    test -e /dev/fb0 && fbv -f -e -i "${image}"
+
+    FBV_OPTS="-f -e"
+    # FBV_OPTS can be set differently for some boards to work
+    MODELOPTS=/etc/opts.$(cat /sys/firmware/devicetree/base/model)
+    test -e "${MODELOPTS}" && . "${MODELOPTS}"
+
+    test -e /dev/fb0 && fbv ${FBV_OPTS} -i "${image}"
 }
 
 case "$1" in
