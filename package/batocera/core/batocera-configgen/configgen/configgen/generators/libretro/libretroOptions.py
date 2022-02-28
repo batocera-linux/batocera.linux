@@ -647,16 +647,12 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('mame_altres', '"640x480"')
         # Software Lists (MESS)
-        if system.isOptSet('mess_softList') and system.config['mame_softList'] != "none":
-            coreSettings.save('mame_softlists_enable', '"enabled"')
-            coreSettings.save('mame_softlists_auto_media', '"enabled"')
-        else:
-            coreSettings.save('mame_softlists_enable', '"disabled"')
-            coreSettings.save('mame_softlists_auto_media', '"disabled"')
+        coreSettings.save('mame_softlists_enable', '"disabled"')
+        coreSettings.save('mame_softlists_auto_media', '"disabled"')
         # Enable config reading (for controls)
-            coreSettings.save('mame_read_config', '"enabled"')
+        coreSettings.save('mame_read_config', '"enabled"')
         # Use CLI (via CMD file) to boot
-            coreSettings.save('mame_boot_from_cli', '"enabled"')
+        coreSettings.save('mame_boot_from_cli', '"enabled"')
 
 
     # MAME 2003 Plus

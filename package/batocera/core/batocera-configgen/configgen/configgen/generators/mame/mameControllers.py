@@ -211,7 +211,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, dpadMode, altButtons))
+                    xml_input.appendChild(generateSpecialPortElement(config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, dpadMode, "", ""))
                 else:
                     xml_input.appendChild(generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, dpadMode, altButtons))
             else:
@@ -439,7 +439,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON9", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "256", "0"))          # Rate Reset
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "512", "0"))         # Rate Hold
         
-            nplayer = nplayer + 1
+        nplayer = nplayer + 1
         
         # save the config file
         #mameXml = open(configFile, "w")
