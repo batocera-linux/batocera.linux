@@ -37,7 +37,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] == "mame":
+                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
                     lightgun = False
                 else:
                     lightgun = True
