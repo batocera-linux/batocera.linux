@@ -80,9 +80,8 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 commandLine += [ messSysName[messMode] ]
             if softList != "":
                 # Software list ROM commands
-                prepSoftwareList(subdirSoftList, softList, softDir, romDirname)
+                prepSoftwareList(subdirSoftList, softList, softDir, "/userdata/bios/mame/hash", romDirname)
                 commandLine += [ romDrivername ]
-                commandLine += [ "-hashpath", softDir + "hash/" ]
                 commandLine += [ "-rompath", softDir + ";/userdata/bios/" ]
                 commandLine += [ "-swpath", softDir ]
                 commandLine += [ "-verbose" ]
@@ -140,34 +139,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
 
-            # Autostart computer games where applicable
-            # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
-                if system.isOptSet("altromtype") or softList != "":
-                    if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
-                        commandLine += [ '-autoboot_delay', '2', '-autoboot_command', '*tape\nchain""\n' ]
-                    elif left(system.config["altromtype"], 4) == "flop" or softList[-4:] == "flop":
-                        commandLine += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
-                else:
-                    commandLine += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
-            # fm7 boots floppies, needs cassette loading
-            elif system.name == "fm7":
-                if system.isOptSet("altromtype") or softList != "":
-                    if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
-                        commandLine += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\n' ]
-            else:
-                # Check for an override file, otherwise use generic (if it exists)
-                autoRunCmd = messAutoRun[messMode]
-                autoRunFile = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/' + softList + '_autoload.csv'
-                if os.path.exists(autoRunFile):
-                    openARFile = open(autoRunFile, 'r')
-                    with openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
-                                autoRunCmd = row[1] + "\\n"
-                if autoRunCmd != "":
-                    commandLine += [ "-autoboot_delay", "3", "-autoboot_command", autoRunCmd ]
+            # Autostart would go here, but it is not properly supported by lr-mame.
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -208,10 +180,9 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName[messMode], romBasename)
 
-def prepSoftwareList(subdirSoftList, softList, softDir, romDirname):
+def prepSoftwareList(subdirSoftList, softList, softDir, hashDir, romDirname):
     if not os.path.exists(softDir):
         os.makedirs(softDir)
-
     # Check for/remove existing symlinks, remove hashfile folder
     for fileName in os.listdir(softDir):
         checkFile = os.path.join(softDir, fileName)
@@ -219,13 +190,16 @@ def prepSoftwareList(subdirSoftList, softList, softDir, romDirname):
             os.unlink(checkFile)
         if os.path.isdir(checkFile):
             shutil.rmtree(checkFile)
-
-    # Link folders & hashfile
-    # Only use a single hashfile due to conflicts in some systems
-    if not os.path.exists(softDir + "hash/"):
-        os.makedirs(softDir + "hash/")
-    os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
-
+    # Prepare hashfile path
+    if not os.path.exists(hashDir):
+        os.makedirs(hashDir)
+    # Remove existing xml files
+    hashFiles = os.listdir(hashDir)
+    for file in hashFiles:
+        if file.endswith(".xml"):
+            os.remove(os.path.join(hashDir, file))
+    # Copy hashfile
+    shutil.copy2("/usr/share/lr-mame/hash/" + softList + ".xml", hashDir + "/" + softList + ".xml")
     # Link ROM's parent folder if needed, ROM's folder otherwise
     if softList in subdirSoftList:
         romPath = Path(romDirname)
@@ -737,12 +711,9 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
         if messSysName in specialControlList and overwriteSystem:
-            print("MAME Debug: Saving " + configFile_alt)
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml_alt.write(dom_string_alt)
-        else:
-            print("MAME Debug: NOT saving " + configFile_alt)
 
 def reverseMapping(key):
     if key == "joystick1down":

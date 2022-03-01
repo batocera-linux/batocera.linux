@@ -63,6 +63,8 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mess_libretro.so
 	$(INSTALL) -D $(@D)/mamevirtual_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mamevirtual_libretro.so
+	mkdir -p $(TARGET_DIR)/usr/share/lr-mame/hash
+	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
@@ -72,6 +74,8 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 		$(STAGING_DIR)/usr/lib/libretro/mess_libretro.so
 	$(INSTALL) -D $(@D)/mamevirtual_libretro.so \
 		$(STAGING_DIR)/usr/lib/libretro/mamevirtual_libretro.so
+	mkdir -p $(STAGING_DIR)/usr/share/lr-mame/hash
+	cp -R $(@D)/hash $(STAGING_DIR)/usr/share/lr-mame
 endef
 
 $(eval $(generic-package))

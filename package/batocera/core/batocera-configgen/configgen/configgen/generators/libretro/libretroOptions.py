@@ -646,6 +646,8 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mame_altres', system.config['mame_altres'])
         else:
             coreSettings.save('mame_altres', '"640x480"')
+        # Disable controller profiling
+        coreSettings.save('mame_buttons_profiles', '"disabled"')
         # Software Lists (MESS)
         coreSettings.save('mame_softlists_enable', '"disabled"')
         coreSettings.save('mame_softlists_auto_media', '"disabled"')
