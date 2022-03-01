@@ -262,11 +262,14 @@ class MameGenerator(Generator):
                                 shutil.rmtree(checkFile)
                         if not os.path.exists(softDir + "hash/"):
                             os.makedirs(softDir + "hash/")
+                        # Clear existing hashfile links
+                        for hashFile in os.listdir(softDir + "hash/"):
+                            if hashFile.endswith('.xml'):
+                                os.unlink(softDir + "hash/" + hashFile)
                         os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
                         if softList in subdirSoftList:
                             romPath = Path(romDirname)
                             os.symlink(str(romPath.parents[0]), softDir + softList, True)
-                            commandArray += [ os.path.basename(romDirname), "-verbose" ]
                         else:
                             os.symlink(romDirname, softDir + softList, True)
                             commandArray += [ os.path.splitext(romBasename)[0] ]

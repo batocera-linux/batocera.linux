@@ -365,6 +365,7 @@ lcdgames:
   emulators:
     libretro:
       gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
 
@@ -378,6 +379,7 @@ gameandwatch:
   emulators:
     libretro:
       gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
 
@@ -2309,6 +2311,8 @@ cdi:
   hardware: console
   extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2321,6 +2325,8 @@ advision:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2333,6 +2339,8 @@ plugnplay:
   hardware: console
   extensions: [zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2343,6 +2351,8 @@ megaduck:
   hardware: portable
   extensions:  [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2353,6 +2363,8 @@ pv1000:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2363,6 +2375,8 @@ gamate:
   hardware: portable
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2376,6 +2390,8 @@ crvision:
   theme: creativision
   extensions: [bin, rom, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2388,6 +2404,8 @@ socrates:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2401,6 +2419,8 @@ vsmile:
   hardware: console
   extensions: [u1, u3, bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2413,6 +2433,8 @@ supracan:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2425,6 +2447,8 @@ gamecom:
   hardware: portable
   extensions: [bin, tgc, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2437,6 +2461,8 @@ gamepock:
   hardware: portable
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2449,6 +2475,8 @@ fm7:
   hardware: computer
   extensions: [wav, t77, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2461,6 +2489,8 @@ archimedes:
   hardware: computer
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2475,6 +2505,8 @@ atom:
   hardware: computer
   extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2489,6 +2521,8 @@ electron:
   hardware: computer
   extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2503,6 +2537,8 @@ apfm1000:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2516,6 +2552,8 @@ bbc:
   theme: bbcmicro
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2529,6 +2567,8 @@ camplynx:
   hardware: computer
   extensions: [wav, tap, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2542,6 +2582,8 @@ adam:
   hardware: computer
   extensions: [wav, ddp, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, rom, col, bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2555,6 +2597,8 @@ arcadia:
   hardware: console
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2565,6 +2609,8 @@ gmaster:
   hardware: portable
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2578,6 +2624,8 @@ astrocde:
   theme: astrocade
   extensions: [bin, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2590,6 +2638,8 @@ ti99:
   hardware: computer
   extensions: [rpk, wav, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2603,6 +2653,8 @@ tutor:
   hardware: computer
   extensions: [bin, wav, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2616,6 +2668,8 @@ coco:
   hardware: computer
   extensions: [wav, cas, ccc, rom, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2628,6 +2682,8 @@ vgmplay:
   hardware: computer
   extensions: [vgm, vgz, zip, 7z]
   emulators:
+    libretro:
+      mamevirtual: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2806,6 +2862,7 @@ macintosh:
   emulators:
     libretro:
       minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC], incompatible_extensions: [7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |

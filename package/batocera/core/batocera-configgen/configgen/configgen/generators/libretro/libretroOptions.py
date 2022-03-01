@@ -4,6 +4,8 @@ import os
 import configparser
 from settings.unixSettings import UnixSettings
 import batoceraFiles
+import csv
+from pathlib import Path
 
 def generateCoreSettings(coreSettings, system, rom):
 
@@ -628,8 +630,8 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('o2em_low_pass_filter', '"disabled"')
             coreSettings.save('o2em_low_pass_range',  '"0"')
 
-    # MAME 0.225
-    if (system.config['core'] == 'mame'):
+    # MAME/MESS/MAMEVirtual
+    if (system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]):
         # Lightgun mode
         coreSettings.save('mame_lightgun_mode', '"lightgun"')
         # Enable cheats
@@ -644,6 +646,16 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mame_altres', system.config['mame_altres'])
         else:
             coreSettings.save('mame_altres', '"640x480"')
+        # Disable controller profiling
+        coreSettings.save('mame_buttons_profiles', '"disabled"')
+        # Software Lists (MESS)
+        coreSettings.save('mame_softlists_enable', '"disabled"')
+        coreSettings.save('mame_softlists_auto_media', '"disabled"')
+        # Enable config reading (for controls)
+        coreSettings.save('mame_read_config', '"enabled"')
+        # Use CLI (via CMD file) to boot
+        coreSettings.save('mame_boot_from_cli', '"enabled"')
+
 
     # MAME 2003 Plus
     if (system.config['core'] == 'mame078plus'):

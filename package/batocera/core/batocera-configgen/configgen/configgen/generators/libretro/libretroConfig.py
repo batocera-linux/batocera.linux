@@ -3,6 +3,7 @@ import sys
 import os
 import batoceraFiles
 from . import libretroOptions
+from . import libretroMAMEConfig
 from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
@@ -83,6 +84,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     # Create/update hatari.cfg
     if system.name == 'atarist':
         libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
+
+    if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+        libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom)
 
     retroarchConfig = dict()
     systemConfig = system.config

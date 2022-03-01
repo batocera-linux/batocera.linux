@@ -11,16 +11,6 @@
             "target": [ "KEY_TAB" ]
 	},
 	{
-            "trigger": ["select"],
-            "type": "key",
-            "target": [ "KEY_5" ]
-	},
-        {
-            "trigger": ["start"],
-            "type": "key",
-            "target": [ "KEY_1" ]
-        },
-	{
             "trigger": ["hotkey", "x"],
             "type": "key",
             "target": [ "KEY_F7" ]
@@ -45,27 +35,5 @@
             "type": "key",
             "target": [ "KEY_SCROLLLOCK" ]
 	}
-
-    ],
-    "actions_player2": [
-        {
-            "trigger": ["start"],
-            "type": "key",
-            "target": [ "KEY_2" ]
-        }
-    ],
-    "actions_player3": [
-        {
-            "trigger": ["start"],
-            "type": "key",
-            "target": [ "KEY_3" ]
-        }
-    ],
-    "actions_player4": [
-        {
-            "trigger": ["start"],
-            "type": "key",
-            "target": [ "KEY_4" ]
-        }
     ]
 }
