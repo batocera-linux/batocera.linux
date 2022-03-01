@@ -18,7 +18,8 @@ class MupenGenerator(Generator):
         if os.path.exists(batoceraFiles.mupenCustom):
             iniConfig.read(batoceraFiles.mupenCustom)
         else:
-            os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
+            if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
+                os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
             iniConfig.read(batoceraFiles.mupenCustom)
 
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)

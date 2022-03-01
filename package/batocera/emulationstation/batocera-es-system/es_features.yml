@@ -7204,6 +7204,13 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
+        drastic_screen_orientation:
+            prompt:      SCREEN LAYOUT
+            description: Arrange the dual screen layout.
+            choices:
+                "Vertical": 0
+                "Horizontal": 1
+                "Single": 3
 
 xemu:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

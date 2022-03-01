@@ -6,12 +6,13 @@
 
 # version: DEmul x86 v0.7 BUILD 280418 - closed source
 # not developed since 2018
-DEMUL_SOURCE = demul07_280418.7z
+DEMUL_VERSION = demul07_280418
+DEMUL_SOURCE = $(DEMUL_VERSION).7z
 DEMUL_SITE = http://demul.emulation64.com/files
-DEMUL_DEPENDENCIES = p7zip
+DEMUL_DEPENDENCIES = host-p7zip
 
 define DEMUL_EXTRACT_CMDS
-	mkdir -p $(@D) && cd $(@D) && $(TARGET_DIR)/usr/bin/7zr x -y $(DL_DIR)/$(DEMUL_DL_SUBDIR)/$(DEMUL_SOURCE)
+	mkdir -p $(@D) && cd $(@D) && $(HOST_DIR)/usr/bin/7zr x -y $(DL_DIR)/$(DEMUL_DL_SUBDIR)/$(DEMUL_SOURCE)
 endef
 
 define DEMUL_INSTALL_TARGET_CMDS

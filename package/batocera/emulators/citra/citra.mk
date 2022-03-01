@@ -1,9 +1,8 @@
 ################################################################################
 #
-# CITRA
+# citra
 #
 ################################################################################
-# Version.: Commits on Jul 08, 2020
 
 CITRA_DEPENDENCIES = fmt boost ffmpeg sdl2
 CITRA_SITE_METHOD=git
@@ -11,16 +10,16 @@ CITRA_GIT_SUBMODULES=YES
 CITRA_LICENSE = GPLv2
 
 # Use citra-android for AArch64 (SDL2 only)
+# Version.: Commits on Sep 11, 2021
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-CITRA_VERSION = dad2146e4e65980deb7d273bf1e9c58334847c19
+CITRA_VERSION = 6f6f9a091085305154375028f3342aad16697f3c
 CITRA_SITE = https://github.com/citra-emu/citra-android.git
 CITRA_CONF_OPTS += -DENABLE_QT=OFF
 
 # Use citra for x86_64 and enable citra-qt
+# Commits on Feb 22, 2022 - removed performance patches
 else
-# commit 55ec7031ccb2943c2c507620cf4613a86d160670 is reverted by patch, something wrong in it for perfs (patch 004-perf1-revert-core.patch)
-# patch 003-perf1.patch while NO_CAST_FROM_ASCII is causing perfs issues too
-CITRA_VERSION = 5b54a99f9
+CITRA_VERSION = db5edf549e3013a0d8862d56c52f6ed0ea522561
 
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_CONF_OPTS += -DENABLE_QT=ON
@@ -41,24 +40,22 @@ CITRA_CONF_ENV += LDFLAGS=-lpthread
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 define CITRA_INSTALL_TARGET_CMDS
-       	mkdir -p $(TARGET_DIR)/usr/bin
-        mkdir -p $(TARGET_DIR)/usr/lib
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra-qt \
+    mkdir -p $(TARGET_DIR)/usr/bin
+    mkdir -p $(TARGET_DIR)/usr/lib
+	$(INSTALL) -D $(@D)/buildroot-build/bin/Release/citra-qt \
 		$(TARGET_DIR)/usr/bin/
 endef
 else
 define CITRA_INSTALL_TARGET_CMDS
-        mkdir -p $(TARGET_DIR)/usr/bin
-        mkdir -p $(TARGET_DIR)/usr/lib
-
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
+    mkdir -p $(TARGET_DIR)/usr/bin
+    mkdir -p $(TARGET_DIR)/usr/lib
+	$(INSTALL) -D $(@D)/buildroot-build/bin/Release/citra \
 		$(TARGET_DIR)/usr/bin/
 endef
 endif
 
 define CITRA_EVMAP
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	
 	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/citra/3ds.citra.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef

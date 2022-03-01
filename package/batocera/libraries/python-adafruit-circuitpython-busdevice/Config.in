@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_BUSDEVICE
+	bool "python-adafruit-circuitpython-busdevice"
+	select BR2_PACKAGE_PYTHON_ADAFRUIT_BLINKA
+	select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_TYPING
+	help
+	  CircuitPython bus device classes to manage bus sharing.
+
+	  https://pypi.org/project/adafruit-circuitpython-busdevice
