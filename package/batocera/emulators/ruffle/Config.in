@@ -1,9 +1,9 @@
 config BR2_PACKAGE_RUFFLE
 	bool "ruffle"
+    depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
 	select BR2_PACKAGE_HOST_RUSTC
     select BR2_PACKAGE_OPENSSL
 	help
-          Ruffle
-          Flash emulator for windows / mac / linux.
+        ruffle is a Flash Player emulator built in the Rust programming language.
 
-          https://ruffle.rs/
+        https://ruffle.rs/
