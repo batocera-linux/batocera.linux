@@ -1,16 +1,16 @@
 ################################################################################
 #
-# mupen64plus rsp-hle
+# mupen64plus-rsp-hle
 #
 ################################################################################
-# Version.: Commits on Sep 14, 2021
-MUPEN64PLUS_RSPHLE_VERSION = 88093cb43499eff53d343653cddcae2132af17ef
-MUPEN64PLUS_RSPHLE_SITE = $(call github,mupen64plus,mupen64plus-rsp-hle,$(MUPEN64PLUS_RSPHLE_VERSION))
-MUPEN64PLUS_RSPHLE_LICENSE = GPLv2
-MUPEN64PLUS_RSPHLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
-MUPEN64PLUS_RSPHLE_INSTALL_STAGING = YES
+# Version.: Commits on Jan 17, 2022
+MUPEN64PLUS_RSP_HLE_VERSION = 4bac3aeb98aff2d89095c59ec105aad721a16167
+MUPEN64PLUS_RSP_HLE_SITE = $(call github,mupen64plus,mupen64plus-rsp-hle,$(MUPEN64PLUS_RSP_HLE_VERSION))
+MUPEN64PLUS_RSP_HLE_LICENSE = GPLv2
+MUPEN64PLUS_RSP_HLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
+MUPEN64PLUS_RSP_HLE_INSTALL_STAGING = YES
 
-define MUPEN64PLUS_RSPHLE_BUILD_CMDS
+define MUPEN64PLUS_RSP_HLE_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 		CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
 		PREFIX="$(STAGING_DIR)/usr" \
@@ -22,7 +22,7 @@ define MUPEN64PLUS_RSPHLE_BUILD_CMDS
 		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
-define MUPEN64PLUS_RSPHLE_INSTALL_TARGET_CMDS
+define MUPEN64PLUS_RSP_HLE_INSTALL_TARGET_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 		CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
 		PREFIX="$(TARGET_DIR)/usr/" \
