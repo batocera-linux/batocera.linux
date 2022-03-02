@@ -15,8 +15,8 @@ define UMTOOL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/src/umtool/umtool $(TARGET_DIR)/usr/bin/umtool
 
     # out-of-the-box configs
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/umtool
-	cp $(@D)/src/umtool/*.json $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/umtool
+	mkdir -p $(TARGET_DIR)/usr/share/umtool
+	cp $(@D)/src/umtool/*.json $(TARGET_DIR)/usr/share/umtool
 
 	# udev rule
 	cp $(@D)/21-ultimarc.rules $(TARGET_DIR)/etc/udev/rules.d/99-ultimarc.rules
