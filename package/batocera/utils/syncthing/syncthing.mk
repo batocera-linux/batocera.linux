@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SYNCTHING_VERSION = v1.18.6
+SYNCTHING_VERSION = v1.19.1
 SYNCTHING_SITE = $(call github,syncthing,syncthing,$(SYNCTHING_VERSION))
 SYNCTHING_LICENSE = MPLv2
 SYNCTHING_LICENSE_FILES = LICENSE
@@ -29,6 +29,9 @@ SYNCTHING_TARGET_ENV = \
 
 define SYNCTHING_BUILD_CMDS
 	cd $(@D) && $(SYNCTHING_TARGET_ENV) $(GO_BIN) run build.go -goos linux -goarch $(GOARCH) build
+	# Fix directory permissions to make sure cleanbuild works.
+	# For details see: https://github.com/golang/go/issues/27161 https://github.com/golang/go/issues/27455
+	cd $(@D) && find . -type d -exec chmod +w '{}' \;
 endef
 
 define SYNCTHING_INSTALL_TARGET_CMDS
