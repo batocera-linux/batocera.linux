@@ -163,4 +163,10 @@ case "${ACTION}" in
         f_usage
         ;;
 esac
+
+if which batocera-resolution-post >/dev/null
+then
+    batocera-resolution-post "${ACTION}" "${1}"
+fi
+
 exit 0
