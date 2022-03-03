@@ -1,10 +1,10 @@
 ################################################################################
 #
-# MUPEN64PLUS-NEXT
+# mupen64plus-next-libretro
 #
 ################################################################################
-# Version.: Commits on Oct 11, 2021
-LIBRETRO_MUPEN64PLUS_NEXT_VERSION = 018ee72b4fe247b38ed161033ad12a19bb936f00
+# Version: Commits on Feb 8, 2022
+LIBRETRO_MUPEN64PLUS_NEXT_VERSION = 6e9dcd2cd9d23d3e79eaf2349bf7e9f25ad45bf1
 LIBRETRO_MUPEN64PLUS_NEXT_SITE = $(call github,libretro,mupen64plus-libretro-nx,$(LIBRETRO_MUPEN64PLUS_NEXT_VERSION))
 LIBRETRO_MUPEN64PLUS_NEXT_LICENSE = GPLv2
 LIBRETRO_MUPEN64PLUS_NEXT_DEPENDENCIES = host-nasm retroarch
@@ -100,7 +100,6 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
 		LIBRETRO_MUPEN64PLUS_NEXT_TARGET_CXXFLAGS += -DEGL_NO_X11
 	endif
 endif
-
 
 define LIBRETRO_MUPEN64PLUS_NEXT_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) \
