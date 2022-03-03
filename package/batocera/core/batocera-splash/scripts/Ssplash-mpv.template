@@ -75,6 +75,13 @@ do_videostart ()
         resize=$(echo "${video_resize}" | sed "s/x/:/")
         mpv_video="${mpv_video} --vf=scale=${resize}"
     fi
+    video_subtitle=$(batocera-settings-get splash.screen.subtitle)
+    if [[ $? -eq 0 ]]; then
+	if test "${video_subtitle}" = 0
+	then
+           mpv_video="${mpv_video} --no-sub-auto"
+	fi
+    fi
 
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
     start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"
