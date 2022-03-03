@@ -2,16 +2,6 @@
 
 BOOTCONF="/boot/batocera-boot.conf"
 
-fix_resolution() {
-    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
-    if test -z "${bootresolution}"
-    then
-        batocera-resolution minTomaxResolution-secure
-    else
-        batocera-resolution setMode "${bootresolution}"
-    fi
-}
-
 on_hdmi_change() {
     HDMISTATUS=$1
     CONNECTOR=$(cat /var/run/drmConn)
@@ -22,8 +12,6 @@ on_hdmi_change() {
     then
 	if test "${GLOBAL_VIDEO_OUTPUT}" != "0" # if not forced on internal screen
 	then
-	    batocera-resolution setOutput 1
-	    fix_resolution
 	    curl http://localhost:1234/quit
 	fi
     else
@@ -31,8 +19,6 @@ on_hdmi_change() {
 	then
 	    if test "${GLOBAL_VIDEO_OUTPUT}" != "1" # if not forced on hdmi
 	    then
-		batocera-resolution setOutput 0
-		fix_resolution
 		curl http://localhost:1234/quit
 	    fi
 	fi
