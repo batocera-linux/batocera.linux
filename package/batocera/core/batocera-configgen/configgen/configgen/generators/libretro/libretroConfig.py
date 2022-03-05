@@ -408,7 +408,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         retroarchConfig['video_smooth'] = 'false'
 
     # Shader option
-    if 'shader' in renderConfig and renderConfig['shader'] != None:
+    if 'shader' in renderConfig and (renderConfig['shader'] != None and renderConfig['shader'] != "none"):
         retroarchConfig['video_shader_enable'] = 'true'
         retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
     else:
