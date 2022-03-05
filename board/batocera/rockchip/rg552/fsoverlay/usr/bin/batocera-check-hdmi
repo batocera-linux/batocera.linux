@@ -19,7 +19,7 @@ on_hdmi_change() {
 	then
 	    if test "${GLOBAL_VIDEO_OUTPUT}" != "1" # if not forced on hdmi
 	    then
-		curl http://localhost:1234/quit?confirm=switchscreen
+		curl http://localhost:1234/quit # no confirmation while the hdmi is unplugged, the user will not see the question
 	    fi
 	fi
     fi
