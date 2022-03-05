@@ -35,8 +35,10 @@ then
 	if test "${NEWCONN}" = 0
 	then
 	    touch /var/run/rk-rotation
+	    fbv -z -e -i /usr/share/batocera/splash/boot-logo.png
 	else
 	    rm -f /var/run/rk-rotation
+	    fbv -e -i /usr/share/batocera/splash/boot-logo.png
 	fi
 
 	# force audio associated with the device
