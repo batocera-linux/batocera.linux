@@ -269,17 +269,14 @@ def getGFXBackend(system):
         # Pick glcore or gl based on drivers if not selected
         if system.isOptSet("gfxbackend"):
             backend = system.config["gfxbackend"]
-            setManually = True
         else:
-            setManually = False
             if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
                 backend = "glcore"
             else:
-                backend = "opengl"
+                backend = "gl"
         # If set to glcore or gl, override setting for certain cores that require one or the other
-        if not setManually:
-            if backend == "opengl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
-                backend = "glcore"
-            if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3', 'flycast' ]:
-                backend = "opengl"
+        if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
+            backend = "glcore"
+        if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3' ]:
+            backend = "gl"
         return backend
