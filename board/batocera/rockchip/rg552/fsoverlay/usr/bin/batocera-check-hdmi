@@ -12,14 +12,14 @@ on_hdmi_change() {
     then
 	if test "${GLOBAL_VIDEO_OUTPUT}" != "0" # if not forced on internal screen
 	then
-	    curl http://localhost:1234/quit
+	    curl http://localhost:1234/quit?confirm=switchscreen
 	fi
     else
 	if test "${HDMISTATUS}" = 1 -a "${CONNECTOR}" = 1 # was on hdmi, go on screen
 	then
 	    if test "${GLOBAL_VIDEO_OUTPUT}" != "1" # if not forced on hdmi
 	    then
-		curl http://localhost:1234/quit
+		curl http://localhost:1234/quit?confirm=switchscreen
 	    fi
 	fi
     fi
