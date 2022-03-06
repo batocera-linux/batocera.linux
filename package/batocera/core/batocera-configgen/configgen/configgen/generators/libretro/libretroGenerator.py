@@ -264,19 +264,29 @@ class LibretroGenerator(Generator):
         return Command.Command(array=commandArray)
 
 def getGFXBackend(system):
-        core = system.config['core']
         # Start with the selected option
         # Pick glcore or gl based on drivers if not selected
         if system.isOptSet("gfxbackend"):
             backend = system.config["gfxbackend"]
+            setManually = True
         else:
-            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
+            setManually = False
+            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:
                 backend = "glcore"
             else:
                 backend = "gl"
-        # If set to glcore or gl, override setting for certain cores that require one or the other
-        if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
-            backend = "glcore"
-        if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3' ]:
+
+        # Retroarch has flipped between using opengl or gl, correct the setting here if needed.
+        if backend == "opengl":
             backend = "gl"
+
+        # Don't change based on core if manually selected.
+        if not setManually:
+            # If set to glcore or gl, override setting for certain cores that require one or the other
+            core = system.config['core']
+            if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
+                backend = "glcore"
+            if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3', 'flycast' ]:
+                backend = "gl"
+
         return backend

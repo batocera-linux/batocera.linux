@@ -187,7 +187,7 @@ libretro:
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan may not work for every core.
       choices:
-        "OpenGL": opengl
+        "OpenGL": gl
         "GLCore": glcore
         "Vulkan": vulkan
     audio_latency:
