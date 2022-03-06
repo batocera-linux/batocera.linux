@@ -384,7 +384,7 @@ gameandwatch:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
 
 dreamcast:
-  name:       Sega Dreamcast
+  name:       Dreamcast
   manufacturer: Sega
   release: 1998
   hardware: console
@@ -404,7 +404,7 @@ dreamcast:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:dreamcast
 
 naomi:
-  name:       Sega Naomi
+  name:       Naomi
   manufacturer: Sega
   release: 1998
   hardware: arcade
@@ -434,7 +434,7 @@ atomiswave:
       demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
 
 megadrive:
-  name:       Sega Megadrive
+  name:       Mega Drive
   manufacturer: Sega
   release: 1988
   hardware: console
@@ -464,7 +464,7 @@ segacd:
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [m3u] }
 
 sega32x:
-  name:       Sega 32x
+  name:       32x
   manufacturer: Sega
   release: 1994
   hardware: console
@@ -475,7 +475,7 @@ sega32x:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 mastersystem:
-  name:       Sega Master System
+  name:       Master System
   manufacturer: Sega
   release: 1985
   hardware: console
@@ -486,7 +486,7 @@ mastersystem:
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 gamegear:
-  name:       Sega Game Gear
+  name:       Game Gear
   manufacturer: Sega
   release: 1990
   hardware: portable
@@ -497,7 +497,7 @@ gamegear:
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 sg1000:
-  name:       Sega SG1000
+  name:       SG-1000
   manufacturer: Sega
   release: 1983
   hardware: console
@@ -509,7 +509,7 @@ sg1000:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
 
 psp:
-  name:       Sony Playstation Portable
+  name:       Playstation Portable
   manufacturer: Sony
   release: 2004
   hardware: portable
@@ -525,7 +525,7 @@ psp:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:psp
 
 psx:
-  name:       Sony Playstation 1
+  name:       Playstation
   manufacturer: Sony
   release: 1994
   hardware: console
@@ -1446,7 +1446,7 @@ zx81:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" en "Cursor Joystick"
 
 zxspectrum:
-  name:       ZXSpectrum
+  name:       ZX Spectrum
   manufacturer: Sinclair
   release: 1982
   hardware: computer
@@ -1507,7 +1507,7 @@ apple2:
       linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
 
 saturn:
-  name:       Sega Saturn
+  name:       Saturn
   manufacturer: Sega
   release: 1994
   hardware: console
@@ -1519,7 +1519,7 @@ saturn:
       yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
 
 jaguar:
-  name:       Atari Jaguar
+  name:       Jaguar
   manufacturer: Atari
   release: 1993
   hardware: console
@@ -1530,7 +1530,7 @@ jaguar:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
 
 gamecube:
-  name:       Nintendo GameCube
+  name:       GameCube
   manufacturer: Nintendo
   release: 2001
   hardware: console
@@ -1563,7 +1563,7 @@ triforce:
     For the most up-to-date information, visit https://wiki.batocera.org/systems:triforce
 
 wii:
-  name:       Nintendo Wii
+  name:       Wii
   manufacturer: Nintendo
   release: 2006
   hardware: console
@@ -1591,7 +1591,7 @@ wii:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:wii
 
 ps2:
-  name:       Sony Playstation 2
+  name:       Playstation 2
   manufacturer: Sony
   release: 2000
   hardware: console
@@ -1610,7 +1610,7 @@ ps2:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:playstation_2
 
 ps3:
-  name:       Sony Playstation 3
+  name:       Playstation 3
   manufacturer: Sony
   release: 2006
   hardware: console
@@ -1673,7 +1673,7 @@ x1:
       x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
 
 3ds:
-  name:       Nintendo 3DS
+  name:       3DS
   manufacturer: Nintendo
   release: 2011
   hardware: portable
@@ -1726,7 +1726,7 @@ sufami:
       snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
 
 pokemini:
-  name:       Pokemon-Mini
+  name:       Pokemon Mini
   manufacturer: Nintendo
   release: 2001
   hardware: portable
@@ -1736,7 +1736,7 @@ pokemini:
       pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
 gx4000:
-  name:       Amstrad GX4000
+  name:       GX4000
   manufacturer: Amstrad
   release: 1991
   hardware: console
@@ -1771,7 +1771,7 @@ thomson:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
 pc88:
-  name:       NEC PC-8800
+  name:       PC-8800
   manufacturer: NEC
   release: 1981
   hardware: computer
@@ -1782,7 +1782,7 @@ pc88:
       quasi88:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC88] }
 
 pc98:
-  name:       NEC PC-9800
+  name:       PC-9800
   manufacturer: NEC
   release: 1982
   hardware: computer
@@ -1793,7 +1793,7 @@ pc98:
       np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
 
 fmtowns:
-  name:       Fujitsu FM-TOWNS
+  name:       FM-TOWNS
   manufacturer: Fujitsu
   release: 1987
   hardware: computer
@@ -1988,7 +1988,7 @@ library:
   force:      True
 
 model3:
-  name:       Sega Model 3
+  name:       Model 3
   manufacturer: Sega
   release: 1996
   hardware: arcade
@@ -2071,7 +2071,7 @@ fpinball:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:windows
 
 flash:
-  name:       Adobe Flash Player
+  name:       Flash Player
   manufacturer: Adobe
   release: 1996
   hardware: port
@@ -2083,7 +2083,7 @@ flash:
       ruffle: { requireAnyOf: [BR2_PACKAGE_RUFFLE] }
 
 xbox:
-  name:       Microsoft XBOX
+  name:       XBOX
   manufacturer: Microsoft
   release: 2003
   hardware: console
@@ -2132,7 +2132,7 @@ steam:
           Run batocera-steam-update to update the roms directory according to your installed games.
 
 supervision:
-  name:       Watara Supervision
+  name:       Supervision
   manufacturer: Watara
   release: 1992
   hardware: portable
@@ -2205,7 +2205,7 @@ sonicretro:
     The dev menu option is needed to run mods.
 
 model2:
-  name:       Sega Model 2
+  name:       Model 2
   manufacturer: Sega
   release: 1993
   hardware: arcade
@@ -2276,7 +2276,7 @@ model2:
 
 scv:
   name:       Super Cassette Vision
-  manufacturer: Epoch Co
+  manufacturer: Epoch
   release: 1984
   hardware: console
   extensions: [bin, "0"]
@@ -2469,7 +2469,7 @@ gamepock:
           Requires MAME BIOS file gamepock.zip
 
 fm7:
-  name:       Fujitsu FM-7
+  name:       FM-7
   manufacturer: Fujitsu
   release: 1982
   hardware: computer
@@ -2483,7 +2483,7 @@ fm7:
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
 
 archimedes:
-  name:       Acorn Archimedes
+  name:       Archimedes
   manufacturer: Acorn Computers
   release: 1987
   hardware: computer
@@ -2499,7 +2499,7 @@ archimedes:
           Double-click the floppy drive in the lower left to open the contents, double-click the app/game to run it.
 
 atom:
-  name:       Acorn Atom
+  name:       Atom
   manufacturer: Acorn Computers
   release: 1979
   hardware: computer
@@ -2515,7 +2515,7 @@ atom:
           Disks will automatically show contents, if the program isn't auto-launched, type the program name followed by a double quote (mapped to shift-2) and hit enter to run.
 
 electron:
-  name:       Acorn Electron
+  name:       Electron
   manufacturer: Acorn Computers
   release: 1983
   hardware: computer
@@ -2531,7 +2531,7 @@ electron:
           Tapes should auto-load, use the MAME menu to stop/play/rewind if needed.
 
 apfm1000:
-  name:       APF M-1000
+  name:       M-1000
   manufacturer: APF Electronics
   release: 1978
   hardware: console
@@ -2546,7 +2546,7 @@ apfm1000:
 
 bbc:
   name:       BBC Micro
-  manufacturer: Acorn
+  manufacturer: Acorn Computers
   release: 1981
   hardware: computer
   theme: bbcmicro
@@ -2576,7 +2576,7 @@ camplynx:
           Using software list mode is recommended.
 
 adam:
-  name:       Coleco ADAM
+  name:       ADAM
   manufacturer: Coleco
   release: 1983
   hardware: computer
@@ -2647,7 +2647,7 @@ ti99:
           Cartridges need to be in .rpk format and unzipped if not using software lists.
 
 tutor:
-  name:       Tomy Tutor
+  name:       Tutor
   manufacturer: Tomy
   release: 1983
   hardware: computer
@@ -2738,7 +2738,7 @@ zc210:
       zc210:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ZC210] }
 
 vemulator:
-  name:       SEGA Dreamcast VMU
+  name:       Dreamcast VMU
   manufacturer: Sega
   release: 1998
   hardware: console
@@ -2854,7 +2854,7 @@ xrick:
     Placez ici vos fichiers data.zip pour xrick.
     
 macintosh:
-  name: Macintosh
+  name:       Macintosh
   manufacturer: Apple
   release: 1984
   hardware: computer
@@ -2881,7 +2881,7 @@ macintosh:
           If booting from a hard drive, floppies may not load at boot. For best results, make a copy of one of the bootable drives, load disks manually via the MAME menu, and copy or install them to the hard drive image.
 
 naomi2:
-  name: Naomi 2
+  name:       Naomi 2
   manufacturer: Sega
   release: 2000
   hardware: arcade
@@ -2946,7 +2946,7 @@ naomi2:
     Enjoy Naomi 2 games under Linux!
 
 hikaru:
-  name: Hikaru
+  name:       Hikaru
   manufacturer: Sega
   release: 1999
   hardware: arcade
@@ -2997,7 +2997,7 @@ hikaru:
     Enjoy Sega Hikaru games under Linux!
 
 gaelco:
-  name: Gaelco
+  name:       Gaelco
   manufacturer: Sega
   release: 1999
   hardware: arcade
@@ -3047,7 +3047,7 @@ gaelco:
     Enjoy Sega Gaelco games under Linux!
 
 cave3rd:
-  name: Cave CV1000
+  name:       Cave CV1000
   manufacturer: Sega
   release: 2004
   hardware: arcade
