@@ -3,9 +3,8 @@
 # libretro-flycast
 #
 ################################################################################
-
-# version: Commits on Jan 30, 2022
-LIBRETRO_FLYCAST_VERSION = 4e21391f8cfd481ac1e0ac6b2bf54e0d81f59a1f
+# Version: Commits on Feb 28, 2022
+LIBRETRO_FLYCAST_VERSION = 830ffd0559eafc2954ffc957e7e7323a9421ca55
 LIBRETRO_FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 LIBRETRO_FLYCAST_SITE_METHOD=git
 LIBRETRO_FLYCAST_GIT_SUBMODULES=YES
@@ -14,9 +13,8 @@ LIBRETRO_FLYCAST_DEPENDENCIES = retroarch
 
 LIBRETRO_FLYCAST_PLATFORM = $(LIBRETRO_PLATFORM)
 
-# Enable build libretro core
-# vulkan - turn off sahred libs
-LIBRETRO_FLYCAST_CONF_OPTS = -DUSE_OPENMP=ON -DLIBRETRO=ON -DUSE_OPENGL=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_EXTERNAL=OFF
+LIBRETRO_FLYCAST_CONF_OPTS = -DUSE_OPENMP=ON -DLIBRETRO=ON \
+    -DUSE_OPENGL=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_EXTERNAL=OFF
 
 # determine the best GLES version to use - prefer GLES3
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
