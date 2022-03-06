@@ -3,10 +3,8 @@
 # flycast
 #
 ################################################################################
-
-# version: Commits on Dec 19, 2021
-# don't go beyond this until SDL is upgraded
-FLYCAST_VERSION = e706368225d7c9a77713e6ee6614616401745cf0
+# Version: Commits on Feb 28, 2022
+FLYCAST_VERSION = 830ffd0559eafc2954ffc957e7e7323a9421ca55
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
