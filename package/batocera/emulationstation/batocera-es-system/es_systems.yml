@@ -509,7 +509,7 @@ sg1000:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
 
 psp:
-  name:       Playstation Portable
+  name:       PlayStation Portable
   manufacturer: Sony
   release: 2004
   hardware: portable
@@ -525,7 +525,7 @@ psp:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:psp
 
 psx:
-  name:       Playstation
+  name:       PlayStation
   manufacturer: Sony
   release: 1994
   hardware: console
@@ -1591,7 +1591,7 @@ wii:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:wii
 
 ps2:
-  name:       Playstation 2
+  name:       PlayStation 2
   manufacturer: Sony
   release: 2000
   hardware: console
@@ -1605,12 +1605,12 @@ ps2:
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:playstation_2
+    For more info: https://wiki.batocera.org/systems:PlayStation_2
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:playstation_2
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:PlayStation_2
 
 ps3:
-  name:       Playstation 3
+  name:       PlayStation 3
   manufacturer: Sony
   release: 2006
   hardware: console
@@ -1624,13 +1624,13 @@ ps3:
     PSN digital games are installed in rpcs3-config, create a text file ending with .psn that contains the game's ID.
     First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
 
-    For more info: https://wiki.batocera.org/systems:playstation_3
+    For more info: https://wiki.batocera.org/systems:PlayStation_3
   comment_fr: |
     Vous devez préalablement charger le firmware en lançant rpcs3-config depuis menu>f1>Applications puis File>Install firmware.
     Les roms ps3 sont des dossiers ; ils doivent être renommés pour terminer par .ps3
     La première fois que vous chargez un jeu, cela met du temps (une barre de progression est visible). Cela ne se produit pas les fois suivantes.
 
-    Trouvez la documentation ici : https://wiki.batocera.org/systems:playstation_3
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:PlayStation_3
 
 3do:
   name:       3DO Interactive Multiplayer
@@ -2083,7 +2083,7 @@ flash:
       ruffle: { requireAnyOf: [BR2_PACKAGE_RUFFLE] }
 
 xbox:
-  name:       XBOX
+  name:       XBox
   manufacturer: Microsoft
   release: 2003
   hardware: console
