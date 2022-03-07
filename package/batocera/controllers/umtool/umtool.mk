@@ -19,7 +19,7 @@ define UMTOOL_INSTALL_TARGET_CMDS
 	cp $(@D)/src/umtool/*.json $(TARGET_DIR)/usr/share/umtool
 
 	# udev rule
-	cp $(@D)/21-ultimarc.rules $(TARGET_DIR)/etc/udev/rules.d/99-ultimarc.rules
+	cp $(@D)/21-ultimarc.rules $(TARGET_DIR)/etc/udev/rules.d/99-umtool.rules
 endef
 
 $(eval $(autotools-package))
