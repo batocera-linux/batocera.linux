@@ -20,61 +20,61 @@ systems = {
 
     # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
     "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"}, # TOS 1.02 US
-						    # Atari ST / STf / STfm
-						    { "md5": "25789a649faff0a1176dc7d9b98105c0", "file": "bios/tos100fr.img"},
-						    { "md5": "c87a52c277f7952b41c639fc7bf0a43b", "file": "bios/tos100uk.img"},
-						    { "md5": "d0f682ee6237497004339fb02172638b", "file": "bios/tos100us.img"},
+                            # Atari ST / STf / STfm
+                            { "md5": "25789a649faff0a1176dc7d9b98105c0", "file": "bios/tos100fr.img"},
+                            { "md5": "c87a52c277f7952b41c639fc7bf0a43b", "file": "bios/tos100uk.img"},
+                            { "md5": "d0f682ee6237497004339fb02172638b", "file": "bios/tos100us.img"},
 
-						    { "md5": "a622cc35d8d78703905592dfaa4d2ccb", "file": "bios/tos102de.img"},
-						    { "md5": "d6521785627d20c51edc566808a6bf28", "file": "bios/tos102fr.img"},
-						    { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos102uk.img"},
-						    #{ "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos102us.img"},
+                            { "md5": "a622cc35d8d78703905592dfaa4d2ccb", "file": "bios/tos102de.img"},
+                            { "md5": "d6521785627d20c51edc566808a6bf28", "file": "bios/tos102fr.img"},
+                            { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos102uk.img"},
+                            #{ "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos102us.img"},
 
-						    { "md5": "41b7dae4e24735f330b63ad923a0bfbc", "file": "bios/tos104de.img"},
-						    { "md5": "143343f7b8e0b1162af206fe8f46b002", "file": "bios/tos104es.img"},
-						    { "md5": "0087e2707c57efa2106a0aa7576655c0", "file": "bios/tos104fr.img"},
-						    #{ "md5": "52248cc70ae48b3050e197e270917130", "file": "bios/tos104nl.img"},
-						    #{ "md5": "7c040857bdcfcd7d748ca82205463efa", "file": "bios/tos104se.img"},
-						    { "md5": "036c5ae4f885cbf62c9bed651c6c58a8", "file": "bios/tos104uk.img"},
-						    { "md5": "736adb2dc835df4d323191fdc8926cc9", "file": "bios/tos104us.img"},
+                            { "md5": "41b7dae4e24735f330b63ad923a0bfbc", "file": "bios/tos104de.img"},
+                            { "md5": "143343f7b8e0b1162af206fe8f46b002", "file": "bios/tos104es.img"},
+                            { "md5": "0087e2707c57efa2106a0aa7576655c0", "file": "bios/tos104fr.img"},
+                            #{ "md5": "52248cc70ae48b3050e197e270917130", "file": "bios/tos104nl.img"},
+                            #{ "md5": "7c040857bdcfcd7d748ca82205463efa", "file": "bios/tos104se.img"},
+                            { "md5": "036c5ae4f885cbf62c9bed651c6c58a8", "file": "bios/tos104uk.img"},
+                            { "md5": "736adb2dc835df4d323191fdc8926cc9", "file": "bios/tos104us.img"},
 
-						    # Atari STe
-						    { "md5": "992bac38e01633a529121a2a65f0779e", "file": "bios/tos106de.img"},
-						    { "md5": "30f69d70fe7c210300ed83f991b12de9", "file": "bios/tos106es.img"},
-						    { "md5": "bc7b224d0dc3f0cc14c8897db89c5787", "file": "bios/tos106fr.img"},
-						    { "md5": "6033f2b9364edfed321c6931a8181fd2", "file": "bios/tos106uk.img"},
-						    { "md5": "a0982e760f9807d82667ff5a69e78f6b", "file": "bios/tos106us.img"},
+                            # Atari STe
+                            { "md5": "992bac38e01633a529121a2a65f0779e", "file": "bios/tos106de.img"},
+                            { "md5": "30f69d70fe7c210300ed83f991b12de9", "file": "bios/tos106es.img"},
+                            { "md5": "bc7b224d0dc3f0cc14c8897db89c5787", "file": "bios/tos106fr.img"},
+                            { "md5": "6033f2b9364edfed321c6931a8181fd2", "file": "bios/tos106uk.img"},
+                            { "md5": "a0982e760f9807d82667ff5a69e78f6b", "file": "bios/tos106us.img"},
 
-						    { "md5": "94a75c1c65408d9f974b0463e15a3b11", "file": "bios/tos162de.img"},
-						    { "md5": "ed5fbaabe0219092df74c6c14cea3f8e", "file": "bios/tos162fr.img"},
-						    #{ "md5": "6f9471098a521214fad1e2c6f2dd3d08", "file": "bios/tos162se.img"},
-						    { "md5": "1cbc4f55295e469fc8cd72b7efdea1da", "file": "bios/tos162uk.img"},
-						    { "md5": "febb00ba8784798293a7ae709a1dafcb", "file": "bios/tos162us.img"},
+                            { "md5": "94a75c1c65408d9f974b0463e15a3b11", "file": "bios/tos162de.img"},
+                            { "md5": "ed5fbaabe0219092df74c6c14cea3f8e", "file": "bios/tos162fr.img"},
+                            #{ "md5": "6f9471098a521214fad1e2c6f2dd3d08", "file": "bios/tos162se.img"},
+                            { "md5": "1cbc4f55295e469fc8cd72b7efdea1da", "file": "bios/tos162uk.img"},
+                            { "md5": "febb00ba8784798293a7ae709a1dafcb", "file": "bios/tos162us.img"},
 
-						    # Atari Mega STe
-						    { "md5": "7aeabdc25f8134590e25643a405210ca", "file": "bios/tos205de.img"},
-						    { "md5": "7449b131681f1dfe62ebed1392847057", "file": "bios/tos205es.img"},
-						    { "md5": "61b620ad951815a25cb37895c81a947c", "file": "bios/tos205fr.img"},
-						    { "md5": "7e87d8fe7e24e0b4c55ad1b7955beae3", "file": "bios/tos205it.img"},
-						    #{ "md5": "1c92855316a33faee602b8007f22d2cb", "file": "bios/tos205se.img"},
-						    { "md5": "7cdd45b6aac66a21bfb357d9334e46db", "file": "bios/tos205us.img"},
+                            # Atari Mega STe
+                            { "md5": "7aeabdc25f8134590e25643a405210ca", "file": "bios/tos205de.img"},
+                            { "md5": "7449b131681f1dfe62ebed1392847057", "file": "bios/tos205es.img"},
+                            { "md5": "61b620ad951815a25cb37895c81a947c", "file": "bios/tos205fr.img"},
+                            { "md5": "7e87d8fe7e24e0b4c55ad1b7955beae3", "file": "bios/tos205it.img"},
+                            #{ "md5": "1c92855316a33faee602b8007f22d2cb", "file": "bios/tos205se.img"},
+                            { "md5": "7cdd45b6aac66a21bfb357d9334e46db", "file": "bios/tos205us.img"},
 
-						    { "md5": "0604dbb85928f0598d04144a8b554bbe", "file": "bios/tos206de.img"},
-						    { "md5": "b2873004a408b8db36321f98daafa251", "file": "bios/tos206fr.img"},
-						    { "md5": "4a0d4f282c3f2a0196681adf88862dd4", "file": "bios/tos206.img"},
-						    #{ "md5": "332fe3803a7e20cd625b27a69f07ae69", "file": "bios/tos206ru.img"},
-						    #{ "md5": "a7dc40dc5c1086bce1a8f3d44fd29051", "file": "bios/tos206se.img"},
-						    { "md5": "e690bec90d902024beed549d22150755", "file": "bios/tos206uk.img"},
-						    { "md5": "c9093f27159e7d13ac0d1501a95e53d4", "file": "bios/tos206us.img"},
+                            { "md5": "0604dbb85928f0598d04144a8b554bbe", "file": "bios/tos206de.img"},
+                            { "md5": "b2873004a408b8db36321f98daafa251", "file": "bios/tos206fr.img"},
+                            { "md5": "4a0d4f282c3f2a0196681adf88862dd4", "file": "bios/tos206.img"},
+                            #{ "md5": "332fe3803a7e20cd625b27a69f07ae69", "file": "bios/tos206ru.img"},
+                            #{ "md5": "a7dc40dc5c1086bce1a8f3d44fd29051", "file": "bios/tos206se.img"},
+                            { "md5": "e690bec90d902024beed549d22150755", "file": "bios/tos206uk.img"},
+                            { "md5": "c9093f27159e7d13ac0d1501a95e53d4", "file": "bios/tos206us.img"},
 
-						    # Atari TT
-						    { "md5": "066f39a7ea5789d5afd59dd7b3104fa6", "file": "bios/tos306de.img"},
-						    { "md5": "dd1010ec566efbd71047d6c4919feba5", "file": "bios/tos306uk.img"},
+                            # Atari TT
+                            { "md5": "066f39a7ea5789d5afd59dd7b3104fa6", "file": "bios/tos306de.img"},
+                            { "md5": "dd1010ec566efbd71047d6c4919feba5", "file": "bios/tos306uk.img"},
 
-						    # Atari Falcon
-						    { "md5": "ed2647936ce4bd283c4d7dfd7ae09d1c", "file": "bios/tos400.img"},
-						    { "md5": "9e880168d0a004f7f5e852be758f39e4", "file": "bios/tos402.img"},
-						    { "md5": "e5ea0f216fb446f1c4a4f476bc5f03d4", "file": "bios/tos404.img"} ] },
+                            # Atari Falcon
+                            { "md5": "ed2647936ce4bd283c4d7dfd7ae09d1c", "file": "bios/tos400.img"},
+                            { "md5": "9e880168d0a004f7f5e852be758f39e4", "file": "bios/tos402.img"},
+                            { "md5": "e5ea0f216fb446f1c4a4f476bc5f03d4", "file": "bios/tos404.img"} ] },
 
     # https://docs.libretro.com/library/beetle_handy/#bios
     "lynx": { "name": "Lynx", "biosFiles": [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"} ] },
@@ -112,7 +112,7 @@ systems = {
 
     # ---------- Panasonic, Sanyo and Goldstar ---------- #
     # https://github.com/libretro/libretro-super/blob/master/dist/info/opera_libretro.info
-    "3do":	{ "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin"	},
+    "3do":  { "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin" },
                                             { "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"},
                                             { "md5": "8639fd5e549bd6238cfee79e3e749114", "file": "bios/goldstar.bin"} ] },
 
@@ -127,13 +127,13 @@ systems = {
     "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/awbios.zip"  } ] },
 
     "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
-                                                            { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	},
-                                                            { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin" 	} ] },
+                                                            { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
+                                                            { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
     # https://docs.libretro.com/library/beetle_saturn/#bios
     # https://github.com/libretro/libretro-super/blob/master/dist/info/yabasanshiro_libretro.info
-    "saturn":       { "name": "Sega Saturn", "biosFiles": [ { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"	 },
-                                                            { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"	 },
+    "saturn":       { "name": "Sega Saturn", "biosFiles": [ { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"     },
+                                                            { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"    },
                                                             { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1" },
                                                             { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1" },
                                                             { "md5": "af5828fdff51384f99b3c4926be27762", "file": "bios/saturn_bios.bin" } ] },
@@ -153,9 +153,9 @@ systems = {
                                             { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
                                             { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
                                             { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
-                                            { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
-                                            { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
-                                            { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
+                                            { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN"      },
+                                            { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin"      },
+                                            { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN"      } ] },
 
     # https://www.playstation.com/en-us/support/system-updates/ps3/
     "ps3": { "name": "PS3", "biosFiles": [  { "md5": "a0b63a3e4ae92ed176d6b9a67ce447f0", "file": "bios/PS3UPDAT.PUP" } ] },
@@ -202,7 +202,7 @@ systems = {
     # ---------- Commodore ---------- #
     # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
     # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
-    "amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
+    "amiga":  { "name": "Amiga",    "biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
                                                     { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
                                                     { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
                                                     { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/kick34005.CDTV"      },
@@ -254,10 +254,10 @@ systems = {
     # ---------- Fujistu FM-Towns ---------- #
     # https://github.com/captainys/TOWNSEMU
     "fmtowns":  { "name": "Fujistu FM-Towns", "biosFiles": [  { "md5": "8fa4e553f28cfc0c30a0a1e589799942", "file": "bios/fmtowns/FMT_DIC.ROM" },
-							      { "md5": "0585b19930d4a7f4c71bcc8a33746588", "file": "bios/fmtowns/FMT_DOS.ROM" },
-							      { "md5": "ac0c7021e9bf48ca84b51ab651169a88", "file": "bios/fmtowns/FMT_F20.ROM" },
-							      { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
-							      { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" } ] },
+                                  { "md5": "0585b19930d4a7f4c71bcc8a33746588", "file": "bios/fmtowns/FMT_DOS.ROM" },
+                                  { "md5": "ac0c7021e9bf48ca84b51ab651169a88", "file": "bios/fmtowns/FMT_F20.ROM" },
+                                  { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
+                                  { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" } ] },
 
     # ---------- Future Pinball ---------- #
     "fpinball":   { "name": "Future Pinball", "biosFiles":  [ { "md5": "65a8ebf870420316a939ac44fd4c731d", "file": "bios/wsh57/scripten.exe"  } ] },
@@ -369,7 +369,7 @@ systems = {
                                                 { "md5": "cf10b154f2e006a9740d7653cfc47cab", "zippedFile": "eos 6 rev 57 08dd.u22", "file": "bios/adam.zip"},
                                                 { "md5": "7916bb9635d502366326ec39aea5fc89", "zippedFile": "master rev a 174b.u6", "file": "bios/adam.zip"},
                                                 { "md5": "2c66f5911e5b42b8ebe113403548eee7", "zippedFile": "os7.u2", "file": "bios/adam.zip"},
-                                                { "md5": "4fe4f6800076ea3d897d4285653447bd", "zippedFile": "wp_r80.rom", "file": "bios/adam.zip"},                                                
+                                                { "md5": "4fe4f6800076ea3d897d4285653447bd", "zippedFile": "wp_r80.rom", "file": "bios/adam.zip"},
                                                 { "md5": "", "file": "bios/adam_ddp.zip" },
                                                 { "md5": "0423e9e9bf5036aa1e9d656b6a1f842c", "zippedFile": "tape rev a 8865.u24", "file": "bios/adam_ddp.zip"},
                                                 { "md5": "", "file": "bios/adam_fdc.zip" },
@@ -486,7 +486,7 @@ systems = {
                                                 { "md5": "4688a93aa298b9431c1788c9b90378c8", "zippedFile": "os_basic.ic2", "file": "bios/electron.zip"},
                                                 { "md5": "", "file": "bios/electron64.zip"  },
                                                 { "md5": "2cc67be4624df4dc66617742571a8e3d", "zippedFile": "basic.rom", "file": "bios/electron64.zip"},
-                                                { "md5": "df01cfe5894276de96bbd1c45b7e834c", "zippedFile": "os_300", "file": "bios/electron64.zip"},
+                                                { "md5": "df01cfe5894276de96bbd1c45b7e834c", "zippedFile": "os_300.rom", "file": "bios/electron64.zip"},
                                                 { "md5": "", "file": "bios/electron_plus1.zip"  },
                                                 { "md5": "f3a39227b401a2ce8cdc7e4b7a860aaf", "zippedFile": "plus1.rom", "file": "bios/electron_plus1.zip"},
                                                 { "md5": "", "file": "bios/electron_plus3.zip"  },
@@ -498,30 +498,30 @@ systems = {
 
     # ---------- Camputers Lynx ---------- #
     "camplynx":   { "name": "Camputers Lynx", "biosFiles":  [ { "md5": "", "file": "bios/lynx48k.zip"  },
-                                                { "md5": "b0ad5bf3070aea27b637e1998c81fa8c", "zippedfile": "lynx48-1.ic46", "file": "bios/lynx48k.zip"},
-                                                { "md5": "b665e10211bbdbfaf2defb32d5580892", "zippedfile": "lynx48-2.ic45", "file": "bios/lynx48k.zip"},
-                                                { "md5": "bc0760d8bf61c9683270266d259cd2ae", "zippedfile": "lynx4811.ic46", "file": "bios/lynx48k.zip"},
-                                                { "md5": "dde90a794e5324002a9fd7f79cec3172", "zippedfile": "lynx4812.ic45", "file": "bios/lynx48k.zip"},
+                                                { "md5": "b0ad5bf3070aea27b637e1998c81fa8c", "zippedFile": "lynx48-1.ic46", "file": "bios/lynx48k.zip"},
+                                                { "md5": "b665e10211bbdbfaf2defb32d5580892", "zippedFile": "lynx48-2.ic45", "file": "bios/lynx48k.zip"},
+                                                { "md5": "bc0760d8bf61c9683270266d259cd2ae", "zippedFile": "lynx4811.ic46", "file": "bios/lynx48k.zip"},
+                                                { "md5": "dde90a794e5324002a9fd7f79cec3172", "zippedFile": "lynx4812.ic45", "file": "bios/lynx48k.zip"},
                                                 { "md5": "", "file": "bios/lynx96k.zip" },
-                                                { "md5": "a0a8f136f69b5891d33993627a185697", "zippedfile": "danish96k3.ic44", "file": "bios/lynx96k.zip"},
-                                                { "md5": "fcb706b3ba2ba61f6f7af1c28f420f94", "zippedfile": "dosrom.rom", "file": "bios/lynx96k.zip"},
-                                                { "md5": "815afa653b61cbe70936b01aff700912", "zippedfile": "lynx9644.ic44", "file": "bios/lynx96k.zip"},
-                                                { "md5": "3ccdb9dfe6018892383fcbb1a9167d76", "zippedfile": "lynx9645.ic45", "file": "bios/lynx96k.zip"},
-                                                { "md5": "01a9770efdab17f089bbbbe53f5d69fa", "zippedfile": "lynx9646.ic46", "file": "bios/lynx96k.zip"},
-                                                { "md5": "89ba52f683cd79638646874e965476b6", "zippedfile": "skorprom.ic44", "file": "bios/lynx96k.zip"},
+                                                { "md5": "a0a8f136f69b5891d33993627a185697", "zippedFile": "danish96k3.ic44", "file": "bios/lynx96k.zip"},
+                                                { "md5": "fcb706b3ba2ba61f6f7af1c28f420f94", "zippedFile": "dosrom.rom", "file": "bios/lynx96k.zip"},
+                                                { "md5": "815afa653b61cbe70936b01aff700912", "zippedFile": "lynx9644.ic44", "file": "bios/lynx96k.zip"},
+                                                { "md5": "3ccdb9dfe6018892383fcbb1a9167d76", "zippedFile": "lynx9645.ic45", "file": "bios/lynx96k.zip"},
+                                                { "md5": "01a9770efdab17f089bbbbe53f5d69fa", "zippedFile": "lynx9646.ic46", "file": "bios/lynx96k.zip"},
+                                                { "md5": "89ba52f683cd79638646874e965476b6", "zippedFile": "skorprom.ic44", "file": "bios/lynx96k.zip"},
                                                 { "md5": "", "file": "bios/lynx128k.zip" },
-                                                { "md5": "fcb706b3ba2ba61f6f7af1c28f420f94", "zippedfile": "dosrom.rom", "file": "bios/lynx128k.zip"},
-                                                { "md5": "5017fe3a2ea47038ae61e2aeb4f43d65", "zippedfile": "lynx128-1.ic1", "file": "bios/lynx128k.zip"},
-                                                { "md5": "bf69d9538192f65571dbed43dc4a99bb", "zippedfile": "lynx128-2.ic2", "file": "bios/lynx128k.zip"},
-                                                { "md5": "f9f54913cdedb22bb8f0c549ad121379", "zippedfile": "lynx128-3.ic3", "file": "bios/lynx128k.zip"} ] },
+                                                { "md5": "fcb706b3ba2ba61f6f7af1c28f420f94", "zippedFile": "dosrom.rom", "file": "bios/lynx128k.zip"},
+                                                { "md5": "5017fe3a2ea47038ae61e2aeb4f43d65", "zippedFile": "lynx128-1.ic1", "file": "bios/lynx128k.zip"},
+                                                { "md5": "bf69d9538192f65571dbed43dc4a99bb", "zippedFile": "lynx128-2.ic2", "file": "bios/lynx128k.zip"},
+                                                { "md5": "f9f54913cdedb22bb8f0c549ad121379", "zippedFile": "lynx128-3.ic3", "file": "bios/lynx128k.zip"} ] },
 
     # ---------- Video Game Music Player ---------- #
     "vgmplay":   { "name": "Video Game Music Player", "biosFiles":  [ { "md5": "", "file": "bios/qsound.zip"  },
-                                                { "md5": "108b113a596e800a02fece73f784eeb0", "zippedfile": "dl-1425.bin", "file": "bios/qsound.zip"},
+                                                { "md5": "108b113a596e800a02fece73f784eeb0", "zippedFile": "dl-1425.bin", "file": "bios/qsound.zip"},
                                                 { "md5": "", "file": "bios/ym2413.zip" },
-                                                { "md5": "96c11a92992bdff7f7e9d98a52621e1f", "zippedfile": "ym2413_instruments.bin", "file": "bios/ym2413.zip"},
+                                                { "md5": "96c11a92992bdff7f7e9d98a52621e1f", "zippedFile": "ym2413_instruments.bin", "file": "bios/ym2413.zip"},
                                                 { "md5": "", "file": "bios/ym2608.zip" },
-                                                { "md5": "8740932cda05e518a9955f1d08d6786f", "zippedfile": "ym2608_adpcm_rom.bin", "file": "bios/ym2608.zip"} ] },
+                                                { "md5": "8740932cda05e518a9955f1d08d6786f", "zippedFile": "ym2608_adpcm_rom.bin", "file": "bios/ym2608.zip"} ] },
 
     # ---------- Epoch Game Pocket Computer ---------- #
     "gamepock":   { "name": "Epoch Game Pocket Computer", "biosFiles":  [ { "md5": "", "file": "bios/gamepock.zip"  },
@@ -542,17 +542,17 @@ systems = {
 
     # ---------- VTech V.Smile ---------- #
     "vsmile":   { "name": "VTech V.Smile", "biosFiles":  [ { "md5": "", "file": "bios/vsmile.zip"  },
-                                                { "md5": "851ff77a89ec3f4f2793eb4aede30e5f", "zippedfile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "f41fcc19ebe1e90fa359cd0df6293fab", "zippedfile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "11e59253c578c8f16ea2375ec398e4e9", "zippedfile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
+                                                { "md5": "0a58d75b804c23c2edbd6a3698c6e12a", "zippedFile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "4623919fb453a6427fbb19b16478c98b", "zippedFile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "6668b21fb6287813639a70aaafe8fafa", "zippedFile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
 
     # ---------- VTech Socrates ---------- #
     "socrates":   { "name": "VTech Socrates", "biosFiles":  [ { "md5": "", "file": "bios/socrates.zip"  },
-                                                { "md5": "0efac0c2cc168c0d495e1c4e04ea9f5a", "zippedfile": "27-00817-000-000.u1", "file": "bios/socrates.zip"},
-                                                { "md5": "99af124aa300ecd44f5dc9d5a2599778", "zippedfile": "speech_eng_internal.bin", "file": "bios/socrates.zip"},
-                                                { "md5": "7046c2b27f51c9a5d33b4d6103f29acf", "zippedfile": "speech_eng_vsm1.bin", "file": "bios/socrates.zip"},
-                                                { "md5": "6878302c362321eeee7e40d285cf7d30", "zippedfile": "speech_eng_vsm2.bin", "file": "bios/socrates.zip"},
-                                                { "md5": "31c29c57e3d3e6788ba5817eaaa8b17a", "zippedfile": "speech_eng_vsm3.bin", "file": "bios/socrates.zip"} ] },
+                                                { "md5": "0efac0c2cc168c0d495e1c4e04ea9f5a", "zippedFile": "27-00817-000-000.u1", "file": "bios/socrates.zip"},
+                                                { "md5": "99af124aa300ecd44f5dc9d5a2599778", "zippedFile": "speech_eng_internal.bin", "file": "bios/socrates.zip"},
+                                                { "md5": "7046c2b27f51c9a5d33b4d6103f29acf", "zippedFile": "speech_eng_vsm1.bin", "file": "bios/socrates.zip"},
+                                                { "md5": "6878302c362321eeee7e40d285cf7d30", "zippedFile": "speech_eng_vsm2.bin", "file": "bios/socrates.zip"},
+                                                { "md5": "31c29c57e3d3e6788ba5817eaaa8b17a", "zippedFile": "speech_eng_vsm3.bin", "file": "bios/socrates.zip"} ] },
 
     # ---------- Entex Aventure Vision ---------- #
     "advision":   { "name": "Entex Adventure Vision", "biosFiles":  [ { "md5": "", "file": "bios/advision.zip"  },
