@@ -196,23 +196,6 @@ D-Pad/Right = `Hat 0 E`
         else:
             dolphinTriforceGFXSettings.set("Settings", "wideScreenHack", "False")
 
-        # Ubershaders (synchronous_ubershader by default)
-        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
-            if system.config["ubershaders"] == "exclusive_ubershader":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "1")
-            elif system.config["ubershaders"] == "hybrid_ubershader":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "2")
-            elif system.config["ubershaders"] == "skip_draw":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "3")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "0")
-
-        # Shader pre-caching
-        if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders'):
-            dolphinTriforceGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
-
         # Various performance hacks - Default Off
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
             dolphinTriforceGFXSettings.set("Hacks", "BBoxEnable", "False")
@@ -243,9 +226,9 @@ D-Pad/Right = `Hat 0 E`
 
         # Internal resolution settings
         if system.isOptSet('internal_resolution'):
-            dolphinTriforceGFXSettings.set("Settings", "InternalResolution", system.config["internal_resolution"])
+            dolphinTriforceGFXSettings.set("Settings", "EFBScale", system.config["internal_resolution"])
         else:
-            dolphinTriforceGFXSettings.set("Settings", "InternalResolution", "2")
+            dolphinTriforceGFXSettings.set("Settings", "EFBScale", "2")
 
         # VSync
         if system.isOptSet('vsync'):
@@ -264,12 +247,6 @@ D-Pad/Right = `Hat 0 E`
             dolphinTriforceGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
             dolphinTriforceGFXSettings.set("Settings", "MSAA", "0")
-
-        # Anti aliasing mode
-        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa'):
-            dolphinTriforceGFXSettings.set("Settings", "SSAA", "True")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "SSAA", "False")
 
         # Save gfx.ini
         with open(batoceraFiles.dolphinTriforceGfxIni, 'w') as configfile:

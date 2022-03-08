@@ -5230,33 +5230,22 @@ dolphin_triforce:
                 "Force 16:9": 1
                 "Force 4:3": 2
                 "Stretch to window": 3
-        ubershaders:
-            prompt:      UBERSHADERS (needs review)
-            description: May not work well on all hardware. Hybrid is preferred, where supported.
-            choices:
-                "No Ubershaders":                          no_ubershader
-                "Exclusive Ubershaders":                   exclusive_ubershader
-                "Hybrid Ubershaders":                      hybrid_ubershader
-                "Skip Drawing":                            skip_draw
-        wait_for_shaders:
-            prompt:      PRE-CACHE SHADERS
-            description: Compile shaders on next launch of game (one time). Reduces micro-freezes.
-            choices:
-                "Off (default)": 0
-                "On":            1
         perf_hacks:
+            group: ADVANCED OPTIONS
             prompt:      PERFORMANCE HACKS (needs review)
             description: Increase emulator performance, at the cost of accuracy/stability.
             choices:
                 "Off": 0
                 "On":  1
         use_pad_profiles:
-            prompt:      USE PAD PROFILES
+            group: ADVANCED OPTIONS
+            prompt:      USE PAD PROFILES (KO'D, DO NOT USE YET)
             description: Search for custom configured joystick profiles.
             choices:
                 "Off": 0
                 "On":  1
         anisotropic_filtering:
+            group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
             description: Improves clarity of distant textures.
             choices:
@@ -5266,56 +5255,62 @@ dolphin_triforce:
                 "8x":  3
                 "16x": 4
         dual_core:
-            prompt:      DUAL CORE MODE (needs review)
+            group: ADVANCED OPTIONS
+            prompt:      DUAL CORE MODE
             description: Usually not much faster than single core mode.
             choices:
                 "Off": 0
                 "On":  1
         gpu_sync:
-            prompt:      GPU SYNC (needs review)
+            group: ADVANCED OPTIONS
+            prompt:      GPU SYNC
             description: Speed hack for dual core mode to fix some glitches.
             choices:
                 "Off": 0
                 "On":  1
         antialiasing:
+            group: ADVANCED OPTIONS
             prompt:      ANTI-ALIASING
             description: Enhancement. Smooth out jagged edges on 3D object polygons.
             choices:
-                "Off": 0
-                "2x":  2
-                "4x":  4
-                "8x":  8
-        use_ssaa:
-            prompt:      ANTI-ALIASING MODE
-            description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
-            choices:
-                "MSAA (default)": 0
-                "SSAA":           1
+                "Off":         0
+                "2x":          1
+                "4x":          2
+                "8x":          3
+                "8x (CSAA)":   4
+                "8xQ (CSAA)":  5
+                "16x (CSAA)":  6
+                "16xQ (CSAA)": 7
+                "4x (SSAA)":   8
         hires_textures:
+            group: ADVANCED OPTIONS
             prompt:      LOAD CUSTOM TEXTURES
             choices:
                 "Off": 0
                 "On":  1
         widescreen_hack:
+            group: ADVANCED OPTIONS
             prompt:      WIDESCREEN HACK (GLITCHY)
             description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
                 "Off": 0
                 "On":  1
         enable_mmu:
+            group: ADVANCED OPTIONS
             prompt:      MEMORY MANAGEMENT UNIT
             description: Required by some games.
             choices:
                 "Off": 0
                 "On":  1
         vsync:
+            group: ADVANCED OPTIONS
             prompt:      VSYNC
             description: Fix screen tearing. CPU heavy.
             choices:
                 "Off": 0
                 "On":  1
         rumble:
-            prompt:      RUMBLE (needs review)
+            prompt:      RUMBLE (KO'D, DO NOT USE YET)
             choices:
                 "Off": 0
                 "On":  1
