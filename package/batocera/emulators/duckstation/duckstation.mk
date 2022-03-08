@@ -26,11 +26,9 @@ endif
 ifeq ($(BR2_PACKAGE_QT5),y)
   DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON -DBUILD_SDL_FRONTEND=OFF
   DUCKSTATION_DEPENDENCIES += qt5base qt5tools qt5multimedia
-  DUCKSTATION_BINARY = duckstation-qt
 else
   DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=OFF -DBUILD_SDL_FRONTEND=OFF -DBUILD_NOGUI_FRONTEND=ON
   DUCKSTATION_DEPENDENCIES += libdrm sdl2 libevdev
-  DUCKSTATION_BINARY = duckstation-nogui
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
@@ -54,7 +52,7 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
   mkdir -p $(TARGET_DIR)/usr/lib
   mkdir -p $(TARGET_DIR)/usr/share/duckstation
 
-  $(INSTALL) -D $(@D)/buildroot-build/bin/$(DUCKSTATION_BINARY) $(TARGET_DIR)/usr/bin/duckstation
+  $(INSTALL) -D $(@D)/buildroot-build/bin/duckstation* $(TARGET_DIR)/usr/bin/
   cp -R $(@D)/buildroot-build/bin/database      $(TARGET_DIR)/usr/share/duckstation/
   rm -f $(TARGET_DIR)/usr/share/duckstation/database/gamecontrollerdb.txt
   cp -R $(@D)/buildroot-build/bin/inputprofiles $(TARGET_DIR)/usr/share/duckstation/
