@@ -1,0 +1,370 @@
+diff --git a/engine/openbor.c b/engine/openbor.c
+index 9d3c995..ad5c1a1 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -2477,7 +2477,7 @@ void clearsettings()
+         savedata.joyrumble[i] = 0;
+     }
+ 
+-    control_clearmappings();
++    control_clearmappings(playercontrolpointers);
+ }
+ 
+ 
+@@ -2759,7 +2759,7 @@ void loadsettings()
+     getBasePath(path, "Saves", 0);
+     getPakName(tmpname, 5);
+     strcat(path, tmpname);
+-    if (!control_loadmappings(path))
++    if (!control_loadmappings(path, playercontrolpointers))
+     {
+         printf("Failed to load controls from %s\n", path);
+     }
+@@ -2794,7 +2794,7 @@ void loadfromdefault()
+     // load controls
+     getBasePath(path, "Saves", 0);
+     strcat(path, "default.controls");
+-    if (!control_loadmappings(path))
++    if (!control_loadmappings(path, playercontrolpointers))
+     {
+         printf("Failed to load controls from %s\n", path);
+     }
+@@ -35807,7 +35807,7 @@ void guistartup()
+ 
+     borTimerInit();
+ 
+-    control_init(2);
++    control_init(2, playercontrolpointers);
+     apply_controls();
+ 
+     init_videomodes(0);
+@@ -35939,7 +35939,7 @@ void startup()
+     printf("Done!\n");
+ 
+     printf("Input init...................\t");
+-    control_init(savedata.usejoy);
++    control_init(savedata.usejoy, playercontrolpointers);
+     apply_controls();
+     printf("Done!\n");
+ 
+@@ -38478,7 +38478,7 @@ void keyboard_setup(int player)
+                 }
+                 else if(selector == OPTIONS_NUM) // default
+                 {
+-                    control_resetmappings(deviceID);
++		    control_resetmappings(deviceID, playercontrolpointers);
+                     savedata.joyrumble[player] = 0;
+                 }
+                 else
+diff --git a/engine/sdl/control.c b/engine/sdl/control.c
+index 110e264..35b233b 100644
+--- a/engine/sdl/control.c
++++ b/engine/sdl/control.c
+@@ -91,7 +91,7 @@ static void update_saved_mapping(int deviceID)
+ }
+ 
+ // set the mappings for a device to the saved settings
+-static void load_from_saved_mapping(int deviceID)
++static void load_from_saved_mapping(int deviceID, s_playercontrols **allPlayerControls)
+ {
+     InputDevice *device = &devices[deviceID];
+     if (device->deviceType == DEVICE_TYPE_NONE) return;
+@@ -102,7 +102,7 @@ static void load_from_saved_mapping(int deviceID)
+     }
+     else
+     {
+-        control_resetmappings(deviceID);
++      control_resetmappings(deviceID, allPlayerControls);
+     }
+ }
+ 
+@@ -161,7 +161,7 @@ static void set_device_name(int deviceID, const char *name)
+     snprintf(devices[deviceID].name, sizeof(devices[deviceID].name), "%s", fullName);
+ }
+ 
+-static void setup_joystick(int deviceID, int sdlDeviceID)
++static void setup_joystick(int deviceID, int sdlDeviceID, s_playercontrols **allPlayerControls)
+ {
+     if (SDL_IsGameController(sdlDeviceID))
+     {
+@@ -178,7 +178,7 @@ static void setup_joystick(int deviceID, int sdlDeviceID)
+         }
+         //snprintf(devices[deviceID].name, sizeof(devices[deviceID].name), "%s", name);
+         set_device_name(deviceID, name);
+-        load_from_saved_mapping(deviceID);
++        load_from_saved_mapping(deviceID, allPlayerControls);
+         printf("%s (device #%i, SDL ID %i) is a game controller.\n", devices[deviceID].name, deviceID, sdlDeviceID);
+     }
+     else
+@@ -192,7 +192,7 @@ static void setup_joystick(int deviceID, int sdlDeviceID)
+         }
+         //snprintf(devices[deviceID].name, sizeof(devices[deviceID].name), "%s", name);
+         set_device_name(deviceID, name);
+-        load_from_saved_mapping(deviceID);
++        load_from_saved_mapping(deviceID, allPlayerControls);
+         printf("%s (device #%i, SDL ID %i) is not a game controller.\n", devices[deviceID].name, deviceID, sdlDeviceID);
+     }
+ 
+@@ -207,7 +207,7 @@ static void setup_joystick(int deviceID, int sdlDeviceID)
+     }
+ }
+ 
+-void control_init()
++void control_init(int joy_enable, s_playercontrols **allPlayerControls)
+ {
+     if (controlInited) return;
+ 
+@@ -237,7 +237,7 @@ void control_init()
+             continue;
+         }
+ 
+-        setup_joystick(joystickCount, i);
++        setup_joystick(joystickCount, i, allPlayerControls);
+         joystickCount++;
+     }
+ 
+@@ -248,7 +248,7 @@ void control_init()
+ #else
+     snprintf(devices[joystickCount].name, sizeof(devices[joystickCount].name), "%s", "Keyboard");
+ #endif
+-    load_from_saved_mapping(joystickCount);
++    load_from_saved_mapping(joystickCount, allPlayerControls);
+ 
+ #ifdef ANDROID
+     for (int i = 0; i < MAX_POINTERS; i++)
+@@ -327,8 +327,50 @@ static void set_default_controller_mappings(InputDevice *device)
+     device->mappings[SDID_ESC]        = SDL_CONTROLLER_BUTTON_B;
+ }
+ 
+-static void set_default_joystick_mappings(InputDevice *device)
++static void set_default_joystick_mappings(InputDevice *device, s_playercontrols **allPlayerControls)
+ {
++  int numDevice = -1;
++  int numPlayer = -1;
++
++  // find the sdl device num to configure
++  for (int i = 0; i < MAX_DEVICES; i++) {
++    if (&(devices[i]) == device) {
++      numDevice = i;
++    }
++  }
++
++  if(numDevice >= 0) {    
++    // find the associated player number (the value includes the joystick index (600+1+idx*64+btn))
++    for(int i=0; i<MAX_PLAYERS; i++) {
++      //fprintf(stderr, "player %i (key=%i) : %i == %i ?\n", i, savedata.keys[i][SDID_MOVEUP], numDevice, ((savedata.keys[i][SDID_MOVEUP]-600-1) / 64));
++      if(numDevice == ((savedata.keys[i][SDID_MOVEUP]-600-1) / 64) ) {
++	numPlayer = i;
++      }
++    }
++
++    if(numPlayer >= 0) {
++      int valConfDelta = 600+1+numDevice*64;
++      fprintf(stderr, "configuring sdl pad num=%i for player=%i (start=%i-%i)\n", numDevice, numPlayer, savedata.keys[numPlayer][SDID_START], valConfDelta);
++
++      allPlayerControls[numPlayer]->deviceID = numDevice;
++
++      device->mappings[SDID_MOVEUP]     = savedata.keys[numPlayer][SDID_MOVEUP]-valConfDelta;
++      device->mappings[SDID_MOVEDOWN]   = savedata.keys[numPlayer][SDID_MOVEDOWN]-valConfDelta;
++      device->mappings[SDID_MOVELEFT]   = savedata.keys[numPlayer][SDID_MOVELEFT]-valConfDelta;
++      device->mappings[SDID_MOVERIGHT]  = savedata.keys[numPlayer][SDID_MOVERIGHT]-valConfDelta;
++      device->mappings[SDID_ATTACK]     = savedata.keys[numPlayer][SDID_ATTACK]-valConfDelta;
++      device->mappings[SDID_ATTACK2]    = savedata.keys[numPlayer][SDID_ATTACK2]-valConfDelta;
++      device->mappings[SDID_ATTACK3]    = savedata.keys[numPlayer][SDID_ATTACK3]-valConfDelta;
++      device->mappings[SDID_ATTACK4]    = savedata.keys[numPlayer][SDID_ATTACK4]-valConfDelta;
++      device->mappings[SDID_JUMP]       = savedata.keys[numPlayer][SDID_JUMP]-valConfDelta;
++      device->mappings[SDID_SPECIAL]    = savedata.keys[numPlayer][SDID_SPECIAL]-valConfDelta;
++      device->mappings[SDID_START]      = savedata.keys[numPlayer][SDID_START]-valConfDelta;
++      device->mappings[SDID_SCREENSHOT] = savedata.keys[numPlayer][SDID_SCREENSHOT]-valConfDelta;
++      device->mappings[SDID_ESC]        = savedata.keys[numPlayer][SDID_ESC]-valConfDelta;
++      return;
++    }
++  }
++
+     int numButtons = SDL_JoystickNumButtons(device->joystick);
+ 
+     device->mappings[SDID_MOVEUP]     = numButtons;
+@@ -346,7 +388,7 @@ static void set_default_joystick_mappings(InputDevice *device)
+     device->mappings[SDID_ESC]        = device->mappings[SDID_SPECIAL];
+ }
+ 
+-void control_resetmappings(int deviceID)
++void control_resetmappings(int deviceID, s_playercontrols **allPlayerControls)
+ {
+     if (deviceID < 0) return;
+ 
+@@ -360,7 +402,7 @@ void control_resetmappings(int deviceID)
+             set_default_controller_mappings(device);
+             break;
+         case DEVICE_TYPE_JOYSTICK:
+-            set_default_joystick_mappings(device);
++	  set_default_joystick_mappings(device, allPlayerControls);
+             break;
+         default:
+             memset(device->mappings, 0, sizeof(device->mappings));
+@@ -368,7 +410,7 @@ void control_resetmappings(int deviceID)
+     }
+ }
+ 
+-static void handle_events()
++static void handle_events(s_playercontrols **allPlayerControls)
+ {
+     SDL_Event ev;
+     while (SDL_PollEvent(&ev))
+@@ -431,7 +473,7 @@ static void handle_events()
+                 {
+                     if (devices[i].deviceType == DEVICE_TYPE_NONE)
+                     {
+-                        setup_joystick(i, ev.jdevice.which);
++		        setup_joystick(i, ev.jdevice.which, allPlayerControls);
+                         printf("Hotplugged %s set as device #%i\n",
+                                devices[i].deviceType == DEVICE_TYPE_CONTROLLER ? "controller" : "joystick",
+                                i);
+@@ -738,7 +780,7 @@ void control_update_player(s_playercontrols *playerControls)
+ 
+ void control_update(s_playercontrols **playerControls, int numPlayers)
+ {
+-    handle_events();
++    handle_events(playerControls);
+ 
+     for (int i = 0; i < numPlayers; i++)
+     {
+@@ -1170,7 +1212,7 @@ int is_touch_area(float x, float y)
+ 
+ #define MAPPINGS_FILE_SENTINEL 0x9cf232d4
+ 
+-bool control_loadmappings(const char *filename)
++bool control_loadmappings(const char *filename, s_playercontrols **allPlayerControls)
+ {
+     FILE *fp = fopen(filename, "rb");
+     if (!fp)
+@@ -1211,7 +1253,7 @@ bool control_loadmappings(const char *filename)
+     {
+         if (devices[i].deviceType != DEVICE_TYPE_NONE)
+         {
+-            load_from_saved_mapping(i);
++	  load_from_saved_mapping(i, allPlayerControls);
+         }
+     }
+ 
+@@ -1258,15 +1300,20 @@ bool control_savemappings(const char *filename)
+     return true;
+ }
+ 
+-void control_clearmappings()
++void control_clearmappings(s_playercontrols **allPlayerControls)
+ {
+     clear_saved_mappings();
+ 
++    // deinit any configuration
++    for(int p = 0; p < MAX_PLAYERS; p++) {
++      allPlayerControls[p]->deviceID = -1;
++    }
++
+     for (int i = 0; i < MAX_DEVICES; i++)
+     {
+         if (devices[i].deviceType != DEVICE_TYPE_NONE)
+         {
+-            control_resetmappings(i);
++	  control_resetmappings(i, allPlayerControls);
+         }
+     }
+ }
+diff --git a/engine/sdl/control.h b/engine/sdl/control.h
+index 9e18f14..4811ac6 100644
+--- a/engine/sdl/control.h
++++ b/engine/sdl/control.h
+@@ -22,7 +22,7 @@ typedef struct {
+     uint32_t newkeyflags;
+ } s_playercontrols;
+ 
+-void control_init();
++void control_init(int joy_enable, s_playercontrols **allPlayerControls);
+ void control_exit();
+ 
+ /* Listen to input from deviceID. The first input from deviceID will be returned by the next call to
+@@ -36,7 +36,7 @@ int control_getremappedkey();
+ int *control_getmappings(int deviceID);
+ 
+ // Resets mappings for device to default
+-void control_resetmappings(int deviceID);
++void control_resetmappings(int deviceID, s_playercontrols **allPlayerControls);
+ void control_update(s_playercontrols **allPlayerControls, int numPlayers);
+ void control_update_keyboard(s_playercontrols *keyboardControls);
+ const char *control_getkeyname(int deviceID, int keycode);
+@@ -44,11 +44,11 @@ bool control_isvaliddevice(int deviceID);
+ const char *control_getdevicename(int deviceID);
+ void control_rumble(int deviceID, int ratio, int msec);
+ 
+-bool control_loadmappings(const char *filename);
++bool control_loadmappings(const char *filename, s_playercontrols **allPlayerControls);
+ bool control_savemappings(const char *filename);
+ 
+ // clears saved mappings and resets every device's mappings to defaults
+-void control_clearmappings();
++void control_clearmappings(s_playercontrols **allPlayerControls);
+ 
+ 
+ #define control_getmappedkeyname(deviceID, key) control_getkeyname(deviceID, control_getmappings(deviceID)[key])
+diff --git a/engine/sdl/menu.c b/engine/sdl/menu.c
+index de60c0c..45b20e4 100644
+--- a/engine/sdl/menu.c
++++ b/engine/sdl/menu.c
+@@ -447,7 +447,7 @@ static int ControlBGM()
+ 	return status;
+ }
+ 
+-static void initMenu(int type)
++static void initMenu(int type, s_playercontrols **allPlayerControls)
+ {
+ 
+ #ifdef ANDROID
+@@ -482,7 +482,7 @@ static void initMenu(int type)
+ 	// CRxTRDude - Initialize log screen images
+ 	logscreen = pngToScreen(isWide ? (void*) logviewer_480x272_png.data : (void*) logviewer_320x240_png.data);
+ 
+-	control_init(2);
++	control_init(2, allPlayerControls);
+ 	apply_controls();
+ 	sound_init(12);
+ 	sound_start_playback();
+@@ -699,14 +699,14 @@ static void drawLogs()
+ 	drawMenu();
+ }
+ 
+-static void drawLogo()
++static void drawLogo(s_playercontrols **allPlayerControls)
+ {
+     int i;
+     int delay = 500;
+ 
+     if(savedata.logo) return;
+ 
+-	initMenu(0);
++    initMenu(0, allPlayerControls);
+ 
+ 	for(i = 0; i < delay; i++)
+     {
+@@ -717,19 +717,19 @@ static void drawLogo()
+ 	termMenu();
+ }
+ 
+-void Menu()
++void Menu(s_playercontrols **allPlayerControls)
+ {
+ 	int done = 0;
+ 	int ctrl = 0;
+ 	loadsettings();
+-	drawLogo();
++	drawLogo(allPlayerControls);
+ 	dListCurrentPosition = 0;
+ 	if((dListTotal = findPaks()) != 1)
+ 	{
+ 		sortList();
+ 		getAllLogs();
+ 		packfile_music_read(filelist, dListTotal);
+-		initMenu(1);
++		initMenu(1, allPlayerControls);
+ 		drawMenu();
+ 		pControl = ControlMenu;
+ 

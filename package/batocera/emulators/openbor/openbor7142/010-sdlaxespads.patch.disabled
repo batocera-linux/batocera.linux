@@ -1,0 +1,267 @@
+diff --git a/engine/openbor.c b/engine/openbor.c
+index ad5c1a1..a710c37 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -2475,6 +2475,7 @@ void clearsettings()
+     for (i = 0; i < MAX_PLAYERS; i++)
+     {
+         savedata.joyrumble[i] = 0;
++	savedata.keys[i][SDID_AXISUP] = savedata.keys[i][SDID_AXISDOWN] = savedata.keys[i][SDID_AXISLEFT] = savedata.keys[i][SDID_AXISRIGHT] = 0;
+     }
+ 
+     control_clearmappings(playercontrolpointers);
+@@ -4621,19 +4622,19 @@ int translate_SDID(char *value)
+ {
+     if(stricmp(value, "moveup") == 0)
+     {
+-        return SDID_MOVEUP;
++        return SDID_PADUP;
+     }
+     else if(stricmp(value, "movedown") == 0)
+     {
+-        return SDID_MOVEDOWN;
++        return SDID_PADDOWN;
+     }
+     else if(stricmp(value, "moveleft") == 0)
+     {
+-        return SDID_MOVELEFT;
++        return SDID_PADLEFT;
+     }
+     else if(stricmp(value, "moveright") == 0)
+     {
+-        return SDID_MOVERIGHT;
++        return SDID_PADRIGHT;
+     }
+     else if(stricmp(value, "attack") == 0)
+     {
+@@ -35429,10 +35430,10 @@ void apply_controls()
+     {
+         //control_setkey(playercontrolpointers[p], FLAG_ESC,        CONTROL_ESC); // FCA
+ 		control_setkey(playercontrolpointers[p], FLAG_ESC,	      savedata.keys[p][SDID_ESC]); // FCA
+-        control_setkey(playercontrolpointers[p], FLAG_MOVEUP,     savedata.keys[p][SDID_MOVEUP]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVEDOWN,   savedata.keys[p][SDID_MOVEDOWN]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVELEFT,   savedata.keys[p][SDID_MOVELEFT]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVERIGHT,  savedata.keys[p][SDID_MOVERIGHT]);
++        control_setkey(playercontrolpointers[p], FLAG_MOVEUP,     savedata.keys[p][SDID_PADUP]);
++        control_setkey(playercontrolpointers[p], FLAG_MOVEDOWN,   savedata.keys[p][SDID_PADDOWN]);
++        control_setkey(playercontrolpointers[p], FLAG_MOVELEFT,   savedata.keys[p][SDID_PADLEFT]);
++        control_setkey(playercontrolpointers[p], FLAG_MOVERIGHT,  savedata.keys[p][SDID_PADRIGHT]);
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK,     savedata.keys[p][SDID_ATTACK]);
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK2,    savedata.keys[p][SDID_ATTACK2]);
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK3,    savedata.keys[p][SDID_ATTACK3]);
+@@ -38289,7 +38290,7 @@ void keyboard_setup(int player)
+         selector = 0,
+         setting = -1,
+         i, k, ok = 0,
+-              disabledkey[MAX_BTN_NUM] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
++      disabledkey[MAX_BTN_NUM] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                 col1 = -8, col2 = 6;
+     ptrdiff_t voffset, pos;
+     char *buf,
+@@ -38307,10 +38308,10 @@ void keyboard_setup(int player)
+ 
+     printf("Loading control settings.......\t");
+ 
+-    strcpy(buttonnames[SDID_MOVEUP], "Move Up");
+-    strcpy(buttonnames[SDID_MOVEDOWN], "Move Down");
+-    strcpy(buttonnames[SDID_MOVELEFT], "Move Left");
+-    strcpy(buttonnames[SDID_MOVERIGHT], "Move Right");
++    strcpy(buttonnames[SDID_PADUP], "Move Up");
++    strcpy(buttonnames[SDID_PADDOWN], "Move Down");
++    strcpy(buttonnames[SDID_PADLEFT], "Move Left");
++    strcpy(buttonnames[SDID_PADRIGHT], "Move Right");
+     strcpy(buttonnames[SDID_ATTACK], "Attack 1");
+     strcpy(buttonnames[SDID_ATTACK2], "Attack 2");
+     strcpy(buttonnames[SDID_ATTACK3], "Attack 3");
+diff --git a/engine/openbor.h b/engine/openbor.h
+index a19fafb..d8fabce 100644
+--- a/engine/openbor.h
++++ b/engine/openbor.h
+@@ -416,10 +416,10 @@ typedef struct
+ // Key definitions.
+ typedef enum
+ {
+-    SDID_MOVEUP,
+-    SDID_MOVEDOWN,
+-    SDID_MOVELEFT,
+-    SDID_MOVERIGHT,
++    SDID_PADUP,
++    SDID_PADDOWN,
++    SDID_PADLEFT,
++    SDID_PADRIGHT,
+     SDID_ATTACK,
+     SDID_ATTACK2,
+     SDID_ATTACK3,
+@@ -429,6 +429,10 @@ typedef enum
+     SDID_START,
+     SDID_SCREENSHOT,
+     SDID_ESC,
++    SDID_AXISUP,
++    SDID_AXISDOWN,
++    SDID_AXISLEFT,
++    SDID_AXISRIGHT,
+     SDID_COUNT // not a key ID; it's the number of key IDs
+ } e_key_id;
+ 
+@@ -438,10 +442,10 @@ typedef enum
+ // Entity types.
+ typedef enum
+ {
+-    FLAG_MOVEUP         = (1 << SDID_MOVEUP),
+-    FLAG_MOVEDOWN       = (1 << SDID_MOVEDOWN),
+-    FLAG_MOVELEFT       = (1 << SDID_MOVELEFT),
+-    FLAG_MOVERIGHT      = (1 << SDID_MOVERIGHT),
++    FLAG_PADUP         = (1 << SDID_PADUP),
++    FLAG_PADDOWN       = (1 << SDID_PADDOWN),
++    FLAG_PADLEFT       = (1 << SDID_PADLEFT),
++    FLAG_PADRIGHT      = (1 << SDID_PADRIGHT),
+     FLAG_ATTACK         = (1 << SDID_ATTACK),
+     FLAG_ATTACK2        = (1 << SDID_ATTACK2),
+     FLAG_ATTACK3        = (1 << SDID_ATTACK3),
+@@ -451,9 +455,18 @@ typedef enum
+     FLAG_START          = (1 << SDID_START),
+     FLAG_SCREENSHOT     = (1 << SDID_SCREENSHOT),
+     FLAG_ESC            = (1 << SDID_ESC),
++    FLAG_AXISUP         = (1 << SDID_AXISUP),
++    FLAG_AXISDOWN       = (1 << SDID_AXISDOWN),
++    FLAG_AXISLEFT       = (1 << SDID_AXISLEFT),
++    FLAG_AXISRIGHT      = (1 << SDID_AXISRIGHT),
++
++    FLAG_MOVEDOWN  = FLAG_PADDOWN  | FLAG_AXISDOWN,
++    FLAG_MOVEUP    = FLAG_PADUP    | FLAG_AXISUP,
++    FLAG_MOVELEFT  = FLAG_PADLEFT  | FLAG_AXISLEFT,
++    FLAG_MOVERIGHT = FLAG_PADRIGHT | FLAG_AXISRIGHT,
+ 
+     FLAG_ANYBUTTON		= (FLAG_START|FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP),
+-    FLAG_CONTROLKEYS    = (FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP|FLAG_MOVEUP|FLAG_MOVEDOWN|FLAG_MOVELEFT|FLAG_MOVERIGHT),
++    FLAG_CONTROLKEYS    = (FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP|FLAG_PADUP|FLAG_PADDOWN|FLAG_PADLEFT|FLAG_PADRIGHT|FLAG_AXISUP|FLAG_AXISDOWN|FLAG_AXISLEFT|FLAG_AXISRIGHT),
+     FLAG_FORWARD		= 0x40000000,
+     FLAG_BACKWARD		= 0x80000000
+ } e_key_def;
+diff --git a/engine/sdl/control.c b/engine/sdl/control.c
+index 35b233b..33d1163 100644
+--- a/engine/sdl/control.c
++++ b/engine/sdl/control.c
+@@ -295,10 +295,10 @@ void control_exit()
+ 
+ static void set_default_keyboard_mappings(InputDevice *device)
+ {
+-    device->mappings[SDID_MOVEUP]     = SDL_SCANCODE_UP;
+-    device->mappings[SDID_MOVEDOWN]   = SDL_SCANCODE_DOWN;
+-    device->mappings[SDID_MOVELEFT]   = SDL_SCANCODE_LEFT;
+-    device->mappings[SDID_MOVERIGHT]  = SDL_SCANCODE_RIGHT;
++    device->mappings[SDID_PADUP]     = SDL_SCANCODE_UP;
++    device->mappings[SDID_PADDOWN]   = SDL_SCANCODE_DOWN;
++    device->mappings[SDID_PADLEFT]   = SDL_SCANCODE_LEFT;
++    device->mappings[SDID_PADRIGHT]  = SDL_SCANCODE_RIGHT;
+     device->mappings[SDID_ATTACK]     = SDL_SCANCODE_A;
+     device->mappings[SDID_ATTACK2]    = SDL_SCANCODE_S;
+     device->mappings[SDID_ATTACK3]    = SDL_SCANCODE_Z;
+@@ -312,10 +312,10 @@ static void set_default_keyboard_mappings(InputDevice *device)
+ 
+ static void set_default_controller_mappings(InputDevice *device)
+ {
+-    device->mappings[SDID_MOVEUP]     = SDL_CONTROLLER_BUTTON_DPAD_UP;
+-    device->mappings[SDID_MOVEDOWN]   = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+-    device->mappings[SDID_MOVELEFT]   = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+-    device->mappings[SDID_MOVERIGHT]  = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
++    device->mappings[SDID_PADUP]     = SDL_CONTROLLER_BUTTON_DPAD_UP;
++    device->mappings[SDID_PADDOWN]   = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
++    device->mappings[SDID_PADLEFT]   = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
++    device->mappings[SDID_PADRIGHT]  = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+     device->mappings[SDID_ATTACK]     = SDL_CONTROLLER_BUTTON_A;
+     device->mappings[SDID_ATTACK2]    = SDL_CONTROLLER_BUTTON_X;
+     device->mappings[SDID_ATTACK3]    = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
+@@ -343,7 +343,7 @@ static void set_default_joystick_mappings(InputDevice *device, s_playercontrols
+     // find the associated player number (the value includes the joystick index (600+1+idx*64+btn))
+     for(int i=0; i<MAX_PLAYERS; i++) {
+       //fprintf(stderr, "player %i (key=%i) : %i == %i ?\n", i, savedata.keys[i][SDID_MOVEUP], numDevice, ((savedata.keys[i][SDID_MOVEUP]-600-1) / 64));
+-      if(numDevice == ((savedata.keys[i][SDID_MOVEUP]-600-1) / 64) ) {
++      if(numDevice == ((savedata.keys[i][SDID_PADUP]-600-1) / 64) ) {
+ 	numPlayer = i;
+       }
+     }
+@@ -354,10 +354,10 @@ static void set_default_joystick_mappings(InputDevice *device, s_playercontrols
+ 
+       allPlayerControls[numPlayer]->deviceID = numDevice;
+ 
+-      device->mappings[SDID_MOVEUP]     = savedata.keys[numPlayer][SDID_MOVEUP]-valConfDelta;
+-      device->mappings[SDID_MOVEDOWN]   = savedata.keys[numPlayer][SDID_MOVEDOWN]-valConfDelta;
+-      device->mappings[SDID_MOVELEFT]   = savedata.keys[numPlayer][SDID_MOVELEFT]-valConfDelta;
+-      device->mappings[SDID_MOVERIGHT]  = savedata.keys[numPlayer][SDID_MOVERIGHT]-valConfDelta;
++      device->mappings[SDID_PADUP]     = savedata.keys[numPlayer][SDID_PADUP]-valConfDelta;
++      device->mappings[SDID_PADDOWN]   = savedata.keys[numPlayer][SDID_PADDOWN]-valConfDelta;
++      device->mappings[SDID_PADLEFT]   = savedata.keys[numPlayer][SDID_PADLEFT]-valConfDelta;
++      device->mappings[SDID_PADRIGHT]  = savedata.keys[numPlayer][SDID_PADRIGHT]-valConfDelta;
+       device->mappings[SDID_ATTACK]     = savedata.keys[numPlayer][SDID_ATTACK]-valConfDelta;
+       device->mappings[SDID_ATTACK2]    = savedata.keys[numPlayer][SDID_ATTACK2]-valConfDelta;
+       device->mappings[SDID_ATTACK3]    = savedata.keys[numPlayer][SDID_ATTACK3]-valConfDelta;
+@@ -367,16 +367,21 @@ static void set_default_joystick_mappings(InputDevice *device, s_playercontrols
+       device->mappings[SDID_START]      = savedata.keys[numPlayer][SDID_START]-valConfDelta;
+       device->mappings[SDID_SCREENSHOT] = savedata.keys[numPlayer][SDID_SCREENSHOT]-valConfDelta;
+       device->mappings[SDID_ESC]        = savedata.keys[numPlayer][SDID_ESC]-valConfDelta;
++
++      device->mappings[SDID_AXISUP]     = savedata.keys[numPlayer][SDID_AXISUP]-valConfDelta;
++      device->mappings[SDID_AXISDOWN]   = savedata.keys[numPlayer][SDID_AXISDOWN]-valConfDelta;
++      device->mappings[SDID_AXISLEFT]   = savedata.keys[numPlayer][SDID_AXISLEFT]-valConfDelta;
++      device->mappings[SDID_AXISRIGHT]  = savedata.keys[numPlayer][SDID_AXISRIGHT]-valConfDelta;
+       return;
+     }
+   }
+ 
+     int numButtons = SDL_JoystickNumButtons(device->joystick);
+ 
+-    device->mappings[SDID_MOVEUP]     = numButtons;
+-    device->mappings[SDID_MOVEDOWN]   = numButtons + 1;
+-    device->mappings[SDID_MOVELEFT]   = numButtons + 2;
+-    device->mappings[SDID_MOVERIGHT]  = numButtons + 3;
++    device->mappings[SDID_PADUP]     = numButtons;
++    device->mappings[SDID_PADDOWN]   = numButtons + 1;
++    device->mappings[SDID_PADLEFT]   = numButtons + 2;
++    device->mappings[SDID_PADRIGHT]  = numButtons + 3;
+     device->mappings[SDID_ATTACK]     = 0;
+     device->mappings[SDID_ATTACK2]    = 3;
+     device->mappings[SDID_ATTACK3]    = 4;
+diff --git a/engine/source/openborscript/constants.c b/engine/source/openborscript/constants.c
+index f81189a..f235e44 100644
+--- a/engine/source/openborscript/constants.c
++++ b/engine/source/openborscript/constants.c
+@@ -292,10 +292,10 @@ int mapstrings_transconst(ScriptVariant **varlist, int paramCount)
+         ICMPCONST(SCROLL_DOWNWARD)
+ 
+         // Key control flags.
+-        ICMPCONST(SDID_MOVEUP)
+-        ICMPCONST(SDID_MOVEDOWN)
+-        ICMPCONST(SDID_MOVELEFT)
+-        ICMPCONST(SDID_MOVERIGHT)
++        ICMPCONST(SDID_PADUP)
++        ICMPCONST(SDID_PADDOWN)
++        ICMPCONST(SDID_PADLEFT)
++        ICMPCONST(SDID_PADRIGHT)
+         ICMPCONST(SDID_SPECIAL)
+         ICMPCONST(SDID_ATTACK)
+         ICMPCONST(SDID_ATTACK2)
+@@ -304,6 +304,10 @@ int mapstrings_transconst(ScriptVariant **varlist, int paramCount)
+         ICMPCONST(SDID_JUMP)
+         ICMPCONST(SDID_START)
+         ICMPCONST(SDID_SCREENSHOT)
++        ICMPCONST(SDID_AXISUP)
++        ICMPCONST(SDID_AXISDOWN)
++        ICMPCONST(SDID_AXISLEFT)
++        ICMPCONST(SDID_AXISRIGHT)
+ 
+         // Spawn type.
+         ICMPCONST(SPAWN_TYPE_UNDEFINED)
+diff --git a/engine/source/savedata.h b/engine/source/savedata.h
+index 9700f32..8f96f57 100644
+--- a/engine/source/savedata.h
++++ b/engine/source/savedata.h
+@@ -10,7 +10,7 @@
+ #define SAVEDATA_H
+ 
+ #define     MAX_PLAYERS         4
+-#define     MAX_BTN_NUM         13
++#define     MAX_BTN_NUM         17
+ 
+ typedef struct
+ {
