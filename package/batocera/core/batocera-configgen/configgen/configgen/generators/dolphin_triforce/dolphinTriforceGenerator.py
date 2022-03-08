@@ -18,33 +18,7 @@ class DolphinTriforceGenerator(Generator):
         if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinTriforceData + "/StateSaves")
 
-        #dolphinTriforceControllers.generateControllerConfig(system, playersControllers, rom)
-        # Workaround to at least have X-input controllers working by default
-        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/Config/GCPadNew.ini"):
-            dolphinTriforceGCPad = open(batoceraFiles.dolphinTriforceConfig + "/Config/GCPadNew.ini", "w")
-            dolphinTriforceGCPad.write("""[GCPad1]
-Device = SDL/0/Microsoft X-Box 360 pad
-Buttons/A = `Button 0`
-Buttons/B = `Button 2`
-Buttons/X = `Button 3`
-Buttons/Z = `Button 5`
-Buttons/Start = `Button 7`
-Main Stick/Up = `Axis 1-`
-Main Stick/Down = `Axis 1+`
-Main Stick/Left = `Axis 0-`
-Main Stick/Right = `Axis 0+`
-C-Stick/Up = `Axis 4-`
-C-Stick/Down = `Axis 4+`
-C-Stick/Left = `Axis 3-`
-C-Stick/Right = `Axis 3+`
-Triggers/L-Analog = `Axis 2+`
-Triggers/R-Analog = `Axis 5-+`
-D-Pad/Up = `Hat 0 N`
-D-Pad/Down = `Hat 0 S`
-D-Pad/Left = `Hat 0 W`
-D-Pad/Right = `Hat 0 E`
-""")
-            dolphinTriforceGCPad.close()
+        dolphinTriforceControllers.generateControllerConfig(system, playersControllers, rom)
 
         ## dolphin.ini ##
 
@@ -196,23 +170,6 @@ D-Pad/Right = `Hat 0 E`
         else:
             dolphinTriforceGFXSettings.set("Settings", "wideScreenHack", "False")
 
-        # Ubershaders (synchronous_ubershader by default)
-        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
-            if system.config["ubershaders"] == "exclusive_ubershader":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "1")
-            elif system.config["ubershaders"] == "hybrid_ubershader":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "2")
-            elif system.config["ubershaders"] == "skip_draw":
-                dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "3")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "ShaderCompilationMode", "0")
-
-        # Shader pre-caching
-        if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders'):
-            dolphinTriforceGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
-
         # Various performance hacks - Default Off
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
             dolphinTriforceGFXSettings.set("Hacks", "BBoxEnable", "False")
@@ -243,9 +200,9 @@ D-Pad/Right = `Hat 0 E`
 
         # Internal resolution settings
         if system.isOptSet('internal_resolution'):
-            dolphinTriforceGFXSettings.set("Settings", "InternalResolution", system.config["internal_resolution"])
+            dolphinTriforceGFXSettings.set("Settings", "EFBScale", system.config["internal_resolution"])
         else:
-            dolphinTriforceGFXSettings.set("Settings", "InternalResolution", "1")
+            dolphinTriforceGFXSettings.set("Settings", "EFBScale", "2")
 
         # VSync
         if system.isOptSet('vsync'):
@@ -264,12 +221,6 @@ D-Pad/Right = `Hat 0 E`
             dolphinTriforceGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
             dolphinTriforceGFXSettings.set("Settings", "MSAA", "0")
-
-        # Anti aliasing mode
-        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa'):
-            dolphinTriforceGFXSettings.set("Settings", "SSAA", "True")
-        else:
-            dolphinTriforceGFXSettings.set("Settings", "SSAA", "False")
 
         # Save gfx.ini
         with open(batoceraFiles.dolphinTriforceGfxIni, 'w') as configfile:
@@ -502,9 +453,9 @@ $99 credits
         # with open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", 'w') as configfile:
             # dolphinTriforceGameSettingsGGPE01.write(configfile)
 
-        commandArray = ["dolphin-triforce.AppImage", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
+        commandArray = ["dolphin-triforce", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
         if system.isOptSet('platform'):
-            commandArray = ["dolphin-triforce.AppImage-nogui", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-p", system.config["platform"], "-e", rom]
+            commandArray = ["dolphin-triforce-nogui", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-p", system.config["platform"], "-e", rom]
 
         # No environment variables work for now, paths are coded in above.
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})

@@ -19,9 +19,10 @@ def generateControllerConfig(system, playersControllers, rom):
     generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
 
 def generateControllerConfig_gamecube(system, playersControllers,rom):
+    # Exclude Buttons/Y from mapping as that just resets the system.
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
-        'x':            'Buttons/Y',     'a':             'Buttons/X',
+        'a':            'Buttons/X',
         'pagedown':     'Buttons/Z',     'start':         'Buttons/Start',
         'l2':           'Triggers/L',    'r2':            'Triggers/R',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
@@ -66,7 +67,7 @@ def removeControllerConfig_gamecube():
 
 def generateHotkeys(playersControllers):
     configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, "Config/Hotkeys.ini")
-    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+    f = codecs.open(configFileName, "w", encoding="utf_8")
 
     hotkeysMapping = {
         'a':           'Keys/Reset',                    'b': 'Keys/Toggle Pause',
@@ -114,7 +115,7 @@ def generateHotkeys(playersControllers):
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, filename)
-    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+    f = codecs.open(configFileName, "w", encoding="utf_8")
     nplayer = 1
     nsamepad = 0
 

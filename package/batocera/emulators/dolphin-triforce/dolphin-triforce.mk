@@ -18,14 +18,14 @@ endif
 # Includes custom game configs required to successfully launch and play them.
 define DOLPHIN_TRIFORCE_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
-	$(INSTALL) -D -m 0555 "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/dolphin-triforce.AppImage" "${TARGET_DIR}/usr/bin/dolphin-triforce.AppImage"
+	$(INSTALL) -D -m 0555 "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/dolphin-triforce.AppImage" "${TARGET_DIR}/usr/bin/dolphin-triforce"
 endef
 
 # Hotkeys (non-functional at the moment)
 define DOLPHIN_TRIFORCE_EVMAP
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/triforce.dolphin_triforce.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/triforce.dolphin-triforce.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 

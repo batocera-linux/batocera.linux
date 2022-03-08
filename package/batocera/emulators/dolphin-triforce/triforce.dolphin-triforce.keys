@@ -9,8 +9,20 @@
         {
             "trigger": ["hotkey", "b"],
             "type": "key",
-            "target": ["KEY_LEFTALT", "KEY_ENTER"],
+            "target": ["KEY_LEFTALT", "KEY_RETURN"],
             "description": "Open Dolphin-triforce's menu"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": ["KEY_F1"],
+            "description": "Load State Slot 1"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": ["KEY_LEFTSHIFT", "KEY_F1"],
+            "description": "Save State Slot 1"
         },
         {
             "trigger": ["hotkey", "pageup"],
