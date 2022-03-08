@@ -5210,21 +5210,19 @@ dolphin:
                     "Wiimote Sideway + Nunchuk": in
 
 dolphin_triforce:
-  features: [decoration, padtokeyboard]
+  features: [decoration]
   shared: [hud]
   cfeatures:
         internal_resolution:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x native (640x528)":  1
-                "2x 720p (1280x1056)":  2
-                "3x 1080p (1920x1584)": 3
-                "4x 1440p (2560x2112)": 4
-                "5x (3200x2640)":       5
-                "6x 4K (3840x3168)":    6
-                "7x (4480x3696)":       7
-                "8x 5K (5120x4224)":    8
+                "1x native (640x528)":    2
+                "1.5x 720p (960x792)":    3
+                "2x (1280x1056)":         4
+                "2.5x 1080p (1600x1320)": 5
+                "3x (1920x1584)":         6
+                "4x 1440p (2560x2112)":   7
         dolphin_aspect_ratio:
             prompt:      ASPECT RATIO
             description: The final output image, unrelated to the Wii's emulated NAND setting.
