@@ -126,6 +126,12 @@ do
     cd /userdata # es need a PWD
     %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 
+    # es flag when rebooting (https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-core/src/platform.cpp#L194)
+    if test -e "/tmp/restart.please" -o -e "/tmp/shutdown.please"
+    then
+	rm -f "${REBOOT_FLAG}"
+    fi
+
     GAMELAUNCH=0
 done
 exit 0
