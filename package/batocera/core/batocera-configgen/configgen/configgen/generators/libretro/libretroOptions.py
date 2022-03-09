@@ -1132,7 +1132,7 @@ def generateCoreSettings(coreSettings, system, rom):
             # GB: Colorization of GB games
             if system.isOptSet('gb_colorization'):
                 if system.config['gb_colorization'] == 'none':                           #No Selection --> Classic Green
-                    coreSettings.save('gambatte_gb_colorization',     '"internal"')
+                    coreSettings.save('gambatte_gb_colorization',     '"custom"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 elif system.config['gb_colorization'] == 'GB - Disabled':                #Disabled --> Black and White Color
                     coreSettings.save('gambatte_gb_colorization',     '"disabled"')
@@ -1144,7 +1144,7 @@ def generateCoreSettings(coreSettings, system, rom):
                     coreSettings.save('gambatte_gb_colorization',     '"internal"')           
                     coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
             else:
-                coreSettings.save('gambatte_gb_colorization',         '"internal"')      #It's an empty file, set to Classic Green
+                coreSettings.save('gambatte_gb_colorization',         '"custom"')      #It's an empty file, set to Classic Green
                 coreSettings.save('gambatte_gb_internal_palette',     '"Special 1"')
 
     if (system.config['core'] == 'mgba'):
