@@ -45,7 +45,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
             softList = ""
 
         # Determine MESS system name (if needed)
-        messDataFile = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/messSystems.csv'
+        messDataFile = '/usr/share/batocera/configgen/data/mame/messSystems.csv'
         openFile = open(messDataFile, 'r')
         messSystems = []
         messSysName = []
@@ -209,12 +209,12 @@ def prepSoftwareList(subdirSoftList, softList, softDir, hashDir, romDirname):
 
 def getMameControlScheme(system, romBasename):
     # Game list files
-    mameCapcom = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameCapcom.txt'
-    mameKInstinct = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameKInstinct.txt'
-    mameMKombat = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameMKombat.txt'
-    mameNeogeo = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameNeogeo.txt'
-    mameTwinstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameTwinstick.txt'
-    mameRotatedstick = '/usr/lib/python3.9/site-packages/configgen/datainit/mame/mameRotatedstick.txt'
+    mameCapcom = '/usr/share/batocera/configgen/data/mame/mameCapcom.txt'
+    mameKInstinct = '/usr/share/batocera/configgen/data/mame/mameKInstinct.txt'
+    mameMKombat = '/usr/share/batocera/configgen/data/mame/mameMKombat.txt'
+    mameNeogeo = '/usr/share/batocera/configgen/data/mame/mameNeogeo.txt'
+    mameTwinstick = '/usr/share/batocera/configgen/data/mame/mameTwinstick.txt'
+    mameRotatedstick = '/usr/share/batocera/configgen/data/mame/mameRotatedstick.txt'
 
     # Controls for games with 5-6 buttons or other unusual controls
     if system.isOptSet("altlayout"):
