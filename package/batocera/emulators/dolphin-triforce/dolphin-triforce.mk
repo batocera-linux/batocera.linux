@@ -25,7 +25,7 @@ endef
 define DOLPHIN_TRIFORCE_EVMAP
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/triforce.dolphin-triforce.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/triforce.dolphin_triforce.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 
