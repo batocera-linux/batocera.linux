@@ -133,7 +133,12 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 BATOCERA_EMULATIONSTATION_PREFIX =
 BATOCERA_EMULATIONSTATION_CMD = startx
 BATOCERA_EMULATIONSTATION_ARGS = --windowed
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_XINITRC
 endif
+
+define BATOCERA_EMULATIONSTATION_XINITRC
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation $(TARGET_DIR)/etc/init.d/S31emulationstation
