@@ -291,12 +291,12 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
 @@ -18,7 +18,7 @@
  		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
  		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
- 		drm_client_modeset.o drm_atomic_uapi.o drm_hdcp.o \
+ 		drm_client_modeset.o drm_atomic_uapi.o \
 -		drm_managed.o drm_vblank_work.o
 +		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
  
  drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
- 			    drm_legacy_misc.o drm_lock.o drm_memory.o drm_scatter.o \
+ 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
 diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/include/drm/drm_connector.h linux-5.14_15kHz/include/drm/drm_connector.h
 --- linux-5.14_stock/include/drm/drm_connector.h	2021-08-30 00:04:50.000000000 +0200
 +++ linux-5.14_15kHz/include/drm/drm_connector.h	2021-09-01 01:14:53.675622649 +0200
