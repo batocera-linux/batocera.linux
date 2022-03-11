@@ -208,8 +208,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BAUH                                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # flatpak gui
 	select BR2_PACKAGE_RYZENADJ                             if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # ryzen apu configuration
 	select BR2_PACKAGE_SYNCTHING                            # sync files across multiple batoceras
-	select BR2_PACKAGE_RCLONE                               if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sync files in the cloud
-	select BR2_PACKAGE_BTOP                                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # htop alternative
+	select BR2_PACKAGE_RCLONE                               if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sync files in the cloud (require x86_64)
+	select BR2_PACKAGE_BTOP                                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # htop alternative (require x86_64)
 
 	# RaspberryPi Firmwares
 	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth and wifi firmware
@@ -503,8 +503,8 @@ config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 	bool "batocera.linux Flash support"
 
 	# Flash Player Emulator
-	select BR2_PACKAGE_RUFFLE           if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
-	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+	select BR2_PACKAGE_RUFFLE           if BR2_PACKAGE_XORG7 && BR2_PACKAGE_BATOCERA_TARGET_X86_64 # need to be configured to support crosscompilation
+	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_XORG7
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
@@ -589,15 +589,13 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
     # Demul emulator - multiple Sega arcade systems
-	select BR2_PACKAGE_DEMUL			    if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-                                                BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_DEMUL		if BR2_PACKAGE_BATOCERA_WINE
 
 	# Laserdic emulation
 	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
 
 	# Standalone Sega Model 2 emulator
-	select BR2_PACKAGE_MODEL2EMU			if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-                                                BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_MODEL2EMU		if BR2_PACKAGE_BATOCERA_WINE
 
 	# Standalone Sega Model 3 emulator
 	select BR2_PACKAGE_SUPERMODEL           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -931,12 +929,10 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_RPCS3                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Wii U (requires Wine layer)
-	select BR2_PACKAGE_CEMU                         if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-                                                        BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_CEMU                         if BR2_PACKAGE_BATOCERA_WINE
 
 	# future pinball
-	select BR2_PACKAGE_FPINBALL                     if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-                                                        BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_FPINBALL                     if BR2_PACKAGE_BATOCERA_WINE
 
 	# Panasonic 3DO
 	select BR2_PACKAGE_LIBRETRO_OPERA               if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
