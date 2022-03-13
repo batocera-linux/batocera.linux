@@ -1140,6 +1140,9 @@ def generateCoreSettings(coreSettings, system, rom):
                 elif system.config['gb_colorization'] == 'GB - SmartColor':              #Smart Coloring --> Gambatte's most colorful/appropriate color
                     coreSettings.save('gambatte_gb_colorization',     '"auto"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                elif system.config['gb_colorization'] == 'custom':                       #Custom Palettes --> Use the custom palettes in the bios/palettes folder
+                    coreSettings.save('gambatte_gb_colorization',     '"custom"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 else:                                                                    #User Selection
                     coreSettings.save('gambatte_gb_colorization',     '"internal"')           
                     coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
