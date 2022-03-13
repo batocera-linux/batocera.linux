@@ -142,7 +142,7 @@ class MameGenerator(Generator):
         commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
         commandArray += [ "-homepath" ,           "/userdata/saves/mame/plugins/" ]
         commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
-        commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/ini/" ]
+        commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/;/userdata/system/configs/mame/ini/" ]
         commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
         if softList != "":
             commandArray += [ "-swpath" ,        softDir ]
