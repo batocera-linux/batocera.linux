@@ -228,9 +228,8 @@ if [ "$command" = "storage" ]; then
 	exit 0
     fi
     if [ "$mode" = "list" ]; then
-	echo "INTERNAL"
-	echo "ANYEXTERNAL"
-	echo "RAM"
+	echo "INTERNAL INTERNAL"
+	echo "ANYEXTERNAL ANY EXTERNAL"
 
 	INTERNAL_DEVICE=$(batocera-part share_internal)
 	PARTPREFIX=$(batocera-part prefix "${INTERNAL_DEVICE}")
