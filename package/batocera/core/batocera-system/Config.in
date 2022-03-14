@@ -252,8 +252,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC && \
-					    !BR2_PACKAGE_BATOCERA_TARGET_X86_64 # not working yet with kernel .17
+                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 
 	select BR2_PACKAGE_RTL8821CE		if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1               && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2           && \
