@@ -74,7 +74,7 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
-	RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles3_1
+	RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles3_1 --enable-opengles3_2
 	RETROARCH_DEPENDENCIES += libgles
 endif
 
