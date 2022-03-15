@@ -70,6 +70,11 @@ msgctxt "game_options"
 msgid "SHADER SET"
 msgstr "PACK DE FILTRE"
 
+#. TRANSLATION: shared, shared, shared
+msgctxt "game_options"
+msgid "GAME RENDERING"
+msgstr ""
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
@@ -84,6 +89,11 @@ msgstr "MISE A L'ECHELLE (PIXEL PERFECT)"
 msgctxt "game_options"
 msgid "DECORATION SET"
 msgstr "PACK DE DECORATION"
+
+#. TRANSLATION: shared, shared, shared, shared, shared, ...
+msgctxt "game_options"
+msgid "DECORATIONS"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -185,6 +195,11 @@ msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "ACTIVER LE SERVICE DE TRADUCTION INTELIGENT"
 
+#. TRANSLATION: shared, shared, shared, shared
+msgctxt "game_options"
+msgid "AI GAME TRANSLATION"
+msgstr ""
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TARGET LANGUAGE"
@@ -212,6 +227,11 @@ msgid ""
 "visible jitter."
 msgstr ""
 
+#. TRANSLATION: shared, shared, shared, shared
+msgctxt "game_options"
+msgid "LATENCY REDUCTION"
+msgstr ""
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
@@ -220,7 +240,9 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Can prevent audio skips on button presses when using run-ahead."
-msgstr "Peut empêcher l'audio de de craqué ou de se couper si l'éxécution des images en avance est activé."
+msgstr ""
+"Peut empêcher l'audio de de craqué ou de se couper si l'éxécution des images "
+"en avance est activé."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -232,7 +254,9 @@ msgctxt "game_options"
 msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
-msgstr "Réduisez automatiquement le délai de trame temporairement pour éviter les chutes de trame."
+msgstr ""
+"Réduisez automatiquement le délai de trame temporairement pour éviter les "
+"chutes de trame."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -303,7 +327,9 @@ msgstr ""
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Speeds up file loading. Some games won't load with this."
-msgstr "Accélère le chargement des fichiers. Certains jeux ne le prennent pas en charge."
+msgstr ""
+"Accélère le chargement des fichiers. Certains jeux ne le prennent pas en "
+"charge."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -313,7 +339,8 @@ msgstr ""
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Emulate NTSC quirks to show more colors in hi-res mode."
-msgstr "Émulez le NTSC pour afficher plus de couleurs en mode haute résolution."
+msgstr ""
+"Émulez le NTSC pour afficher plus de couleurs en mode haute résolution."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -423,7 +450,8 @@ msgstr "MÉLANGE HAUTE RÉSOLUTION"
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x
 msgctxt "game_options"
 msgid "Blur high-res mode, allowing for better transparency effects."
-msgstr "Mode flou haute résolution, permettant de meilleurs effets de transparence."
+msgstr ""
+"Mode flou haute résolution, permettant de meilleurs effets de transparence."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -435,7 +463,8 @@ msgctxt "game_options"
 msgid ""
 "Enhancement. Swap from SNES' guassian interpolation to cubic. Improves sound "
 "quality."
-msgstr "Passer de l'interpolation guassienne de SNES à cubique. Améliore le son."
+msgstr ""
+"Passer de l'interpolation guassienne de SNES à cubique. Améliore le son."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -447,7 +476,9 @@ msgctxt "game_options"
 msgid ""
 "Change behaviour when emulating GB games. Auto uses SGB for GB and GBC for "
 "GBC."
-msgstr "Modifiez le comportement lors de l'émulation de jeux GB. Auto utilise SGB pour GB et GBC pour GBC."
+msgstr ""
+"Modifiez le comportement lors de l'émulation de jeux GB. Auto utilise SGB "
+"pour GB et GBC pour GBC."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -472,7 +503,8 @@ msgstr "SUPER GAME BOY 2"
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid "Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed."
-msgstr "Émulez le Super Game Boy 2 pour SGB. Exécute les jeux à la bonne vitesse. "
+msgstr ""
+"Émulez le Super Game Boy 2 pour SGB. Exécute les jeux à la bonne vitesse. "
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
 msgctxt "game_options"
@@ -482,7 +514,9 @@ msgstr "OVERCLOCK (INSTABLE)"
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
-msgstr "Réduit le ralentissement du système. Provoque des problèmes dans certains jeux."
+msgstr ""
+"Réduit le ralentissement du système. Provoque des problèmes dans certains "
+"jeux."
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry
 msgctxt "game_options"
@@ -582,7 +616,9 @@ msgstr "FILTRE NTSC"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Core-powered video filter. Bisqwit filters are CPU heavy."
-msgstr "Filtre vidéo alimenté par le cœur. Les filtres Bisqwit sont lourds pour le processeur."
+msgstr ""
+"Filtre vidéo alimenté par le cœur. Les filtres Bisqwit sont lourds pour le "
+"processeur."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -813,7 +849,9 @@ msgstr "SAUT D'IMAGE"
 #. TRANSLATION: libretro/desmume, libretro/dosbox, libretro/fbneo, libretro/flycast, libretro/mame078plus, ...
 msgctxt "game_options"
 msgid "Skip frames to improve performance, at the cost of choppy motion."
-msgstr "Ignorez les images pour améliorer les performances, au prix d'un mouvement saccadé."
+msgstr ""
+"Ignorez les images pour améliorer les performances, au prix d'un mouvement "
+"saccadé."
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -823,7 +861,9 @@ msgstr "IGNORER LE MENU SYSTÈME DS"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
-msgstr "Désactiver pour accéder aux paramètres du système, comme l'heure et la langue."
+msgstr ""
+"Désactiver pour accéder aux paramètres du système, comme l'heure et la "
+"langue."
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1503,7 +1543,9 @@ msgstr ""
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/fceumm, libretro/nestopia, duckstation
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
-msgstr "Agrandit pour masquer les bordures noires. Les bordures sont différentes par match."
+msgstr ""
+"Agrandit pour masquer les bordures noires. Les bordures sont différentes par "
+"match."
 
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
@@ -1518,7 +1560,9 @@ msgstr "Toutes les bordures"
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 msgctxt "game_options"
 msgid "DualShock has rumble support. Not all games support DualShock."
-msgstr "DualShock a un support de vibrations. Tous les jeux ne prennent pas en charge DualShock."
+msgstr ""
+"DualShock a un support de vibrations. Tous les jeux ne prennent pas en "
+"charge DualShock."
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 msgctxt "game_options"
@@ -1558,7 +1602,8 @@ msgstr "CPU CLOCK"
 #. TRANSLATION: libretro/fbneo
 msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
-msgstr "Peut corriger le ralentissement. Ne fonctionne que sur certains pilotes."
+msgstr ""
+"Peut corriger le ralentissement. Ne fonctionne que sur certains pilotes."
 
 #. TRANSLATION: libretro/fbneo
 msgctxt "game_options"
@@ -1678,7 +1723,9 @@ msgstr "QUALITÉ DU SON"
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
 msgid "Only supported games. Higher settings increase system requirements."
-msgstr "Seuls les jeux pris en charge. Des paramètres plus élevés augmentent les exigences du système."
+msgstr ""
+"Seuls les jeux pris en charge. Des paramètres plus élevés augmentent les "
+"exigences du système."
 
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
@@ -1718,7 +1765,8 @@ msgstr "RENDU SYNCHRONE"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Can avoid flashing screen issues. Significant performance cost."
-msgstr "Peut éviter les problèmes d'écran clignotant. Coût de performance important."
+msgstr ""
+"Peut éviter les problèmes d'écran clignotant. Coût de performance important."
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -1738,7 +1786,8 @@ msgstr "FILTRAGE ANISOTROPE"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Improves clarity of distant textures when mip-mapping is enabled."
-msgstr "Améliore la clarté des textures distantes lorsque le mip-mapping est activé."
+msgstr ""
+"Améliore la clarté des textures distantes lorsque le mip-mapping est activé."
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
@@ -1818,7 +1867,9 @@ msgstr "ZOOM (MASQUER LES BORDURES)"
 #. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games used the borders."
-msgstr "Masque les bordures sur de nombreux jeux. Certains jeux utilisaient les bordures."
+msgstr ""
+"Masque les bordures sur de nombreux jeux. Certains jeux utilisaient les "
+"bordures."
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -1888,7 +1939,9 @@ msgstr "PRISE EN CHARGE DU CLAVIER"
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Set controller 1 and 2 to None to use it standalone."
-msgstr "Définissez les contrôleurs 1 et 2 sur Aucun pour les utiliser de manière autonome."
+msgstr ""
+"Définissez les contrôleurs 1 et 2 sur Aucun pour les utiliser de manière "
+"autonome."
 
 #. TRANSLATION: libretro/gambatte, libretro/potator
 msgctxt "game_options"
@@ -2103,7 +2156,8 @@ msgstr ""
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Enhanced sound output support for compatible games."
-msgstr "Prise en charge améliorée de la sortie audio pour les jeux compatibles."
+msgstr ""
+"Prise en charge améliorée de la sortie audio pour les jeux compatibles."
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
