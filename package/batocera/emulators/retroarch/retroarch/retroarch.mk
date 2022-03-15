@@ -73,6 +73,11 @@ else
 	RETROARCH_CONF_OPTS += --disable-pulse
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
+	RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles3_1
+	RETROARCH_DEPENDENCIES += libgles
+endif
+
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
 	RETROARCH_CONF_OPTS += --enable-opengles
 	RETROARCH_DEPENDENCIES += libgles
