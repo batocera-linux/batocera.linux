@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20220209
+ALLLINUXFIRMWARES_VERSION = 20220310
 ALLLINUXFIRMWARES_SITE = http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 ALLLINUXFIRMWARES_SITE_METHOD = git
 
