@@ -333,8 +333,15 @@ $AX
 
         # Save state required for successful launch.
         if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
-            myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
-            open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+            try:
+                myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
+                open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+                if myfile and myfile.status_code == 200:
+                    open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+                else:
+                    print("Network connection found, but " + gamecode + ".s01 failed to download.")
+            except:
+                print( gamecode + ".s01 failed to download, check your network connection.")
 
         if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini"):
             dolphinTriforceGameSettingsGVSJ8P = open(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini", "w")
@@ -353,8 +360,14 @@ $DI Seed Blanker
 
         # Save state required for successful launch.
         if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
-            myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
-            open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+            try:
+                myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
+                if myfile and myfile.status_code == 200:
+                    open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+                else:
+                    print("Network connection found, but " + gamecode + ".s01 failed to download.")
+            except:
+                print( gamecode + ".s01 failed to download, check your network connection.")
 
         if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini"):
             dolphinTriforceGameSettingsGGPE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini", "w")
