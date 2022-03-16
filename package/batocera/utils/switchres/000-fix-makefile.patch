@@ -1,7 +1,8 @@
-diff --color -uri switchres-lbrpdx/makefile switchres-a8af8e8f7f54d24414b4a8595a84c0f0f23e14a1/makefile
---- switchres-lbrpdx/makefile	2021-06-28 14:51:06.000000000 -0700
-+++ switchres-a8af8e8f7f54d24414b4a8595a84c0f0f23e14a1/makefile	2021-09-10 03:36:52.380008814 -0700
-@@ -10,7 +10,8 @@
+diff --git a/makefile b/makefile
+index 93f215f..051a4c1 100644
+--- a/makefile
++++ b/makefile
+@@ -10,7 +10,8 @@ OBJS = $(SRC:.cpp=.o)
  CROSS_COMPILE ?=
  CXX ?= g++
  AR ?= ar
@@ -11,8 +12,8 @@ diff --color -uri switchres-lbrpdx/makefile switchres-a8af8e8f7f54d24414b4a8595a
  FINAL_CXX=$(CROSS_COMPILE)$(CXX)
  FINAL_AR=$(CROSS_COMPILE)$(AR)
  CPPFLAGS = -O3 -Wall -Wextra
-@@ -20,9 +21,9 @@
-
+@@ -20,9 +21,9 @@ INSTALL=install
+ 
  DESTDIR ?=
  PREFIX ?= /usr
 -INCDIR = $(DESTDIR)$(PREFIX)/include
@@ -22,23 +23,16 @@ diff --color -uri switchres-lbrpdx/makefile switchres-a8af8e8f7f54d24414b4a8595a
 +LIBDIR = $(PREFIX)/lib
 +BINDIR = $(PREFIX)/bin
  PKGDIR = $(LIBDIR)/pkgconfig
-
- # Linux
-@@ -48,12 +49,12 @@
-     SRC += custom_video_drmkms.cpp
+ 
+ ifneq ($(DEBUG),)
+@@ -68,8 +69,8 @@ CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
+ CPPFLAGS += $(shell $(PKG_CONFIG) --libs $(EXTRA_LIBS))
  endif
-
--ifneq (,$(EXTRA_LIBS))
--CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
--endif
-+#ifneq (,$(EXTRA_LIBS))
-+#CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
-+#endif
-
+ 
 -CPPFLAGS += -fPIC
--LIBS = -ldl
+-LIBS += -ldl
 +CPPFLAGS += -fPIC -I$(INCDIR) -I$(INCDIR)/libdrm
 +LIBS = -ldl -lm -lrt -lstdc++
+ 
  REMOVE = rm -f
  STATIC_LIB_EXT = a
- DYNAMIC_LIB_EXT = so
