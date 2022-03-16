@@ -29,4 +29,19 @@ ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
     ALLLINUXFIRMWARES_PRE_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_DELETE_BRCM
 endif
 
+# realtek uses symbolic links for some firmware between different cards
+define ALLLINUXFIRMWARES_REALTEK_POST_PROCESS
+    # create realtek wifi symbolic links
+    cd $(TARGET_DIR)/lib/firmware/rtlwifi ; \
+    ln -s rtl8192eu_nic.bin rtl8192eefw.bin ; \
+    ln -s rtl8723bu_ap_wowlan.bin rtl8723bs_ap_wowlan.bin ; \
+    ln -s rtl8723bu_nic.bin rtl8723bs_nic.bin
+    # create realtek bluetooth symbolic links
+    cd $(TARGET_DIR)/lib/firmware/rtl_bt ; \
+    ln -s rtl8723bs_config-OBDA8723.bin rtl8723bs_config-OBDA0623.bin ; \
+    ln -s rtl8821c_config.bin rtl8821a_config.bin
+endef
+
+ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_REALTEK_POST_PROCESS
+
 $(eval $(generic-package))
