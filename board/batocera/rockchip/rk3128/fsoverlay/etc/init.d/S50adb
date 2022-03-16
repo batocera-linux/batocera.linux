@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+# Start ADB...
+#
+
+case "$1" in
+  start)
+	printf "Starting adb daemon: "
+
+	mount -t configfs none /sys/kernel/config
+	mkdir -p /sys/kernel/config/usb_gadget/g1
+	#USB 2.0
+	echo 0x0200 > /sys/kernel/config/usb_gadget/g1/bcdUSB
+	#Instantiate English strings
+	mkdir -p /sys/kernel/config/usb_gadget/g1/strings/0x409
+	echo 1 > /sys/kernel/config/usb_gadget/g1/os_desc/use 1
+
+	#Configure VID/PID/ProductName/Serial (replace with your vid/pid)
+	echo "0x1d6b" > /sys/kernel/config/usb_gadget/g1/idVendor
+	echo "0x0104" > /sys/kernel/config/usb_gadget/g1/idProduct
+	echo "0123456789" > /sys/kernel/config/usb_gadget/g1/strings/0x409/serialnumber
+	echo "Foo Inc" > /sys/kernel/config/usb_gadget/g1/strings/0x409/manufacturer
+	echo "Bar Prod" >  /sys/kernel/config/usb_gadget/g1/strings/0x409/product
+
+	#Create Function(s) Instance(s)
+	mkdir -p /sys/kernel/config/usb_gadget/g1/functions/ffs.adb
+	mkdir -p /sys/kernel/config/usb_gadget/g1/configs/b.1
+	mkdir -p /sys/kernel/config/usb_gadget/g1/configs/b.1/strings/0x409
+	echo "ffs.adb" > /sys/kernel/config/usb_gadget/g1/configs/b.1/strings/0x409/configuration
+
+	#Bind functions
+	ln -s /sys/kernel/config/usb_gadget/g1/functions/ffs.adb /sys/kernel/config/usb_gadget/g1/configs/b.1
+
+	mkdir -p /dev/usb-ffs
+	mkdir -p /dev/usb-ffs/adb
+	mount -t functionfs adb /dev/usb-ffs/adb
+
+	#Start adbd daemon
+	start-stop-daemon --start --background --oknodo --quiet --exec /usr/bin/adbd
+
+	echo 0x1 > /sys/kernel/config/usb_gadget/g1/os_desc/b_vendor_code
+
+	#Attach created gadget device to the UDC driver
+	#UDC driver name obtained from "ls /sys/class/udc/"
+	sleep 2
+	echo 10180000.usb > /sys/kernel/config/usb_gadget/g1/UDC
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	;;
+  stop)
+	printf "Stopping adb-daemon: "
+	killall -9 adbd
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	;;
+  restart|reload)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+

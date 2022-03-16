@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Start wx8 joystick...
+#
+
+case "$1" in
+  start)
+	printf "Enabling analogue joystick for WX8: "
+
+	echo 1 > /sys/devices/platform/20072000.i2c/i2c-0/0-004c/key_type
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	;;
+  stop)
+	;;
+  restart|reload)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+

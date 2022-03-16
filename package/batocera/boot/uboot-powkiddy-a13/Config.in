@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBOOT_POWKIDDY_A13
+    bool "uboot files for Powkiddy A12/13"
+    select BR2_PACKAGE_RK3128_BLOBS
+    help
+        uboot files for POWKIDDY_A13
