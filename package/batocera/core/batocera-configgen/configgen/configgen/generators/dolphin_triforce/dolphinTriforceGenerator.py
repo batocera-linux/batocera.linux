@@ -7,6 +7,7 @@ import os.path
 from os import environ
 import configparser
 from . import dolphinTriforceControllers
+import requests
 
 class DolphinTriforceGenerator(Generator):
 
@@ -328,9 +329,15 @@ $AX
             dolphinTriforceGameSettingsGFZE01.close()
 
         # GVSJ8P Virtua Striker 2002
+        gamecode = "GVSJ8P"
 
-        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GVSJ8P.ini"):
-            dolphinTriforceGameSettingsGVSJ8P = open(batoceraFiles.dolphinTriforceGameSettings + "/GVSJ8P.ini", "w")
+        # Save state required for successful launch.
+        if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
+            myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
+            open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+
+        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini"):
+            dolphinTriforceGameSettingsGVSJ8P = open(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini", "w")
             dolphinTriforceGameSettingsGVSJ8P.write("""[OnFrame]
 $DI Seed Blanker
 0x80000000:dword:0x00000000
@@ -342,9 +349,15 @@ $DI Seed Blanker
             dolphinTriforceGameSettingsGVSJ8P.close()
 
         # GGPE01 Mario Kart GP 1
+        gamecode = "GGPE01"
 
-        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini"):
-            dolphinTriforceGameSettingsGGPE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", "w")
+        # Save state required for successful launch.
+        if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
+            myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
+            open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
+
+        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini"):
+            dolphinTriforceGameSettingsGGPE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/" + gamecode + ".ini", "w")
             dolphinTriforceGameSettingsGGPE01.write("""[OnFrame]
 $Disable crypto
 0x8023D828:dword:0x93A30008
