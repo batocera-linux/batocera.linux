@@ -5,10 +5,13 @@ default:
     videomode:      default
     ratio:          auto
     video_threaded: false
-    smooth:         true
+    smooth:         false
     rewind:         false
     bezel:          default
     forceNoBezel:   false
+    shaderset:      none
+    retroarch.video_driver: sdl2
+    audio.volume:   30
 
 # 0-C
 
