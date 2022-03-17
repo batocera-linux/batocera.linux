@@ -498,8 +498,12 @@ class EsSystemConf:
                                        description = ""
                                        if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
                                            description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
+                                       submenu = ""
+                                       if "submenu" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                           submenu = features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"]
                                        EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                        EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                       EsSystemConf.addCommentToDictKey(toTranslate, submenu, { "emulator": emulator, "core": core })
                                        for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
                                            EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
                             # #############
@@ -512,8 +516,12 @@ class EsSystemConf:
                                                description = ""
                                                if "description" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
                                                    description = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["description"]
+                                               submenu = ""
+                                               if "submenu" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
+                                                   submenu = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"]
                                                EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                                EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                               EsSystemConf.addCommentToDictKey(toTranslate, submenu, { "emulator": emulator, "core": core })
                                                for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                                    EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
                 if "systems" in features[emulator]:
@@ -523,8 +531,12 @@ class EsSystemConf:
                                     description = ""
                                     if "description" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
                                         description = features[emulator]["systems"][system]["cfeatures"][cfeature]["description"]
+                                    submenu = ""
+                                    if "submenu" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
+                                        submenu = features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"]
                                     EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], { "emulator": emulator, "core": core })
                                     EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
+                                    EsSystemConf.addCommentToDictKey(toTranslate, submenu, { "emulator": emulator, "core": core })
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                         EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
                 if "cfeatures" in features[emulator]:
@@ -532,8 +544,12 @@ class EsSystemConf:
                             description = ""
                             if "description" in features[emulator]["cfeatures"][cfeature]:
                                 description = features[emulator]["cfeatures"][cfeature]["description"]
+                            submenu = ""
+                            if "submenu" in features[emulator]["cfeatures"][cfeature]:
+                                submenu = features[emulator]["cfeatures"][cfeature]["submenu"]
                             EsSystemConf.addCommentToDictKey(toTranslate, features[emulator]["cfeatures"][cfeature]["prompt"], { "emulator": emulator })
                             EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator })
+                            EsSystemConf.addCommentToDictKey(toTranslate, submenu, { "emulator": emulator })
                             if "choices" in features[emulator]["cfeatures"][cfeature]:
                                 for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
                                     EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator })
