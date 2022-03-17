@@ -55,7 +55,7 @@ ifeq ($(BATOCERA_SPLASH_MEDIA),video)
     # alternative video
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/Capcom.mp4
-    else ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+    else ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3326)$(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash720p.mp4
     else
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash.mp4
