@@ -59,10 +59,6 @@ mountDeviceOrFallback() {
         then
             if batocera-mount "${TDEVICE}" 1 "${DEVICE}" "${BATOCERAFULLFS}"
             then
-                if [ -d "${BATOCERAFULLFS}/recalbox" -a ! -d "${BATOCERAFULLFS}/batocera" ] # legacy renaming (rename only if batocera doesn't exist and recalbox does)
-                then
-                    mv "${BATOCERAFULLFS}/recalbox" "${BATOCERAFULLFS}/batocera"
-                fi
                 if mkdir -p "${BATOCERAFULLFS}/batocera"
                 then
                     if mount "${BATOCERAFULLFS}/batocera" "/userdata" -o "noatime"
@@ -81,10 +77,6 @@ mountDeviceOrFallback() {
             mount -t tmpfs -o size=256M tmpfs /userdata
         fi
     fi
-}
-
-fixbatoceraconfname() {
-    [ -e "/userdata/system/recalbox.conf" ] && mv /userdata/system/recalbox.conf /userdata/system/batocera.conf
 }
 
 mountNetwork() {
@@ -230,7 +222,6 @@ case "${MODE}" in
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
         TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
         mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
-        fixbatoceraconfname
     ;;
     "ANYEXTERNAL")
         PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
@@ -244,7 +235,6 @@ case "${MODE}" in
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
         TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
         mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
-        fixbatoceraconfname
     ;;
     "RAM")
         mount -t tmpfs -o size=256M tmpfs /userdata
@@ -257,7 +247,6 @@ case "${MODE}" in
         then
             # we try to fix old residues from former timer here
             # if share mount for network fails then we fallback to internal data
-            fixbatoceraconfname
         else
             # fallback
             mount -t tmpfs -o size=256M tmpfs /userdata
@@ -274,7 +263,6 @@ case "${MODE}" in
             # the internal partition is no more required in fact
            mount -t tmpfs -o size=256M tmpfs /userdata
         fi
-        fixbatoceraconfname
     ;;
 esac
 
