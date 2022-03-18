@@ -282,21 +282,27 @@ class MameGenerator(Generator):
                     if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                         commandArray += ["-ioport:peb:slot3", "speech"]
 
+                autoRunCmd = ""
+                autoRunDelay = 0
                 # Autostart computer games where applicable
                 # bbc has different boots for floppy & cassette, no special boot for carts
                 if system.name == "bbc":
                     if system.isOptSet("altromtype") or softList != "":
                         if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
-                            commandArray += [ '-autoboot_delay', '2', '-autoboot_command', '*tape\nchain""\n' ]
+                            autoRunCmd = '*tape\\nchain""\\n'
+                            autoRunDelay = 2
                         elif left(system.config["altromtype"], 4) == "flop" or softList[-4:] == "flop":
-                            commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
+                            autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
+                            autoRunDelay = 3
                     else:
-                        commandArray += [ '-autoboot_delay',  '3',  '-autoboot_command', '*cat\n*exec !boot\n' ]
+                        autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
+                        autoRunDelay = 3
                 # fm7 boots floppies, needs cassette loading
                 elif system.name == "fm7":
                     if system.isOptSet("altromtype") or softList != "":
                         if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
-                            commandArray += [ '-autoboot_delay', '5', '-autoboot_command', 'LOADM”“,,R\n' ]
+                            autoRunCmd = 'LOADM”“,,R\\n'
+                            autoRunDelay = 5
                 else:
                     # Check for an override file, otherwise use generic (if it exists)
                     autoRunCmd = messAutoRun[messMode]
@@ -308,8 +314,10 @@ class MameGenerator(Generator):
                             for row in autoRunList:
                                 if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
                                     autoRunCmd = row[1] + "\\n"
-                    if autoRunCmd != "":
-                        commandArray += [ "-autoboot_delay", "3", "-autoboot_command", autoRunCmd ]
+                if autoRunCmd != "":
+                    if autoRunCmd.startswith("'"):
+                        autoRunCmd.replace("'", "")
+                    commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
         
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):

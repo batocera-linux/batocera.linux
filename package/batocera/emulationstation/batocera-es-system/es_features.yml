@@ -2254,6 +2254,29 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         pdp1:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":            none
+                          "PDP-1 Paper Tape Reader Images": pdp1_ptp
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM GAME CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          pv1000:
               cfeatures:
                   softList:
@@ -2511,8 +2534,8 @@ libretro:
                 prompt:      CROP ARTWORK
                 description: Crop MAME artwork to maximize the game screen and only fill unused space.
                 choices:
-                    "On (Default)": 1
-                    "Off":          0
+                    "On":            1
+                    "Off (Default)": 0
             customcfg:
                 group: ADVANCED OPTIONS
                 prompt:      CUSTOM CONFIG
@@ -6843,6 +6866,29 @@ mame:
                     choices:
                         "Don't Use (Default)":             none
                         "Creatronic Mega Duck cartridges": megaduck
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       pdp1:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":            none
+                        "PDP-1 Paper Tape Reader Images": pdp1_ptp
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
                 pergamecfg:
                     group: ADVANCED OPTIONS
                     prompt:      CUSTOM GAME CONFIG

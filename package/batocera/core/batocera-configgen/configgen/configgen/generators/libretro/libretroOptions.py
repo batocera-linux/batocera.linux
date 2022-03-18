@@ -655,6 +655,11 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('mame_read_config', '"enabled"')
         # Use CLI (via CMD file) to boot
         coreSettings.save('mame_boot_from_cli', '"enabled"')
+        # Activate mouse for Mac & Archimedes
+        if system.name in [ 'macintosh', 'archimedes' ]:
+            coreSettings.save('mame_mouse_enable', '"enabled"')
+        else:
+            coreSettings.save('mame_mouse_enable', '"disabled"')
 
 
     # MAME 2003 Plus

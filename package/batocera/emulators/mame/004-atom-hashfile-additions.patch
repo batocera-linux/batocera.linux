@@ -1,0 +1,33 @@
+--- a/hash/atom_flop.xml	2022-02-24 11:47:25.000000000 -0500
++++ b/hash/atom_flop.xml	2022-03-17 14:09:03.323992383 -0400
+@@ -207,4 +207,30 @@
+ 		</part>
+ 	</software>
+ 
++	<software name="tetris">
++        <description>Tetris (32K)</description>
++        <year>2017</year>
++        <publisher>Retro Software</publisher>
++        <info name="author" value="Kees van Oss" />
++        <info name="usage" value="Load with *RUN&quot;SIDRUN&quot;" />
++        <part name="flop1" interface="floppy_5_25">
++            <dataarea name="flop" size="102400">
++                <rom name="tetris.dsk" size="102400" crc="f1fcba9c" sha1="5cad021eb3483a80a5d7da813222bb83cd1219a2" />
++            </dataarea>
++        </part>
++    </software>
++
++	<software name="flappy">
++        <description>Flappy Bird (32K)</description>
++        <year>2012</year>
++        <publisher>Retro Software</publisher>
++        <info name="author" value="Kees van Oss" />
++        <info name="usage" value="Load with *RUN&quot;FLAPPY&quot;" />
++        <part name="flop1" interface="floppy_5_25">
++            <dataarea name="flop" size="102400">
++                <rom name="flappy.dsk" size="102400" crc="3915179c" sha1="7e1faaec3cd2fac0e52473926df40a5814774ce4" />
++            </dataarea>
++        </part>
++	</software>
++
+ </softwarelist>
