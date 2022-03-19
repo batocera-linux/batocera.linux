@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version.: Commits on Feb 14, 2022 - lutris-7.1
-WINE_LUTRIS_VERSION = cb3e2c222f5112b2561c0e2139538a7f59b01a53
+# Version.: 7.2
+WINE_LUTRIS_VERSION = lutris-wine-7.2
 WINE_LUTRIS_SITE = $(call github,lutris,wine,$(WINE_LUTRIS_VERSION))
 WINE_LUTRIS_LICENSE = LGPL-2.1+
 WINE_LUTRIS_DEPENDENCIES = host-bison host-flex host-wine-lutris
