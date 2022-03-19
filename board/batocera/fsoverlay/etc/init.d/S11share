@@ -243,11 +243,8 @@ case "${MODE}" in
         # first, INTERNAL mount, then, network mount over the NETWORK mounts
         # to allow to mount over /userdata, but only over /userdata/roms if wanted
         # mounting network mounts over usb key have not really sense
-        if batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
+        if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
         then
-            # we try to fix old residues from former timer here
-            # if share mount for network fails then we fallback to internal data
-        else
             # fallback
             mount -t tmpfs -o size=256M tmpfs /userdata
         fi
