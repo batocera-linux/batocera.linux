@@ -1,11 +1,11 @@
 ################################################################################
 #
-# XEMU
+# xemu
 #
 ################################################################################
 
 # Daily build
-XEMU_VERSION = build-202112030110
+XEMU_VERSION = 0.6.2-80-g5d02cdf512
 XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
