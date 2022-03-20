@@ -13,12 +13,12 @@ msgstr ""
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
 msgid "VIDEO MODE"
-msgstr "MODE VIDEO"
+msgstr "MODE VIDÉO"
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
 msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
-msgstr "RAPPORT D'ASPECT DU JEU"
+msgstr "RATIO ÉCRAN DU JEU"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -68,7 +68,7 @@ msgstr "SAUVEGARDE/CHARGEMENT AUTO"
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "GAME RENDERING"
-msgstr ""
+msgstr "RENDU DU JEU"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -83,22 +83,22 @@ msgstr "FILTRAGE BILINEAIRE"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "INTEGER SCALING (PIXEL PERFECT)"
-msgstr "MISE A L'ECHELLE (PIXEL PERFECT)"
+msgstr "MISE À L'ÉCHELLE (PIXEL PERFECT)"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "DECORATIONS"
-msgstr ""
+msgstr "DÉCORATIONS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "DECORATION SET"
-msgstr "PACK DE DECORATION"
+msgstr "PACK DE DÉCORATIONS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
-msgstr "ETIRER LES BEZELS (4K & ECRAN LARGE)"
+msgstr "ÉTIRER LES BEZELS (4K & ÉCRAN LARGE)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -108,7 +108,7 @@ msgstr "Afficher des informations du jeu pendant les parties."
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "HEADS UP DISPLAY"
-msgstr "Affichage en surimpression"
+msgstr "AFFICHAGE EN SURIMPRESSION"
 
 #. TRANSLATION: shared, shared, libretro/mesen-s, libretro/mesen, libretro/mesen, ...
 msgctxt "game_options"
@@ -118,7 +118,7 @@ msgstr "Aucun"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Game info/art"
-msgstr "Info/art du Jeu"
+msgstr "Information/image du Jeu"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -143,12 +143,12 @@ msgstr "NON"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SYSTEM CONTROLLERS"
-msgstr "MANETTE DU SYSTEME"
+msgstr "MANETTES SYSTEMES"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "CUSTOM IMAGE"
-msgstr "IMAGE PERSONALISE"
+msgstr "IMAGE PERSONALISÉ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -178,7 +178,7 @@ msgstr "SUD OUEST"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "CUSTOM .PNG IMAGE PATH"
-msgstr "CHEMIN DE L'IMAGE PERSONALISE"
+msgstr "CHEMIN DE L'IMAGE .PNG PERSONALISÉ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -193,27 +193,27 @@ msgstr "REDIMENSIONNER LE TATTOO"
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "AI GAME TRANSLATION"
-msgstr ""
+msgstr "TRADUCTION PAR IA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
-msgstr "ACTIVER LE SERVICE DE TRADUCTION INTELIGENT"
+msgstr "ACTIVER LE SERVICE DE TRADUCTION PAR IA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TARGET LANGUAGE"
-msgstr "LANGUAGE CIBLE"
+msgstr "LANGUE CIBLE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AI TRANSLATION SERVICE URL"
-msgstr "ADRESSE DU SERVICE DE TRADUCTION"
+msgstr "URL DU SERVICE DE TRADUCTION IA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "PAUSE ON TRANSLATED SCREEN"
-msgstr "PAUSE SUR L'ECRAN DE TRADUCTION"
+msgstr "PAUSE SUR L'ÉCRAN DE TRADUCTION"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -225,7 +225,7 @@ msgstr ""
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "LATENCY REDUCTION"
-msgstr ""
+msgstr "RÉDUCTION DE LA LATENCE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -250,13 +250,13 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
-"Réduisez automatiquement le délai de trame temporairement pour éviter les "
-"chutes de trame."
+"Réduire automatiquement le délai d'image temporairement pour éviter les "
+"sauts d'image."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
-msgstr "RETARD DE TRAME AUTOMATIQUE"
+msgstr "RETARD D'IMAGE AUTOMATIQUE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -277,7 +277,7 @@ msgstr "Émuler l'interface Chroma 81 (colorisation)."
 #. TRANSLATION: libretro/81, libretro/81, libretro/atari800, libretro/atari800, libretro/atari800, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
-msgstr ""
+msgstr "OPTIONS AVANCÉES"
 
 #. TRANSLATION: libretro/81, libretro/gambatte
 msgctxt "game_options"
@@ -312,7 +312,7 @@ msgstr "SYSTÈME ATARI"
 #. TRANSLATION: libretro/atari800, libretro/puae
 msgctxt "game_options"
 msgid "VIDEO FORMAT STANDARD"
-msgstr "FORMAT VIDEO STANDARD"
+msgstr "FORMAT VIDÉO STANDARD"
 
 #. TRANSLATION: libretro/atari800, libretro/puae
 msgctxt "game_options"
@@ -328,19 +328,18 @@ msgstr "PAL 288x576px 50Hz"
 msgctxt "game_options"
 msgid "Speeds up file loading. Some games won't load with this."
 msgstr ""
-"Accélère le chargement des fichiers. Certains jeux ne le prennent pas en "
-"charge."
+"Accélère le chargement des fichiers. Certains jeux ne fonctionnent pas avec."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "SIO ACCELERATION"
-msgstr ""
+msgstr "ACCÉLÉRATION SIO"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Emulate NTSC quirks to show more colors in hi-res mode."
 msgstr ""
-"Émulez le NTSC pour afficher plus de couleurs en mode haute résolution."
+"Émuler le NTSC pour afficher plus de couleurs en mode haute résolution."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -350,17 +349,17 @@ msgstr ""
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
-msgstr "Utilisez une autre résolution. Nécessaire pour certains jeux."
+msgstr "Utiliser une autre résolution. Nécessaire pour certains jeux."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
-msgstr "RESOLUTION INTERNE"
+msgstr "RÉSOLUTION INTERNE"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Treats the right analog stick as the second joystick."
-msgstr "Utilise le stick analogique droit comme le deuxième joystick."
+msgstr "Utiliser le stick analogique droit comme le deuxième joystick."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -425,7 +424,7 @@ msgstr "FILTRE NTSC BLARGG"
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/mame, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Disabled"
-msgstr "Désactiver"
+msgstr "Désactivé"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
@@ -464,7 +463,7 @@ msgid ""
 "Enhancement. Swap from SNES' guassian interpolation to cubic. Improves sound "
 "quality."
 msgstr ""
-"Passer de l'interpolation guassienne de SNES à cubique. Améliore le son."
+"Passer l'interpolation SNES de guassienne à cubique. Améliore le son."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -477,13 +476,13 @@ msgid ""
 "Change behaviour when emulating GB games. Auto uses SGB for GB and GBC for "
 "GBC."
 msgstr ""
-"Modifiez le comportement lors de l'émulation de jeux GB. Auto utilise SGB "
+"Modifier le comportement lors de l'émulation de jeux GB. Auto utilise SGB "
 "pour GB et GBC pour GBC."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid "GAME BOY MODE"
-msgstr "GAME BOY MODE"
+msgstr "MODE GAME BOY"
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -504,7 +503,7 @@ msgstr "Super Game Boy"
 msgctxt "game_options"
 msgid "Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed."
 msgstr ""
-"Émulez le Super Game Boy 2 pour SGB. Exécute les jeux à la bonne vitesse. "
+"Émulez le Super Game Boy 2 pour SGB. Exécute les jeux à la bonne vitesse."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -2212,57 +2211,57 @@ msgstr "DISPOSITIONS SPÉCIALES DES COMMANDES"
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Default Only"
-msgstr ""
+msgstr "Par défaut uniquement"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "SNES Style"
-msgstr ""
+msgstr "Style SNES"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Genesis/Megadrive Style"
-msgstr ""
+msgstr "Style Genesis/Megadrive"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Modern Fightstick Style"
-msgstr ""
+msgstr "Style Modern Fightstick"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Neo Geo Mini Pad"
-msgstr ""
+msgstr "Neo Geo Mini Pad"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Neo Geo CD Pad"
-msgstr ""
+msgstr "Neo Geo CD Pad"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Twin Stick with Triggers"
-msgstr ""
+msgstr "Twin Stick avec déclencheurs"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
-msgstr ""
+msgstr "Rotated 4-Way Stick (Q*Bert)"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Emable or disable high score saving"
-msgstr ""
+msgstr "Activer ou désactiver l'enregistrement des meilleurs scores"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
-msgstr ""
+msgstr "PLUGIN HIGH SCORE"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
-msgstr ""
+msgstr "Activé (par défaut)"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
@@ -2274,198 +2273,202 @@ msgstr ""
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
-msgstr ""
+msgstr "PARTAGEZ MAME ARTWORK"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "On (Default)"
-msgstr ""
+msgstr "Activé (par défaut)"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
 msgid ""
 "Crop MAME artwork to maximize the game screen and only fill unused space."
 msgstr ""
+"Recadrez l'illustration MAME pour maximiser l'écran de jeu et ne remplir que "
+"l'espace inutilisé."
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
 msgid "CROP ARTWORK"
-msgstr ""
+msgstr "ARTWORK COUPE"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
-msgstr ""
+msgstr "Définissez les commandes à l'échelle du système via le menu MAME"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "CUSTOM MAME CONFIG"
-msgstr ""
+msgstr "CONFIG MAME PERSONNALISÉE"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "If the D-Pad is oriented incorrectly for your controller."
-msgstr ""
+msgstr "Si le D-Pad est mal orienté pour votre manette."
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "ALT DPAD MODE"
-msgstr ""
+msgstr "ALT DPAD MODE"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, cemu, flycast/uzem, ...
 msgctxt "game_options"
 msgid "Off (Default)"
-msgstr ""
+msgstr "Désactivé (par défaut)"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "DS3 Orientation"
-msgstr ""
+msgstr "DS3 Orientation"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "X360 Orientation"
-msgstr ""
+msgstr "X360 Orientation"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
-msgstr ""
+msgstr "Utilisez des listes de logiciels MAME pour identifier la ROM"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "SOFTWARE LIST"
-msgstr ""
+msgstr "LISTE LOGICIELS"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Don't Use (Default)"
-msgstr ""
+msgstr "Ne pas utiliser (par défaut)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam cartridges"
-msgstr ""
+msgstr "Cartouches Coleco Adam"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam Digital Data Packs"
-msgstr ""
+msgstr "Packs de données numériques Coleco Adam"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ADAM diskettes"
-msgstr ""
+msgstr "Disquettes Coleco ADAM"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ColecoVision cartridges"
-msgstr ""
+msgstr "Cartouches Coleco ColecoVision"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Type of ROM file to load."
-msgstr ""
+msgstr "Type de fichier ROM à charger."
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "MEDIA TYPE"
-msgstr ""
+msgstr "TYPE DE MÉDIA"
 
 #. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 1"
-msgstr ""
+msgstr "Cassette 1"
 
 #. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 2"
-msgstr ""
+msgstr "Cassette 2"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Disk (Drive 1)"
-msgstr ""
+msgstr "Disque (lecteur 1)"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Disk (Drive 2)"
-msgstr ""
+msgstr "Disque (lecteur 2)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 1)"
-msgstr ""
+msgstr "Cartouche (Fente 1)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 2)"
-msgstr ""
+msgstr "Cartouche (Fente 2)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 3)"
-msgstr ""
+msgstr "Cartouche (Fente 3)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 4)"
-msgstr ""
+msgstr "Cartouche (Fente 4)"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Toggle with hotkey + D-pad up or Scroll Lock in-game."
 msgstr ""
+"Basculer avec le raccourci clavier + D-pad vers le haut ou le verrouillage "
+"du défilement dans le jeu."
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "UI KEYS"
-msgstr ""
+msgstr "UI KEYS"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Off at Start"
-msgstr ""
+msgstr "Désactivé au démarrage"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "On at Start"
-msgstr ""
+msgstr "Activé au démarrage"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Enable per-game custom configuration via MAME menu."
-msgstr ""
+msgstr "Activez la configuration personnalisée par jeu via le menu MAME."
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "CUSTOM GAME CONFIG"
-msgstr ""
+msgstr "CONFIGURATION DE JEU PERSONNALISÉE"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Entex AdventureVision cartridges"
-msgstr ""
+msgstr "Cartouches Entex AdventureVision"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "APF M-1000 cartridges"
-msgstr ""
+msgstr "Cartouches APF M-1000"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Emerson Arcadia 2001 cartridges"
-msgstr ""
+msgstr "Cartouches Emerson Arcadia 2001"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Archimedes floppy images"
-msgstr ""
+msgstr "Images de disquette d'Archimède Acorn"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Archimedes hard disks"
-msgstr ""
+msgstr "Disques durs d'Archimède Acorn"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2475,287 +2478,287 @@ msgstr ""
 #. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Select model to emulate"
-msgstr ""
+msgstr "Sélectionnez le modèle à émuler"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ARCHIMEDES MODEL"
-msgstr ""
+msgstr "MODÈLE D'ARCHIMÈDE"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 310"
-msgstr ""
+msgstr "Archimedes 310"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "BBC A3000"
-msgstr ""
+msgstr "BBC A3000"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 440/1 (Default)"
-msgstr ""
+msgstr "Archimedes 440/1 (Default)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 540"
-msgstr ""
+msgstr "Archimedes 540"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Bally Professional Arcade cartridges"
-msgstr ""
+msgstr "Cartouches Bally Professional Arcade"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom cassettes"
-msgstr ""
+msgstr "Acorn Atom cassettes"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom disk images"
-msgstr ""
+msgstr "Images de disque Acorn Atom"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom Utility ROMs"
-msgstr ""
+msgstr "ROM utilitaire Acorn Atom"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Cassette"
-msgstr ""
+msgstr "Cassette"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Cartridge"
-msgstr ""
+msgstr "Cartouche"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Quickload"
-msgstr ""
+msgstr "Chargement rapide"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro cassettes"
-msgstr ""
+msgstr "Acorn BBC Micro cassettes"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro hard disks"
-msgstr ""
+msgstr "Disques durs Acorn BBC Micro"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro ROMs"
-msgstr ""
+msgstr "Acorn BBC Micro ROMs"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro Model B disks"
-msgstr ""
+msgstr "Disques Acorn BBC Micro Modèle B"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro Model B Original disks"
-msgstr ""
+msgstr "Acorn BBC Micro Model B Disques originaux"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 1)"
-msgstr ""
+msgstr "ROM (emplacement 1)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 2)"
-msgstr ""
+msgstr "ROM (emplacement 2)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 3)"
-msgstr ""
+msgstr "ROM (emplacement 3)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ROM (Slot 4)"
-msgstr ""
+msgstr "ROM (emplacement 4)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "CUSTOM CONFIG"
-msgstr ""
+msgstr "CONFIG PERSONNALISÉE"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Camputers Lynx cassettes"
-msgstr ""
+msgstr "Camputers Lynx cassettes"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "LYNX MODEL"
-msgstr ""
+msgstr "LYNX MODEL"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 128k (Default)"
-msgstr ""
+msgstr "Lynx 128k (Default)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 96k"
-msgstr ""
+msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 48k"
-msgstr ""
+msgstr "Lynx 48k"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Philips CD-i CD-ROMs"
-msgstr ""
+msgstr "Philips CD-i CD-ROMs"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer cartridges"
-msgstr ""
+msgstr "Cartouches Tandy Radio Shack Color Computer"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer disk images"
-msgstr ""
+msgstr "Images disque Tandy Radio Shack Color Computer"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Select the model of Color Computer to emulate"
-msgstr ""
+msgstr "Sélectionnez le modèle d'ordinateur couleur à émuler"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "COLOR COMPUTER MODEL"
-msgstr ""
+msgstr "MODÈLE D'ORDINATEUR COULEUR"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer"
-msgstr ""
+msgstr "Color Computer"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2"
-msgstr ""
+msgstr "Color Computer 2"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2B"
-msgstr ""
+msgstr "Color Computer 2B"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (NTSC) (Default)"
-msgstr ""
+msgstr "Color Computer 3 (NTSC) (Default)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (PAL)"
-msgstr ""
+msgstr "Color Computer 3 (PAL)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "V-Tech Creativision cartridges"
-msgstr ""
+msgstr "Cartouches V-Tech Creativision"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Disks"
-msgstr ""
+msgstr "Disques d'électrons Acorn"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Cassettes"
-msgstr ""
+msgstr "Acorn Electron Cassettes"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Cartridges"
-msgstr ""
+msgstr "Acorn Electron Cartridges"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Acron Electron ROMs"
-msgstr ""
+msgstr "Acron Electron ROMs"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "ELECTRON MODEL"
-msgstr ""
+msgstr "ELECTRON MODEL"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Electron w/64k Master RAM Board (default)"
-msgstr ""
+msgstr "Electron w/64k Master RAM Board (default)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Electron"
-msgstr ""
+msgstr "Electron"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-77AV disk images"
-msgstr ""
+msgstr "Images disque Fujitsu FM-77AV"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-7 cassettes"
-msgstr ""
+msgstr "Cassettes Fujitsu FM-7"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-7 disk images"
-msgstr ""
+msgstr "Images disque Fujitsu FM-7"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "FM-7 MODEL"
-msgstr ""
+msgstr "FM-7 MODEL"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Bit Corp Gamate cartridges"
-msgstr ""
+msgstr "Cartouches Bit Corp Gamate"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Tiger Game.com cartridges"
-msgstr ""
+msgstr "Cartouches Tiger Game.com"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Epoch Game Pocket Computer cartridges"
-msgstr ""
+msgstr "Cartouches Epoch Game Pocket Computer"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Hartung Game Master cartridges"
-msgstr ""
+msgstr "Cartouches Hartung Game Master"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Macintosh 400K/800K Disk images"
-msgstr ""
+msgstr "Images de disque Macintosh 400K/800K"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Macintosh High Density Disk images"
-msgstr ""
+msgstr "Images de disque haute densité Macintosh"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac Harddisks"
-msgstr ""
+msgstr "Disques durs Mac"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2763,436 +2766,438 @@ msgid ""
 "Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for "
 "Color)"
 msgstr ""
+"Sélectionnez le modèle de Mac (les recommandations sont Mac Plus pour N&B, "
+"Mac LC 3 pour la couleur"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "MAC MODEL"
-msgstr ""
+msgstr "MAC MODEL"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac 128k (128kb RAM, 2 LD Floppies)"
-msgstr ""
+msgstr "Mac 128k (128kb de RAM, 2 disquettes LD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac 512k (512kb RAM, 2 LD Floppies)"
-msgstr ""
+msgstr "Mac 512k (512kb RAM, 2 LD Floppies)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)"
-msgstr ""
+msgstr "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac SE (4Mb RAM, 2 LD Floppies/HDD)"
-msgstr ""
+msgstr "Mac SE (4Mb RAM, 2 LD Floppies/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)"
-msgstr ""
+msgstr "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
-msgstr ""
+msgstr "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
-msgstr ""
+msgstr "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
-msgstr ""
+msgstr "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Disk"
-msgstr ""
+msgstr "Disque"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "CD"
-msgstr ""
+msgstr "CD"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive"
-msgstr ""
+msgstr "Disque dur"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
-msgstr ""
+msgstr "Sélectionnez un disque de démarrage ou un disque dur si nécessaire"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "BOOT DISK"
-msgstr ""
+msgstr "DISQUE DE DÉMARRAGE"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 3.0 (LD Floppy)"
-msgstr ""
+msgstr "Système 3.0 (disquette LD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (LD Floppy)"
-msgstr ""
+msgstr "Système 6.0.8 (disquette LD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (HD Floppy)"
-msgstr ""
+msgstr "Système 7.0.1 (Disquette HD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 7.5 (HD Floppy)"
-msgstr ""
+msgstr "Système 7.5 (disquette HD)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (Hard Drive)"
-msgstr ""
+msgstr "Système 6.0.8 (disque dur)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (Hard Drive)"
-msgstr ""
+msgstr "Système 7.0.1 (disque dur)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "System 7.5.5 (Hard Drive)"
-msgstr ""
+msgstr "Système 7.5.5 (disque dur)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Creatronic Mega Duck cartridges"
-msgstr ""
+msgstr "Cartouches Creatronic Mega Duck"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Casio PV-1000 cartridges"
-msgstr ""
+msgstr "Cartouches Casio PV-1000"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Video Technology Socrates cartridges"
-msgstr ""
+msgstr "Technologie vidéo Cartouches Socrates"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Funtech Super A'Can cartridges"
-msgstr ""
+msgstr "Cartouches Funtech Super A'Can"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "TI-99/4A Cartridges"
-msgstr ""
+msgstr "Cartouches TI-99/4A"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "32k RAM expansion card installed"
-msgstr ""
+msgstr "Carte d'extension 32k RAM installée"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "32K RAM EXPANSION"
-msgstr ""
+msgstr "32K RAM EXPANSION"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Speech module installed"
-msgstr ""
+msgstr "Module vocal installé"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "SPEECH MODULE"
-msgstr ""
+msgstr "MODULE DE PAROLE"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Tomy Tutor & Pyuuta cartridge"
-msgstr ""
+msgstr "Cartouche Tomy Tutor & Pyuuta"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "GCE Vectrex cartridges"
-msgstr ""
+msgstr "Cartouches GCE Vectrex"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "VTech V.Smile cartridges"
-msgstr ""
+msgstr "Cartouches VTech V.Smile"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "VTech V.Smile Motion cartridges"
-msgstr ""
+msgstr "Cartouches VTech V.Smile Motion"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
-msgstr ""
+msgstr "Cartouches Atari XE Game System"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Atari 400 / 800 floppy disks"
-msgstr ""
+msgstr "Disquettes Atari 400 / 800"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 3)"
-msgstr ""
+msgstr "Disque (lecteur 3)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 4)"
-msgstr ""
+msgstr "Disque (lecteur 4)"
 
 #. TRANSLATION: libretro/mamevirtual, mame/uzem
 msgctxt "game_options"
 msgid "Video Game Music Files"
-msgstr ""
+msgstr "Fichiers de musique de jeux vidéo"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "CONTROL MAPPING"
-msgstr ""
+msgstr "CARTOGRAPHIE DES CONTRÔLES"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "Analog"
-msgstr ""
+msgstr "Analog"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "Digital"
-msgstr ""
+msgstr "Digital"
 
 #. TRANSLATION: libretro/mame078plus, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Keyboard shortcuts unavailable if passing through the keyboard."
-msgstr ""
+msgstr "Raccourcis clavier indisponibles si passage par le clavier."
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "INPUT INTERFACE"
-msgstr ""
+msgstr "INTERFACE D'ENTRÉE"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "Keyboard passthrough"
-msgstr ""
+msgstr "Intercommunication clavier"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
 msgid "Simultaneous"
-msgstr ""
+msgstr "Simultanée"
 
 #. TRANSLATION: libretro/mame078plus, mame
 msgctxt "game_options"
 msgid "Rotates screen by 90 degrees. Intended for rotating displays."
-msgstr ""
+msgstr "Fait pivoter l'écran de 90 degrés. Destiné aux affichages rotatifs."
 
 #. TRANSLATION: libretro/mame078plus, mame
 msgctxt "game_options"
 msgid "VERTICAL ROTATION (TATE)"
-msgstr ""
+msgstr "ROTATION VERTICALE (TATE)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "100%(native)"
-msgstr ""
+msgstr "100%(native)"
 
 #. TRANSLATION: libretro/mednafen_psx, duckstation
 msgctxt "game_options"
 msgid "1x(native)"
-msgstr ""
+msgstr "1x(native)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Small performance increase (may drop frames)."
-msgstr ""
+msgstr "Petite augmentation des performances (peut perdre des images)."
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
-msgstr ""
+msgstr "TRAME DUPING (ACCÉLÉRER)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Much faster than interpreter (but may have issues)."
-msgstr ""
+msgstr "Beaucoup plus rapide que l'interprète (mais peut avoir des problèmes)."
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "CPU DYNAREC (SPEED UP)"
-msgstr ""
+msgstr "CPU DYNAREC (ACCÉLÉRER)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Disabled (Beatle Interpreter)"
-msgstr ""
+msgstr "Désactivé (interprète Beatle)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Max Performance"
-msgstr ""
+msgstr "Performances maximales"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Cycle Timing Check"
-msgstr ""
+msgstr "Vérification de la synchronisation du cycle"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Lightrec Interpreter"
-msgstr ""
+msgstr "Interprète Lightrec"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "DYNAREC CODE INVALIDATION"
-msgstr ""
+msgstr "INVALIDATION DU CODE DYNAREC"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Full (more compatible)"
-msgstr ""
+msgstr "Complet (plus compatible)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "DMA Only (Slightly Faster)"
-msgstr ""
+msgstr "DMA uniquement (légèrement plus rapide)"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
-msgstr ""
+msgstr "Autorise jusqu'à 5 ou 8 contrôleurs dans les jeux pris en charge."
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, duckstation, pcsx2
 msgctxt "game_options"
 msgid "MULTITAP"
-msgstr ""
+msgstr "MULTITAP"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Port 1"
-msgstr ""
+msgstr "Port 1"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Port 2"
-msgstr ""
+msgstr "Port 2"
 
 #. TRANSLATION: libretro/mednafen_psx, duckstation
 msgctxt "game_options"
 msgid "Port 1+2"
-msgstr ""
+msgstr "Port 1+2"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Analog Controller"
-msgstr ""
+msgstr "Contrôleur analogique"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "DualShock Controller"
-msgstr ""
+msgstr "Contrôleur DualShock"
 
 #. TRANSLATION: libretro/mednafen_psx, libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Analog Joystick (Flystick)"
-msgstr ""
+msgstr "Joystick analogique (Flystick)"
 
 #. TRANSLATION: libretro/mednafen_supergrafx, libretro/pce, libretro/pce_fast, libretro/pcfx
 msgctxt "game_options"
 msgid "Enhancement. Remove the sixteen sprites per line limit."
-msgstr ""
+msgstr "Supprimez la limite de seize sprites par ligne."
 
 #. TRANSLATION: libretro/mednafen_wswan
 msgctxt "game_options"
 msgid "Manual"
-msgstr ""
+msgstr "Manuel"
 
 #. TRANSLATION: libretro/mednafen_wswan
 msgctxt "game_options"
 msgid "Portrait"
-msgstr ""
+msgstr "Portrait"
 
 #. TRANSLATION: libretro/mednafen_wswan
 msgctxt "game_options"
 msgid "Landscape"
-msgstr ""
+msgstr "Paysage"
 
 #. TRANSLATION: libretro/mgba
 msgctxt "game_options"
 msgid "Requires BIOS file to be present."
-msgstr ""
+msgstr "Nécessite que le fichier BIOS soit présent."
 
 #. TRANSLATION: libretro/mgba, libretro/mgba, libretro/vba-m, libretro/vba-m
 msgctxt "game_options"
 msgid "Only for Super Game Boy enhanced games."
-msgstr ""
+msgstr "Uniquement pour les jeux améliorés Super Game Boy."
 
 #. TRANSLATION: libretro/mgba, libretro/mgba, libretro/vba-m, libretro/vba-m
 msgctxt "game_options"
 msgid "SUPER GB BORDERS"
-msgstr ""
+msgstr "FRONTIÈRES SUPER GB"
 
 #. TRANSLATION: libretro/mgba
 msgctxt "game_options"
 msgid "Value to use for the emulated solar sensor (Boktai)."
-msgstr ""
+msgstr "Valeur à utiliser pour le capteur solaire émulé (Boktai)."
 
 #. TRANSLATION: libretro/mgba, libretro/vba-m
 msgctxt "game_options"
 msgid "SOLAR SENSOR LEVEL"
-msgstr ""
+msgstr "NIVEAU DU CAPTEUR SOLAIRE"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "TEAM COLOR MODE"
-msgstr ""
+msgstr "MODE COULEUR D'ÉQUIPE"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "Selfie"
-msgstr ""
+msgstr "Selfies"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "Color"
-msgstr ""
+msgstr "Couleur"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "Sex"
-msgstr ""
+msgstr "Sex"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "Skynet"
-msgstr ""
+msgstr "Skynet"
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "Enable or disable monsters in battle."
-msgstr ""
+msgstr "Activez ou désactivez les monstres au combat."
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
 msgid "MONSTERS"
-msgstr ""
+msgstr "MONSTRES"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "4:3 RENDERING RESOLUTION"
-msgstr ""
+msgstr "RÉSOLUTION DE RENDU 4:3"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -3200,681 +3205,685 @@ msgid ""
 "Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D "
 "objects clearer."
 msgstr ""
+"Augmentez la résolution de rendu en format 16:9. Fait de la 3Ddes objets "
+"plus clairs"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "16:9 RENDERING RESOLUTION"
-msgstr ""
+msgstr "RÉSOLUTION DE RENDU 16:9"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Enhancement. 3 point is accurate to N64, standard is better."
-msgstr ""
+msgstr "3 points est précis à N64, la norme est meilleure."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "TEXTURE FILTERING MODE"
-msgstr ""
+msgstr "MODE DE FILTRAGE DE TEXTURE"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "standard"
-msgstr ""
+msgstr "standard"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "3 point"
-msgstr ""
+msgstr "3 point"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
-msgstr ""
+msgstr "Lisser les bords irréguliers sur les polygones d'objets 3D."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
-msgstr ""
+msgstr "Textures lisses sur des objets 3D."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Smooth 1"
-msgstr ""
+msgstr "Lisse 1"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Smooth 2"
-msgstr ""
+msgstr "Lisse 2"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Smooth 3"
-msgstr ""
+msgstr "Lisse 3"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Smooth 4"
-msgstr ""
+msgstr "Lisse 4"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Sharp 1"
-msgstr ""
+msgstr "Sharp 1"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Sharp 2"
-msgstr ""
+msgstr "Sharp 2"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Enhancement. Upscale textures."
-msgstr ""
+msgstr "Textures haut de gamme."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "TEXTURE UPSCALING"
-msgstr ""
+msgstr "AMÉLIORATION DE LA TEXTURE"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "As Is"
-msgstr ""
+msgstr "Comme si"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "X2"
-msgstr ""
+msgstr "X2"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
-msgstr ""
+msgstr "Émulez un pak dans le port d'extension du contrôleur."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER PAK 1"
-msgstr ""
+msgstr "CONTRÔLEUR PAK 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Memory Pak"
-msgstr ""
+msgstr "Memory Pak"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Rumble Pak"
-msgstr ""
+msgstr "Rumble Pak"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER PAK 2"
-msgstr ""
+msgstr "CONTRÔLEUR PAK 2"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER PAK 3"
-msgstr ""
+msgstr "CONTRÔLEUR PAK 3"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER PAK 4"
-msgstr ""
+msgstr "CONTRÔLEUR PAK 4"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "Can change the language of some games."
-msgstr ""
+msgstr "Peut changer la langue de certains jeux."
 
 #. TRANSLATION: libretro/neocd, flycast/uzem, redream
 msgctxt "game_options"
 msgid "Japan"
-msgstr ""
+msgstr "Japon"
 
 #. TRANSLATION: libretro/neocd, flycast/uzem
 msgctxt "game_options"
 msgid "USA"
-msgstr ""
+msgstr "USA"
 
 #. TRANSLATION: libretro/neocd, flycast/uzem, redream
 msgctxt "game_options"
 msgid "Europe"
-msgstr ""
+msgstr "Europe"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "Universe BIOS is not compatible with cheats."
-msgstr ""
+msgstr "Universe BIOS n'est pas compatible avec les tricheurs."
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "NEO GEO CD BIOS"
-msgstr ""
+msgstr "NEO GEO CD BIOS"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "CDZ"
-msgstr ""
+msgstr "CDZ"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "CDZ (MAME)"
-msgstr ""
+msgstr "CDZ (MAME)"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "Use one save file per game."
-msgstr ""
+msgstr "Utilisez un fichier de sauvegarde par jeu."
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "PER-GAME SAVES"
-msgstr ""
+msgstr "SAUVEGARDES PAR JEU"
 
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
 msgid "Manually activate the adapter for supported games."
-msgstr ""
+msgstr "Activez manuellement l'adaptateur pour les jeux pris en charge."
 
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
 msgid "4 PLAYER ADAPTER"
-msgstr ""
+msgstr "ADAPTATEUR 4 JOUEURS"
 
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
 msgid "NTSC (NES)"
-msgstr ""
+msgstr "NTSC (NES)"
 
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
 msgid "Famicom (FDS)"
-msgstr ""
+msgstr "Famicom (FDS)"
 
 #. TRANSLATION: libretro/np2kai, libretro/quasi88
 msgctxt "game_options"
 msgid "PC MODEL"
-msgstr ""
+msgstr "PC MODEL"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Select the processor model."
-msgstr ""
+msgstr "Sélectionnez le modèle de processeur."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "CPU FEATURE"
-msgstr ""
+msgstr "CARACTÉRISTIQUE DU CPU"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "OVERCLOCK MULTIPLIER"
-msgstr ""
+msgstr "MULTIPLICATEUR D'OVERCLOCK"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "6x (Recommended)"
-msgstr ""
+msgstr "6x (recommandé)"
 
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "1MB"
-msgstr ""
+msgstr "1MB"
 
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "3MB"
-msgstr ""
+msgstr "3MB"
 
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "7MB"
-msgstr ""
+msgstr "7MB"
 
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "11MB"
-msgstr ""
+msgstr "11MB"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "13MB (Recommended)"
-msgstr ""
+msgstr "13 Mo (recommandé)"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "120MB"
-msgstr ""
+msgstr "120MB"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "230MB"
-msgstr ""
+msgstr "230MB"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "512MB"
-msgstr ""
+msgstr "512MB"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "1024MB"
-msgstr ""
+msgstr "1024MB"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Graphic Display Controller model."
-msgstr ""
+msgstr "Modèle de contrôleur d'affichage graphique."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "GDC"
-msgstr ""
+msgstr "GDC"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Older games skipped drawing every second line, this masks that."
 msgstr ""
+"Les jeux plus anciens ne dessinaient pas une ligne sur deux, cela les "
+"masques."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "REMOVE SCANLINES"
-msgstr ""
+msgstr "SUPPRIMER LES LIGNES DE SCAN"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Full 255 lines"
-msgstr ""
+msgstr "255 lignes complètes"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Some games rely on this (Apros)."
-msgstr ""
+msgstr "Certains jeux en dépendent (Apros)."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "REAL PALETTES"
-msgstr ""
+msgstr "VRAIES PALETTES"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "26K for old games and 86K for newer games."
-msgstr ""
+msgstr "26K pour les anciens jeux et 86K pour les nouveaux jeux."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "SOUND BOARD"
-msgstr ""
+msgstr "CARTE SON"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "To have music and not only sound in games (Owl-Zoo)."
-msgstr ""
+msgstr "Avoir de la musique et pas seulement du son dans les jeux (Owl-Zoo)."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "JAST SOUND"
-msgstr ""
+msgstr "SON JAST"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Emulate a keyboard/mouse/joypad."
-msgstr ""
+msgstr "Émulez un clavier/souris/joypad."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "JOY2KEY PROFILE"
-msgstr ""
+msgstr "PROFIL JOY2KEY"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
-msgstr ""
+msgstr "Flèches"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows 3button"
-msgstr ""
+msgstr "Flèches 3 boutons"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Keypad"
-msgstr ""
+msgstr "Clavier"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Keypad 3button"
-msgstr ""
+msgstr "Clavier 3 boutons"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Manual keyboard"
-msgstr ""
+msgstr "Clavier manuel"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Atari Joypad"
-msgstr ""
+msgstr "Manette Atari"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "EMULATED SYSTEM"
-msgstr ""
+msgstr "SYSTÈME ÉMULÉ"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Videopac G7000 (European)"
-msgstr ""
+msgstr "Vidéopac G7000 (européen)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Videopac+ G7400 (European)"
-msgstr ""
+msgstr "Videopac+ G7400 (européen)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Videopac+ G7400 (France)"
-msgstr ""
+msgstr "Vidéopac+ G7400 (France)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Some games accept input from port 2 instead of port 1."
-msgstr ""
+msgstr "Certains jeux acceptent l'entrée du port 2 au lieu du port 1."
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "SWAP GAMEPADS"
-msgstr ""
+msgstr "ÉCHANGER LES MANETTES DE JEU"
 
 #. TRANSLATION: libretro/o2em, libretro/picodrive
 msgctxt "game_options"
 msgid "Zooms in to hide black borders."
-msgstr ""
+msgstr "Effectue un zoom avant pour masquer les bordures noires."
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "CRT GHOSTING EFFECT"
-msgstr ""
+msgstr "EFFET FANTÔME CRT (Ghosting)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Ghosting (65%)"
-msgstr ""
+msgstr "Ghosting (65%)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Ghosting (75%)"
-msgstr ""
+msgstr "Ghosting (75%)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Ghosting (85%)"
-msgstr ""
+msgstr "Ghosting (85%)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Ghosting (95%)"
-msgstr ""
+msgstr "Ghosting (95%)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
-msgstr ""
+msgstr "Adoucir l'effet sonore de hachage de certains jeux."
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "AUDIO FILTER"
-msgstr ""
+msgstr "FILTRE AUDIO"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.0x (12.50Mhz)"
-msgstr ""
+msgstr "1.0x (12.50Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.1x (13.75Mhz)"
-msgstr ""
+msgstr "1.1x (13.75Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.2x (15.00Mhz)"
-msgstr ""
+msgstr "1.2x (15.00Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.5x (18.75Mhz)"
-msgstr ""
+msgstr "1.5x (18.75Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.6x (20.00Mhz)"
-msgstr ""
+msgstr "1.6x (20.00Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "1.8x (22.50Mhz)"
-msgstr ""
+msgstr "1.8x (22.50Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "2.0x (25.00Mhz)"
-msgstr ""
+msgstr "2.0x (25.00Mhz)"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Fixes a possible bug with multiple controllers detection."
-msgstr ""
+msgstr "Corrige un bogue possible avec la détection de plusieurs contrôleurs."
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "ACTIVE INPUT DEVICES FIX"
-msgstr ""
+msgstr "CORRECTIF DES DISPOSITIFS D'ENTREE ACTIFS"
 
 #. TRANSLATION: libretro/opera, libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "SPECIFIC GAME FIXES"
-msgstr ""
+msgstr "CORRECTIFS SPECIFIQUES AU JEU"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Alone in the Dark"
-msgstr ""
+msgstr "Alone in the Dark"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Crash-n Burn"
-msgstr ""
+msgstr "Crash-n Burn"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Dinopark Tycoon"
-msgstr ""
+msgstr "Dinopark Tycoon"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Microcosm"
-msgstr ""
+msgstr "Microcosm"
 
 #. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp
 msgctxt "game_options"
 msgid "Automatic"
-msgstr ""
+msgstr "Automatique"
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "N64 3-point"
-msgstr ""
+msgstr "N64 3-point"
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "Fullspeed can break some games."
-msgstr ""
+msgstr "La pleine vitesse peut casser certains jeux."
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAMERATE"
-msgstr ""
+msgstr "FRAMERATE"
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "fullspeed"
-msgstr ""
+msgstr "pleine vitesse"
 
 #. TRANSLATION: libretro/parallel_n64, libretro/puae, libretro/vb, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "original"
-msgstr ""
+msgstr "original"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
 msgid "PCE Joypad"
-msgstr ""
+msgstr "PCE Joypad"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
 msgid "PCE Mouse"
-msgstr ""
+msgstr "PCE Mouse"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
-msgstr ""
+msgstr "Désactivé est plus sûr, activé pour des jeux spécifiques."
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Double the rendering resolution. No effect on 64-bit machines."
-msgstr ""
+msgstr "Doublez la résolution de rendu. Aucun effet sur les machines 64 bits."
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "ENHANCED RENDERING RESOLUTION (32-BIT ONLY)"
-msgstr ""
+msgstr "RÉSOLUTION DE RENDU AMÉLIORÉE (32 BITS UNIQUEMENT)"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "On (Speed hack)"
-msgstr ""
+msgstr "On (Speed hack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "Port1"
-msgstr ""
+msgstr "Port1"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "Port2"
-msgstr ""
+msgstr "Port2"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "Port1+2"
-msgstr ""
+msgstr "Port1+2"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Capcom VS games Expand Screen Width"
-msgstr ""
+msgstr "Les jeux Capcom VS augmentent la largeur de l'écran"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Chrono Chross Odd/Even Bit Hack"
-msgstr ""
+msgstr "Chrono Chross Odd/Even Bit Hack"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Dark Forces Flat Tex Triangles Fix"
-msgstr ""
+msgstr "Correction des triangles Flat Tex de Dark Forces"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Diablo Music Fix"
-msgstr ""
+msgstr "Correction de la musique Diablo"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Lunar Ignore Brightness Color Fix"
-msgstr ""
+msgstr "Lunar Ignore Brightness Color Fix"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "InuYasha Sengoku Battle Fix"
-msgstr ""
+msgstr "InuYasha Sengoku Battle Fix"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Pandemonium 2 Lazy Screen Update Fix"
-msgstr ""
+msgstr "Correctif de mise à jour de l'écran paresseux de Pandemonium 2"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Parasite Eve 2/Vandal Hearts 1&2 Fix"
-msgstr ""
+msgstr "Parasite Eve 2/Vandal Hearts 1&2 Fix"
 
 #. TRANSLATION: libretro/pokemini
 msgctxt "game_options"
 msgid "Produces a clean LCD effect."
-msgstr ""
+msgstr "Produit un effet LCD net."
 
 #. TRANSLATION: libretro/pokemini
 msgctxt "game_options"
 msgid "LCD FILTER"
-msgstr ""
+msgstr "FILTRE LCD"
 
 #. TRANSLATION: libretro/pokemini
 msgctxt "game_options"
 msgid "LCD GHOSTING EFFECTS"
-msgstr ""
+msgstr "EFFETS DE FANTÔME LCD"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Green - GameKing"
-msgstr ""
+msgstr "Vert - GameKing"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "VB - Virtual Boy"
-msgstr ""
+msgstr "VB - Virtual Boy"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Potator - Orangish - Amber"
-msgstr ""
+msgstr "Potator - Orangé - Ambré"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Potator - Green"
-msgstr ""
+msgstr "Potator - Vert"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Potator - Blue"
-msgstr ""
+msgstr "Potator - Bleu"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Potator - Green - BGB"
-msgstr ""
+msgstr "Potator - Vert - BGB"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Potator - Green Wataroo"
-msgstr ""
+msgstr "Potator - Wataroo vert"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Brownish - Travel Wood"
-msgstr ""
+msgstr "Brunâtre - Bois de voyage"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Blue - Bubbles Blue"
-msgstr ""
+msgstr "Bleu - Bulles Bleues"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
 msgid "Blue - Game Master"
-msgstr ""
+msgstr "Bleu - Maître du jeu"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
