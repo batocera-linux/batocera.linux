@@ -107,17 +107,17 @@ class DolphinTriforceGenerator(Generator):
         # Serial Port 1 to AM-Baseband
         # F-Zero GX exception, it needs to not be using the AM-Baseband to function.
         # This cannot be set in the game's INI for some reason.
-        if rom == "F-Zero GX (USA).iso":
-            dolphinTriforceSettings.set("Core", "SerialPort1", "255")
-        else:
-            dolphinTriforceSettings.set("Core", "SerialPort1", "6")
+        #if rom == "F-Zero GX (USA).iso":
+        #    dolphinTriforceSettings.set("Core", "SerialPort1", "255")
+        #else:
+        #    dolphinTriforceSettings.set("Core", "SerialPort1", "6")
 
         # Gamecube pads forced as AM-Baseband
         # F-Zero GX exception, it needs it to be a regular pad instead.
-        if rom == "F-Zero GX (USA).iso":
-            dolphinTriforceSettings.set("Core", "SIDevice0", "6")
-        else:
-            dolphinTriforceSettings.set("Core", "SIDevice0", "11")
+        #if rom == "F-Zero GX (USA).iso":
+        #    dolphinTriforceSettings.set("Core", "SIDevice0", "6")
+        #else:
+        #    dolphinTriforceSettings.set("Core", "SIDevice0", "11")
 
         # Save dolphin.ini
         with open(batoceraFiles.dolphinTriforceIni, 'w') as configfile:
