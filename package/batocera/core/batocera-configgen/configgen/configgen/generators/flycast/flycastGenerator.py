@@ -50,6 +50,9 @@ class FlycastGenerator(Generator):
             
             # Set the evdev_mapping_X
             Config.set("input", 'evdev_mapping_' + controller.player, controllerConfigFile)
+
+            # Ensure controller is on Port A
+            Config.set("input", 'maple_/dev/input/event' + eventNum, "0")
         
         if not Config.has_section("players"):
             Config.add_section("players")
@@ -133,15 +136,17 @@ class FlycastGenerator(Generator):
         # internal config
         # vmuA1
         if not isfile(batoceraFiles.flycastVMUA1):
-            if not isdir(dirname(batoceraFiles.flycastVMUA1)):
+            if not isdir(dirname(batoceraFiles.flycastSaves)):
                 os.mkdir(batoceraFiles.flycastSaves)
-                os.mkdir(dirname(batoceraFiles.flycastVMUA1))
+            if not isdir(dirname(batoceraFiles.flycastSaves) + "/flycast"):
+                os.mkdir((batoceraFiles.flycastSaves) + "/flycast")
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA1)
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
-            if not isdir(dirname(batoceraFiles.flycastVMUA2)):
+            if not isdir(dirname(batoceraFiles.flycastSaves)):
                 os.mkdir(batoceraFiles.flycastSaves)
-                os.mkdir(dirname(batoceraFiles.flycastVMUA2))
+            if not isdir(dirname(batoceraFiles.flycastSaves) + "/flycast"):
+                os.mkdir((batoceraFiles.flycastSaves) + "/flycast")
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
         
         # flycast vulkan workaround - manually point to vulkan icd's in preferred order.
