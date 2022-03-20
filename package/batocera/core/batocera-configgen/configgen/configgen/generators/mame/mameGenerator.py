@@ -314,6 +314,7 @@ class MameGenerator(Generator):
                             for row in autoRunList:
                                 if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
                                     autoRunCmd = row[1] + "\\n"
+                                    autoRunDelay = 3
                 if autoRunCmd != "":
                     if autoRunCmd.startswith("'"):
                         autoRunCmd.replace("'", "")

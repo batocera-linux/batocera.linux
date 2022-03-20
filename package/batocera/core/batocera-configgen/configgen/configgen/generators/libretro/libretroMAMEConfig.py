@@ -141,13 +141,14 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
+            # lr-mame does NOT support multiple ini paths
             # Using computer.ini since autorun only applies to computers, and this would be unlikely to be used otherwise
             autoRunCmd = ""
             autoRunDelay = 0
-            if not os.path.exists('/var/run/mame_ini/'):
-                        os.makedirs('/var/run/mame_ini/')
-            if os.path.exists('/var/run/mame_ini/computer.ini'):
-                os.remove('/var/run/mame_ini/computer.ini')
+            if not os.path.exists('/userdata/saves/mame/mame/ini/'):
+                     os.makedirs('/userdata/saves/mame/mame/ini/')
+            if os.path.exists('/userdata/saves/mame/mame/ini/computer.ini'):
+                os.remove('/userdata/saves/mame/mame/ini/computer.ini')
             # bbc has different boots for floppy & cassette, no special boot for carts
             if system.name == "bbc":
                 if system.isOptSet("altromtype") or softList != "":
@@ -178,17 +179,14 @@ def generateMAMEConfigs(playersControllers, system, rom):
                             if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
                                 autoRunCmd = row[1] + "\\n"
                                 autoRunDelay = 3
+            commandLine += [ '-inipath', '/userdata/saves/mame/mame/ini/' ]
             if autoRunCmd != "":
-                # Write ini file
-                commandLine += [ '-inipath', '/var/run/mame_ini/;/userdata/saves/mame/mame/;/userdata/saves/mame/mame/ini/' ]
-                iniFile = open('/var/run/mame_ini/computer.ini', "w")
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
+                iniFile = open('/userdata/saves/mame/mame/ini/computer.ini', "w")
                 iniFile.write('autoboot_command          ' + autoRunCmd + "\n")
                 iniFile.write('autoboot_delay            ' + str(autoRunDelay))
                 iniFile.close()
-            else:
-                commandLine += [ '-inipath', '/userdata/saves/mame/mame/;/userdata/saves/mame/mame/ini/' ]
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -201,7 +199,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
     if not system.isOptSet("artworkcrop"):
-        if not system.name in [ 'pdp1', 'vgmplay' ]
+        if not system.name in [ 'pdp1', 'vgmplay' ]:
             commandLine += [ "-artwork_crop" ]
     else:
         if system.getOptBoolean("artworkcrop"):

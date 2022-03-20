@@ -3108,4 +3108,7 @@ pdp1:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-    Use Control-Enter to start after loading.
+    Use Control-Enter or Start to start after loading. Loading may take some time,
+    if the green lights are blinking, it is loading.
+
+    Spacewar is two player only, if you only have one controller connected, it will control both ships.
