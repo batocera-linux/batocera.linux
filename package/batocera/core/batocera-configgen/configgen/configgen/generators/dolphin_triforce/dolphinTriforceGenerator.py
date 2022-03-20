@@ -235,104 +235,18 @@ class DolphinTriforceGenerator(Generator):
             os.makedirs(batoceraFiles.dolphinTriforceGameSettings)
 
         # GFZE01 F-Zero GX (convert to F-Zero AX)
+        # Commented out. Non-playable.
 
-        if not os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GFZE01.ini"):
-            dolphinTriforceGameSettingsGFZE01 = open(batoceraFiles.dolphinTriforceGameSettings + "/GFZE01.ini", "w")
-            dolphinTriforceGameSettingsGFZE01.write("""[Gecko]
-$AX
-06003F30 00000284
-818D831C 280C0000
-41820274 3C6C000B
-3863FADC 3883000C
-38A0000C 4BFFF5F5
-3CAC0019 8085D550
-64844001 9085D550
-3CAC0018 BBC30040
-BFC511DC 3C6C0010
-A0032A86 280000A4
-4082000C 380000A2
-B0032A86 380000C0
-98035D26 A0A32A7E
-3C006000 280500AD
-4082000C 3C8C0033
-9004DE1C 28050010
-408200CC 3C630022
-90037B90 3C630003
-3800002A B003C754
-3800002C B003C758
-38000029 B003C778
-3800002B B003C77C
-3C6C0034 3C006000
-9003CE94 3C803C00
-60803FA0 9003D000
-60803FCC 9003D008
-3C809001 608000D0
-9003D004 608000D4
-9003D00C 3C004800
-6000010C 9003D010
-3C003CE0 60004323
-9003D024 3C0090E1
-600000C8 9003D054
-3C003800 6000007F
-9003D11C 38003F40
-B003D122 3C009061
-600000EC 9003D124
-3C804BFF 6080FEEC
-9003D128 6080F9E8
-9003D478 380000D7
-98035817 3800002C
-9803582B 280500AC
-40820054 3C8C0032
-3C003C60 60008000
-90046E44 3C003863
-60003F1E 90046E48
-3C003806 60000001
-90046E54 3C007000
-6000FFFE 90046E5C
-3C0080ED 60008A9C
-90044A64 3C8C0033
-3C00809F 600032C0
-9004B5D0 280500B0
-40820010 3C8C0033
-80044E04 900D8A9C
-2805009C 40820038
-3C6C0032 38000002
-98034FBB 9803509B
-980351A7 980352DB
-980353B3 3800000E
-98034FFB 980350DF
-980351E7 9803531B
-980353F7 3C8C000C
-38845404 38640028
-38A00018 4BFFF415
-38000001 980C0133
-3C6CFFF8 3C003800
-6000000D 9003FB50
-3C808000 80043F24
-28000000 4082001C
-3C00000B 6000002E
-90043F20 3C000039
-6000001D 90043F24
-3C6C0007 A0043F20
-B0030CEE A0043F22
-B0030CF6 A0043F24
-B0030CFE 38003860
-B0030D04 A0043F26
-B0030D06 3C6C0009
-3C004E80 60000020
-90037428 80010014
-48016DF4 00000000
-0401AFA0 4BFE8F90
-[Gecko_Enabled]
-$AX
-""")
-            dolphinTriforceGameSettingsGFZE01.close()
 
         # GVSJ8P Virtua Striker 2002
         gamecode = "GVSJ8P"
 
         # Save state required for successful launch.
-        if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
+        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/StateSaves/" + gamecode + ".s01"):
+            shutil.copyfile("/usr/share/dolphin-triforce/StateSaves/" + gamecode + ".s01", "/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01")
+
+        # Download from the Github in case local file fails
+        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/StateSaves/" + gamecode + ".s01"):
             try:
                 myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
                 open("/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01", 'wb').write(myfile.content)
@@ -355,11 +269,16 @@ $DI Seed Blanker
 """)
             dolphinTriforceGameSettingsGVSJ8P.close()
 
+
         # GGPE01 Mario Kart GP 1
         gamecode = "GGPE01"
 
         # Save state required for successful launch.
-        if not os.path.exists(batoceraFiles.dolphinTriforceData + "/StateSaves/" + gamecode + ".s01"):
+        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/StateSaves/" + gamecode + ".s01"):
+            shutil.copyfile("/usr/share/dolphin-triforce/StateSaves/" + gamecode + ".s01", "/userdata/system/configs/dolphin-triforce/StateSaves/" + gamecode + ".s01")
+
+        # Download from the Github in case local file fails
+        if not os.path.exists(batoceraFiles.dolphinTriforceConfig + "/StateSaves/" + gamecode + ".s01"):
             try:
                 myfile = requests.get("https://github.com/batocera-linux/batocera.linux/raw/triforce-save-states/package/batocera/emulators/dolphin-triforce/" + gamecode + ".s01")
                 if myfile and myfile.status_code == 200:
