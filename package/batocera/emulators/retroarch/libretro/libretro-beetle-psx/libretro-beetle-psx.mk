@@ -13,7 +13,7 @@ LIBRETRO_BEETLE_PSX_OUTFILE=mednafen_psx_libretro.so
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
 # Batocera - RPi4 required_hw_api = "OpenGL Core >= 3.3 | Vulkan >= 1.0"
-  ifeq ($(!BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
     LIBRETRO_BEETLE_PSX_EXTRAOPT += HAVE_HW=1
     LIBRETRO_BEETLE_PSX_OUTFILE=mednafen_psx_hw_libretro.so
   endif
