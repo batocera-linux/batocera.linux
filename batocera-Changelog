@@ -32,6 +32,8 @@
         * bump: libretro snes cores
         * bump: nvidia to v510.54
         * bump: switchres
+		* bump: parallel64 to 25 Dec build - update optimisations
+        * bump: xemu to v 0.6.2-80
         * change: added most MAME configuration options to libretro-mame
         * change: Restored Sonic Retro Engine to non-x86 boards (using 1.1.2.1 for sonic2013 & 1.1.2 for soniccd)
         * change: MAME/MESS: speech module and 32k RAM option for TI-99, image reader enabled for Mac IIx model (x86_64)
@@ -43,6 +45,7 @@
 		* change: RPi4 now allows F1 menu access (xorg)
 		* change: moonlight configuration options added
 		* fix: mediatek 7921 cards
+		* fix: parallel64 not starting
 		* fix: lr-flycast with opengles
 		* fix: syncthing upgrade
 		* fix: relatek firmware symbolic links
@@ -50,8 +53,10 @@
 		* fix: citra running slow
 		* fix: duckstation pop-up
 		* fix: duckstation language
+		* fix: fix yabasanshiro not starting
 		* fix: cemu controller config
-		* fix: moonlight custom config getting overwritten
+    * fix: flycast not creating save directory on new install
+    * fix: moonlight custom config getting overwritten
 
 2022/02/xx - batocera.linux 33
         * add: Support for Beelink GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
