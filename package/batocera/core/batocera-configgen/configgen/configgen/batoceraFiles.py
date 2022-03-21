@@ -60,8 +60,9 @@ mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
 mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
 
-moonlightCustom = CONF+'/moonlight'
+moonlightCustom = CONF + '/moonlight'
 moonlightConfigFile = moonlightCustom + '/moonlight.conf'
+moonlightStagingConfigFile = moonlightCustom + '/staging/moonlight.conf'
 moonlightGamelist = moonlightCustom + '/gamelist.txt'
 moonlightMapping = dict()
 moonlightMapping[1] = moonlightCustom + '/mappingP1.conf'

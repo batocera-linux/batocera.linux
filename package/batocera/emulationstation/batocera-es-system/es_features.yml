@@ -5641,6 +5641,52 @@ melonds:
 
 moonlight:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        moonlight_codec:
+            prompt:      VIDEO CODEC
+            description: Codec used to compress video signal
+            choices:
+                "h264 (less latency)":                                 0
+                "h265(HEVC) (higher quality at lower bitrates)":       1
+        moonlight_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Resolution for streaming
+            choices:
+                "1280x720 (Default)":    0
+                "1920x1080":             1
+                "4k (3840x2160)":        2
+        moonlight_framerate:
+            prompt:      VIDEO FRAMERATE
+            description: Framerate
+            choices:
+                "30":                    0
+                "60 (Default)":          1
+                "120":                   2
+        moonlight_bitrate:
+            prompt:      BITRATE
+            description: Bitrate in Kbps. Higher number equals higher picture quality but requires more bandwidth
+            choices:
+                "5Mbps (5000) for lower resolution or fps":            0
+                "10Mbps (10000) for 1080p or 60 fps (Default)":        1
+                "20Mbps (20000) for 1080p (60 fps)":                   2
+                "50Mbps (50000) very high quality":                    3
+        moonlight_sops:
+            prompt:      SOPS
+            description: Streaming Optimal Playable Settings (may override other settings if enabled)
+            choices:
+                "on":                    0
+                "off":                   1
+        moonlight_quitapp:
+            prompt:      QUIT ON EXIT
+            description: Send quit app request to remote after quitting session
+            choices:
+                "on":                    0
+                "off":                   1
+        moonlight_avdecoder:
+            prompt:      AV DECODER
+            description: For Odroid Go Advance, if screen is rotated by 90 degrees select SDL
+            choices:
+                "SDL":                   0
 
 mupen64plus:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

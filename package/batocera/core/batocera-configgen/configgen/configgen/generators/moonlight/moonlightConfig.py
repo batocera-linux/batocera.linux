@@ -2,91 +2,112 @@
 
 import batoceraFiles
 import os
+import shutil
 from Emulator import Emulator
 from settings.unixSettings import UnixSettings
 
-def generateMoonlightConfig():
-    # conf file
-    try:
-        moonlightConfig = UnixSettings(batoceraFiles.moonlightConfigFile, separator=' ')
-    except UnicodeError:
-        # remove it and try again
-        os.remove(batoceraFiles.moonlightConfigFile)
-        moonlightConfig = UnixSettings(batoceraFiles.moonlightConfigFile, separator=' ')
+def generateMoonlightConfig(system):
 
-    ## Hostname or IP-address of host to connect to
-    ## By default host is autodiscovered using mDNS
-    #address = 
+    moonlightStagingConfigFile = batoceraFiles.moonlightStagingConfigFile
+    if not os.path.exists(batoceraFiles.moonlightCustom + '/staging'):
+        os.makedirs(batoceraFiles.moonlightCustom + '/staging')
 
-    ## Video streaming configuration
-    moonlightConfig.save('width', '1280')
-    moonlightConfig.save('height', '720')
-    moonlightConfig.save('fps', '60')
+    # If user made config file exists, copy to staging directory for use
+    if os.path.exists(batoceraFiles.moonlightConfigFile):
+        shutil.copy(batoceraFiles.moonlightConfigFile, batoceraFiles.moonlightStagingConfigFile)
+    else:
+        # truncate existing config and create new one
+        f = open(moonlightStagingConfigFile, "w").close()
 
-    ## Bitrate depends by default on resolution and fps
-    ## Set to -1 to enable default
-    ## 20Mbps (20000) for 1080p (60 fps)
-    ## 10Mbps (10000) for 1080p or 60 fps
-    ## 5Mbps (5000) for lower resolution or fps
-    moonlightConfig.save('bitrate', '-1')
+        moonlightConfig = UnixSettings(moonlightStagingConfigFile, separator=' ')
 
-    ## Size of network packets should be lower than MTU
-    #packetsize = 1024
+        # resolution
+        if system.isOptSet('moonlight_resolution'):
+            if system.config["moonlight_resolution"] == "0":
+                moonlightConfig.save('width', '1280')
+                moonlightConfig.save('height', '720')
+            elif system.config["moonlight_resolution"] == "1":
+                moonlightConfig.save('width', '1920')
+                moonlightConfig.save('height', '1080')
+            elif system.config["moonlight_resolution"] == "2":
+                moonlightConfig.save('width', '3840')
+                moonlightConfig.save('height', '2160')
+            else:
+                moonlightConfig.save('width', '1280')
+                moonlightConfig.save('height', '720')
+        else:
+            moonlightConfig.save('width', '1280')
+            moonlightConfig.save('height', '720')
 
-    ## Select video codec (auto/h264/h265)
-    #codec = auto
+        # framerate
+        if system.isOptSet('moonlight_framerate'):
+            if system.config["moonlight_framerate"] == "0":
+                moonlightConfig.save('fps', '30')
+            elif system.config["moonlight_framerate"] == "1":
+                moonlightConfig.save('fps', '60')
+            elif system.config["moonlight_framerate"] == "2":
+                moonlightConfig.save('fps', '120')
+            else:
+                moonlightConfig.save('fps', '60')
+        else:
+            moonlightConfig.save('fps', '60')
 
-    ## Default started application on host
-    #app = Steam
+        # bitrate
+        if system.isOptSet('moonlight_bitrate'):
+            if system.config["moonlight_bitrate"] == "0":
+                moonlightConfig.save('bitrate', '5000')
+            elif system.config["moonlight_bitrate"] == "1":
+                moonlightConfig.save('bitrate', '10000')
+            elif system.config["moonlight_bitrate"] == "2":
+                moonlightConfig.save('bitrate', '20000')
+            elif system.config["moonlight_bitrate"] == "3":
+                moonlightConfig.save('bitrate', '50000')
+            else:
+                moonlightConfig.save('bitrate', '-1') #-1 sets Moonlight default
+        else:
+            moonlightConfig.save('bitrate', '-1') #-1 sets Moonlight default
 
-    ## Default used mapping for streaming
-    ## Searched for in $XDG_DATA_DIRS/moonlight or /usr/share/moonlight and /usr/local/share/moonlight
-    ## Mapping can also be user overrided in $XDG_CONFIG_DIR/moonlight or ~/.config/moonlight or current directory
-    #mapping = gamecontrollerdb.txt
+        # codec
+        if system.isOptSet('moonlight_codec'):
+            if system.config["moonlight_codec"] == "0":
+                moonlightConfig.save('codec', 'h264')
+            elif system.config["moonlight_codec"] == "1":
+                moonlightConfig.save('codec', 'h265')
+            else:
+                moonlightConfig.save('codec', 'auto')
+        else:
+            moonlightConfig.save('codec', 'auto')
 
-    ## Enable selected input devices
-    ## By default all available input devices should be used
-    ## Only evdev devices /dev/input/event* are allowed
-    ## To use a different mapping then default another mapping should be declared above the input
-    #input = /dev/input/event1
+        # sops (Streaming Optimal Playable Settings)
+        if system.isOptSet('moonlight_sops'):
+            if system.config["moonlight_sops"] == "0":
+                moonlightConfig.save('sops', 'true')
+            elif system.config["moonlight_sops"] == "1":
+                moonlightConfig.save('sops', 'false')
+            else:
+                moonlightConfig.save('sops', 'true')
+        else:
+            moonlightConfig.save('sops', 'true')
 
-    ## Enable GFE for changing graphical game settings for optimal performance and quality
-    moonlightConfig.save('sops', 'true')
+        # quit remote app on exit
+        if system.isOptSet('moonlight_quitapp'):
+            if system.config["moonlight_quitapp"] == "0":
+                moonlightConfig.save('quitappafter', 'true')
+            else:
+                moonlightConfig.save('quitappafter', 'false')
+        else:
+            moonlightConfig.save('quitappafter', 'false')
 
-    ## Play audio on host instead of streaming to client
-    #localaudio = false
+        # av decoder
+        if system.isOptSet('moonlight_avdecoder'):
+            if system.config["moonlight_avdecoder"] == "0":
+                moonlightConfig.save('platform', 'sdl')
+            else:
+                pass
+        else:
+            pass
 
-    ## Send quit app request to remote after quitting session
-    #quitappafter = false
+        ## Directory to store encryption keys
+        moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
 
-    ## Disable all input processing (view-only mode)
-    #viewonly = false
-
-    ## Select audio device to play sound on
-    #audio = sysdefault
-
-    ## Select the audio and video decoder to use
-    ## default - autodetect
-    ## aml - hardware video decoder for ODROID-C1/C2
-    ## rk  - hardware video decoder for ODROID-N1 Rockchip
-    ## omx - hardware video decoder for Raspberry Pi
-    ## imx - hardware video decoder for i.MX6 devices
-    ## x11 - software decoder
-    ## sdl - software decoder with SDL input and audio
-    ## fake - no audio and video
-    #platform = default
-
-    ## Directory to store encryption keys
-    ## By default keys are stored in $XDG_CACHE_DIR/moonlight or ~/.cache/moonlight
-    moonlightConfig.save('keydir', '/userdata/system/configs/moonlight/keydir')
-
-    ## Enable QOS settings to optimize for internet instead of local network
-    #remote = false
-
-    ## Enable 5.1 surround sound
-    #surround = false
-
-    ## Load additional configuration files
-    #config = /path/to/config
-
-    moonlightConfig.write()
+        moonlightConfig.write()
