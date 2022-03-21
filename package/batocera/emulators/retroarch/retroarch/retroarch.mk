@@ -119,8 +119,10 @@ ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
+  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
     RETROARCH_CONF_OPTS += --enable-opengl --disable-opengles --disable-opengles3
     RETROARCH_DEPENDENCIES += libgl
+  endif
 endif
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
