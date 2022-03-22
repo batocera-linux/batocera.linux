@@ -101,7 +101,19 @@ def generateMoonlightConfig(system):
         # av decoder
         if system.isOptSet('moonlight_avdecoder'):
             if system.config["moonlight_avdecoder"] == "0":
+                moonlightConfig.save('platform', 'aml')
+            elif system.config["moonlight_avdecoder"] == "1":
+                moonlightConfig.save('platform', 'rk')
+            elif system.config["moonlight_avdecoder"] == "2":
+                moonlightConfig.save('platform', 'omx')
+            elif system.config["moonlight_avdecoder"] == "3":
+                moonlightConfig.save('platform', 'imx')
+            elif system.config["moonlight_avdecoder"] == "4":
+                moonlightConfig.save('platform', 'x11')
+            elif system.config["moonlight_avdecoder"] == "5":
                 moonlightConfig.save('platform', 'sdl')
+            elif system.config["moonlight_avdecoder"] == "6":
+                moonlightConfig.save('platform', 'fake')
             else:
                 pass
         else:
