@@ -40,6 +40,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
 	BATOCERA_SHADERS_SYSTEM=orangepi_pc
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
 	BATOCERA_SHADERS_SYSTEM=low-gpu
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
+	BATOCERA_SHADERS_SYSTEM=low-gpu
 endif
 
 BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
