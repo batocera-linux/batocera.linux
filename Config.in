@@ -75,7 +75,6 @@ menu "System"
   endmenu
 
   menu "Network"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821ce/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8723ds/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8192eu/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8812au/Config.in"
@@ -376,6 +375,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/piboy/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-ethtool/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/btop/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/picade/Config.in"
 endmenu
 
 menu "Libraries"
