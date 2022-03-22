@@ -166,7 +166,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1" ]
     if sysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + sysName + ".cfg"
@@ -440,6 +440,23 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "512", "0"))         # Rate Hold
                 xml_input.appendChild(generateSpecialPortElement(config, 'standard', nplayer, pad.index, "UI_CONFIGURE", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "", ""))                           # MAME Menu
         
+            # Punchtape loading & Spacewar controls for PDP-1
+            if nplayer <= 2 and sysName == "pdp1":
+                if nplayer == 1:
+                    xml_input_alt.appendChild(generateComboPortElement(config_alt, ':CSW', pad.index, "KEYBOARD", "LCONTROL", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "1", "0"))                                # Control Panel Switch
+                    xml_input_alt.appendChild(generateComboPortElement(config_alt, ':CSW', pad.index, "KEYBOARD", "ENTER", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "256", "0"))                                 # Load Punchtape
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "1", "0"))    # P1 Spin Left
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "2", "0"))  # P1 Spin Right
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "4", "0"))                      # P1 Thrust
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "8", "0"))                      # P1 Fire
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "256", "0"))                    # P1 Hyperspace
+                elif nplayer == 2:
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "16", "0"))   # P2 Spin Left
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "32", "0")) # P2 Spin Right
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "64", "0"))                     # P2 Thrust
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))                    # P2 Fire
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "512", "0"))                    # P2 Hyperspace
+
         nplayer = nplayer + 1
         
         # save the config file

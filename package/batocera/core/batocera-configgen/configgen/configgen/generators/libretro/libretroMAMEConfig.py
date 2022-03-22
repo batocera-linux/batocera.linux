@@ -139,7 +139,54 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
 
-            # Autostart would go here, but it is not properly supported by lr-mame.
+            # Autostart via ini file
+            # Init variables, delete old ini if it exists, prepare ini path
+            # lr-mame does NOT support multiple ini paths
+            # Using computer.ini since autorun only applies to computers, and this would be unlikely to be used otherwise
+            autoRunCmd = ""
+            autoRunDelay = 0
+            if not os.path.exists('/userdata/saves/mame/mame/ini/'):
+                     os.makedirs('/userdata/saves/mame/mame/ini/')
+            if os.path.exists('/userdata/saves/mame/mame/ini/computer.ini'):
+                os.remove('/userdata/saves/mame/mame/ini/computer.ini')
+            # bbc has different boots for floppy & cassette, no special boot for carts
+            if system.name == "bbc":
+                if system.isOptSet("altromtype") or softList != "":
+                    if (system.isOptSet("altromtype") and system.config["altromtype"] == "cass") or softList[-4:] == "cass":
+                        autoRunCmd = '*tape\\nchain""\\n'
+                        autoRunDelay = 2
+                    elif (system.isOptSet("altromtype") and left(system.config["altromtype"], 4) == "flop") or softList[-4:] == "flop":
+                        autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
+                        autoRunDelay = 3
+                else:
+                    autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
+                    autoRunDelay = 3
+            # fm7 boots floppies, needs cassette loading
+            elif system.name == "fm7":
+                if system.isOptSet("altromtype") or softList != "":
+                    if (system.isOptSet("altromtype") and system.config["altromtype"] == "cass") or softList[-4:] == "cass":
+                        autoRunCmd = 'LOADM”“,,R\\n'
+                        autoRunDelay = 5
+            else:
+                # Check for an override file, otherwise use generic (if it exists)
+                autoRunCmd = messAutoRun[messMode]
+                autoRunFile = '/usr/share/batocera/configgen/data/mame/' + softList + '_autoload.csv'
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
+                                autoRunCmd = row[1] + "\\n"
+                                autoRunDelay = 3
+            commandLine += [ '-inipath', '/userdata/saves/mame/mame/ini/' ]
+            if autoRunCmd != "":
+                if autoRunCmd.startswith("'"):
+                    autoRunCmd.replace("'", "")
+                iniFile = open('/userdata/saves/mame/mame/ini/computer.ini', "w")
+                iniFile.write('autoboot_command          ' + autoRunCmd + "\n")
+                iniFile.write('autoboot_delay            ' + str(autoRunDelay))
+                iniFile.close()
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -150,8 +197,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
     commandLine += [ '-artpath', artPath ]
 
     # Artwork crop - default to On for lr-mame
-    if not (system.isOptSet("artworkcrop") and not system.getOptBoolean("artworkcrop")):
-        commandLine += [ "-artwork_crop" ]
+    # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
+    if not system.isOptSet("artworkcrop"):
+        if not system.name in [ 'pdp1', 'vgmplay' ]:
+            commandLine += [ "-artwork_crop" ]
+    else:
+        if system.getOptBoolean("artworkcrop"):
+            commandLine += [ "-artwork_crop" ]
 
     # Share plugins & samples with standalone MAME
     commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]    
@@ -162,7 +214,6 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
     # UI enable - for computer systems, the default sends all keys to the emulated system.
     # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
-    # Hotkey + D-Pad Up will toggle this when in use (scroll lock key)
     if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
         commandLine += [ "-ui_active" ]
 
@@ -429,7 +480,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1" ]
     if messSysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + messSysName + ".cfg"
@@ -698,7 +749,24 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON9", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "256", "0"))          # Rate Reset
             xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "512", "0"))         # Rate Hold
             xml_input.appendChild(generateSpecialPortElement(config, 'standard', nplayer, pad.index, "UI_CONFIGURE", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "", ""))
-        
+
+        # Punchtape loading & Spacewar controls for PDP-1
+        if nplayer <= 2 and messSysName == "pdp1":
+            if nplayer == 1:
+                xml_input_alt.appendChild(generateComboPortElement(config_alt, ':CSW', pad.index, "KEYBOARD", "LCONTROL", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "1", "0"))                                # Control Panel Switch
+                xml_input_alt.appendChild(generateComboPortElement(config_alt, ':CSW', pad.index, "KEYBOARD", "ENTER", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "256", "0"))                                 # Load Punchtape
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "1", "0"))    # P1 Spin Left
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "2", "0"))  # P1 Spin Right
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "4", "0"))                      # P1 Thrust
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "8", "0"))                      # P1 Fire
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "256", "0"))                    # P1 Hyperspace
+            elif nplayer == 2:
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "16", "0"))   # P2 Spin Left
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "32", "0")) # P2 Spin Right
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "64", "0"))                     # P2 Thrust
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))                    # P2 Fire
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "512", "0"))                    # P2 Hyperspace
+
         nplayer = nplayer + 1
         
         # save the config file

@@ -3095,3 +3095,20 @@ cave3rd:
     You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
 
     Enjoy Sega Cave CV1000 games under Linux!
+
+pdp1:
+  name:       PDP-1
+  manufacturer: Digital Equipment Corporation
+  release: 1961
+  hardware: computer
+  extensions: [zip, 7z, tap, rim, drm]
+  emulators:
+    libretro:
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Use Control-Enter or Start to start after loading. Loading may take some time,
+    if the green lights are blinking, it is loading.
+
+    Spacewar is two player only, if you only have one controller connected, it will control both ships.
