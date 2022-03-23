@@ -861,6 +861,8 @@ xegs:
   hardware: computer
   extensions: [atr, dsk, xfd, bin, rom, car, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
