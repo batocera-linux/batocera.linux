@@ -5711,13 +5711,9 @@ moonlight:
             prompt:      AV DECODER
             description: If screen is rotated by 90 degrees, select SDL.
             choices:
-                "AML":                   0
-                "RK":                    1
-                "OMX":                   2
-                "IMX":                   3
-                "X11":                   4
-                "SDL":                   5
-                "FAKE":                  6
+                "DEFAULT":               0
+                "SDL":                   "sdl"
+
 
 mupen64plus:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

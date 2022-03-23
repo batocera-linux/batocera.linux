@@ -99,25 +99,8 @@ def generateMoonlightConfig(system):
             moonlightConfig.save('quitappafter', 'false')
 
         # av decoder
-        if system.isOptSet('moonlight_avdecoder'):
-            if system.config["moonlight_avdecoder"] == "0":
-                moonlightConfig.save('platform', 'aml')
-            elif system.config["moonlight_avdecoder"] == "1":
-                moonlightConfig.save('platform', 'rk')
-            elif system.config["moonlight_avdecoder"] == "2":
-                moonlightConfig.save('platform', 'omx')
-            elif system.config["moonlight_avdecoder"] == "3":
-                moonlightConfig.save('platform', 'imx')
-            elif system.config["moonlight_avdecoder"] == "4":
-                moonlightConfig.save('platform', 'x11')
-            elif system.config["moonlight_avdecoder"] == "5":
-                moonlightConfig.save('platform', 'sdl')
-            elif system.config["moonlight_avdecoder"] == "6":
-                moonlightConfig.save('platform', 'fake')
-            else:
-                pass
-        else:
-            pass
+        if system.config["moonlight_avdecoder"] == "0": pass
+        elif "moonlight_avdecoder" in system.config: moonlightConfig.save('platform', system.config["moonlight_avdecoder"])
 
         ## Directory to store encryption keys
         moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
