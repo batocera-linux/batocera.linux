@@ -99,8 +99,9 @@ def generateMoonlightConfig(system):
             moonlightConfig.save('quitappafter', 'false')
 
         # av decoder
-        if system.config["moonlight_avdecoder"] == "0": pass
-        elif "moonlight_avdecoder" in system.config: moonlightConfig.save('platform', system.config["moonlight_avdecoder"])
+        if system.isOptSet('moonlight_avdecoder'):
+            if system.config["moonlight_avdecoder"] == "sdl": 
+                moonlightConfig.save('platform', 'sdl')
 
         ## Directory to store encryption keys
         moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
