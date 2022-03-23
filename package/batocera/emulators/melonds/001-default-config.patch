@@ -2,6 +2,15 @@ diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
 index 7a0ec698ba..0b06f8f120 100644
 --- a/src/frontend/qt_sdl/Config.cpp
 +++ b/src/frontend/qt_sdl/Config.cpp
+@@ -140,7 +140,7 @@ int DSiBatteryLevel;
+ bool DSiBatteryCharging;
+ 
+ 
+-const char* kConfigFile = "melonDS.ini";
++const char* kConfigFile = "/userdata/system/configs/melonDS/melonDS.ini";
+ 
+ ConfigEntry ConfigFile[] =
+ {
 @@ -241,28 +241,28 @@ ConfigEntry ConfigFile[] =
  
      {"ExternalBIOSEnable", 1, &ExternalBIOSEnable, false},

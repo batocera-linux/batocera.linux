@@ -127,6 +127,13 @@ ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_ICONS   += demul.png
 endif
 
+# melonds
+ifeq ($(BR2_PACKAGE_DEMUL),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-melonds
+  BATOCERA_DESKTOPAPPS_APPS    += melonds-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

@@ -23,4 +23,11 @@ define MELONDS_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/
 endef
 
+define MELONDS_POST_PROCESS
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/melonds/nds.melonds.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+MELONDS_POST_INSTALL_TARGET_HOOKS += MELONDS_POST_PROCESS
+
 $(eval $(cmake-package))
