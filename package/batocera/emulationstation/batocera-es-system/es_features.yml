@@ -5708,9 +5708,10 @@ moonlight:
                 "off":                   1
         moonlight_avdecoder:
             group: ADVANCED OPTIONS
-            prompt:      AV DECODER
+            prompt:      PREFERRED AV DECODER
             description: If screen is rotated by 90 degrees, select SDL.
             choices:
+                "None":                  "none"
                 "SDL":                   "sdl"
 
 mupen64plus:
