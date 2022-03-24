@@ -210,10 +210,45 @@ class MameGenerator(Generator):
                 commandArray += [ romBasename ]
             else:
                 # Alternate system for machines that have different configs (ie computers with different hardware)
+                macModel = "maclc3"
                 if system.isOptSet("altmodel"):
                     commandArray += [ system.config["altmodel"] ]
+                    if system.name == "macintosh":
+                        macModel = system.config["altmodel"]
                 else:
                     commandArray += [ messSysName[messMode] ]
+
+                #TI-99 32k RAM expansion & speech modules - enabled by default
+                if system.name == "ti99":
+                    commandArray += [ "-ioport", "peb" ]
+                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                        commandArray += ["-ioport:peb:slot2", "32kmem"]
+                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
+                        commandArray += ["-ioport:peb:slot3", "speech"]
+
+                # Mac RAM & Image Reader (if applicable)
+                if system.name == "macintosh":
+                    if system.isOptSet("ramsize"):
+                        ramSize = int(system.config["ramsize"])
+                        if macModel in [ 'maciix', 'maclc3' ]:
+                            if macModel == 'maclc3' and ramSize == 2:
+                                ramSize = 4
+                            if macModel == 'maclc3' and ramSize > 80:
+                                ramSize = 80
+                            if macModel == 'maciix' and ramSize == 16:
+                                ramSize = 32
+                            if macModel == 'maciix' and ramSize == 48:
+                                ramSize = 64
+                            commandArray += [ '-ramsize', str(ramSize) + 'M' ]
+                        if macModel == 'maciix':
+                            imageSlot = 'nba'
+                            if system.isOptSet('imagereader'):
+                                if system.config["imagereader"] == "disabled":
+                                    imageSlot = ''
+                                else:
+                                    imageSlot = system.config["imagereader"]
+                            if imageSlot != "":
+                                commandArray += [ "-" + imageSlot, 'image' ]
 
                 if softList == "":
                     # Boot disk for Macintosh
@@ -273,14 +308,6 @@ class MameGenerator(Generator):
                         else:
                             os.symlink(romDirname, softDir + softList, True)
                             commandArray += [ os.path.splitext(romBasename)[0] ]
-
-                #TI-99 32k RAM expansion & speech modules - enabled by default
-                if system.name == "ti99":
-                    commandArray += [ "-ioport", "peb" ]
-                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
-                        commandArray += ["-ioport:peb:slot2", "32kmem"]
-                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
-                        commandArray += ["-ioport:peb:slot3", "speech"]
 
                 autoRunCmd = ""
                 autoRunDelay = 0

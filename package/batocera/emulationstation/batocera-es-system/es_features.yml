@@ -2196,22 +2196,47 @@ libretro:
                       prompt:      MAC MODEL
                       description: Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for Color)
                       choices:
-                          "Mac 128k (128kb RAM, 2 LD Floppies)":                       mac128k
-                          "Mac 512k (512kb RAM, 2 LD Floppies)":                       mac512k
-                          "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)":                     macplus
-                          "Mac SE (4Mb RAM, 2 LD Floppies/HDD)":                       macse
-                          "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)":                  macclasc
-                          "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":             mac2fdhd
-                          "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":            maciix
-                          "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)": maclc3
+                          "Mac 128k (128kb RAM, 2 LD Floppies)":                         mac128k
+                          "Mac 512k (512kb RAM, 2 LD Floppies)":                         mac512k
+                          "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)":                       macplus
+                          "Mac SE (4Mb RAM, 2 LD Floppies/HDD)":                         macse
+                          "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)":                    macclasc
+                          "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":               mac2fdhd
+                          "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD/Image Reader)": maciix
+                          "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)":   maclc3
+                  imagereader:
+                      group: ADVANCED OPTIONS
+                      prompt:      IMAGE READER
+                      description: Install the image reader card to read idks image files (Mac IIx only)
+                      choices:
+                          "Disabled":         disabled
+                          "Slot A (Default)": nba
+                          "Slot B":           nbb
+                          "Slot C":           nbc
+                          "Slot D":           nbd
+                          "Slot E":           nbe
+                  ramsize:
+                      group: ADVANCED OPTIONS
+                      prompt:      RAM SIZE
+                      description: How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)
+                      choices:
+                          "2MB":    2
+                          "4MB":    4
+                          "8MB":    8
+                          "16MB":   16
+                          "32MB":   32
+                          "48MB":   48
+                          "64MB":   64
+                          "96MB":   96
+                          "128MB":  128
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
-                      description: Type of ROM file to load.
+                      description: Type of ROM file to load
                       choices:
-                          "Disk":       flop1
-                          "CD":         cdrm
-                          "Hard Drive": hard
+                          "Floppy Disk": flop1
+                          "CD":          cdrm
+                          "Hard Drive":  hard
                   bootdisk:
                       group: ADVANCED OPTIONS
                       prompt:      BOOT DISK
@@ -6863,22 +6888,48 @@ mame:
                     prompt:      MAC MODEL
                     description: Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for Color)
                     choices:
-                        "Mac 128k (128kb RAM, 2 LD Floppies)":                       mac128k
-                        "Mac 512k (512kb RAM, 2 LD Floppies)":                       mac512k
-                        "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)":                     macplus
-                        "Mac SE (4Mb RAM, 2 LD Floppies/HDD)":                       macse
-                        "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)":                  macclasc
-                        "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":             mac2fdhd
-                        "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":            maciix
-                        "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)": maclc3
+                        "Mac 128k (128kb RAM, 2 LD Floppies)":                          mac128k
+                        "Mac 512k (512kb RAM, 2 LD Floppies)":                          mac512k
+                        "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)":                        macplus
+                        "Mac SE (4Mb RAM, 2 LD Floppies/HDD)":                          macse
+                        "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)":                     macclasc
+                        "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)":                mac2fdhd
+                        "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)": maciix
+                        "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)":    maclc3
+                imagereader:
+                    group: ADVANCED OPTIONS
+                    prompt:      IMAGE READER
+                    description: Install the image reader card to read idks image files (Mac IIx only)
+                    choices:
+                        "Disabled":         disabled
+                        "Slot A (Default)": nba
+                        "Slot B":           nbb
+                        "Slot C":           nbc
+                        "Slot D":           nbd
+                        "Slot E":           nbe
+                ramsize:
+                    group: ADVANCED OPTIONS
+                    prompt:      RAM SIZE
+                    description: How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)
+                    choices:
+                        "2MB":    2
+                        "4MB":    4
+                        "8MB":    8
+                        "16MB":   16
+                        "32MB":   32
+                        "48MB":   48
+                        "64MB":   64
+                        "96MB":   96
+                        "128MB":  128
                 altromtype:
                     group: ADVANCED OPTIONS
                     prompt:      MEDIA TYPE
-                    description: Type of ROM file to load.
+                    description: Type of ROM file to load. Disk Image requires Mac IIx and Image Reader
                     choices:
-                        "Disk":       flop1
-                        "CD":         cdrm
-                        "Hard Drive": hard
+                        "Floppy Disk": flop1
+                        "CD":          cdrm
+                        "Hard Drive":  hard
+                        "Disk Image":  disk
                 bootdisk:
                     group: ADVANCED OPTIONS
                     prompt:      BOOT DISK

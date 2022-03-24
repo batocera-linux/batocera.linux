@@ -74,10 +74,46 @@ def generateMAMEConfigs(playersControllers, system, rom):
         else:
             # Command line for MESS consoles/computers
             # Alternate system for machines that have different configs (ie computers with different hardware)
+            macModel = 'maclc3'
             if system.isOptSet("altmodel"):
                 commandLine += [ system.config["altmodel"] ]
+                if system.name == "macintosh":
+                    macModel = system.config["altmodel"]
             else:
                 commandLine += [ messSysName[messMode] ]
+
+            #TI-99 32k RAM expansion & speech modules - enabled by default
+            if system.name == "ti99":
+                commandLine += [ "-ioport", "peb" ]
+                if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                    commandLine += ["-ioport:peb:slot2", "32kmem"]
+                if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
+                    commandLine += ["-ioport:peb:slot3", "speech"]
+
+            # Mac RAM & Image Reader (if applicable)
+            if system.name == "macintosh":
+                if system.isOptSet("ramsize"):
+                    ramSize = int(system.config["ramsize"])
+                    if macModel in [ 'maciix', 'maclc3' ]:
+                        if macModel == 'maclc3' and ramSize == 2:
+                            ramSize = 4
+                        if macModel == 'maclc3' and ramSize > 80:
+                            ramSize = 80
+                        if macModel == 'maciix' and ramSize == 16:
+                            ramSize = 32
+                        if macModel == 'maciix' and ramSize == 48:
+                            ramSize = 64
+                        commandLine += [ '-ramsize', str(ramSize) + 'M' ]
+                    if macModel == 'maciix':
+                        imageSlot = 'nba'
+                        if system.isOptSet('imagereader'):
+                            if system.config["imagereader"] == "disabled":
+                                imageSlot = ''
+                            else:
+                                imageSlot = system.config["imagereader"]
+                        if imageSlot != "":
+                            commandLine += [ "-" + imageSlot, 'image' ]
+
             if softList != "":
                 # Software list ROM commands
                 prepSoftwareList(subdirSoftList, softList, softDir, "/userdata/bios/mame/hash", romDirname)
@@ -86,17 +122,6 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 commandLine += [ "-swpath", softDir ]
                 commandLine += [ "-verbose" ]
             else:
-                # Boot disk for Macintosh
-                # Will use Floppy 1 or Hard Drive, depending on the disk.
-                if system.name == "macintosh" and system.isOptSet("bootdisk"):
-                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                        bootType = "-flop1"
-                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
-                    else:
-                        bootType = "-hard"
-                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
-                    commandLine += [ bootType, bootDisk ]
-
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
                 # Mac will auto change floppy 1 to 2 if a boot disk is enabled
                 if system.name != "macintosh":
@@ -120,6 +145,23 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 # Use the full filename for MESS non-softlist ROMs
                 commandLine += [ '"' + rom + '"' ]
                 commandLine += [ "-rompath", romDirname + ";/userdata/bios/" ]
+
+                # Boot disk for Macintosh
+                # Will use Floppy 1 or Hard Drive, depending on the disk.
+                if system.name == "macintosh" and system.isOptSet("bootdisk"):
+                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                        bootType = "-flop1"
+                        bootDisk = '"/userdata/bios/' + system.config["bootdisk"] + '.img"'
+                    else:
+                        bootType = "-hard"
+                        bootDisk = '"/userdata/bios/' + system.config["bootdisk"] + '.chd"'
+                    commandLine += [ bootType, bootDisk ]
+
+            # UI enable - for computer systems, the default sends all keys to the emulated system.
+            # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
+            if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
+                commandLine += [ "-ui_active" ]
+
             # MESS config folder
             if system.getOptBoolean("customcfg"):
                 cfgPath = "/userdata/system/configs/lr-mame/" + messSysName[messMode] + "/custom/"
@@ -130,14 +172,6 @@ def generateMAMEConfigs(playersControllers, system, rom):
             if not os.path.exists(cfgPath):
                 os.makedirs(cfgPath)
             commandLine += [ '-cfg_directory', cfgPath ]
-
-            #TI-99 32k RAM expansion & speech modules - enabled by default
-            if system.name == "ti99":
-                commandLine += [ "-ioport", "peb" ]
-                if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
-                    commandLine += ["-ioport:peb:slot2", "32kmem"]
-                if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
-                    commandLine += ["-ioport:peb:slot3", "speech"]
 
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
@@ -211,11 +245,6 @@ def generateMAMEConfigs(playersControllers, system, rom):
     if not os.path.exists("/userdata/saves/mame/plugins/"):
         os.makedirs("/userdata/saves/mame/plugins/")
     commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
-
-    # UI enable - for computer systems, the default sends all keys to the emulated system.
-    # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
-    if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
-        commandLine += [ "-ui_active" ]
 
     # Write command line file
     cmdFilename = "/var/run/lr-mame.cmd"
