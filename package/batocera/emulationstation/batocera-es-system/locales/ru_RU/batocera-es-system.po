@@ -1086,17 +1086,17 @@ msgctxt "game_options"
 msgid "No EMS/XMS"
 msgstr "Нет EMS/XMS"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/px68k
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/px68k, mame/uzem
 msgctxt "game_options"
 msgid "4MB"
 msgstr "4MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/px68k
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/px68k, mame/uzem
 msgctxt "game_options"
 msgid "8MB"
 msgstr "8MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/np2kai
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "16MB"
 msgstr "16MB"
@@ -1106,27 +1106,27 @@ msgctxt "game_options"
 msgid "24MB"
 msgstr "24MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/np2kai
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "32MB"
 msgstr "32MB"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "48MB"
 msgstr "48MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/np2kai
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "64MB"
 msgstr "64MB"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "96MB"
 msgstr "96MB"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "128MB"
 msgstr "128MB"
@@ -2270,7 +2270,7 @@ msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
 msgid "On (Default)"
 msgstr ""
@@ -2306,7 +2306,7 @@ msgctxt "game_options"
 msgid "ALT DPAD MODE"
 msgstr "АЛЬТЕРНАТИВНЫЙ РЕЖИМ КРЕСТОВИНЫ"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, cemu, flycast/uzem, ...
+#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, cemu, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Выкл (по умолчанию)"
@@ -2795,9 +2795,9 @@ msgctxt "game_options"
 msgid "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr ""
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
 msgctxt "game_options"
-msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
+msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD/Image Reader)"
 msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
@@ -2807,8 +2807,64 @@ msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
-msgid "Disk"
-msgstr "Диск"
+msgid "Install the image reader card to read idks image files (Mac IIx only)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "IMAGE READER"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Slot A (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Slot B"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Slot C"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Slot D"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Slot E"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid ""
+"How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "RAM SIZE"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, libretro/px68k, mame/uzem
+msgctxt "game_options"
+msgid "2MB"
+msgstr "2MB"
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "Type of ROM file to load"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Floppy Disk"
+msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2868,6 +2924,11 @@ msgstr "System 7.0.1 (жёсткий диск)"
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Creatronic Mega Duck cartridges"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "PDP-1 Paper Tape Reader Images"
 msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
@@ -4384,11 +4445,6 @@ msgstr "200Mhz (Разгон)"
 
 #. TRANSLATION: libretro/px68k
 msgctxt "game_options"
-msgid "2MB"
-msgstr "2MB"
-
-#. TRANSLATION: libretro/px68k
-msgctxt "game_options"
 msgid "5MB"
 msgstr "5MB"
 
@@ -5595,7 +5651,7 @@ msgctxt "game_options"
 msgid "Original"
 msgstr "Оригинал"
 
-#. TRANSLATION: daphne, openbor, pcsx2, redream, xemu, ...
+#. TRANSLATION: daphne, openbor, pcsx2, redream, demul
 msgctxt "game_options"
 msgid "Stretch"
 msgstr "Растянуть"
@@ -6243,7 +6299,7 @@ msgctxt "game_options"
 msgid "SCREEN RATIO"
 msgstr "СООТНОШЕНИЕ ЭКРАНА"
 
-#. TRANSLATION: flycast, xemu
+#. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Widescreen"
 msgstr "Широкоэкранный"
@@ -6392,6 +6448,134 @@ msgstr "2M"
 msgctxt "game_options"
 msgid "4M"
 msgstr "4M"
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid ""
+"h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth "
+"efficient."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIDEO STREAM CODEC"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "h264 (less latency)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "h265 (HEVC) (higher quality at lower bitrates)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIDEO STREAM RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "4K (3840x2160)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIDEO STREAM FRAMERATE"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "30FPS"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "60FPS"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "120FPS"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "Higher number for higher picture quality, but requires more bandwidth."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIDEO STREAM BITRATE"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "5Mbps (good for 720p)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "10Mbps (good for 1080p 60FPS)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "20Mbps (not supported by some routers)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "50Mbps (highest quality available)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid ""
+"Streaming Optimal Playable Settings, overrides other settings if enabled."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
+msgstr ""
+
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "on"
+msgstr ""
+
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "off"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "Close app on the remote host when quitting Moonlight."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "QUIT ON HOST"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "If screen is rotated by 90 degrees, select SDL."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "PREFERRED AV DECODER"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "SDL"
+msgstr ""
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7280,6 +7464,21 @@ msgctxt "game_options"
 msgid "FORCE 386DX CPU"
 msgstr "ПРИНУДИТЕЛЬНО 386DX CPU"
 
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Type of ROM file to load. Disk Image requires Mac IIx and Image Reader"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Disk Image"
+msgstr ""
+
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "BGFX for post-processing, accel/opengl for raw image."
@@ -7594,13 +7793,23 @@ msgstr "РЕЖИМ МАСШТАБИРОВАНИЯ"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "Center"
-msgstr "Центр"
+msgid "Original resolution"
+msgstr ""
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "Scale"
-msgstr "Масштаб"
+msgid "Scale to best fit"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "Stretch to full"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "Stretch to 16:9"
+msgstr ""
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -7816,6 +8025,18 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "ВКЛЮЧИТЬ RAW-ВВОД"
+
+#~ msgctxt "game_options"
+#~ msgid "Disk"
+#~ msgstr "Диск"
+
+#~ msgctxt "game_options"
+#~ msgid "Center"
+#~ msgstr "Центр"
+
+#~ msgctxt "game_options"
+#~ msgid "Scale"
+#~ msgstr "Масштаб"
 
 #~ msgctxt "game_options"
 #~ msgid "CUSTOM TEXTURES"
