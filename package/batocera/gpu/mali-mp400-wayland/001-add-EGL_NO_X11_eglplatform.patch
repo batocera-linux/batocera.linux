@@ -1,0 +1,13 @@
+--- a/include/EGL/eglplatform.h	2021-12-19 03:21:49.471351176 +0000
++++ b/include/EGL/eglplatform.h	2021-12-19 03:22:16.639219656 +0000
+@@ -46,6 +46,10 @@
+  * KHRONOS_APICALL and KHRONOS_APIENTRY are defined in KHR/mali_khrplatform.h
+  */
+ 
++#ifndef EGL_NO_X11
++#define EGL_NO_X11
++#endif
++
+ #ifndef EGLAPI
+ #define EGLAPI KHRONOS_APICALL
+ #endif

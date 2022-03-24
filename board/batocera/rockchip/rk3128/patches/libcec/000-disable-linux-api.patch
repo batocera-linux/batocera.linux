@@ -1,0 +1,19 @@
+--- a/src/libcec/cmake/CheckPlatformSupport.cmake	2022-03-15 17:43:49.123325507 +0000
++++ b/src/libcec/cmake/CheckPlatformSupport.cmake	2022-03-15 17:43:59.631276975 +0000
+@@ -154,16 +154,6 @@
+     list(APPEND CEC_SOURCES ${CEC_SOURCES_ADAPTER_EXYNOS})
+   endif()
+ 
+-  # Linux
+-  if (${HAVE_LINUX_API})
+-    set(LIB_INFO "${LIB_INFO}, Linux")
+-    SET(HAVE_LINUX_API ON CACHE BOOL "linux supported" FORCE)
+-    set(CEC_SOURCES_ADAPTER_LINUX adapter/Linux/LinuxCECAdapterDetection.cpp
+-                                  adapter/Linux/LinuxCECAdapterCommunication.cpp)
+-    source_group("Source Files\\adapter\\Linux" FILES ${CEC_SOURCES_ADAPTER_LINUX})
+-    list(APPEND CEC_SOURCES ${CEC_SOURCES_ADAPTER_LINUX})
+-  endif()
+-
+   # AOCEC
+   if (${HAVE_AOCEC_API})
+     set(LIB_INFO "${LIB_INFO}, AOCEC")
