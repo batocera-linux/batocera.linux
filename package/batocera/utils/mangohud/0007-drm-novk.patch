@@ -165,18 +165,20 @@ index 2235a68..6648745 100644
  	ImGui::GetBackgroundDrawList()->AddImage((void*)(intptr_t)(HUDElements.background_image_infos.texture), ImVec2(0, 0), ImVec2(HUDElements.background_image_infos.width, HUDElements.background_image_infos.height));
        }
 diff --git a/src/meson.build b/src/meson.build
-index dfcca39..bab6447 100644
+index dfcca39..95e8f69 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -282,3 +282,7 @@ if get_option('include_doc')
-     rename : ['MangoHud.conf.example']
-   )
+@@ -161,6 +161,10 @@ if is_unixy
+   endif
  endif
-+
-+if not get_option('use_vulkan')
+ 
++if get_option('use_vulkan')
 +    pre_args += '-DHAVE_VULKAN'
 +endif
-\ No newline at end of file
++
+ link_args = cc.get_supported_link_arguments(['-Wl,-Bsymbolic-functions', '-Wl,-z,relro', '-Wl,--exclude-libs,ALL', '-lGL'])
+ # meson fails to check version-script so just force add
+ link_args += '-Wl,--version-script,@0@'.format(join_paths(meson.current_source_dir(), 'mangohud.version'))
 diff --git a/src/vulkan.cpp b/src/vulkan.cpp
 index 9dcbe5f..eafe600 100644
 --- a/src/vulkan.cpp
