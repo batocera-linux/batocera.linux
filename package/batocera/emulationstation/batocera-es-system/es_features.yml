@@ -5686,6 +5686,105 @@ linapple:
 
 melonds:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        melonds_framerate:
+            group: ADVANCED OPTIONS
+            prompt: LIMIT FRAMERATE
+            description: Choose whether or not to limit the framerate.
+            choices:
+                "No Limitation":      0
+                "Standard (Default)": 1
+        melonds_resolution:
+            prompt: RENDERING RESOLUTION
+            description: Enhancement. Increase the rendering resolution.
+            choices:
+                "1x native (256x192) (Default)": 1
+                "2x native (512x384)":           2
+                "3x native (768x576)":           3
+                "4x native (1024x768)":          4
+                "5x native (1280x960)":          5
+                "6x native (1536x1152)":         6
+                "7x native (1792x1344)":         7
+                "8x native (2048x1536)":         8
+                "9x native (2304x1728)":         9
+                "10x native (2560x1920)":        10
+                "11x native (2816x2112)":        11
+                "12x native (3072x2304)":        12
+                "13x native (3328x2496)":        13
+                "14x native (3584x2688)":        14
+                "15x native (3840x2880)":        15
+                "16x native (4096x3072)":        16
+        melonds_polygons:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE POLYGON SPLITTING
+            description: Enables improved polygon splitting.
+            choices:
+                "Off (Default)": 0
+                "On":            1
+        melonds_rotation:
+            prompt: SCREEN ROTATION
+            description: Rotate the screen with the emulator.
+            choices:
+                "0 degrees (Default)": 0
+                "90 degrees":          1
+                "180 degrees":         2
+                "270 degrees":         3
+        melonds_screenswap:
+            prompt: SCREEN SWAP
+            description: Swap the Nintendo DS Displays.
+            choices:
+                "Off (Default)": 0
+                "On":            1
+        melonds_screensize:
+            prompt: SCREEN SIZE
+            description: Choose the screen size.
+            choices:
+                "1x (Default)": 0
+                "2x":           1
+                "3x":           2
+                "4x":           3
+        melonds_layout:
+            prompt: SCREEN LAYOUT
+            description: Choose the preferred screen layout.
+            choices:
+                "Natural (Default)": 0
+                "Vertical":          1
+                "Horizontal":        2
+                "Hybrid":            3
+        melonds_screensizing:
+            prompt: SCREEN SIZING
+            description: Choose the NDS screen sizings.
+            choices:
+                "Even (Default)":   0
+                "Emphasize top":    1
+                "Emphasize botton": 2
+                "Auto":             3
+                "Top only":         4
+                "Bottom only":      5
+        melonds_scaling:
+            prompt: INTEGER SCALING
+            description: Force integer scaling for pixels on larger displays.
+            choices:
+                "Off (Default)":   0
+                "On":              1
+        melonds_cheats:
+            prompt: ENABLE CHEATS
+            description: Enable cheats for MelonDS.
+            choices:
+                "Off (Default)":   0
+                "On":              1    
+        melonds_osd:
+            prompt: ENABLE OSD
+            description: Enable the on screen display.
+            choices:
+                "Off":          0
+                "On (Default)": 1
+        melonds_console:
+            prompt: CONSOLE TYPE
+            description: Choose console type.
+            choices:
+                "DS (default)":        0
+                "DSi (Experiemental)": 1
 
 moonlight:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
