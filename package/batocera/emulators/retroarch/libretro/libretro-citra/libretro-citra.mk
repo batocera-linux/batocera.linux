@@ -1,10 +1,10 @@
 ################################################################################
 #
-# CITRA
+# libretro-citra
 #
 ################################################################################
-# Version.: Commits on Jul 30, 2021
-LIBRETRO_CITRA_VERSION = b1959d07a340bfd9af65ad464fd19eb6799a96ef
+# Version: Commits on Feb 25, 2022
+LIBRETRO_CITRA_VERSION = 60406d34ed9c0e04a29eb0b83089e727a72162b9
 LIBRETRO_CITRA_SITE = https://github.com/libretro/citra.git
 LIBRETRO_CITRA_SITE_METHOD=git
 LIBRETRO_CITRA_GIT_SUBMODULES=YES
@@ -25,7 +25,6 @@ LIBRETRO_CITRA_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 define LIBRETRO_CITRA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/src/citra_libretro/citra_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/citra_libretro.so
-
 endef
 
 $(eval $(cmake-package))
