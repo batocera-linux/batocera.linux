@@ -1,13 +1,12 @@
 ################################################################################
 #
-# BLASTEM
+# libretro-blastem
 #
 ################################################################################
-# Version.: Commits on Apr xx, 2020
-LIBRETRO_BLASTEM_VERSION = a61b47d5489e
-LIBRETRO_BLASTEM_SOURCE = $(LIBRETRO_BLASTEM_VERSION).tar.gz
-LIBRETRO_BLASTEM_SITE = https://www.retrodev.com/repos/blastem/archive
-LIBRETRO_BLASTEM_LICENSE = Non-commercial
+# Version: Commits on Aug 10, 2021
+LIBRETRO_BLASTEM_VERSION = 0786858437ed71996f43b7af0fbe627eb88152fc
+LIBRETRO_BLASTEM_SITE = $(call github,libretro,blastem,$(LIBRETRO_BLASTEM_VERSION))
+LIBRETRO_BLASTEM_LICENSE = GPLv3
 
 LIBRETRO_BLASTEM_EXTRAOPTS=""
 
@@ -28,4 +27,3 @@ define LIBRETRO_BLASTEM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
-
