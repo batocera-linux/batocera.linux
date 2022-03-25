@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_TYRQUAKE
-        bool "libretro-tyrquake"
+    bool "libretro-tyrquake"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro Quake1 engine
+      help
+        A libretro Quake1 engine
 
 	  http://www.libretro.com
 

@@ -1,10 +1,10 @@
 ################################################################################
 #
-# LIBRETRO-VICE
+# libretro-vice
 #
 ################################################################################
-# Version.: Commits on Dec 30, 2021
-LIBRETRO_VICE_VERSION = af699397ba7b44dc48316277f1a7a24c845f7935
+# Version: Commits on Mar 26, 2022
+LIBRETRO_VICE_VERSION = b8efb4ac069a5ae8752fb5d7297053ef50d3cd23
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 LIBRETRO_VICE_LICENSE = GPLv2
 

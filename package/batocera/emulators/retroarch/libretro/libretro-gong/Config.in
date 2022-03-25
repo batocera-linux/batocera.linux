@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_GONG
-        bool "libretro-gong"
+    bool "libretro-gong"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro clone of pong.
+      help
+        A libretro clone of pong.
 
 	  http://www.libretro.com
 

@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_MAME
-        bool "libretro-mame"
+    bool "libretro-mame"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro mame core for Mame.
+      help
+        A libretro mame core for Mame.
 
 	  http://www.libretro.com
 

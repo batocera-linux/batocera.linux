@@ -1,8 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_PLAY
-        bool "libretro-play"
+    bool "libretro-play"
     select BR2_PACKAGE_QT5BASE
     select BR2_PACKAGE_QT5X11EXTRAS
     select BR2_PACKAGE_LIBGLEW
+      help
+        Play! - PlayStation2 Emulator
 
-        help
-          A PS2 portable emulator
+        https://purei.org/

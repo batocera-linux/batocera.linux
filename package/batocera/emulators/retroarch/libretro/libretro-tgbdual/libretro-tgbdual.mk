@@ -1,6 +1,6 @@
 ################################################################################
 #
-# TGBDUAL
+# libretro-tgbdual
 #
 ################################################################################
 # Version.: Commits on Jun 06, 2021
@@ -18,4 +18,3 @@ define LIBRETRO_TGBDUAL_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
-
