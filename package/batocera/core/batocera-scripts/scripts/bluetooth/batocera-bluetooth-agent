@@ -18,7 +18,8 @@ AGENT_INTERFACE = 'org.bluez.Agent1'
 gadapter = None
 gdiscovering = False
 gdevices = {}
-g_devices_seen = {}
+glisting_mode = False
+glisting_devs = {}
 
 logging.basicConfig(filename='/var/log/bluetooth-agent.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
@@ -32,8 +33,9 @@ def logging_status(msg):
   with open("/var/run/bt_status", "w") as file:
     file.write(msg + "\n")
 
-def connect_device(path, address, properties, forceConnect, typeInput, typeAudio):
+def connect_device(path, address, properties, forceConnect, typeInput, typeAudio, typeDevice):
   global gdiscovering
+  global gadapter
 
   devName = ""
   trusted = False
@@ -45,45 +47,32 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
   if "Connected" not in properties:
     return
 
-  rproperties = {}
-  # Get the adapter name and bt mac
-  for key, value in properties.items():
-    if type(value) is dbus.String:
-      value = value.encode('ascii', 'replace')
-    rproperties[key] = value
-
-  trusted   = rproperties["Trusted"]
-  paired    = rproperties["Paired"]
-  devName = getDevName(rproperties)
-  shortDevName = getShortDevName(rproperties)
-  connected = rproperties["Connected"]
+  trusted   = prop2str(properties["Trusted"])
+  paired    = prop2str(properties["Paired"])
+  devName = getDevName(properties)
+  shortDevName = getShortDevName(properties)
+  connected = prop2str(properties["Connected"])
 
   # skip non input devices
   if "Icon" not in properties:
-    logging.info("Skipping device {} (no type)".format(getDevName(rproperties)));
+    logging.info("Skipping device {} (no type)".format(getDevName(properties)));
     return
 
-  if not ( (typeInput and properties["Icon"].startswith("input")) or (typeAudio and properties["Icon"].startswith("audio-card")) ):
-    logging.info("Skipping device {} because of type {}".format(getDevName(rproperties), properties["Icon"]));
-    return
-
-  blacklistAddr, blacklistName = getBlacklistAddrAndName(properties)
-
-  # add device to the seen list
-  if blacklistAddr not in g_devices_seen:
-    g_devices_seen[blacklistAddr] = { "name": blacklistName }
-    updateKnownDevicesList(g_devices_seen)
-
-  # skip blacklisted devices
-  if blacklistAddr is not None and isDeviceBlacklisted(blacklistAddr):
-    logging.info("Skipping blacklisted device {}".format(blacklistName))
+  if not ( (typeInput and prop2str(properties["Icon"]).startswith("input")) or (typeAudio and prop2str(properties["Icon"]).startswith("audio-card")) or (typeDevice is not None and typeDevice == prop2str(properties["Address"])) ):
+    if (typeInput or typeAudio) and typeDevice is None:
+      logging.info("Skipping device {} because of type {}".format(getDevName(properties), prop2str(properties["Icon"])));
+    else:
+      if typeDevice:
+        logging.info("Skipping device {} (not {})".format(getDevName(properties), typeDevice));
+      else:
+        logging.info("Skipping device {} (no target)".format(getDevName(properties)));
     return
 
   logging.info("event for " + devName + "(paired=" + bool2str(paired, "paired", "not paired") + ", trusted=" + bool2str(trusted, "trusted", "untrusted") + ", connected=" + bool2str(connected, "connected", "disconnected") + ")")
 
   # skipping connected devices
   if paired and trusted and connected:
-    logging.info("Skipping already connected device {}".format(getDevName(rproperties)));
+    logging.info("Skipping already connected device {}".format(getDevName(properties)));
     return
   
   if not paired:
@@ -163,96 +152,85 @@ def getDevName(properties):
   #devTech = "legacyPairing: " + str(properties["LegacyPairing"]) # + ", RSSI: " + properties["RSSI"]
 
   if "Name" in properties and "Address" in properties and "Icon" in properties:
-    return str(properties["Name"]) + " (" + str(properties["Address"]) + ", " + str(properties["Icon"]) + ")"
+    return prop2str(properties["Name"]) + " (" + prop2str(properties["Address"]) + ", " + prop2str(properties["Icon"]) + ")"
 
   if "Name" in properties and "Address" in properties:
-    return str(properties["Name"]) + " (" + str(properties["Address"]) + ")"
+    return prop2str(properties["Name"]) + " (" + prop2str(properties["Address"]) + ")"
 
   if "Name" in properties and "Icon" in properties:
-    return str(properties["Name"]) + " (" + str(properties["Icon"]) + ")"
+    return prop2str(properties["Name"]) + " (" + prop2str(properties["Icon"]) + ")"
 
   if "Name" in properties:
-    return str(properties["Name"])
+    return prop2str(properties["Name"])
 
   if "Address" in properties and "Icon" in properties:
-    return str(properties["Address"]) + " (" + str(properties["Icon"]) + ")"
+    return prop2str(properties["Address"]) + " (" + prop2str(properties["Icon"]) + ")"
 
   if "Address" in properties:
-    return str(properties["Address"])
+    return prop2str(properties["Address"])
 
   if "Icon" in properties:
-    return str(properties["Icon"])
+    return prop2str(properties["Icon"])
 
   return "unknown"
 
-def updateKnownDevicesList(g_devices_seen):
-  f = open("/var/run/bluetooth_seen", "w")
-  for key in g_devices_seen:
-    f.write("{} {}\n".format(key, g_devices_seen[key]["name"]))
-  f.close()
-
-def isDeviceBlacklisted(blacklistAddr):
-  datafile = "/var/lib/bluetooth/bluetooth_blacklisted"
-
-  # reread the file each time in case somebody changed it
-  if not os.path.isfile(datafile):
-    return False
-
-  with open(datafile) as file:
-    lines = file.readlines()
-    for line in lines:
-      if line[0:len(blacklistAddr)] == blacklistAddr:
-        return True
-
-  return False
-
-def getBlacklistAddrAndName(properties):
-  if "Address" not in properties:
-    return None
-  address = str(properties["Address"])
-  name = ""
-
-  if "Name" in properties:
-    name = str(properties["Name"])
-  elif "Icon" in properties:
-    name = str(properties["Icon"])
-  else:
-    name = "unknown"
-
-  return address, name
+def prop2str(p):
+  newp = p
+  if type(newp) is dbus.String:
+    newp = newp.encode('ascii', 'replace')
+  if type(newp) is bytes:
+    newp = newp.decode('UTF-8')
+  return newp
 
 def getShortDevName(properties):
   if "Name" in properties:
-    return str(properties["Name"])
+    return prop2str(properties["Name"])
 
   if "Address" in properties:
-    return str(properties["Address"])
+    return prop2str(properties["Address"])
 
   if "Icon" in properties:
-    return str(properties["Icon"])
+    return prop2str(properties["Icon"])
 
   return "unknown"
 
+def getDevAddressName(properties):
+  if "Address" not in properties:
+    return None, None
+
+  if "Name" in properties:
+    return prop2str(properties["Address"]), prop2str(properties["Name"])
+  return prop2str(properties["Address"]), None
+
 def getBluetoothWantedTypes():
-  if not os.path.isfile("/var/run/bt_types"):
-    logging.info("no bt_types file")
-    return True, True
+  typeDevice = None
+  typePad = False
+  typeAudio = False
 
-  btype = ""
-  with open("/var/run/bt_types", "r") as file:
-    btype = file.read().strip()
-    logging.info("bt_type: {}".format(btype))
+  if os.path.isfile("/var/run/bt_device"):
+    with open("/var/run/bt_device", "r") as file:
+      typeDevice = file.read().strip()
+      logging.info("bt_dev: {}".format(typeDevice))
+  
+  if os.path.isfile("/var/run/bt_types"):
+    btype = ""
+    with open("/var/run/bt_types", "r") as file:
+      btype = file.read().strip()
+      logging.info("bt_type: {}".format(btype))
+    
+    if btype == "":
+      typePad   = True
+      typeAudio = True
+    if btype == "pad":
+      typePad   = True
+    if btype == "audio":
+      typeAudio = True
 
-  if btype == "":
-    return True, True
-  if btype == "pad":
-    return True, False
-  if btype == "audio":
-    return False, True
-  return False, False
+  return typeDevice, typePad, typeAudio
 
 def interfaces_added(path, interfaces):
   global gdevices
+  global glisting_mode
 
   if "org.bluez.Device1" not in interfaces:
     return
@@ -266,12 +244,26 @@ def interfaces_added(path, interfaces):
   else:
     gdevices[path] = properties
 
+  if glisting_mode:
+    listing_dev_event(path, gdevices[path], True)
+    return
+
   if "Address" in gdevices[path]:
-    typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, properties["Address"], gdevices[path], False, typeInput, typeAudio)
+    typeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, prop2str(properties["Address"]), gdevices[path], False, typeInput, typeAudio, typeDevice)
+
+def interfaces_removed(path, interfaces):
+  global gdevices
+
+  if path in gdevices:
+    listing_dev_event(path, gdevices[path], False)
+
+  if path in gdevices:
+    del gdevices[path]
 
 def properties_changed(interface, changed, invalidated, path):
   global gdevices
+  global glisting_mode
 
   if interface != "org.bluez.Device1":
     return
@@ -281,14 +273,18 @@ def properties_changed(interface, changed, invalidated, path):
   else:
     gdevices[path] = changed
 
+  if glisting_mode:
+    listing_dev_event(path, gdevices[path], True)
+    return
+
   #logging.info("Properties changed:")
   #logging.info(changed)
   #logging.info(invalidated)
 
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
-    typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, gdevices[path]["Address"], gdevices[path], True, typeInput, typeAudio)
+    typdeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, gdevices[path]["Address"], gdevices[path], True, typeInput, typeAudio, typdeDevice)
     return
   
   # ok, it is now connected, what else ?
@@ -300,17 +296,52 @@ def properties_changed(interface, changed, invalidated, path):
     return
 
   if "Address" in gdevices[path]:
-    typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, gdevices[path]["Address"], gdevices[path], False, typeInput, typeAudio)
+    typeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
+    connect_device(path, gdevices[path]["Address"], gdevices[path], False, typeInput, typeAudio, typeDevice)
 
 def merge2dicts(d1, d2):
   res = d1.copy()
   res.update(d2)
   return res
 
+def listing_dev_event(path, properties, adding):
+  global glisting_devs
+
+  # device already here
+  if path in glisting_devs and adding:
+    return
+
+  # device already removed
+  if path not in glisting_devs and not adding:
+    return
+
+  # update list
+  if adding:
+    glisting_devs[path] = True
+  else:
+      del glisting_devs[path]
+
+  devstatus = "added"
+  if not adding:
+    devstatus = "removed"
+  with open("/var/run/bt_listing", "a") as file:
+    devaddress, devname = getDevAddressName(properties)
+    file.write("<device id=\"{}\" name=\"{}\" status=\"{}\"/>\n".format(devaddress, devname, devstatus));
+
 def user_signal_start_discovery(signum, frame):
   global gdiscovering
   global gadapter
+  global glisting_mode
+  global glisting_devs
+  global gdevices
+
+  if os.path.isfile("/var/run/bt_listing"):
+    glisting_mode = True
+    logging.info("listing mode enabled");
+    glisting_devs = {}
+    # initial listing with existing devices
+    for path in gdevices:
+      listing_dev_event(path, gdevices[path], True)
 
   try:
     if gdiscovering == False:
@@ -323,6 +354,11 @@ def user_signal_start_discovery(signum, frame):
 def user_signal_stop_discovery(signum, frame):
   global gdiscovering
   global gadapter
+  global glisting_mode
+
+  if glisting_mode:
+    logging.info("listing mode disabled");
+  glisting_mode = False
 
   try:
     if gdiscovering:
@@ -431,14 +467,12 @@ if __name__ == '__main__':
   parser = OptionParser(option_list=option_list)
   (options, args) = parser.parse_args()
 
-  # initialize the seen devices file
-  updateKnownDevicesList(g_devices_seen)
-
   # register dbus
   dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
   bus = dbus.SystemBus()
 
   bus.add_signal_receiver(interfaces_added,   dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesAdded")
+  bus.add_signal_receiver(interfaces_removed, dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesRemoved")
   bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = "org.bluez.Device1", path_keyword = "path")
 
   # register the agent
