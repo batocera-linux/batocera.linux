@@ -226,6 +226,24 @@ class DolphinTriforceGenerator(Generator):
         with open(batoceraFiles.dolphinTriforceGfxIni, 'w') as configfile:
             dolphinTriforceGFXSettings.write(configfile)
 
+        ## logger settings ##
+
+        dolphinTriforceLogSettings = configparser.ConfigParser(interpolation=None)
+        # To prevent ConfigParser from converting to lower case
+        dolphinTriforceLogSettings.optionxform = str
+        dolphinTriforceLogSettings.read(batoceraFiles.dolphinTriforceLoggerIni)
+
+        # Sections
+        if not dolphinTriforceLogSettings.has_section("Logs"):
+            dolphinTriforceLogSettings.add_section("Logs")
+
+        # Prevent the constant log spam.
+        dolphinTriforceLogSettings.set("Logs", "DVD", "False")
+
+        # Save Logger.ini
+        with open(batoceraFiles.dolphinTriforceLoggerIni, 'w') as configfile:
+            dolphinTriforceLogSettings.write(configfile)
+
         ## game settings ##
 
         # These cheat files are required to launch Triforce games, and thus should always be present and enabled.
