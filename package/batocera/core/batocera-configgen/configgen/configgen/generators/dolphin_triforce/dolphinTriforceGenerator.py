@@ -228,11 +228,6 @@ class DolphinTriforceGenerator(Generator):
 
         ## logger settings ##
 
-        dolphinTriforceGFXSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinTriforceGFXSettings.optionxform = str
-        dolphinTriforceGFXSettings.read(batoceraFiles.dolphinTriforceGfxIni)
-
         dolphinTriforceLogSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinTriforceLogSettings.optionxform = str
