@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_UZEM
-        bool "libretro-uzem"
+    bool "libretro-uzem"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro Uzebox emulator
+      help
+        A libretro Uzebox emulator
 
 	  https://docs.libretro.com/library/uzem/
 
