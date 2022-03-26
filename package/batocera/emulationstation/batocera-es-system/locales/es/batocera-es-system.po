@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-16 12:57+0100\n"
-"PO-Revision-Date: 2022-03-21 21:53+0100\n"
+"PO-Revision-Date: 2022-03-25 22:30+0100\n"
 "Last-Translator: pajarorrojo\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -863,7 +863,7 @@ msgstr "híbrido/anajo"
 msgctxt "game_options"
 msgid "Skip frames to improve performance, at the cost of choppy motion."
 msgstr ""
-"Omitir frames mejora el rendimiento a costa de movimientos entrecortados."
+"Omitir frames mejora el rendimiento a costa de posibles tirones en la imagen."
 
 #. TRANSLATION: libretro/desmume, libretro/fbneo, libretro/flycast, libretro/mame078plus, libretro/mgba, ...
 msgctxt "game_options"
@@ -2817,7 +2817,7 @@ msgstr "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 #. TRANSLATION: libretro/mess
 msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD/Image Reader)"
-msgstr ""
+msgstr "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD/Image Reader)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2828,47 +2828,49 @@ msgstr "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgctxt "game_options"
 msgid "Install the image reader card to read idks image files (Mac IIx only)"
 msgstr ""
+"Instalar tarjeta lectora de imágenes para leer archivos de imágenes idks "
+"(Solo Mac IIx)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "IMAGE READER"
-msgstr ""
+msgstr "TARJETA LECTORA DE IMÁGENES"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Slot A (Default)"
-msgstr ""
+msgstr "Ranura A (Defecto)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Slot B"
-msgstr ""
+msgstr "Ranura B"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Slot C"
-msgstr ""
+msgstr "Ranura C"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Slot D"
-msgstr ""
+msgstr "Ranura D"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Slot E"
-msgstr ""
+msgstr "Ranura E"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid ""
 "How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
-msgstr ""
+msgstr "RAM instalada en el Mac emulado (solo Mac IIx y Mac LC 3)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "RAM SIZE"
-msgstr ""
+msgstr "TAMAÑO DE LA RAM"
 
 #. TRANSLATION: libretro/mess, libretro/px68k, mame/uzem
 msgctxt "game_options"
@@ -2878,12 +2880,12 @@ msgstr "2MB"
 #. TRANSLATION: libretro/mess
 msgctxt "game_options"
 msgid "Type of ROM file to load"
-msgstr ""
+msgstr "Tipo de archivo ROM a cargar"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Floppy Disk"
-msgstr ""
+msgstr "Disco Floppy"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2948,7 +2950,7 @@ msgstr "Cartuchos Creatronic Mega Duck"
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "PDP-1 Paper Tape Reader Images"
-msgstr ""
+msgstr "PDP-1 Paper Tape Reader Images"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -4149,7 +4151,7 @@ msgstr "CD32 (2MB Chip + 8MB Rápido)"
 #. TRANSLATION: libretro/puae
 msgctxt "game_options"
 msgid "Help games which are too quick or that have bugs."
-msgstr "Ayuda a juegos que son demasiado rápidos o que tienen errores."
+msgstr "Ayuda a juegos que son demasiado rápidos o que dan errores."
 
 #. TRANSLATION: libretro/puae
 msgctxt "game_options"
@@ -4303,7 +4305,7 @@ msgstr "máximo"
 #. TRANSLATION: libretro/puae
 msgctxt "game_options"
 msgid "Affects mouse speed globally."
-msgstr "Afecta la velocidad del mouse a nivel global."
+msgstr "Afecta a la velocidad del mouse a nivel global."
 
 #. TRANSLATION: libretro/puae
 msgctxt "game_options"
@@ -6732,127 +6734,132 @@ msgid ""
 "h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth "
 "efficient."
 msgstr ""
+"h265 (HEVC) consume mucha CPU y aumenta la latencia, pero el ancho de banda "
+"es más eficiente."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM CODEC"
-msgstr ""
+msgstr "CÓDEC DE TRANSMISIÓN DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "h264 (less latency)"
-msgstr ""
+msgstr "h264 (menor latencia)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "h265 (HEVC) (higher quality at lower bitrates)"
-msgstr ""
+msgstr "h265 (HEVC) (mayor calidad a tasas de bits más bajas)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM RESOLUTION"
-msgstr ""
+msgstr "RESOLUCIÓN DE TRANSMISIÓN DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "4K (3840x2160)"
-msgstr ""
+msgstr "4K (3840x2160)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM FRAMERATE"
-msgstr ""
+msgstr "FRAMERATE DE LA TRANSMISIÓN DE VIDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "30FPS"
-msgstr ""
+msgstr "30FPS"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "60FPS"
-msgstr ""
+msgstr "60FPS"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "120FPS"
-msgstr ""
+msgstr "120FPS"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Higher number for higher picture quality, but requires more bandwidth."
 msgstr ""
+"A mayor número mejor calidad de imagen, pero requiere más ancho de banda."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM BITRATE"
-msgstr ""
+msgstr "BITRATE DE TRANSMISIÓN DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "5Mbps (good for 720p)"
-msgstr ""
+msgstr "5Mbps (óptimo para 720p)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "10Mbps (good for 1080p 60FPS)"
-msgstr ""
+msgstr "10Mbps (óptimo para 1080p 60FPS)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "20Mbps (not supported by some routers)"
-msgstr ""
+msgstr "20Mbps (no soportado por algunos routers)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "50Mbps (highest quality available)"
-msgstr ""
+msgstr "50 Mbps (mayor calidad)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid ""
 "Streaming Optimal Playable Settings, overrides other settings if enabled."
 msgstr ""
+"Ajustes óptimos de retransmisión, anula otras configuraciones si está "
+"habilitada."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
-msgstr ""
+msgstr "CALCULAR DINAMICAMENTE LOS AJUSTES ÓPTIMOS"
 
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "on"
-msgstr ""
+msgstr "on"
 
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "off"
-msgstr ""
+msgstr "off"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
-msgstr ""
+msgstr "Cierra la aplicación en el host remoto al salir de Moonlight."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "QUIT ON HOST"
-msgstr ""
+msgstr "SALIR DEL HOST"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "If screen is rotated by 90 degrees, select SDL."
-msgstr ""
+msgstr "Si la pantalla está girada 90 grados, selecciona SDL."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "PREFERRED AV DECODER"
-msgstr ""
+msgstr "DECODIFICADOR AV PREFERIDO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "SDL"
-msgstr ""
+msgstr "SDL"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7763,17 +7770,18 @@ msgstr "FORZAR CPU 386DX"
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)"
-msgstr ""
+msgstr "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Type of ROM file to load. Disk Image requires Mac IIx and Image Reader"
 msgstr ""
+"Tipo de archivo ROM a cargar. Imagen de disco requiere Mac IIx e Image Reader"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Disk Image"
-msgstr ""
+msgstr "Imagen de disco"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -8093,22 +8101,22 @@ msgstr "MODO ESCALADO"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Original resolution"
-msgstr ""
+msgstr "Resolución original"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Scale to best fit"
-msgstr ""
+msgstr "Escalar para ajustar mejor"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Stretch to full"
-msgstr ""
+msgstr "Estirar a pantalla completa"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Stretch to 16:9"
-msgstr ""
+msgstr "Ajustar a 16:9"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
