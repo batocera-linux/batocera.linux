@@ -53,7 +53,8 @@ LIBRETRO_YABASANSHIRO_TARGET_LDFLAGS += -shared -Wl,--no-undefined -pthread
 
 else ifeq ($(BR2_x86_64),y)
 LIBRETRO_YABASANSHIRO_PLATFORM = unix
-LIBRETRO_YABASANSHIRO_TARGET_LDFLAGS += -shared -Wl,--no-undefined -pthread
+LIBRETRO_YABASANSHIRO_EXTRA_ARGS = FORCE_GLES=0
+LIBRETRO_YABASANSHIRO_TARGET_LDFLAGS += -shared -Wl,--no-undefined -pthread -lGL
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
