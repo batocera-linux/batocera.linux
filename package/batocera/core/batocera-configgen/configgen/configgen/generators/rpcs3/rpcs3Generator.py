@@ -124,7 +124,8 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Video"]['Frame limit'] = 60
 
-        rpcs3ymlconfig["Audio"]['Renderer'] = 'OpenAL' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
+        rpcs3ymlconfig["Audio"]['Renderer'] = 'Cubeb' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
+        rpcs3ymlconfig["Audio"]['Master Volume'] = 100
         rpcs3ymlconfig["Audio"]['Audio Channels'] = 'Downmix to Stereo'
         
         rpcs3ymlconfig["Miscellaneous"]['Exit RPCS3 when process finishes'] = True
