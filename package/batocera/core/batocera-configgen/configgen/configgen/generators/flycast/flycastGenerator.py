@@ -143,10 +143,6 @@ class FlycastGenerator(Generator):
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA1)
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
-            if not isdir(dirname(batoceraFiles.flycastSaves)):
-                os.mkdir(batoceraFiles.flycastSaves)
-            if not isdir(dirname(batoceraFiles.flycastSaves) + "/flycast"):
-                os.mkdir((batoceraFiles.flycastSaves) + "/flycast")
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
         
         # flycast vulkan workaround - manually point to vulkan icd's in preferred order.
