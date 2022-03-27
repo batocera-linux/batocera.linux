@@ -54,7 +54,7 @@ do_devlist() {
 	exit 1
     fi
 
-    NPID=$(pidof batocera-bluetooth-agent)
+    NPID=$(cat /var/run/bluetooth-agent.pid)
     trap "kill -12 ${NPID} ; rm -f /var/run/bt_listing" 2 3
 
     kill -10 "${NPID}"
@@ -64,7 +64,7 @@ do_devlist() {
 
 do_trust() {
     TRUSTTYPE=$1
-    NPID=$(pidof batocera-bluetooth-agent)
+    NPID=$(cat /var/run/bluetooth-agent.pid)
     test -z "${NPID}" && return 0
 
     touch "/var/run/bt_status" || retrun 1
@@ -123,16 +123,16 @@ do_trust() {
 }
 
 do_starttrust() {
-    NPID=$(pidof batocera-bluetooth-agent)
-    test -z "${NPID}" && exit 0
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    test -z "${NPID}" && return 0
 
     # start discovering
     kill -10 "${NPID}"
 }
 
 do_stoptrust() {
-    NPID=$(pidof batocera-bluetooth-agent)
-    test -z "${NPID}" && exit 0
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    test -z "${NPID}" && return 0
 
     # stop discovering
     kill -12 "${NPID}"
