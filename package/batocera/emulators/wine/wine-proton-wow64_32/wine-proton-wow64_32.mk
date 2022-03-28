@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_WOW64_32_VERSION = proton-wine-6.3-8
+WINE_PROTON_WOW64_32_VERSION = proton-wine-7.0-1
 WINE_PROTON_WOW64_32_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_WOW64_32_VERSION))
 WINE_PROTON_WOW64_32_LICENSE = LGPL-2.1+
 WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-proton
@@ -12,8 +12,9 @@ HOST_WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex
 
 # Configure Proton
 define WINE_PROTON_WOW64_32_AUTOGEN
+	cd $(@D); autoreconf -fiv
 	cd $(@D); ./tools/make_requests
-	cd $(@D); autoreconf -f
+	cd $(@D); ./dlls/winevulkan/make_vulkan && rm dlls/winevulkan/vk-*.xml
 endef
 
 # That create folder for install
@@ -24,7 +25,7 @@ endef
 WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
-WINE_PROTON_WOW64_32_CONF_OPTS = \
+WINE_PROTON_WOW64_32_CONF_OPTS = CPPFLAGS="-DMPG123_NO_LARGENAME=1" \
 	--with-wine-tools=../host-wine-proton-$(WINE_PROTON_WOW64_32_VERSION) \
 	--disable-tests \
 	--without-capi \

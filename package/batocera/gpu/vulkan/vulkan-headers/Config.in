@@ -1,7 +1,0 @@
-config BR2_PACKAGE_VULKAN_HEADERS
-  bool "vulkan-headers"
-  select BR2_PACKAGE_VULKAN_LOADER
-  help
-    Vulkan Headers from Khronos
-
-    https://github.com/KhronosGroup/Vulkan-Headers

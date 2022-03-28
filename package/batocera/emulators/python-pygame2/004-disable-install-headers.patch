@@ -1,0 +1,12 @@
+diff --git a/setup.py b/setup.py
+index 2dca8cf..3fd05a1 100644
+--- a/setup.py
++++ b/setup.py
+@@ -317,6 +317,7 @@ import distutils.command.install_headers
+ 
+ # monkey patch distutils header install to copy over directories
+ def run_install_headers(self):
++    return
+     headers = self.distribution.headers
+     if not headers:
+         return

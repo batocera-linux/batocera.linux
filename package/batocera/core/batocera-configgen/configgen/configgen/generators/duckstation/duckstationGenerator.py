@@ -359,7 +359,15 @@ def configurePads(settings, playersControllers, system):
 
         for mapping in mappings:
             if mappings[mapping] in pad.inputs:
-                settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
+                # mapping workaround - for l2 & r2 if axis, require positive value
+                if mappings[mapping] == "l2" or mappings[mapping] == "r2" and system.config["duckstation_" + controller] == "AnalogController":
+                    trigger=input2definition(pad.inputs[mappings[mapping]])
+                    if "Axis" in trigger:
+                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/+" + input2definition(pad.inputs[mappings[mapping]]))
+                    else:
+                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
+                else:
+                    settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
 
         controllerGunList = {'NamcoGunCon', 'NeGcon'};
         # Testing if Gun, add specific keys

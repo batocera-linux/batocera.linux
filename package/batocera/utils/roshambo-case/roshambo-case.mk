@@ -15,8 +15,8 @@ define ROSHAMBO_CASE_BUILD_CMDS
 endef
 
 define ROSHAMBO_CASE_INSTALL_TARGET_CMDS
-	install -d -m 755      $(TARGET_DIR)/usr/lib/python3.9/site-packages/R64
-	cp -r $(@D)/R64/*      $(TARGET_DIR)/usr/lib/python3.9/site-packages/R64
+	install -d -m 755      $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/R64
+	cp -r $(@D)/R64/*      $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/R64
 
 	$(INSTALL) -Dm755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/roshambo-case/S14roshambo       $(TARGET_DIR)/etc/init.d/
 	$(INSTALL) -Dm755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/roshambo-case/roshambo-case.py* $(TARGET_DIR)/usr/bin/

@@ -1,0 +1,4975 @@
+diff --git a/Documentation/devicetree/bindings/leds/leds-axp20x.txt b/Documentation/devicetree/bindings/leds/leds-axp20x.txt
+new file mode 100644
+index 000000000..5a83ad067
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/leds-axp20x.txt
+@@ -0,0 +1,74 @@
++Device Tree Bindings for LED support on X-Powers PMIC
++
++Most of the X-Powers PMICs have integrated battery charger with LED indicator.
++The output is open-drain, so the state is either high-Z or output-low. The
++driver is a subnode of AXP20X MFD driver, since it uses shared bus with all
++other cells.
++The LED can be controlled either manually or automatically. Then in automatic
++(controlled by the charger) there are two indication modes:
++
++Mode-A
++======
++- output-low:		Charging
++- high-Z		Not charging
++- 1Hz flashing:		Abnormal alarm
++- 4Hz flashing		Overvoltage alarm
++
++Mode-B
++======
++- output-low:		Battery full
++- high-Z		Not charging
++- 1Hz flashing:		Charging
++- 4Hz flashing		Overvoltage or abnormal alarm
++
++The control and the mode can be changed from sysfs.
++
++For AXP20X MFD bindings see:
++Documentation/devicetree/bindings/mfd/axp20x.txt
++
++Required properties:
++- compatible : Must be "x-powers,axp20x-led"
++
++Supported common LED properties, see ./common.txt for more informationn
++- label : See Documentation/devicetree/bindings/leds/common.txt
++- linux,default-trigger : See Documentation/devicetree/bindings/leds/common.txt
++- default-state: See Documentation/devicetree/bindings/leds/common.txt
++
++Optional properties:
++- x-powers,charger-mode: 0 for Mode-A, 1 for Mode-B
++			 If omitted, then the control is set to manual mode.
++			 On invalid value, Mode-A is used.
++
++
++Example:
++
++	axp803: pmic@3a3 {
++		compatible = "x-powers,axp803";
++
++		...
++
++		led@0 {
++			compatible = "x-powers,axp20x-led";
++			status = "okay";
++
++			label = "axp20x:yellow:chgled";
++			linux,default-trigger = "timer";
++			default-state = "on";
++		};
++	};
++
++or
++
++	axp803: pmic@3a3 {
++		compatible = "x-powers,axp803";
++
++		...
++
++		led@0 {
++			compatible = "x-powers,axp20x-led";
++			status = "okay";
++
++			label = "axp20x:yellow:chgled";
++			x-powers,charger-mode = <1>;
++		};
++	};
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index e8dd99201..6b7e42345 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1144,6 +1144,8 @@ dtb-$(CONFIG_MACH_SUN8I) += \
+ 	sun8i-h2-plus-libretech-all-h3-cc.dtb \
+ 	sun8i-h2-plus-orangepi-r1.dtb \
+ 	sun8i-h2-plus-orangepi-zero.dtb \
++	sun8i-r16-clockworkpi-cpi3.dtb \
++	sun8i-r16-clockworkpi-cpi3-hdmi.dtb \
+ 	sun8i-h3-bananapi-m2-plus.dtb \
+ 	sun8i-h3-bananapi-m2-plus-v1.2.dtb \
+ 	sun8i-h3-beelink-x2.dtb \
+diff --git a/arch/arm/boot/dts/axp209.dtsi b/arch/arm/boot/dts/axp209.dtsi
+index 0d9ff12bd..f972b6f3e 100644
+--- a/arch/arm/boot/dts/axp209.dtsi
++++ b/arch/arm/boot/dts/axp209.dtsi
+@@ -69,6 +69,11 @@ axp_gpio: gpio {
+ 		#gpio-cells = <2>;
+ 	};
+
++	axp_led: led {
++		compatible = "x-powers,axp20x-led";
++		status = "disabled";
++	};
++
+ 	battery_power_supply: battery-power {
+ 		compatible = "x-powers,axp209-battery-power-supply";
+ 		status = "disabled";
+diff --git a/arch/arm/boot/dts/axp22x.dtsi b/arch/arm/boot/dts/axp22x.dtsi
+index 65a07a67a..92a0b6425 100644
+--- a/arch/arm/boot/dts/axp22x.dtsi
++++ b/arch/arm/boot/dts/axp22x.dtsi
+@@ -62,6 +62,11 @@ axp_adc: adc {
+ 		#io-channel-cells = <1>;
+ 	};
+
++	axp_led: led {
++		compatible = "x-powers,axp20x-led";
++		status = "disabled";
++	};
++
+ 	battery_power_supply: battery-power-supply {
+ 		compatible = "x-powers,axp221-battery-power-supply";
+ 		status = "disabled";
+diff --git a/arch/arm/boot/dts/axp81x.dtsi b/arch/arm/boot/dts/axp81x.dtsi
+index 1dfeeceab..fa26f0479 100644
+--- a/arch/arm/boot/dts/axp81x.dtsi
++++ b/arch/arm/boot/dts/axp81x.dtsi
+@@ -74,6 +74,11 @@ gpio1_ldo: gpio1-ldo {
+ 		};
+ 	};
+
++	axp_led: led {
++		compatible = "x-powers,axp20x-led";
++		status = "disabled";
++	};
++
+ 	battery_power_supply: battery-power-supply {
+ 		compatible = "x-powers,axp813-battery-power-supply";
+ 		status = "disabled";
+diff --git a/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3-hdmi.dts b/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3-hdmi.dts
+new file mode 100644
+index 000000000..cf510053e
+--- /dev/null
++++ b/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3-hdmi.dts
+@@ -0,0 +1,467 @@
++/*
++ * Copyright (c) 2018 Clockwork
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "sun8i-a33.dtsi"
++#include "sunxi-common-regulators.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Clockwork CPI3";
++	compatible = "clockwork,clockworkpi-cpi3", "allwinner,sun8i-a33";
++
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&led_pins>;
++
++		led1 {
++			label = "led1";
++			gpios = <&pio 1 7 GPIO_ACTIVE_LOW>; /* PB7 */
++			linux,default-trigger = "activity";
++		};
++	};
++
++	wifi_pwrseq: wifi_pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		reset-gpios = <&r_pio 0 6 GPIO_ACTIVE_LOW>; /* PL6 */
++	};
++
++//	panel {
++//		compatible = "clockwork,cpi3-hdmi";
++//
++//		ports {
++//			#address-cells = <1>;
++//			#size-cells = <0>;
++//			port@0 {
++//				#address-cells = <1>;
++//				#size-cells = <0>;
++//				reg = <0>;
++//
++//				rgb_input: endpoint@0 {
++//					reg = <0>;
++//					remote-endpoint = <&tcon0_out_rgb>;
++//				};
++//			};
++//		};
++//	};
++};
++
++&codec {
++//	compatible = "allwinner,sun8i-a33-codec-aif2";
++//	pinctrl-names = "default";
++//	pinctrl-0 = <&hdmi_i2s_pins>;
++	status = "okay";
++};
++
++&cpu0 {
++        cpu-supply = <&reg_dcdc3>;
++};
++
++&cpu0_opp_table {
++        opp-1104000000 {
++                opp-hz = /bits/ 64 <1104000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1200000000 {
++                opp-hz = /bits/ 64 <1200000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1300000000 {
++                opp-hz = /bits/ 64 <1300000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1400000000 {
++                opp-hz = /bits/ 64 <1400000000>;
++                opp-microvolt = <1400000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++};
++
++&dai {
++	status = "okay";
++};
++
++&sound {
++//	simple-audio-card,routing =
++//		"Left DAC", "AIF2 Slot 0 Left",
++//		"Right DAC", "AIF2 Slot 0 Right";
++	status = "okay";
++};
++
++&codec_analog {
++	pinctrl-names = "default";
++	pinctrl-0 = <&speaker_amplifier_pin>;
++	speaker-amplifier-gpios = <&r_pio 0 3 GPIO_ACTIVE_HIGH>; /* PL3 */
++	interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
++};
++
++&de {
++	status = "okay";
++};
++
++&tcon0 {
++	status = "okay";
++};
++
++&tcon0_out {
++	tcon0_out_rgb: endpoint@0 {
++		reg = <0>;
++//		remote-endpoint = <&rgb_input>;
++		remote-endpoint = <&it66121_in>;
++	};
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&mmc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc0_pins>, <&mmc0_cd_pin>;
++	vmmc-supply = <&reg_dcdc1>;
++	cd-gpios = <&pio 1 3 GPIO_ACTIVE_LOW>; /* PB3 */
++	bus-width = <4>;
++	status = "okay";
++};
++
++&mmc1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc1_pg_pins>, <&wifi_reset_pin>;
++	vmmc-supply = <&reg_aldo1>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	bus-width = <4>;
++	non-removable;
++	keep-power-in-suspend;
++	status = "okay";
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&pio {
++	mmc0_cd_pin: mmc0_cd_pin@0 {
++		pins = "PB3";
++		function = "gpio_in";
++		bias-pull-up;
++	};
++
++//	hdmi_i2s_pins: hdmi_i2s_pins@0 {
++//		pins = "PB4", "PB5", "PB6";
++//		function = "aif2";
++//	};
++
++	led_pins: led_pins@0 {
++		pins = "PB7";
++		function = "gpio_out";
++	};
++};
++
++&r_pio {
++	usb1_vbus_pin: usb1_vbus_pin@0 {
++		pins = "PL2";
++		function = "gpio_out";
++	};
++
++	speaker_amplifier_pin: speaker_amplifier_pin@0 {
++		pins = "PL3";
++		function = "gpio_out";
++	};
++
++	usb0_id_det: usb0_id_detect_pin@0 {
++		pins = "PL4";
++		function = "gpio_in";
++		bias-pull-up;
++	};
++
++	wifi_reset_pin: wifi_reset_pin@0 {
++		pins = "PL6";
++		function = "gpio_out";
++	};
++
++	bt_control_pin: bt_control_pin@0 {
++		pins = "PL8", "PL10";
++		function = "gpio_out";
++	};
++
++	ite_pins_default: ite_pins_default@0 {
++		pins = "PL5";
++		function = "gpio_out";
++	};
++};
++
++&r_rsb {
++	status = "okay";
++
++	axp22x: pmic@3a3 {
++		compatible = "x-powers,axp223";
++		reg = <0x3a3>;
++		interrupt-parent = <&nmi_intc>;
++		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++		drivevbus-supply = <&reg_vcc5v0>;
++		x-powers,drive-vbus-en;
++	};
++};
++
++#include "axp223.dtsi"
++
++&axp_led {
++	label = "chgled";
++	status = "okay";
++	x-powers,charger-mode = <0>;
++};
++
++&reg_aldo1 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-io";
++};
++
++&reg_aldo2 {
++	regulator-always-on;
++	regulator-min-microvolt = <2500000>;
++	regulator-max-microvolt = <2500000>;
++	regulator-name = "vdd-dll";
++};
++
++&reg_aldo3 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-pll-avcc";
++};
++
++&reg_dc5ldo {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-cpus";
++};
++
++&reg_dcdc1 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-3v0";
++};
++
++&reg_dcdc2 {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-sys";
++};
++
++&reg_dcdc3 {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-cpu";
++};
++
++&reg_dcdc5 {
++	regulator-always-on;
++	regulator-min-microvolt = <1500000>;
++	regulator-max-microvolt = <1500000>;
++	regulator-name = "vcc-dram";
++};
++
++&reg_dldo1 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi0";
++};
++
++&reg_dldo2 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi1";
++};
++
++&reg_dldo3 {
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-amp";
++};
++
++&reg_dldo4 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 AND dldo4 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi2";
++};
++
++&reg_drivevbus {
++	regulator-name = "usb0-vbus";
++	status = "okay";
++};
++
++&reg_rtc_ldo {
++	regulator-name = "vcc-rtc";
++};
++
++&reg_eldo1 {
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-hdmi";
++};
++
++&reg_usb1_vbus {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb1_vbus_pin>;
++	gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
++	status = "okay";
++};
++
++&battery_power_supply {
++	status = "okay";
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_pb_pins>;
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pg_pins>, <&uart1_cts_rts_pg_pins>;
++	status = "okay";
++
++	bluetooth {
++	compatible = "brcm,bcm43438-bt";
++		max-speed = <1500000>;
++		clocks = <&rtc 1>;
++		clock-names = "lpo";
++		vbat-supply = <&reg_dldo1>;
++		vddio-supply = <&reg_aldo3>;
++		device-wakeup-gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>; /* PL10 */
++		host-wakeup-gpios = <&r_pio 0 9 GPIO_ACTIVE_HIGH>; /* PL9 */
++		shutdown-gpios = <&r_pio 0 8 GPIO_ACTIVE_HIGH>; /* PL8 */
++	};
++};
++
++&usb_otg {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&usb_power_supply {
++	status = "okay";
++};
++
++&usbphy {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb0_id_det>;
++	usb0_vbus-supply = <&reg_drivevbus>;
++	usb0_id_det-gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
++	usb0_vbus_power-supply = <&usb_power_supply>;
++	usb1_vbus-supply = <&reg_usb1_vbus>;
++};
++
++&i2c0 {
++	clock-frequency = <10000>;
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	it66121hdmitx: it66121hdmitx@4c {
++	  compatible = "ite,it66121";
++	  pinctrl-names = "default";
++	  pinctrl-0 = <&ite_pins_default>;
++	  vcn33-supply = <&reg_eldo1>;
++	  vcn18-supply = <&reg_eldo1>;
++	  vrf12-supply = <&reg_eldo1>;
++	  reset-gpios = <&pio 7 0 GPIO_ACTIVE_LOW>; /* PH0 */
++	  interrupt-parent = <&r_pio>;
++	  interrupts = <0 5 IRQ_TYPE_LEVEL_LOW>; /* PL5 */
++	  reg = <0x4c>;
++	  pclk-dual-edge;
++
++	  port {
++	    it66121_in: endpoint {
++	      remote-endpoint = <&tcon0_out_rgb>;
++	    };
++	  };
++	};
++};
++
++&i2c1 {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3.dts b/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3.dts
+new file mode 100644
+index 000000000..8512a2f77
+--- /dev/null
++++ b/arch/arm/boot/dts/sun8i-r16-clockworkpi-cpi3.dts
+@@ -0,0 +1,453 @@
++/*
++ * Copyright (c) 2018 Clockwork
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "sun8i-a33.dtsi"
++#include "sunxi-common-regulators.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Clockwork CPI3";
++	compatible = "clockwork,clockworkpi-cpi3", "allwinner,sun8i-a33";
++
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&led_pins>;
++
++		led1 {
++			label = "led1";
++			gpios = <&pio 1 7 GPIO_ACTIVE_LOW>; /* PB7 */
++			linux,default-trigger = "activity";
++		};
++	};
++
++	wifi_pwrseq: wifi_pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		reset-gpios = <&r_pio 0 6 GPIO_ACTIVE_LOW>; /* PL6 */
++	};
++
++	backlight {
++		compatible = "ocp8178-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&backlight_control_pin>;
++		backlight-control-gpios = <&pio 7 1 GPIO_ACTIVE_HIGH>; /* PH1 */
++		default-brightness = <5>;
++	};
++
++	lcd {
++		compatible = "kd027-lcd";
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_control_pin>;
++		lcd-rst-gpios = <&pio 1 2 GPIO_ACTIVE_HIGH>; /* PB2 */
++		lcd-cs-gpios = <&pio 2 3 GPIO_ACTIVE_HIGH>; /* PC3 */
++		lcd-sck-gpios = <&pio 2 2 GPIO_ACTIVE_HIGH>; /* PC2 */
++		lcd-sda-gpios = <&pio 2 0 GPIO_ACTIVE_HIGH>; /* PC0 */
++		init-seq = /bits/ 8 <0x2b 0x01 0x00 0x07 0x0c 0x27 0x16 0x04>;
++		suspend-seq = /bits/ 8 <0x2b 0x00>;
++		resume-seq = /bits/ 8 <0x2b 0x01>;
++	};
++
++	panel {
++		compatible = "clockwork,cpi3-lcd";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reg = <0>;
++
++				rgb_input: endpoint@0 {
++					reg = <0>;
++					remote-endpoint = <&tcon0_out_rgb>;
++				};
++			};
++		};
++	};
++};
++
++&codec {
++	status = "okay";
++};
++
++&cpu0 {
++        cpu-supply = <&reg_dcdc3>;
++};
++
++&cpu0_opp_table {
++        opp-1104000000 {
++                opp-hz = /bits/ 64 <1104000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1200000000 {
++                opp-hz = /bits/ 64 <1200000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1300000000 {
++                opp-hz = /bits/ 64 <1300000000>;
++                opp-microvolt = <1320000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++
++        opp-1400000000 {
++                opp-hz = /bits/ 64 <1400000000>;
++                opp-microvolt = <1400000>;
++                clock-latency-ns = <244144>; /* 8 32k periods */
++        };
++};
++
++&dai {
++	status = "okay";
++};
++
++&sound {
++	status = "okay";
++};
++
++&codec_analog {
++	pinctrl-names = "default";
++	pinctrl-0 = <&speaker_amplifier_pin>;
++	speaker-amplifier-gpios = <&r_pio 0 3 GPIO_ACTIVE_HIGH>; /* PL3 */
++	interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
++};
++
++&de {
++	status = "okay";
++};
++
++&tcon0 {
++	status = "okay";
++};
++
++&tcon0_out {
++	tcon0_out_rgb: endpoint@0 {
++		reg = <0>;
++		remote-endpoint = <&rgb_input>;
++	};
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&mmc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc0_pins>, <&mmc0_cd_pin>;
++	vmmc-supply = <&reg_dcdc1>;
++	cd-gpios = <&pio 1 3 GPIO_ACTIVE_LOW>; /* PB3 */
++	bus-width = <4>;
++	status = "okay";
++};
++
++&mmc1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc1_pg_pins>, <&wifi_reset_pin>;
++	vmmc-supply = <&reg_aldo1>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	bus-width = <4>;
++	non-removable;
++	keep-power-in-suspend;
++	status = "okay";
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&pio {
++	mmc0_cd_pin: mmc0_cd_pin@0 {
++		pins = "PB3";
++		function = "gpio_in";
++		bias-pull-up;
++	};
++
++	led_pins: led_pins@0 {
++		pins = "PB7";
++		function = "gpio_out";
++	};
++
++	lcd_control_pin: lcd_control_pin@0 {
++		pins = "PB2", "PC0", "PC2", "PC3";
++		function = "gpio_out";
++	};
++
++	backlight_control_pin: backlight_control_pin@0 {
++		pins = "PH1";
++		function = "gpio_out";
++	};
++};
++
++&r_pio {
++	usb1_vbus_pin: usb1_vbus_pin@0 {
++		pins = "PL2";
++		function = "gpio_out";
++	};
++
++	speaker_amplifier_pin: speaker_amplifier_pin@0 {
++		pins = "PL3";
++		function = "gpio_out";
++	};
++
++	usb0_id_det: usb0_id_detect_pin@0 {
++		pins = "PL4";
++		function = "gpio_in";
++		bias-pull-up;
++	};
++
++	wifi_reset_pin: wifi_reset_pin@0 {
++		pins = "PL6";
++		function = "gpio_out";
++	};
++
++	bt_control_pin: bt_control_pin@0 {
++		pins = "PL8", "PL10";
++		function = "gpio_out";
++	};
++
++        ite_pins_default: ite_pins_default@0 {
++                pins = "PL5";
++                function = "gpio_out";
++        };
++};
++
++&r_rsb {
++	status = "okay";
++
++	axp22x: pmic@3a3 {
++		compatible = "x-powers,axp223";
++		reg = <0x3a3>;
++		interrupt-parent = <&nmi_intc>;
++		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++		drivevbus-supply = <&reg_vcc5v0>;
++		x-powers,drive-vbus-en;
++	};
++};
++
++#include "axp223.dtsi"
++
++&axp_led {
++       label = "chgled";
++       status = "okay";
++       x-powers,charger-mode = <0>;
++};
++
++&reg_aldo1 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-io";
++};
++
++&reg_aldo2 {
++	regulator-always-on;
++	regulator-min-microvolt = <2500000>;
++	regulator-max-microvolt = <2500000>;
++	regulator-name = "vdd-dll";
++};
++
++&reg_aldo3 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-pll-avcc";
++};
++
++&reg_dc5ldo {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-cpus";
++};
++
++&reg_dcdc1 {
++	regulator-always-on;
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-name = "vcc-3v0";
++};
++
++&reg_dcdc2 {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-sys";
++};
++
++&reg_dcdc3 {
++	regulator-always-on;
++	regulator-min-microvolt = <900000>;
++	regulator-max-microvolt = <1400000>;
++	regulator-name = "vdd-cpu";
++};
++
++&reg_dcdc5 {
++	regulator-always-on;
++	regulator-min-microvolt = <1500000>;
++	regulator-max-microvolt = <1500000>;
++	regulator-name = "vcc-dram";
++};
++
++&reg_dldo1 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi0";
++};
++
++&reg_dldo2 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi1";
++};
++
++&reg_dldo3 {
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-amp";
++};
++
++&reg_dldo4 {
++	/*
++	 * TODO: WiFi chip needs dldo1 AND dldo2 AND dldo4 to be on to be powered.
++	 * Remove next line once it is possible to sync two regulators.
++	 */
++	regulator-always-on;
++	regulator-min-microvolt = <3300000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-name = "vcc-wifi2";
++};
++
++&reg_drivevbus {
++	regulator-name = "usb0-vbus";
++	status = "okay";
++};
++
++&reg_rtc_ldo {
++	regulator-name = "vcc-rtc";
++};
++
++&reg_usb1_vbus {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb1_vbus_pin>;
++	gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
++	status = "okay";
++};
++
++&battery_power_supply {
++	status = "okay";
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_pb_pins>;
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pg_pins>, <&uart1_cts_rts_pg_pins>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		max-speed = <1500000>;
++		clocks = <&rtc 1>;
++		clock-names = "lpo";
++		vbat-supply = <&reg_dldo1>;
++		vddio-supply = <&reg_aldo3>;
++		device-wakeup-gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>; /* PL10 */
++		host-wakeup-gpios = <&r_pio 0 9 GPIO_ACTIVE_HIGH>; /* PL9 */
++		shutdown-gpios = <&r_pio 0 8 GPIO_ACTIVE_HIGH>; /* PL8 */
++	};
++};
++
++&usb_otg {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&usb_power_supply {
++	status = "okay";
++};
++
++&usbphy {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb0_id_det>;
++	usb0_vbus-supply = <&reg_drivevbus>;
++	usb0_id_det-gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
++	usb0_vbus_power-supply = <&usb_power_supply>;
++	usb1_vbus-supply = <&reg_usb1_vbus>;
++};
++
++&i2c1 {
++	status = "okay";
++};
+diff --git a/arch/arm/configs/clockworkpi_cpi3_defconfig b/arch/arm/configs/clockworkpi_cpi3_defconfig
+new file mode 100644
+index 000000000..855ac5413
+--- /dev/null
++++ b/arch/arm/configs/clockworkpi_cpi3_defconfig
+@@ -0,0 +1,236 @@
++CONFIG_LOCALVERSION="-clockworkpi-cpi3"
++CONFIG_DEFAULT_HOSTNAME="clockworkpi "
++CONFIG_NO_HZ=y
++CONFIG_HIGH_RES_TIMERS=y
++CONFIG_CGROUPS=y
++CONFIG_PERF_EVENTS=y
++CONFIG_ARCH_SUNXI=y
++# CONFIG_VDSO is not set
++CONFIG_SMP=y
++CONFIG_SCHED_MC=y
++CONFIG_NR_CPUS=8
++CONFIG_HIGHMEM=y
++# CONFIG_ARM_MODULE_PLTS is not set
++CONFIG_ARM_APPENDED_DTB=y
++CONFIG_ARM_ATAG_DTB_COMPAT=y
++CONFIG_CPU_FREQ=y
++CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND=y
++CONFIG_CPU_FREQ_GOV_POWERSAVE=y
++CONFIG_CPU_FREQ_GOV_USERSPACE=y
++CONFIG_CPUFREQ_DT=y
++CONFIG_VFP=y
++CONFIG_NEON=y
++CONFIG_KERNEL_MODE_NEON=y
++CONFIG_MODULES=y
++CONFIG_MODULE_UNLOAD=y
++CONFIG_IOSCHED_BFQ=y
++CONFIG_CMA=y
++CONFIG_NET=y
++CONFIG_PACKET=y
++CONFIG_UNIX=y
++CONFIG_INET=y
++CONFIG_IP_PNP=y
++CONFIG_IP_PNP_DHCP=y
++CONFIG_IP_PNP_BOOTP=y
++# CONFIG_INET_DIAG is not set
++# CONFIG_IPV6 is not set
++CONFIG_CAN=y
++CONFIG_CAN_SUN4I=y
++CONFIG_BT=y
++CONFIG_BT_RFCOMM=y
++CONFIG_BT_RFCOMM_TTY=y
++CONFIG_BT_HIDP=y
++CONFIG_BT_HCIUART=m
++CONFIG_BT_HCIUART_BCM=y
++CONFIG_CFG80211=y
++CONFIG_CFG80211_WEXT=y
++CONFIG_RFKILL=y
++CONFIG_RFKILL_GPIO=y
++CONFIG_UEVENT_HELPER=y
++CONFIG_DEVTMPFS=y
++CONFIG_DEVTMPFS_MOUNT=y
++CONFIG_BLK_DEV_LOOP=y
++CONFIG_NETDEVICES=y
++# CONFIG_ETHERNET is not set
++CONFIG_MDIO_DEVICE=y
++CONFIG_MDIO_SUN4I=y
++# CONFIG_USB_NET_DRIVERS is not set
++# CONFIG_WLAN_VENDOR_ADMTEK is not set
++# CONFIG_WLAN_VENDOR_ATH is not set
++# CONFIG_WLAN_VENDOR_ATMEL is not set
++CONFIG_BRCMFMAC=m
++# CONFIG_WLAN_VENDOR_CISCO is not set
++# CONFIG_WLAN_VENDOR_INTEL is not set
++# CONFIG_WLAN_VENDOR_INTERSIL is not set
++# CONFIG_WLAN_VENDOR_MARVELL is not set
++# CONFIG_WLAN_VENDOR_MEDIATEK is not set
++# CONFIG_WLAN_VENDOR_RALINK is not set
++# CONFIG_WLAN_VENDOR_REALTEK is not set
++# CONFIG_WLAN_VENDOR_RSI is not set
++# CONFIG_WLAN_VENDOR_ST is not set
++# CONFIG_WLAN_VENDOR_TI is not set
++# CONFIG_WLAN_VENDOR_ZYDAS is not set
++# CONFIG_WLAN_VENDOR_QUANTENNA is not set
++# CONFIG_INPUT_LEDS is not set
++CONFIG_INPUT_JOYDEV=y
++CONFIG_INPUT_EVDEV=y
++# CONFIG_INPUT_KEYBOARD is not set
++# CONFIG_INPUT_MOUSE is not set
++CONFIG_INPUT_JOYSTICK=y
++CONFIG_JOYSTICK_ANALOG=y
++CONFIG_INPUT_MISC=y
++CONFIG_INPUT_AXP20X_PEK=y
++CONFIG_SERIAL_8250=y
++CONFIG_SERIAL_8250_CONSOLE=y
++CONFIG_SERIAL_8250_NR_UARTS=8
++CONFIG_SERIAL_8250_RUNTIME_UARTS=8
++CONFIG_SERIAL_8250_DW=y
++CONFIG_SERIAL_OF_PLATFORM=y
++CONFIG_SERIAL_DEV_BUS=y
++# CONFIG_HW_RANDOM is not set
++CONFIG_I2C_CHARDEV=y
++CONFIG_I2C_MV64XXX=y
++CONFIG_SPI=y
++CONFIG_SPI_SUN4I=y
++CONFIG_SPI_SUN6I=y
++CONFIG_GPIO_SYSFS=y
++CONFIG_POWER_SUPPLY=y
++CONFIG_CHARGER_AXP20X=y
++CONFIG_BATTERY_AXP20X=y
++CONFIG_AXP20X_POWER=y
++# CONFIG_HWMON is not set
++CONFIG_THERMAL=y
++CONFIG_CPU_THERMAL=y
++CONFIG_WATCHDOG=y
++CONFIG_SUNXI_WATCHDOG=y
++CONFIG_MFD_SUN4I_GPADC=y
++CONFIG_MFD_AC100=y
++CONFIG_MFD_AXP20X_RSB=y
++CONFIG_REGULATOR=y
++CONFIG_REGULATOR_FIXED_VOLTAGE=y
++CONFIG_REGULATOR_AXP20X=y
++CONFIG_REGULATOR_GPIO=y
++CONFIG_MEDIA_SUPPORT=y
++CONFIG_MEDIA_CAMERA_SUPPORT=y
++CONFIG_MEDIA_CONTROLLER=y
++CONFIG_MEDIA_CONTROLLER_REQUEST_API=y
++CONFIG_V4L_MEM2MEM_DRIVERS=y
++# CONFIG_MEDIA_SUBDRV_AUTOSELECT is not set
++CONFIG_DRM=y
++CONFIG_DRM_MALI_DISPLAY=y
++CONFIG_DRM_SUN4I=y
++CONFIG_DRM_PANEL_SIMPLE=y
++CONFIG_DRM_DISPLAY_CONNECTOR=y
++CONFIG_DRM_ITE_IT66121=m
++CONFIG_DRM_LIMA=y
++CONFIG_FB_SIMPLE=y
++CONFIG_LCD_CLASS_DEVICE=y
++CONFIG_LCD_KD027=y
++CONFIG_BACKLIGHT_CLASS_DEVICE=y
++# CONFIG_BACKLIGHT_GENERIC is not set
++CONFIG_BACKLIGHT_OCP8178=y
++CONFIG_LOGO=y
++# CONFIG_LOGO_LINUX_MONO is not set
++# CONFIG_LOGO_LINUX_VGA16 is not set
++CONFIG_SOUND=y
++CONFIG_SND=y
++CONFIG_SND_OSSEMUL=y
++CONFIG_SND_MIXER_OSS=y
++CONFIG_SND_PCM_OSS=y
++CONFIG_SND_SEQUENCER=y
++CONFIG_SND_SEQ_DUMMY=y
++CONFIG_SND_SEQUENCER_OSS=y
++# CONFIG_SND_DRIVERS is not set
++# CONFIG_SND_ARM is not set
++# CONFIG_SND_SPI is not set
++CONFIG_SND_USB_AUDIO=y
++CONFIG_SND_SOC=y
++CONFIG_SND_SUN8I_CODEC=y
++CONFIG_SND_SUN8I_CODEC_ANALOG=y
++CONFIG_SND_SUN4I_I2S=y
++CONFIG_SND_SIMPLE_CARD=y
++# CONFIG_HID_A4TECH is not set
++# CONFIG_HID_APPLE is not set
++# CONFIG_HID_BELKIN is not set
++# CONFIG_HID_CHERRY is not set
++# CONFIG_HID_CHICONY is not set
++# CONFIG_HID_CYPRESS is not set
++# CONFIG_HID_EZKEY is not set
++# CONFIG_HID_ITE is not set
++# CONFIG_HID_KENSINGTON is not set
++# CONFIG_HID_LOGITECH is not set
++# CONFIG_HID_MICROSOFT is not set
++# CONFIG_HID_MONTEREY is not set
++CONFIG_USB_HIDDEV=y
++CONFIG_USB=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_HCD_PLATFORM=y
++CONFIG_USB_OHCI_HCD=y
++CONFIG_USB_OHCI_HCD_PLATFORM=y
++CONFIG_USB_MUSB_HDRC=y
++CONFIG_USB_MUSB_SUNXI=y
++CONFIG_NOP_USB_XCEIV=y
++CONFIG_USB_GADGET=y
++CONFIG_USB_G_MULTI=m
++CONFIG_MMC=y
++CONFIG_MMC_SUNXI=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_AXP20X=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_HEARTBEAT=y
++CONFIG_LEDS_TRIGGER_ACTIVITY=y
++CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
++CONFIG_RTC_CLASS=y
++# CONFIG_RTC_INTF_SYSFS is not set
++# CONFIG_RTC_INTF_PROC is not set
++CONFIG_RTC_DRV_AC100=y
++CONFIG_DMADEVICES=y
++CONFIG_DMA_SUN6I=y
++CONFIG_STAGING=y
++CONFIG_STAGING_MEDIA=y
++CONFIG_VIDEO_SUNXI=y
++CONFIG_VIDEO_SUNXI_CEDRUS=m
++# CONFIG_SUN8I_DE2_CCU is not set
++# CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IIO=y
++CONFIG_AXP20X_ADC=y
++CONFIG_SUN4I_GPADC=y
++CONFIG_PWM=y
++CONFIG_PWM_SUN4I=y
++CONFIG_PHY_SUN4I_USB=y
++CONFIG_PHY_SUN9I_USB=y
++CONFIG_NVMEM_SUNXI_SID=y
++CONFIG_VALIDATE_FS_PARSER=y
++CONFIG_EXT4_FS=y
++CONFIG_VFAT_FS=y
++CONFIG_TMPFS=y
++CONFIG_CONFIGFS_FS=y
++# CONFIG_MISC_FILESYSTEMS is not set
++CONFIG_NFS_FS=y
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=y
++CONFIG_ROOT_NFS=y
++CONFIG_NLS_CODEPAGE_437=y
++CONFIG_NLS_ISO8859_1=y
++CONFIG_LSM="yama,loadpin,safesetid,integrity"
++CONFIG_CRYPTO_CCM=y
++CONFIG_CRYPTO_GCM=y
++CONFIG_CRYPTO_CBC=y
++CONFIG_CRYPTO_CTS=y
++CONFIG_CRYPTO_VMAC=y
++CONFIG_CRYPTO_CRC32=y
++CONFIG_CRYPTO_CRCT10DIF=y
++CONFIG_CRYPTO_MD4=y
++CONFIG_CRYPTO_SHA512=y
++CONFIG_CRYPTO_DES=y
++CONFIG_CRYPTO_DEV_SUN4I_SS=y
++CONFIG_XZ_DEC=y
++CONFIG_DMA_CMA=y
++CONFIG_CMA_SIZE_MBYTES=256
++CONFIG_PRINTK_TIME=y
++CONFIG_DEBUG_KERNEL=y
++CONFIG_PANIC_TIMEOUT=5
++# CONFIG_SCHED_DEBUG is not set
++# CONFIG_FTRACE is not set
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 3ad828eae..fd26f3a79 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -3411,6 +3411,88 @@ static const struct panel_desc arm_rtsm = {
+ 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+ };
+
++static const struct drm_display_mode clockwork_cpi3_lcd_mode = {
++	.clock = 5800,
++	.hdisplay = 320,
++	.hsync_start = 320 + 6,
++	.hsync_end = 320 + 6 + 2,
++	.htotal = 320 + 6 + 2 + 60,
++	.vdisplay = 240,
++	.vsync_start = 240 + 2,
++	.vsync_end = 240 + 2 + 2,
++	.vtotal = 240 + 2 + 2 + 6,
++	.vrefresh = 60,
++	.flags = DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_PHSYNC,
++};
++
++static const struct panel_desc clockwork_cpi3_lcd = {
++	.modes = &clockwork_cpi3_lcd_mode,
++	.num_modes = 1,
++	.bpc = 8,
++};
++
++static const struct drm_display_mode clockwork_cpi3_hdmi_modes[] = {
++	{
++		.clock = 74250,
++		.hdisplay = 1280,
++		.hsync_start = 1280 + 110,
++		.hsync_end = 1280 + 110 + 40,
++		.htotal = 1280 + 110 + 40 + 220,
++		.vdisplay = 720,
++		.vsync_start = 720 + 5,
++		.vsync_end = 720 + 5 + 5,
++		.vtotal = 720 + 5 + 5 + 20,
++		.vrefresh = 60,
++		.flags = DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_PHSYNC,
++	},
++	{//1024x768
++                .clock = 64110,
++                .hdisplay = 1024,
++                .hsync_start = 1080,
++                .hsync_end = 1184,
++                .htotal = 1344,
++                .vdisplay = 768,
++                .vsync_start = 769,
++                .vsync_end = 772,
++                .vtotal = 795,
++                .vrefresh = 60,
++                .flags = DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_PHSYNC,
++
++	},
++        {//1024x600
++                .clock = 48960,
++                .hdisplay = 1024,
++                .hsync_start = 1064,
++                .hsync_end = 1168,
++                .htotal = 1312,
++                .vdisplay = 600,
++                .vsync_start = 601,
++                .vsync_end = 604,
++                .vtotal = 622,
++                .vrefresh = 60,
++                .flags = DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_PHSYNC,
++	},
++/*        {//1920x1080 30
++                .clock = 80180,
++                .hdisplay = 1920,
++                .hsync_start = 1984,
++                .hsync_end = 2176,
++                .htotal = 2432,
++                .vdisplay = 1080,
++                .vsync_start = 1081,
++                .vsync_end = 1084,
++                .vtotal = 1099,
++                .vrefresh = 30,
++                .flags = DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_PHSYNC,
++        },*/
++};
++
++static const struct panel_desc clockwork_cpi3_hdmi = {
++	.modes = clockwork_cpi3_hdmi_modes,
++	.num_modes = ARRAY_SIZE(clockwork_cpi3_hdmi_modes),
++	.bpc = 8,
++};
++
+ static const struct of_device_id platform_of_match[] = {
+ 	{
+ 		.compatible = "ampire,am-480272h3tmqw-t01h",
+@@ -3767,6 +3849,12 @@ static const struct of_device_id platform_of_match[] = {
+ 		.compatible = "winstar,wf35ltiacd",
+ 		.data = &winstar_wf35ltiacd,
+ 	}, {
++		.compatible = "clockwork,cpi3-lcd",
++		.data = &clockwork_cpi3_lcd,
++	}, {
++		.compatible = "clockwork,cpi3-hdmi",
++		.data = &clockwork_cpi3_hdmi,
++	}, {
+ 		/* Must be the last entry */
+ 		.compatible = "panel-dpi",
+ 		.data = &panel_dpi,
+diff --git a/drivers/input/misc/axp20x-pek.c b/drivers/input/misc/axp20x-pek.c
+index 9c6386b2a..30a37fc56 100644
+--- a/drivers/input/misc/axp20x-pek.c
++++ b/drivers/input/misc/axp20x-pek.c
+@@ -215,10 +215,18 @@ static irqreturn_t axp20x_pek_irq(int irq, void *pwr)
+ 	 * The power-button is connected to ground so a falling edge (dbf)
+ 	 * means it is pressed.
+ 	 */
+-	if (irq == axp20x_pek->irq_dbf)
++	//Using long press for KEY_POWER instead of falling edge (dbf)
++	//See drivers/mfd/axp20x.c in axp22x_pek_resources const
++	if (irq == axp20x_pek->irq_dbf) {
+ 		input_report_key(idev, KEY_POWER, true);
+-	else if (irq == axp20x_pek->irq_dbr)
+ 		input_report_key(idev, KEY_POWER, false);
++	}
++        else if (irq == axp20x_pek->irq_dbr) {
++                input_report_key(idev, KEY_SUSPEND, true);
++                input_report_key(idev, KEY_SUSPEND, false);
++        }
++	//else if (irq == axp20x_pek->irq_dbr)
++	//	input_report_key(idev, KEY_POWER, false);
+
+ 	input_sync(idev);
+
+@@ -242,6 +250,7 @@ static int axp20x_pek_probe_input_device(struct axp20x_pek *axp20x_pek,
+ 	idev->dev.parent = &pdev->dev;
+
+ 	input_set_capability(idev, EV_KEY, KEY_POWER);
++	input_set_capability(idev, EV_KEY, KEY_SUSPEND);
+
+ 	input_set_drvdata(idev, axp20x_pek);
+
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index c664d84e1..2da5434fc 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -801,6 +801,16 @@ config LEDS_NIC78BX
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called leds-nic78bx.
+
++config LEDS_AXP20X
++	tristate "LED support for X-Powers PMICs"
++	depends on MFD_AXP20X
++	help
++	  This option enables support for CHGLED found on most of X-Powers
++	  PMICs.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called leds-axp20x.
++
+ config LEDS_SPI_BYTE
+ 	tristate "LED support for SPI LED controller with a single byte"
+ 	depends on LEDS_CLASS
+diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
+index 45235d5fb..4e277e9a3 100644
+--- a/drivers/leds/Makefile
++++ b/drivers/leds/Makefile
+@@ -39,6 +39,7 @@ obj-$(CONFIG_LEDS_LM3532)		+= leds-lm3532.o
+ obj-$(CONFIG_LEDS_LM3533)		+= leds-lm3533.o
+ obj-$(CONFIG_LEDS_LM355x)		+= leds-lm355x.o
+ obj-$(CONFIG_LEDS_LM3601X)		+= leds-lm3601x.o
++obj-$(CONFIG_LEDS_AXP20X)		+= leds-axp20x.o
+ obj-$(CONFIG_LEDS_LM36274)		+= leds-lm36274.o
+ obj-$(CONFIG_LEDS_LM3642)		+= leds-lm3642.o
+ obj-$(CONFIG_LEDS_LM3692X)		+= leds-lm3692x.o
+diff --git a/drivers/leds/leds-axp20x.c b/drivers/leds/leds-axp20x.c
+new file mode 100644
+index 000000000..2d5ae1c08
+--- /dev/null
++++ b/drivers/leds/leds-axp20x.c
+@@ -0,0 +1,291 @@
++// SPDX-License-Identifier: GPL-2.0+
++//
++// Copyright 2019 Stefan Mavrodiev <stefan@olimex.com>
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/leds.h>
++#include <linux/mfd/axp20x.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++#include <uapi/linux/uleds.h>
++
++
++#define AXP20X_CHGLED_CTRL_REG		AXP20X_OFF_CTRL
++#define AXP20X_CHGLED_FUNC_MASK			GENMASK(5, 4)
++#define AXP20X_CHGLED_FUNC_OFF			(0 << 4)
++#define AXP20X_CHGLED_FUNC_1HZ			(1 << 4)
++#define AXP20X_CHGLED_FUNC_4HZ			(2 << 4)
++#define AXP20X_CHGLED_FUNC_FULL			(3 << 4)
++#define AXP20X_CHGLED_CTRL_MASK			BIT(3)
++#define AXP20X_CHGLED_CTRL_MANUAL		0
++#define AXP20X_CHGLED_CTRL_CHARGER		1
++#define AXP20X_CHGLED_CTRL(_ctrl)		(_ctrl << 3)
++
++#define AXP20X_CHGLED_MODE_REG		AXP20X_CHRG_CTRL2
++#define AXP20X_CHGLED_MODE_MASK			BIT(4)
++#define AXP20X_CHGLED_MODE_A			0
++#define AXP20X_CHGLED_MODE_B			1
++#define AXP20X_CHGLED_MODE(_mode)		(_mode << 4)
++
++struct axp20x_led {
++	char			name[LED_MAX_NAME_SIZE];
++	struct led_classdev	cdev;
++	struct mutex		lock;
++	u8			mode : 1;
++	u8			ctrl : 1;
++	u8			ctrl_inverted : 1;
++	struct axp20x_dev	*axp20x;
++};
++
++static inline struct axp20x_led *to_axp20x_led(struct led_classdev *cdev)
++{
++	return container_of(cdev, struct axp20x_led, cdev);
++}
++
++static int axp20x_led_setup(struct axp20x_led *priv)
++{
++	int ret;
++	u8 val;
++
++	/* Invert the logic, if necessary */
++	val = priv->ctrl ^ priv->ctrl_inverted;
++
++	mutex_lock(&priv->lock);
++	ret = regmap_update_bits(priv->axp20x->regmap, AXP20X_CHGLED_CTRL_REG,
++				 AXP20X_CHGLED_CTRL_MASK,
++				 AXP20X_CHGLED_CTRL(val));
++	if (ret < 0)
++		goto out;
++
++	ret = regmap_update_bits(priv->axp20x->regmap, AXP20X_CHGLED_MODE_REG,
++				 AXP20X_CHGLED_MODE_MASK,
++				 AXP20X_CHGLED_MODE(priv->mode));
++out:
++	mutex_unlock(&priv->lock);
++	return ret;
++}
++
++static ssize_t control_show(struct device *dev, struct device_attribute *attr,
++			    char *buf)
++{
++	struct led_classdev *cdev = dev_get_drvdata(dev);
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++
++	return sprintf(buf, "%u\n", priv->ctrl);
++}
++
++static ssize_t control_store(struct device *dev, struct device_attribute *attr,
++			     const char *buf, size_t size)
++{
++	struct led_classdev *cdev = dev_get_drvdata(dev);
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++	unsigned long val;
++	int ret;
++
++	ret = kstrtoul(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	/**
++	 * Supported values are:
++	 *   - 0 : Manual control
++	 *   - 1 : Charger control
++	 */
++	if (val > 1)
++		return -EINVAL;
++
++	priv->ctrl = val;
++
++	return axp20x_led_setup(priv) ? : size;
++}
++static DEVICE_ATTR_RW(control);
++
++static ssize_t mode_show(struct device *dev, struct device_attribute *attr,
++			 char *buf)
++{
++	struct led_classdev *cdev = dev_get_drvdata(dev);
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++
++	return sprintf(buf, "%u\n", priv->mode);
++}
++
++static ssize_t mode_store(struct device *dev, struct device_attribute *attr,
++			  const char *buf, size_t size)
++{
++	struct led_classdev *cdev = dev_get_drvdata(dev);
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++	unsigned long val;
++	int ret;
++
++	ret = kstrtoul(buf, 0, &val);
++	if (ret)
++		return ret;
++	/**
++	 * Supported values are:
++	 *   - 0 : Mode A
++	 *   - 1 : Mode B
++	 */
++	if (val > 1)
++		return -EINVAL;
++
++	priv->mode = val;
++
++	return axp20x_led_setup(priv) ? : size;
++}
++static DEVICE_ATTR_RW(mode);
++
++static struct attribute *axp20x_led_attrs[] = {
++	&dev_attr_control.attr,
++	&dev_attr_mode.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(axp20x_led);
++
++enum led_brightness axp20x_led_brightness_get(struct led_classdev *cdev)
++{
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++	u32 val;
++	int ret;
++
++	mutex_lock(&priv->lock);
++	ret = regmap_read(priv->axp20x->regmap, AXP20X_CHGLED_CTRL_REG, &val);
++	mutex_unlock(&priv->lock);
++	if (ret < 0)
++		return LED_OFF;
++
++	return (val & AXP20X_CHGLED_FUNC_FULL) ? LED_FULL : LED_OFF;
++}
++
++static int axp20x_led_brightness_set_blocking(struct led_classdev *cdev,
++					      enum led_brightness brightness)
++{
++	struct axp20x_led *priv = to_axp20x_led(cdev);
++	int ret = 0;
++
++	mutex_lock(&priv->lock);
++	ret = regmap_update_bits(priv->axp20x->regmap,
++				 AXP20X_CHGLED_CTRL_REG,
++				 AXP20X_CHGLED_FUNC_MASK,
++				 (brightness) ?
++				 AXP20X_CHGLED_FUNC_FULL :
++				 AXP20X_CHGLED_FUNC_OFF);
++	mutex_unlock(&priv->lock);
++
++	return ret;
++}
++
++static int axp20x_led_parse_dt(struct axp20x_led *priv, struct device_node *np)
++{
++	const char *str;
++	u8 value;
++	int ret = 0;
++
++	str = of_get_property(np, "label", NULL);
++	if (!str)
++		snprintf(priv->name, sizeof(priv->name), "axp20x::");
++	else
++		snprintf(priv->name, sizeof(priv->name), "axp20x:%s", str);
++	priv->cdev.name = priv->name;
++
++	priv->cdev.default_trigger = of_get_property(np,
++						     "linux,default-trigger",
++						     NULL);
++
++	if (!of_property_read_u8(np, "x-powers,charger-mode", &value)) {
++		priv->ctrl = AXP20X_CHGLED_CTRL_CHARGER;
++		priv->mode = (value < 2) ? value : 0;
++	} else {
++		priv->ctrl = AXP20X_CHGLED_CTRL_MANUAL;
++	}
++
++	str = of_get_property(np, "default-state", NULL);
++	if (str) {
++		if (!strcmp(str, "keep")) {
++			ret = axp20x_led_brightness_get(&priv->cdev);
++			if (ret < 0)
++				return ret;
++			priv->cdev.brightness = ret;
++		} else if (!strcmp(str, "on")) {
++			ret = axp20x_led_brightness_set_blocking(&priv->cdev,
++								 LED_FULL);
++		} else  {
++			ret = axp20x_led_brightness_set_blocking(&priv->cdev,
++								 LED_OFF);
++		}
++	}
++
++	return ret;
++}
++
++static const struct of_device_id axp20x_led_of_match[] = {
++	{ .compatible = "x-powers,axp20x-led" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, axp20x_led_of_match);
++
++static int axp20x_led_probe(struct platform_device *pdev)
++{
++	struct axp20x_led *priv;
++	int ret;
++
++	if (!of_device_is_available(pdev->dev.of_node))
++		return -ENODEV;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(struct axp20x_led),
++			    GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->axp20x = dev_get_drvdata(pdev->dev.parent);
++	if (!priv->axp20x) {
++		dev_err(&pdev->dev, "Failed to get parent data\n");
++		return -ENXIO;
++	}
++
++	mutex_init(&priv->lock);
++
++	priv->cdev.brightness_set_blocking = axp20x_led_brightness_set_blocking;
++	priv->cdev.brightness_get = axp20x_led_brightness_get;
++	priv->cdev.groups = axp20x_led_groups;
++
++	ret = axp20x_led_parse_dt(priv, pdev->dev.of_node);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to set parameters\n");
++		return ret;
++	}
++
++	/**
++	 * For some reason in AXP209 the bit that controls CHGLED is with
++	 * inverted logic compared to all other PMICs.
++	 * If the PMIC is actually AXP209, set inverted flag and later use it
++	 * when configuring the LED.
++	 */
++	if (priv->axp20x->variant == AXP209_ID)
++		priv->ctrl_inverted = 1;
++
++	ret =  axp20x_led_setup(priv);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to configure led");
++		return ret;
++	}
++
++	return devm_led_classdev_register(&pdev->dev, &priv->cdev);
++}
++
++static struct platform_driver axp20x_led_driver = {
++	.driver = {
++		.name	= "axp20x-led",
++		.of_match_table = of_match_ptr(axp20x_led_of_match),
++	},
++	.probe = axp20x_led_probe,
++};
++
++module_platform_driver(axp20x_led_driver);
++
++MODULE_AUTHOR("Stefan Mavrodiev <stefan@olimex.com");
++MODULE_DESCRIPTION("X-Powers PMIC CHGLED driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/leds/leds-gpio.c b/drivers/leds/leds-gpio.c
+index 2bf745956..c80d92ea2 100644
+--- a/drivers/leds/leds-gpio.c
++++ b/drivers/leds/leds-gpio.c
+@@ -25,6 +25,8 @@ struct gpio_led_data {
+ 	gpio_blink_set_t platform_gpio_blink_set;
+ };
+
++static int leds_gpio_proc_init(const char *name);
++
+ static inline struct gpio_led_data *
+ 			cdev_to_gpio_led_data(struct led_classdev *led_cdev)
+ {
+@@ -108,6 +110,7 @@ static int create_gpio_led(const struct gpio_led *template,
+ 	if (ret < 0)
+ 		return ret;
+
++    leds_gpio_proc_init(led_dat->cdev.name);
+ 	if (template->name) {
+ 		led_dat->cdev.name = template->name;
+ 		ret = devm_led_classdev_register(parent, &led_dat->cdev);
+@@ -125,6 +128,8 @@ struct gpio_leds_priv {
+ 	struct gpio_led_data leds[];
+ };
+
++static struct gpio_leds_priv *leds_priv;
++
+ static inline int sizeof_gpio_leds_priv(int num_leds)
+ {
+ 	return sizeof(struct gpio_leds_priv) +
+@@ -196,7 +201,7 @@ static struct gpio_leds_priv *gpio_leds_create(struct platform_device *pdev)
+ 					led_dat->cdev.dev->kobj.name);
+ 		priv->num_leds++;
+ 	}
+-
++    leds_priv = priv;
+ 	return priv;
+ }
+
+@@ -324,6 +329,82 @@ static struct platform_driver gpio_led_driver = {
+
+ module_platform_driver(gpio_led_driver);
+
++#ifdef CONFIG_PROC_FS
++
++#include <linux/proc_fs.h>
++#include <linux/uaccess.h>
++
++static char global_buffer[64];
++
++static int leds_gpio_proc_show(struct seq_file *m, void *v)
++{
++	seq_printf(m, "leds_gpio\n");
++	return 0;
++}
++
++static int leds_gpio_proc_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, leds_gpio_proc_show, NULL);
++}
++
++static int leds_gpio_proc_read(struct file * file, char __user * buf, size_t size, loff_t * loff)
++{
++	int value, len, i;
++
++	for(i = 0; i < leds_priv->num_leds; i++) {
++		if(strcmp(leds_priv->leds[i].cdev.name, file->f_path.dentry->d_iname) == 0) {
++			value = leds_priv->leds[i].cdev.brightness;
++			len = snprintf(global_buffer, sizeof(global_buffer), "%d\n", value);
++			return simple_read_from_buffer(buf, size, loff, global_buffer, len);
++		}
++	}
++
++	return 0;
++}
++
++static int leds_gpio_proc_write(struct file * file, const char __user * buf, size_t size, loff_t * loff)
++{
++	int value, i;
++
++	if(copy_from_user(global_buffer, buf, size))
++		return -EFAULT;
++
++	global_buffer[size] = 0;
++	for(i = 0; i < leds_priv->num_leds; i++) {
++		if(strcmp(leds_priv->leds[i].cdev.name, file->f_path.dentry->d_iname) == 0) {
++			value = simple_strtol(global_buffer, 0, 10);
++			gpio_led_set(&leds_priv->leds[i].cdev, value);
++			leds_priv->leds[i].cdev.brightness = value;
++			break;
++		}
++	}
++
++	return size;
++}
++
++static const struct proc_ops leds_gpio_proc_fops = {
++	.proc_open		= leds_gpio_proc_open,
++	.proc_read		= leds_gpio_proc_read,
++	.proc_write		= leds_gpio_proc_write,
++	.proc_lseek		= seq_lseek,
++	.proc_release		= single_release,
++};
++
++static int leds_gpio_proc_init(const char *name)
++{
++	struct proc_dir_entry *r;
++	char buf[50];
++
++	sprintf(buf, "driver/%s", name);
++	r = proc_create(buf, S_IRWXUGO, NULL, &leds_gpio_proc_fops);
++	if (!r)
++		return -ENOMEM;
++	return 0;
++}
++#else
++static inline int leds_gpio_proc_init(const char *name) { return 0; }
++#endif /* CONFIG_PROC_FS */
++
+ MODULE_AUTHOR("Raphael Assenat <raph@8d.com>, Trent Piepho <tpiepho@freescale.com>");
+ MODULE_DESCRIPTION("GPIO LED driver");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index aa59496e4..a925ca63a 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -201,9 +201,13 @@ static const struct resource axp803_usb_power_supply_resources[] = {
+ 	DEFINE_RES_IRQ_NAMED(AXP803_IRQ_VBUS_REMOVAL, "VBUS_REMOVAL"),
+ };
+
++// Changing PEF_DBF to long press instead of falling to use short
++// Using short press for KEY_SUSPEND, and long press for KEY_POWER
+ static const struct resource axp22x_pek_resources[] = {
+-	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_RIS_EDGE, "PEK_DBR"),
+-	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
++//	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_RIS_EDGE, "PEK_DBR"),
++//	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
++	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_LONG, "PEK_DBF"),
++	DEFINE_RES_IRQ_NAMED(AXP22X_IRQ_PEK_SHORT, "PEK_DBR"),
+ };
+
+ static const struct resource axp288_power_button_resources[] = {
+@@ -613,6 +617,9 @@ static const struct mfd_cell axp20x_cells[] = {
+ 		.of_compatible	= "x-powers,axp202-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp20x_usb_power_supply_resources),
+ 		.resources	= axp20x_usb_power_supply_resources,
++	}, {
++		.name		= "axp20x-led",
++		.of_compatible	= "x-powers,axp20x-led",
+ 	},
+ };
+
+@@ -639,6 +646,9 @@ static const struct mfd_cell axp221_cells[] = {
+ 		.of_compatible	= "x-powers,axp221-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp22x_usb_power_supply_resources),
+ 		.resources	= axp22x_usb_power_supply_resources,
++	}, {
++		.name		= "axp20x-led",
++		.of_compatible	= "x-powers,axp20x-led",
+ 	},
+ };
+
+@@ -665,6 +675,9 @@ static const struct mfd_cell axp223_cells[] = {
+ 		.of_compatible	= "x-powers,axp223-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp22x_usb_power_supply_resources),
+ 		.resources	= axp22x_usb_power_supply_resources,
++	}, {
++		.name		= "axp20x-led",
++		.of_compatible	= "x-powers,axp20x-led",
+ 	},
+ };
+
+@@ -722,6 +735,9 @@ static const struct mfd_cell axp288_cells[] = {
+ 		.resources	= axp288_power_button_resources,
+ 	}, {
+ 		.name		= "axp288_pmic_acpi",
++	}, {
++		.name		= "axp20x-led",
++		.of_compatible	= "x-powers,axp20x-led",
+ 	},
+ };
+
+@@ -744,6 +760,11 @@ static const struct mfd_cell axp803_cells[] = {
+ 		.of_compatible	= "x-powers,axp813-ac-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp20x_ac_power_supply_resources),
+ 		.resources	= axp20x_ac_power_supply_resources,
++	}, {
++		.name           = "axp20x-regulator"
++	}, {
++		.name           = "axp20x-led",
++		.of_compatible  = "x-powers,axp20x-led",
+ 	}, {
+ 		.name		= "axp20x-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp803_usb_power_supply_resources),
+@@ -777,6 +798,9 @@ static const struct mfd_cell axp809_cells[] = {
+ 	}, {
+ 		.id		= 1,
+ 		.name		= "axp20x-regulator",
++	}, {
++		.name		= "axp20x-led",
++		.of_compatible	= "x-powers,axp20x-led",
+ 	},
+ };
+
+@@ -801,6 +825,9 @@ static const struct mfd_cell axp813_cells[] = {
+ 		.of_compatible	= "x-powers,axp813-ac-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp20x_ac_power_supply_resources),
+ 		.resources	= axp20x_ac_power_supply_resources,
++        }, {
++                .name           = "axp20x-led",
++                .of_compatible  = "x-powers,axp20x-led",
+ 	}, {
+ 		.name		= "axp20x-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp803_usb_power_supply_resources),
+diff --git a/drivers/mfd/sun6i-prcm.c b/drivers/mfd/sun6i-prcm.c
+index c31927d4b..eb137695b 100644
+--- a/drivers/mfd/sun6i-prcm.c
++++ b/drivers/mfd/sun6i-prcm.c
+@@ -12,7 +12,7 @@
+ #include <linux/of.h>
+
+ #define SUN8I_CODEC_ANALOG_BASE	0x1c0
+-#define SUN8I_CODEC_ANALOG_SIZE	0x4
++#define SUN8I_CODEC_ANALOG_SIZE	0x10
+
+ struct prcm_data {
+ 	int nsubdevs;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 3a08252f1..711094b0e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -3895,6 +3895,55 @@ static const struct brcmf_buscore_ops brcmf_sdio_buscore_ops = {
+ 	.write32 = brcmf_sdio_buscore_write32,
+ };
+
++static char brcmf_fw_name[BRCMF_FW_NAME_LEN];
++
++#ifdef CONFIG_PROC_FS
++#include <linux/proc_fs.h>
++
++static int brcmf_sdio_proc_show(struct seq_file *m, void *v)
++{
++	seq_printf(m, "brcmf_sdio\n");
++	return 0;
++}
++
++static int brcmf_sdio_proc_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, brcmf_sdio_proc_show, NULL);
++}
++
++static ssize_t brcmf_sdio_proc_read(struct file * file, char __user * buf, size_t size, loff_t * loff)
++{
++	int len;
++	len = strlen(brcmf_fw_name);
++	return simple_read_from_buffer(buf, size, loff, brcmf_fw_name, len);
++}
++
++static ssize_t brcmf_sdio_proc_write(struct file * file, const char __user * buf, size_t size, loff_t * loff)
++{
++	return size;
++}
++
++static const struct proc_ops brcmf_sdio_proc_fops = {
++	.proc_open		= brcmf_sdio_proc_open,
++	.proc_read		= brcmf_sdio_proc_read,
++	.proc_write		= brcmf_sdio_proc_write,
++	.proc_lseek		= seq_lseek,
++	.proc_release		= single_release,
++};
++
++static int __init brcmf_sdio_proc_init(void)
++{
++	struct proc_dir_entry *r;
++
++	r = proc_create("driver/brcmf_fw", S_IRWXUGO, NULL, &brcmf_sdio_proc_fops);
++	if (!r)
++		return -ENOMEM;
++	return 0;
++}
++#else
++static inline int brcmf_sdio_proc_init(void) { return 0; }
++#endif /* CONFIG_PROC_FS */
++
+ static bool
+ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
+ {
+@@ -4422,6 +4471,9 @@ struct brcmf_sdio *brcmf_sdio_probe(struct brcmf_sdio_dev *sdiodev)
+ 		goto fail;
+ 	}
+
++    sprintf(brcmf_fw_name, "%s\n", sdiodev->fw_name);
++	brcmf_sdio_proc_init();
++
+ 	return bus;
+
+ fail:
+diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
+index 7d22d7377..d452569b4 100644
+--- a/drivers/video/backlight/Kconfig
++++ b/drivers/video/backlight/Kconfig
+@@ -135,6 +135,12 @@ config LCD_HX8357
+ 	  If you have a panel based on the OTM3225A controller
+ 	  chip then say y to include a driver for it.
+
++  config LCD_KD027
++	tristate "STARTEK KD027 LCD Driver"
++	help
++	  If you have a KD027 LCD panel, say Y to enable its LCD control
++	  driver.
++
+ endif # LCD_CLASS_DEVICE
+
+ #
+@@ -456,6 +462,12 @@ config BACKLIGHT_RAVE_SP
+ 	help
+ 	  Support for backlight control on RAVE SP device.
+
++config BACKLIGHT_OCP8178
++	tristate "OCP8178 Backlight Driver"
++	depends on GPIOLIB
++	help
++	  If you have an OCP8178, say Y to enable the backlight driver.
++
+ config BACKLIGHT_LED
+ 	tristate "Generic LED based Backlight Driver"
+ 	depends on LEDS_CLASS && OF
+diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
+index 0c1a15246..e7d60896e 100644
+--- a/drivers/video/backlight/Makefile
++++ b/drivers/video/backlight/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_LCD_PLATFORM)		+= platform_lcd.o
+ obj-$(CONFIG_LCD_TDO24M)		+= tdo24m.o
+ obj-$(CONFIG_LCD_TOSA)			+= tosa_lcd.o
+ obj-$(CONFIG_LCD_VGG2432A4)		+= vgg2432a4.o
++obj-$(CONFIG_LCD_KD027)			+= kd027_lcd.o
+
+ obj-$(CONFIG_BACKLIGHT_88PM860X)	+= 88pm860x_bl.o
+ obj-$(CONFIG_BACKLIGHT_AAT2870)		+= aat2870_bl.o
+@@ -57,4 +58,5 @@ obj-$(CONFIG_BACKLIGHT_TPS65217)	+= tps65217_bl.o
+ obj-$(CONFIG_BACKLIGHT_WM831X)		+= wm831x_bl.o
+ obj-$(CONFIG_BACKLIGHT_ARCXCNN) 	+= arcxcnn_bl.o
+ obj-$(CONFIG_BACKLIGHT_RAVE_SP)		+= rave-sp-backlight.o
++obj-$(CONFIG_BACKLIGHT_OCP8178)		+= ocp8178_bl.o
+ obj-$(CONFIG_BACKLIGHT_LED)		+= led_bl.o
+diff --git a/drivers/video/backlight/kd027_lcd.c b/drivers/video/backlight/kd027_lcd.c
+new file mode 100644
+index 000000000..7db993ae1
+--- /dev/null
++++ b/drivers/video/backlight/kd027_lcd.c
+@@ -0,0 +1,249 @@
++/*
++ * kd027_lcd.c
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ *
++ *
++ */
++
++#include <linux/gpio.h> /* Only for legacy support */
++#include <linux/gpio/consumer.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++#include <linux/platform_data/gpio_backlight.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/delay.h>
++#include <linux/timer.h>
++#include <linux/poll.h>
++#include <linux/proc_fs.h>
++#include <linux/seq_file.h>
++#include <linux/sched.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/io.h>
++#include <linux/clk.h>
++
++struct kd027_lcd {
++	struct gpio_desc* rst_pin;
++	struct gpio_desc* cs_pin;
++	struct gpio_desc* sck_pin;
++	struct gpio_desc* sda_pin;
++	unsigned char init_seq[100];
++	unsigned char suspend_seq[20];
++	unsigned char resume_seq[20];
++	int init_seq_len;
++	int suspend_seq_len;
++	int resume_seq_len;
++};
++
++struct kd027_lcd * lcd_data;
++
++static void kd027_write_lcd(unsigned char data)
++{
++	unsigned char i;
++
++	for(i = 0; i < 8; i++) {
++		if (data & 0x80)
++			gpiod_set_value(lcd_data->sda_pin, 1);
++		else
++			gpiod_set_value(lcd_data->sda_pin, 0);
++		gpiod_set_value(lcd_data->sck_pin, 0);
++		gpiod_set_value(lcd_data->sck_pin, 1);
++		data <<= 1;
++	}
++}
++
++static void kd027_write_cmd_data(unsigned char c, unsigned char d)
++{
++	gpiod_set_value(lcd_data->cs_pin, 0);
++	kd027_write_lcd(c);
++	kd027_write_lcd(d);
++	gpiod_set_value(lcd_data->cs_pin, 1);
++}
++
++static void kd027_init(void)
++{
++	int i;
++	for(i = 0; i < lcd_data->init_seq_len/2; i++) {
++		kd027_write_cmd_data(lcd_data->init_seq[i * 2], lcd_data->init_seq[i * 2 + 1]);
++	}
++}
++
++#ifdef CONFIG_PROC_FS
++static char global_buffer[64];
++
++static int kd027_proc_show(struct seq_file *m, void *v)
++{
++	seq_printf(m, "kd027\n");
++	return 0;
++}
++
++static int kd027_proc_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, kd027_proc_show, NULL);
++}
++
++static ssize_t kd027_proc_read(struct file * file, char __user * buf, size_t size, loff_t * loff)
++{
++	return 0;
++}
++
++static ssize_t kd027_proc_write(struct file * file, const char __user * buf, size_t size, loff_t * loff)
++{
++	int cmd, data;
++	char* tmp;
++
++	if(copy_from_user(global_buffer, buf, size))
++		return -EFAULT;
++
++	global_buffer[size] = 0;
++	cmd = simple_strtol(global_buffer, 0, 16);
++	tmp = strchr(global_buffer, ' ');
++	if(tmp) {
++		data = simple_strtol(tmp+1, 0, 16);
++		kd027_write_cmd_data(cmd, data);
++	}
++
++	return size;
++}
++
++static const struct proc_ops kd027_proc_fops = {
++	.proc_open		= kd027_proc_open,
++	.proc_read		= kd027_proc_read,
++	.proc_write		= kd027_proc_write,
++	.proc_lseek		= seq_lseek,
++	.proc_release		= single_release,
++};
++
++static int __init kd027_proc_init(void)
++{
++	struct proc_dir_entry *r;
++
++	r = proc_create("driver/lcd", S_IRWXUGO, NULL, &kd027_proc_fops);
++	if (!r)
++		return -ENOMEM;
++	return 0;
++}
++#else
++static inline int kd027_proc_init(void) { return 0; }
++#endif /* CONFIG_PROC_FS */
++
++static int kd027_probe(struct platform_device *pdev)
++{
++	int ret;
++	struct device_node *np = pdev->dev.of_node;
++	struct device *dev = &pdev->dev;
++
++	if ( !np) {
++		dev_err(&pdev->dev,
++			"failed to find platform data or device tree node.\n");
++		return -ENODEV;
++	}
++
++	lcd_data = devm_kzalloc(&pdev->dev, sizeof(*lcd_data), GFP_KERNEL);
++	if (lcd_data == NULL)
++		return -ENOMEM;
++
++	lcd_data->init_seq_len =  of_property_read_variable_u8_array(np, "init-seq", lcd_data->init_seq, 1, 100);
++	lcd_data->suspend_seq_len =  of_property_read_variable_u8_array(np, "suspend-seq", lcd_data->suspend_seq, 1, 20);
++	lcd_data->resume_seq_len =  of_property_read_variable_u8_array(np, "resume-seq", lcd_data->resume_seq, 1, 20);
++
++	lcd_data->rst_pin = devm_gpiod_get(dev, "lcd-rst", GPIOD_OUT_HIGH);
++	if (IS_ERR(lcd_data->rst_pin)) {
++		ret = PTR_ERR(lcd_data->rst_pin);
++
++		if (ret != -EPROBE_DEFER) {
++			dev_err(dev,
++				"Error: The gpios parameter is missing or invalid.\n");
++		}
++		return ret;
++	}
++
++	lcd_data->cs_pin = devm_gpiod_get(dev, "lcd-cs", GPIOD_OUT_HIGH);
++	if (IS_ERR(lcd_data->cs_pin)) {
++		ret = PTR_ERR(lcd_data->cs_pin);
++
++		if (ret != -EPROBE_DEFER) {
++			dev_err(dev,
++				"Error: The gpios parameter is missing or invalid.\n");
++		}
++		return ret;
++	}
++
++	lcd_data->sck_pin = devm_gpiod_get(dev, "lcd-sck", GPIOD_OUT_HIGH);
++	if (IS_ERR(lcd_data->sck_pin)) {
++		ret = PTR_ERR(lcd_data->sck_pin);
++
++		if (ret != -EPROBE_DEFER) {
++			dev_err(dev,
++				"Error: The gpios parameter is missing or invalid.\n");
++		}
++		return ret;
++	}
++
++	lcd_data->sda_pin = devm_gpiod_get(dev, "lcd-sda", GPIOD_OUT_HIGH);
++	if (IS_ERR(lcd_data->sda_pin)) {
++		ret = PTR_ERR(lcd_data->sda_pin);
++
++		if (ret != -EPROBE_DEFER) {
++			dev_err(dev,
++				"Error: The gpios parameter is missing or invalid.\n");
++		}
++		return ret;
++	}
++
++	kd027_init();
++	kd027_proc_init();
++
++	return 0;
++}
++
++static int kd027_suspend(struct platform_device * pdev, pm_message_t state)
++{
++	int i;
++	for(i = 0; i < lcd_data->suspend_seq_len/2; i++) {
++		kd027_write_cmd_data(lcd_data->suspend_seq[i * 2], lcd_data->suspend_seq[i * 2 + 1]);
++	}
++	return 0;
++}
++
++static int kd027_resume(struct platform_device * pdev)
++{
++	int i;
++	for(i = 0; i < lcd_data->resume_seq_len/2; i++) {
++		kd027_write_cmd_data(lcd_data->resume_seq[i * 2], lcd_data->resume_seq[i * 2 + 1]);
++	}
++	return 0;
++}
++
++#ifdef CONFIG_OF
++static struct of_device_id kd027_of_match[] = {
++	{ .compatible = "kd027-lcd" },
++	{ /* sentinel */ }
++};
++
++MODULE_DEVICE_TABLE(of, kd027_of_match);
++#endif
++
++static struct platform_driver kd027_device_driver = {
++	.probe		= kd027_probe,
++	.suspend 		= kd027_suspend,
++	.resume 		= kd027_resume,
++	.driver		= {
++		.name		= "kd027-lcd",
++		.of_match_table = of_match_ptr(kd027_of_match),
++	},
++};
++
++module_platform_driver(kd027_device_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("KD027 Driver");
+diff --git a/drivers/video/backlight/ocp8178_bl.c b/drivers/video/backlight/ocp8178_bl.c
+new file mode 100644
+index 000000000..b3e330d2a
+--- /dev/null
++++ b/drivers/video/backlight/ocp8178_bl.c
+@@ -0,0 +1,371 @@
++/*
++ * ocp8178_bl.c - ocp8178 backlight driver
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/backlight.h>
++#include <linux/err.h>
++#include <linux/fb.h>
++#include <linux/gpio.h> /* Only for legacy support */
++#include <linux/gpio/consumer.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++//#include <linux/platform_data/gpio_backlight.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/delay.h>
++#include <linux/timer.h>
++#include <linux/poll.h>
++#include <linux/proc_fs.h>
++#include <linux/seq_file.h>
++#include <linux/sched.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/io.h>
++#include <linux/clk.h>
++
++struct device;
++
++struct gpio_backlight_platform_data {
++        struct device *fbdev;
++        int gpio;
++        int def_value;
++        const char *name;
++};
++
++struct ocp8178_backlight {
++	struct device *dev;
++	struct device *fbdev;
++
++	struct gpio_desc *gpiod;
++	int def_value;
++	int current_value;
++};
++
++#define DETECT_DELAY 200
++#define DETECT_TIME 500
++#define DETECT_WINDOW_TIME 1000
++#define START_TIME 10
++#define END_TIME 10
++#define SHUTDOWN_TIME 3000
++#define LOW_BIT_HIGH_TIME 10
++#define LOW_BIT_LOW_TIME 50
++#define HIGH_BIT_HIGH_TIME 50
++#define HIGH_BIT_LOW_TIME 10
++#define MAX_BRIGHTNESS_VALUE 9
++
++static void entry_1wire_mode(struct ocp8178_backlight *gbl)
++{
++	unsigned long flags = 0;
++	local_irq_save(flags);
++	gpiod_set_value(gbl->gpiod, 0);
++	mdelay(SHUTDOWN_TIME/1000);
++	gpiod_set_value(gbl->gpiod, 1);
++	udelay(DETECT_DELAY);
++	gpiod_set_value(gbl->gpiod, 0);
++	udelay(DETECT_TIME);
++	gpiod_set_value(gbl->gpiod, 1);
++	udelay(DETECT_WINDOW_TIME);
++	local_irq_restore(flags);
++}
++
++static inline void write_bit(struct ocp8178_backlight *gbl, int bit)
++{
++	if (bit) {
++		gpiod_set_value(gbl->gpiod, 0);
++		udelay(HIGH_BIT_LOW_TIME);
++		gpiod_set_value(gbl->gpiod, 1);
++		udelay(HIGH_BIT_HIGH_TIME);
++	} else {
++		gpiod_set_value(gbl->gpiod, 0);
++		udelay(LOW_BIT_LOW_TIME);
++		gpiod_set_value(gbl->gpiod, 1);
++		udelay(LOW_BIT_HIGH_TIME);
++	}
++}
++
++static void write_byte(struct ocp8178_backlight *gbl, int byte)
++{
++	unsigned long flags = 0;
++	unsigned char data = 0x72;
++	int i;
++
++	local_irq_save(flags);
++
++	gpiod_set_value(gbl->gpiod, 1);
++	udelay(START_TIME);
++	for(i = 0; i < 8; i++) {
++		if(data & 0x80) {
++			write_bit(gbl, 1);
++		} else {
++			write_bit(gbl, 0);
++		}
++		data <<= 1;
++	}
++	gpiod_set_value(gbl->gpiod, 0);
++	udelay(END_TIME);
++
++	data = byte & 0x1f;
++
++	gpiod_set_value(gbl->gpiod, 1);
++	udelay(START_TIME);
++	for(i = 0; i < 8; i++) {
++		if(data & 0x80) {
++			write_bit(gbl, 1);
++		} else {
++			write_bit(gbl, 0);
++		}
++		data <<= 1;
++	}
++	gpiod_set_value(gbl->gpiod, 0);
++	udelay(END_TIME);
++	gpiod_set_value(gbl->gpiod, 1);
++
++	local_irq_restore(flags);
++}
++
++unsigned char ocp8178_bl_table[MAX_BRIGHTNESS_VALUE+1] = {0, 1, 4, 8, 12, 16, 20, 24, 28, 31};
++
++static int ocp8178_update_status(struct backlight_device *bl)
++{
++	struct ocp8178_backlight *gbl = bl_get_data(bl);
++	int brightness = bl->props.brightness;
++
++	if (bl->props.power != FB_BLANK_UNBLANK ||
++	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
++	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
++		brightness = 0;
++
++	if(brightness > MAX_BRIGHTNESS_VALUE) {
++		brightness = MAX_BRIGHTNESS_VALUE;
++	}
++
++	write_byte(gbl, ocp8178_bl_table[brightness]);
++	gbl->current_value = brightness;
++
++	return 0;
++}
++
++static int ocp8178_get_brightness(struct backlight_device *bl)
++{
++	struct ocp8178_backlight *gbl = bl_get_data(bl);
++	return gbl->current_value;
++}
++
++static int ocp8178_check_fb(struct backlight_device *bl,
++				   struct fb_info *info)
++{
++	struct ocp8178_backlight *gbl = bl_get_data(bl);
++	return gbl->fbdev == NULL || gbl->fbdev == info->dev;
++}
++
++static const struct backlight_ops ocp8178_backlight_ops = {
++	.options	= BL_CORE_SUSPENDRESUME,
++	.update_status	= ocp8178_update_status,
++	.get_brightness = ocp8178_get_brightness,
++	.check_fb	= ocp8178_check_fb,
++};
++
++static int ocp8178_probe_dt(struct platform_device *pdev,
++				   struct ocp8178_backlight *gbl)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	enum gpiod_flags flags;
++	int ret = 0;
++	u32 value32;
++
++	of_property_read_u32(np, "default-brightness", &value32);
++	if(value32 > MAX_BRIGHTNESS_VALUE)
++		gbl->def_value = MAX_BRIGHTNESS_VALUE;
++	else
++		gbl->def_value = value32;
++	flags = gbl->def_value ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
++
++	gbl->gpiod = devm_gpiod_get(dev, "backlight-control", flags);
++	if (IS_ERR(gbl->gpiod)) {
++		ret = PTR_ERR(gbl->gpiod);
++
++		if (ret != -EPROBE_DEFER) {
++			dev_err(dev,
++				"Error: The gpios parameter is missing or invalid.\n");
++		}
++	}
++
++	return ret;
++}
++
++static struct backlight_device *backlight;
++
++#ifdef CONFIG_PROC_FS
++static char global_buffer[64];
++
++static int ocp8178_proc_show(struct seq_file *m, void *v)
++{
++	seq_printf(m, "ocp8178\n");
++	return 0;
++}
++
++static int ocp8178_proc_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, ocp8178_proc_show, NULL);
++}
++
++static int ocp8178_proc_read(struct file * file, char __user * buf, size_t size, loff_t * loff)
++{
++	int value, len;
++	struct backlight_device *bl = backlight;
++	value = ocp8178_get_brightness(bl);
++	len = snprintf(global_buffer, sizeof(global_buffer), "%d\n", value);
++	return simple_read_from_buffer(buf, size, loff, global_buffer, len);
++}
++
++static int ocp8178_proc_write(struct file * file, const char __user * buf, size_t size, loff_t * loff)
++{
++	int data;
++	struct backlight_device *bl = backlight;
++
++	if(copy_from_user(global_buffer, buf, size))
++		return -EFAULT;
++
++	global_buffer[size] = 0;
++	if(global_buffer[0] == '+') {
++		bl->props.brightness = (bl->props.brightness + 1) % (MAX_BRIGHTNESS_VALUE + 1);
++	} else if(global_buffer[0] == '-') {
++		bl->props.brightness = (bl->props.brightness + MAX_BRIGHTNESS_VALUE) % (MAX_BRIGHTNESS_VALUE + 1);
++	} else {
++		data = simple_strtol(global_buffer, 0, 10);
++		if(data < 0) {
++			bl->props.brightness = 0;
++		} else if(data > MAX_BRIGHTNESS_VALUE) {
++			bl->props.brightness = MAX_BRIGHTNESS_VALUE;
++		} else {
++			bl->props.brightness = data;
++		}
++	}
++	backlight_update_status(bl);
++
++	return size;
++}
++
++static const struct proc_ops ocp8178_proc_fops = {
++	.proc_open		= ocp8178_proc_open,
++	.proc_read		= ocp8178_proc_read,
++	.proc_write		= ocp8178_proc_write,
++	.proc_lseek		= seq_lseek,
++	.proc_release		= single_release,
++};
++
++static int __init ocp8178_proc_init(void)
++{
++	struct proc_dir_entry *r;
++
++	r = proc_create("driver/backlight", S_IRWXUGO, NULL, &ocp8178_proc_fops);
++	if (!r)
++		return -ENOMEM;
++	return 0;
++}
++#else
++static inline int ocp8178_proc_init(void) { return 0; }
++#endif /* CONFIG_PROC_FS */
++
++static int ocp8178_probe(struct platform_device *pdev)
++{
++	struct gpio_backlight_platform_data *pdata =
++		dev_get_platdata(&pdev->dev);
++	struct backlight_properties props;
++	struct backlight_device *bl;
++	struct ocp8178_backlight *gbl;
++	struct device_node *np = pdev->dev.of_node;
++	int ret;
++
++	if (!pdata && !np) {
++		dev_err(&pdev->dev,
++			"failed to find platform data or device tree node.\n");
++		return -ENODEV;
++	}
++
++	gbl = devm_kzalloc(&pdev->dev, sizeof(*gbl), GFP_KERNEL);
++	if (gbl == NULL)
++		return -ENOMEM;
++
++	gbl->dev = &pdev->dev;
++
++	if (np) {
++		ret = ocp8178_probe_dt(pdev, gbl);
++		if (ret)
++			return ret;
++	} else {
++		/*
++		 * Legacy platform data GPIO retrieveal. Do not expand
++		 * the use of this code path, currently only used by one
++		 * SH board.
++		 */
++		unsigned long flags = GPIOF_DIR_OUT;
++
++		gbl->fbdev = pdata->fbdev;
++		gbl->def_value = pdata->def_value;
++		flags |= gbl->def_value ? GPIOF_INIT_HIGH : GPIOF_INIT_LOW;
++
++		ret = devm_gpio_request_one(gbl->dev, pdata->gpio, flags,
++					    pdata ? pdata->name : "backlight");
++		if (ret < 0) {
++			dev_err(&pdev->dev, "unable to request GPIO\n");
++			return ret;
++		}
++		gbl->gpiod = gpio_to_desc(pdata->gpio);
++		if (!gbl->gpiod)
++			return -EINVAL;
++	}
++	gbl->current_value = gbl->def_value;
++
++	memset(&props, 0, sizeof(props));
++	props.type = BACKLIGHT_RAW;
++	props.max_brightness = MAX_BRIGHTNESS_VALUE;
++	bl = devm_backlight_device_register(&pdev->dev, dev_name(&pdev->dev),
++					&pdev->dev, gbl, &ocp8178_backlight_ops,
++					&props);
++	if (IS_ERR(bl)) {
++		dev_err(&pdev->dev, "failed to register backlight\n");
++		return PTR_ERR(bl);
++	}
++
++	entry_1wire_mode(gbl);
++
++	bl->props.brightness = gbl->def_value;
++	backlight_update_status(bl);
++
++	platform_set_drvdata(pdev, bl);
++
++	backlight = bl;
++	ocp8178_proc_init();
++	return 0;
++}
++
++#ifdef CONFIG_OF
++static struct of_device_id ocp8178_of_match[] = {
++	{ .compatible = "ocp8178-backlight" },
++	{ /* sentinel */ }
++};
++
++MODULE_DEVICE_TABLE(of, ocp8178_of_match);
++#endif
++
++static struct platform_driver ocp8178_driver = {
++	.driver		= {
++		.name		= "ocp8178-backlight",
++		.of_match_table = of_match_ptr(ocp8178_of_match),
++	},
++	.probe		= ocp8178_probe,
++};
++
++module_platform_driver(ocp8178_driver);
++
++MODULE_DESCRIPTION("OCP8178 Driver");
++MODULE_LICENSE("GPL");
+diff --git a/sound/soc/sunxi/Makefile b/sound/soc/sunxi/Makefile
+index a86be340a..e6c90357b 100644
+--- a/sound/soc/sunxi/Makefile
++++ b/sound/soc/sunxi/Makefile
+@@ -4,5 +4,5 @@ obj-$(CONFIG_SND_SUN4I_I2S) += sun4i-i2s.o
+ obj-$(CONFIG_SND_SUN4I_SPDIF) += sun4i-spdif.o
+ obj-$(CONFIG_SND_SUN8I_CODEC_ANALOG) += sun8i-codec-analog.o
+ obj-$(CONFIG_SND_SUN50I_CODEC_ANALOG) += sun50i-codec-analog.o
+-obj-$(CONFIG_SND_SUN8I_CODEC) += sun8i-codec.o
++obj-$(CONFIG_SND_SUN8I_CODEC) += sun8i-codec.o sun8i-codec-aif2.o
+ obj-$(CONFIG_SND_SUN8I_ADDA_PR_REGMAP) += sun8i-adda-pr-regmap.o
+diff --git a/sound/soc/sunxi/sun4i-i2s.c b/sound/soc/sunxi/sun4i-i2s.c
+index d0a8d5810..2b77a0384 100644
+--- a/sound/soc/sunxi/sun4i-i2s.c
++++ b/sound/soc/sunxi/sun4i-i2s.c
+@@ -46,6 +46,8 @@
+ #define SUN4I_I2S_FMT0_FMT_RIGHT_J			(2 << 0)
+ #define SUN4I_I2S_FMT0_FMT_LEFT_J			(1 << 0)
+ #define SUN4I_I2S_FMT0_FMT_I2S				(0 << 0)
++#define SUN4I_I2S_FMT0_POLARITY_INVERTED		(1)
++#define SUN4I_I2S_FMT0_POLARITY_NORMAL			(0)
+
+ #define SUN4I_I2S_FMT1_REG		0x08
+ #define SUN4I_I2S_FIFO_TX_REG		0x0c
+@@ -74,11 +76,10 @@
+ #define SUN4I_I2S_CLK_DIV_MCLK_MASK		GENMASK(3, 0)
+ #define SUN4I_I2S_CLK_DIV_MCLK(mclk)			((mclk) << 0)
+
+-#define SUN4I_I2S_TX_CNT_REG		0x28
+-#define SUN4I_I2S_RX_CNT_REG		0x2c
++#define SUN4I_I2S_RX_CNT_REG		0x28
++#define SUN4I_I2S_TX_CNT_REG		0x2c
+
+ #define SUN4I_I2S_TX_CHAN_SEL_REG	0x30
+-#define SUN4I_I2S_CHAN_SEL_MASK			GENMASK(2, 0)
+ #define SUN4I_I2S_CHAN_SEL(num_chan)		(((num_chan) - 1) << 0)
+
+ #define SUN4I_I2S_TX_CHAN_MAP_REG	0x34
+@@ -91,19 +92,8 @@
+ #define SUN8I_I2S_CTRL_BCLK_OUT			BIT(18)
+ #define SUN8I_I2S_CTRL_LRCK_OUT			BIT(17)
+
+-#define SUN8I_I2S_CTRL_MODE_MASK		GENMASK(5, 4)
+-#define SUN8I_I2S_CTRL_MODE_RIGHT		(2 << 4)
+-#define SUN8I_I2S_CTRL_MODE_LEFT		(1 << 4)
+-#define SUN8I_I2S_CTRL_MODE_PCM			(0 << 4)
+-
+-#define SUN8I_I2S_FMT0_LRCLK_POLARITY_MASK	BIT(19)
+-#define SUN8I_I2S_FMT0_LRCLK_POLARITY_INVERTED		(1 << 19)
+-#define SUN8I_I2S_FMT0_LRCLK_POLARITY_NORMAL		(0 << 19)
+ #define SUN8I_I2S_FMT0_LRCK_PERIOD_MASK		GENMASK(17, 8)
+ #define SUN8I_I2S_FMT0_LRCK_PERIOD(period)	((period - 1) << 8)
+-#define SUN8I_I2S_FMT0_BCLK_POLARITY_MASK	BIT(7)
+-#define SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED		(1 << 7)
+-#define SUN8I_I2S_FMT0_BCLK_POLARITY_NORMAL		(0 << 7)
+
+ #define SUN8I_I2S_INT_STA_REG		0x0c
+ #define SUN8I_I2S_FIFO_TX_REG		0x20
+@@ -116,7 +106,7 @@
+
+ #define SUN8I_I2S_TX_CHAN_MAP_REG	0x44
+ #define SUN8I_I2S_TX_CHAN_SEL_REG	0x34
+-#define SUN8I_I2S_TX_CHAN_OFFSET_MASK		GENMASK(13, 12)
++#define SUN8I_I2S_TX_CHAN_OFFSET_MASK		GENMASK(13, 11)
+ #define SUN8I_I2S_TX_CHAN_OFFSET(offset)	(offset << 12)
+ #define SUN8I_I2S_TX_CHAN_EN_MASK		GENMASK(11, 4)
+ #define SUN8I_I2S_TX_CHAN_EN(num_chan)		(((1 << num_chan) - 1) << 4)
+@@ -124,39 +114,55 @@
+ #define SUN8I_I2S_RX_CHAN_SEL_REG	0x54
+ #define SUN8I_I2S_RX_CHAN_MAP_REG	0x58
+
+-struct sun4i_i2s;
+-
+ /**
+  * struct sun4i_i2s_quirks - Differences between SoC variants.
+  *
+  * @has_reset: SoC needs reset deasserted.
++ * @has_slave_select_bit: SoC has a bit to enable slave mode.
++ * @has_fmt_set_lrck_period: SoC requires lrclk period to be set.
++ * @has_chcfg: tx and rx slot number need to be set.
++ * @has_chsel_tx_chen: SoC requires that the tx channels are enabled.
++ * @has_chsel_offset: SoC uses offset for selecting dai operational mode.
+  * @reg_offset_txdata: offset of the tx fifo.
+  * @sun4i_i2s_regmap: regmap config to use.
++ * @mclk_offset: Value by which mclkdiv needs to be adjusted.
++ * @bclk_offset: Value by which bclkdiv needs to be adjusted.
++ * @fmt_offset: Value by which wss and sr needs to be adjusted.
+  * @field_clkdiv_mclk_en: regmap field to enable mclk output.
+  * @field_fmt_wss: regmap field to set word select size.
+  * @field_fmt_sr: regmap field to set sample resolution.
++ * @field_fmt_bclk: regmap field to set clk polarity.
++ * @field_fmt_lrclk: regmap field to set frame polarity.
++ * @field_fmt_mode: regmap field to set the operational mode.
++ * @field_txchanmap: location of the tx channel mapping register.
++ * @field_rxchanmap: location of the rx channel mapping register.
++ * @field_txchansel: location of the tx channel select bit fields.
++ * @field_rxchansel: location of the rx channel select bit fields.
+  */
+ struct sun4i_i2s_quirks {
+ 	bool				has_reset;
++	bool				has_slave_select_bit;
++	bool				has_fmt_set_lrck_period;
++	bool				has_chcfg;
++	bool				has_chsel_tx_chen;
++	bool				has_chsel_offset;
+ 	unsigned int			reg_offset_txdata;	/* TX FIFO */
+ 	const struct regmap_config	*sun4i_i2s_regmap;
++	unsigned int			mclk_offset;
++	unsigned int			bclk_offset;
++	unsigned int			fmt_offset;
+
+ 	/* Register fields for i2s */
+ 	struct reg_field		field_clkdiv_mclk_en;
+ 	struct reg_field		field_fmt_wss;
+ 	struct reg_field		field_fmt_sr;
+-
+-	const struct sun4i_i2s_clk_div	*bclk_dividers;
+-	unsigned int			num_bclk_dividers;
+-	const struct sun4i_i2s_clk_div	*mclk_dividers;
+-	unsigned int			num_mclk_dividers;
+-
+-	unsigned long (*get_bclk_parent_rate)(const struct sun4i_i2s *);
+-	s8	(*get_sr)(const struct sun4i_i2s *, int);
+-	s8	(*get_wss)(const struct sun4i_i2s *, int);
+-	int	(*set_chan_cfg)(const struct sun4i_i2s *,
+-				const struct snd_pcm_hw_params *);
+-	int	(*set_fmt)(const struct sun4i_i2s *, unsigned int);
++	struct reg_field		field_fmt_bclk;
++	struct reg_field		field_fmt_lrclk;
++	struct reg_field		field_fmt_mode;
++	struct reg_field		field_txchanmap;
++	struct reg_field		field_rxchanmap;
++	struct reg_field		field_txchansel;
++	struct reg_field		field_rxchansel;
+ };
+
+ struct sun4i_i2s {
+@@ -165,10 +171,7 @@ struct sun4i_i2s {
+ 	struct regmap	*regmap;
+ 	struct reset_control *rst;
+
+-	unsigned int	format;
+ 	unsigned int	mclk_freq;
+-	unsigned int	slots;
+-	unsigned int	slot_width;
+
+ 	struct snd_dmaengine_dai_dma_data	capture_dma_data;
+ 	struct snd_dmaengine_dai_dma_data	playback_dma_data;
+@@ -177,6 +180,13 @@ struct sun4i_i2s {
+ 	struct regmap_field	*field_clkdiv_mclk_en;
+ 	struct regmap_field	*field_fmt_wss;
+ 	struct regmap_field	*field_fmt_sr;
++	struct regmap_field	*field_fmt_bclk;
++	struct regmap_field	*field_fmt_lrclk;
++	struct regmap_field	*field_fmt_mode;
++	struct regmap_field	*field_txchanmap;
++	struct regmap_field	*field_rxchanmap;
++	struct regmap_field	*field_txchansel;
++	struct regmap_field	*field_rxchansel;
+
+ 	const struct sun4i_i2s_quirks	*variant;
+ };
+@@ -208,46 +218,15 @@ static const struct sun4i_i2s_clk_div sun4i_i2s_mclk_div[] = {
+ 	/* TODO - extend divide ratio supported by newer SoCs */
+ };
+
+-static const struct sun4i_i2s_clk_div sun8i_i2s_clk_div[] = {
+-	{ .div = 1, .val = 1 },
+-	{ .div = 2, .val = 2 },
+-	{ .div = 4, .val = 3 },
+-	{ .div = 6, .val = 4 },
+-	{ .div = 8, .val = 5 },
+-	{ .div = 12, .val = 6 },
+-	{ .div = 16, .val = 7 },
+-	{ .div = 24, .val = 8 },
+-	{ .div = 32, .val = 9 },
+-	{ .div = 48, .val = 10 },
+-	{ .div = 64, .val = 11 },
+-	{ .div = 96, .val = 12 },
+-	{ .div = 128, .val = 13 },
+-	{ .div = 176, .val = 14 },
+-	{ .div = 192, .val = 15 },
+-};
+-
+-static unsigned long sun4i_i2s_get_bclk_parent_rate(const struct sun4i_i2s *i2s)
+-{
+-	return i2s->mclk_freq;
+-}
+-
+-static unsigned long sun8i_i2s_get_bclk_parent_rate(const struct sun4i_i2s *i2s)
+-{
+-	return clk_get_rate(i2s->mod_clk);
+-}
+-
+ static int sun4i_i2s_get_bclk_div(struct sun4i_i2s *i2s,
+-				  unsigned long parent_rate,
+-				  unsigned int sampling_rate,
+-				  unsigned int channels,
++				  unsigned int oversample_rate,
+ 				  unsigned int word_size)
+ {
+-	const struct sun4i_i2s_clk_div *dividers = i2s->variant->bclk_dividers;
+-	int div = parent_rate / sampling_rate / word_size / channels;
++	int div = oversample_rate / word_size / 2;
+ 	int i;
+
+-	for (i = 0; i < i2s->variant->num_bclk_dividers; i++) {
+-		const struct sun4i_i2s_clk_div *bdiv = &dividers[i];
++	for (i = 0; i < ARRAY_SIZE(sun4i_i2s_bclk_div); i++) {
++		const struct sun4i_i2s_clk_div *bdiv = &sun4i_i2s_bclk_div[i];
+
+ 		if (bdiv->div == div)
+ 			return bdiv->val;
+@@ -257,15 +236,15 @@ static int sun4i_i2s_get_bclk_div(struct sun4i_i2s *i2s,
+ }
+
+ static int sun4i_i2s_get_mclk_div(struct sun4i_i2s *i2s,
+-				  unsigned long parent_rate,
+-				  unsigned long mclk_rate)
++				  unsigned int oversample_rate,
++				  unsigned int module_rate,
++				  unsigned int sampling_rate)
+ {
+-	const struct sun4i_i2s_clk_div *dividers = i2s->variant->mclk_dividers;
+-	int div = parent_rate / mclk_rate;
++	int div = module_rate / sampling_rate / oversample_rate;
+ 	int i;
+
+-	for (i = 0; i < i2s->variant->num_mclk_dividers; i++) {
+-		const struct sun4i_i2s_clk_div *mdiv = &dividers[i];
++	for (i = 0; i < ARRAY_SIZE(sun4i_i2s_mclk_div); i++) {
++		const struct sun4i_i2s_clk_div *mdiv = &sun4i_i2s_mclk_div[i];
+
+ 		if (mdiv->div == div)
+ 			return mdiv->val;
+@@ -286,13 +265,37 @@ static bool sun4i_i2s_oversample_is_valid(unsigned int oversample)
+ 	return false;
+ }
+
++static int sun4i_i2s_get_clk_div(struct sun4i_i2s *i2s,
++				  unsigned int word_size,
++				  unsigned int clk_rate,
++				  unsigned int sampling_rate,
++				  unsigned int * mclk_div,
++				  unsigned int * bclk_div)
++{
++	int div = clk_rate / sampling_rate / word_size / 2;
++	int i, j;
++
++	for (i = 0; i < ARRAY_SIZE(sun4i_i2s_mclk_div); i++) {
++		const struct sun4i_i2s_clk_div *mdiv = &sun4i_i2s_mclk_div[i];
++		for (j = 0; j < ARRAY_SIZE(sun4i_i2s_bclk_div); j++) {
++			const struct sun4i_i2s_clk_div *bdiv = &sun4i_i2s_bclk_div[j];
++			if (mdiv->div * bdiv->div == div) {
++				*mclk_div = mdiv->val;
++				*bclk_div = bdiv->val;
++				return 0;
++			}
++		}
++	}
++
++	return -EINVAL;
++}
++
+ static int sun4i_i2s_set_clk_rate(struct snd_soc_dai *dai,
+ 				  unsigned int rate,
+-				  unsigned int slots,
+-				  unsigned int slot_width)
++				  unsigned int word_size)
+ {
+ 	struct sun4i_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+-	unsigned int oversample_rate, clk_rate, bclk_parent_rate;
++	unsigned int oversample_rate, clk_rate;
+ 	int bclk_div, mclk_div;
+ 	int ret;
+
+@@ -327,26 +330,13 @@ static int sun4i_i2s_set_clk_rate(struct snd_soc_dai *dai,
+ 	if (ret)
+ 		return ret;
+
+-	oversample_rate = i2s->mclk_freq / rate;
+-	if (!sun4i_i2s_oversample_is_valid(oversample_rate)) {
+-		dev_err(dai->dev, "Unsupported oversample rate: %d\n",
+-			oversample_rate);
+-		return -EINVAL;
+-	}
+-
+-	bclk_parent_rate = i2s->variant->get_bclk_parent_rate(i2s);
+-	bclk_div = sun4i_i2s_get_bclk_div(i2s, bclk_parent_rate,
+-					  rate, slots, slot_width);
+-	if (bclk_div < 0) {
+-		dev_err(dai->dev, "Unsupported BCLK divider: %d\n", bclk_div);
+-		return -EINVAL;
+-	}
++	ret = sun4i_i2s_get_clk_div(i2s, word_size, clk_rate, rate, &mclk_div, &bclk_div);
++	if (ret)
++		return ret;
+
+-	mclk_div = sun4i_i2s_get_mclk_div(i2s, clk_rate, i2s->mclk_freq);
+-	if (mclk_div < 0) {
+-		dev_err(dai->dev, "Unsupported MCLK divider: %d\n", mclk_div);
+-		return -EINVAL;
+-	}
++	/* Adjust the clock division values if needed */
++	bclk_div += i2s->variant->bclk_offset;
++	mclk_div += i2s->variant->mclk_offset;
+
+ 	regmap_write(i2s->regmap, SUN4I_I2S_CLK_DIV_REG,
+ 		     SUN4I_I2S_CLK_DIV_BCLK(bclk_div) |
+@@ -354,114 +344,11 @@ static int sun4i_i2s_set_clk_rate(struct snd_soc_dai *dai,
+
+ 	regmap_field_write(i2s->field_clkdiv_mclk_en, 1);
+
+-	return 0;
+-}
+-
+-static s8 sun4i_i2s_get_sr(const struct sun4i_i2s *i2s, int width)
+-{
+-	if (width < 16 || width > 24)
+-		return -EINVAL;
+-
+-	if (width % 4)
+-		return -EINVAL;
+-
+-	return (width - 16) / 4;
+-}
+-
+-static s8 sun4i_i2s_get_wss(const struct sun4i_i2s *i2s, int width)
+-{
+-	if (width < 16 || width > 32)
+-		return -EINVAL;
+-
+-	if (width % 4)
+-		return -EINVAL;
+-
+-	return (width - 16) / 4;
+-}
+-
+-static s8 sun8i_i2s_get_sr_wss(const struct sun4i_i2s *i2s, int width)
+-{
+-	if (width % 4)
+-		return -EINVAL;
+-
+-	if (width < 8 || width > 32)
+-		return -EINVAL;
+-
+-	return (width - 8) / 4 + 1;
+-}
+-
+-static int sun4i_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
+-				  const struct snd_pcm_hw_params *params)
+-{
+-	unsigned int channels = params_channels(params);
+-
+-	/* Map the channels for playback and capture */
+-	regmap_write(i2s->regmap, SUN4I_I2S_TX_CHAN_MAP_REG, 0x76543210);
+-	regmap_write(i2s->regmap, SUN4I_I2S_RX_CHAN_MAP_REG, 0x00003210);
+-
+-	/* Configure the channels */
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_TX_CHAN_SEL_REG,
+-			   SUN4I_I2S_CHAN_SEL_MASK,
+-			   SUN4I_I2S_CHAN_SEL(channels));
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_RX_CHAN_SEL_REG,
+-			   SUN4I_I2S_CHAN_SEL_MASK,
+-			   SUN4I_I2S_CHAN_SEL(channels));
+-
+-	return 0;
+-}
+-
+-static int sun8i_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
+-				  const struct snd_pcm_hw_params *params)
+-{
+-	unsigned int channels = params_channels(params);
+-	unsigned int slots = channels;
+-	unsigned int lrck_period;
+-
+-	if (i2s->slots)
+-		slots = i2s->slots;
+-
+-	/* Map the channels for playback and capture */
+-	regmap_write(i2s->regmap, SUN8I_I2S_TX_CHAN_MAP_REG, 0x76543210);
+-	regmap_write(i2s->regmap, SUN8I_I2S_RX_CHAN_MAP_REG, 0x76543210);
+-
+-	/* Configure the channels */
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
+-			   SUN4I_I2S_CHAN_SEL_MASK,
+-			   SUN4I_I2S_CHAN_SEL(channels));
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_RX_CHAN_SEL_REG,
+-			   SUN4I_I2S_CHAN_SEL_MASK,
+-			   SUN4I_I2S_CHAN_SEL(channels));
+-
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_CHAN_CFG_REG,
+-			   SUN8I_I2S_CHAN_CFG_TX_SLOT_NUM_MASK,
+-			   SUN8I_I2S_CHAN_CFG_TX_SLOT_NUM(channels));
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_CHAN_CFG_REG,
+-			   SUN8I_I2S_CHAN_CFG_RX_SLOT_NUM_MASK,
+-			   SUN8I_I2S_CHAN_CFG_RX_SLOT_NUM(channels));
+-
+-	switch (i2s->format & SND_SOC_DAIFMT_FORMAT_MASK) {
+-	case SND_SOC_DAIFMT_DSP_A:
+-	case SND_SOC_DAIFMT_DSP_B:
+-	case SND_SOC_DAIFMT_LEFT_J:
+-	case SND_SOC_DAIFMT_RIGHT_J:
+-		lrck_period = params_physical_width(params) * slots;
+-		break;
+-
+-	case SND_SOC_DAIFMT_I2S:
+-		lrck_period = params_physical_width(params);
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
+-			   SUN8I_I2S_FMT0_LRCK_PERIOD_MASK,
+-			   SUN8I_I2S_FMT0_LRCK_PERIOD(lrck_period));
+-
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
+-			   SUN8I_I2S_TX_CHAN_EN_MASK,
+-			   SUN8I_I2S_TX_CHAN_EN(channels));
++	/* Set sync period */
++	if (i2s->variant->has_fmt_set_lrck_period)
++		regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
++				   SUN8I_I2S_FMT0_LRCK_PERIOD_MASK,
++				   SUN8I_I2S_FMT0_LRCK_PERIOD(32));
+
+ 	return 0;
+ }
+@@ -471,25 +358,41 @@ static int sun4i_i2s_hw_params(struct snd_pcm_substream *substream,
+ 			       struct snd_soc_dai *dai)
+ {
+ 	struct sun4i_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+-	unsigned int word_size = params_width(params);
+-	unsigned int slot_width = params_physical_width(params);
+-	unsigned int channels = params_channels(params);
+-	unsigned int slots = channels;
+-	int ret, sr, wss;
++	int sr, wss, channels;
+ 	u32 width;
+
+-	if (i2s->slots)
+-		slots = i2s->slots;
+-
+-	if (i2s->slot_width)
+-		slot_width = i2s->slot_width;
++	channels = params_channels(params);
++	if (channels != 2) {
++		dev_err(dai->dev, "Unsupported number of channels: %d\n",
++			channels);
++		return -EINVAL;
++	}
+
+-	ret = i2s->variant->set_chan_cfg(i2s, params);
+-	if (ret < 0) {
+-		dev_err(dai->dev, "Invalid channel configuration\n");
+-		return ret;
++	if (i2s->variant->has_chcfg) {
++		regmap_update_bits(i2s->regmap, SUN8I_I2S_CHAN_CFG_REG,
++				   SUN8I_I2S_CHAN_CFG_TX_SLOT_NUM_MASK,
++				   SUN8I_I2S_CHAN_CFG_TX_SLOT_NUM(channels));
++		regmap_update_bits(i2s->regmap, SUN8I_I2S_CHAN_CFG_REG,
++				   SUN8I_I2S_CHAN_CFG_RX_SLOT_NUM_MASK,
++				   SUN8I_I2S_CHAN_CFG_RX_SLOT_NUM(channels));
+ 	}
+
++	/* Map the channels for playback and capture */
++	regmap_field_write(i2s->field_txchanmap, 0x76543210);
++	regmap_field_write(i2s->field_rxchanmap, 0x00003210);
++
++	/* Configure the channels */
++	regmap_field_write(i2s->field_txchansel,
++			   SUN4I_I2S_CHAN_SEL(params_channels(params)));
++
++	regmap_field_write(i2s->field_rxchansel,
++			   SUN4I_I2S_CHAN_SEL(params_channels(params)));
++
++	if (i2s->variant->has_chsel_tx_chen)
++		regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
++				   SUN8I_I2S_TX_CHAN_EN_MASK,
++				   SUN8I_I2S_TX_CHAN_EN(channels));
++
+ 	switch (params_physical_width(params)) {
+ 	case 16:
+ 		width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+@@ -501,205 +404,140 @@ static int sun4i_i2s_hw_params(struct snd_pcm_substream *substream,
+ 	}
+ 	i2s->playback_dma_data.addr_width = width;
+
+-	sr = i2s->variant->get_sr(i2s, word_size);
+-	if (sr < 0)
+-		return -EINVAL;
++	switch (params_width(params)) {
++	case 16:
++		sr = 0;
++		wss = 0;
++		break;
+
+-	wss = i2s->variant->get_wss(i2s, slot_width);
+-	if (wss < 0)
++	default:
++		dev_err(dai->dev, "Unsupported sample width: %d\n",
++			params_width(params));
+ 		return -EINVAL;
++	}
+
+-	regmap_field_write(i2s->field_fmt_wss, wss);
+-	regmap_field_write(i2s->field_fmt_sr, sr);
++	regmap_field_write(i2s->field_fmt_wss,
++			   wss + i2s->variant->fmt_offset);
++	regmap_field_write(i2s->field_fmt_sr,
++			   sr + i2s->variant->fmt_offset);
+
+ 	return sun4i_i2s_set_clk_rate(dai, params_rate(params),
+-				      slots, slot_width);
++				      params_width(params));
+ }
+
+-static int sun4i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
+-				 unsigned int fmt)
++static int sun4i_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ {
++	struct sun4i_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+ 	u32 val;
+-
+-	/* DAI clock polarity */
+-	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
+-	case SND_SOC_DAIFMT_IB_IF:
+-		/* Invert both clocks */
+-		val = SUN4I_I2S_FMT0_BCLK_POLARITY_INVERTED |
+-		      SUN4I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
+-		break;
+-	case SND_SOC_DAIFMT_IB_NF:
+-		/* Invert bit clock */
+-		val = SUN4I_I2S_FMT0_BCLK_POLARITY_INVERTED;
+-		break;
+-	case SND_SOC_DAIFMT_NB_IF:
+-		/* Invert frame clock */
+-		val = SUN4I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
+-		break;
+-	case SND_SOC_DAIFMT_NB_NF:
+-		val = 0;
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
+-			   SUN4I_I2S_FMT0_LRCLK_POLARITY_MASK |
+-			   SUN4I_I2S_FMT0_BCLK_POLARITY_MASK,
+-			   val);
++	u32 offset = 0;
++	u32 bclk_polarity = SUN4I_I2S_FMT0_POLARITY_NORMAL;
++	u32 lrclk_polarity = SUN4I_I2S_FMT0_POLARITY_NORMAL;
+
+ 	/* DAI Mode */
+ 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+ 	case SND_SOC_DAIFMT_I2S:
+ 		val = SUN4I_I2S_FMT0_FMT_I2S;
++		offset = 1;
+ 		break;
+-
+ 	case SND_SOC_DAIFMT_LEFT_J:
+ 		val = SUN4I_I2S_FMT0_FMT_LEFT_J;
+ 		break;
+-
+ 	case SND_SOC_DAIFMT_RIGHT_J:
+ 		val = SUN4I_I2S_FMT0_FMT_RIGHT_J;
+ 		break;
+-
+ 	default:
++		dev_err(dai->dev, "Unsupported format: %d\n",
++			fmt & SND_SOC_DAIFMT_FORMAT_MASK);
+ 		return -EINVAL;
+ 	}
+
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
+-			   SUN4I_I2S_FMT0_FMT_MASK, val);
+-
+-	/* DAI clock master masks */
+-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+-	case SND_SOC_DAIFMT_CBS_CFS:
+-		/* BCLK and LRCLK master */
+-		val = SUN4I_I2S_CTRL_MODE_MASTER;
+-		break;
+-
+-	case SND_SOC_DAIFMT_CBM_CFM:
+-		/* BCLK and LRCLK slave */
+-		val = SUN4I_I2S_CTRL_MODE_SLAVE;
+-		break;
+-
+-	default:
+-		return -EINVAL;
++	if (i2s->variant->has_chsel_offset) {
++		/*
++		 * offset being set indicates that we're connected to an i2s
++		 * device, however offset is only used on the sun8i block and
++		 * i2s shares the same setting with the LJ format. Increment
++		 * val so that the bit to value to write is correct.
++		 */
++		if (offset > 0)
++			val++;
++		/* blck offset determines whether i2s or LJ */
++		regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
++				   SUN8I_I2S_TX_CHAN_OFFSET_MASK,
++				   SUN8I_I2S_TX_CHAN_OFFSET(offset));
+ 	}
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
+-			   SUN4I_I2S_CTRL_MODE_MASK, val);
+-	return 0;
+-}
+
+-static int sun8i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
+-				 unsigned int fmt)
+-{
+-	u32 mode, val;
+-	u8 offset;
+-
+-	/*
+-	 * DAI clock polarity
+-	 *
+-	 * The setup for LRCK contradicts the datasheet, but under a
+-	 * scope it's clear that the LRCK polarity is reversed
+-	 * compared to the expected polarity on the bus.
+-	 */
++	regmap_field_write(i2s->field_fmt_mode, val);
++
++	/* DAI clock polarity */
+ 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
+ 	case SND_SOC_DAIFMT_IB_IF:
+ 		/* Invert both clocks */
+-		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED;
++		bclk_polarity = SUN4I_I2S_FMT0_POLARITY_INVERTED;
++		lrclk_polarity = SUN4I_I2S_FMT0_POLARITY_INVERTED;
+ 		break;
+ 	case SND_SOC_DAIFMT_IB_NF:
+ 		/* Invert bit clock */
+-		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED |
+-		      SUN8I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
++		bclk_polarity = SUN4I_I2S_FMT0_POLARITY_INVERTED;
+ 		break;
+ 	case SND_SOC_DAIFMT_NB_IF:
+ 		/* Invert frame clock */
+-		val = 0;
++		lrclk_polarity = SUN4I_I2S_FMT0_POLARITY_INVERTED;
+ 		break;
+ 	case SND_SOC_DAIFMT_NB_NF:
+-		val = SUN8I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
+ 		break;
+ 	default:
++		dev_err(dai->dev, "Unsupported clock polarity: %d\n",
++			fmt & SND_SOC_DAIFMT_INV_MASK);
+ 		return -EINVAL;
+ 	}
+
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
+-			   SUN8I_I2S_FMT0_LRCLK_POLARITY_MASK |
+-			   SUN8I_I2S_FMT0_BCLK_POLARITY_MASK,
+-			   val);
+-
+-	/* DAI Mode */
+-	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+-	case SND_SOC_DAIFMT_DSP_A:
+-		mode = SUN8I_I2S_CTRL_MODE_PCM;
+-		offset = 1;
+-		break;
+-
+-	case SND_SOC_DAIFMT_DSP_B:
+-		mode = SUN8I_I2S_CTRL_MODE_PCM;
+-		offset = 0;
+-		break;
+-
+-	case SND_SOC_DAIFMT_I2S:
+-		mode = SUN8I_I2S_CTRL_MODE_LEFT;
+-		offset = 1;
+-		break;
+-
+-	case SND_SOC_DAIFMT_LEFT_J:
+-		mode = SUN8I_I2S_CTRL_MODE_LEFT;
+-		offset = 0;
+-		break;
+-
+-	case SND_SOC_DAIFMT_RIGHT_J:
+-		mode = SUN8I_I2S_CTRL_MODE_RIGHT;
+-		offset = 0;
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
+-			   SUN8I_I2S_CTRL_MODE_MASK, mode);
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
+-			   SUN8I_I2S_TX_CHAN_OFFSET_MASK,
+-			   SUN8I_I2S_TX_CHAN_OFFSET(offset));
+-	regmap_update_bits(i2s->regmap, SUN8I_I2S_RX_CHAN_SEL_REG,
+-			   SUN8I_I2S_TX_CHAN_OFFSET_MASK,
+-			   SUN8I_I2S_TX_CHAN_OFFSET(offset));
+-
+-	/* DAI clock master masks */
+-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+-	case SND_SOC_DAIFMT_CBS_CFS:
+-		/* BCLK and LRCLK master */
+-		val = SUN8I_I2S_CTRL_BCLK_OUT |	SUN8I_I2S_CTRL_LRCK_OUT;
+-		break;
+-
+-	case SND_SOC_DAIFMT_CBM_CFM:
+-		/* BCLK and LRCLK slave */
+-		val = 0;
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
+-			   SUN8I_I2S_CTRL_BCLK_OUT | SUN8I_I2S_CTRL_LRCK_OUT,
+-			   val);
+-
+-	return 0;
+-}
+-
+-static int sun4i_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+-{
+-	struct sun4i_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+-	int ret;
+-
+-	ret = i2s->variant->set_fmt(i2s, fmt);
+-	if (ret) {
+-		dev_err(dai->dev, "Unsupported format configuration\n");
+-		return ret;
++	regmap_field_write(i2s->field_fmt_bclk, bclk_polarity);
++	regmap_field_write(i2s->field_fmt_lrclk, lrclk_polarity);
++
++	if (i2s->variant->has_slave_select_bit) {
++		/* DAI clock master masks */
++		switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
++		case SND_SOC_DAIFMT_CBS_CFS:
++			/* BCLK and LRCLK master */
++			val = SUN4I_I2S_CTRL_MODE_MASTER;
++			break;
++		case SND_SOC_DAIFMT_CBM_CFM:
++			/* BCLK and LRCLK slave */
++			val = SUN4I_I2S_CTRL_MODE_SLAVE;
++			break;
++		default:
++			dev_err(dai->dev, "Unsupported slave setting: %d\n",
++				fmt & SND_SOC_DAIFMT_MASTER_MASK);
++			return -EINVAL;
++		}
++		regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
++				   SUN4I_I2S_CTRL_MODE_MASK,
++				   val);
++	} else {
++		/*
++		 * The newer i2s block does not have a slave select bit,
++		 * instead the clk pins are configured as inputs.
++		 */
++		/* DAI clock master masks */
++		switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
++		case SND_SOC_DAIFMT_CBS_CFS:
++			/* BCLK and LRCLK master */
++			val = SUN8I_I2S_CTRL_BCLK_OUT |
++				SUN8I_I2S_CTRL_LRCK_OUT;
++			break;
++		case SND_SOC_DAIFMT_CBM_CFM:
++			/* BCLK and LRCLK slave */
++			val = 0;
++			break;
++		default:
++			dev_err(dai->dev, "Unsupported slave setting: %d\n",
++				fmt & SND_SOC_DAIFMT_MASTER_MASK);
++			return -EINVAL;
++		}
++		regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
++				   SUN8I_I2S_CTRL_BCLK_OUT |
++				   SUN8I_I2S_CTRL_LRCK_OUT,
++				   val);
+ 	}
+
+ 	/* Set significant bits in our FIFOs */
+@@ -708,9 +546,6 @@ static int sun4i_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ 			   SUN4I_I2S_FIFO_CTRL_RX_MODE_MASK,
+ 			   SUN4I_I2S_FIFO_CTRL_TX_MODE(1) |
+ 			   SUN4I_I2S_FIFO_CTRL_RX_MODE(1));
+-
+-	i2s->format = fmt;
+-
+ 	return 0;
+ }
+
+@@ -826,26 +661,10 @@ static int sun4i_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+ 	return 0;
+ }
+
+-static int sun4i_i2s_set_tdm_slot(struct snd_soc_dai *dai,
+-				  unsigned int tx_mask, unsigned int rx_mask,
+-				  int slots, int slot_width)
+-{
+-	struct sun4i_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+-
+-	if (slots > 8)
+-		return -EINVAL;
+-
+-	i2s->slots = slots;
+-	i2s->slot_width = slot_width;
+-
+-	return 0;
+-}
+-
+ static const struct snd_soc_dai_ops sun4i_i2s_dai_ops = {
+ 	.hw_params	= sun4i_i2s_hw_params,
+ 	.set_fmt	= sun4i_i2s_set_fmt,
+ 	.set_sysclk	= sun4i_i2s_set_sysclk,
+-	.set_tdm_slot	= sun4i_i2s_set_tdm_slot,
+ 	.trigger	= sun4i_i2s_trigger,
+ };
+
+@@ -866,15 +685,15 @@ static struct snd_soc_dai_driver sun4i_i2s_dai = {
+ 	.probe = sun4i_i2s_dai_probe,
+ 	.capture = {
+ 		.stream_name = "Capture",
+-		.channels_min = 1,
+-		.channels_max = 8,
++		.channels_min = 2,
++		.channels_max = 2,
+ 		.rates = SNDRV_PCM_RATE_8000_192000,
+ 		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ 	.playback = {
+ 		.stream_name = "Playback",
+-		.channels_min = 1,
+-		.channels_max = 8,
++		.channels_min = 2,
++		.channels_max = 2,
+ 		.rates = SNDRV_PCM_RATE_8000_192000,
+ 		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+@@ -972,6 +791,7 @@ static const struct reg_default sun8i_i2s_reg_defaults[] = {
+ };
+
+ static const struct regmap_config sun4i_i2s_regmap_config = {
++	.name	= "sun4i_i2s",
+ 	.reg_bits	= 32,
+ 	.reg_stride	= 4,
+ 	.val_bits	= 32,
+@@ -1068,15 +888,14 @@ static const struct sun4i_i2s_quirks sun4i_a10_i2s_quirks = {
+ 	.field_clkdiv_mclk_en	= REG_FIELD(SUN4I_I2S_CLK_DIV_REG, 7, 7),
+ 	.field_fmt_wss		= REG_FIELD(SUN4I_I2S_FMT0_REG, 2, 3),
+ 	.field_fmt_sr		= REG_FIELD(SUN4I_I2S_FMT0_REG, 4, 5),
+-	.bclk_dividers		= sun4i_i2s_bclk_div,
+-	.num_bclk_dividers	= ARRAY_SIZE(sun4i_i2s_bclk_div),
+-	.mclk_dividers		= sun4i_i2s_mclk_div,
+-	.num_mclk_dividers	= ARRAY_SIZE(sun4i_i2s_mclk_div),
+-	.get_bclk_parent_rate	= sun4i_i2s_get_bclk_parent_rate,
+-	.get_sr			= sun4i_i2s_get_sr,
+-	.get_wss		= sun4i_i2s_get_wss,
+-	.set_chan_cfg		= sun4i_i2s_set_chan_cfg,
+-	.set_fmt		= sun4i_i2s_set_soc_fmt,
++	.field_fmt_bclk		= REG_FIELD(SUN4I_I2S_FMT0_REG, 6, 6),
++	.field_fmt_lrclk	= REG_FIELD(SUN4I_I2S_FMT0_REG, 7, 7),
++	.has_slave_select_bit	= true,
++	.field_fmt_mode		= REG_FIELD(SUN4I_I2S_FMT0_REG, 0, 1),
++	.field_txchanmap	= REG_FIELD(SUN4I_I2S_TX_CHAN_MAP_REG, 0, 31),
++	.field_rxchanmap	= REG_FIELD(SUN4I_I2S_RX_CHAN_MAP_REG, 0, 31),
++	.field_txchansel	= REG_FIELD(SUN4I_I2S_TX_CHAN_SEL_REG, 0, 2),
++	.field_rxchansel	= REG_FIELD(SUN4I_I2S_RX_CHAN_SEL_REG, 0, 2),
+ };
+
+ static const struct sun4i_i2s_quirks sun6i_a31_i2s_quirks = {
+@@ -1086,22 +905,16 @@ static const struct sun4i_i2s_quirks sun6i_a31_i2s_quirks = {
+ 	.field_clkdiv_mclk_en	= REG_FIELD(SUN4I_I2S_CLK_DIV_REG, 7, 7),
+ 	.field_fmt_wss		= REG_FIELD(SUN4I_I2S_FMT0_REG, 2, 3),
+ 	.field_fmt_sr		= REG_FIELD(SUN4I_I2S_FMT0_REG, 4, 5),
+-	.bclk_dividers		= sun4i_i2s_bclk_div,
+-	.num_bclk_dividers	= ARRAY_SIZE(sun4i_i2s_bclk_div),
+-	.mclk_dividers		= sun4i_i2s_mclk_div,
+-	.num_mclk_dividers	= ARRAY_SIZE(sun4i_i2s_mclk_div),
+-	.get_bclk_parent_rate	= sun4i_i2s_get_bclk_parent_rate,
+-	.get_sr			= sun4i_i2s_get_sr,
+-	.get_wss		= sun4i_i2s_get_wss,
+-	.set_chan_cfg		= sun4i_i2s_set_chan_cfg,
+-	.set_fmt		= sun4i_i2s_set_soc_fmt,
++	.field_fmt_bclk		= REG_FIELD(SUN4I_I2S_FMT0_REG, 6, 6),
++	.field_fmt_lrclk	= REG_FIELD(SUN4I_I2S_FMT0_REG, 7, 7),
++	.has_slave_select_bit	= true,
++	.field_fmt_mode		= REG_FIELD(SUN4I_I2S_FMT0_REG, 0, 1),
++	.field_txchanmap	= REG_FIELD(SUN4I_I2S_TX_CHAN_MAP_REG, 0, 31),
++	.field_rxchanmap	= REG_FIELD(SUN4I_I2S_RX_CHAN_MAP_REG, 0, 31),
++	.field_txchansel	= REG_FIELD(SUN4I_I2S_TX_CHAN_SEL_REG, 0, 2),
++	.field_rxchansel	= REG_FIELD(SUN4I_I2S_RX_CHAN_SEL_REG, 0, 2),
+ };
+
+-/*
+- * This doesn't describe the TDM controller documented in the A83t
+- * datasheet, but the three undocumented I2S controller that use the
+- * older design.
+- */
+ static const struct sun4i_i2s_quirks sun8i_a83t_i2s_quirks = {
+ 	.has_reset		= true,
+ 	.reg_offset_txdata	= SUN8I_I2S_FIFO_TX_REG,
+@@ -1109,51 +922,54 @@ static const struct sun4i_i2s_quirks sun8i_a83t_i2s_quirks = {
+ 	.field_clkdiv_mclk_en	= REG_FIELD(SUN4I_I2S_CLK_DIV_REG, 7, 7),
+ 	.field_fmt_wss		= REG_FIELD(SUN4I_I2S_FMT0_REG, 2, 3),
+ 	.field_fmt_sr		= REG_FIELD(SUN4I_I2S_FMT0_REG, 4, 5),
+-	.bclk_dividers		= sun4i_i2s_bclk_div,
+-	.num_bclk_dividers	= ARRAY_SIZE(sun4i_i2s_bclk_div),
+-	.mclk_dividers		= sun4i_i2s_mclk_div,
+-	.num_mclk_dividers	= ARRAY_SIZE(sun4i_i2s_mclk_div),
+-	.get_bclk_parent_rate	= sun4i_i2s_get_bclk_parent_rate,
+-	.get_sr			= sun4i_i2s_get_sr,
+-	.get_wss		= sun4i_i2s_get_wss,
+-	.set_chan_cfg		= sun4i_i2s_set_chan_cfg,
+-	.set_fmt		= sun4i_i2s_set_soc_fmt,
++	.field_fmt_bclk		= REG_FIELD(SUN4I_I2S_FMT0_REG, 6, 6),
++	.field_fmt_lrclk	= REG_FIELD(SUN4I_I2S_FMT0_REG, 7, 7),
++	.has_slave_select_bit	= true,
++	.field_fmt_mode		= REG_FIELD(SUN4I_I2S_FMT0_REG, 0, 1),
++	.field_txchanmap	= REG_FIELD(SUN4I_I2S_TX_CHAN_MAP_REG, 0, 31),
++	.field_rxchanmap	= REG_FIELD(SUN4I_I2S_RX_CHAN_MAP_REG, 0, 31),
++	.field_txchansel	= REG_FIELD(SUN4I_I2S_TX_CHAN_SEL_REG, 0, 2),
++	.field_rxchansel	= REG_FIELD(SUN4I_I2S_RX_CHAN_SEL_REG, 0, 2),
+ };
+
+ static const struct sun4i_i2s_quirks sun8i_h3_i2s_quirks = {
+ 	.has_reset		= true,
+ 	.reg_offset_txdata	= SUN8I_I2S_FIFO_TX_REG,
+ 	.sun4i_i2s_regmap	= &sun8i_i2s_regmap_config,
++	.mclk_offset		= 1,
++	.bclk_offset		= 2,
++	.fmt_offset		= 3,
++	.has_fmt_set_lrck_period = true,
++	.has_chcfg		= true,
++	.has_chsel_tx_chen	= true,
++	.has_chsel_offset	= true,
+ 	.field_clkdiv_mclk_en	= REG_FIELD(SUN4I_I2S_CLK_DIV_REG, 8, 8),
+ 	.field_fmt_wss		= REG_FIELD(SUN4I_I2S_FMT0_REG, 0, 2),
+ 	.field_fmt_sr		= REG_FIELD(SUN4I_I2S_FMT0_REG, 4, 6),
+-	.bclk_dividers		= sun8i_i2s_clk_div,
+-	.num_bclk_dividers	= ARRAY_SIZE(sun8i_i2s_clk_div),
+-	.mclk_dividers		= sun8i_i2s_clk_div,
+-	.num_mclk_dividers	= ARRAY_SIZE(sun8i_i2s_clk_div),
+-	.get_bclk_parent_rate	= sun8i_i2s_get_bclk_parent_rate,
+-	.get_sr			= sun8i_i2s_get_sr_wss,
+-	.get_wss		= sun8i_i2s_get_sr_wss,
+-	.set_chan_cfg		= sun8i_i2s_set_chan_cfg,
+-	.set_fmt		= sun8i_i2s_set_soc_fmt,
++	.field_fmt_bclk		= REG_FIELD(SUN4I_I2S_FMT0_REG, 7, 7),
++	.field_fmt_lrclk	= REG_FIELD(SUN4I_I2S_FMT0_REG, 19, 19),
++	.field_fmt_mode		= REG_FIELD(SUN4I_I2S_CTRL_REG, 4, 5),
++	.field_txchanmap	= REG_FIELD(SUN8I_I2S_TX_CHAN_MAP_REG, 0, 31),
++	.field_rxchanmap	= REG_FIELD(SUN8I_I2S_RX_CHAN_MAP_REG, 0, 31),
++	.field_txchansel	= REG_FIELD(SUN8I_I2S_TX_CHAN_SEL_REG, 0, 2),
++	.field_rxchansel	= REG_FIELD(SUN8I_I2S_RX_CHAN_SEL_REG, 0, 2),
+ };
+
+ static const struct sun4i_i2s_quirks sun50i_a64_codec_i2s_quirks = {
+ 	.has_reset		= true,
+ 	.reg_offset_txdata	= SUN8I_I2S_FIFO_TX_REG,
+ 	.sun4i_i2s_regmap	= &sun4i_i2s_regmap_config,
++	.has_slave_select_bit	= true,
+ 	.field_clkdiv_mclk_en	= REG_FIELD(SUN4I_I2S_CLK_DIV_REG, 7, 7),
+ 	.field_fmt_wss		= REG_FIELD(SUN4I_I2S_FMT0_REG, 2, 3),
+ 	.field_fmt_sr		= REG_FIELD(SUN4I_I2S_FMT0_REG, 4, 5),
+-	.bclk_dividers		= sun4i_i2s_bclk_div,
+-	.num_bclk_dividers	= ARRAY_SIZE(sun4i_i2s_bclk_div),
+-	.mclk_dividers		= sun4i_i2s_mclk_div,
+-	.num_mclk_dividers	= ARRAY_SIZE(sun4i_i2s_mclk_div),
+-	.get_bclk_parent_rate	= sun4i_i2s_get_bclk_parent_rate,
+-	.get_sr			= sun4i_i2s_get_sr,
+-	.get_wss		= sun4i_i2s_get_wss,
+-	.set_chan_cfg		= sun4i_i2s_set_chan_cfg,
+-	.set_fmt		= sun4i_i2s_set_soc_fmt,
++	.field_fmt_bclk		= REG_FIELD(SUN4I_I2S_FMT0_REG, 6, 6),
++	.field_fmt_lrclk	= REG_FIELD(SUN4I_I2S_FMT0_REG, 7, 7),
++	.field_fmt_mode		= REG_FIELD(SUN4I_I2S_FMT0_REG, 0, 1),
++	.field_txchanmap	= REG_FIELD(SUN4I_I2S_TX_CHAN_MAP_REG, 0, 31),
++	.field_rxchanmap	= REG_FIELD(SUN4I_I2S_RX_CHAN_MAP_REG, 0, 31),
++	.field_txchansel	= REG_FIELD(SUN4I_I2S_TX_CHAN_SEL_REG, 0, 2),
++	.field_rxchansel	= REG_FIELD(SUN4I_I2S_RX_CHAN_SEL_REG, 0, 2),
+ };
+
+ static int sun4i_i2s_init_regmap_fields(struct device *dev,
+@@ -1177,7 +993,46 @@ static int sun4i_i2s_init_regmap_fields(struct device *dev,
+ 	if (IS_ERR(i2s->field_fmt_sr))
+ 		return PTR_ERR(i2s->field_fmt_sr);
+
+-	return 0;
++	i2s->field_fmt_bclk =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_fmt_bclk);
++	if (IS_ERR(i2s->field_fmt_bclk))
++		return PTR_ERR(i2s->field_fmt_bclk);
++
++	i2s->field_fmt_lrclk =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_fmt_lrclk);
++	if (IS_ERR(i2s->field_fmt_lrclk))
++		return PTR_ERR(i2s->field_fmt_lrclk);
++
++	i2s->field_fmt_mode =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_fmt_mode);
++	if (IS_ERR(i2s->field_fmt_mode))
++		return PTR_ERR(i2s->field_fmt_mode);
++
++	i2s->field_txchanmap =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_txchanmap);
++	if (IS_ERR(i2s->field_txchanmap))
++		return PTR_ERR(i2s->field_txchanmap);
++
++	i2s->field_rxchanmap =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_rxchanmap);
++	if (IS_ERR(i2s->field_rxchanmap))
++		return PTR_ERR(i2s->field_rxchanmap);
++
++	i2s->field_txchansel =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_txchansel);
++	if (IS_ERR(i2s->field_txchansel))
++		return PTR_ERR(i2s->field_txchansel);
++
++	i2s->field_rxchansel =
++			devm_regmap_field_alloc(dev, i2s->regmap,
++						i2s->variant->field_rxchansel);
++	return PTR_ERR_OR_ZERO(i2s->field_rxchansel);
+ }
+
+ static int sun4i_i2s_probe(struct platform_device *pdev)
+@@ -1198,8 +1053,10 @@ static int sun4i_i2s_probe(struct platform_device *pdev)
+ 		return PTR_ERR(regs);
+
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0)
++	if (irq < 0) {
++		dev_err(&pdev->dev, "Can't retrieve our interrupt\n");
+ 		return irq;
++	}
+
+ 	i2s->variant = of_device_get_match_data(&pdev->dev);
+ 	if (!i2s->variant) {
+@@ -1257,23 +1114,23 @@ static int sun4i_i2s_probe(struct platform_device *pdev)
+ 			goto err_pm_disable;
+ 	}
+
+-	ret = sun4i_i2s_init_regmap_fields(&pdev->dev, i2s);
++	ret = devm_snd_soc_register_component(&pdev->dev,
++					      &sun4i_i2s_component,
++					      &sun4i_i2s_dai, 1);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "Could not initialise regmap fields\n");
++		dev_err(&pdev->dev, "Could not register DAI\n");
+ 		goto err_suspend;
+ 	}
+
+-	ret = devm_snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
++	ret = snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Could not register PCM\n");
+ 		goto err_suspend;
+ 	}
+
+-	ret = devm_snd_soc_register_component(&pdev->dev,
+-					      &sun4i_i2s_component,
+-					      &sun4i_i2s_dai, 1);
++	ret = sun4i_i2s_init_regmap_fields(&pdev->dev, i2s);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "Could not register DAI\n");
++		dev_err(&pdev->dev, "Could not initialise regmap fields\n");
+ 		goto err_suspend;
+ 	}
+
+@@ -1294,6 +1151,8 @@ static int sun4i_i2s_remove(struct platform_device *pdev)
+ {
+ 	struct sun4i_i2s *i2s = dev_get_drvdata(&pdev->dev);
+
++	snd_dmaengine_pcm_unregister(&pdev->dev);
++
+ 	pm_runtime_disable(&pdev->dev);
+ 	if (!pm_runtime_status_suspended(&pdev->dev))
+ 		sun4i_i2s_runtime_suspend(&pdev->dev);
+diff --git a/sound/soc/sunxi/sun8i-codec-aif2.c b/sound/soc/sunxi/sun8i-codec-aif2.c
+new file mode 100644
+index 000000000..097bcc303
+--- /dev/null
++++ b/sound/soc/sunxi/sun8i-codec-aif2.c
+@@ -0,0 +1,747 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * This driver supports the digital controls for the internal codec
++ * found in Allwinner's A33 SoCs.
++ *
++ * (C) Copyright 2010-2016
++ * Reuuimlla Technology Co., Ltd. <www.reuuimllatech.com>
++ * huangxin <huangxin@Reuuimllatech.com>
++ * Mylène Josserand <mylene.josserand@free-electrons.com>
++ */
++
++#include <linux/module.h>
++#include <linux/delay.h>
++#include <linux/clk.h>
++#include <linux/io.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/log2.h>
++
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++#include <sound/soc-dapm.h>
++
++#define SUN8I_SYSCLK_CTL				0x00c
++#define SUN8I_SYSCLK_CTL_AIF1CLK_ENA			11
++#define SUN8I_SYSCLK_CTL_AIF1CLK_SRC_PLL		9
++#define SUN8I_SYSCLK_CTL_AIF1CLK_SRC			8
++#define SUN8I_SYSCLK_CTL_AIF2CLK_ENA			7
++#define SUN8I_SYSCLK_CTL_AIF2CLK_SRC_PLL		5
++#define SUN8I_SYSCLK_CTL_SYSCLK_ENA			3
++#define SUN8I_SYSCLK_CTL_SYSCLK_SRC			0
++#define SUN8I_MOD_CLK_ENA				0x010
++#define SUN8I_MOD_CLK_ENA_AIF1				15
++#define SUN8I_MOD_CLK_ENA_AIF2				14
++#define SUN8I_MOD_CLK_ENA_ADC				3
++#define SUN8I_MOD_CLK_ENA_DAC				2
++#define SUN8I_MOD_RST_CTL				0x014
++#define SUN8I_MOD_RST_CTL_AIF1				15
++#define SUN8I_MOD_RST_CTL_AIF2				14
++#define SUN8I_MOD_RST_CTL_ADC				3
++#define SUN8I_MOD_RST_CTL_DAC				2
++#define SUN8I_SYS_SR_CTRL				0x018
++#define SUN8I_SYS_SR_CTRL_AIF1_FS			12
++#define SUN8I_SYS_SR_CTRL_AIF2_FS			8
++#define SUN8I_AIF1CLK_CTRL				0x040
++#define SUN8I_AIF1CLK_CTRL_AIF1_MSTR_MOD		15
++#define SUN8I_AIF1CLK_CTRL_AIF1_BCLK_INV		14
++#define SUN8I_AIF1CLK_CTRL_AIF1_LRCK_INV		13
++#define SUN8I_AIF1CLK_CTRL_AIF1_BCLK_DIV		9
++#define SUN8I_AIF1CLK_CTRL_AIF1_LRCK_DIV		6
++#define SUN8I_AIF1CLK_CTRL_AIF1_LRCK_DIV_16		(1 << 6)
++#define SUN8I_AIF1CLK_CTRL_AIF1_WORD_SIZ		4
++#define SUN8I_AIF1CLK_CTRL_AIF1_WORD_SIZ_16		(1 << 4)
++#define SUN8I_AIF1CLK_CTRL_AIF1_DATA_FMT		2
++#define SUN8I_AIF1_ADCDAT_CTRL				0x044
++#define SUN8I_AIF1_ADCDAT_CTRL_AIF1_DA0L_ENA		15
++#define SUN8I_AIF1_ADCDAT_CTRL_AIF1_DA0R_ENA		14
++#define SUN8I_AIF1_DACDAT_CTRL				0x048
++#define SUN8I_AIF1_DACDAT_CTRL_AIF1_DA0L_ENA		15
++#define SUN8I_AIF1_DACDAT_CTRL_AIF1_DA0R_ENA		14
++#define SUN8I_AIF1_MXR_SRC				0x04c
++#define SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF1DA0L	15
++#define SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF2DACL	14
++#define SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_ADCL		13
++#define SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF2DACR	12
++#define SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF1DA0R	11
++#define SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF2DACR	10
++#define SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_ADCR		9
++#define SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF2DACL	8
++#define SUN8I_AIF2CLK_CTRL				0x080
++#define SUN8I_AIF2CLK_CTRL_AIF2_MSTR_MOD		15
++#define SUN8I_AIF2CLK_CTRL_AIF2_BCLK_INV		14
++#define SUN8I_AIF2CLK_CTRL_AIF2_LRCK_INV		13
++#define SUN8I_AIF2CLK_CTRL_AIF2_BCLK_DIV		9
++#define SUN8I_AIF2CLK_CTRL_AIF2_LRCK_DIV		6
++#define SUN8I_AIF2CLK_CTRL_AIF2_LRCK_DIV_16		(1 << 6)
++#define SUN8I_AIF2CLK_CTRL_AIF2_WORD_SIZ		4
++#define SUN8I_AIF2CLK_CTRL_AIF2_WORD_SIZ_16		(1 << 4)
++#define SUN8I_AIF2CLK_CTRL_AIF2_DATA_FMT		2
++#define SUN8I_AIF2_ADCDAT_CTRL				0x084
++#define SUN8I_AIF2_ADCDAT_CTRL_AIF2_ADCL_ENA		15
++#define SUN8I_AIF2_ADCDAT_CTRL_AIF2_ADCR_ENA		14
++#define SUN8I_AIF2_MXR_SRC				0x08C
++#define SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF1DA0L	15
++#define SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF1DA1L	14
++#define SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF2DACR	13
++#define SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_ADCL		12
++#define SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF1DA0R	11
++#define SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF1DA1R	10
++#define SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF2DACL	9
++#define SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_ADCR		8
++#define SUN8I_ADC_DIG_CTRL				0x100
++#define SUN8I_ADC_DIG_CTRL_ENDA			15
++#define SUN8I_ADC_DIG_CTRL_ADOUT_DTS			2
++#define SUN8I_ADC_DIG_CTRL_ADOUT_DLY			1
++#define SUN8I_DAC_DIG_CTRL				0x120
++#define SUN8I_DAC_DIG_CTRL_ENDA			15
++#define SUN8I_DAC_MXR_SRC				0x130
++#define SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF1DA0L	15
++#define SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF1DA1L	14
++#define SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF2DACL	13
++#define SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_ADCL		12
++#define SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF1DA0R	11
++#define SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF1DA1R	10
++#define SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF2DACR	9
++#define SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_ADCR		8
++
++#define SUN8I_SYS_SR_CTRL_AIF1_FS_MASK		GENMASK(15, 12)
++#define SUN8I_SYS_SR_CTRL_AIF2_FS_MASK		GENMASK(11, 8)
++#define SUN8I_AIF1CLK_CTRL_AIF1_WORD_SIZ_MASK	GENMASK(5, 4)
++#define SUN8I_AIF1CLK_CTRL_AIF1_LRCK_DIV_MASK	GENMASK(8, 6)
++#define SUN8I_AIF1CLK_CTRL_AIF1_BCLK_DIV_MASK	GENMASK(12, 9)
++#define SUN8I_AIF2CLK_CTRL_AIF2_WORD_SIZ_MASK	GENMASK(5, 4)
++#define SUN8I_AIF2CLK_CTRL_AIF2_LRCK_DIV_MASK	GENMASK(8, 6)
++#define SUN8I_AIF2CLK_CTRL_AIF2_BCLK_DIV_MASK	GENMASK(12, 9)
++
++struct sun8i_codec {
++	struct device	*dev;
++	struct regmap	*regmap;
++	struct clk	*clk_module;
++	struct clk	*clk_bus;
++};
++
++static int sun8i_codec_runtime_resume(struct device *dev)
++{
++	struct sun8i_codec *scodec = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_prepare_enable(scodec->clk_module);
++	if (ret) {
++		dev_err(dev, "Failed to enable the module clock\n");
++		return ret;
++	}
++
++	ret = clk_prepare_enable(scodec->clk_bus);
++	if (ret) {
++		dev_err(dev, "Failed to enable the bus clock\n");
++		goto err_disable_modclk;
++	}
++
++	regcache_cache_only(scodec->regmap, false);
++
++	ret = regcache_sync(scodec->regmap);
++	if (ret) {
++		dev_err(dev, "Failed to sync regmap cache\n");
++		goto err_disable_clk;
++	}
++
++	return 0;
++
++err_disable_clk:
++	clk_disable_unprepare(scodec->clk_bus);
++
++err_disable_modclk:
++	clk_disable_unprepare(scodec->clk_module);
++
++	return ret;
++}
++
++static int sun8i_codec_runtime_suspend(struct device *dev)
++{
++	struct sun8i_codec *scodec = dev_get_drvdata(dev);
++
++	regcache_cache_only(scodec->regmap, true);
++	regcache_mark_dirty(scodec->regmap);
++
++	clk_disable_unprepare(scodec->clk_module);
++	clk_disable_unprepare(scodec->clk_bus);
++
++	return 0;
++}
++
++static int sun8i_codec_get_hw_rate(struct snd_pcm_hw_params *params)
++{
++	unsigned int rate = params_rate(params);
++
++	switch (rate) {
++	case 8000:
++	case 7350:
++		return 0x0;
++	case 11025:
++		return 0x1;
++	case 12000:
++		return 0x2;
++	case 16000:
++		return 0x3;
++	case 22050:
++		return 0x4;
++	case 24000:
++		return 0x5;
++	case 32000:
++		return 0x6;
++	case 44100:
++		return 0x7;
++	case 48000:
++		return 0x8;
++	case 96000:
++		return 0x9;
++	case 192000:
++		return 0xa;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sun8i_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
++{
++	struct sun8i_codec *scodec = snd_soc_component_get_drvdata(dai->component);
++	u32 value;
++
++	/* clock masters */
++	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
++	case SND_SOC_DAIFMT_CBS_CFS: /* Codec slave, DAI master */
++		value = 0x1;
++		break;
++	case SND_SOC_DAIFMT_CBM_CFM: /* Codec Master, DAI slave */
++		value = 0x0;
++		break;
++	default:
++		return -EINVAL;
++	}
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   BIT(SUN8I_AIF1CLK_CTRL_AIF1_MSTR_MOD),
++			   value << SUN8I_AIF1CLK_CTRL_AIF1_MSTR_MOD);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   BIT(SUN8I_AIF2CLK_CTRL_AIF2_MSTR_MOD),
++			   value << SUN8I_AIF2CLK_CTRL_AIF2_MSTR_MOD);
++
++	/* clock inversion */
++	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
++	case SND_SOC_DAIFMT_NB_NF: /* Normal */
++		value = 0x0;
++		break;
++	case SND_SOC_DAIFMT_IB_IF: /* Inversion */
++		value = 0x1;
++		break;
++	default:
++		return -EINVAL;
++	}
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   BIT(SUN8I_AIF1CLK_CTRL_AIF1_BCLK_INV),
++			   value << SUN8I_AIF1CLK_CTRL_AIF1_BCLK_INV);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   BIT(SUN8I_AIF2CLK_CTRL_AIF2_BCLK_INV),
++			   value << SUN8I_AIF2CLK_CTRL_AIF2_BCLK_INV);
++
++	/*
++	 * It appears that the DAI and the codec don't share the same
++	 * polarity for the LRCK signal when they mean 'normal' and
++	 * 'inverted' in the datasheet.
++	 *
++	 * Since the DAI here is our regular i2s driver that have been
++	 * tested with way more codecs than just this one, it means
++	 * that the codec probably gets it backward, and we have to
++	 * invert the value here.
++	 */
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   BIT(SUN8I_AIF1CLK_CTRL_AIF1_LRCK_INV),
++			   !value << SUN8I_AIF1CLK_CTRL_AIF1_LRCK_INV);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   BIT(SUN8I_AIF2CLK_CTRL_AIF2_LRCK_INV),
++			   !value << SUN8I_AIF2CLK_CTRL_AIF2_LRCK_INV);
++
++	/* DAI format */
++	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
++	case SND_SOC_DAIFMT_I2S:
++		value = 0x0;
++		break;
++	case SND_SOC_DAIFMT_LEFT_J:
++		value = 0x1;
++		break;
++	case SND_SOC_DAIFMT_RIGHT_J:
++		value = 0x2;
++		break;
++	case SND_SOC_DAIFMT_DSP_A:
++	case SND_SOC_DAIFMT_DSP_B:
++		value = 0x3;
++		break;
++	default:
++		return -EINVAL;
++	}
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   BIT(SUN8I_AIF1CLK_CTRL_AIF1_DATA_FMT),
++			   value << SUN8I_AIF1CLK_CTRL_AIF1_DATA_FMT);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   BIT(SUN8I_AIF2CLK_CTRL_AIF2_DATA_FMT),
++			   value << SUN8I_AIF2CLK_CTRL_AIF2_DATA_FMT);
++
++	return 0;
++}
++
++struct sun8i_codec_clk_div {
++	u8	div;
++	u8	val;
++};
++
++static const struct sun8i_codec_clk_div sun8i_codec_bclk_div[] = {
++	{ .div = 1,	.val = 0 },
++	{ .div = 2,	.val = 1 },
++	{ .div = 4,	.val = 2 },
++	{ .div = 6,	.val = 3 },
++	{ .div = 8,	.val = 4 },
++	{ .div = 12,	.val = 5 },
++	{ .div = 16,	.val = 6 },
++	{ .div = 24,	.val = 7 },
++	{ .div = 32,	.val = 8 },
++	{ .div = 48,	.val = 9 },
++	{ .div = 64,	.val = 10 },
++	{ .div = 96,	.val = 11 },
++	{ .div = 128,	.val = 12 },
++	{ .div = 192,	.val = 13 },
++};
++
++static u8 sun8i_codec_get_bclk_div(struct sun8i_codec *scodec,
++				   unsigned int rate,
++				   unsigned int word_size)
++{
++	unsigned long clk_rate;
++	unsigned int div, best_val = 0, best_diff = ~0;
++	int i;
++
++	switch (rate) {
++	case 176400:
++	case 88200:
++	case 44100:
++	case 22050:
++	case 11025:
++		clk_rate = 22579200;
++		break;
++
++	case 192000:
++	case 128000:
++	case 96000:
++	case 64000:
++	case 48000:
++	case 32000:
++	case 24000:
++	case 16000:
++	case 12000:
++	case 8000:
++		clk_rate = 24576000;
++		break;
++
++	default:
++		clk_rate = clk_get_rate(scodec->clk_module);
++		break;
++	}
++
++	div = clk_rate / rate / word_size / 2;
++
++	for (i = 0; i < ARRAY_SIZE(sun8i_codec_bclk_div); i++) {
++		const struct sun8i_codec_clk_div *bdiv = &sun8i_codec_bclk_div[i];
++		unsigned int diff = abs(bdiv->div - div);
++
++		if (diff < best_diff) {
++			best_diff = diff;
++			best_val = bdiv->val;
++		}
++	}
++
++	return best_val;
++}
++
++static int sun8i_codec_get_lrck_div(unsigned int channels,
++				    unsigned int word_size)
++{
++	unsigned int div = word_size * channels;
++
++	if (div < 16 || div > 256)
++		return -EINVAL;
++
++	return ilog2(div) - 4;
++}
++
++static int sun8i_codec_hw_params(struct snd_pcm_substream *substream,
++				 struct snd_pcm_hw_params *params,
++				 struct snd_soc_dai *dai)
++{
++	struct sun8i_codec *scodec = snd_soc_component_get_drvdata(dai->component);
++	int sample_rate, lrck_div;
++	u8 bclk_div;
++
++	/*
++	 * The CPU DAI handles only a sample of 16 bits. Configure the
++	 * codec to handle this type of sample resolution.
++	 */
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   SUN8I_AIF1CLK_CTRL_AIF1_WORD_SIZ_MASK,
++			   SUN8I_AIF1CLK_CTRL_AIF1_WORD_SIZ_16);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   SUN8I_AIF2CLK_CTRL_AIF2_WORD_SIZ_MASK,
++			   SUN8I_AIF2CLK_CTRL_AIF2_WORD_SIZ_16);
++
++	bclk_div = sun8i_codec_get_bclk_div(scodec, params_rate(params), 16);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   SUN8I_AIF1CLK_CTRL_AIF1_BCLK_DIV_MASK,
++			   bclk_div << SUN8I_AIF1CLK_CTRL_AIF1_BCLK_DIV);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   SUN8I_AIF2CLK_CTRL_AIF2_BCLK_DIV_MASK,
++			   bclk_div << SUN8I_AIF2CLK_CTRL_AIF2_BCLK_DIV);
++
++	lrck_div = sun8i_codec_get_lrck_div(params_channels(params),
++					    params_physical_width(params));
++	if (lrck_div < 0)
++		return lrck_div;
++
++	regmap_update_bits(scodec->regmap, SUN8I_AIF1CLK_CTRL,
++			   SUN8I_AIF1CLK_CTRL_AIF1_LRCK_DIV_MASK,
++			   lrck_div << SUN8I_AIF1CLK_CTRL_AIF1_LRCK_DIV);
++	regmap_update_bits(scodec->regmap, SUN8I_AIF2CLK_CTRL,
++			   SUN8I_AIF2CLK_CTRL_AIF2_LRCK_DIV_MASK,
++			   lrck_div << SUN8I_AIF2CLK_CTRL_AIF2_LRCK_DIV);
++
++	sample_rate = sun8i_codec_get_hw_rate(params);
++	if (sample_rate < 0)
++		return sample_rate;
++
++	regmap_update_bits(scodec->regmap, SUN8I_SYS_SR_CTRL,
++			   SUN8I_SYS_SR_CTRL_AIF1_FS_MASK,
++			   sample_rate << SUN8I_SYS_SR_CTRL_AIF1_FS);
++	regmap_update_bits(scodec->regmap, SUN8I_SYS_SR_CTRL,
++			   SUN8I_SYS_SR_CTRL_AIF2_FS_MASK,
++			   sample_rate << SUN8I_SYS_SR_CTRL_AIF2_FS);
++
++	return 0;
++}
++
++static const struct snd_kcontrol_new sun8i_dac_mixer_controls[] = {
++	SOC_DAPM_DOUBLE("AIF1 Slot 0 Digital DAC Playback Switch",
++			SUN8I_DAC_MXR_SRC,
++			SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF1DA0L,
++			SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF1DA0R, 1, 0),
++	SOC_DAPM_DOUBLE("AIF1 Slot 1 Digital DAC Playback Switch",
++			SUN8I_DAC_MXR_SRC,
++			SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF1DA1L,
++			SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF1DA1R, 1, 0),
++	SOC_DAPM_DOUBLE("AIF2 Digital DAC Playback Switch", SUN8I_DAC_MXR_SRC,
++			SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_AIF2DACL,
++			SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_AIF2DACR, 1, 0),
++	SOC_DAPM_DOUBLE("ADC Digital DAC Playback Switch", SUN8I_DAC_MXR_SRC,
++			SUN8I_DAC_MXR_SRC_DACL_MXR_SRC_ADCL,
++			SUN8I_DAC_MXR_SRC_DACR_MXR_SRC_ADCR, 1, 0),
++};
++
++static const struct snd_kcontrol_new sun8i_aif2adc_mixer_controls[] = {
++	SOC_DAPM_DOUBLE("AIF1 Slot 0 Digital DAC Playback Switch",
++			SUN8I_AIF2_MXR_SRC,
++			SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF1DA0L,
++			SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF1DA0R, 1, 0),
++	SOC_DAPM_DOUBLE("AIF1 Slot 1 Digital DAC Playback Switch",
++			SUN8I_AIF2_MXR_SRC,
++			SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF1DA1L,
++			SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF1DA1R, 1, 0),
++	SOC_DAPM_DOUBLE("AIF2 Digital DAC Playback Switch", SUN8I_AIF2_MXR_SRC,
++			SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_AIF2DACR,
++			SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_AIF2DACL, 1, 0),
++	SOC_DAPM_DOUBLE("ADC Digital DAC Playback Switch", SUN8I_AIF2_MXR_SRC,
++			SUN8I_AIF2_MXR_SRC_ADCL_MXR_SRC_ADCL,
++			SUN8I_AIF2_MXR_SRC_ADCR_MXR_SRC_ADCR, 1, 0),
++};
++
++static const struct snd_kcontrol_new sun8i_input_mixer_controls[] = {
++	SOC_DAPM_DOUBLE("AIF1 Slot 0 Digital ADC Capture Switch",
++			SUN8I_AIF1_MXR_SRC,
++			SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF1DA0L,
++			SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF1DA0R, 1, 0),
++	SOC_DAPM_DOUBLE("AIF2 Digital ADC Capture Switch", SUN8I_AIF1_MXR_SRC,
++			SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF2DACL,
++			SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF2DACR, 1, 0),
++	SOC_DAPM_DOUBLE("AIF1 Data Digital ADC Capture Switch",
++			SUN8I_AIF1_MXR_SRC,
++			SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_ADCL,
++			SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_ADCR, 1, 0),
++	SOC_DAPM_DOUBLE("AIF2 Inv Digital ADC Capture Switch",
++			SUN8I_AIF1_MXR_SRC,
++			SUN8I_AIF1_MXR_SRC_AD0L_MXL_SRC_AIF2DACR,
++			SUN8I_AIF1_MXR_SRC_AD0R_MXR_SRC_AIF2DACL, 1, 0),
++};
++
++static const struct snd_soc_dapm_widget sun8i_codec_dapm_widgets[] = {
++	/* Digital parts of the DACs and ADC */
++	SND_SOC_DAPM_SUPPLY("DAC", SUN8I_DAC_DIG_CTRL, SUN8I_DAC_DIG_CTRL_ENDA,
++			    0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("ADC", SUN8I_ADC_DIG_CTRL, SUN8I_ADC_DIG_CTRL_ENDA,
++			    0, NULL, 0),
++
++	/* Analog DAC AIF */
++	SND_SOC_DAPM_AIF_IN("AIF1 Slot 0 Left", "Playback", 0,
++			    SUN8I_AIF1_DACDAT_CTRL,
++			    SUN8I_AIF1_DACDAT_CTRL_AIF1_DA0L_ENA, 0),
++	SND_SOC_DAPM_AIF_IN("AIF1 Slot 0 Right", "Playback", 0,
++			    SUN8I_AIF1_DACDAT_CTRL,
++			    SUN8I_AIF1_DACDAT_CTRL_AIF1_DA0R_ENA, 0),
++
++	/* Analog ADC AIF */
++	SND_SOC_DAPM_AIF_IN("AIF1 Slot 0 Left ADC", "Capture", 0,
++			    SUN8I_AIF1_ADCDAT_CTRL,
++			    SUN8I_AIF1_ADCDAT_CTRL_AIF1_DA0L_ENA, 0),
++	SND_SOC_DAPM_AIF_IN("AIF1 Slot 0 Right ADC", "Capture", 0,
++			    SUN8I_AIF1_ADCDAT_CTRL,
++			    SUN8I_AIF1_ADCDAT_CTRL_AIF1_DA0R_ENA, 0),
++
++	SND_SOC_DAPM_AIF_IN("AIF2 Slot 0 Left", "Playback", 0,
++			    SUN8I_AIF2_ADCDAT_CTRL,
++			    SUN8I_AIF2_ADCDAT_CTRL_AIF2_ADCL_ENA, 0),
++	SND_SOC_DAPM_AIF_IN("AIF2 Slot 0 Right", "Playback", 0,
++			    SUN8I_AIF2_ADCDAT_CTRL,
++			    SUN8I_AIF2_ADCDAT_CTRL_AIF2_ADCR_ENA, 0),
++
++	/* DAC and ADC Mixers */
++	SOC_MIXER_ARRAY("Left Digital DAC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_dac_mixer_controls),
++	SOC_MIXER_ARRAY("Right Digital DAC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_dac_mixer_controls),
++	SOC_MIXER_ARRAY("Left Digital ADC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_input_mixer_controls),
++	SOC_MIXER_ARRAY("Right Digital ADC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_input_mixer_controls),
++
++	/* AIF2 ADC Mixers */
++	SOC_MIXER_ARRAY("Left AIF2 ADC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_aif2adc_mixer_controls),
++	SOC_MIXER_ARRAY("Right AIF2 ADC Mixer", SND_SOC_NOPM, 0, 0,
++			sun8i_aif2adc_mixer_controls),
++
++	/* Clocks */
++	SND_SOC_DAPM_SUPPLY("MODCLK AFI1", SUN8I_MOD_CLK_ENA,
++			    SUN8I_MOD_CLK_ENA_AIF1, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("MODCLK AFI2", SUN8I_MOD_CLK_ENA,
++			    SUN8I_MOD_CLK_ENA_AIF2, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("MODCLK DAC", SUN8I_MOD_CLK_ENA,
++			    SUN8I_MOD_CLK_ENA_DAC, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("MODCLK ADC", SUN8I_MOD_CLK_ENA,
++			    SUN8I_MOD_CLK_ENA_ADC, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("AIF1", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_AIF1CLK_ENA, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("SYSCLK", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_SYSCLK_ENA, 0, NULL, 0),
++
++	SND_SOC_DAPM_SUPPLY("AIF1 PLL", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_AIF1CLK_SRC_PLL, 0, NULL, 0),
++	/* Inversion as 0=AIF1, 1=AIF2 */
++	SND_SOC_DAPM_SUPPLY("SYSCLK AIF1", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_SYSCLK_SRC, 1, NULL, 0),
++
++	SND_SOC_DAPM_SUPPLY("AIF2", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_AIF2CLK_ENA, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("AIF2 PLL", SUN8I_SYSCLK_CTL,
++			    SUN8I_SYSCLK_CTL_AIF2CLK_SRC_PLL, 0, NULL, 0),
++
++	/* Module reset */
++	SND_SOC_DAPM_SUPPLY("RST AIF1", SUN8I_MOD_RST_CTL,
++			    SUN8I_MOD_RST_CTL_AIF1, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("RST AIF2", SUN8I_MOD_RST_CTL,
++			    SUN8I_MOD_RST_CTL_AIF2, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("RST DAC", SUN8I_MOD_RST_CTL,
++			    SUN8I_MOD_RST_CTL_DAC, 0, NULL, 0),
++	SND_SOC_DAPM_SUPPLY("RST ADC", SUN8I_MOD_RST_CTL,
++			    SUN8I_MOD_RST_CTL_ADC, 0, NULL, 0),
++
++	SND_SOC_DAPM_MIC("Headset Mic", NULL),
++	SND_SOC_DAPM_MIC("Mic", NULL),
++
++};
++
++static const struct snd_soc_dapm_route sun8i_codec_dapm_routes[] = {
++	/* Clock Routes */
++	{ "AIF1", NULL, "SYSCLK AIF1" },
++	{ "AIF1 PLL", NULL, "AIF1" },
++	{ "RST AIF1", NULL, "AIF1 PLL" },
++	{ "MODCLK AFI1", NULL, "RST AIF1" },
++	{ "DAC", NULL, "MODCLK AFI1" },
++
++	{ "AIF2 PLL", NULL, "AIF2" },
++	{ "RST AIF2", NULL, "AIF2 PLL" },
++	{ "MODCLK AFI2", NULL, "RST AIF2" },
++	{ "DAC", NULL, "MODCLK AFI2" },
++
++	{ "RST DAC", NULL, "SYSCLK" },
++	{ "MODCLK DAC", NULL, "RST DAC" },
++	{ "DAC", NULL, "MODCLK DAC" },
++
++	/* DAC Routes */
++	{ "AIF1 Slot 0 Right", NULL, "DAC" },
++	{ "AIF1 Slot 0 Left", NULL, "DAC" },
++
++	/* AIF2 ADC Mixer Routes */
++	{ "Left AIF2 ADC Mixer", "AIF1 Slot 0 Digital DAC Playback Switch",
++	  "AIF1 Slot 0 Left"},
++	{ "Right AIF2 ADC Mixer", "AIF1 Slot 0 Digital DAC Playback Switch",
++	  "AIF1 Slot 0 Right"},
++
++	{ "AIF2 Slot 0 Left", NULL, "Left AIF2 ADC Mixer" },
++	{ "AIF2 Slot 0 Right", NULL, "Right AIF2 ADC Mixer" },
++};
++
++static const struct snd_soc_dai_ops sun8i_codec_dai_ops = {
++	.hw_params = sun8i_codec_hw_params,
++	.set_fmt = sun8i_set_fmt,
++};
++
++static struct snd_soc_dai_driver sun8i_codec_dai = {
++	.name = "sun8i",
++	/* playback capabilities */
++	.playback = {
++		.stream_name = "Playback",
++		.channels_min = 1,
++		.channels_max = 2,
++		.rates = SNDRV_PCM_RATE_8000_192000,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
++	},
++	/* capture capabilities */
++	.capture = {
++		.stream_name = "Capture",
++		.channels_min = 1,
++		.channels_max = 2,
++		.rates = SNDRV_PCM_RATE_8000_192000,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
++		.sig_bits = 24,
++	},
++	/* pcm operations */
++	.ops = &sun8i_codec_dai_ops,
++};
++
++static const struct snd_soc_component_driver sun8i_soc_component = {
++	.dapm_widgets		= sun8i_codec_dapm_widgets,
++	.num_dapm_widgets	= ARRAY_SIZE(sun8i_codec_dapm_widgets),
++	.dapm_routes		= sun8i_codec_dapm_routes,
++	.num_dapm_routes	= ARRAY_SIZE(sun8i_codec_dapm_routes),
++	.idle_bias_on		= 1,
++	.use_pmdown_time	= 1,
++	.endianness		= 1,
++	.non_legacy_dai_naming	= 1,
++};
++
++static const struct regmap_config sun8i_codec_regmap_config = {
++	.name	= "sun8i_codec-aif2",
++	.reg_bits	= 32,
++	.reg_stride	= 4,
++	.val_bits	= 32,
++	.max_register	= SUN8I_DAC_MXR_SRC,
++
++	.cache_type	= REGCACHE_FLAT,
++};
++
++static int sun8i_codec_probe(struct platform_device *pdev)
++{
++	struct resource *res_base;
++	struct sun8i_codec *scodec;
++	void __iomem *base;
++	int ret;
++
++	scodec = devm_kzalloc(&pdev->dev, sizeof(*scodec), GFP_KERNEL);
++	if (!scodec)
++		return -ENOMEM;
++
++	scodec->dev = &pdev->dev;
++
++	scodec->clk_module = devm_clk_get(&pdev->dev, "mod");
++	if (IS_ERR(scodec->clk_module)) {
++		dev_err(&pdev->dev, "Failed to get the module clock\n");
++		return PTR_ERR(scodec->clk_module);
++	}
++
++	scodec->clk_bus = devm_clk_get(&pdev->dev, "bus");
++	if (IS_ERR(scodec->clk_bus)) {
++		dev_err(&pdev->dev, "Failed to get the bus clock\n");
++		return PTR_ERR(scodec->clk_bus);
++	}
++
++	res_base = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	base = devm_ioremap_resource(&pdev->dev, res_base);
++	if (IS_ERR(base)) {
++		dev_err(&pdev->dev, "Failed to map the registers\n");
++		return PTR_ERR(base);
++	}
++
++	scodec->regmap = devm_regmap_init_mmio(&pdev->dev, base,
++					       &sun8i_codec_regmap_config);
++	if (IS_ERR(scodec->regmap)) {
++		dev_err(&pdev->dev, "Failed to create our regmap\n");
++		return PTR_ERR(scodec->regmap);
++	}
++
++	platform_set_drvdata(pdev, scodec);
++
++	pm_runtime_enable(&pdev->dev);
++	if (!pm_runtime_enabled(&pdev->dev)) {
++		ret = sun8i_codec_runtime_resume(&pdev->dev);
++		if (ret)
++			goto err_pm_disable;
++	}
++
++	ret = devm_snd_soc_register_component(&pdev->dev, &sun8i_soc_component,
++				     &sun8i_codec_dai, 1);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to register codec\n");
++		goto err_suspend;
++	}
++
++	return ret;
++
++err_suspend:
++	if (!pm_runtime_status_suspended(&pdev->dev))
++		sun8i_codec_runtime_suspend(&pdev->dev);
++
++err_pm_disable:
++	pm_runtime_disable(&pdev->dev);
++
++	return ret;
++}
++
++static int sun8i_codec_remove(struct platform_device *pdev)
++{
++	pm_runtime_disable(&pdev->dev);
++	if (!pm_runtime_status_suspended(&pdev->dev))
++		sun8i_codec_runtime_suspend(&pdev->dev);
++
++	return 0;
++}
++
++static const struct of_device_id sun8i_codec_of_match[] = {
++	{ .compatible = "allwinner,sun8i-a33-codec-aif2" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, sun8i_codec_of_match);
++
++static const struct dev_pm_ops sun8i_codec_pm_ops = {
++	SET_RUNTIME_PM_OPS(sun8i_codec_runtime_suspend,
++			   sun8i_codec_runtime_resume, NULL)
++};
++
++static struct platform_driver sun8i_codec_driver = {
++	.driver = {
++		.name = "sun8i-codec-aif2",
++		.of_match_table = sun8i_codec_of_match,
++		.pm = &sun8i_codec_pm_ops,
++	},
++	.probe = sun8i_codec_probe,
++	.remove = sun8i_codec_remove,
++};
++module_platform_driver(sun8i_codec_driver);
++
++MODULE_DESCRIPTION("Allwinner A33 (sun8i) codec aif2 driver");
++MODULE_AUTHOR("");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:sun8i-codec");
+diff --git a/sound/soc/sunxi/sun8i-codec-analog.c b/sound/soc/sunxi/sun8i-codec-analog.c
+index be872eefa..62c2764c2 100644
+--- a/sound/soc/sunxi/sun8i-codec-analog.c
++++ b/sound/soc/sunxi/sun8i-codec-analog.c
+@@ -19,6 +19,8 @@
+ #include <sound/tlv.h>
+
+ #include "sun8i-adda-pr-regmap.h"
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+
+ /* Codec analog control register offsets and bit fields */
+ #define SUN8I_ADDA_HP_VOLC		0x00
+@@ -113,6 +115,81 @@
+ #define SUN8I_ADDA_ADC_AP_EN_ADCLEN		6
+ #define SUN8I_ADDA_ADC_AP_EN_ADCG		0
+
++/* Analog control register access bits */
++#define ADDA_PR			0x0		/* PRCM base + 0x1c0 */
++#define ADDA_PR_RESET			BIT(28)
++#define ADDA_PR_WRITE			BIT(24)
++#define ADDA_PR_ADDR_SHIFT		16
++#define ADDA_PR_ADDR_MASK		GENMASK(4, 0)
++#define ADDA_PR_DATA_IN_SHIFT		8
++#define ADDA_PR_DATA_IN_MASK		GENMASK(7, 0)
++#define ADDA_PR_DATA_OUT_SHIFT		0
++#define ADDA_PR_DATA_OUT_MASK		GENMASK(7, 0)
++
++/* regmap access bits */
++static int adda_reg_read(void *context, unsigned int reg, unsigned int *val)
++{
++	void __iomem *base = (void __iomem *)context;
++	u32 tmp;
++
++	/* De-assert reset */
++	writel(readl(base) | ADDA_PR_RESET, base);
++
++	/* Clear write bit */
++	writel(readl(base) & ~ADDA_PR_WRITE, base);
++
++	/* Set register address */
++	tmp = readl(base);
++	tmp &= ~(ADDA_PR_ADDR_MASK << ADDA_PR_ADDR_SHIFT);
++	tmp |= (reg & ADDA_PR_ADDR_MASK) << ADDA_PR_ADDR_SHIFT;
++	writel(tmp, base);
++
++	/* Read back value */
++	*val = readl(base) & ADDA_PR_DATA_OUT_MASK;
++
++	return 0;
++}
++
++static int adda_reg_write(void *context, unsigned int reg, unsigned int val)
++{
++	void __iomem *base = (void __iomem *)context;
++	u32 tmp;
++
++	/* De-assert reset */
++	writel(readl(base) | ADDA_PR_RESET, base);
++
++	/* Set register address */
++	tmp = readl(base);
++	tmp &= ~(ADDA_PR_ADDR_MASK << ADDA_PR_ADDR_SHIFT);
++	tmp |= (reg & ADDA_PR_ADDR_MASK) << ADDA_PR_ADDR_SHIFT;
++	writel(tmp, base);
++
++	/* Set data to write */
++	tmp = readl(base);
++	tmp &= ~(ADDA_PR_DATA_IN_MASK << ADDA_PR_DATA_IN_SHIFT);
++	tmp |= (val & ADDA_PR_DATA_IN_MASK) << ADDA_PR_DATA_IN_SHIFT;
++	writel(tmp, base);
++
++	/* Set write bit to signal a write */
++	writel(readl(base) | ADDA_PR_WRITE, base);
++
++	/* Clear write bit */
++	writel(readl(base) & ~ADDA_PR_WRITE, base);
++
++	return 0;
++}
++
++static const struct regmap_config adda_pr_regmap_cfg = {
++	.name		= "adda-pr",
++	.reg_bits	= 5,
++	.reg_stride	= 1,
++	.val_bits	= 8,
++	.reg_read	= adda_reg_read,
++	.reg_write	= adda_reg_write,
++	.fast_io	= true,
++	.max_register	= 24,
++};
++
+ /* mixer controls */
+ static const struct snd_kcontrol_new sun8i_codec_mixer_controls[] = {
+ 	SOC_DAPM_DOUBLE_R("DAC Playback Switch",
+@@ -316,7 +393,7 @@ static const struct snd_soc_dapm_route sun8i_codec_mixer_routes[] = {
+ /* headphone specific controls, widgets, and routes */
+ static const DECLARE_TLV_DB_SCALE(sun8i_codec_hp_vol_scale, -6300, 100, 1);
+ static const struct snd_kcontrol_new sun8i_codec_headphone_controls[] = {
+-	SOC_SINGLE_TLV("Headphone Playback Volume",
++	SOC_SINGLE_TLV("Master Playback Volume",
+ 		       SUN8I_ADDA_HP_VOLC,
+ 		       SUN8I_ADDA_HP_VOLC_HP_VOL, 0x3f, 0,
+ 		       sun8i_codec_hp_vol_scale),
+@@ -673,7 +750,7 @@ struct sun8i_codec_analog_quirks {
+
+ static const struct sun8i_codec_analog_quirks sun8i_a23_quirks = {
+ 	.has_headphone	= true,
+-	.has_hmic	= true,
++//	.has_hmic	= true,
+ 	.has_linein	= true,
+ 	.has_mbias	= true,
+ 	.has_mic2	= true,
+@@ -817,17 +894,189 @@ static const struct of_device_id sun8i_codec_analog_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, sun8i_codec_analog_of_match);
+
++#define SUNXI_HMIC_ENABLE          (0x4)
++#define SUNXI_HMIC_CTL 	           (0x8)
++#define SUNXI_HMIC_DATA	           (0xc)
++
++/*
++*	SUNXI_HMIC_CTL
++*HMIC Control Register
++*CONFIG_ARCH_SUN8IW5:0x1c8
++*/
++#define HMIC_M					  (28)
++#define HMIC_N					  (24)
++#define HMIC_DIRQ				  (23)
++#define HMIC_TH1_HYS			  (21)
++#define HMIC_EARPHONE_OUT_IRQ_EN  (20)
++#define HMIC_EARPHONE_IN_IRQ_EN	  (19)
++#define HMIC_KEY_UP_IRQ_EN		  (18)
++#define HMIC_KEY_DOWN_IRQ_EN	  (17)
++#define HMIC_DATA_IRQ_EN		  (16)
++#define HMIC_DS_SAMP			  (14)
++#define HMIC_TH2_HYS			  (13)
++#define HMIC_TH2_KEY		      (8)
++#define HMIC_SF_SMOOTH_FIL		  (6)
++#define KEY_UP_IRQ_PEND			  (5)
++#define HMIC_TH1_EARPHONE		  (0)
++
++/*
++*	SUNXI_HMIC_DATA
++*HMIC Data Register
++*
++*CONFIG_ARCH_SUN8IW5:0x1cc
++*/
++#define HMIC_EARPHONE_OUT_IRQ_PEND  (20)
++#define HMIC_EARPHONE_IN_IRQ_PEND   (19)
++#define HMIC_KEY_UP_IRQ_PEND 	    (18)
++#define HMIC_KEY_DOWN_IRQ_PEND 		(17)
++#define HMIC_DATA_IRQ_PEND			(16)
++#define HMIC_ADC_DATA				(0)
++
++#define HP_VOLC					  (0x00)
++#define LOMIXSC					  (0x01)
++#define ROMIXSC					  (0x02)
++#define DAC_PA_SRC				  (0x03)
++#define PAEN_HP_CTRL			  (0x07)
++#define ADDA_APT2				  (0x12)
++#define MIC1G_MICBIAS_CTRL		  (0x0B)
++#define PA_ANTI_POP_REG_CTRL	  (0x0E)
++#define PA_SLOPE_SELECT	  (3)
++#define PA_ANTI_POP_EN		(0)
++
++static void __iomem *sun8i_codec_analog_base;
++static struct gpio_desc * speaker_amplifier_gpio;
++
++static int hmic_wrreg_prcm_bits(unsigned short reg, unsigned int mask, unsigned int value)
++{
++	unsigned int old, new;
++
++	adda_reg_read(sun8i_codec_analog_base, reg, &old);
++	new	=	(old & ~mask) | value;
++	adda_reg_write(sun8i_codec_analog_base, reg,new);
++
++	return 0;
++}
++
++static int hmic_wr_prcm_control(u32 reg, u32 mask, u32 shift, u32 val)
++{
++	u32 reg_val;
++	reg_val = val << shift;
++	mask = mask << shift;
++	hmic_wrreg_prcm_bits(reg, mask, reg_val);
++	return 0;
++}
++
++static int hmic_wrreg_bits(unsigned short reg, unsigned int	mask,	unsigned int value)
++{
++	unsigned int old, new;
++
++	old	=	readl(sun8i_codec_analog_base + reg);
++	new	=	(old & ~mask) | value;
++
++	writel(new, sun8i_codec_analog_base + reg);
++
++	return 0;
++}
++
++static int hmic_wr_control(u32 reg, u32 mask, u32 shift, u32 val)
++{
++	u32 reg_val;
++	reg_val = val << shift;
++	mask = mask << shift;
++	hmic_wrreg_bits(reg, mask, reg_val);
++	return 0;
++}
++
++static irqreturn_t sunxi_codec_analog_irq(int irq, void *dev_id)
++{
++	u32 tmp;
++
++	hmic_wr_control(SUNXI_HMIC_DATA, 0x1, HMIC_KEY_DOWN_IRQ_PEND, 0x1);
++	hmic_wr_control(SUNXI_HMIC_DATA, 0x1, HMIC_EARPHONE_IN_IRQ_PEND, 0x1);
++	hmic_wr_control(SUNXI_HMIC_DATA, 0x1, HMIC_KEY_UP_IRQ_PEND, 0x1);
++	hmic_wr_control(SUNXI_HMIC_DATA, 0x1, HMIC_EARPHONE_OUT_IRQ_PEND, 0x1);
++	hmic_wr_control(SUNXI_HMIC_DATA, 0x1, HMIC_DATA_IRQ_PEND, 0x1);
++
++	tmp = readl(sun8i_codec_analog_base + SUNXI_HMIC_DATA);
++	if(tmp & 0x1f)
++		gpiod_set_value(speaker_amplifier_gpio, 0);
++	else
++		gpiod_set_value(speaker_amplifier_gpio, 1);
++
++	return IRQ_HANDLED;
++}
++
++static void sunxi_hppa_enable(void) {
++    /*fix the resume blaze blaze noise*/
++	hmic_wr_prcm_control(ADDA_APT2, 0x1, PA_SLOPE_SELECT, 0x0);
++	hmic_wr_prcm_control(SUN8I_ADDA_PAEN_HP_CTRL, 0x3, SUN8I_ADDA_PAEN_HP_CTRL_PA_ANTI_POP_CTRL, 0x1);
++	hmic_wr_prcm_control(PA_ANTI_POP_REG_CTRL, 0x7, PA_ANTI_POP_EN, 0x2);
++	usleep_range(100,200);
++	/*enable pa*/
++	hmic_wr_prcm_control(SUN8I_ADDA_PAEN_HP_CTRL, 0x1, SUN8I_ADDA_PAEN_HP_CTRL_HPPAEN, 0x1);
++}
++
++static void sunxi_hbias_enable(void) {
++	/*audio codec hardware bug. the HBIASADCEN bit must be enable in init*/
++	hmic_wr_prcm_control(SUN8I_ADDA_MIC1G_MICBIAS_CTRL, 0x1, SUN8I_ADDA_MIC1G_MICBIAS_CTRL_HMICBIAS_MODE, 0x1);
++	hmic_wr_prcm_control(SUN8I_ADDA_MIC1G_MICBIAS_CTRL, 0x1, SUN8I_ADDA_MIC1G_MICBIAS_CTRL_HMICBIASEN, 0x1);
++}
++
++static void codec_init_events(void)
++{
++	/*fix the resume blaze blaze noise*/
++	sunxi_hppa_enable();
++	msleep(450);
++	/*audio codec hardware bug. the HBIASADCEN bit must be enable in init*/
++	sunxi_hbias_enable();
++}
++
+ static int sun8i_codec_analog_probe(struct platform_device *pdev)
+ {
++	struct resource *res;
+ 	struct regmap *regmap;
+ 	void __iomem *base;
++	int irq, ret;
+
+-	base = devm_platform_ioremap_resource(pdev, 0);
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(base)) {
+ 		dev_err(&pdev->dev, "Failed to map the registers\n");
+ 		return PTR_ERR(base);
+ 	}
+
++	sun8i_codec_analog_base = base;
++	speaker_amplifier_gpio = devm_gpiod_get_optional(&pdev->dev, "speaker-amplifier", GPIOD_OUT_HIGH);
++	if (!IS_ERR_OR_NULL(speaker_amplifier_gpio)) {
++
++		hmic_wr_control(SUNXI_HMIC_CTL, 0xf, HMIC_M, 0x0);						/*0xf should be get from hw_debug 28*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0xf, HMIC_N, 0x0);						/*0xf should be get from hw_debug 24 0xf*/
++//		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_DIRQ, 0x1);					/*23*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_EARPHONE_OUT_IRQ_EN, 0x1); 	/*20*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_EARPHONE_IN_IRQ_EN, 0x1); 	/*19*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_KEY_UP_IRQ_EN, 0x1); 			/*18*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_KEY_DOWN_IRQ_EN, 0x1); 		/*17*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1, HMIC_DATA_IRQ_EN, 0x1); 			/*16*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x3, HMIC_DS_SAMP, 0x0); 				/*14 */
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1f, HMIC_TH2_KEY, 0x0);				/*0xf should be get from hw_debug 8*/
++		hmic_wr_control(SUNXI_HMIC_CTL, 0x1f, HMIC_TH1_EARPHONE, 0x1);			/*0x1 should be get from hw_debug 0*/
++
++		irq = platform_get_irq(pdev, 0);
++		if (irq < 0) {
++			dev_err(&pdev->dev, "Can't retrieve our interrupt\n");
++			return irq;
++		}
++
++		ret = devm_request_irq(&pdev->dev, irq, sunxi_codec_analog_irq, 0, "audio_hmic_irq", NULL);
++		if (ret) {
++			dev_err(&pdev->dev, "can't register interrupt handler irq %d: %d\n",
++				irq, ret);
++			return ret;
++		}
++
++		codec_init_events();
++	}
++
+ 	regmap = sun8i_adda_pr_regmap_init(&pdev->dev, base);
+ 	if (IS_ERR(regmap)) {
+ 		dev_err(&pdev->dev, "Failed to create regmap\n");
+diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
+index ca51af114..308f2fd95 100644
+--- a/sound/soc/sunxi/sun8i-codec.c
++++ b/sound/soc/sunxi/sun8i-codec.c
+@@ -273,11 +273,39 @@ static u8 sun8i_codec_get_bclk_div(struct sun8i_codec *scodec,
+ 				   unsigned int rate,
+ 				   unsigned int word_size)
+ {
+-	unsigned long clk_rate = clk_get_rate(scodec->clk_module);
+-	unsigned int div = clk_rate / rate / word_size / 2;
+-	unsigned int best_val = 0, best_diff = ~0;
++	unsigned long clk_rate;
++	unsigned int div, best_val = 0, best_diff = ~0;
+ 	int i;
+
++	switch (rate) {
++	case 176400:
++	case 88200:
++	case 44100:
++	case 22050:
++	case 11025:
++		clk_rate = 22579200;
++		break;
++
++	case 192000:
++	case 128000:
++	case 96000:
++	case 64000:
++	case 48000:
++	case 32000:
++	case 24000:
++	case 16000:
++	case 12000:
++	case 8000:
++		clk_rate = 24576000;
++		break;
++
++	default:
++		clk_rate = clk_get_rate(scodec->clk_module);
++		break;
++	}
++
++	div = clk_rate / rate / word_size / 2;
++
+ 	for (i = 0; i < ARRAY_SIZE(sun8i_codec_bclk_div); i++) {
+ 		const struct sun8i_codec_clk_div *bdiv = &sun8i_codec_bclk_div[i];
+ 		unsigned int diff = abs(bdiv->div - div);
+@@ -523,6 +551,7 @@ static const struct snd_soc_component_driver sun8i_soc_component = {
+ };
+
+ static const struct regmap_config sun8i_codec_regmap_config = {
++	.name	= "sun8i_codec",
+ 	.reg_bits	= 32,
+ 	.reg_stride	= 4,
+ 	.val_bits	= 32,
+@@ -533,6 +562,7 @@ static const struct regmap_config sun8i_codec_regmap_config = {
+
+ static int sun8i_codec_probe(struct platform_device *pdev)
+ {
++	struct resource *res_base;
+ 	struct sun8i_codec *scodec;
+ 	void __iomem *base;
+ 	int ret;
+@@ -553,7 +583,8 @@ static int sun8i_codec_probe(struct platform_device *pdev)
+ 		return PTR_ERR(scodec->clk_bus);
+ 	}
+
+-	base = devm_platform_ioremap_resource(pdev, 0);
++	res_base = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	base = devm_ioremap_resource(&pdev->dev, res_base);
+ 	if (IS_ERR(base)) {
+ 		dev_err(&pdev->dev, "Failed to map the registers\n");
+ 		return PTR_ERR(base);

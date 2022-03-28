@@ -851,6 +851,19 @@ atari800:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
+xegs:
+  name:       Atari XE Game System
+  manufacturer: Atari
+  release: 1987
+  hardware: computer
+  extensions: [atr, dsk, xfd, bin, rom, car, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file xegs.zip
+          Software list mode recommended
+
 atari2600:
   name:       Atari 2600
   manufacturer: Atari
@@ -1075,6 +1088,9 @@ vectrex:
   emulators:
     libretro:
       vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 
 lutro:
   name:       Lutro
@@ -1528,6 +1544,21 @@ gamecube:
     For more info: https://wiki.batocera.org/systems:gamecube
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:gamecube
+
+triforce:
+  name:       Triforce
+  manufacturer: Namco, Sega, Nintendo
+  release: 2003
+  hardware: arcade
+  extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
+  platform:   triforce, arcade
+  emulators:
+    dolphin_triforce:
+      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
+  comment_en: |
+    Triforce is an arcade machine based on the GameCube's hardware. This build only supports booting Mario Kart GP 2.
+
+    For the most up-to-date information, visit https://wiki.batocera.org/systems:triforce
 
 wii:
   name:       Nintendo Wii
@@ -2342,12 +2373,50 @@ crvision:
   manufacturer: VTech
   release: 1982
   hardware: console
+  theme: creativision
   extensions: [bin, rom, zip, 7z]
   emulators:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file crvision.zip
+
+socrates:
+  name:       Socrates
+  manufacturer: VTech
+  release: 1988
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file socrates.zip
+          Software list mode recommended
+
+vsmile:
+  name:       V.Smile
+  manufacturer: VTech
+  release: 2005
+  hardware: console
+  extensions: [u1, u3, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file vsmile.zip
+
+supracan:
+  name:       Super A'Can
+  manufacturer: Funtech Entertainment
+  release: 1995
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Sound support is preliminary
 
 gamecom:
   name:       Game.com
@@ -2374,7 +2443,7 @@ gamepock:
           Requires MAME BIOS file gamepock.zip
 
 fm7:
-  name:       FM-7
+  name:       Fujitsu FM-7
   manufacturer: Fujitsu
   release: 1982
   hardware: computer
@@ -2384,6 +2453,48 @@ fm7:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
+
+archimedes:
+  name:       Acorn Archimedes
+  manufacturer: Acorn Computers
+  release: 1987
+  hardware: computer
+  extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files aa310.zip and archimedes_keyboard.zip
+          Using software list mode is recommended.
+          Double-click the floppy drive in the lower left to open the contents, double-click the app/game to run it.
+
+atom:
+  name:       Acorn Atom
+  manufacturer: Acorn Computers
+  release: 1979
+  hardware: computer
+  extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file atom.zip
+          Using software list mode is recommended. Software list cassettes don't work but floppies do.
+          Disks will automatically show contents, if the program isn't auto-launched, type the program name followed by a double quote (mapped to shift-2) and hit enter to run.
+
+electron:
+  name:       Acorn Electron
+  manufacturer: Acorn Computers
+  release: 1983
+  hardware: computer
+  extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files electron.zip, electron64.zip, electron_plus1.zip, electron_plus3.zip
+          Using software list mode (cassette) is recommended.
+          Tapes should auto-load, use the MAME menu to stop/play/rewind if needed.
 
 apfm1000:
   name:       APF M-1000
@@ -2402,6 +2513,7 @@ bbc:
   manufacturer: Acorn
   release: 1981
   hardware: computer
+  theme: bbcmicro
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
   emulators:
     mame:
@@ -2409,6 +2521,19 @@ bbc:
   comment_en: |
           Requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Also sample pack bbc.zip in bios/mame/samples
+
+camplynx:
+  name:       Camputers Lynx
+  manufacturer: Camputers
+  release: 1983
+  hardware: computer
+  extensions: [wav, tap, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files lynx128k.zip, lynx96k.zip, lynx48k.zip
+          Using software list mode is recommended.
 
 adam:
   name:       Coleco ADAM
@@ -2450,6 +2575,7 @@ astrocde:
   manufacturer: Bally
   release: 1978
   hardware: console
+  theme: astrocade
   extensions: [bin, zip, 7z]
   emulators:
     mame:
@@ -2468,7 +2594,7 @@ ti99:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file ti99_4a.zip
-          Cartridges need to be in .rpk format and unzipped - the MAME software list files (.bin) will not run properly.
+          Cartridges need to be in .rpk format and unzipped if not using software lists.
 
 tutor:
   name:       Tomy Tutor
@@ -2495,6 +2621,19 @@ coco:
   comment_en: |
           Requires MAME BIOS file coco.zip
 
+vgmplay:
+  name:       Video Game Music Player
+  manufacturer: Various
+  release: 1980
+  hardware: computer
+  extensions: [vgm, vgz, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Software lists recommended. QSound can be CPU-intensive.
+          Use the File Manager in the MAME menu to change tracks.
+
 switch:
   name:       Switch
   manufacturer: Nintendo
@@ -2506,6 +2645,8 @@ switch:
   emulators:
     yuzu:
       yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
+    ryujinx:
+      ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
   name:       Quake II
@@ -2534,6 +2675,7 @@ zc210:
   manufacturer: Ports
   release: 1999
   hardware: console
+  theme: zeldac
   extensions: [qst]
   emulators:
     libretro:
@@ -2696,12 +2838,14 @@ naomi2:
     ## NAOMI 2 IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Naomi 2 games using Demul & Wine.
+    You can now play Naomi 2 games using Demul with Wine.
     Roms should be stored in the appropriate naomi2 directory.
     You will need a Naomi 2 bios, please add the naomi2.zip file to your bios directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2759,12 +2903,14 @@ hikaru:
     ## HIKARU IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Hikaru games using Demul & Wine.
+    You can now play Sega Hikaru games using Demul with Wine.
     Roms should be stored in the appropriate hikaru directory.
     You will need a Hikaru bios, please add the hikaru.zip file to your bios directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2808,11 +2954,13 @@ gaelco:
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Gaelco games using Demul & Wine.
+    You can now play Sega Gaelco games using Demul with Wine.
     Roms should be stored in the appropriate gaelco directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -2856,11 +3004,13 @@ cave3rd:
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Cave CV1000 games using Demul & Wine.
+    You can now play Sega Cave CV1000 games using Demul with Wine.
     Roms should be stored in the appropriate cave3rd directory.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start

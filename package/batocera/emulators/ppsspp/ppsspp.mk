@@ -1,10 +1,10 @@
 ################################################################################
 #
-# PPSSPP
+# ppsspp
 #
 ################################################################################
-# Version: Commits on Oct 18, 2021
-PPSSPP_VERSION = v1.12.3
+# Version: Commits on Feb 14, 2022
+PPSSPP_VERSION = 858539c5b0b2a296cbe2c62e0cda86dae15c4d64
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -20,74 +20,74 @@ PPSSPP_CONF_OPTS = \
 PPSSPP_TARGET_CFLAGS = $(TARGET_CFLAGS)
 
 ifeq ($(BR2_PACKAGE_QT5),y)
-PPSSPP_CONF_OPTS += -DUSING_QT_UI=ON
-PPSSPP_TARGET_BINARY = PPSSPPQt
+    PPSSPP_CONF_OPTS += -DUSING_QT_UI=ON
+    PPSSPP_TARGET_BINARY = PPSSPPQt
 else
-PPSSPP_CONF_OPTS += -DUSING_QT_UI=OFF
-PPSSPP_TARGET_BINARY = PPSSPPSDL
+    PPSSPP_CONF_OPTS += -DUSING_QT_UI=OFF
+    PPSSPP_TARGET_BINARY = PPSSPPSDL
 endif
 
 # make sure to select glvnd and depends on glew / glu because of X11 desktop GL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-	PPSSPP_CONF_OPTS += -DOpenGL_GL_PREFERENCE=GLVND
-	PPSSPP_DEPENDENCIES += libglew libglu
+    PPSSPP_CONF_OPTS += -DOpenGL_GL_PREFERENCE=GLVND
+    PPSSPP_DEPENDENCIES += libglew libglu
 endif
 
 # enable vulkan if we are building with it
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-	PPSSPP_CONF_OPTS += -DVULKAN=ON
+    PPSSPP_CONF_OPTS += -DVULKAN=ON
 else
-	PPSSPP_CONF_OPTS += -DVULKAN=OFF
+    PPSSPP_CONF_OPTS += -DVULKAN=OFF
 endif
 
 # enable x11/vulkan interface only if xorg
 ifeq ($(BR2_PACKAGE_XORG7),y)
-	PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
+    PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
 else
-	PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
-	PPSSPP_TARGET_CFLAGS += -DEGL_NO_X11=1 -DMESA_EGL_NO_X11_HEADERS=1
+    PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
+    PPSSPP_TARGET_CFLAGS += -DEGL_NO_X11=1 -DMESA_EGL_NO_X11_HEADERS=1
 endif
 
 # arm
 ifeq ($(BR2_arm),y)
     PPSSPP_CONF_OPTS += -DARM=ON
     PPSSPP_CONF_OPTS += -DARMV7=ON
-	PPSSPP_CONF_OPTS += -DUSING_GLES2=ON
+    PPSSPP_CONF_OPTS += -DUSING_GLES2=ON
     PPSSPP_CONF_OPTS += -DUSING_EGL=OFF
 endif
 
 ifeq ($(BR2_aarch64),y)
     PPSSPP_CONF_OPTS += -DARM=ON
-	PPSSPP_CONF_OPTS += -DARM64=ON
-	PPSSPP_CONF_OPTS += -DUSING_GLES2=ON
+    PPSSPP_CONF_OPTS += -DARM64=ON
+    PPSSPP_CONF_OPTS += -DUSING_GLES2=ON
     PPSSPP_CONF_OPTS += -DUSING_EGL=OFF
 endif
 
 # x86
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
-	PPSSPP_CONF_OPTS += -DX86=ON
+    PPSSPP_CONF_OPTS += -DX86=ON
 endif
 
 # x86_64
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-	PPSSPP_CONF_OPTS += -DX86_64=ON
+    PPSSPP_CONF_OPTS += -DX86_64=ON
 endif
 
 # rpi4 and panfrost vulkan support
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_PANFROST_MESA3D),y)
-	PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
+    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
 else
-	PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
+    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
 endif
 
 # rockchip
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-# In order to support the custom resolution patch, permissive compile is needed
-PPSSPP_TARGET_CFLAGS += -fpermissive
+    # In order to support the custom resolution patch, permissive compile is needed
+    PPSSPP_TARGET_CFLAGS += -fpermissive
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
-PPSSPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali
+    PPSSPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali
 endif
 
 PPSSPP_CONF_OPTS += -DCMAKE_C_FLAGS="$(PPSSPP_TARGET_CFLAGS)" -DCMAKE_CXX_FLAGS="$(PPSSPP_TARGET_CFLAGS)"
@@ -100,13 +100,13 @@ endef
 PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_UPDATE_INCLUDES
 
 define PPSSPP_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin
-	$(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(TARGET_DIR)/usr/bin/PPSSPP
-	mkdir -p $(TARGET_DIR)/usr/share/ppsspp
-	cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
-	# Fix PSP font for languages like Japanese
-	# (font from https://github.com/minoryorg/Noto-Sans-CJK-JP/blob/master/fonts/)
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ppsspp/NotoSansCJKjp-DemiLight.ttf $(TARGET_DIR)/usr/share/ppsspp/PPSSPP/Roboto-Condensed.ttf
+    mkdir -p $(TARGET_DIR)/usr/bin
+    $(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(TARGET_DIR)/usr/bin/PPSSPP
+    mkdir -p $(TARGET_DIR)/usr/share/ppsspp
+    cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
+    # Fix PSP font for languages like Japanese
+    # (font from https://github.com/minoryorg/Noto-Sans-CJK-JP/blob/master/fonts/)
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ppsspp/NotoSansCJKjp-DemiLight.ttf $(TARGET_DIR)/usr/share/ppsspp/PPSSPP/Roboto-Condensed.ttf
 endef
 
 $(eval $(cmake-package))

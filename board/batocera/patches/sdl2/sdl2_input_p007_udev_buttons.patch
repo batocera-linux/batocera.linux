@@ -1,17 +1,21 @@
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index 827a7e7..9f82452 100644
+index ee5b9f8..3f23249 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -877,9 +877,9 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
+@@ -897,16 +897,6 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
+             if (test_bit(i, keybit)) {
  #ifdef DEBUG_INPUT_EVENTS
-                 printf("Joystick has button: 0x%x\n", i);
- #endif
+                 SDL_Log("Joystick has button: 0x%x\n", i);
+-#endif
 -                joystick->hwdata->key_map[i] = joystick->nbuttons;
 -                joystick->hwdata->has_key[i] = SDL_TRUE;
 -                ++joystick->nbuttons;
-+                //joystick->hwdata->key_map[i] = joystick->nbuttons;
-+                //joystick->hwdata->has_key[i] = SDL_TRUE;
-+                //++joystick->nbuttons;
-             }
-         }
-         for (i = 0; i < ABS_MISC; ++i) {
+-            }
+-        }
+-        for (i = 0; i < BTN_JOYSTICK; ++i) {
+-            if (test_bit(i, keybit)) {
+-#ifdef DEBUG_INPUT_EVENTS
+-                SDL_Log("Joystick has button: 0x%x\n", i);
+ #endif
+                 joystick->hwdata->key_map[i] = joystick->nbuttons;
+                 joystick->hwdata->has_key[i] = SDL_TRUE;

@@ -2,10 +2,12 @@ default:
   emulator:
   core:
   options:
+    hud_support:    true
     videomode:      default
     ratio:          auto
     video_threaded: false
     smooth:         true
+    shaderset:      sharp-bilinear-simple
     rewind:         false
     bezel:          consoles
     forceNoBezel:   false
@@ -391,6 +393,9 @@ thomson:
 tic80:
   emulator: libretro
   core:     tic80
+triforce:
+  emulator: dolphin_triforce
+  core:     dolphin_triforce
 tyrquake:
   emulator: libretro
   core:     tyrquake
