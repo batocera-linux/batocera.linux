@@ -1,0 +1,106 @@
+#Stage Clear
+Special/stageclear.ogg
+
+#Main Menu
+Menu/menu.ogg
+
+#Tournament Menu
+Menu/tournamentmenu.ogg
+
+#Tournament Over
+Special/tournamentover.ogg
+
+
+#These music files will be used for the music categories listed.  In
+#addition, all files places in subdirectories labeled "Land",
+#"Underground", etc will be read into those categories as well.
+
+[Land]
+smb3level1.ogg
+M2_Level1.ogg
+
+[Underground]
+M1_Underground.ogg
+M3_Boss.ogg
+
+[Underwater]
+M3_Underwater.ogg
+
+[Castle]
+M3_Boss.ogg
+
+#These are not needed (see ReadMe.txt), because they have the same
+#tracks as the above 4 categories, but I included them for easy editing
+#purposes.
+
+[Platforms]
+smb3level1.ogg
+M2_Level1.ogg
+
+[Ghost]
+M1_Underground.ogg
+M3_Boss.ogg
+
+[Bonus]
+M3_Underwater.ogg
+
+[Battle]
+M3_Boss.ogg
+
+[Desert]
+smb3level1.ogg
+M2_Level1.ogg
+
+[Clouds]
+smb3level1.ogg
+M2_Level1.ogg
+
+[Snow]
+smb3level1.ogg
+M2_Level1.ogg
+
+
+#These are special tags that allow you to force which music is played
+#for a specific map or a specific background.  Please use these 
+#in moderation as the map makers choose music categories that are 
+#approprate for their maps.  
+
+#When adding a map, you must use the map's display name and it must be
+#capitalized.  For example, if the name of the map is "two52_cave.map",
+#please use "Cave" as the map name below
+[Maps]
+#0smw,smb3level1.ogg,M2_Level1.ogg
+
+[Backgrounds]
+#Land_Classic.png,smb3level1.ogg,M2_Level1.ogg
+
+
+#Mapping of how the old backgrounds map to the new music categories by
+#default.
+
+#0: Land
+#1: Castle
+#2: Land
+#3: Ghost
+#4: Underground
+#5: Platforms
+#6: Castle
+#7: Platforms
+#8: Land
+#9: Land
+#10: Underground
+#11: Land
+#12: Platforms
+#13: Land
+#14: Land
+#15: Battle
+#16: Platforms
+#17: Underground
+#18: Underground
+#19: Bonus
+#20: Platforms
+#21: Battle
+#22: Bonus
+#23: Castle
+#24: Land
+#25: Platforms
