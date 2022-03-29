@@ -18,7 +18,7 @@ endef
 
 define LIBRETRO_SUPERBROSWAR_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/superbroswar_libretro.so \
-	$(TARGET_DIR)/usr/lib/superbroswar/superbroswar_libretro.so
+	$(TARGET_DIR)/usr/lib/libretro/superbroswar_libretro.so
 endef
 
 $(eval $(generic-package))
