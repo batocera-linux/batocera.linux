@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# version - 5.0-16185 - Commits on Mar 27, 2022
-DOLPHIN_EMU_VERSION = 56b5c677c06f714282c2b9464715c68f17d98205
+# version - 5.0-16195 - Commits on Mar 29, 2022
+DOLPHIN_EMU_VERSION = 0204b119e904d358ba7084d18a84f77929a5f7e5
 DOLPHIN_EMU_SITE = $(call github,dolphin-emu,dolphin,$(DOLPHIN_EMU_VERSION))
 DOLPHIN_EMU_LICENSE = GPLv2+
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl bluez5_utils hidapi xz host-xz
@@ -33,5 +33,12 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_PANFROST_MESA3D)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_VULKAN=ON
 endif
+
+define DOLPHIN_EMU_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-emu/*.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+DOLPHIN_EMU_POST_INSTALL_TARGET_HOOKS = DOLPHIN_EMU_EVMAPY
 
 $(eval $(cmake-package))
