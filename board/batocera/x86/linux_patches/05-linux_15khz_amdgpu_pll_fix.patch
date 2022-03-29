@@ -1,0 +1,16 @@
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+index 4eaec446b49d..0e6832a8c487 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+@@ -88,9 +88,9 @@ static void amdgpu_pll_get_fb_ref_div(struct amdgpu_device *adev, unsigned int n
+ 
+ 	/* limit reference * post divider to a maximum */
+ 	if (adev->family == AMDGPU_FAMILY_SI)
+-		ref_div_max = min(100 / post_div, ref_div_max);
++		ref_div_max = max(min(100 / post_div, ref_div_max), 1u);
+ 	else
+-		ref_div_max = min(128 / post_div, ref_div_max);
++		ref_div_max = max(min(128 / post_div, ref_div_max), 1u);
+ 
+ 	/* get matching reference and feedback divider */
+ 	*ref_div = min(max(DIV_ROUND_CLOSEST(den, post_div), 1u), ref_div_max);
