@@ -74,7 +74,7 @@ do
     shift
 done
 
-test ${GRABMODE} = 1 && INPUTS=${INPUTS} grab
+test ${GRABMODE} = 1 && INPUTS="${INPUTS} grab"
 
 echo "evsieve ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
 evsieve ${INPUTS} persist=exit --output name="${NEWNAME}"
