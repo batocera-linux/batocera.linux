@@ -96,12 +96,10 @@ case ${1,,} in
 
         ES_PID=$(check_esrun)
         if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
-            kill $ES_PID
-            smart_wait 0 $ES_PID
+            /etc/init.d/S31emulationstation stop
             shutdown -h now
         elif [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
-            kill $ES_PID
-            smart_wait 0 $ES_PID
+            /etc/init.d/S31emulationstation stop
             reboot
         fi
     ;;

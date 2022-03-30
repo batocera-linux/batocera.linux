@@ -60,7 +60,6 @@ class CitraGenerator(Generator):
             os.remove(citraConfigFile)          # Force removing qt-config.ini
             citraConfig.read(citraConfigFile)
 
-
         ## [LAYOUT]
         if not citraConfig.has_section("Layout"):
             citraConfig.add_section("Layout")
@@ -75,7 +74,6 @@ class CitraGenerator(Generator):
             citraConfig.set("Layout", "swap_screen",   "false")
             citraConfig.set("Layout", "layout_option", "4")
 
-
         ## [SYSTEM]
         if not citraConfig.has_section("System"):
             citraConfig.add_section("System")
@@ -88,7 +86,6 @@ class CitraGenerator(Generator):
         # Language
         citraConfig.set("System", "region_value", str(getCitraLangFromEnvironment()))
 
-
         ## [UI]
         if not citraConfig.has_section("UI"):
             citraConfig.add_section("UI")
@@ -99,13 +96,18 @@ class CitraGenerator(Generator):
             citraConfig.set("UI", "showStatusBar",    "true")
         else:
             citraConfig.set("UI", "fullscreen",       "true")
+        # Batocera - Defaults
         citraConfig.set("UI", "displayTitleBars", "false")
         citraConfig.set("UI", "displaytitlebars", "false") # Emulator Bug
         citraConfig.set("UI", "firstStart",       "false")
+        citraConfig.set("UI", "hideInactiveMouse", "true")
+        citraConfig.set("UI", "enable_discord_presence", "false")
+        citraConfig.set("UI", "firstStart", "false")
+        # Remove pop-up prompt on start
+        citraConfig.set("UI", "calloutFlags", "1")
         # Close without confirmation
         citraConfig.set("UI", "confirmClose",     "false")
         citraConfig.set("UI", "confirmclose",     "false") # Emulator Bug
-
 
         ## [RENDERER]
         if not citraConfig.has_section("Renderer"):
@@ -131,7 +133,11 @@ class CitraGenerator(Generator):
             citraConfig.set("Renderer", "use_frame_limit", "false")
         else:
             citraConfig.set("Renderer", "use_frame_limit", "true")
-
+        
+        ## [WEB SERVICE]
+        if not citraConfig.has_section("WebService"):
+            citraConfig.add_section("WebService")
+        citraConfig.set("WebService", "enable_telemetry",  "false")
 
         ## [UTILITY]
         if not citraConfig.has_section("Utility"):
@@ -153,7 +159,6 @@ class CitraGenerator(Generator):
         else:
             citraConfig.set("Utility", "custom_textures",  "false")
             citraConfig.set("Utility", "preload_textures", "false")
-
 
         ## [CONTROLS]
         if not citraConfig.has_section("Controls"):

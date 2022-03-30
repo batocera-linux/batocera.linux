@@ -1,10 +1,10 @@
 ################################################################################
 #
-# VITAQUAKE2
+# libretro-vitaquake2
 #
 ################################################################################
-# Version.: Commits on Dec 08, 2021
-LIBRETRO_VITAQUAKE2_VERSION = b9846734bc2d6ca4db7f734e745e844b809d7701
+# Version: Commits on Dec 15, 2021
+LIBRETRO_VITAQUAKE2_VERSION = aed906ef107eb684e18d8889c9bf383cc7b77b84
 LIBRETRO_VITAQUAKE2_SITE = $(call github,libretro,vitaquake2,$(LIBRETRO_VITAQUAKE2_VERSION))
 LIBRETRO_VITAQUAKE2_LICENSE = GPL-2.0
 
@@ -30,4 +30,3 @@ define LIBRETRO_VITAQUAKE2_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
-

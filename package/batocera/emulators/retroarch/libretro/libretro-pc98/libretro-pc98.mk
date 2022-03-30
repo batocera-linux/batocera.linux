@@ -1,6 +1,6 @@
 ################################################################################
 #
-# LIBRETRO PC98
+# libretro-pc98
 #
 ################################################################################
 # Version.: Commits on May 10, 2020
@@ -35,7 +35,7 @@ LIBRETRO_PC98_PLATFORM = odroid
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 LIBRETRO_PC98_PLATFORM = odroidxu
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_RG552),y)
 LIBRETRO_PC98_PLATFORM = RK3399
 
 else ifeq ($(BR2_aarch64),y)

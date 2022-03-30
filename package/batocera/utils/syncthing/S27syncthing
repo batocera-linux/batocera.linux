@@ -31,7 +31,7 @@ start() {
 	fi
 	
 	echo -n "Starting syncthing service: "
-	start-stop-daemon -S -b -q -x /usr/bin/syncthing -- serve --no-browser --logflags=2 --logfile=$SYNCTHING_LOG --home=$SYNCTHING_CONFIG --gui-address=$SYNCTHING_GUI
+	start-stop-daemon -S -b -q -x /usr/bin/syncthing -- serve --no-upgrade --no-browser --logflags=2 --logfile=$SYNCTHING_LOG --home=$SYNCTHING_CONFIG --gui-address=$SYNCTHING_GUI
 	RETVAL=$?
 	echo "done"
 

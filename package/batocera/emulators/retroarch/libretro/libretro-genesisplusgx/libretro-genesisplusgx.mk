@@ -1,10 +1,10 @@
 ################################################################################
 #
-# GENESISPLUSGX
+# libretro-genesisplusgx
 #
 ################################################################################
-# Version.: Commits on Oct 24, 2021
-LIBRETRO_GENESISPLUSGX_VERSION = 236e783ec258089a500174e1be550041a4e4850b
+# Version: Commits on Feb 26, 2022
+LIBRETRO_GENESISPLUSGX_VERSION = 7d4ae7da0c9cbfb6dc7cc8caac701ee948db53c5
 LIBRETRO_GENESISPLUSGX_SITE = $(call github,ekeeke,Genesis-Plus-GX,$(LIBRETRO_GENESISPLUSGX_VERSION))
 LIBRETRO_GENESISPLUSGX_LICENSE = Non-commercial
 
@@ -24,6 +24,9 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
 LIBRETRO_GENESISPLUSGX_PLATFORM += rpi2
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
+LIBRETRO_GENESISPLUSGX_PLATFORM += rpi2
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
 LIBRETRO_GENESISPLUSGX_PLATFORM += rpi2
 endif
 

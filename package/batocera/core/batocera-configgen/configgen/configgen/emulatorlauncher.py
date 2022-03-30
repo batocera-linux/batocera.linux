@@ -17,6 +17,7 @@ from generators.mupen.mupenGenerator import MupenGenerator
 from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
 from generators.flycast.flycastGenerator import FlycastGenerator
 from generators.dolphin.dolphinGenerator import DolphinGenerator
+from generators.dolphin_triforce.dolphinTriforceGenerator import DolphinTriforceGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
@@ -61,6 +62,7 @@ from generators.sonicretro.sonicretroGenerator import SonicRetroGenerator
 from generators.gsplus.gsplusGenerator import GSplusGenerator
 from generators.fba2x.fba2xGenerator import Fba2xGenerator
 from generators.yuzu.yuzuGenerator import YuzuGenerator
+from generators.ryujinx.ryujinxGenerator import RyujinxGenerator
 from generators.samcoupe.samcoupeGenerator import SamcoupeGenerator
 from generators.abuse.abuseGenerator import AbuseGenerator
 from generators.cdogs.cdogsGenerator import CdogsGenerator
@@ -95,6 +97,7 @@ generators = {
     'amiberry': AmiberryGenerator(),
     'flycast': FlycastGenerator(),
     'dolphin': DolphinGenerator(),
+    'dolphin_triforce': DolphinTriforceGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
@@ -134,6 +137,7 @@ generators = {
     'gsplus': GSplusGenerator(),
     'fba2x': Fba2xGenerator(),
     'yuzu': YuzuGenerator(),
+    'ryujinx': RyujinxGenerator(),
     'samcoupe': SamcoupeGenerator(),
     'abuse': AbuseGenerator(),
     'cdogs': CdogsGenerator(),

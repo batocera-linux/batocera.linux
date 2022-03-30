@@ -1,10 +1,10 @@
 ##########################################################™™######################
 #
-# MAME
+# libretro-mame
 #
 ################################################################################
-# Version: Commits on Dec 29, 2021 (0.238)
-LIBRETRO_MAME_VERSION = 2f9c793a77222ae46266c71f64d491cf7870dc1e
+# Version: Commits on Mar 18, 2022 (v0.241)
+LIBRETRO_MAME_VERSION = 012bb32965339b7ad7c0328a5fb6b35806d39fb2
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 LIBRETRO_MAME_DEPENDENCIES = retroarch
@@ -40,16 +40,42 @@ define LIBRETRO_MAME_BUILD_CMDS
 		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
 		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="arcade" RETRO=1         \
 		OSD="retro" DEBUG=0
+
+	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
+		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
+		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
+		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
+		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="mess" RETRO=1         \
+		OSD="retro" DEBUG=0
+
+	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
+		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
+		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
+		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
+		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="virtual" RETRO=1         \
+		OSD="retro" DEBUG=0
 endef
 
 define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame_libretro.so
+	$(INSTALL) -D $(@D)/mess_libretro.so \
+		$(TARGET_DIR)/usr/lib/libretro/mess_libretro.so
+	$(INSTALL) -D $(@D)/mamevirtual_libretro.so \
+		$(TARGET_DIR)/usr/lib/libretro/mamevirtual_libretro.so
+	mkdir -p $(TARGET_DIR)/usr/share/lr-mame/hash
+	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
 		$(STAGING_DIR)/usr/lib/libretro/mame_libretro.so
+	$(INSTALL) -D $(@D)/mess_libretro.so \
+		$(STAGING_DIR)/usr/lib/libretro/mess_libretro.so
+	$(INSTALL) -D $(@D)/mamevirtual_libretro.so \
+		$(STAGING_DIR)/usr/lib/libretro/mamevirtual_libretro.so
+	mkdir -p $(STAGING_DIR)/usr/share/lr-mame/hash
+	cp -R $(@D)/hash $(STAGING_DIR)/usr/share/lr-mame
 endef
 
 $(eval $(generic-package))

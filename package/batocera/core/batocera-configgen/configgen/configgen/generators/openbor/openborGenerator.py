@@ -30,15 +30,13 @@ class OpenborGenerator(Generator):
         eslog.debug("core taken is {}".format(core))
 
         # config file
-        configfilename = "config6510.ini"
+        configfilename = "config7142.ini"
         if core == "openbor4432":
             configfilename = "config4432.ini"
-        elif core == "openbor6330":
-            configfilename = "config6330.ini"
         elif core == "openbor6412":
             configfilename = "config6412.ini"
-        elif core == "openbor6510":
-            configfilename = "config6510.ini"
+        elif core == "openbor7142":
+            configfilename = "config7142.ini"
 
         config = UnixSettings(configDir + "/" + configfilename, separator='')
 
@@ -70,27 +68,23 @@ class OpenborGenerator(Generator):
     def executeCore(core, rom):
         if core == "openbor4432":
             commandArray = ["OpenBOR4432", rom]
-        elif core == "openbor6330":
-            commandArray = ["OpenBOR6330", rom]
         elif core == "openbor6412":
             commandArray = ["OpenBOR6412", rom]
-        elif core == "openbor6510":
-            commandArray = ["OpenBOR6510", rom]
+        elif core == "openbor7142":
+            commandArray = ["OpenBOR7142", rom]
         else:
-            commandArray = ["OpenBOR6510", rom]
+            commandArray = ["OpenBOR7142", rom]
         return Command.Command(array=commandArray)
 
     @staticmethod
     def guessCore(rom):
         versionstr = re.search(r'\[.*([0-9]{4})\]+', os.path.basename(rom))
         if versionstr == None:
-            return "openbor6510"
+            return "openbor7142"
         version = int(versionstr.group(1))
 
         if version < 6000:
             return "openbor4432"
-        if version < 6400:
-            return "openbor6330"
         if version < 6500:
             return "openbor6412"
-        return "openbor6510"
+        return "openbor7142"

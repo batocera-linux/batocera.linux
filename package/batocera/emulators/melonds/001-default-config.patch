@@ -1,51 +1,72 @@
 diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
-index 30babaf..7a29042 100644
+index 7a0ec698ba..0b06f8f120 100644
 --- a/src/frontend/qt_sdl/Config.cpp
 +++ b/src/frontend/qt_sdl/Config.cpp
-@@ -233,28 +233,28 @@ ConfigEntry ConfigFile[] =
+@@ -140,7 +140,7 @@ int DSiBatteryLevel;
+ bool DSiBatteryCharging;
  
-     {"ExternalBIOSEnable", 0, &ExternalBIOSEnable, 0, NULL, 0},
  
--    {"BIOS9Path", 1, BIOS9Path, 0, "", 1023},
--    {"BIOS7Path", 1, BIOS7Path, 0, "", 1023},
--    {"FirmwarePath", 1, FirmwarePath, 0, "", 1023},
-+    {"BIOS9Path", 1, BIOS9Path, 0, "/userdata/bios/biosnds9.bin", 1023},
-+    {"BIOS7Path", 1, BIOS7Path, 0, "/userdata/bios/biosnds7.bin", 1023},
-+    {"FirmwarePath", 1, FirmwarePath, 0, "/userdata/bios/dsfirmware.bin", 1023},
+-const char* kConfigFile = "melonDS.ini";
++const char* kConfigFile = "/userdata/system/configs/melonDS/melonDS.ini";
  
--    {"DSiBIOS9Path", 1, DSiBIOS9Path, 0, "", 1023},
--    {"DSiBIOS7Path", 1, DSiBIOS7Path, 0, "", 1023},
--    {"DSiFirmwarePath", 1, DSiFirmwarePath, 0, "", 1023},
--    {"DSiNANDPath", 1, DSiNANDPath, 0, "", 1023},
-+    {"DSiBIOS9Path", 1, DSiBIOS9Path, 0, "/userdata/bios/biosdsi9.bin", 1023},
-+    {"DSiBIOS7Path", 1, DSiBIOS7Path, 0, "/userdata/bios/biosdsi7.bin", 1023},
-+    {"DSiFirmwarePath", 1, DSiFirmwarePath, 0, "/userdata/bios/dsifirmware.bin", 1023},
-+    {"DSiNANDPath", 1, DSiNANDPath, 0, "/userdata/bios/dsinand.bin", 1023},
+ ConfigEntry ConfigFile[] =
+ {
+@@ -241,28 +241,28 @@ ConfigEntry ConfigFile[] =
  
-     {"DLDIEnable", 0, &DLDIEnable, 0, NULL, 0},
-     {"DLDISDPath", 1, DLDISDPath, 0, "dldi.bin", 1023},
-     {"DLDISize", 0, &DLDISize, 0, NULL, 0},
-     {"DLDIReadOnly", 0, &DLDIReadOnly, 0, NULL, 0},
-     {"DLDIFolderSync", 0, &DLDIFolderSync, 0, NULL, 0},
--    {"DLDIFolderPath", 1, DLDIFolderPath, 0, "", 1023},
-+    {"DLDIFolderPath", 1, DLDIFolderPath, 0, "/userdata/saves/melonds", 1023},
+     {"ExternalBIOSEnable", 1, &ExternalBIOSEnable, false},
  
-     {"DSiSDEnable", 0, &DSiSDEnable, 0, NULL, 0},
-     {"DSiSDPath", 1, DSiSDPath, 0, "dsisd.bin", 1023},
-     {"DSiSDSize", 0, &DSiSDSize, 0, NULL, 0},
-     {"DSiSDReadOnly", 0, &DSiSDReadOnly, 0, NULL, 0},
-     {"DSiSDFolderSync", 0, &DSiSDFolderSync, 0, NULL, 0},
--    {"DSiSDFolderPath", 1, DSiSDFolderPath, 0, "", 1023},
-+    {"DSiSDFolderPath", 1, DSiSDFolderPath, 0, "/userdata/saves/melonds", 1023},
+-    {"BIOS9Path", 2, &BIOS9Path, (std::string)""},
+-    {"BIOS7Path", 2, &BIOS7Path, (std::string)""},
+-    {"FirmwarePath", 2, &FirmwarePath, (std::string)""},
++    {"BIOS9Path", 2, &BIOS9Path, (std::string)"/userdata/bios/biosnds9.bin"},
++    {"BIOS7Path", 2, &BIOS7Path, (std::string)"/userdata/bios/biosnds7.bin"},
++    {"FirmwarePath", 2, &FirmwarePath, (std::string)"/userdata/bios/dsfirmware.bin"},
  
-     {"FirmwareOverrideSettings", 0, &FirmwareOverrideSettings, false, NULL, 0},
-     {"FirmwareUsername", 1, FirmwareUsername, 0, "melonDS", 63},
-@@ -276,7 +276,7 @@ ConfigEntry ConfigFile[] =
-     {"AudioBitrate", 0, &AudioBitrate, 0, NULL, 0},
-     {"AudioVolume", 0, &AudioVolume, 256, NULL, 0},
-     {"MicInputType", 0, &MicInputType, 1, NULL, 0},
--    {"MicWavPath", 1, MicWavPath, 0, "", 1023},
-+    {"MicWavPath", 1, MicWavPath, 0, "/userdata/saves/melonds", 1023},
+-    {"DSiBIOS9Path", 2, &DSiBIOS9Path, (std::string)""},
+-    {"DSiBIOS7Path", 2, &DSiBIOS7Path, (std::string)""},
+-    {"DSiFirmwarePath", 2, &DSiFirmwarePath, (std::string)""},
+-    {"DSiNANDPath", 2, &DSiNANDPath, (std::string)""},
++    {"DSiBIOS9Path", 2, &DSiBIOS9Path, (std::string)"/userdata/bios/biosdsi9.bin"},
++    {"DSiBIOS7Path", 2, &DSiBIOS7Path, (std::string)"/userdata/bios/biosdsi7.bin"},
++    {"DSiFirmwarePath", 2, &DSiFirmwarePath, (std::string)"/userdata/bios/dsifirmware.bin"},
++    {"DSiNANDPath", 2, &DSiNANDPath, (std::string)"/userdata/bios/dsinand.bin"},
  
-     {"LastROMFolder", 1, LastROMFolder, 0, "", 1023},
+     {"DLDIEnable", 1, &DLDIEnable, false},
+     {"DLDISDPath", 2, &DLDISDPath, (std::string)"dldi.bin"},
+     {"DLDISize", 0, &DLDISize, 0},
+     {"DLDIReadOnly", 1, &DLDIReadOnly, false},
+     {"DLDIFolderSync", 1, &DLDIFolderSync, false},
+-    {"DLDIFolderPath", 2, &DLDIFolderPath, (std::string)""},
++    {"DLDIFolderPath", 2, &DLDIFolderPath, (std::string)"/userdata/saves/melonds"},
  
+     {"DSiSDEnable", 1, &DSiSDEnable, false},
+     {"DSiSDPath", 2, &DSiSDPath, (std::string)"dsisd.bin"},
+     {"DSiSDSize", 0, &DSiSDSize, 0},
+     {"DSiSDReadOnly", 1, &DSiSDReadOnly, false},
+     {"DSiSDFolderSync", 1, &DSiSDFolderSync, false},
+-    {"DSiSDFolderPath", 2, &DSiSDFolderPath, (std::string)""},
++    {"DSiSDFolderPath", 2, &DSiSDFolderPath, (std::string)"/userdata/saves/melonds"},
+ 
+     {"FirmwareOverrideSettings", 1, &FirmwareOverrideSettings, false},
+     {"FirmwareUsername", 2, &FirmwareUsername, (std::string)"melonDS"},
+@@ -284,7 +284,7 @@ ConfigEntry ConfigFile[] =
+     {"AudioBitrate", 0, &AudioBitrate, 0},
+     {"AudioVolume", 0, &AudioVolume, 256},
+     {"MicInputType", 0, &MicInputType, 1},
+-    {"MicWavPath", 2, &MicWavPath, (std::string)""},
++    {"MicWavPath", 2, &MicWavPath, (std::string)"/userdata/saves/melonds"},
+ 
+     {"LastROMFolder", 2, &LastROMFolder, (std::string)""},
+ 
+@@ -299,9 +299,9 @@ ConfigEntry ConfigFile[] =
+     {"RecentROM_8", 2, &RecentROMList[8], (std::string)""},
+     {"RecentROM_9", 2, &RecentROMList[9], (std::string)""},
+ 
+-    {"SaveFilePath", 2, &SaveFilePath, (std::string)""},
+-    {"SavestatePath", 2, &SavestatePath, (std::string)""},
+-    {"CheatFilePath", 2, &CheatFilePath, (std::string)""},
++    {"SaveFilePath", 2, &SaveFilePath, (std::string)"/userdata/saves/melonds"},
++    {"SavestatePath", 2, &SavestatePath, (std::string)"/userdata/saves/melonds"},
++    {"CheatFilePath", 2, &CheatFilePath, (std::string)"/userdata/cht/cheats/melonDS"},
+ 
+     {"EnableCheats", 1, &EnableCheats, false},

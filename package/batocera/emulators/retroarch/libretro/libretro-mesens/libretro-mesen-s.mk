@@ -1,9 +1,9 @@
 ################################################################################
 #
-# MESEN-S
+# libretro-mesen-s
 #
 ################################################################################
-# Version.: 0.4.0
+# Version: Commits on May 11, 2021
 LIBRETRO_MESENS_VERSION = 42eb0e8ad346608dae86feb8a04833d16ad21541
 LIBRETRO_MESENS_SITE = $(call github,libretro,Mesen-S,$(LIBRETRO_MESENS_VERSION))
 LIBRETRO_MESENS_LICENSE = GPL

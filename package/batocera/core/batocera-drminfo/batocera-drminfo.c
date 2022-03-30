@@ -282,7 +282,9 @@ static char* conntype2str(uint32_t type) {
   if(type == DRM_MODE_CONNECTOR_eDP)   	     return "EDP";
   if(type == DRM_MODE_CONNECTOR_VIRTUAL)     return "VIRTUAL";
   if(type == DRM_MODE_CONNECTOR_DSI) 	     return "DSI";
+#ifndef HAVE_NOT_DRM_MODE_CONNECTOR_DPI
   if(type == DRM_MODE_CONNECTOR_DPI) 	     return "DPI";
+#endif
   //if(type == DRM_MODE_CONNECTOR_WRITEBACK)   return "WRITEBACK";
   //if(type == DRM_MODE_CONNECTOR_SPI)         return "SPI";
   return "OUTPUT"; // unknown

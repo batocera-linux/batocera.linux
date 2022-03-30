@@ -4,6 +4,8 @@ import os
 import configparser
 from settings.unixSettings import UnixSettings
 import batoceraFiles
+import csv
+from pathlib import Path
 
 def generateCoreSettings(coreSettings, system, rom):
 
@@ -628,8 +630,8 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('o2em_low_pass_filter', '"disabled"')
             coreSettings.save('o2em_low_pass_range',  '"0"')
 
-    # MAME 0.225
-    if (system.config['core'] == 'mame'):
+    # MAME/MESS/MAMEVirtual
+    if (system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]):
         # Lightgun mode
         coreSettings.save('mame_lightgun_mode', '"lightgun"')
         # Enable cheats
@@ -644,6 +646,21 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mame_altres', system.config['mame_altres'])
         else:
             coreSettings.save('mame_altres', '"640x480"')
+        # Disable controller profiling
+        coreSettings.save('mame_buttons_profiles', '"disabled"')
+        # Software Lists (MESS)
+        coreSettings.save('mame_softlists_enable', '"disabled"')
+        coreSettings.save('mame_softlists_auto_media', '"disabled"')
+        # Enable config reading (for controls)
+        coreSettings.save('mame_read_config', '"enabled"')
+        # Use CLI (via CMD file) to boot
+        coreSettings.save('mame_boot_from_cli', '"enabled"')
+        # Activate mouse for Mac & Archimedes
+        if system.name in [ 'macintosh', 'archimedes' ]:
+            coreSettings.save('mame_mouse_enable', '"enabled"')
+        else:
+            coreSettings.save('mame_mouse_enable', '"disabled"')
+
 
     # MAME 2003 Plus
     if (system.config['core'] == 'mame078plus'):
@@ -1128,6 +1145,9 @@ def generateCoreSettings(coreSettings, system, rom):
                 elif system.config['gb_colorization'] == 'GB - SmartColor':              #Smart Coloring --> Gambatte's most colorful/appropriate color
                     coreSettings.save('gambatte_gb_colorization',     '"auto"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                elif system.config['gb_colorization'] == 'custom':                       #Custom Palettes --> Use the custom palettes in the bios/palettes folder
+                    coreSettings.save('gambatte_gb_colorization',     '"custom"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 else:                                                                    #User Selection
                     coreSettings.save('gambatte_gb_colorization',     '"internal"')           
                     coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
@@ -1316,6 +1336,62 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('fceumm_overclocking', '"disabled"')
 
+    if (system.config['core'] == 'mesen'):
+        if system.isOptSet('mesen_region'):
+            coreSettings.save('mesen_region', '"' + system.config['mesen_region'] + '"')
+        else:
+            coreSettings.save('mesen_region', '"Auto"')
+        # Screen rotation (for homebrew)
+        if system.isOptSet('mesen_screenrotation'):
+            coreSettings.save('mesen_screenrotation', '"' + system.config['mesen_screenrotation'] + '"')
+        else:
+            coreSettings.save('mesen_screenrotation', '"None"')
+        # NTSC Filter
+        if system.isOptSet('mesen_ntsc_filter'):
+            coreSettings.save('mesen_ntsc_filter', '"' + system.config['mesen_ntsc_filter'] + '"')
+        else:
+            coreSettings.save('mesen_ntsc_filter', '"Disabled"')
+        # Sprite limit removal
+        if system.isOptSet('mesen_nospritelimit'):
+            coreSettings.save('mesen_nospritelimit', '"' + system.config['mesen_nospritelimit'] + '"')
+        else:
+            coreSettings.save('mesen_nospritelimit', '"disabled"')
+        # Palette
+        if system.isOptSet('mesen_palette'):
+            coreSettings.save('mesen_palette', '"' + system.config['mesen_palette'] + '"')
+        else:
+            coreSettings.save('mesen_palette', '"Default"')
+        # HD texture replacements
+        if system.isOptSet('mesen_hdpacks'):
+            coreSettings.save('mesen_hdpacks', '"' + system.config['mesen_hdpacks'] + '"')
+        else:
+            coreSettings.save('mesen_hdpacks', '"enabled"')
+        # FDS Auto-insert side A
+        if system.isOptSet('mesen_fdsautoinsertdisk'):
+            coreSettings.save('mesen_fdsautoinsertdisk', + system.config['mesen_fdsautoinsertdisk'] + '"')
+        else:
+            coreSettings.save('mesen_fdsautoinsertdisk', '"disabled"')
+        # FDS Fast forward floppy disk loading
+        if system.isOptSet('mesen_fdsfastforwardload'):
+            coreSettings.save('mesen_fdsfastforwardload', + system.config['mesen_fdsautoinsertdisk'] + '"')
+        else:
+            coreSettings.save('mesen_fdsfastforwardload', '"disabled"')
+        # RAM init state (speedrunning)
+        if system.isOptSet('mesen_ramstate'):
+            coreSettings.save('mesen_ramstate', '"' + system.config['mesen_ramstate'] + '"')
+        else:
+            coreSettings.save('mesen_ramstate', '"All 0s (Default)"')
+        # NES CPU Overclock
+        if system.isOptSet('mesen_overclock'):
+            coreSettings.save('mesen_overclock', '"' + system.config['mesen_overclock'] + '"')
+        else:
+            coreSettings.save('mesen_overclock', '"None"')
+        # Overclocking type (compatibility)
+        if system.isOptSet('mesen_overclock_type'):
+            coreSettings.save('mesen_overclock_type', '"' + system.config['mesen_overclock_type'] + '"')
+        else:
+            coreSettings.save('mesen_overclock_type', '"Before NMI (Recommended)"')
+
     # Nintendo Pokemon Mini
     if (system.config['core'] == 'pokemini'):
         # LCD Filter
@@ -1388,37 +1464,37 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('mesen-s_sgb2'):
             coreSettings.save('mesen-s_sgb2', '"' + system.config['mesen-s_sgb2'] + '"')
         else:
-            coreSettings.save('msesn-s_sgb2', '"enabled"')
+            coreSettings.save('mesen-s_sgb2', '"enabled"')
         # NTSC Filter
         if system.isOptSet('mesen-s_ntsc_filter'):
             coreSettings.save('mesen-s_ntsc_filter', '"' + system.config['mesen-s_ntsc_filter'] + '"')
         else:
-            coreSettings.save('msesn-s_ntsc_filter', '"disabled"')
+            coreSettings.save('mesen-s_ntsc_filter', '"disabled"')
         # Blending for high-res mode (Kirby's Dream Land 3 pseudo-transparency)
         if system.isOptSet('mesen-s_blend_high_res'):
             coreSettings.save('mesen-s_blend_high_res', '"' + system.config['mesen-s_blend_high_res'] + '"')
         else:
-            coreSettings.save('msesn-s_blend_high_res', '"disabled"')
+            coreSettings.save('mesen-s_blend_high_res', '"disabled"')
         # Change sound interpolation to cubic
         if system.isOptSet('mesen-s_cubic_interpolation'):
             coreSettings.save('mesen-s_cubic_interpolation', '"' + system.config['mesen-s_cubic_interpolation'] + '"')
         else:
-            coreSettings.save('msesn-s_cubic_interpolation', '"disabled"')
+            coreSettings.save('mesen-s_cubic_interpolation', '"disabled"')
         # SNES CPU Overclock
         if system.isOptSet('mesen-s_overclock'):
             coreSettings.save('mesen-s_overclock', '"' + system.config['mesen-s_overclock'] + '"')
         else:
-            coreSettings.save('msesn-s_overclock', '"None"')
+            coreSettings.save('mesen-s_overclock', '"None"')
         # Overclocking type (compatibility)
         if system.isOptSet('mesen-s_overclock_type'):
             coreSettings.save('mesen-s_overclock_type', '"' + system.config['mesen-s_overclock_type'] + '"')
         else:
-            coreSettings.save('msesn-s_overclock_type', '"Before NMI"')
+            coreSettings.save('mesen-s_overclock_type', '"Before NMI"')
         # SuperFX Overclock
         if system.isOptSet('mesen-s_superfx_overclock'):
             coreSettings.save('mesen-s_superfx_overclock', '"' + system.config['mesen-s_superfx_overclock'] + '"')
         else:
-            coreSettings.save('msesn-s_superfx_overclock', '"100%"')
+            coreSettings.save('mesen-s_superfx_overclock', '"100%"')
 
     # Nintendo Virtual Boy
     if (system.config['core'] == 'vb'):

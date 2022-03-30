@@ -37,7 +37,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] == "mame":
+                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
                     lightgun = False
                 else:
                     lightgun = True
@@ -204,8 +204,10 @@ class LibretroGenerator(Generator):
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
         renderConfig = system.renderconfig
         gameSpecial = videoMode.getGameSpecial(system.name, rom)
+        gameShader = None
         if gameSpecial == "0":
-            gameShader = renderConfig['shader']
+            if 'shader' in renderConfig:
+                gameShader = renderConfig['shader']
         else:
             if ('shader-' + str(gameSpecial)) in renderConfig:
                 gameShader = renderConfig['shader-' + str(gameSpecial)]
@@ -251,25 +253,40 @@ class LibretroGenerator(Generator):
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
+        # Use command line instead of ROM file for MAME variants
+        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+            dontAppendROM = True
+            commandArray.append("/var/run/lr-mame.cmd")
+
         if dontAppendROM == False:
             commandArray.append(rom)
             
         return Command.Command(array=commandArray)
 
 def getGFXBackend(system):
-        core = system.config['core']
         # Start with the selected option
         # Pick glcore or gl based on drivers if not selected
         if system.isOptSet("gfxbackend"):
             backend = system.config["gfxbackend"]
+            setManually = True
         else:
-            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:  
+            setManually = False
+            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:
                 backend = "glcore"
             else:
                 backend = "gl"
-        # If set to glcore or gl, override setting for certain cores that require one or the other
-        if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
-            backend = "glcore"
-        if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3' ]:
+
+        # Retroarch has flipped between using opengl or gl, correct the setting here if needed.
+        if backend == "opengl":
             backend = "gl"
+
+        # Don't change based on core if manually selected.
+        if not setManually:
+            # If set to glcore or gl, override setting for certain cores that require one or the other
+            core = system.config['core']
+            if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
+                backend = "glcore"
+            if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'openlara', 'boom3' ]:
+                backend = "gl"
+
         return backend

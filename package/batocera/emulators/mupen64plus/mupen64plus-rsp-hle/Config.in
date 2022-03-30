@@ -1,0 +1,14 @@
+config BR2_PACKAGE_MUPEN64PLUS_RSP_HLE
+    bool "mupen64plus-rsp-hle"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_ALSA_LIB
+        help
+          RSP processor plugin for the Mupen64Plus v2.0 project.
+		  This plugin is based on the Mupen64 HLE RSP plugin v0.2 with Azimers code by Hacktarux
+
+	  https://github.com/mupen64plus/
+	  https://github.com/mupen64plus/mupen64plus-rsp-hle
+
+comment "MUPEN64PLUS_RSP_HLE needs a toolchain w/ C++, ALSA and SDL2"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2 || !BR2_PACKAGE_ALSA_LIB

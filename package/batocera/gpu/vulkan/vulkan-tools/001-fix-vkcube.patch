@@ -28,9 +28,9 @@
                         cube.cpp
                         ${PROJECT_SOURCE_DIR}/cube/cube.vert
 @@ -222,7 +222,7 @@
-                        cube.vert.inc
-                        cube.frag.inc)
+                        ${OPTIONAL_WAYLAND_DATA_FILES})
          target_link_libraries(vkcubepp Vulkan::Vulkan)
+         target_compile_definitions(vkcubepp PUBLIC ${CUBE_PLATFORM})
 -    endif()
 +    #endif()
  else()

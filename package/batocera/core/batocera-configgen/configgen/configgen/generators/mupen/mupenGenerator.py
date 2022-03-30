@@ -17,6 +17,10 @@ class MupenGenerator(Generator):
         iniConfig.optionxform = str
         if os.path.exists(batoceraFiles.mupenCustom):
             iniConfig.read(batoceraFiles.mupenCustom)
+        else:
+            if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
+                os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
+            iniConfig.read(batoceraFiles.mupenCustom)
 
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
         mupenControllers.setControllersConfig(iniConfig, playersControllers, system.config)
@@ -34,6 +38,6 @@ class MupenGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if config["ratio"] == "16/9":
+        if ("mupen64plus_ratio" in config and config["mupen64plus_ratio"] == "16/9") or ("mupen64plus_ratio" not in config and "ratio" in config and config["ratio"] == "16/9"):
             return 16/9
         return 4/3

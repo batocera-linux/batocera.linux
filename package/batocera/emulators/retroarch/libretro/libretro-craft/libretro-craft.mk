@@ -1,9 +1,9 @@
 ################################################################################
 #
-# CRAFT
+# libretro-craft
 #
 ################################################################################
-# Version.: Commits on Mar 17, 2021
+# Version: Commits on Mar 17, 2021
 LIBRETRO_CRAFT_VERSION = d0de2c6d3ff9d971d5c23c796bcb208498f635a9
 LIBRETRO_CRAFT_SITE = $(call github,libretro,Craft,$(LIBRETRO_CRAFT_VERSION))
 LIBRETRO_CRAFT_LICENSE = MIT

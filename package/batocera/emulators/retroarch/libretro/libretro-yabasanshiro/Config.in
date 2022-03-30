@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_YABASANSHIRO
-        bool "libretro-yabasanshiro"
+    bool "libretro-yabasanshiro"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro YABASANSHIRO emulator core.
+      help
+        A libretro YABASANSHIRO emulator core.
 
 	  http://www.libretro.com
 

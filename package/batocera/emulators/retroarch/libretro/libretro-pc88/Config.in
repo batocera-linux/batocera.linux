@@ -2,9 +2,8 @@ config BR2_PACKAGE_LIBRETRO_PC88
     bool "libretro-pc88"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-        
-		help
-          A port of QUASI88, a PC-8800 series emulator by Showzoh Fukunaga, to the libretro API.
+      help
+        A port of QUASI88, a PC-8800 series emulator by Showzoh Fukunaga, to the libretro API.
 
 	  http://www.libretro.com
 

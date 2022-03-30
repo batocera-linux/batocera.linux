@@ -20,7 +20,7 @@ PIPEWIRECONF_SUFFIX =
 endif
 
 define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/lib/python3.9 \
+	mkdir -p $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) \
 		$(TARGET_DIR)/usr/bin \
 		$(TARGET_DIR)/usr/share/sounds \
 		$(TARGET_DIR)/usr/share/batocera/alsa \

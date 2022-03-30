@@ -24,6 +24,13 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
 endif
 
+# dolphin-triforce
+ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin-triforce
+  BATOCERA_DESKTOPAPPS_APPS    += dolphin-triforce-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += dolphin-triforce.png
+endif
+
 # duckstation
 ifeq ($(BR2_PACKAGE_DUCKSTATION),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-duckstation
@@ -106,11 +113,25 @@ ifeq ($(BR2_PACKAGE_YUZU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += yuzu.png
 endif
 
+# ryujinx
+ifeq ($(BR2_PACKAGE_RYUJINX),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-ryujinx
+  BATOCERA_DESKTOPAPPS_APPS    += ryujinx-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += ryujinx.png
+endif
+
 # demul
 ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-demul
   BATOCERA_DESKTOPAPPS_APPS    += demul-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += demul.png
+endif
+
+# melonds
+ifeq ($(BR2_PACKAGE_DEMUL),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-melonds
+  BATOCERA_DESKTOPAPPS_APPS    += melonds-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
 endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS

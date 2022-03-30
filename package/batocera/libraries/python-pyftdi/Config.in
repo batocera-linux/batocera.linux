@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_PYFTDI
+	bool "python-pyftdi"
+	select BR2_PACKAGE_PYTHON_SERIAL
+	select BR2_PACKAGE_PYTHON_PYUSB
+	help
+	  FTDI device driver (pure Python)
+
+	  https://pypi.org/project/pyftdi

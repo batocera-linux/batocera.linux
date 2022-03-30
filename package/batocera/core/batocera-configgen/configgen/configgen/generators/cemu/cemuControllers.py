@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import batoceraFiles
 import os
@@ -8,132 +7,247 @@ import codecs
 from Emulator import Emulator
 import configparser
 import json
+import xml.etree.cElementTree as ET
+import xml.dom.minidom
 
 cemuConfig  = batoceraFiles.CONF + '/cemu'
 
-# Create the controller configuration file
+#  -=Cemu XInput mappings=-
+
+# A =                Button 13
+# B =                Button 12
+# X =                Button 15
+# Y =                Button 14
+# Left Shoulder =    Button 8
+# Right Shoulder =   Button 9
+# Left Trigger =     Button 42
+# Right Trigger =    Button 43
+# + / Start =        Button 4
+# - / Select =       Button 5
+
+# Left Axis Click =  Button 6
+# Left Axis Up =     Button 39
+# Left Axis Down =   Button 45
+# Left Axis Left =   Button 44
+# Left Axis Right =  Button 38
+
+# Rigth Axis Click = Button 7
+# Rigth Axis Up =    Button 41
+# Rigth Axis Down =  Button 47 
+# Rigth Axis Left =  Button 46
+# Rigth Axis Right = Button 40
+
+# D-Pad Up =         Button 0
+# D-Pad Down =       Button 1
+# D-Pad Left =       Button 2
+# D-pad Right =      Button 3
+
 # First controller will ALWAYS BE A Gamepad
 # Additional controllers will either be a Pro Controller or Wiimote
+
 def generateControllerConfig(system, playersControllers, rom):
+    # -= Wii U controller types =-
+
+    # xml mapping number: cemu expected XInput button number
+
+    # Wii U GamePad Controller (excludes blow mic & show screen)
+    wiiUGamePadButtons = {
+            "1":  "13",
+            "2":  "12",
+            "3":  "15",
+            "4":  "14",
+            "5":  "8",
+            "6":  "9",
+            "7":  "42",
+            "8":  "43",
+            "9":  "4",
+            "10": "5",
+            "11": "0",
+            "12": "1",
+            "13": "2",
+            "14": "3",
+            "15": "6",
+            "16": "7",
+            "17": "39",
+            "18": "45",
+            "19": "44",
+            "20": "38",
+            "21": "41",
+            "22": "47",
+            "23": "46",
+            "24": "40"
+    }
+    # Wii U Pro Controller (no mapping 11)
+    wiiUProButtons = {
+            "1":  "13",
+            "2":  "12",
+            "3":  "15",
+            "4":  "14",
+            "5":  "8",
+            "6":  "9",
+            "7":  "42",
+            "8":  "43",
+            "9":  "4",
+            "10": "5",
+            "12": "0",
+            "13": "1",
+            "14": "2",
+            "15": "3",
+            "16": "6",
+            "17": "7",
+            "18": "39",
+            "19": "45",
+            "20": "44",
+            "21": "38",
+            "22": "41",
+            "23": "47",
+            "24": "46",
+            "25": "40"
+    }
+    # Wii U Classic Controller (no mapping 11)
+    wiiUClassicButtons = {
+            "1":  "13",
+            "2":  "12",
+            "3":  "15",
+            "4":  "14",
+            "5":  "8",
+            "6":  "9",
+            "7":  "42",
+            "8":  "43",
+            "9":  "4",
+            "10": "5",
+            "12": "0",
+            "13": "1",
+            "14": "2",
+            "15": "3",
+            "16": "39",
+            "17": "45",
+            "18": "44",
+            "19": "38",
+            "20": "41",
+            "21": "47",
+            "22": "46",
+            "23": "40"
+    }
+    # Wiimote, enable MotionPlus & Nunchuck (no home button)
+    wiiMoteButtons = {
+            "1":  "13",
+            "2":  "43",
+            "3":  "15",
+            "4":  "12",
+            "5":  "42",
+            "6":  "8",
+            "7":  "4",
+            "8":  "5",
+            "9":  "0",
+            "10": "1",
+            "11": "2",
+            "12": "3",
+            "13": "39",            
+            "14": "45",
+            "15": "44",
+            "16": "38"
+    }
     # Make controller directory if it doesn't exist
     if not path.isdir(cemuConfig + "/controllerProfiles"):
         os.mkdir(cemuConfig + "/controllerProfiles")
-
     # Purge old controller files
     for counter in range(0,8):
-        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(counter) +".txt")
+        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(counter) +".xml")
         if os.path.isfile(configFileName):
             os.remove(configFileName)
-
-
-    ## CONTROLLER: Create the config files
-    #  We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
+    ## CONTROLLER: Create the config xml files
     nplayer = 0
+    m_encoding = 'UTF-8'
     for playercontroller, pad in sorted(playersControllers.items()):
-        cemuSettings = configparser.ConfigParser(interpolation=None)
-        cemuSettings.optionxform = str
-
-
-        ## [GENERAL]
-        if not cemuSettings.has_section("General"):
-            cemuSettings.add_section("General")
-
-        cemuSettings.set("General", "api", "XInput")
-        cemuSettings.set("General", "controller", str(nplayer))
-
+        root = ET.Element("emulated_controller")
+        doc = ET.SubElement(root, "type")      
         # Controller combination type
         wiimote = 0
+        mappings = wiiUProButtons # default
         if system.isOptSet('controller_combination') and system.config["controller_combination"] != '0':
             if system.config["controller_combination"] == '1':
                 if (nplayer == 0):
-                    cemuSettings.set("General", "emulate", "Wii U GamePad")
+                    doc.text = "Wii U GamePad"
+                    mappings = wiiUGamePadButtons
                     addIndex = 0
                 else:
-                    cemuSettings.set("General", "emulate", "Wiimote")
+                    doc.text = "Wiimote"
+                    mappings = wiiMoteButtons
                     wiimote = 1
             elif system.config["controller_combination"] == '2':
-                cemuSettings.set("General", "emulate", "Wii U Pro Controller")
+                doc.text = "Wii U Pro Controller"
+                mappings = wiiUProButtons
                 addIndex = 1
             else:
-                cemuSettings.set("General", "emulate", "Wiimote")
+                doc.text = "Wiimote"
+                mappings = wiiMoteButtons
                 wiimote = 1
+            if system.config["controller_combination"] == '4':
+                doc.text = "Wii U Classic Controller"
+                mappings = wiiUClassicButtons
+                addIndex = 1
         else:
             if (nplayer == 0):
-                cemuSettings.set("General", "emulate", "Wii U GamePad")
+                doc.text = "Wii U GamePad"
+                mappings = wiiUGamePadButtons
                 addIndex = 0
             else:
-                cemuSettings.set("General", "emulate", "Wii U Pro Controller")
+                doc.text = "Wii U Pro Controller"
+                mappings = wiiUProButtons
                 addIndex = 1
 
-
-        ## [CONTROLLER]
-        if not cemuSettings.has_section("Controller"):
-            cemuSettings.add_section("Controller")
-
+        doc = ET.SubElement(root, "controller")
+        ctrl = ET.SubElement(doc, "api")
+        ctrl.text = "XInput" # use XInput for now 
+        ctrl = ET.SubElement(doc, "uuid") #uuid is the XInput controller number
+        ctrl.text = str(nplayer)
+        ctrl = ET.SubElement(doc, "display_name")
+        ctrl.text = "Controller {}".format((nplayer)+1) # use controller number for display name
         # Rumble
-        if system.isOptSet("rumble") and system.config["rumble"] == "0":
-            cemuSettings.set("Controller", "rumble", "0")
+        if system.isOptSet("rumble"):
+            ctrl = ET.SubElement(doc, "rumble")
+            ctrl.text = system.config["rumble"] # % chosen
         else:
-            cemuSettings.set("Controller", "rumble", "0.5")
+            ctrl = ET.SubElement(doc, "rumble")
+            ctrl.text = "0" # none
+        # axis
+        ctrl = ET.SubElement(doc, "axis")
+        axis = ET.SubElement(ctrl, "deadzone")
+        axis.text = "0.15" # XInput is 0.15 by default
+        axis = ET.SubElement(ctrl, "range")
+        axis.text = "1"
+        # rotation
+        ctrl = ET.SubElement(doc, "rotation")
+        rotation = ET.SubElement(ctrl, "deadzone")
+        rotation.text = "0.15"
+        rotation = ET.SubElement(ctrl, "range")
+        rotation.text = "1"
+        # trigger
+        ctrl = ET.SubElement(doc, "trigger")
+        trigger = ET.SubElement(ctrl, "deadzone")
+        trigger.text = "0.15"
+        trigger = ET.SubElement(ctrl, "range")
+        trigger.text = "1"
+        # apply the appropriate mappings
+        ctrl = ET.SubElement(doc, "mappings")
+        for mapping in mappings:
+            ctrlmapping = ET.SubElement(ctrl, "entry")
+            mp = ET.SubElement(ctrlmapping, "mapping")
+            mp.text = mapping
+            btn = ET.SubElement(ctrlmapping, "button")
+            btn.text = mappings[mapping]
 
-        cemuSettings.set("Controller", "leftRange", "1")
-        cemuSettings.set("Controller", "rightRange", "1")
-        cemuSettings.set("Controller", "leftDeadzone", ".2")
-        cemuSettings.set("Controller", "rightDeadzone", ".2")
-        cemuSettings.set("Controller", "buttonThreshold", ".5")
+        # now format the xml file so it's all pirdy...
+        dom = xml.dom.minidom.parseString(ET.tostring(root))
+        xml_string = dom.toprettyxml()
+        part1, part2 = xml_string.split('?>')
 
-        # Wiimote (Assumes a sideways wiimote configuration)
-        if wiimote == 1:
-            cemuSettings.set("Controller", "1", "button_4")             # A
-            cemuSettings.set("Controller", "2", "button_8")             # B
-            cemuSettings.set("Controller", "3", "button_1")             # 1
-            cemuSettings.set("Controller", "4", "button_2")             # 2
-            cemuSettings.set("Controller", "5", "button_800000000")     # C
-            cemuSettings.set("Controller", "6", "button_100000000")     # Z
-            cemuSettings.set("Controller", "7", "button_40")            # +
-            cemuSettings.set("Controller", "8", "button_80")            # -
-            cemuSettings.set("Controller", "9", "button_10000000")      # Up (Binds to Left on Controller)
-            cemuSettings.set("Controller", "10", "button_20000000")     # Down (Binds to Right on Controller)
-            cemuSettings.set("Controller", "11", "button_8000000")      # Left (Binds to Down on Controller)
-            cemuSettings.set("Controller", "12", "button_4000000")      # Right (Binds to Up on Controller
-            cemuSettings.set("Controller", "13", "button_400000000")    # Nunchuk Up (RStick)
-            cemuSettings.set("Controller", "14", "button_10000000000")  # Nunchuk Down (RStick)
-            cemuSettings.set("Controller", "15", "button_8000000000")   # Nunchuk Left (RStick)
-            cemuSettings.set("Controller", "16", "button_200000000")    # Nunchuk Right (RStick)
-            cemuSettings.set("Controller", "17", "0")                   # Home
-            cemuSettings.set("Controller", "nunchuck", "1")
-            cemuSettings.set("Controller", "motionPlus", "0")
-        # Wii U GamePad / Wii U Pro Controller
-        else:
-            cemuSettings.set("Controller", "1", "button_2")                         # A
-            cemuSettings.set("Controller", "2", "button_1")                         # B
-            cemuSettings.set("Controller", "3", "button_8")                         # X
-            cemuSettings.set("Controller", "4", "button_4")                         # Y
-            cemuSettings.set("Controller", "5", "button_10")                        # L
-            cemuSettings.set("Controller", "6", "button_20")                        # R
-            cemuSettings.set("Controller", "7", "button_100000000")                 # L2
-            cemuSettings.set("Controller", "8", "button_800000000")                 # R2
-            cemuSettings.set("Controller", "9", "button_40")                        # Start
-            cemuSettings.set("Controller", "10", "button_80")                       # Select
-            cemuSettings.set("Controller", str(11 + addIndex), "button_4000000")    # Up
-            cemuSettings.set("Controller", str(12 + addIndex), "button_8000000")    # Down
-            cemuSettings.set("Controller", str(13 + addIndex), "button_10000000")   # Left
-            cemuSettings.set("Controller", str(14 + addIndex), "button_20000000")   # Right
-            cemuSettings.set("Controller", str(15 + addIndex), "button_100")        # LStick Click
-            cemuSettings.set("Controller", str(16 + addIndex), "button_200")        # RStick Click
-            cemuSettings.set("Controller", str(17 + addIndex), "button_80000000")   # LStick Up
-            cemuSettings.set("Controller", str(18 + addIndex), "button_2000000000") # LStick Down
-            cemuSettings.set("Controller", str(19 + addIndex), "button_1000000000") # LStick Left
-            cemuSettings.set("Controller", str(20 + addIndex), "button_40000000")   # LStick Right
-            cemuSettings.set("Controller", str(21 + addIndex), "button_400000000")  # RStick Up
-            cemuSettings.set("Controller", str(22 + addIndex), "button_10000000000")# RStick Down
-            cemuSettings.set("Controller", str(23 + addIndex), "button_8000000000") # RStick Left
-            cemuSettings.set("Controller", str(24 + addIndex), "button_200000000")  # RStick Right
-            cemuSettings.set("Controller", str(25 + addIndex), "button_100")        # Blow Mic
+        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(nplayer) + ".xml")
 
-        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(nplayer) + ".txt")
+        # Save Cemu controller profiles      
+        with open(configFileName, 'w') as xfile:
+            xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
+            xfile.close()
 
-        # Save Cemu controller profiles
-        with open(configFileName, 'w') as configfile:
-            cemuSettings.write(configfile)
         nplayer+=1

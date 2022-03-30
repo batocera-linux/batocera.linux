@@ -1,0 +1,49 @@
+#Version
+1.8.0.0
+
+#Note: Only one music file may be specified for each of the categories.
+#      This is somewhat more limited than the game music packs
+
+#Special music
+#Bonus plays in bonus houses
+[Bonus]
+bonushouse.ogg
+
+#Sleep plays when a music box world item is used
+[Sleep]
+sleep.ogg
+
+#Standard world categories that are settable from the world editor
+[Grass]
+grassland.ogg
+
+[Desert]
+desert.ogg
+
+[Water]
+water.ogg
+
+[Giant]
+giant.ogg
+
+[Sky]
+sky.ogg
+
+[Ice]
+ice.ogg
+
+[Pipe]
+pipe.ogg
+
+[Dark]
+bowser.ogg
+
+[Space]
+space.ogg
+
+#The section below is for selecting music for a specific world
+#The format is "WorldName,MusicFile".  Only one music file can be
+#specified for any given map.  The map name should be only the actual
+#name and no extension.  Capitalization should match the map exactly.
+[Worlds]
+SMB3,grassland.ogg

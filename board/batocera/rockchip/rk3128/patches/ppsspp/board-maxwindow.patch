@@ -1,0 +1,14 @@
+diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
+index 7b0ee13..78d72df 100644
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -776,7 +776,8 @@ int main(int argc, char *argv[]) {
+ #if !defined(MOBILE_DEVICE)
+ 			case SDL_WINDOWEVENT:
+ 				switch (event.window.event) {
+-				case SDL_WINDOWEVENT_SIZE_CHANGED:  // better than RESIZED, more general
++				//case SDL_WINDOWEVENT_SIZE_CHANGED:  // better than RESIZED, more general
++				case SDL_WINDOWEVENT_RESIZED:
+ 				{
+ 					int new_width = event.window.data1;
+ 					int new_height = event.window.data2;

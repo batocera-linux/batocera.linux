@@ -60,8 +60,9 @@ mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
 mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
 
-moonlightCustom = CONF+'/moonlight'
+moonlightCustom = CONF + '/moonlight'
 moonlightConfigFile = moonlightCustom + '/moonlight.conf'
+moonlightStagingConfigFile = moonlightCustom + '/staging/moonlight.conf'
 moonlightGamelist = moonlightCustom + '/gamelist.txt'
 moonlightMapping = dict()
 moonlightMapping[1] = moonlightCustom + '/mappingP1.conf'
@@ -74,6 +75,13 @@ dolphinData    = SAVES + "/dolphin-emu"
 dolphinIni     = dolphinConfig + '/Dolphin.ini'
 dolphinGfxIni  = dolphinConfig + '/GFX.ini'
 dolphinSYSCONF = dolphinData + "/Wii/shared2/sys/SYSCONF"
+
+dolphinTriforceConfig  = CONF + "/dolphin-triforce"
+dolphinTriforceData    = SAVES + "/dolphin-triforce"
+dolphinTriforceIni     = dolphinTriforceConfig + '/Config/Dolphin.ini'
+dolphinTriforceGfxIni  = dolphinTriforceConfig + '/Config/gfx_opengl.ini'
+dolphinTriforceLoggerIni    = dolphinTriforceConfig + '/Config/Logger.ini'
+dolphinTriforceGameSettings = dolphinTriforceConfig + "/GameSettings"
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
@@ -112,14 +120,14 @@ daphneSaves = SAVES + '/daphne'
 linappleConfigFile = CONF + '/linapple/linapple.conf'
 linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
 linapplaSaves = SAVES + '/apple2'
-linappleMasterDSK = '/usr/lib/python3.9/site-packages/configgen/datainit/linapple/Master.dsk'
+linappleMasterDSK = '/usr/share/batocera/configgen/data/linapple/Master.dsk'
 
 flycastCustom = CONF + '/flycast'
 flycastMapping = flycastCustom + '/mappings'
 flycastConfig = flycastCustom + '/emu.cfg'
 flycastSaves = SAVES + '/dreamcast'
 flycastBios = BIOS
-flycastVMUBlank = '/usr/lib/python3.9/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
+flycastVMUBlank = '/usr/share/batocera/configgen/data/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
 

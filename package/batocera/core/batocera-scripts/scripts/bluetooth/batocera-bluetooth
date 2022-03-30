@@ -4,13 +4,11 @@ ACTION=$1
 
 do_help() {
     echo "${1} list" >&2
-    echo "${1} list_blacklistable" >&2
     echo "${1} trust" >&2
-    echo "${1} blacklist <device address> <device name>" >&2
-    echo "${1} unblacklist <device address>" >&2
     echo "${1} remove <device address>" >&2
     echo "${1} save" >&2
     echo "${1} restore" >&2
+    echo "${1} live_devices" >&2
 }
 
 do_save() {
@@ -36,13 +34,6 @@ do_list() {
 	done
 }
 
-do_list_blacklistable() {
-    (
-	cat /var/lib/bluetooth/bluetooth_blacklisted | sed -e s+"^\([^ ]*\) \(.*\)$"+"\1 1 \2"+
-	cat /var/run/bluetooth_seen | sed -e s+"^\([^ ]*\) \(.*\)$"+"\1 0 \2"+
-    ) | sort -r -t " " -k 1,1 -u
-}
-
 do_remove() {
     DEV="${1}"
 
@@ -57,21 +48,18 @@ do_remove() {
     return 0
 }
 
-do_blacklist() {
-    BLADDR=$1
-    BLNAME=$2
+do_devlist() {
+    if ! > /var/run/bt_listing
+    then
+	exit 1
+    fi
 
-    echo "${BLADDR} ${BLNAME}" >> "/var/lib/bluetooth/bluetooth_blacklisted"
-    do_remove "${BLADDR}"
-    do_save # save
-}
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    trap "kill -12 ${NPID} ; rm -f /var/run/bt_listing" 2 3
 
-do_unblacklist() {
-    BLADDR=$1
-
-    grep -vE "^${BLADDR} " "/var/lib/bluetooth/bluetooth_blacklisted" > "/var/lib/bluetooth/bluetooth_blacklisted.tmp"
-    mv "/var/lib/bluetooth/bluetooth_blacklisted.tmp" "/var/lib/bluetooth/bluetooth_blacklisted" || return 1
-    do_save # save
+    kill -10 "${NPID}"
+    # ok, not 10 lines should happen during this instant (between kill and tail)
+    tail -f /var/run/bt_listing
 }
 
 do_trust() {
@@ -83,7 +71,20 @@ do_trust() {
     LAST_MSG=$(cat "/var/run/bt_status")
 
     # empty, audio, pad
-    echo "${TRUSTTYPE}" > /var/run/bt_types || return 1
+    if test "${TRUSTTYPE}" = "audio" -o "${TRUSTTYPE}" = "pad"
+    then
+	echo "${TRUSTTYPE}" > /var/run/bt_types || return 1
+    else
+	echo > /var/run/bt_types || return 1
+    fi
+
+    # trust device
+    if echo "${TRUSTTYPE}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"
+    then
+	echo "${TRUSTTYPE}" > /var/run/bt_device || return 1
+    else
+	echo "" > /var/run/bt_device || return 1
+    fi
 
     # start discovering
     kill -10 "${NPID}"
@@ -99,7 +100,19 @@ do_trust() {
 	    LAST_MSG="${NEW_MSG}"
 	    echo "${NEW_MSG}"
 	fi
-	sleep 1
+
+	# check is in list and uniq trusting
+	if echo "${TRUSTTYPE}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"
+	then
+	    if do_list | grep -qE "^${TRUSTTYPE} "
+	    then
+		N=0
+	    fi
+	fi
+
+	# wait
+	test $N -gt 0 && sleep 1
+
 	N=$((N-1))
     done
 
@@ -111,7 +124,7 @@ do_trust() {
 
 do_starttrust() {
     NPID=$(cat /var/run/bluetooth-agent.pid)
-    test -z "${NPID}" && exit 0
+    test -z "${NPID}" && return 0
 
     # start discovering
     kill -10 "${NPID}"
@@ -119,7 +132,7 @@ do_starttrust() {
 
 do_stoptrust() {
     NPID=$(cat /var/run/bluetooth-agent.pid)
-    test -z "${NPID}" && exit 0
+    test -z "${NPID}" && return 0
 
     # stop discovering
     kill -12 "${NPID}"
@@ -131,35 +144,15 @@ case "${ACTION}" in
     "list")
 	do_list
 	;;
-    "list_blacklistable")
-	do_list_blacklistable
-	;;
     "trust")
-	do_trust
+	TRUSTTYPE=$2
+	do_trust "${TRUSTTYPE}"
 	;;
     "trust-audio")
 	do_trust audio
 	;;
     "trust-pad")
 	do_trust pad
-	;;
-    "blacklist")
-	if test $# = 3
-	then
-	    do_blacklist "${2}" "${3}" || exit 1
-	else
-	    do_help "${0}"
-	    exit 1
-	fi
-	;;
-    "unblacklist")
-	if test $# = 2
-	then
-	    do_unblacklist "${2}" || exit 1
-	else
-	    do_help "${0}"
-	    exit 1
-	fi
 	;;
     "starttrust")
 	do_starttrust
@@ -181,6 +174,9 @@ case "${ACTION}" in
 	;;
     "restore")
 	do_restore
+	;;
+    "live_devices")
+	do_devlist
 	;;
     *)
 	do_help "${0}"

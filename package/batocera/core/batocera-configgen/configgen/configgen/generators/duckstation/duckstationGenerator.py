@@ -18,7 +18,7 @@ class DuckstationGenerator(Generator):
         if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)
 
-        commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
+        commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom ]
 
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
@@ -37,6 +37,7 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "ConfirmPowerOff", "false")
         # Force Fullscreen
         settings.set("Main", "EnableFullscreenUI", "true")
+        settings.set("Main", "StartFullscreen", "true")
         # Controller backend
         settings.set("Main","ControllerBackend", "SDL")
         # Force applying game Settings fixes
@@ -83,7 +84,6 @@ class DuckstationGenerator(Generator):
             settings.set("Console", "Region", "NTSC-U")
         else:
             settings.set("Console", "Region", "Auto")
-
 
         ## [BIOS]
         if not settings.has_section("BIOS"):
@@ -148,8 +148,6 @@ class DuckstationGenerator(Generator):
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
 
-
-
         ## [DISPLAY]
         if not settings.has_section("Display"):
             settings.add_section("Display")
@@ -170,7 +168,6 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "DisplayAllFrames", "true")
         else:
             settings.set("Display", "DisplayAllFrames", "false")
-
 
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
@@ -217,7 +214,6 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("Cheevos", "Enabled",               "false")
 
-
         ## [CONTROLLERPORTS]
         if not settings.has_section("ControllerPorts"):
             settings.add_section("ControllerPorts")
@@ -226,7 +222,6 @@ class DuckstationGenerator(Generator):
             settings.set("ControllerPorts", "MultitapMode", system.config["duckstation_multitap"])
         else:
             settings.set("ControllerPorts", "MultitapMode", "Disabled")
-
 
         ## [TEXTURE REPLACEMENT]
         if not settings.has_section("TextureReplacements"):
@@ -242,10 +237,8 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
-
         ## [CONTROLLERS]
         configurePads(settings, playersControllers, system)
-
 
         ## [HOTKEYS]
         if not settings.has_section("Hotkeys"):
@@ -273,15 +266,14 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
 
-
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
+        
         env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
-
 
 def getGfxRatioFromConfig(config, gameResolution):
     #ratioIndexes = ["Auto (Game Native)", "Auto (Match Window)", "4:3", "16:9", "1:1", "1:1 PAR", "2:1 (VRAM 1:1)", "3:2", "5:4", "8:7", "16:10", "19:9", "20:9", "32:9"]
@@ -298,7 +290,6 @@ def getGfxRatioFromConfig(config, gameResolution):
         return "16:9"
 
     return "4:3"
-
 
 def configurePads(settings, playersControllers, system):
     mappings = {
@@ -338,9 +329,11 @@ def configurePads(settings, playersControllers, system):
             settings.add_section(controller)
 
         # Controller Type
+        ctrlType = "AnalogController"
         settings.set(controller, "Type", "AnalogController") # defaults to AnalogController to make dpad to joystick work by default
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
+            ctrlType = system.config["duckstation_" + controller]
 
         # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};
@@ -359,7 +352,15 @@ def configurePads(settings, playersControllers, system):
 
         for mapping in mappings:
             if mappings[mapping] in pad.inputs:
-                settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
+                # mapping workaround - for l2 & r2 if axis, require positive value
+                if mappings[mapping] == "l2" or mappings[mapping] == "r2" and ctrlType == "AnalogController":
+                    trigger=input2definition(pad.inputs[mappings[mapping]])
+                    if "Axis" in trigger:
+                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/+" + input2definition(pad.inputs[mappings[mapping]]))
+                    else:
+                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
+                else:
+                    settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
 
         controllerGunList = {'NamcoGunCon', 'NeGcon'};
         # Testing if Gun, add specific keys
@@ -382,7 +383,6 @@ def configurePads(settings, playersControllers, system):
 
         nplayer = nplayer + 1
 
-
 def input2definition(input):
     if input.type == "button":
         return "Button" + str(input.id)
@@ -399,10 +399,9 @@ def input2definition(input):
         return "Axis" + str(input.id)
     return "unknown"
 
-
 def getLangFromEnvironment():
     lang = environ['LANG'][:5]
-    availableLanguages = { "en_US": "",
+    availableLanguages = { "en_US": "en",
                            "de_DE": "de",
                            "fr_FR": "fr",
                            "es_ES": "es",
@@ -420,7 +419,6 @@ def getLangFromEnvironment():
     if lang in availableLanguages:
         return availableLanguages[lang]
     return availableLanguages["en_US"]
-
 
 def rewriteM3uFullPath(m3u):                                                                    # Rewrite a clean m3u file with valid fullpath
     # get initialm3u

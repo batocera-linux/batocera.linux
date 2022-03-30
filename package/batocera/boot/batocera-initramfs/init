@@ -2,7 +2,6 @@
 
 do_mount() {
     if mount -o ro "${1}"           /boot_root; then return 0; fi
-    if mount -o ro "LABEL=RECALBOX" /boot_root; then return 0; fi # LEGACY BOOT FOR IMAGES BURNT BEFORE 5.17
     return 1
 }
 
@@ -37,7 +36,6 @@ do_root() {
     if test -e /boot_root/boot/batocera.update
     then
       mount -o remount,rw /boot_root || return 1
-      rm -f /boot_root/boot/recalbox.update /boot_root/boot/recalbox # legacy cleaning
       mv /boot_root/boot/batocera.update /boot_root/boot/batocera || return 1
       # remove the overlay when updating
       if test -e /boot_root/boot/overlay
@@ -45,14 +43,6 @@ do_root() {
 	  mv /boot_root/boot/overlay /boot_root/boot/overlay.old      || return 1
       fi
       mount -o remount,ro /boot_root || return 1
-    fi
-
-    # rename the batocera-boot.conf file
-    if test -e /boot_root/recalbox-boot.conf # legacy cleaning
-    then
-	mount -o remount,rw /boot_root || return 1
-	mv /boot_root/recalbox-boot.conf /boot_root/batocera-boot.conf || return 1
-	mount -o remount,ro /boot_root || return 1
     fi
 
     # create an overlay on memory

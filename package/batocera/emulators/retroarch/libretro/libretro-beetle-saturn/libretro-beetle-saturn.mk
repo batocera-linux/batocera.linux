@@ -1,10 +1,10 @@
 ################################################################################
 #
-# BEETLE-SATURN
+# libretro-beetle-saturn
 #
 ################################################################################
-# Version.: Commits on Dec 05, 2021
-LIBRETRO_BEETLE_SATURN_VERSION = e6ba71f8bcc647b646d94dec812b24d00c41cf3f
+# Version.: Commits on Mar 20, 2022
+LIBRETRO_BEETLE_SATURN_VERSION = ae30f29e340a00b33e38df85ceaa599151a47cd7
 LIBRETRO_BEETLE_SATURN_SITE = $(call github,libretro,beetle-saturn-libretro,$(LIBRETRO_BEETLE_SATURN_VERSION))
 LIBRETRO_BEETLE_SATURN_LICENSE = GPLv2
 

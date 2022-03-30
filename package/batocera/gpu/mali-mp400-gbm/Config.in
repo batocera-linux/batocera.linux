@@ -1,0 +1,27 @@
+config BR2_PACKAGE_MALI_MP400_GBM
+	bool "mali-mp400-gbm"
+	depends on BR2_arm
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_HAS_LIBMALI
+	select BR2_PACKAGE_GBM
+	
+	help
+	  Install the binary user-space components for the ARM Mali Utgard
+	  MP400 GPU. This package requires a kernel with the ARM Mali Utgard
+	  GPU Kernel Drivers enabled.
+
+if BR2_PACKAGE_MALI_MP400_GBM
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-mp400-gbm"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-mp400-gbm"
+
+config BR2_PACKAGE_PROVIDES_LIBMALI
+	default "mali-mp400-gbm"
+
+endif
+
+comment "mali-mp400-gbm"

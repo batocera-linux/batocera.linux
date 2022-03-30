@@ -1,29 +1,26 @@
 ################################################################################
 #
-# RUFFLE
+# ruffle
 #
 ################################################################################
-# Version.: Commits on Jan 13, 2022
-RUFFLE_VERSION = 483028707f437dbe00b270fc700f4454dd60aa27
+# Version: Commits on Mar 2, 2022
+RUFFLE_VERSION = cbbdb7baa94e0996fd8696976a2fa3e1151c16f9
 RUFFLE_SITE = $(call github,ruffle-rs,ruffle,$(RUFFLE_VERSION))
 RUFFLE_LICENSE = GPLv2
 RUFFLE_DEPENDENCIES = host-rustc host-rust-bin openssl
 
-RUFFLE_CARGO_ENV = \
-    CARGO_HOME=$(HOST_DIR)/usr/share/cargo \
-    RUST_TARGET_PATH=$(HOST_DIR)/etc/rustc \
-    PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR) \
-    PKG_CONFIG_PATH=$(STAGING_DIR)/usr/lib/pkgconfig \
-    TARGET_CC=$(TARGET_CC) \
-    TARGET_CXX=$(TARGET_CXX) \
-    TARGET_LD=$(TARGET_LD)
+RUFFLE_ARGS_FOR_BUILD = -L $(STAGING_DIR) -Wl,-rpath,$(STAGING_DIR)
+
+RUFFLE_CARGO_ENV = CARGO_HOME=$(HOST_DIR)/usr/share/cargo \
+    RUSTFLAGS='$(addprefix -C linker=$(TARGET_CC) -C link-args=,$(RUFFLE_ARGS_FOR_BUILD))'
+
+RUFFLE_CARGO_MODE = $(if $(BR2_ENABLE_DEBUG),,release)
+RUFFLE_BIN_DIR = target/$(RUSTC_TARGET_NAME)/$(RUFFLE_CARGO_MODE)
 
 RUFFLE_CARGO_OPTS = \
-    --target=$(BR2_ARCH)-unknown-linux-gnu \
-    --manifest-path=$(@D)/Cargo.toml
-
-RUFFLE_CARGO_MODE = release
-RUFFLE_CARGO_OPTS += --$(RUFFLE_CARGO_MODE)
+    --$(RUFFLE_CARGO_MODE) \
+        --target=$(RUSTC_TARGET_NAME) \
+        --manifest-path=$(@D)/Cargo.toml
 
 define RUFFLE_BUILD_CMDS
     $(TARGET_MAKE_ENV) $(RUFFLE_CARGO_ENV) \
@@ -31,14 +28,14 @@ define RUFFLE_BUILD_CMDS
 endef
 
 define RUFFLE_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-
-	cp -pr $(@D)/target/x86_64-unknown-linux-gnu/release/ruffle_desktop $(TARGET_DIR)/usr/bin/ruffle
-
-	# evmap config
+    $(INSTALL) -D -m 0755 $(@D)/$(RUFFLE_BIN_DIR)/ruffle_desktop \
+             $(TARGET_DIR)/usr/bin/ruffle
+	
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ruffle/flash.ruffle.keys $(TARGET_DIR)/usr/share/evmapy
 endef
+
+#mkdir -p $(TARGET_DIR)/usr/bin
+#	cp -pr $(@D)/$(RUFFLE_BIN_DIR)/ruffle_desktop $(TARGET_DIR)/usr/bin/ruffle
 
 $(eval $(generic-package))
