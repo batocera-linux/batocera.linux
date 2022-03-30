@@ -30,6 +30,8 @@ endef
 define EVSIEVE_INSTALL_TARGET_CMDS
  	$(INSTALL) -D -m 0755 $(@D)/$(EVSIEVE_BIN_DIR)release/evsieve \
  		$(TARGET_DIR)/usr/bin/evsieve
+ 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evsieve/evsieve-merge-devices \
+ 		$(TARGET_DIR)/usr/bin/evsieve-merge-devices
 	$(TARGET_STRIP) -s $(TARGET_DIR)/usr/bin/evsieve
 endef
 
