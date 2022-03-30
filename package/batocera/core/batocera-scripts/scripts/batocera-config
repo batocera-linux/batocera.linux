@@ -39,7 +39,7 @@ bato_config_set_value () {
 
 log=/userdata/system/logs/batocera.log
 
-echo "---- batocera-config ----" >> $log
+#echo "---- batocera-config ----" >> $log
 
 if [ "$command" = "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
