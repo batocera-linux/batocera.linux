@@ -4,12 +4,12 @@
 shared:
   cfeatures:
     videomode:
-      prompt: EMULATOR VIDEO MODE
+      prompt: VIDEO MODE
       description: Force the emulator to run at this resolution.
       preset: videomodes
     ratio:
       prompt: LIBRETRO GAME ASPECT RATIO
-      description: Force the game to render in this aspect ratio.
+      description: Force the game to render in this aspect ratio. Only affects libretro cores.
       choices:
         "4/3":           "4/3"
         "16/9":          "16/9"
@@ -37,8 +37,8 @@ shared:
         "Core provided": "core"
         "Custom":        "custom"
     rewind:
-      prompt: LIBRETRO REWIND
-      description: Store past states to rewind to in realtime, very resource intensive.
+      prompt: REWIND
+      description: Store past states to rewind to in realtime, if the core supports it.
       choices:
         "On":  1
         "Off": 0
