@@ -66,7 +66,12 @@ class DolphinTriforceGenerator(Generator):
 
         # PanicHandlers displaymessages
         dolphinTriforceSettings.set("Interface", "UsePanicHandlers",        "False")
-        dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "False")
+	
+        # Disable OSD Messages
+        if system.isOptSet("osd_messages") and system.getOptBoolean("osd_messages"):
+            dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "False")
+        else:
+            dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "True")
 
         # Don't confirm at stop
         dolphinTriforceSettings.set("Interface", "ConfirmStop", "False")

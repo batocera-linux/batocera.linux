@@ -5358,6 +5358,13 @@ dolphin_triforce:
             choices:
                 "Off": 0
                 "On":  1
+        osd_messages:
+            group: ADVANCED OPTIONS
+            prompt:      DISABLE OSD MESSAGES
+            description: Disable status messages displayed by the emulator.
+            choices:
+                "Off": 0
+                "On":  1
         rumble:
             prompt:      RUMBLE
             choices:
