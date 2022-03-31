@@ -37,6 +37,7 @@ eventFromName() {
 }
 
 BYMODE="ids"
+GRABMODE=0
 
 while test "${1:0:2}" = "--"
 do
@@ -46,15 +47,15 @@ do
 	    do
 		VP=$(evtest --info "${DEV}" | grep -E '^Input device ID:' | sed -e s+"^.* vendor 0x\([0-9a-f]*\) product 0x\([0-9a-f]*\) .*$"+'\1 \2'+)
 		VN=$(evtest --info "${DEV}" | grep -E '^Input device name:' | sed -e s+"^Input device name: "++)
-		if test "${VP}" != "0 0"
-		then
-		    echo "${DEV}: ${VP} ${VN}"
-		fi
+		echo "${DEV}: ${VP} ${VN}"
 	    done
 	    exit 0
 	    ;;
 	"--by-names")
 	    BYMODE="names"
+	    ;;
+	"--grab")
+	    GRABMODE=1
 	    ;;
     esac
     shift
@@ -72,6 +73,8 @@ do
     INPUTS="${INPUTS} --input ${EVINPUT}"
     shift
 done
+
+test ${GRABMODE} = 1 && INPUTS="${INPUTS} grab"
 
 echo "evsieve ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
 evsieve ${INPUTS} persist=exit --output name="${NEWNAME}"
