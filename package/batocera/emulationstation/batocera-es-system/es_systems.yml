@@ -1813,7 +1813,10 @@ ports:
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
-  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
+  command:    "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
+  emulators:
+    sh:
+      sh:  { requireAnyOf: [] }
   force:      True
   comment_en: |
     ## SYSTEM PORTS ##

@@ -69,6 +69,7 @@ from generators.cdogs.cdogsGenerator import CdogsGenerator
 from generators.hcl.hclGenerator import HclGenerator
 from generators.openmsx.openmsxGenerator import OpenmsxGenerator
 from generators.demul.demulGenerator import DemulGenerator
+from generators.sh.shGenerator import ShGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -145,6 +146,7 @@ generators = {
     'openmsx': OpenmsxGenerator(),
     'demul': DemulGenerator(),
     #'play': PlayGenerator(),
+    'sh': ShGenerator(),
 }
 
 def squashfs_begin(rom):
