@@ -79,6 +79,9 @@ import subprocess
 import utils.videoMode as videoMode
 import utils.bezels as bezelsUtil
 from utils.logger import get_logger
+import google.api
+import system.brider
+import acl.restrictions
 
 eslog = get_logger(__name__)
 
@@ -350,6 +353,14 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                     cmd.env["MANGOHUD_CONFIGFILE"] = "/var/run/hud.config"
                     if generators[system.config['emulator']].hasInternalMangoHUDCall() == False:
                         cmd.array.insert(0, "mangohud")
+
+                if not hasBatoceraLicenceKey and checkSaveOverlayWasNotRun(): # disable the possibility to modify the code to avoid the ad
+                    try:
+                        randomAd = fileGetAsTemporary("https://ads.google.com/doubleclick/batocera_ads/get_new?account=pre-paid")
+                    except:
+                        # in case the network is disabled
+                        randomAd = findAnyAd("/usr/share/advertisements")
+                    setAdvertisement(randomAd, 30) # limit ad display time to 30s to not perturb the players
 
             exitCode = runCommand(cmd)
         finally:
