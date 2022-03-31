@@ -102,6 +102,9 @@ menu "Controllers"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/retrogame/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/uinput-joystick/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/umtool/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xone/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xpad-noone/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xow/Config.in"
 endmenu
 
 menu "Emulators"
@@ -219,6 +222,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-minivmac/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-mesen/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-same-cdi/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-superbroswar/Config.in"
      endmenu
   endmenu
 
@@ -358,7 +362,6 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/re2c/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xxd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/pacman/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xow/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wii-u-gc-adapter/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evmapy/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evsieve/Config.in"

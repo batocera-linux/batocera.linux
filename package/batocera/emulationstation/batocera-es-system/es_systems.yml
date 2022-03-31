@@ -2692,6 +2692,21 @@ vgmplay:
           Software lists recommended. QSound can be CPU-intensive.
           Use the File Manager in the MAME menu to change tracks.
 
+superbroswar:
+  name:       Super Mario War
+  manufacturer: Ports
+  release: 2006
+  hardware: port
+  extensions: [game]
+  group: ports
+  emulators:
+    libretro:
+      superbroswar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SUPERBROSWAR] }
+  comment_en: |
+    Super Mario War - smash opponents by stomping on them, in a fun multiplayer game.
+  comment_fr: |
+    Super Mario War - écrasez vos adversaires dans ce jeu multijoueurs compétitif.
+
 switch:
   name:       Switch
   manufacturer: Nintendo

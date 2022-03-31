@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# example of rule file to create a pad from 2 pads:
+# /etc/udev/rules.d
+# KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="146b", ATTRS{idProduct}=="0902", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices 'my pad 2' '2dc8 9015' '146b 902'"
+# KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="9015", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices 'my pad 2' '2dc8 9015' '146b 902'"
+
+# or by name
+# # KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="mypad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'my pad 2' 'name1' 'name2'"
+
+eventFromId() {
+    PVP=$1
+    for DEV in /dev/input/event*
+    do
+	VP=$(evtest --info "${DEV}" | grep -E '^Input device ID:' | sed -e s+"^.* vendor 0x\([0-9a-f]*\) product 0x\([0-9a-f]*\) .*$"+'\1 \2'+)
+	if test "${VP}" == "${PVP}"
+	then
+	    echo "${DEV}"
+	    return 0
+	fi
+    done
+    return 1
+}
+
+eventFromName() {
+    PVP=$1
+    for DEV in /dev/input/event*
+    do
+	VP=$(evtest --info "${DEV}" | grep -E '^Input device name:' | sed -e s+"^Input device name: \"\(.*\)\"$"+"\1"+)
+	if test "${VP}" == "${PVP}"
+	then
+	    echo "${DEV}"
+	    return 0
+	fi
+    done
+    return 1
+}
+
+BYMODE="ids"
+GRABMODE=0
+
+while test "${1:0:2}" = "--"
+do
+    case "${1}" in
+	"--list")
+	    for DEV in /dev/input/event*
+	    do
+		VP=$(evtest --info "${DEV}" | grep -E '^Input device ID:' | sed -e s+"^.* vendor 0x\([0-9a-f]*\) product 0x\([0-9a-f]*\) .*$"+'\1 \2'+)
+		VN=$(evtest --info "${DEV}" | grep -E '^Input device name:' | sed -e s+"^Input device name: "++)
+		echo "${DEV}: ${VP} ${VN}"
+	    done
+	    exit 0
+	    ;;
+	"--by-names")
+	    BYMODE="names"
+	    ;;
+	"--grab")
+	    GRABMODE=1
+	    ;;
+    esac
+    shift
+done
+
+NEWNAME=$1
+shift
+
+INPUTS=""
+while test $# -gt 0
+do
+    test "${BYMODE}" = "ids"   && EVINPUT=$(eventFromId   "${1}")
+    test "${BYMODE}" = "names" && EVINPUT=$(eventFromName "${1}")
+    test $? -ne 0 && exit 1 # id not found, exit, no action taken
+    INPUTS="${INPUTS} ${EVINPUT}"
+    shift
+done
+
+test ${GRABMODE} = 1 && INPUTS="${INPUTS} grab"
+
+echo "evsieve --input ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
+evsieve --input ${INPUTS} persist=exit --output name="${NEWNAME}"
+###

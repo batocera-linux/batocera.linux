@@ -1,0 +1,199 @@
+#Tour files are loaded onto the tournament select field on the main menu
+#They contain a set number of "tour stops" that they players play through
+#Each tour stop consists of a map, mode and goal
+#If a map is not on the user's machine, it will choose a random map
+
+#Modes
+#0 = Classic
+#1 = Frag
+#2 = Time Limit
+#3 = Jail
+#4 = Coins
+#5 = Stomp
+#6 = Eggs
+#7 = CTF
+#8 = Chicken
+#9 = Tag
+#10 = Star
+#11 = Domination
+#12 = King of the Hill
+#13 = Race
+#14 = Owned
+#15 = Frenzy
+#16 = Survival
+#17 = Greed
+#18 = Health
+#19 = Card Collection
+#20 = Phanto Chase
+#21 = Shyguy Tag
+#1000 = Pipe Minigame
+#1001 = Boss Minigame
+#1002 = Boxes Minigame
+
+#Version
+1.8.0.0
+
+#Mode Options
+#0 - Classic
+#On Kill - 0 for respawning on kill, 1 for shield and player keeps playing
+#Scoring - 0 for all kills and 1 for push kills only
+
+#1 - Frag
+#On Kill - 0 for respawning on kill, 1 for shield and player keeps playing
+#Scoring - 0 for all kills and 1 for push kills only
+
+#2 - Time Limit
+#On Kill - 0 for respawning on kill, 1 for shield and player keeps playing
+#Scoring - 0 for all kills and 1 for push kills only
+#Percent Extra Time - number between 0 and 100 indicating the percent chance extra time will appear from a powerup block
+
+#3 - Jail
+#Style - 0 for Classic, 1 for Owned and 2 for Free For All
+#Free Timer - None = 1, all other numbers greater than 1 are number of frames the jail will last (example: 620 is about 10 seconds)
+#Tag Free - 0 = Off, 1 = On
+#Percent Jail Key - number between 0 and 100 indicating the percent chance that a jail key will appear from a powerup block
+
+#4 - Coins
+#Penalty - 0 = Off, 1 = On
+#Quantity - any number greater than 0
+#Extra Coins - number between 0 and 100 indicating the percent chance extra time will appear from a powerup block
+
+#5 - Stomp
+#Rate - Relates to the number of frames between spawns. The smaller the number, the faster the spawning (example: 30 is "Very fast" and 120 is "Slow")
+#Goomba Weight - any positive number including 0, used in conjunction with the other weights below.  If goomba rate is 2 and koopa and cheep cheep is 1, then there will be a 50% chance the next enemy will be a goomba (2 + 1 + 1 = 4, 2 / 4 = 50%)
+#Koopa Weight - any positive number including 0
+#Cheep Cheep Weight - any positive number including 0
+#Red Koopa Weight - any positive number including 0
+#Spiny - any positive number including 0
+#Buzzy Beetle - any positive number including 0
+#Paragoomba - any positive number including 0
+#Parakoopa - any positive number including 0
+#Red Parakoopa - any positive number including 0
+
+#6 - Eggs
+#Red Eggs - number of red eggs to play with
+#Green Eggs - number of green eggs to play with
+#Yellow Eggs - number of yellow eggs to play with
+#Blue Eggs - number of blue eggs to play with
+#Red Yoshis - number of red yoshis to play with
+#Green Yoshis - number of green yoshis to play with
+#Yellow Yoshis - number of yellow yoshis to play with
+#Blue Yoshis - number of blue yoshis to play with
+#Explosion Timer - number of seconds until eggs explode - 0 for off any positive number is the number of seconds (5 is 5 seconds until explosion)
+
+#7 - CTF
+#Speed - 0 = stationary, -1 = stationary and no reposition, any number greater than 0 causes bases to move.  The larger the number, the faster they go.
+#Touch Return - 0 = Off, 1 = On
+#Point Move - 0 = Off, 1 = On
+#Auto Return - 0 = No auto return, any number greater than 0 is the number of frames before it returns (example: 620 is about 10 seconds)
+#Need Home - 0 = Off, 1 = On
+#Center Flag - 0 = Off, 1 = On
+
+#8 - Chicken
+#Show Target - 0 = Off, 1 = On
+#Chicken Glide - 0 = Off, 1 = On
+
+#9 - Tag
+#Touch Tag - 0 = Off, 1 = On
+
+#10 - Star
+#Time - any number greater than 0, number of seconds between scores
+#Star Type - 0 = Ztar, 1 = Shine, 2 = Multi Shine, 3 = Random
+#Percent Extra Time - number between 0 and 100 indicating the percent chance extra time will appear from a powerup block
+
+#11 - Domination
+#Quantity - 1 to 10 is that number of bases, 11 to 18 is #Players - 1 to #Players + 6, 19 on up is 2xPlayers - 3 on up
+#Relocate - 0 = Never, all other numbers greater than 1 are number of frames until the bases relocate (example: 620 is about 10 seconds)
+#Lose Bases on Death - 0 = Off, 1 = On
+#Move Bases on Death - 0 = Off, 1 = On
+#Steal Bases on Death - 0 = Off, 1 = On
+
+#12 - King of the Hill
+#Size - number greater than 1 (example: 3 for 3x3 base)
+#Relocate - 0 = never, all other numbers greater than 0 are number of frames until the zone moves (example: 620 is about 10 seconds)
+#Max Multiplier - 1 = no multiplier, all numbers 2 through 10 is the maximum multiplier that the player can achieve
+
+#13 - Race
+#Quantity - any number greater than 1
+#Speed - 0 = stationary, any number greater than 0 causes bases to move.  The larger the number, the faster they go. (2 is "Very Slow" and 6 is "Fast")
+#Penalty - 0 = none, 1 = one goal, 2 = all goals
+
+#14 - Owned - None
+
+#15 - Frenzy
+#Limit - 0 = single card (like old bob-omb mode), 1 to 5 = that number of cards, 6 on up = #players - 1 cards on up
+#Rate - 0 = instant, any number greater than 0 is the amount of time in frames that is between card spawns (example: 310 is about 5 seconds)
+#Store Shells - 0 = Off, 1 = On
+#Bob-omb Powerup Weight - any positive number including 0, used in conjunction with the other weights below.  If star powerup rate is 2 and flower is 3 and 1up is 1, then there will be a 33% chance the next powerup will be a star powerup (2 + 3 + 1 = 6, 2 / 6 = 33%)
+#Fire Flower Powerup Weight - any positive number including 0
+#Hammer Powerup Weight - any positive number including 0
+#Feather Powerup Weight - any positive number including 0
+#Boomerang Powerup Weight - any positive number including 0
+#Ice Wand Powerup Weight - any positive number including 0
+#Bomb Powerup Weight - any positive number including 0
+#Leaf Powerup Weight - any positive number including 0
+#P-Wings Powerup Weight - any positive number including 0
+#Tanooki Powerup Weight - any positive number including 0
+#POW Powerup Weight - any positive number including 0
+#MOd Powerup Weight - any positive number including 0
+#Bullet Bill Powerup Weight - any positive number including 0
+#Podoboo Powerup Weight - any positive number including 0
+#Green Shell Powerup Weight - any positive number including 0
+#Red Shell Powerup Weight - any positive number including 0
+#Spiked Shell Powerup Weight - any positive number including 0
+#Buzzy Shell Powerup Weight - any positive number including 0
+#Random Powerup Weight - any positive number including 0
+
+#16 - Survival
+#Thwomp Weight - any positive number including 0, used in conjunction with the other weights below.  If thwomp rate is 2 and podoboo and bowser fire is 1, then there will be a 50% chance the next hazard will be a thwomp (2 + 1 + 1 = 4, 2 / 4 = 50%)
+#Podoboo Weight - any positive number including 0
+#Bowser Fire Weight - any positive number including 0
+#Density - number relating how fast the hazards appear, the smaller the number the faster they come (10 is "High" and 40 is "Very Low")
+#Speed - any number greater than 0.  The larger the number, the faster they go. (2 is "Very Slow" and 8 is "Very Fast")
+#Shield - 0 = Off, 1 = On
+
+#17 - Greed
+#Coin Life - time until coins disappear - number of frames until the bases relocate (example: 620 is about 10 seconds)
+#Own Coins - 0 = player cannot collect his own coins, 1 = he can
+#Multiplier = how many coins are released from players, 1 = 0.5x normal, 2 = normal amount, 4 = 2x, 6 = 3x, ect.
+#Extra Coins - number between 0 and 100 indicating the percent chance extra time will appear from a powerup block
+
+#18 - Health
+#Start Life - Number of hearts each team starts with - number between 1 and 10
+#Max Life - Number of hearts that a team can collect up to - number between 1 and 10
+#Percent Extra Life - Percent chance a special heart powerup will spawn from a powerup block - number between 0 and 100
+
+#19 - Card Collection
+#Limit - 1 to 5 = that number of cards, 6 on up = #players - 1 cards on up
+#Rate - 0 = instant, any number greater than 0 is the amount of time in frames that is between card spawns (example: 310 is about 5 seconds)
+#Bank Time - 0 = instant, any number greater than 0 is the amount of time in frames that is between card spawns (example: 310 is about 5 seconds)
+#Card Life - 0 = no cards released, any number greater than 0 is the amount of time in frames that a card lives for (example: 310 is about 5 seconds)
+
+#20 - Phanto Chase
+#Phanto Speed - Any positive number, the bigger the greater the speed (5 is normal, 2 is very slow and 7 is very fast for example)
+#Yellow Phanto Quantity - Number of yellow phantos from 0 on up
+#Red Phanto Quantity - Number of red phantos from 0 on up
+#Green Phanto Quantity - Number of green phantos from 0 on up
+
+#21 - Shyguy Tag
+#Suicide Tag - 0 = Off, 1 = On
+#Tag Transfer - 0 = Touch Only, 1 = Kills Only, 2 = Touch and Kills
+#Free Time - 0 = instant, any number greater than 0 is the amount of time in frames (example: 310 is about 5 seconds)
+
+#1000 - Pipe Minigame
+#No Options
+
+#1001 - Boss Minigame
+#Boss Type - 0 = Hammer, 1 = Bomb, 2 = Fire
+#Difficulty - 0 = Very Easy, 1 = Easy, 2 = Moderate, 3 = Hard, 4 = Very Hard
+#Hit Points - Any number greater than 0. This is the number of hits required to kill the boss.
+
+#1002 - Boxes Minigame
+#No Options
+
+
+#Tour Stops (maximum 10 stops)
+#Map,Mode,Goal,Points,Bonus Wheel,Name,Options(see above)
+subcon,7,10,2,1,1st Stop,5,1,0,0,0,0
+0smw,16,20,1,0,2nd Stop,1,5,0,8,4,1
+treefort,15,15,1,0,3rd Stop,3,310,0,2,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0
