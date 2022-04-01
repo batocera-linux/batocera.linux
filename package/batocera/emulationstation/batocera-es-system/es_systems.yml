@@ -1271,7 +1271,7 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
-  comment_fr:
+  comment_fr: |
     ## BIOS ##
 
     - Emulateur BlueMSX (choix initial) :
@@ -1511,7 +1511,7 @@ apple2:
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
     linapple:
-      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE], incompatible_extensions:  [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
 
 saturn:
   name:       Saturn
