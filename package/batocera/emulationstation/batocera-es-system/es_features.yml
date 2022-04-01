@@ -1798,6 +1798,76 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         apple2:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":            none
+                          "Apple II cleanly cracked disks": apple2_flop_clcracked
+                          "Apple II miscellaneous disks":   apple2_flop_misc
+                          "Apple II original disks":        apple2_flop_orig
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "Cassette":       cass
+                          "Disk (Drive 1)": flop1
+                          "Disk (Drive 2)": flop2
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM GAME CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
+         apple2gs:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":              none
+                          "Apple IIgs cleanly cracked disks": apple2gs_flop_clcracked
+                          "Apple IIgs miscellaneous disks":   apple2gs_flop_misc
+                          "Apple IIgs original disks":        apple2gs_flop_orig
+                          "Apple II cleanly cracked disks":   apple2_flop_clcracked
+                          "Apple II miscellaneous disks":     apple2_flop_misc
+                          "Apple II original disks":          apple2_flop_orig
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "5 1/4 Disk (Drive 1)": flop1
+                          "5 1/4 Disk (Drive 2)": flop2
+                          "3 1/2 Disk (Drive 3)": flop3
+                          "3 1/2 Disk (Drive 4)": flop4
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM GAME CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          arcadia:
               cfeatures:
                   softList:
@@ -6625,6 +6695,76 @@ mame:
                     choices:
                         "Don't Use (Default)":   none
                         "APF M-1000 cartridges": apfm1000
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       apple2:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":            none
+                        "Apple II cleanly cracked disks": apple2_flop_clcracked
+                        "Apple II miscellaneous disks":   apple2_flop_misc
+                        "Apple II original disks":        apple2_flop_orig
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Cassette":       cass
+                        "Disk (Drive 1)": flop1
+                        "Disk (Drive 2)": flop2
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       apple2gs:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":              none
+                        "Apple IIgs cleanly cracked disks": apple2gs_flop_clcracked
+                        "Apple IIgs miscellaneous disks":   apple2gs_flop_misc
+                        "Apple IIgs original disks":        apple2gs_flop_orig
+                        "Apple II cleanly cracked disks":   apple2_flop_clcracked
+                        "Apple II miscellaneous disks":     apple2_flop_misc
+                        "Apple II original disks":          apple2_flop_orig
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "5 1/4 Disk (Drive 1)": flop1
+                        "5 1/4 Disk (Drive 2)": flop2
+                        "3 1/2 Disk (Drive 3)": flop3
+                        "3 1/2 Disk (Drive 4)": flop4
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
                 pergamecfg:
                     group: ADVANCED OPTIONS
                     prompt:      CUSTOM GAME CONFIG

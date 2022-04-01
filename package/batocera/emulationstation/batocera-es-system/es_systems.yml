@@ -1271,7 +1271,7 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
-  comment_fr: |
+  comment_fr:
     ## BIOS ##
 
     - Emulateur BlueMSX (choix initial) :
@@ -1502,12 +1502,16 @@ apple2:
   manufacturer: Apple
   release: 1977
   hardware: computer
-  extensions: [nib, do, po, dsk]
+  extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
-      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
     linapple:
-      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE], incompatible_extensions:  [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
 
 saturn:
   name:       Saturn
@@ -2291,10 +2295,14 @@ apple2gs:
   manufacturer: Apple
   release: 1986
   hardware: computer
-  extensions: [2mg, do, nib, po, dsk]
+  extensions: [2mg, do, nib, po, dsk, mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
-      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
 
 uzebox:
   name:       Uzebox
