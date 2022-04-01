@@ -1901,6 +1901,14 @@ libretro:
                           "Off": 0
          bbc:
               cfeatures:
+                  altmodel:
+                      group: ADVANCED OPTIONS
+                      prompt:      BBC MODEL
+                      description: Select model to emulate
+                      choices:
+                          "BBC Micro Model B (Default)": bbcb
+                          "BBC Master 128":              bbcm
+                          "BBC Master 512":              bbcm512
                   softList:
                       group: ADVANCED OPTIONS
                       prompt:      SOFTWARE LIST
@@ -1912,18 +1920,22 @@ libretro:
                           "Acorn BBC Micro ROMs":                   bbc_rom
                           "Acorn BBC Micro Model B disks":          bbcb_flop
                           "Acorn BBC Micro Model B Original disks": bbcb_flop_orig
+                          "Acorn BBC Master cartridges":            bbcm_cart
+                          "Acorn BBC Master disks":                 bbcm_flop
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
                       description: Type of ROM file to load.
                       choices:
-                          "Cassette":       cass
-                          "ROM (Slot 1)":   rom1
-                          "ROM (Slot 2)":   rom2
-                          "ROM (Slot 3)":   rom3
-                          "ROM (Slot 4)":   rom4
-                          "Disk (Drive 1)": flop1
-                          "Disk (Drive 2)": flop2
+                          "BBC Micro/Master Cassette":       cass
+                          "BBC Micro/Master ROM (Slot 1)":   rom1
+                          "BBC Micro ROM (Slot 2)":          rom2
+                          "BBC Micro ROM (Slot 3)":          rom3
+                          "BBC Micro ROM (Slot 4)":          rom4
+                          "BBC Micro/Master Disk (Drive 1)": flop1
+                          "BBC Micro/Master Disk (Drive 2)": flop2
+                          "BBC Master Cartridge (Slot 1)":   cart1
+                          "BBC Master Cartridge (Slot 2)":   cart2
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
