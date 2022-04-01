@@ -1979,19 +1979,22 @@ libretro:
                           "BBC Micro Model B (Default)": bbcb
                           "BBC Master 128":              bbcm
                           "BBC Master 512":              bbcm512
+                          "BBC Master Compact":          bbcmc
                   softList:
                       group: ADVANCED OPTIONS
                       prompt:      SOFTWARE LIST
                       description: Use MAME software lists to identify ROM
                       choices:
-                          "Don't Use (Default)":                    none
-                          "Acorn BBC Micro cassettes":              bbc_cass
-                          "Acorn BBC Micro hard disks":             bbc_hdd
-                          "Acorn BBC Micro ROMs":                   bbc_rom
-                          "Acorn BBC Micro Model B disks":          bbcb_flop
-                          "Acorn BBC Micro Model B Original disks": bbcb_flop_orig
-                          "Acorn BBC Master cartridges":            bbcm_cart
-                          "Acorn BBC Master disks":                 bbcm_flop
+                          "Don't Use (Default)":                                 none
+                          "Acorn BBC Micro cassettes":                           bbc_cass
+                          "Acorn BBC Micro hard disks":                          bbc_hdd
+                          "Acorn BBC Micro ROMs":                                bbc_rom
+                          "Acorn BBC Micro Model B disks":                       bbcb_flop
+                          "Acorn BBC Micro Model B Original disks":              bbcb_flop_orig
+                          "Acorn BBC Master cartridges":                         bbcm_cart
+                          "Acorn BBC Master disks":                              bbcm_flop
+                          "Acorn BBC Master Compact disks":                      bbcmc_flop
+                          "Olivetti Prodest PC 128S disks (BBC Master Compact)": pro128s_flop
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
