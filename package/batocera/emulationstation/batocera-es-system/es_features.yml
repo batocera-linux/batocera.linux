@@ -2202,6 +2202,49 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         fmtowns:
+              cfeatures:
+                  altmodel:
+                      group: ADVANCED OPTIONS
+                      prompt:      FM TOWNS MODEL
+                      description: Select model to emulate
+                      choices:
+                          "FM Towns Marty (Default)": fmtmarty
+                          "FM Towns (Model 1/2)":     fmtowns
+                          "FM Towns II UX":           fmtownsux
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":                               none
+                          "Fujitsu FM Towns CD-ROMs":                          fmtowns_cd
+                          "Fujitsu FM Towns cracked floppy disk images":       fmtowns_flop_cracked
+                          "Fujitsu FM Towns miscellaneous floppy disk images": fmtowns_flop_misc
+                          "Fujitsu FM Towns original floppy disk images":      fmtowns_flop_orig
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "Floppy Disk (Drive 1)":                     flop1
+                          "Floppy Disk (Drive 2 - Model 1/2 & II UX)": flop2
+                          "CD-ROM":                                    cdrm
+                          "Hard Drive (II UX)":                        hard1
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          gamate:
               cfeatures:
                   softList:
@@ -7090,6 +7133,49 @@ mame:
                 pergamecfg:
                     group: ADVANCED OPTIONS
                     prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       fmtowns:
+            cfeatures:
+                altmodel:
+                    group: ADVANCED OPTIONS
+                    prompt:      FM TOWNS MODEL
+                    description: Select model to emulate
+                    choices:
+                        "FM Towns Marty (Default)": fmtmarty
+                        "FM Towns (Model 1/2)":     fmtowns
+                        "FM Towns II UX":           fmtownsux
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":                               none
+                        "Fujitsu FM Towns CD-ROMs":                          fmtowns_cd
+                        "Fujitsu FM Towns cracked floppy disk images":       fmtowns_flop_cracked
+                        "Fujitsu FM Towns miscellaneous floppy disk images": fmtowns_flop_misc
+                        "Fujitsu FM Towns original floppy disk images":      fmtowns_flop_orig
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Floppy Disk (Drive 1)":                     flop1
+                        "Floppy Disk (Drive 2 - Model 1/2 & II UX)": flop2
+                        "CD-ROM":                                    cdrm
+                        "Hard Drive (II UX)":                        hard1
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM CONFIG
                     description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1

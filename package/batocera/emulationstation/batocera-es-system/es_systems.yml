@@ -1803,11 +1803,15 @@ fmtowns:
   manufacturer: Fujitsu
   release: 1987
   hardware: computer
-  extensions: [bin, m3u, cue, d88, d77, xdf, iso]
+  extensions: [bin, m3u, cue, d88, d77, xdf, iso, chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z]
   platform:   fmtowns
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [xdf, m3u] }
     tsugaru:
-      tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU] }
+      tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU], incompatible_extensions: [chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z] }
 
 ports:
   name:       Ports
