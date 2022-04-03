@@ -19,6 +19,7 @@
 #v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
 #v2.0 - add DESKPIPRO for Dekpi Pro case (RPi4) - @dmanlfc
 #v2.1 - added config switch to avoid double reboots - @dmanlfc
+#v2.2 - add PISTATION_LCD support - @dmanlfc
 #by cyperghost 11.11.2019
 
 ### Array for Powerdevices, add/remove entries here
@@ -39,7 +40,8 @@ powerdevices=(
               PIN56PUSH "py: Momentary push button for shutdown" \
               PIN356ONOFFRESET "py: Power button and reset button" \
               DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case" \
-              PIBOY "Fan & power & pads for Piboy DMG"
+              PIBOY "Fan & power & pads for Piboy DMG" \
+              PISTATION_LCD "Config.txt tweaks to get the display to work"
              )
 
 #dialog for selecting your switch or power device
@@ -555,6 +557,74 @@ function deskpipro_config()
     fi
 }
 
+#https://retroflag.com/pistation-case.html
+function pistation_start()
+{
+    # Check config.txt for fkms
+    if ! grep -Fxq "vc4-fkms-v3d-pi4" "/boot/config.txt"; then
+        echo "*** Adding PiStation LCD kms config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove default vc4-kms-v3d-pi4 type config to avoid conflict
+        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[PiStation LCD]" >> "/boot/config.txt"
+        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "/boot/config.txt"
+        echo "vc4-fkms-v3d-pi4" >> "/boot/config.txt"
+        mount -o remount, ro /boot
+    fi
+    # Check config.txt for EDID
+    if ! grep -Fxq "[EDID=YDK-YD2680]" "/boot/config.txt"; then
+        echo "*** Adding PiStation LCD EDID config.txt parameter ***"
+        mount -o remount, rw /boot
+        echo "" >> "/boot/config.txt"
+        echo "# PiStation LCD EDID" >> "/boot/config.txt"
+        echo "# remove the section below if no longer needed" >> "/boot/config.txt"
+        echo "[EDID=YDK-YD2680]" >> "/boot/config.txt"
+        echo "hdmi_group=2" >> "/boot/config.txt"
+        echo "hdmi_mode=87" >> "/boot/config.txt"
+        echo "hdmi_drive=2" >> "/boot/config.txt"
+        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "/boot/config.txt"
+        echo "" >> "/boot/config.txt"
+        mount -o remount, ro /boot
+    fi
+}
+
+function pistation_stop()
+{
+    echo "" # not required
+}
+
+function pistation_config()
+{
+    # Check config.txt for fkms
+    if ! grep -Fxq "vc4-fkms-v3d-pi4" "/boot/config.txt"; then
+        echo "*** Adding PiStation LCD kms config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove default vc4-kms-v3d-pi4 type config to avoid conflict
+        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[PiStation LCD]" >> "/boot/config.txt"
+        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "/boot/config.txt"
+        echo "vc4-fkms-v3d-pi4" >> "/boot/config.txt"
+        mount -o remount, ro /boot
+    fi
+    # Check config.txt for EDID
+    if ! grep -Fxq "[EDID=YDK-YD2680]" "/boot/config.txt"; then
+        echo "*** Adding PiStation LCD EDID config.txt parameter ***"
+        mount -o remount, rw /boot
+        echo "" >> "/boot/config.txt"
+        echo "# PiStation LCD EDID" >> "/boot/config.txt"
+        echo "# remove the section below if no longer needed" >> "/boot/config.txt"
+        echo "[EDID=YDK-YD2680]" >> "/boot/config.txt"
+        echo "hdmi_group=2" >> "/boot/config.txt"
+        echo "hdmi_mode=87" >> "/boot/config.txt"
+        echo "hdmi_drive=2" >> "/boot/config.txt"
+        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "/boot/config.txt"
+        echo "" >> "/boot/config.txt"
+        mount -o remount, ro /boot
+    fi
+}
+
 #https://www.experimentalpi.com/PiBoy-DMG--Kit_p_18.html
 function piboy_start()
 {
@@ -683,6 +753,9 @@ case "$CONFVALUE" in
     ;;
     "PIBOY")
         piboy_$1
+    ;;
+    "PISTATION_LCD")
+        pistation_$1
     ;;
     "--DIALOG")
         # Go to selection dialog
