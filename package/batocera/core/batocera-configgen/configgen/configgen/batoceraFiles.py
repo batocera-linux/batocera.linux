@@ -49,7 +49,6 @@ retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
-libretroExt = '_libretro.so'
 screenshotsDir = "/userdata/screenshots/"
 savesDir = "/userdata/saves/"
 

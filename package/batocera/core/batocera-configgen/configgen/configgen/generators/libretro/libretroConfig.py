@@ -140,7 +140,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
 
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
-    retroarchConfig['cache_directory'] = '/userdata/system/.cache'
+    retroarchConfig['cache_directory'] = '/userdata/system/configs/retroarch/cache'
+
+    # require for core informations
+    retroarchConfig['libretro_directory'] = '/usr/lib/libretro'
+    retroarchConfig['libretro_info_path'] = '/usr/share/libretro/info'
 
     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
 
