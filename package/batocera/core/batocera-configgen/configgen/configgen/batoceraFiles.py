@@ -49,7 +49,6 @@ retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
-libretroExt = '_libretro.so'
 screenshotsDir = "/userdata/screenshots/"
 savesDir = "/userdata/saves/"
 
@@ -126,7 +125,7 @@ flycastCustom = CONF + '/flycast'
 flycastMapping = flycastCustom + '/mappings'
 flycastConfig = flycastCustom + '/emu.cfg'
 flycastSaves = SAVES + '/dreamcast'
-flycastBios = BIOS
+flycastBios = BIOS + '/dc'
 flycastVMUBlank = '/usr/share/batocera/configgen/data/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
