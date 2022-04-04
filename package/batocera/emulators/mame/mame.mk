@@ -273,6 +273,8 @@ define MAME_EVMAPY
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/vgmplay.mame.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/vsmile.mame.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/xegs.mame.keys
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/fmtowns.dsk $(TARGET_DIR)/usr/share/mame/fmtowns.dsk
 endef
 
 MAME_POST_INSTALL_TARGET_HOOKS += MAME_EVMAPY

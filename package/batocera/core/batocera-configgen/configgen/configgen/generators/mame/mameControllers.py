@@ -46,8 +46,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         "JOYSTICKRIGHT_LEFT": "joystick2left",
         "JOYSTICKRIGHT_RIGHT": "joystick2right",
         "BUTTON1": "b",
-        "BUTTON2": "y",
-        "BUTTON3": "a",
+        "BUTTON2": "a",
+        "BUTTON3": "y",
         "BUTTON4": "x",
         "BUTTON5": "pageup",
         "BUTTON6": "pagedown",
@@ -103,6 +103,13 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
         mappings.update({"BUTTON6": "a"})
         mappings.update({"BUTTON7": "pageup"})
         mappings.update({"BUTTON8": "l2"})
+    elif altButtons == "mddefault": # Swap of the default controls to match Megadrive, puts buttons 1 - 3 on the bottom row for 3-button controller support.
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "b"})
+        mappings.update({"BUTTON3": "a"})
+        mappings.update({"BUTTON4": "pageup"})
+        mappings.update({"BUTTON5": "x"})
+        mappings.update({"BUTTON6": "pagedown"})
     elif altButtons == "megadrive": # Genesis-style controller layout
         mappings.update({"BUTTON1": "pageup"})
         mappings.update({"BUTTON2": "x"})
@@ -166,7 +173,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1", "vc4000" ]
     if sysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + sysName + ".cfg"
@@ -274,6 +281,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':joy.3', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, dpadMode, "8", "8"))   # 8
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':joy.2', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "8", "8"))         # 9
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':joy.0', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "2", "2"))       # 0
+
             # Special case for Astrocade - numpad on console
             if nplayer == 1 and sysName == "astrocde":
                 # Based on Colecovision button mapping, keypad is on the console
@@ -456,6 +464,38 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "64", "0"))                     # P2 Thrust
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))                    # P2 Fire
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "512", "0"))                    # P2 Hyperspace
+
+            # Special case for VC4000 - uses numpad controllers
+            if nplayer <= 2 and sysName == "vc4000":
+                if nplayer == 1:
+                    # Based on Colecovision button mapping, rearranged slightly since 2 = fire, not enough inputs
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))  # 1
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "128", "0"))  # 2/Button
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "128", "0"))  # 3
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "64", "0"))   # 4
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, dpadMode, "64", "0"))   # 5
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, dpadMode, "64", "0"))   # 6
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, dpadMode, "32", "0"))   # 7
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, dpadMode, "32", "0"))   # 8
+                    # ':KEYPAD1_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
+                    # ':KEYPAD1_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, dpadMode, "16", "0")) # Enter
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, dpadMode, "16", "0"))   # Clear
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PANEL', nplayer, pad.index, "P1_SELECT", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "128", "0"))         # Game Select
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PANEL', nplayer, pad.index, "P1_START", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "64", "0"))         # Start
+                elif nplayer == 2:
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))  # 1
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "128", "0"))  # 2/Button
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "128", "0"))  # 3
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "64", "0"))   # 4
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, dpadMode, "64", "0"))   # 5
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, dpadMode, "64", "0"))   # 6
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, dpadMode, "32", "0"))   # 7
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, dpadMode, "32", "0"))   # 8
+                    # ':KEYPAD2_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
+                    # ':KEYPAD2_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, dpadMode, "16", "0")) # Enter
+                    xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, dpadMode, "16", "0"))   # Clear
 
         nplayer = nplayer + 1
         

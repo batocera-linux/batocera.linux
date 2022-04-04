@@ -1643,7 +1643,7 @@ libretro:
                     "On":  1
                     "Off": 0
     mess:
-      features: [netplay]
+      features: [netplay, padtokeyboard]
       shared: [autosave]
       cfeatures:
             mame_cpu_overclock:
@@ -6584,7 +6584,7 @@ vice:
                 "YES":          1
 
 tsugaru:
-  features: [pad2keyboard]
+  features: [padtokeyboard]
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         cdrom_speed:
@@ -7123,6 +7123,14 @@ mame:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
+                addblankdisk:
+                    group: ADVANCED OPTIONS
+                    prompt:      USER DISK
+                    description: Mount a floppy for user data, creates if needed
+                    choices:
+                        "Cassette":       cass
+                        "Disk (Drive 1)": flop1
+                        "Disk (Drive 2)": flop2
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS
@@ -7496,6 +7504,29 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
+       vc4000:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":         none
+                        "Interton VC 4000 cartridges": vc4000
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Cartridge": cart
+                        "Quickload": quik
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
        vectrex:
             cfeatures:
                 softList:
@@ -7580,6 +7611,7 @@ mame:
                         "On":  1
                         "Off": 0
        mame: 
+            features: [netplay, padtokeyboard]
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS

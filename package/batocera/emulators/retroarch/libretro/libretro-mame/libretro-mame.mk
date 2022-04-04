@@ -65,6 +65,8 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mamevirtual_libretro.so
 	mkdir -p $(TARGET_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/fmtowns.dsk $(TARGET_DIR)/usr/share/mame/fmtowns.dsk
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
@@ -76,6 +78,8 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 		$(STAGING_DIR)/usr/lib/libretro/mamevirtual_libretro.so
 	mkdir -p $(STAGING_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(STAGING_DIR)/usr/share/lr-mame
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/fmtowns.dsk $(TARGET_DIR)/usr/share/mame/fmtowns.dsk
 endef
 
 $(eval $(generic-package))
