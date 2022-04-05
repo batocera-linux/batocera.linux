@@ -134,6 +134,13 @@ ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
 endif
 
+# xenia
+ifeq ($(BR2_PACKAGE_XENIA),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-xenia
+  BATOCERA_DESKTOPAPPS_APPS    += xenia-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += xenia.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

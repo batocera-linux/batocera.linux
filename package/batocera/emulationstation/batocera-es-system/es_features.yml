@@ -1609,7 +1609,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -1693,7 +1693,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -2550,7 +2550,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -7866,3 +7866,7 @@ demul:
             choices:
                 "Off": 0
                 "On":  1
+
+xenia:
+  features: []
+  shared: [videomode]
