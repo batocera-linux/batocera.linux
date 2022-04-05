@@ -107,25 +107,26 @@ amiga500:
   manufacturer: Commodore
   release: 1987
   hardware: computer
-  extensions: [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
-  platform:   amiga
-  group:      amiga
+  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
+  platform:     amiga
+  group:        amiga
   emulators:
     fsuae:
-      A500:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-      A500+:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-      A600:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-      A1000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-      A3000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A500:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A500+:    { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A600:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A1000:    { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A3000:    { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
-      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A500:     { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A500+:    { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
-      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
-  comment_en: |
+      uae4arm:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE4ARM] }
+  comment_en:  |
     For more info: https://wiki.batocera.org/systems:amiga500
-  comment_fr: |
+  comment_fr:  |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:amiga500
 
 amiga1200:
@@ -133,22 +134,23 @@ amiga1200:
   manufacturer: Commodore
   release: 1992
   hardware: computer
-  extensions: [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
-  platform:   amiga
-  group:      amiga
+  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
+  platform:     amiga
+  group:        amiga
   emulators:
     fsuae:
-      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-      A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A1200:    { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A4000:    { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
-      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A1200:    { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A4000:    { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
-      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
-  comment_en: |
+      uae4arm:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE4ARM] }
+  comment_en:  |
     For more info: https://wiki.batocera.org/systems:amiga500
-  comment_fr: |
+  comment_fr:  |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:amiga500
 
 amigacd32:
@@ -156,28 +158,30 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions: [bin, cue, iso, chd]
+  extensions:   [bin, cue, iso, chd]
   emulators:
     fsuae:
-      CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      CD32:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
+      CD32:     { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
     libretro:
-      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
+      uae4arm:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE4ARM] }
 
 amigacdtv:
   name:       Amiga CDTV
   manufacturer: Commodore
   release: 1991
   hardware: console
-  extensions: [bin, cue, iso, chd, m3u]
+  extensions:   [bin, cue, iso, chd, m3u]
   emulators:
     fsuae:
-      CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      CDTV:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     libretro:
-      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
+      uae4arm:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE4ARM] }
 
 nes:
   name:       Nintendo Entertainment System

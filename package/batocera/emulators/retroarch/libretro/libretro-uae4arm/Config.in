@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBRETRO_UAE4ARM
+        bool "libretro-uae4arm"
+	depends on BR2_PACKAGE_RETROARCH
+        help
+          A libretro AMIGA emulator core optimized for ARM.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_UAE4ARM needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
