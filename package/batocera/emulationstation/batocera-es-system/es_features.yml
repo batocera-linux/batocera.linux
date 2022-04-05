@@ -6310,11 +6310,11 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  shared: [videomode, hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
       redreamResolution:
-          prompt:      GAME RESOLUTION
-          description: Choose your rendered resolution (Requires personal redream.key file).
+          prompt:      RENDERING RESOLUTION
+          description: Choose your render resolution (Requires personal redream.key file).
           choices:
               "640x480":            1
               "1280x960 (Default)": 2
