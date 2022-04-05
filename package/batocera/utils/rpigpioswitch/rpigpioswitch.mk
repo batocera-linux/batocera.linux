@@ -3,7 +3,7 @@
 # rpigpioswitch 
 #
 ################################################################################
-RPIGPIOSWITCH_VERSION = 1.0
+RPIGPIOSWITCH_VERSION = 2.2
 RPIGPIOSWITCH_SOURCE =
 
 define RPIGPIOSWITCH_INSTALL_TARGET_CMDS

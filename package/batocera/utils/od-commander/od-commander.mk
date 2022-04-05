@@ -1,0 +1,49 @@
+################################################################################
+#
+# od-commander
+#
+################################################################################
+
+OD_COMMANDER_VERSION = 60e30e2e8f0819bc118cf546ee7fd52fc8b91e87
+OD_COMMANDER_SITE = $(call github,od-contrib,commander,$(OD_COMMANDER_VERSION))
+OD_COMMANDER_DEPENDENCIES = sdl2 sdl2_gfx sdl2_image sdl2_ttf dejavu nanum-font
+OD_COMMANDER_RESOURCES_DIR = /usr/share/od-commander/
+
+OD_COMMANDER_CONF_OPTS += \
+	-DWITH_SYSTEM_SDL_GFX=ON -DWITH_SYSTEM_SDL_TTF=ON \
+	-DFONTS=$(BR2_PACKAGE_OD_COMMANDER_FONTS) \
+	-DLOW_DPI_FONTS=$(BR2_PACKAGE_OD_COMMANDER_FONTS_LOW_DPI) \
+	-DRES_DIR="\"$(OD_COMMANDER_RESOURCES_DIR)\"" \
+	-DFILE_SYSTEM="\"/dev/mmcblk0p2\""
+
+ifeq ($(BR2_PACKAGE_OD_COMMANDER_AUTOSCALE),y)
+OD_COMMANDER_CONF_OPTS += -DAUTOSCALE=1
+endif
+
+ifneq ($(BR2_PACKAGE_OD_COMMANDER_PPU_X),"")
+OD_COMMANDER_CONF_OPTS += -DPPU_X=$(BR2_PACKAGE_OD_COMMANDER_PPU_X)
+endif
+
+ifneq ($(BR2_PACKAGE_OD_COMMANDER_PPU_Y),"")
+OD_COMMANDER_CONF_OPTS += -DPPU_Y=$(BR2_PACKAGE_OD_COMMANDER_PPU_Y)
+endif
+
+ifneq ($(BR2_PACKAGE_OD_COMMANDER_WIDTH),"")
+OD_COMMANDER_CONF_OPTS += -DSCREEN_WIDTH=$(BR2_PACKAGE_OD_COMMANDER_WIDTH)
+endif
+
+ifneq ($(BR2_PACKAGE_OD_COMMANDER_HEIGHT),"")
+OD_COMMANDER_CONF_OPTS += -DSCREEN_HEIGHT=$(BR2_PACKAGE_OD_COMMANDER_HEIGHT)
+endif
+
+define OD_COMMANDER_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)$(OD_COMMANDER_RESOURCES_DIR)
+	$(INSTALL) -m 0644 $(@D)/res/Fiery_Turk.ttf \
+	  $(TARGET_DIR)$(OD_COMMANDER_RESOURCES_DIR)
+	$(INSTALL) -m 0644 $(@D)/res/*.png \
+	  $(TARGET_DIR)$(OD_COMMANDER_RESOURCES_DIR)
+	$(INSTALL) -m 0755 -D $(OD_COMMANDER_BUILDDIR)commander \
+	  $(TARGET_DIR)/usr/bin/od-commander
+endef
+
+$(eval $(cmake-package))

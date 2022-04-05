@@ -48,9 +48,9 @@ def generateMoonlightConfig(system):
             elif system.config["moonlight_framerate"] == "2":
                 moonlightConfig.save('fps', '120')
             else:
-                moonlightConfig.save('fps', '60')
+                moonlightConfig.save('fps', '30')
         else:
-            moonlightConfig.save('fps', '60')
+            moonlightConfig.save('fps', '30')
 
         # bitrate
         if system.isOptSet('moonlight_bitrate'):

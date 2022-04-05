@@ -32,7 +32,7 @@ ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'amstradcpc', 'atari2600', 'atari7800', 'jaguar', 'colecovision', 'dreamcast', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'sgb', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc', 'supervision', 'sufami', 'pc88', 'pcfx', '3do', 'intellivision', 'odyssey2', 'vectrex', 'wonderswan', 'psp', 'snes-msu1', 'satellaview'};
+systemToRetroachievements = {'amstradcpc', 'atari2600', 'atari7800', 'jaguar', 'colecovision', 'dreamcast', 'atomiswave', 'naomi', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'sgb', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc', 'supervision', 'sufami', 'pc88', 'pcfx', '3do', 'intellivision', 'odyssey2', 'vectrex', 'wonderswan', 'psp', 'snes-msu1', 'satellaview'};
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
@@ -140,7 +140,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
 
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
-    retroarchConfig['cache_directory'] = '/userdata/system/.cache'
+    retroarchConfig['cache_directory'] = '/userdata/system/configs/retroarch/cache'
+
+    # require for core informations
+    retroarchConfig['libretro_directory'] = '/usr/lib/libretro'
+    retroarchConfig['libretro_info_path'] = '/usr/share/libretro/info'
 
     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
 
@@ -156,6 +160,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
 
     # Input configuration
     retroarchConfig['input_joypad_driver'] = 'udev'
+    retroarchConfig['input_driver'] = 'udev'                    # driver for mouse/keyboard. udev required for guns.
     retroarchConfig['input_max_users'] = "16"                   # Allow up to 16 players
 
     retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
