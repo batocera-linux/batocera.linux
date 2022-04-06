@@ -39,18 +39,10 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 LIBRETRO_PICODRIVE_PLATFORM = unix
 endif
 
-# rk3128 fails to compile with VFS enabled - disable it for now
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
-LIBRETRO_PICODRIVE_BUILD_OPTS += USE_LIBRETRO_VFS=0
-else
-LIBRETRO_PICODRIVE_BUILD_OPTS +=
-endif
-
 define LIBRETRO_PICODRIVE_BUILD_CMDS
 	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h
 	# force -j 1 to avoid parallel issues in the makefile
-	cd $(@D) && $(TARGET_CONFIGURE_OPTS) $(MAKE) -j1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro \
-        $(LIBRETRO_PICODRIVE_BUILD_OPTS) platform="$(LIBRETRO_PICODRIVE_PLATFORM)" \
+	cd $(@D) && $(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)" \
         GIT_VERSION=" $(shell echo $(LIBRETRO_PICODRIVE_VERSION) | cut -c 1-7)"
 endef
 
