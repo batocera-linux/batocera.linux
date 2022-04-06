@@ -19,7 +19,7 @@ def generateControllerConfig(system, playersControllers, rom):
     generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
 
 def generateControllerConfig_gamecube(system, playersControllers,rom):
-    # Exclude Buttons/Y from mapping as that just resets the system.
+    # Exclude Buttons/Y from mapping as that just resets the system. Buttons/Z is used to insert credit. Therefore it is set to Select.
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
         'a':            'Buttons/X',
