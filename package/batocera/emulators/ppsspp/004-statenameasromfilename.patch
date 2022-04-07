@@ -1,0 +1,13 @@
+diff --git a/Core/SaveState.cpp b/Core/SaveState.cpp
+index 95074f8..ae2ad78 100644
+--- a/Core/SaveState.cpp
++++ b/Core/SaveState.cpp
+@@ -445,7 +445,7 @@ namespace SaveState
+ 
+ 	Path GenerateSaveSlotFilename(const Path &gameFilename, int slot, const char *extension)
+ 	{
+-		std::string filename = StringFromFormat("%s_%d.%s", GenerateFullDiscId(gameFilename).c_str(), slot, extension);
++	  std::string filename = StringFromFormat("%s_%d.%s", gameFilename.WithReplacedExtension("").GetFilename().c_str(), slot, extension);
+ 		return GetSysDirectory(DIRECTORY_SAVESTATE) / filename;
+ 	}
+ 
