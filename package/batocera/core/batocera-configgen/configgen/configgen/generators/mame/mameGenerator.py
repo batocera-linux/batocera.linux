@@ -33,7 +33,8 @@ class MameGenerator(Generator):
         romDirname  = path.dirname(rom)
         softDir = "/var/run/mame_software/"
         softList = ""
-        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
+        messModel = ""
+        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
 
         # Generate userdata folders if needed
         mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
@@ -210,13 +211,12 @@ class MameGenerator(Generator):
                 commandArray += [ romBasename ]
             else:
                 # Alternate system for machines that have different configs (ie computers with different hardware)
-                macModel = "maclc3"
                 if system.isOptSet("altmodel"):
-                    commandArray += [ system.config["altmodel"] ]
-                    if system.name == "macintosh":
-                        macModel = system.config["altmodel"]
+                    messModel = system.config["altmodel"]
                 else:
-                    commandArray += [ messSysName[messMode] ]
+                    messModel = messSysName[messMode]
+                commandArray += [ messModel ]
+
 
                 #TI-99 32k RAM expansion & speech modules - enabled by default
                 if system.name == "ti99":
@@ -230,17 +230,17 @@ class MameGenerator(Generator):
                 if system.name == "macintosh":
                     if system.isOptSet("ramsize"):
                         ramSize = int(system.config["ramsize"])
-                        if macModel in [ 'maciix', 'maclc3' ]:
-                            if macModel == 'maclc3' and ramSize == 2:
+                        if messModel in [ 'maciix', 'maclc3' ]:
+                            if messModel == 'maclc3' and ramSize == 2:
                                 ramSize = 4
-                            if macModel == 'maclc3' and ramSize > 80:
+                            if messModel == 'maclc3' and ramSize > 80:
                                 ramSize = 80
-                            if macModel == 'maciix' and ramSize == 16:
+                            if messModel == 'maciix' and ramSize == 16:
                                 ramSize = 32
-                            if macModel == 'maciix' and ramSize == 48:
+                            if messModel == 'maciix' and ramSize == 48:
                                 ramSize = 64
                             commandArray += [ '-ramsize', str(ramSize) + 'M' ]
-                        if macModel == 'maciix':
+                        if messModel == 'maciix':
                             imageSlot = 'nba'
                             if system.isOptSet('imagereader'):
                                 if system.config["imagereader"] == "disabled":
@@ -285,6 +285,12 @@ class MameGenerator(Generator):
                     # Use the full filename for MESS ROMs
                     commandArray += [ rom ]
                 else:
+                    # Auto softlist for FM Towns if there is a zip that matches the folder name
+                    # Used for games that require a CD and floppy to both be inserted
+                    if system.name == 'fmtowns' and softList == '':
+                        romParentPath = basename(romDirname)
+                        if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                            softList = 'fmtowns_cd'
                     # Prepare software lists
                     if softList != "":
                         if not os.path.exists(softDir):
@@ -333,7 +339,7 @@ class MameGenerator(Generator):
                 else:
                     # Check for an override file, otherwise use generic (if it exists)
                     autoRunCmd = messAutoRun[messMode]
-                    autoRunFile = '/usr/share/batocera/configgen/data/mame/' + softList + '_autoload.csv'
+                    autoRunFile = '/usr/share/batocera/configgen/data/mame/{}_autoload.csv'.format(softList)
                     if os.path.exists(autoRunFile):
                         openARFile = open(autoRunFile, 'r')
                         with openARFile:
@@ -346,7 +352,18 @@ class MameGenerator(Generator):
                     if autoRunCmd.startswith("'"):
                         autoRunCmd.replace("'", "")
                     commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
-        
+
+                # Create & add a blank disk if needed, insert into drive 2
+                # or drive 1 if drive 2 is selected manually or FM Towns Marty.
+                if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
+                    if not os.path.exists('/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
+                        os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
+                        shutil.copy2('/usr/share/mame/{}.dsk'.format(system.name), '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
+                    if (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2') or messModel == "fmtmarty":
+                        commandArray += [ '-flop1', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                    else:
+                        commandArray += [ '-flop2', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):
             dpadMode = system.config["altdpad"]
@@ -636,5 +653,7 @@ def getMameControlScheme(system, romBasename):
         else:
             if controllerType == "fightstick":
                 return "fightstick"
+            if controllerType == "megadrive":
+                return "mddefault"
 
     return "default"
