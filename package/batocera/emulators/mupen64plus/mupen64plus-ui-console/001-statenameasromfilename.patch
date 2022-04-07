@@ -1,0 +1,19 @@
+diff --git a/src/main.c b/src/main.c
+index 04a46f0..313527e 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1025,6 +1025,14 @@ int main(int argc, char *argv[])
+     }
+     fclose(fPtr);
+ 
++    if ((*CoreDoCommand)(M64CMD_ROM_FILENAME, strlen(l_ROMFilepath), l_ROMFilepath) != M64ERR_SUCCESS) {
++      DebugMessage(M64MSG_ERROR, "core failed to ROM_FILENAME image file '%s'.", l_ROMFilepath);
++      free(ROM_buffer);
++      (*CoreShutdown)();
++      DetachCoreLib();
++      return 10;
++    }
++
+     /* Try to load the ROM image into the core */
+     if ((*CoreDoCommand)(M64CMD_ROM_OPEN, (int) romlength, ROM_buffer) != M64ERR_SUCCESS)
+     {
