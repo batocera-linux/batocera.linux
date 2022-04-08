@@ -83,7 +83,8 @@ class CemuGenerator(Generator):
                 "mesa_glthread": "true",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "WINEDLLOVERRIDES": "mscoree=;mshtml=;cemuhook.dll=n,b",
-                "__GL_THREADED_OPTIMIZATIONS": "1"
+                "__GL_THREADED_OPTIMIZATIONS": "1",
+                "SDL_JOYSTICK_HIDAPI": "0"
             })
 
     @staticmethod

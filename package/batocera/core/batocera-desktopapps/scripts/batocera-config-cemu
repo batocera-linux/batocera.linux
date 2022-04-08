@@ -5,6 +5,7 @@ then
     export DISPLAY=:0.0
 fi
 
+export SDL_JOYSTICK_HIDAPI=0
 emulatorlauncher -system wiiu -rom config
 
 exit 0
