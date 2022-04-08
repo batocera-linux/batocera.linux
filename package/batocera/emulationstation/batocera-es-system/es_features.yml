@@ -111,12 +111,12 @@ shared:
       preset: switchon
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
-      description: During gameplay, press Hotkey + R1 to translate on-screen text.
-      submenu: LIBRETRO AI GAME TRANSLATION
+      description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
+      submenu: AI GAME TRANSLATION
       preset: switchoff
     ai_target_lang:
       prompt: TARGET LANGUAGE
-      submenu: LIBRETRO AI GAME TRANSLATION
+      submenu: AI GAME TRANSLATION
       choices:
         "ENGLISH":   "En"
         "FRANÇAIS":  "Fr"
@@ -141,11 +141,11 @@ shared:
         "简体中文":  "Zh"
     ai_service_url:
       prompt: AI TRANSLATION SERVICE URL
-      submenu: LIBRETRO AI GAME TRANSLATION
+      submenu: AI GAME TRANSLATION
       preset: input
     ai_service_pause:
       prompt: PAUSE ON TRANSLATED SCREEN
-      submenu: LIBRETRO AI GAME TRANSLATION
+      submenu: AI GAME TRANSLATION
       preset: switchoff
     runahead:
       submenu:     LATENCY REDUCTION
