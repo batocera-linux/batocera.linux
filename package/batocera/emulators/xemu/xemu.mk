@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Daily build
-XEMU_VERSION = 0.6.2-80-g5d02cdf512
+# Mar 23, 2022
+XEMU_VERSION = 0.6.2-90-g6f507c80af
 XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -72,12 +72,12 @@ XEMU_CONF_OPTS += --disable-vvfat
 XEMU_CONF_OPTS += --disable-qcow1
 XEMU_CONF_OPTS += --disable-qed
 XEMU_CONF_OPTS += --disable-parallels
-#XEMU_CONF_OPTS += --disable-sheepdog
-XEMU_CONF_OPTS += --disable-blobs
 XEMU_CONF_OPTS += --disable-hax
 XEMU_CONF_OPTS += --disable-hvf
 XEMU_CONF_OPTS += --disable-whpx
-XEMU_CONF_OPTS += --without-default-devices
+XEMU_CONF_OPTS += --with-default-devices
+XEMU_CONF_OPTS += --disable-renderdoc
+XEMU_CONF_OPTS += --enable-avx2
 
 define XEMU_CONFIGURE_CMDS
 	cd $(@D) && $(TARGET_CONFIGURE_OPTS) ./configure $(XEMU_CONF_OPTS)
@@ -90,7 +90,7 @@ define XEMU_BUILD_CMDS
                 CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
                 PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
                 PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
-		$(MAKE) -C $(@D) V=1
+		$(MAKE) -C $(@D)
 endef
 
 define XEMU_INSTALL_TARGET_CMDS
