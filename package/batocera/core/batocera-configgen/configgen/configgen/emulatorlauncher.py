@@ -70,6 +70,7 @@ from generators.hcl.hclGenerator import HclGenerator
 from generators.openmsx.openmsxGenerator import OpenmsxGenerator
 from generators.demul.demulGenerator import DemulGenerator
 from generators.sh.shGenerator import ShGenerator
+from generators.xenia.xeniaGenerator import XeniaGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -145,6 +146,7 @@ generators = {
     'hcl': HclGenerator(),
     'openmsx': OpenmsxGenerator(),
     'demul': DemulGenerator(),
+    'xenia': XeniaGenerator(),
     #'play': PlayGenerator(),
     'sh': ShGenerator(),
 }

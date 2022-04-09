@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+	export DISPLAY=:0.0
+fi
+
+# set-up environmental variables
+PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
+WINEPREFIX=/userdata/saves/xenia-bottle
+LD_LIBRARY_PATH=/usr/lib:/lib32:/usr/wine/lutris/lib/wine
+LIBGL_DRIVERS_PATH=/usr/lib/dri
+SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
+PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+# now run
+wine64 /userdata/saves/xenia-bottle/xenia/xenia.exe
+# --gpu="vulkan"
+
+exit 0

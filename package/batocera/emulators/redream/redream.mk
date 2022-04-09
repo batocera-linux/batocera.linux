@@ -4,24 +4,29 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-993-g6956a4e
+REDREAM_VERSION = 1.5.0-1044-g1e79940
+REDREAM_SITE = https://redream.io/download
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+REDREAM_SOURCE = redream.universal-raspberry-linux-v$(REDREAM_VERSION).tar.gz
+else
 REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz
-REDREAM_SITE = https://github.com/liberodark/redream-repo/releases/download/1.0
-# REDREAM_SITE = https://redream.io/download
-# temporarly link to a private repo untile the stable is realeased
+endif
 
 define REDREAM_EXTRACT_CMDS
 	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(REDREAM_DL_SUBDIR)/$(REDREAM_SOURCE)
 endef
 
-define REDREAM_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin
-
-	$(INSTALL) -D $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
-
-	# evmap config
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
+define REDREAM_RPI4_RENAME_ELF
+    mv $(@D)/target/redream.aarch64.elf $(@D)/target/redream
 endef
+
+define REDREAM_INSTALL_TARGET_CMDS
+    $(INSTALL) -D $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+    REDREAM_PRE_INSTALL_TARGET_HOOKS += REDREAM_RPI4_RENAME_ELF
+endif
 
 $(eval $(generic-package))

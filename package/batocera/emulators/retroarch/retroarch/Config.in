@@ -3,6 +3,7 @@ config BR2_PACKAGE_RETROARCH
 	depends on (BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBEGL || BR2_PACKAGE_HAS_LIBGL)
 	select dejavu
 	select BR2_PACKAGE_RETROARCH_ASSETS
+	select BR2_PACKAGE_LIBRETRO_CORE_INFO
 	select BR2_PACKAGE_FLAC
       help
         A multi emulator frontend.

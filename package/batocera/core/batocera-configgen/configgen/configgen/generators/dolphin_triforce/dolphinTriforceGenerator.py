@@ -66,7 +66,12 @@ class DolphinTriforceGenerator(Generator):
 
         # PanicHandlers displaymessages
         dolphinTriforceSettings.set("Interface", "UsePanicHandlers",        "False")
-        dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "True")
+	
+        # Disable OSD Messages
+        if system.isOptSet("disable_osd_messages") and system.getOptBoolean("disable_osd_messages"):
+            dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "False")
+        else:
+            dolphinTriforceSettings.set("Interface", "OnScreenDisplayMessages", "True")
 
         # Don't confirm at stop
         dolphinTriforceSettings.set("Interface", "ConfirmStop", "False")
@@ -440,7 +445,7 @@ $Stuck loop patch
 $60times Loop patch
 $GameTestMode Patch
 $SeatLoopPatch
-$99 credits
+99 credits
 """)
             dolphinTriforceGameSettingsGGPE02.close()
         

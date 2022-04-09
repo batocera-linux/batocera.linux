@@ -3132,3 +3132,21 @@ pdp1:
     if the green lights are blinking, it is loading.
 
     Spacewar is two player only, if you only have one controller connected, it will control both ships.
+
+xbox360:
+  name: Xbox 360
+  manufacturer: Microsoft
+  release: 2005
+  hardware: console
+  extensions: [iso, xex]
+  emulators:
+    xenia:
+      xenia: { requireAnyOf: [BR2_PACKAGE_XENIA] }
+  comment_en: |
+    Currently Xenia runs under Wine and therefore is currently restricted to run using Vulkan only.
+    Unfortunately the Vulkan implementation for Xenia is somewhat behind D3D12 in terms on graphics compatibility.
+    Therefore only a few games will run using Xenia util either Vulkan improves or VKD3D works with Xenia.
+
+    You therefore need a GPU that supports Vulkan well.
+
+    Note: It is possible to build Xenia for Linux but functionality as of writing is extremely poor.

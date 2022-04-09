@@ -70,12 +70,12 @@ do
     test "${BYMODE}" = "ids"   && EVINPUT=$(eventFromId   "${1}")
     test "${BYMODE}" = "names" && EVINPUT=$(eventFromName "${1}")
     test $? -ne 0 && exit 1 # id not found, exit, no action taken
-    INPUTS="${INPUTS} --input ${EVINPUT}"
+    INPUTS="${INPUTS} ${EVINPUT}"
     shift
 done
 
 test ${GRABMODE} = 1 && INPUTS="${INPUTS} grab"
 
-echo "evsieve ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
-evsieve ${INPUTS} persist=exit --output name="${NEWNAME}"
+echo "evsieve --input ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
+evsieve --input ${INPUTS} persist=exit --output name="${NEWNAME}"
 ###

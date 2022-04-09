@@ -1609,7 +1609,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -1693,7 +1693,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -2550,7 +2550,7 @@ libretro:
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decoarations or shaders.
+                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
                 choices:
                     "On (Default)": 1
                     "Off":          0
@@ -5358,6 +5358,13 @@ dolphin_triforce:
             choices:
                 "Off": 0
                 "On":  1
+        disable_osd_messages:
+            group: ADVANCED OPTIONS
+            prompt:      DISABLE OSD MESSAGES
+            description: Disable status messages displayed by the emulator.
+            choices:
+                "Off": 0
+                "On":  1
         rumble:
             prompt:      RUMBLE
             choices:
@@ -6303,11 +6310,11 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  shared: [videomode, hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
       redreamResolution:
-          prompt:      GAME RESOLUTION
-          description: Choose your rendered resolution (Requires personal redream.key file).
+          prompt:      RENDERING RESOLUTION
+          description: Choose your render resolution (Requires personal redream.key file).
           choices:
               "640x480":            1
               "1280x960 (Default)": 2
@@ -7869,4 +7876,8 @@ demul:
 
 sh:
   features: [padtokeyboard]
+  shared: [videomode]
+
+xenia:
+  features: []
   shared: [videomode]

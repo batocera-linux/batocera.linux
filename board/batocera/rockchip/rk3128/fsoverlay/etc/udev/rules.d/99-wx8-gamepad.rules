@@ -1,0 +1,5 @@
+# WX8-keys are not joysticks
+SUBSYSTEM=="input", ATTRS{name}=="keys", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0"
+#
+# Merge wx8 keys and joysticks with evsieve
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="WX8 joysticks", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --grab --by-names 'ps5000-gamepad' 'keys' 'WX8 joysticks'"
