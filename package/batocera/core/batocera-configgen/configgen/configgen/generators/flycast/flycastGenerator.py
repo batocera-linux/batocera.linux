@@ -146,15 +146,6 @@ class FlycastGenerator(Generator):
         if not isfile(batoceraFiles.flycastVMUA2):
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
         
-        # flycast vulkan workaround - manually point to vulkan icd's in preferred order.
-        # pi4
-        broadcom_icd = "/usr/share/vulkan/icd.d/broadcom_icd.cortex-a72.json"
-        if os.path.exists(broadcom_icd):
-            gpu_icd = broadcom_icd
-        # x86_64
-        else:
-            gpu_icd = "/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/intel_icd.x86_64.json"
-
         # the command to run  
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
@@ -165,7 +156,5 @@ class FlycastGenerator(Generator):
         # controller cfg files are set with an absolute path, so no worry
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
             "XDG_DATA_HOME":batoceraFiles.flycastSaves,
-            "XDG_DATA_DIRS":batoceraFiles.flycastBios,
             "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
-            "VK_ICD_FILENAMES":gpu_icd,
             })
