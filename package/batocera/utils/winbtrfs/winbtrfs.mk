@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINBTRFS_VERSION = 1.7.9
+WINBTRFS_VERSION = 1.8
 WINBTRFS_SOURCE = btrfs-$(WINBTRFS_VERSION).zip
 WINBTRFS_SITE = https://github.com/maharmstone/btrfs/releases/download/v$(WINBTRFS_VERSION)
 
