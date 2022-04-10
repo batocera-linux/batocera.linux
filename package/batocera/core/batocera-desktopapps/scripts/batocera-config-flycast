@@ -2,7 +2,7 @@
 
 export DISPLAY=:0.0
 
-# point to vulkan icd's in preferred order.
-gpu_icd = "/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/intel_icd.x86_64.json"
-
-XDG_CONFIG_HOME=/userdata/system/configs XDG_DATA_HOME=/userdata/saves/dreamcast XDG_DATA_DIRS=/userdata/bios FLYCAST_BIOS_PATH=/userdata/bios/dc VK_ICD_FILENAMES=gpu_icd /usr/bin/flycast
+XDG_CONFIG_HOME=/userdata/system/configs
+XDG_DATA_HOME=/userdata/saves/dreamcast
+FLYCAST_BIOS_PATH=/userdata/bios/dc
+/usr/bin/flycast
