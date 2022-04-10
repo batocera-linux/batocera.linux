@@ -68,7 +68,7 @@ index 31f720be2e..412930ac00 100644
  	case DIRECTORY_TEXTURES:
  		return pspDirectory / "TEXTURES";
  	case DIRECTORY_PLUGINS:
-@@ -638,20 +639,20 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+@@ -638,22 +639,22 @@ Path GetSysDirectory(PSPDirectories directoryType) {
  		if (!g_Config.appCacheDirectory.empty()) {
  			return g_Config.appCacheDirectory;
  		}
@@ -81,6 +81,8 @@ index 31f720be2e..412930ac00 100644
 +		return Path("/userdata/music/");
  	case DIRECTORY_CUSTOM_SHADERS:
  		return pspDirectory / "shaders";
+ 	case DIRECTORY_CUSTOM_THEMES:
+ 		return pspDirectory / "themes";
  
  	case DIRECTORY_MEMSTICK_ROOT:
 -		return g_Config.memStickDirectory;
