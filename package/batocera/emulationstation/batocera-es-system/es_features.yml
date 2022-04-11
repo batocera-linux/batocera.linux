@@ -5865,6 +5865,15 @@ mupen64plus:
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        mupen64plus_AudioBuffer:
+            group: ADVANCED OPTIONS
+            prompt:      AUDIO BUFFER (SAMPLES)
+            description: Lower values reduce audio latency and improve performance, but can cause audio issues.
+            choices:
+                "Very High":     Very High 
+                "High":          High
+                "Medium":        Medium
+                "Low":           Low
         mupen64plus_Mipmapping:
             group: ADVANCED OPTIONS
             prompt:      TEXTURE MIP-MAPPING (BLUR)
