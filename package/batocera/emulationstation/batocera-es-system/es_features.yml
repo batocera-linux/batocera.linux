@@ -2212,6 +2212,13 @@ libretro:
                           "FM Towns Marty (Default)": fmtmarty
                           "FM Towns (Model 1/2)":     fmtowns
                           "FM Towns II UX":           fmtownsux
+                  addblankdisk:
+                      group: ADVANCED OPTIONS
+                      prompt:      ADD USER DISK
+                      description: Insert a disk into the floppy drive, a blank will be used if one doesn't exist
+                      choices:
+                          "Off (Default)": false
+                          "On":            true
                   softList:
                       group: ADVANCED OPTIONS
                       prompt:      SOFTWARE LIST
@@ -7162,6 +7169,13 @@ mame:
                         "FM Towns Marty (Default)": fmtmarty
                         "FM Towns (Model 1/2)":     fmtowns
                         "FM Towns II UX":           fmtownsux
+                addblankdisk:
+                    group: ADVANCED OPTIONS
+                    prompt:      ADD USER DISK
+                    description: Insert a disk into the floppy drive, a blank will be used if one doesn't exist
+                    choices:
+                        "Off (Default)": false
+                        "On":            true
                 softList:
                     group: ADVANCED OPTIONS
                     prompt:      SOFTWARE LIST

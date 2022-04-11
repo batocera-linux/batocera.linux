@@ -210,11 +210,10 @@ class MameGenerator(Generator):
             if messSysName[messMode] == "":
                 commandArray += [ romBasename ]
             else:
+                messModel = messSysName[messMode]
                 # Alternate system for machines that have different configs (ie computers with different hardware)
                 if system.isOptSet("altmodel"):
                     messModel = system.config["altmodel"]
-                else:
-                    messModel = messSysName[messMode]
                 commandArray += [ messModel ]
 
 
@@ -264,9 +263,13 @@ class MameGenerator(Generator):
 
                     # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
                     # Mac will auto change floppy 1 to 2 if a boot disk is enabled
+                    # Only one drive on FMTMarty
                     if system.name != "macintosh":
                         if system.isOptSet("altromtype"):
-                            commandArray += [ "-" + system.config["altromtype"] ]
+                            if messModel == "fmtmarty" and system.config["altromtype"] == "flop1":
+                                commandArray += [ "-flop" ]
+                            else:
+                                commandArray += [ "-" + system.config["altromtype"] ]
                         else:
                             commandArray += [ "-" + messRomType[messMode] ]
                     else:
@@ -315,6 +318,19 @@ class MameGenerator(Generator):
                             os.symlink(romDirname, softDir + softList, True)
                             commandArray += [ os.path.splitext(romBasename)[0] ]
 
+                # Create & add a blank disk if needed, insert into drive 2
+                # or drive 1 if drive 2 is selected manually or FM Towns Marty.
+                if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
+                    if not os.path.exists('/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
+                        os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
+                        shutil.copy2('/usr/share/mame/{}.dsk'.format(system.name), '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
+                    if messModel == "fmtmarty":
+                        commandArray += [ '-flop', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                    elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
+                        commandArray += [ '-flop1', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                    else:
+                        commandArray += [ '-flop2', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+
                 autoRunCmd = ""
                 autoRunDelay = 0
                 # Autostart computer games where applicable
@@ -353,17 +369,6 @@ class MameGenerator(Generator):
                         autoRunCmd.replace("'", "")
                     commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
-                # Create & add a blank disk if needed, insert into drive 2
-                # or drive 1 if drive 2 is selected manually or FM Towns Marty.
-                if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
-                    if not os.path.exists('/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
-                        os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
-                        shutil.copy2('/usr/share/mame/{}.dsk'.format(system.name), '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
-                    if (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2') or messModel == "fmtmarty":
-                        commandArray += [ '-flop1', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
-                    else:
-                        commandArray += [ '-flop2', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
-
         # Alternate D-Pad Mode
         if system.isOptSet("altdpad"):
             dpadMode = system.config["altdpad"]
@@ -375,7 +380,7 @@ class MameGenerator(Generator):
         if messMode == -1:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messSysName[messMode], dpadMode, buttonLayout, customCfg)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg)
         
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':

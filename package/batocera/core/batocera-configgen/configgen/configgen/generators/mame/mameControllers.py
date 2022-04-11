@@ -173,7 +173,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1", "vc4000" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtowns" ]
     if sysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + sysName + ".cfg"
@@ -244,7 +244,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                 
                 #Hide LCD display
                 removeSection(config_alt, xml_system_alt, "video")
-                xml_video_alt = config_alt.createElement("video")                
+                xml_video_alt = config_alt.createElement("video")
                 xml_system_alt.appendChild(xml_video_alt)
                 
                 xml_screencfg_alt = config_alt.createElement("target")
@@ -388,7 +388,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                     xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PA3.1', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "64", "64"))      # P2 Lower Right (N)
             
             # BBC Micro - joystick not emulated/supported for most games, map some to gamepad
-            if nplayer == 1 and sysName == "bbcb":
+            if nplayer == 1 and sysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
                 xml_kbenable_alt = config_alt.createElement("keyboard")
                 xml_kbenable_alt.setAttribute("tag", ":")
                 xml_kbenable_alt.setAttribute("enabled", "1")
@@ -435,6 +435,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                     xml_input_alt.appendChild(generateComboPortElement(config_alt, ':IN5', pad.index, "KEYBOARD", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, dpadMode, "128", "0")) # Right
                     xml_input_alt.appendChild(generateComboPortElement(config_alt, ':IN5', pad.index, "KEYBOARD", "RALT", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "512", "0"))               # P2 Button
 
+            #VGM Player mapping
             if nplayer == 1 and sysName == "vgmplay":
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "1", "0"))            # Stop
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON2", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "2", "0"))                # Pause
@@ -448,6 +449,10 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "512", "0"))         # Rate Hold
                 xml_input.appendChild(generateSpecialPortElement(config, 'standard', nplayer, pad.index, "UI_CONFIGURE", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "", ""))                           # MAME Menu
         
+            # FM Towns (Marty) Run button mapping, the rest map properly automatically.
+            if nplayer == 1 and sysName == "fmtmarty":
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':joy1_ex', nplayer, pad.index, "P1_START", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "1", "0")) # Run
+
             # Punchtape loading & Spacewar controls for PDP-1
             if nplayer <= 2 and sysName == "pdp1":
                 if nplayer == 1:
