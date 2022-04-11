@@ -1,0 +1,13 @@
+config BR2_PACKAGE_GZDOOM
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_NET
+    select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_LIBJPEG
+    select BR2_PACKAGE_LIBGL
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_ZMUSIC
+    bool "gzdoom"
+    help
+      GZdoom is a port of the doom 3D engine.
+
+	    https://zdoom.org
