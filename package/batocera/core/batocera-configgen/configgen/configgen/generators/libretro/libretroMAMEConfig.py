@@ -281,7 +281,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     if messMode == -1:
         generateMAMEPadConfig(cfgPath, playersControllers, system, "", romBasename)
     else:
-        generateMAMEPadConfig(cfgPath, playersControllers, system, , romBasename)
+        generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, romBasename)
 
 def prepSoftwareList(subdirSoftList, softList, softDir, hashDir, romDirname):
     if not os.path.exists(softDir):
