@@ -1093,6 +1093,9 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE    # audio resampler
 	select BR2_PACKAGE_LIBCDIO_PARANOIA     # cd-audio
 	select BR2_PACKAGE_LIBOPENH264          # openh264
+    
+    # AV1 support for x86_64
+    select BR2_PACKAGE_DAV1D           if BR2_PACKAGE_BATOCERA_TARGET_X86_64       # AV1
 
 	# kodi languages
 	select BR2_PACKAGE_KODI19_RESOURCE_LANGUAGE_DE_DE
