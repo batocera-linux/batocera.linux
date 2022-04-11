@@ -94,7 +94,7 @@ class Xash3dFwgsGenerator(Generator):
         # -log        # Log to /userdata/roms/xash3d_fwgs/engine.log
         # -dev 2      # Verbose logging
         # -ref gles2  # Select a specific renderer (gl, gl4es, gles1, gles2, soft)
-        commandArray = ['/usr/lib/xash3d/xash3d', '-fullscreen']
+        commandArray = ['/usr/lib/xash3d/xash3d', '-fullscreen', '-dev']
 
         # By default, xash3d will use `dlls/hl.so` in the valve directory (via the `liblist.gam` config file).
         # However, that `so` is incompatible with xash3d (it's the x86-glibc version from Valve).
