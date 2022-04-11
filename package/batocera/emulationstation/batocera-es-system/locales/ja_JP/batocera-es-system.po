@@ -227,7 +227,7 @@ msgstr ""
 "先読みを有効にします(CPU要件が倍)数値が大きいと、ジッターが発生する可能性があ"
 "ります"
 
-#. TRANSLATION: shared, shared, shared, shared
+#. TRANSLATION: shared, shared, shared, shared, shared
 msgctxt "game_options"
 msgid "LATENCY REDUCTION"
 msgstr "ちらつき軽減"
@@ -270,6 +270,16 @@ msgstr "コア要求のタイミングで。G-Sync、FreeSync、HDMI2.1VRR"
 msgctxt "game_options"
 msgid "VARIABLE REFRESH RATE"
 msgstr "可変リフレッシュレート"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Improves performance at the cost of latency and more video stuttering."
+msgstr "映像の遅延やカクつきが増えますが、動作速度が向上します"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "THREADED VIDEO"
+msgstr "映像処理(映像スレッド)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -5374,16 +5384,6 @@ msgstr "音声 レイテンシー"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "Improves performance at the cost of latency and more video stuttering."
-msgstr "映像の遅延やカクつきが増えますが、動作速度が向上します"
-
-#. TRANSLATION: libretro
-msgctxt "game_options"
-msgid "THREADED VIDEO"
-msgstr "映像処理(映像スレッド)"
-
-#. TRANSLATION: libretro
-msgctxt "game_options"
 msgid "Allow cores to set rotation."
 msgstr "コアの回転設定を可能にします"
 
@@ -5979,6 +5979,16 @@ msgstr "16xQ (CSAA)"
 msgctxt "game_options"
 msgid "4x (SSAA)"
 msgstr "4x (SSAA)"
+
+#. TRANSLATION: dolphin_triforce
+msgctxt "game_options"
+msgid "Disable status messages displayed by the emulator."
+msgstr ""
+
+#. TRANSLATION: dolphin_triforce
+msgctxt "game_options"
+msgid "DISABLE OSD MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7452,13 +7462,8 @@ msgstr "バルト諸語"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
-msgid "Choose your rendered resolution (Requires personal redream.key file)."
-msgstr "レンダリングの解像度を選択します（redream.keyファイルが必要）"
-
-#. TRANSLATION: redream
-msgctxt "game_options"
-msgid "GAME RESOLUTION"
-msgstr "ゲーム 解像度"
+msgid "Choose your render resolution (Requires personal redream.key file)."
+msgstr ""
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -8267,6 +8272,15 @@ msgstr "2人用のシューティングゲームで２つ同時にマウスを�
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "RAW入力を有効"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Choose your rendered resolution (Requires personal redream.key file)."
+#~ msgstr "レンダリングの解像度を選択します（redream.keyファイルが必要）"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME RESOLUTION"
+#~ msgstr "ゲーム 解像度"
 
 #~ msgctxt "game_options"
 #~ msgid ""

@@ -233,7 +233,7 @@ msgstr ""
 "Włącza klatki z wyprzedzeniem. Podwaja wymagania procesora. Wysokie liczby "
 "mogą powodować widoczne drgania."
 
-#. TRANSLATION: shared, shared, shared, shared
+#. TRANSLATION: shared, shared, shared, shared, shared
 msgctxt "game_options"
 msgid "LATENCY REDUCTION"
 msgstr "REDUKCJA OPÓŹNIEŃ"
@@ -277,6 +277,16 @@ msgstr "Nie odbiegaj od żądanego taktowania. G-Sync, FreeSync, HDMI 2.1 VRR."
 msgctxt "game_options"
 msgid "VARIABLE REFRESH RATE"
 msgstr "ZMIENNA CZĘSTOTLIWOŚĆ ODŚWIEŻANIA"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Improves performance at the cost of latency and more video stuttering."
+msgstr "Poprawia wydajność kosztem opóźnień i większego zacinania się obrazu."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "THREADED VIDEO"
+msgstr "WIELOWĄTKOWE WIDEO"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -5425,16 +5435,6 @@ msgstr "OPÓŹNIENIE DŹWIĘKU"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "Improves performance at the cost of latency and more video stuttering."
-msgstr "Poprawia wydajność kosztem opóźnień i większego zacinania się obrazu."
-
-#. TRANSLATION: libretro
-msgctxt "game_options"
-msgid "THREADED VIDEO"
-msgstr "WIELOWĄTKOWE WIDEO"
-
-#. TRANSLATION: libretro
-msgctxt "game_options"
 msgid "Allow cores to set rotation."
 msgstr "Zezwalaj emulatorom na ustawienie rotacji."
 
@@ -6037,6 +6037,16 @@ msgstr "16xQ (CSAA)"
 msgctxt "game_options"
 msgid "4x (SSAA)"
 msgstr "4x (SSAA)"
+
+#. TRANSLATION: dolphin_triforce
+msgctxt "game_options"
+msgid "Disable status messages displayed by the emulator."
+msgstr ""
+
+#. TRANSLATION: dolphin_triforce
+msgctxt "game_options"
+msgid "DISABLE OSD MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7528,14 +7538,8 @@ msgstr ""
 
 #. TRANSLATION: redream
 msgctxt "game_options"
-msgid "Choose your rendered resolution (Requires personal redream.key file)."
+msgid "Choose your render resolution (Requires personal redream.key file)."
 msgstr ""
-"Wybierz rozdzielczość renderowania (wymaga osobistego pliku redream.key)."
-
-#. TRANSLATION: redream
-msgctxt "game_options"
-msgid "GAME RESOLUTION"
-msgstr "ROZDZIELCZOŚĆ GRY"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -8348,6 +8352,16 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Choose your rendered resolution (Requires personal redream.key file)."
+#~ msgstr ""
+#~ "Wybierz rozdzielczość renderowania (wymaga osobistego pliku redream.key)."
+
+#~ msgctxt "game_options"
+#~ msgid "GAME RESOLUTION"
+#~ msgstr "ROZDZIELCZOŚĆ GRY"
 
 #~ msgctxt "game_options"
 #~ msgid ""

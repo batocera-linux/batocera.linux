@@ -3,8 +3,8 @@
 # ppsspp
 #
 ################################################################################
-# Version: Commits on Feb 14, 2022
-PPSSPP_VERSION = 858539c5b0b2a296cbe2c62e0cda86dae15c4d64
+# Version: Commits on Apr 9, 2022
+PPSSPP_VERSION = 5b58b6906ab3f7a4b3352b9299db0ab848e6244e
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -15,17 +15,10 @@ PPSSPP_CONF_OPTS = \
 	-DUSE_FFMPEG=ON -DUSE_SYSTEM_FFMPEG=OFF -DUSING_FBDEV=ON -DUSE_WAYLAND_WSI=OFF \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Linux -DUSE_DISCORD=OFF \
 	-DBUILD_SHARED_LIBS=OFF -DANDROID=OFF -DWIN32=OFF -DAPPLE=OFF \
-	-DUNITTEST=OFF -DSIMULATOR=OFF
+	-DUNITTEST=OFF -DSIMULATOR=OFF -DUSING_QT_UI=OFF
 
 PPSSPP_TARGET_CFLAGS = $(TARGET_CFLAGS)
-
-ifeq ($(BR2_PACKAGE_QT5),y)
-    PPSSPP_CONF_OPTS += -DUSING_QT_UI=ON
-    PPSSPP_TARGET_BINARY = PPSSPPQt
-else
-    PPSSPP_CONF_OPTS += -DUSING_QT_UI=OFF
-    PPSSPP_TARGET_BINARY = PPSSPPSDL
-endif
+PPSSPP_TARGET_BINARY = PPSSPPSDL
 
 # make sure to select glvnd and depends on glew / glu because of X11 desktop GL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
@@ -35,11 +28,10 @@ endif
 
 # enable vulkan if we are building with it
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    PPSSPP_CONF_OPTS += -DVULKAN=ON
+    PPSSPP_CONF_OPTS += -DVULKAN=ON -DUSE_VULKAN_DISPLAY_KHR=ON
 else
     PPSSPP_CONF_OPTS += -DVULKAN=OFF
 endif
-
 # enable x11/vulkan interface only if xorg
 ifeq ($(BR2_PACKAGE_XORG7),y)
     PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
@@ -68,7 +60,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
     PPSSPP_CONF_OPTS += -DX86=ON
 endif
 
-# x86_64
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
     PPSSPP_CONF_OPTS += -DX86_64=ON
 endif
@@ -76,8 +67,6 @@ endif
 # rpi4 and panfrost vulkan support
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_PANFROST_MESA3D),y)
     PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
-else
-    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
 endif
 
 # rockchip
