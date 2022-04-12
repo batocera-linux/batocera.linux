@@ -69,6 +69,7 @@ from generators.cdogs.cdogsGenerator import CdogsGenerator
 from generators.hcl.hclGenerator import HclGenerator
 from generators.openmsx.openmsxGenerator import OpenmsxGenerator
 from generators.demul.demulGenerator import DemulGenerator
+from generators.sh.shGenerator import ShGenerator
 from generators.xenia.xeniaGenerator import XeniaGenerator
 from generators.odcommander.odcommanderGenerator import OdcommanderGenerator
 #from generators.play.playGenerator import PlayGenerator
@@ -149,6 +150,7 @@ generators = {
     'xenia': XeniaGenerator(),
     'odcommander': OdcommanderGenerator(),
     #'play': PlayGenerator(),
+    'sh': ShGenerator(),
 }
 
 def squashfs_begin(rom):

@@ -1813,7 +1813,9 @@ ports:
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
-  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
+  emulators:
+    sh:
+      sh:  { requireAnyOf: [] }
   force:      True
   comment_en: |
     ## SYSTEM PORTS ##
