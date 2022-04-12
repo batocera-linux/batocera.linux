@@ -93,8 +93,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     renderConfig = system.renderconfig
 
     # Basic configuration
-    retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
-    retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
+    retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
+    retroarchConfig['menu_show_restart_retroarch'] = 'false'      # this option messes everything up on Batocera if ever clicked
+    retroarchConfig['menu_show_load_content_animation'] = 'false' # hide popup when starting a game
 
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
 
