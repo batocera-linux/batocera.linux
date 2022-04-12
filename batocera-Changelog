@@ -24,9 +24,9 @@
         * add: picade dtbo overlay file for RPi builds
         * add: retroachievements for Amstrad CPC (libretro-cap32) and Dreamcast, Atomiswave and Naomi (libretro-flycast)
         * add: redream for the raspberry pi4
-        * add: more mounting options for userdata
         * add: evsieve for input/output rebinding
         * add: ultimarc for pac arcade encoder on-the-fly configuration
+        * add: specific partitions can now be mounted to share, roms, saves by editing batocera-boot.conf
         * es: save state manager now supports more systems
         * es: added audio buffer options for Mupen64Plus
         * es: system/manufacturer names have been corrected
@@ -48,7 +48,7 @@
         * bump: switchres
         * bump: parallel64 to 25 Dec build - update optimisations
         * bump: xemu to v 0.6.2-80
-		* bump: redream to 1.5.0-1044
+        * bump: redream to 1.5.0-1044
         * change: added most MAME configuration options to libretro-mame
         * change: Restored Sonic Retro Engine to non-x86 boards (using 1.1.2.1 for sonic2013 & 1.1.2 for soniccd)
         * change: MAME/MESS: speech module and 32k RAM option for TI-99, image reader enabled for Mac IIx model (x86_64)
@@ -64,6 +64,7 @@
         * change: splash screen version number can now be disabled
         * change: mupen64plus gliden64 disabled
         * change: default emulators optimized for rk3128
+        * change: move some savestate to /userdata/saves/<system>/<rom filelname>.<extension> (mupen, ppsspp)
         * fix: mediatek 7921 cards
         * fix: parallel64 not starting
         * fix: lr-flycast with opengles
@@ -75,15 +76,15 @@
         * fix: duckstation language
         * fix: fix yabasanshiro not starting
         * fix: cemu controller config
-    	* fix: flycast not creating save directory on new install
+        * fix: flycast not creating save directory on new install
         * fix: pcsx2 and mupen64's ratio settings
         * fix: user-created shaders in retroarch's menu being ignored
-    	* fix: moonlight custom config getting overwritten
-		* fix: redream controllers, hotkey now quits redream
         * fix: av1 decoder added to kodi
         * fix: ps5 controllers now work in the odroid xu4 image
+        * fix: moonlight custom config getting overwritten
+        * fix: redream controllers, hotkey now quits redream
 
-2022/02/xx - batocera.linux 33
+2022/02/12 - batocera.linux 33
         * add: Support for Beelink GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
         * add: Support for Beelink GT-KING-PRO "https://www.bee-link.com/products/beelink-gt-king"
         * add: Support for Raxda Zero "https://wiki.radxa.com/Zero"
