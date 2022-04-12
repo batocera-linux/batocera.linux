@@ -24,7 +24,13 @@
         * add: picade dtbo overlay file for RPi builds
         * add: retroachievements for Amstrad CPC (libretro-cap32) and Dreamcast, Atomiswave and Naomi (libretro-flycast)
         * add: redream for the raspberry pi4
+        * add: evsieve for input/output rebinding
+        * add: ultimarc for pac arcade encoder on-the-fly configuration
         * add: specific partitions can now be mounted to share, roms, saves by editing batocera-boot.conf
+        * es: save state manager now supports more systems
+        * es: added audio buffer options for Mupen64Plus
+        * es: system/manufacturer names have been corrected
+        * es: default keyboard mapping now includes West bound to "-" and North bound to "="
         * bump: rk3399 linux kernel 5.10
         * bump: dolphin to 5.0-15993
         * bump: flycast & libretro-flycast to 1.2
@@ -53,6 +59,11 @@
         * change: RPi4 now runs under xorg window server
         * change: RPi4 now allows F1 menu access (xorg)
         * change: moonlight configuration options added
+        * change: add l2/r2 as flipper controls for future pinball
+        * change: recalbox.conf is no longer checked
+        * change: splash screen version number can now be disabled
+        * change: mupen64plus gliden64 disabled
+        * change: default emulators optimized for rk3128
         * change: move some savestate to /userdata/saves/<system>/<rom filelname>.<extension> (mupen, ppsspp)
         * fix: mediatek 7921 cards
         * fix: parallel64 not starting
@@ -68,6 +79,8 @@
         * fix: flycast not creating save directory on new install
         * fix: pcsx2 and mupen64's ratio settings
         * fix: user-created shaders in retroarch's menu being ignored
+        * fix: av1 decoder added to kodi
+        * fix: ps5 controllers now work in the odroid xu4 image
         * fix: moonlight custom config getting overwritten
         * fix: redream controllers, hotkey now quits redream
 
