@@ -38,7 +38,8 @@ def generateRetroarchCustom():
     retroarchSettings.save('input_player3_analog_dpad_mode',    '"1"')
     retroarchSettings.save('input_player4_analog_dpad_mode',    '"1"')
     retroarchSettings.save('input_enable_hotkey_btn',           '"16"')
-    retroarchSettings.save('input_enable_hotkey',               '"escape"')
+    retroarchSettings.save('input_enable_hotkey',               '"shift"')
+    retroarchSettings.save('input_menu_toggle',                 '"f1"')
     retroarchSettings.save('input_exit_emulator',               '"escape"')
 
     # Video
