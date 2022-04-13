@@ -160,15 +160,20 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 # Create & add a blank disk if needed, insert into drive 2
                 # or drive 1 if drive 2 is selected manually or FM Towns Marty.
                 if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
-                    if not os.path.exists('/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
+                    if system.name == 'fmtowns':
+                        blankDisk = '/usr/share/mame/blank.fmtowns'
+                        targetDisk = '/userdata/saves/mame/{}/{}.fmtowns'.format(system.name, os.path.splitext(romBasename)[0])
+                    # Add elif statements here for other systems if enabled
+                    if not os.path.exists(targetDisk):
                         os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
-                        shutil.copy2('/usr/share/mame/{}.dsk'.format(system.name), '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
+                        shutil.copy2(blankDisk, targetDisk)
+                    # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
-                        commandArray += [ '-flop', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop', targetDisk ]
                     elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
-                        commandArray += [ '-flop1', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop1', targetDisk ]
                     else:
-                        commandArray += [ '-flop2', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop2', targetDisk ]
 
             # UI enable - for computer systems, the default sends all keys to the emulated system.
             # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
@@ -532,7 +537,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtowns" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty" ]
     if messSysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + messSysName + ".cfg"

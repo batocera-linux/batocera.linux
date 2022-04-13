@@ -297,7 +297,7 @@ class MameGenerator(Generator):
                     # Prepare software lists
                     if softList != "":
                         if not os.path.exists(softDir):
-                            os.makedirs(softDir)                    
+                            os.makedirs(softDir)
                         for fileName in os.listdir(softDir):
                             checkFile = os.path.join(softDir, fileName)
                             if os.path.islink(checkFile):
@@ -321,15 +321,20 @@ class MameGenerator(Generator):
                 # Create & add a blank disk if needed, insert into drive 2
                 # or drive 1 if drive 2 is selected manually or FM Towns Marty.
                 if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
-                    if not os.path.exists('/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
+                    if system.name == 'fmtowns':
+                        blankDisk = '/usr/share/mame/blank.fmtowns'
+                        targetDisk = '/userdata/saves/mame/{}/{}.fmtowns'.format(system.name, os.path.splitext(romBasename)[0])
+                    # Add elif statements here for other systems if enabled
+                    if not os.path.exists(targetDisk):
                         os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
-                        shutil.copy2('/usr/share/mame/{}.dsk'.format(system.name), '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
+                        shutil.copy2(blankDisk, targetDisk)
+                    # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
-                        commandArray += [ '-flop', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop', targetDisk ]
                     elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
-                        commandArray += [ '-flop1', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop1', targetDisk ]
                     else:
-                        commandArray += [ '-flop2', '/userdata/saves/mame/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                        commandArray += [ '-flop2', targetDisk ]
 
                 autoRunCmd = ""
                 autoRunDelay = 0

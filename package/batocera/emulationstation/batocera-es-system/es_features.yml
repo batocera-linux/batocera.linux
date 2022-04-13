@@ -2217,8 +2217,8 @@ libretro:
                       prompt:      ADD USER DISK
                       description: Insert a disk into the floppy drive, a blank will be used if one doesn't exist
                       choices:
-                          "Off (Default)": false
-                          "On":            true
+                          "Off (Default)": 0
+                          "On":            1
                   softList:
                       group: ADVANCED OPTIONS
                       prompt:      SOFTWARE LIST
@@ -7183,8 +7183,8 @@ mame:
                     prompt:      ADD USER DISK
                     description: Insert a disk into the floppy drive, a blank will be used if one doesn't exist
                     choices:
-                        "Off (Default)": false
-                        "On":            true
+                        "Off (Default)": 0
+                        "On":            1
                 softList:
                     group: ADVANCED OPTIONS
                     prompt:      SOFTWARE LIST

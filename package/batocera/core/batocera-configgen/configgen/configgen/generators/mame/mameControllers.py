@@ -173,7 +173,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, dpadMode, altButton
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtowns" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty" ]
     if sysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + sysName + ".cfg"

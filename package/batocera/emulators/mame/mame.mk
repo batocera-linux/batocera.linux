@@ -234,6 +234,10 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy extra bgfx shaders
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/crt-geom-deluxe-rgb.json $(TARGET_DIR)/usr/bin/mame/bgfx/chains
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/crt-geom-deluxe-composite.json $(TARGET_DIR)/usr/bin/mame/bgfx/chains
+
+	# Copy blank disk image(s)
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 endef
 
 define MAME_EVMAPY
@@ -275,8 +279,6 @@ define MAME_EVMAPY
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/vgmplay.mame.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/vsmile.mame.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy/xegs.mame.keys
-	mkdir -p $(TARGET_DIR)/usr/share/mame
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/fmtowns.dsk $(TARGET_DIR)/usr/share/mame/fmtowns.dsk
 endef
 
 MAME_POST_INSTALL_TARGET_HOOKS += MAME_EVMAPY
