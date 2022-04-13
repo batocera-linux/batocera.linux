@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-16 12:57+0100\n"
-"PO-Revision-Date: 2022-03-26 20:14+0100\n"
+"PO-Revision-Date: 2022-04-12 20:38+0200\n"
 "Last-Translator: pajarorrojo\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -544,22 +544,22 @@ msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
 msgstr "OVERCLOCK (INESTABLE)"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus
 msgctxt "game_options"
 msgid "Low"
 msgstr "Bajo"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus
 msgctxt "game_options"
 msgid "Medium"
 msgstr "Medio"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus
 msgctxt "game_options"
 msgid "High"
 msgstr "Alto"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, mupen64plus
 msgctxt "game_options"
 msgid "Very High"
 msgstr "Muy alto"
@@ -2289,6 +2289,8 @@ msgid ""
 "Use the same art paths as standalone MAME - not recommended if using "
 "decorations or shaders."
 msgstr ""
+"Usar las mismas rutas que MAME; no se recomienda si usas decoraciones o "
+"shaders."
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
@@ -6039,12 +6041,12 @@ msgstr "4x (SSAA)"
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "Disable status messages displayed by the emulator."
-msgstr ""
+msgstr "Desactiva los mensajes de estado mostrados por el emulador."
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "DISABLE OSD MESSAGES"
-msgstr ""
+msgstr "DESACTIVAR OSD"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6876,6 +6878,18 @@ msgstr "SALTO DE FRAMES (SOLO GL64MK2 )"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
+msgid ""
+"Lower values reduce audio latency and improve performance, but can cause "
+"audio issues."
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "AUDIO BUFFER (SAMPLES)"
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
 msgid "nearest"
 msgstr "más cercano"
 
@@ -7431,38 +7445,40 @@ msgstr "EXTENDER AL ÁREA DE VISUALIZACIÓN"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Can Fix broken graphics in some games."
-msgstr ""
+msgstr "Puede solucionar los problemas en los gráficos de algunos juegos."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "WRITE DEPTH BUFFER"
-msgstr ""
+msgstr "ACTIVAR BÚFER DE PROFUNDIDAD"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "May help to fix choppy audio on weaker CPUs."
-msgstr ""
+msgstr "Puede ayudar a corregir cortes de audio en CPUs menos potentes."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "PREFERRED SPU THREADS"
-msgstr ""
+msgstr "PROCESADO DE SPU PREFERIDO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "0 (Default)"
-msgstr ""
+msgstr "0 (Defecto)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
 "Enable this option if you get missing graphics or broken lighting ingame."
 msgstr ""
+"Activa esta opción si faltan gráficos o la iluminación no funciona en el "
+"juego."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "WRITE COLOUR BUFFERS"
-msgstr ""
+msgstr "ACTIVAR BÚFER DE COLORES"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -7543,6 +7559,7 @@ msgstr "Báltico"
 msgctxt "game_options"
 msgid "Choose your render resolution (Requires personal redream.key file)."
 msgstr ""
+"Elige tu resolución de renderizado (requiere archivo redream.key personal)."
 
 #. TRANSLATION: redream
 msgctxt "game_options"
