@@ -111,6 +111,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         if imageSlot != "":
                             commandLine += [ "-" + imageSlot, 'image' ]
 
+            # Auto softlist for FM Towns if there is a zip that matches the folder name
+            # Used for games that require a CD and floppy to both be inserted
+            if system.name == 'fmtowns' and softList == '':
+                romParentPath = os.path.basename(romDirname)
+                if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                    softList = 'fmtowns_cd'
+
             if softList != "":
                 # Software list ROM commands
                 prepSoftwareList(subdirSoftList, softList, softDir, "/userdata/bios/mame/hash", romDirname)
@@ -162,10 +169,12 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
                     if system.name == 'fmtowns':
                         blankDisk = '/usr/share/mame/blank.fmtowns'
-                        targetDisk = '/userdata/saves/mame/{}/{}.fmtowns'.format(system.name, os.path.splitext(romBasename)[0])
+                        targetFolder = '/userdata/saves/mame/{}'.format(system.name)
+                        targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
                     # Add elif statements here for other systems if enabled
+                    if not os.path.exists(targetFolder):
+                        os.makedirs(targetFolder)
                     if not os.path.exists(targetDisk):
-                        os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
                         shutil.copy2(blankDisk, targetDisk)
                     # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
@@ -829,7 +838,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "512", "0"))                    # P2 Hyperspace
 
         # Special case for VC4000 - uses numpad controllers
-        if nplayer <= 2 and sysName == "vc4000":
+        if nplayer <= 2 and messSysName == "vc4000":
             if nplayer == 1:
                 # Based on Colecovision button mapping, rearranged slightly since 2 = fire, not enough inputs
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))  # 1

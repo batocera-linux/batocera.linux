@@ -249,6 +249,13 @@ class MameGenerator(Generator):
                             if imageSlot != "":
                                 commandArray += [ "-" + imageSlot, 'image' ]
 
+                # Auto softlist for FM Towns if there is a zip that matches the folder name
+                # Used for games that require a CD and floppy to both be inserted
+                if system.name == 'fmtowns' and softList == '':
+                    romParentPath = path.basename(romDirname)
+                    if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                        softList = 'fmtowns_cd'
+
                 if softList == "":
                     # Boot disk for Macintosh
                     # Will use Floppy 1 or Hard Drive, depending on the disk.
@@ -288,12 +295,6 @@ class MameGenerator(Generator):
                     # Use the full filename for MESS ROMs
                     commandArray += [ rom ]
                 else:
-                    # Auto softlist for FM Towns if there is a zip that matches the folder name
-                    # Used for games that require a CD and floppy to both be inserted
-                    if system.name == 'fmtowns' and softList == '':
-                        romParentPath = basename(romDirname)
-                        if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
-                            softList = 'fmtowns_cd'
                     # Prepare software lists
                     if softList != "":
                         if not os.path.exists(softDir):
@@ -323,10 +324,12 @@ class MameGenerator(Generator):
                 if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
                     if system.name == 'fmtowns':
                         blankDisk = '/usr/share/mame/blank.fmtowns'
-                        targetDisk = '/userdata/saves/mame/{}/{}.fmtowns'.format(system.name, os.path.splitext(romBasename)[0])
+                        targetFolder = '/userdata/saves/mame/{}'.format(system.name)
+                        targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
                     # Add elif statements here for other systems if enabled
+                    if not os.path.exists(targetFolder):
+                        os.makedirs(targetFolder)
                     if not os.path.exists(targetDisk):
-                        os.makedirs('/userdata/saves/mame/{}/'.format(system.name))
                         shutil.copy2(blankDisk, targetDisk)
                     # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
