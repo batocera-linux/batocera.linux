@@ -146,9 +146,15 @@ def configPadsIni(playersControllers, altControl):
         targetConfig.write(configfile)
 
 def transformValue(value, playersControllers, mapping, mapping_fallback):
-    if value[0] == '"' and value[-1] == '"':
+    # remove comments
+    cleanValue = value
+    matches = re.search("^([^;]*[^ ])[ ]*;.*$", value)
+    if matches:
+        cleanValue = matches.group(1)
+
+    if cleanValue[0] == '"' and cleanValue[-1] == '"':
         newvalue = ""
-        for elt in value[1:-1].split(","):
+        for elt in cleanValue[1:-1].split(","):
             newelt = transformElement(elt, playersControllers, mapping, mapping_fallback)
             if newelt is not None:
                 if newvalue != "":
@@ -157,7 +163,7 @@ def transformValue(value, playersControllers, mapping, mapping_fallback):
         return '"' + newvalue + '"'
     else:
         # integers
-        return value
+        return cleanValue
 
 def transformElement(elt, playersControllers, mapping, mapping_fallback):
     # Docs/README.txt
