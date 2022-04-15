@@ -48,16 +48,16 @@ def generateLinappleConfig(rom, playersControllers, gameResolution):
         controller = playersControllers[indexController]
         
         # Enabling control
-        linappleConfig.save('Joy{}Index'.format(controller.index),  controller.index)
-        linappleConfig.save('Joystick {}'.format(controller.index), '1')
+        linappleConfig.save(f'Joy{controller.index}Index',  controller.index)
+        linappleConfig.save(f'Joystick {controller.index}', '1')
 
         # Button
-        linappleConfig.save('Joy{}Button1'.format(controller.index), controller.inputs["a"].id)
-        linappleConfig.save('Joy{}Button2'.format(controller.index), controller.inputs["b"].id)
+        linappleConfig.save(f'Joy{controller.index}Button1', controller.inputs["a"].id)
+        linappleConfig.save(f'Joy{controller.index}Button2', controller.inputs["b"].id)
 
         # Axis
-        linappleConfig.save('Joy{}Axis0'.format(controller.index),   controller.inputs["joystick1left"].id)
-        linappleConfig.save('Joy{}Axis1'.format(controller.index),   controller.inputs["joystick1up"].id)
+        linappleConfig.save(f'Joy{controller.index}Axis0',   controller.inputs["joystick1left"].id)
+        linappleConfig.save(f'Joy{controller.index}Axis1',   controller.inputs["joystick1up"].id)
         
 
         # Enable Quitting the program with by pressing two joystick buttons at the same time

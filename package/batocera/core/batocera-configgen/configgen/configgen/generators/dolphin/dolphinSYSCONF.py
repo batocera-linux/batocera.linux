@@ -51,7 +51,7 @@ def readWriteEntry(f, setval):
             itemValue = setval[itemName]
             writeInt8(f, itemValue)
         else:
-            raise Exception("not writable type {}".format(itemType))
+            raise Exception(f"not writable type {itemType}")
     else:
         if itemType == 1: # big array
             dataSize = readBEInt16(f) + 1
@@ -73,10 +73,10 @@ def readWriteEntry(f, setval):
         elif itemType == 7: # bool
             itemValue = readInt8(f)
         else:
-            raise Exception("unknown type {}".format(itemType))
+            raise Exception(f"unknown type {itemType}")
 
     if not setval or itemName in setval:
-        eslog.debug('{:12s} = {}'.format(itemName, itemValue))
+        eslog.debug(f'{itemName:12s} = {itemValue}')
 
 def readWriteFile(filepath, setval):
     # open in read read/write depending of the action

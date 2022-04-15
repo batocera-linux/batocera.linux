@@ -27,7 +27,7 @@ class OpenborGenerator(Generator):
         core = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
-        eslog.debug("core taken is {}".format(core))
+        eslog.debug(f"core taken is {core}")
 
         # config file
         configfilename = "config7142.ini"

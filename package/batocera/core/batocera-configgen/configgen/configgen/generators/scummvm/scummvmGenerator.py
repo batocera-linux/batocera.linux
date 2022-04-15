@@ -35,12 +35,12 @@ class ScummVMGenerator(Generator):
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                         "-f",
-                        "--joystick={}".format(id),
+                        f"--joystick={id}",
                         "--screenshotspath="+batoceraFiles.screenshotsDir, 
                         "--extrapath=/usr/share/scummvm",
                         "--savepath="+batoceraFiles.scummvmSaves,
                         "--path=""{}""".format(romPath)]
-        commandArray.append("""{}""".format(romName))
+        commandArray.append(f"""{romName}""")
 
         return Command.Command(array=commandArray,env={
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)

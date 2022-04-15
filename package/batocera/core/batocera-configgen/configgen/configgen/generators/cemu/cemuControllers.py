@@ -203,7 +203,7 @@ def generateControllerConfig(system, playersControllers, rom):
         ctrl = ET.SubElement(doc, "uuid") #uuid is the XInput controller number
         ctrl.text = str(nplayer)
         ctrl = ET.SubElement(doc, "display_name")
-        ctrl.text = "Controller {}".format((nplayer)+1) # use controller number for display name
+        ctrl.text = f"Controller {(nplayer)+1}" # use controller number for display name
         # Rumble
         if system.isOptSet("rumble"):
             ctrl = ET.SubElement(doc, "rumble")
@@ -247,7 +247,7 @@ def generateControllerConfig(system, playersControllers, rom):
 
         # Save Cemu controller profiles      
         with open(configFileName, 'w') as xfile:
-            xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
+            xfile.write(part1 + f'encoding=\"{m_encoding}\"?>\n' + part2)
             xfile.close()
 
         nplayer+=1

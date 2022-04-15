@@ -23,13 +23,13 @@ class DosBoxGenerator(Generator):
 			"-fullscreen",
 			"-userconf", 
 			"-exit", 
-			"""{}""".format(batFile),
-			"-c", """set ROOT={}""".format(gameDir)]
+			f"""{batFile}""",
+			"-c", f"""set ROOT={gameDir}"""]
         if os.path.isfile(gameConfFile):
             commandArray.append("-conf")
-            commandArray.append("""{}""".format(gameConfFile))
+            commandArray.append(f"""{gameConfFile}""")
         else:
             commandArray.append("-conf")
-            commandArray.append("""{}""".format(batoceraFiles.dosboxConfig))
+            commandArray.append(f"""{batoceraFiles.dosboxConfig}""")
 
         return Command.Command(array=commandArray)

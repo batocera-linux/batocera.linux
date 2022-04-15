@@ -194,17 +194,17 @@ class LibretroGenerator(Generator):
 
 
         # Custom configs - per core
-        customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
+        customCfg = f"{batoceraFiles.retroarchRoot}/{system.name}.cfg"
         if os.path.isfile(customCfg):
             configToAppend.append(customCfg)
 
         # Custom configs - per game
-        customGameCfg = "{}/{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name, romName)
+        customGameCfg = f"{batoceraFiles.retroarchRoot}/{system.name}/{romName}.cfg"
         if os.path.isfile(customGameCfg):
             configToAppend.append(customGameCfg)
 
         # Overlay management
-        overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
+        overlayFile = f"{batoceraFiles.OVERLAYS}/{system.name}/{romName}.cfg"
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
 
@@ -225,10 +225,10 @@ class LibretroGenerator(Generator):
                 shaderFilename = gameShader + ".slangp"
             else:
                 shaderFilename = gameShader + ".glslp"
-            eslog.debug("searching shader {}".format(shaderFilename))
+            eslog.debug(f"searching shader {shaderFilename}")
             if os.path.exists("/userdata/shaders/" + shaderFilename):
                 video_shader_dir = "/userdata/shaders"
-                eslog.debug("shader {} found in /userdata/shaders".format(shaderFilename))
+                eslog.debug(f"shader {shaderFilename} found in /userdata/shaders")
             else:
                 video_shader_dir = "/usr/share/batocera/shaders"
             video_shader = video_shader_dir + "/" + shaderFilename

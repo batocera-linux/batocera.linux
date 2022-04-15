@@ -141,7 +141,7 @@ def generateControllerConfig(controller):
         code = input.code
         if input.type == 'button':
             pspcode = sdlNameToNKCode[input.name]
-            val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
+            val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
             val = optionValue(Config, section, var, val)
             Config.set(section, var, val)
             
@@ -150,9 +150,9 @@ def generateControllerConfig(controller):
             nkAxisId = SDLJoyAxisMap[input.id]
             # Apply the magic axis formula
             pspcode = axisToCode(nkAxisId, int(input.value))
-            val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
+            val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
             val = optionValue(Config, section, var, val)
-            eslog.debug("Adding {} to {}".format(var, val))
+            eslog.debug(f"Adding {var} to {val}")
             Config.set(section, var, val)
             
             # Skip the rest if it's an axis dpad
@@ -168,14 +168,14 @@ def generateControllerConfig(controller):
                 var = ppssppMapping['joystick2right'][input.type]
                 
             pspcode = axisToCode(nkAxisId, -int(input.value))
-            val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
+            val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
             val = optionValue(Config, section, var, val)
             Config.set(section, var, val)
         
         elif input.type == 'hat' and input.name in SDLHatMap:
             var = ppssppMapping[input.name][input.type]
             pspcode = SDLHatMap[input.name]
-            val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
+            val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
             val = optionValue(Config, section, var, val)
             Config.set(section, var, val)
 
@@ -198,6 +198,6 @@ def axisToCode(axisId, direction) :
 # determine if the option already exists or not
 def optionValue(config, section, option, value):
     if config.has_option(section, option):
-        return "{},{}".format(config.get(section, option), value)
+        return f"{config.get(section, option)},{value}"
     else:
         return value

@@ -645,7 +645,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     except Exception as e:
         # error with bezels, disabling them
         writeBezelConfig(None, retroarchConfig, rom, gameResolution, system)
-        eslog.error("Error with bezel {}: {}".format(bezel, e))
+        eslog.error(f"Error with bezel {bezel}: {e}")
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
@@ -781,11 +781,11 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         if create_new_bezel_file is True:
             # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
             # or up/down for 4K
-            eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
+            eslog.debug(f"Generating a new adapted bezel file {output_png_file}")
             try:
                 bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
             except Exception as e:
-                eslog.debug("Failed to create the adapated image: {}".format(e))
+                eslog.debug(f"Failed to create the adapated image: {e}")
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
@@ -805,7 +805,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             bezelsUtil.tatooImage(overlay_png_file, output_png, system)
             overlay_png_file = output_png
 
-    eslog.debug("Bezel file set to {}".format(overlay_png_file))
+    eslog.debug(f"Bezel file set to {overlay_png_file}")
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):

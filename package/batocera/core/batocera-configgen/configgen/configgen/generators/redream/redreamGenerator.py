@@ -71,41 +71,41 @@ class RedreamGenerator(Generator):
             controller = playersControllers[index]
             if nplayer <= 4:
                 # dev = ? seems to be 4+
-                ctrlport = "port{}=dev:{},desc:{},type:controller".format(controller.index, 4 + controller.index, controller.guid)
+                ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
                 f.write((ctrlport)+ "\n")
                 
-                ctrlprofile = "profile{}=name:{},type:controller,deadzone:12,crosshair:1".format(controller.index, controller.guid)
+                ctrlprofile = f"profile{controller.index}=name:{controller.guid},type:controller,deadzone:12,crosshair:1"
                 fullprofile = ctrlprofile
                 
-                eslog.debug("CONTROLLER: {} - {}".format(controller.index, controller.guid))
+                eslog.debug(f"CONTROLLER: {controller.index} - {controller.guid}")
                 
                 for index in controller.inputs:
                     input = controller.inputs[index]
-                    eslog.debug("Name: {}, Type: {}, ID: {}, Code: {}".format(input.name, input.type, input.id, input.code))
+                    eslog.debug(f"Name: {input.name}, Type: {input.type}, ID: {input.id}, Code: {input.code}")
                     
                     # [buttons]
                     if input.type == "button" and input.name in ButtonMap:
                         buttonname = ButtonMap[input.name]
                         fullprofile = fullprofile + ","
-                        fullprofile = fullprofile + "{}:joy{}".format(buttonname, input.id)
+                        fullprofile = fullprofile + f"{buttonname}:joy{input.id}"
                     #on rare occassions when triggers are buttons
                     if input.type == "button" and input.name == "l2":
                         fullprofile = fullprofile + ","
-                        fullprofile = fullprofile + "ltrig:joy{}".format(input.id)
+                        fullprofile = fullprofile + f"ltrig:joy{input.id}"
                     if input.type == "button" and input.name == "r2":
                         fullprofile = fullprofile + ","
-                        fullprofile = fullprofile + "rtrig:joy{}".format(input.id)
+                        fullprofile = fullprofile + f"rtrig:joy{input.id}"
                     #on occassions when dpad directions are buttons
                     if input.type == "button":
                         if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "dpad_{}:joy{}".format(input.name, input.id)
+                            fullprofile = fullprofile + f"dpad_{input.name}:joy{input.id}"
                     
                     # [hats]
                     if input.type == "hat" and input.name in HatMap:
                         hatid = HatMap[input.name]
                         fullprofile = fullprofile + ","
-                        fullprofile = fullprofile + "dpad_{}:hat{}".format(input.name, hatid)
+                        fullprofile = fullprofile + f"dpad_{input.name}:hat{hatid}"
                     
                     # [axis]
                     if input.type == "axis" and input.name in AxisMap:
@@ -113,21 +113,21 @@ class RedreamGenerator(Generator):
                         #l2/r2 as axis triggers
                         if input.name == "l2":
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "ltrig:+axis{}".format(input.id)
+                            fullprofile = fullprofile + f"ltrig:+axis{input.id}"
                         if input.name == "r2":
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "rtrig:+axis{}".format(input.id)
+                            fullprofile = fullprofile + f"rtrig:+axis{input.id}"
                         #handle axis l,r,u,d
                         if input.name == "joystick1left":
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "ljoy_left:-axis{}".format(axisid)
+                            fullprofile = fullprofile + f"ljoy_left:-axis{axisid}"
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "ljoy_right:+axis{}".format(axisid)
+                            fullprofile = fullprofile + f"ljoy_right:+axis{axisid}"
                         if input.name == "joystick1up":
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "ljoy_up:-axis{}".format(axisid)
+                            fullprofile = fullprofile + f"ljoy_up:-axis{axisid}"
                             fullprofile = fullprofile + ","
-                            fullprofile = fullprofile + "ljoy_down:+axis{}".format(axisid)
+                            fullprofile = fullprofile + f"ljoy_down:+axis{axisid}"
                     
                 f.write((fullprofile)+ "\n")
                 nplayer = nplayer + 1

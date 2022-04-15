@@ -73,7 +73,7 @@ arcadesections = { 'analog' : ['axis_x', 'axis_y', 'axis_trigger_left', 'axis_tr
 # returns its name
 def generateControllerConfig(controller):
     # Set config file name
-    configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.flycastMapping,controller.realName)
+    configFileName = f"{batoceraFiles.flycastMapping}/evdev_{controller.realName}.cfg"
     Config = configparser.ConfigParser(interpolation=None)
 
     if not os.path.exists(os.path.dirname(configFileName)):
@@ -95,11 +95,11 @@ def generateControllerConfig(controller):
         if input.name not in flycastMapping:
             continue
         if input.type not in flycastMapping[input.name]:
-            eslog.warning("Input type: {} - not in mapping".format(input.type))
+            eslog.warning(f"Input type: {input.type} - not in mapping")
             continue
         name = [input.name]
         var = flycastMapping[input.name][input.type]
-        eslog.debug("Name: {} - Var: {}".format(name, var))
+        eslog.debug(f"Name: {name} - Var: {var}")
         for i in sections:
             if var in sections[i]:
                 section = i
@@ -111,13 +111,13 @@ def generateControllerConfig(controller):
             else:
                 code = 16 + 2*int(input.id) # ABS_HAT0X=16
             # hat's considered analog
-            option = "bind{}".format(analogbind)
+            option = f"bind{analogbind}"
             if input.name == 'up' or input.name == 'left':
                 code = str(code) + "-"
             else:
                 code = str(code) + "+"
             analogbind = analogbind +1
-            val = "{}:{}".format(code, var)
+            val = f"{code}:{var}"
             Config.set(section, option, val)
         else:
             if input.code is not None:
@@ -126,29 +126,29 @@ def generateControllerConfig(controller):
                     section = 'digital'
                 if section == 'analog':
                     code = input.code + "-"
-                    option = "bind{}".format(analogbind)
+                    option = f"bind{analogbind}"
                     analogbind = analogbind +1
                 if section == 'digital':
                     code = input.code
-                    option = "bind{}".format(digitalbind)
+                    option = f"bind{digitalbind}"
                     digitalbind = digitalbind +1
-                val = "{}:{}".format(code, var)
+                val = f"{code}:{var}"
                 if input.name == 'joystick1left' or input.name == 'joystick1up':
                     Config.set(section, option, val)
                     # becase we only take one axis input
                     # now have to write the joy1right & joy1down manually
                     # same code number but positive axis
-                    option = "bind{}".format(analogbind)
+                    option = f"bind{analogbind}"
                     analogbind = analogbind +1
                     if input.name == 'joystick1left':
                         code = input.code + "+"
                         var = 'btn_analog_right'
-                        val = "{}:{}".format(code, var)
+                        val = f"{code}:{var}"
                         Config.set(section, option, val)
                     if input.name == 'joystick1up':
                         code = input.code + "+"
                         var = 'btn_analog_down'
-                        val = "{}:{}".format(code, var)
+                        val = f"{code}:{var}"
                         Config.set(section, option, val)
                 else:
                     Config.set(section, option, val)
@@ -162,7 +162,7 @@ def generateControllerConfig(controller):
 # atomiswave & naomi games expect an arcade cfg
 def generateArcadeControllerConfig(controller):
     # Set config file name
-    configFileName = "{}/evdev_{}_arcade.cfg".format(batoceraFiles.flycastMapping,controller.realName)
+    configFileName = f"{batoceraFiles.flycastMapping}/evdev_{controller.realName}_arcade.cfg"
     Config = configparser.ConfigParser(interpolation=None)
 
     if not os.path.exists(os.path.dirname(configFileName)):
@@ -184,11 +184,11 @@ def generateArcadeControllerConfig(controller):
         if input.name not in flycastArcadeMapping:
             continue
         if input.type not in flycastArcadeMapping[input.name]:
-            eslog.warning("Input type: {} - not in mapping".format(input.type))
+            eslog.warning(f"Input type: {input.type} - not in mapping")
             continue
         name = [input.name]
         var = flycastArcadeMapping[input.name][input.type]
-        eslog.debug("Name: {} - Var: {}".format(name, var))
+        eslog.debug(f"Name: {name} - Var: {var}")
         for i in arcadesections:
             if var in arcadesections[i]:
                 section = i
@@ -200,13 +200,13 @@ def generateArcadeControllerConfig(controller):
             else:
                 code = 16 + 2*int(input.id) # ABS_HAT0X=16
             # hat's considered analog
-            option = "bind{}".format(analogbind)
+            option = f"bind{analogbind}"
             if input.name == 'up' or input.name == 'left':
                 code = str(code) + "-"
             else:
                 code = str(code) + "+"
             analogbind = analogbind +1
-            val = "{}:{}".format(code, var)
+            val = f"{code}:{var}"
             Config.set(section, option, val)
         else:
             if input.code is not None:
@@ -215,29 +215,29 @@ def generateArcadeControllerConfig(controller):
                     section = 'digital'
                 if section == 'analog':
                     code = input.code + "-"
-                    option = "bind{}".format(analogbind)
+                    option = f"bind{analogbind}"
                     analogbind = analogbind +1
                 if section == 'digital':
                     code = input.code
-                    option = "bind{}".format(digitalbind)
+                    option = f"bind{digitalbind}"
                     digitalbind = digitalbind +1
-                val = "{}:{}".format(code, var)
+                val = f"{code}:{var}"
                 if input.name == 'joystick1left' or input.name == 'joystick1up':
                     Config.set(section, option, val)
                     # becase we only take one axis input
                     # now have to write the joy1right & joy1down manually
                     # same code number but positive axis
-                    option = "bind{}".format(analogbind)
+                    option = f"bind{analogbind}"
                     analogbind = analogbind +1
                     if input.name == 'joystick1left':
                         code = input.code + "+"
                         var = 'btn_analog_right'
-                        val = "{}:{}".format(code, var)
+                        val = f"{code}:{var}"
                         Config.set(section, option, val)
                     if input.name == 'joystick1up':
                         code = input.code + "+"
                         var = 'btn_analog_down'
-                        val = "{}:{}".format(code, var)
+                        val = f"{code}:{var}"
                         Config.set(section, option, val)
                 else:
                     Config.set(section, option, val)

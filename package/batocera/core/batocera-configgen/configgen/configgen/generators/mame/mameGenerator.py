@@ -509,7 +509,7 @@ class MameGenerator(Generator):
                         tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
                     tattoo = Image.open(tattoo_file)
                 except Exception as e:
-                    eslog.error("Error opening controller overlay: {}".format(tattoo_file))
+                    eslog.error(f"Error opening controller overlay: {tattoo_file}")
             elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
                 try:
                     tattoo_file = system.config['bezel.tattoo_file']

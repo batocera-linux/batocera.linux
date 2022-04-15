@@ -25,6 +25,6 @@ class ECWolfGenerator(Generator):
             os.chdir(rom)
         # Only game directories, not .zip
         except Exception as e:
-            print("Error: couldn't go into directory {} ({})".format(rom, e))
+            print(f"Error: couldn't go into directory {rom} ({e})")
         commandArray = ["ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", "--config /userdata/system/configs/ecwolf/ecwolf.cfg"]
         return Command.Command(array=commandArray)

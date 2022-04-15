@@ -153,8 +153,8 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
                 wiiMapping.update(res)
                 line = cconfig.readline()
 
-    eslog.debug("Extra Options: {}".format(extraOptions))
-    eslog.debug("Wii Mappings: {}".format(wiiMapping))
+    eslog.debug(f"Extra Options: {extraOptions}")
+    eslog.debug(f"Wii Mappings: {wiiMapping}")
 
     generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
@@ -205,7 +205,7 @@ def removeControllerConfig_gamecube():
         os.remove(configFileName)
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
+    configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     while nplayer <= 4:
@@ -264,7 +264,7 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
+    configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     nsamepad = 0
@@ -356,13 +356,13 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
 def generateControllerConfig_any_from_profiles(f, pad):
     for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
         try:
-            eslog.debug("Looking profile : {}".format(profileFile))
+            eslog.debug(f"Looking profile : {profileFile}")
             profileConfig = configparser.ConfigParser(interpolation=None)
             # To prevent ConfigParser from converting to lower case
             profileConfig.optionxform = str
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug("Profile device : {}".format(profileDevice))
+            eslog.debug(f"Profile device : {profileDevice}")
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
@@ -370,10 +370,10 @@ def generateControllerConfig_any_from_profiles(f, pad):
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
-                            f.write("{} = {}\n".format(key, val))
+                            f.write(f"{key} = {val}\n")
                     return True
         except:
-            eslog.error("profile {} : FAILED".format(profileFile))
+            eslog.error(f"profile {profileFile} : FAILED")
 
     return False
 
