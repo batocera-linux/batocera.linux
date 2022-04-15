@@ -319,6 +319,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             system.config["state_slot"] = args.state_slot
         if args.autosave is not None:
             system.config["autosave"] = args.autosave
+        if args.state_filename is not None:
+            system.config["state_filename"] = args.state_filename
 
         if generators[system.config['emulator']].getMouseMode(system.config):
             mouseChanged = True
@@ -621,6 +623,7 @@ if __name__ == '__main__':
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
     parser.add_argument("-state_slot", help="state slot", type=str, required=False)
+    parser.add_argument("-state_filename", help="state filename", type=str, required=False)
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
     parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
     parser.add_argument("-gameinfoxml", help="game info xml", type=str, nargs='?', default='/dev/null', required=False)
