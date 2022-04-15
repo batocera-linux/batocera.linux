@@ -50,8 +50,9 @@ index 6059a584e6..35f87d4f77 100644
  	{ 0x0000, 0x0000, "Generic X-Box pad", 0, XTYPE_UNKNOWN }
  };
  
-@@ -371,8 +377,10 @@ static const struct usb_device_id xpad_table[] = {
+@@ -371,8 +377,11 @@ static const struct usb_device_id xpad_table[] = {
  	XPAD_XBOX360_VENDOR(0x07ff),		/* Mad Catz GamePad */
++	XPAD_XBOX360_VENDOR(0x0c12),		/* Zeroplus X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x0e6f),		/* 0x0e6f X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x0f0d),		/* Hori Controllers */
 +	XPAD_XBOX360_VENDOR(0x24c6),		/* Hori Controllers */
