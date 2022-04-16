@@ -7741,12 +7741,6 @@ soniccd:
 model2emu:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        screenRatio:
-            prompt:      ASPECT RATIO
-            choices:
-                "4:3":      0
-                "16:9":     1
-                "16:10":    2
         fakeGouraud:
             group: ADVANCED OPTIONS
             prompt:      FAKE GOURAUD
