@@ -3299,6 +3299,13 @@ libretro:
                     "Crash-n Burn":      timing_hack1
                     "Dinopark Tycoon":   timing_hack3
                     "Microcosm":         timing_hack5
+            opera_nvram_storage:
+                group: ADVANCED OPTIONS
+                prompt:      NVRAM STORAGE
+                description: Enable shared saves for multi-disc games
+                choices:
+                    "Shared":   shared
+                    "Per Game": per game
     parallel_n64:
       features: [cheevos]
       shared: [autosave]
