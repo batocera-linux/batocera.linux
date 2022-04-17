@@ -485,6 +485,7 @@ mastersystem:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
 
 gamegear:
   name:       Game Gear
@@ -496,6 +497,7 @@ gamegear:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
 
 sg1000:
   name:       SG-1000
