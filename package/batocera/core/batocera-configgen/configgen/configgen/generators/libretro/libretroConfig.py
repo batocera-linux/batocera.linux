@@ -363,7 +363,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         # If set manually, proritize that.
         # Otherwise, set to portrait for games listed as 90 degrees, manual (default) if not.
         if not system.isOptSet('wswan_rotate_display'):
-            wswanGameRotation = videoMode.getGameSpecial(system.name, rom)
+            wswanGameRotation = videoMode.getGameSpecial(system.name, rom, True)
             if wswanGameRotation == "90":
                 wswanOrientation = "portrait"
             else:
@@ -673,7 +673,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     if bezel is None:
         return
 
-    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
+    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
     if bz_infos is None:
         return
 
