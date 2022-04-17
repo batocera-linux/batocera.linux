@@ -201,7 +201,7 @@ define MAME_INSTALL_TARGET_CMDS
 	cp -R $(@D)/ini				$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/keymaps			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/language		$(TARGET_DIR)/usr/bin/mame/
-	cp -R $(@D)/plugins			$(TARGET_DIR)/usr/bin/mame/
+	cp -R -u $(@D)/plugins			$(TARGET_DIR)/usr/bin/mame/
 	# Skip regression tests
 	#cp -R $(@D)/regtests		$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/roms			$(TARGET_DIR)/usr/bin/mame/
@@ -234,6 +234,9 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy extra bgfx shaders
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/crt-geom-deluxe-rgb.json $(TARGET_DIR)/usr/bin/mame/bgfx/chains
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/crt-geom-deluxe-composite.json $(TARGET_DIR)/usr/bin/mame/bgfx/chains
+
+	# Copy coin drop plugin
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
 endef
 
 define MAME_EVMAPY
