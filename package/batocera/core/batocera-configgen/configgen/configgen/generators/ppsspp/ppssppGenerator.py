@@ -43,9 +43,13 @@ class PPSSPPGenerator(Generator):
         if PPSSPPGenerator.isLowResolution(gameResolution):
             commandArray.extend(["--dpi", "0.5"])
 
+        # state_slot option
+        if system.isOptSet('state_filename'):
+            commandArray.extend(["--state", "/userdata/saves/psp/{}".format(system.config['state_filename'])])
+
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_RUNTIME_DIR":batoceraFiles.HOME_INIT, "QT_QPA_PLATFORM":"xcb", "PPSSPP_GAME_CONTROLLER_DB_PATH": ppssppControls})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_RUNTIME_DIR":batoceraFiles.HOME_INIT, "PPSSPP_GAME_CONTROLLER_DB_PATH": ppssppControls})
 
     @staticmethod
     def isLowResolution(gameResolution):

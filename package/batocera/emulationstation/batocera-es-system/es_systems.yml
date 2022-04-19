@@ -1813,7 +1813,9 @@ ports:
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
-  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
+  emulators:
+    sh:
+      sh:  { requireAnyOf: [] }
   force:      True
   comment_en: |
     ## SYSTEM PORTS ##
@@ -3148,3 +3150,19 @@ xbox360:
     You therefore need a GPU that supports Vulkan well.
 
     Note: It is possible to build Xenia for Linux but functionality as of writing is extremely poor.
+
+odcommander:
+  name: OD-Commander
+  manufacturer: Ports
+  release: 2022
+  hardware: port
+  extensions: [odc]
+  group: ports
+  emulators:
+    odcommander:
+      odcommander: { requireAnyOf: [BR2_PACKAGE_OD_COMMANDER] }
+  comment_en: |
+    A two-pane file manager in the style of Norton/Midnight Commander.
+  comment_fr: |
+    Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
+

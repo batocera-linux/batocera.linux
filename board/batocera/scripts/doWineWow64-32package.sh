@@ -87,6 +87,10 @@ if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
 then
     exit 1
 fi
+if ! mkdir -p "${TMPOUT}/lib32/vdpau"
+then
+    exit 1
+fi
 #if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
 #then
 #    exit 1
@@ -123,6 +127,7 @@ cp -p "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/vdpau/"* "${TMPOUT}/lib32/vdpau" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 
 # add .so for lutris

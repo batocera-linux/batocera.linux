@@ -36,6 +36,30 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     else:
         iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
 
+    # Audio buffer settings
+    # In the future, add for Audio-OMX too?
+    if system.isOptSet("mupen64plus_AudioBuffer"):
+        # Very High
+        if system.config["mupen64plus_AudioBuffer"] == "Very High":
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "16384")
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "4096")
+            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "2048")
+        # High (defaults provided by mupen64plus)
+        if system.config["mupen64plus_AudioBuffer"] == "High":
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "16384")
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "2048")
+            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "1024")
+        # Low
+        if system.config["mupen64plus_AudioBuffer"] == "Low":
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "4096")
+            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "1024")
+            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "512")
+    else:
+        # Medium
+        iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "8192")
+        iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "2048")
+        iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "1024")
+
     # Invert required when screen is rotated
     if gameResolution["width"] < gameResolution["height"]:
         width = gameResolution["height"]
