@@ -1,5 +1,5 @@
 diff --git a/xpad.c b/xpad.c
-index 6059a584e6..35f87d4f77 100644
+index 6059a584e6..94c49fec67 100644
 --- a/xpad.c
 +++ b/xpad.c
 @@ -217,6 +217,7 @@ static const struct xpad_device {
@@ -42,15 +42,18 @@ index 6059a584e6..35f87d4f77 100644
  	{ 0x24c6, 0x550d, "Hori GEM Xbox controller", 0, XTYPE_XBOX360 },
  	{ 0x24c6, 0x550e, "Hori Real Arcade Pro V Kai 360", MAP_TRIGGERS_TO_BUTTONS, XTYPE_XBOX360 },
  	{ 0x24c6, 0x5b00, "ThrustMaster Ferrari 458 Racing Wheel", 0, XTYPE_XBOX360 },
-@@ -289,6 +294,7 @@ static const struct xpad_device {
+@@ -289,6 +294,8 @@ static const struct xpad_device {
  	{ 0x24c6, 0xfafe, "Rock Candy Gamepad for Xbox 360", 0, XTYPE_XBOX360 },
  	{ 0x3767, 0x0101, "Fanatec Speedster 3 Forceshock Wheel", 0, XTYPE_XBOX },
  	{ 0xffff, 0xffff, "Chinese-made Xbox Controller", 0, XTYPE_XBOX },
 +	{ 0x2563, 0x058d, "OneXPlayer Gamepad", 0, XTYPE_XBOX360 },
++	{ 0x28de, 0x1205, "Valve Software Steam Controller", 0, XTYPE_XBOX360 },
  	{ 0x0000, 0x0000, "Generic X-Box pad", 0, XTYPE_UNKNOWN }
  };
  
-@@ -371,8 +377,11 @@ static const struct usb_device_id xpad_table[] = {
+@@ -369,10 +376,13 @@ static const struct usb_device_id xpad_table[] = {
+ 	XPAD_XBOX360_VENDOR(0x0738),		/* Mad Catz X-Box 360 controllers */
+ 	{ USB_DEVICE(0x0738, 0x4540) },		/* Mad Catz Beat Pad */
  	XPAD_XBOX360_VENDOR(0x07ff),		/* Mad Catz GamePad */
 +	XPAD_XBOX360_VENDOR(0x0c12),		/* Zeroplus X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x0e6f),		/* 0x0e6f X-Box 360 controllers */
@@ -62,7 +65,7 @@ index 6059a584e6..35f87d4f77 100644
  	XPAD_XBOX360_VENDOR(0x12ab),		/* X-Box 360 dance pads */
  	XPAD_XBOX360_VENDOR(0x1430),		/* RedOctane X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x146b),		/* BigBen Interactive Controllers */
-@@ -380,8 +388,13 @@ static const struct usb_device_id xpad_table[] = {
+@@ -380,8 +390,14 @@ static const struct usb_device_id xpad_table[] = {
  	XPAD_XBOX360_VENDOR(0x15e4),		/* Numark X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x162e),		/* Joytech X-Box 360 controllers */
  	XPAD_XBOX360_VENDOR(0x1689),		/* Razer Onza */
@@ -73,6 +76,7 @@ index 6059a584e6..35f87d4f77 100644
 +	XPAD_XBOX360_VENDOR(0x2f24),		/* GameSir Controllers */
 +	XPAD_XBOX360_VENDOR(0x3285),		/* Nacon Controllers */
 +	XPAD_XBOX360_VENDOR(0x2563),		/* OneXPlayer Gamepad */
++	XPAD_XBOX360_VENDOR(0x28de),		/* Valve Software Steam Controller */
  	{ }
  };
  
