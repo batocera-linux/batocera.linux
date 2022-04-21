@@ -1542,6 +1542,14 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('opera_hack_timing_5',        '"enabled"')
             elif system.config['game_fixes_opera'] == 'timing_hack6':
                 coreSettings.save('opera_hack_timing_6',        '"enabled"')
+        # Shared nvram
+        # If ROM includes the word Disc, assume it's a multi disc game, and enable shared nvram if the option isn't set.
+        if system.isOptSet('opera_nvram_storage'):
+            coreSettings.save('opera_nvram_storage', '"' + system.config['opera_nvram_storage'] + '"')
+        elif 'disc' in rom.casefold():
+            coreSettings.save('opera_nvram_storage', '"shared"')
+        else:
+            coreSettings.save('opera_nvram_storage', '"per game"')
 
     # ScummVM CORE Options
     if (system.config['core'] == 'scummvm'):
