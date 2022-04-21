@@ -65,6 +65,10 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mamevirtual_libretro.so
 	mkdir -p $(TARGET_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
+	cp -R -u $(@D)/plugins $(TARGET_DIR)/usr/bin/mame/
+	# Copy coin drop plugin
+	mkdir -p $(TARGET_DIR)/usr/bin/mame/
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS

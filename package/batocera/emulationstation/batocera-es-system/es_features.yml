@@ -1606,6 +1606,13 @@ libretro:
                 choices:
                     "Enabled (Default)": 1
                     "Disabled":          0
+            coindropplugin:
+                group: ADVANCED OPTIONS
+                prompt:      COIN SOUND PLUGIN
+                description: Play a coin drop sound effect when an insert coin button is pressed
+                choices:
+                    "Enabled":            1
+                    "Disabled (Default)": 0
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
@@ -7378,10 +7385,17 @@ mame:
                 hiscoreplugin:
                     group: ADVANCED OPTIONS
                     prompt:      HIGH SCORE PLUGIN
-                    description: Emable or disable high score saving
+                    description: Enable or disable high score saving
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
+                coindropplugin:
+                    group: ADVANCED OPTIONS
+                    prompt:      COIN SOUND PLUGIN
+                    description: Play a coin drop sound effect when an insert coin button is pressed
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
        neogeo: 
             cfeatures:
                 altlayout:
@@ -7403,6 +7417,13 @@ mame:
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
+                coindropplugin:
+                    group: ADVANCED OPTIONS
+                    prompt:      COIN SOUND PLUGIN
+                    description: Play a coin drop sound effect when an insert coin button is pressed
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
 
 wine:
   features: [padtokeyboard]

@@ -32,8 +32,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
         commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', cfgPath ]
         commandLine += [ '-rompath', romDirname ]
+        pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
-            commandLine += [ "-plugins", "-plugin", "hiscore" ]
+            pluginsToLoad += [ "hiscore" ]
+        if system.isOptSet("coindropplugin") and system.getOptBoolean("coindropplugin"):
+            pluginsToLoad += [ "coindrop" ]
+        if len(pluginsToLoad) > 0:
+            commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
         messMode = -1
     else:
         # Set up command line for MESS or MAMEVirtual
