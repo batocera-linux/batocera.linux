@@ -200,9 +200,9 @@ n64:
   extensions: [z64, n64, v64, zip, 7z]
   emulators:
     mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
-      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64], incompatible_extensions: [zip, 7z] }
+      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2], incompatible_extensions: [zip, 7z] }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE], incompatible_extensions: [zip, 7z] }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
@@ -2349,7 +2349,7 @@ plugnplay:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 megaduck:
-  name:       Mega Duck
+  name:       Mega Duck / Cougar Boy
   manufacturer: Welback Holdings
   release: 1993
   hardware: portable
@@ -2357,8 +2357,11 @@ megaduck:
   emulators:
     libretro:
       mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK], incompatible_extensions: [zip, 7z] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Use unzipped ROMs (BIN format) if using Sameduck.
 
 pv1000:
   name:       PV-1000
@@ -2765,16 +2768,6 @@ vemulator:
   emulators:
     libretro:
       vemulator:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VEMULATOR] }
-
-sameduck:
-  name:       Mega Duck / Cougar Boy
-  manufacturer: Welback Holdings
-  release: 1993
-  hardware: portable
-  extensions: [bin]
-  emulators:
-    libretro:
-      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
 
 openjazz:
   name:       Jazz Jackrabbit
