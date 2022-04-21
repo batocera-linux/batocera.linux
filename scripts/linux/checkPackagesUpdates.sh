@@ -76,6 +76,7 @@ PACKAGES_LIBRETRO="	libretro-81
 					libretro-px68k
 					libretro-retro8
 					libretro-scummvm
+					libretro-smsplus-gx
 					libretro-snes9x
 					libretro-snes9x-next
 					libretro-stella
