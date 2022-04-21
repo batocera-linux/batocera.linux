@@ -5879,6 +5879,13 @@ mupen64plus:
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        mupen64plus_AudioSync:
+            group: ADVANCED OPTIONS
+            prompt:      AUDIO SYNC
+            description: Enable second audio limiter. Improves audio quality at the cost of performance.
+            choices:
+                "Off":   "False"
+                "On":    "True"
         mupen64plus_AudioBuffer:
             group: ADVANCED OPTIONS
             prompt:      AUDIO BUFFER (SAMPLES)
