@@ -137,17 +137,13 @@ class Model2EmuGenerator(Generator):
         if os.path.isfile(configFileName):
             Config.read(configFileName)
 
+        # set ini to use custom resolution and automatically start in fullscreen
         Config.set("Renderer","FullScreenWidth", str(gameResolution["width"]))
         Config.set("Renderer","FullScreenHeight", str(gameResolution["height"]))
-        # set ini to use custom resolution and automatically start in fullscreen
         Config.set("Renderer","FullMode", "4")
         Config.set("Renderer","AutoFull", "1")
 
         # now set the emulator features
-        if system.isOptSet("screenRatio"):
-            Config.set("Renderer","WideScreenWindow", format(system.config["screenRatio"]))
-        else:
-            Config.set("Renderer","WideScreenWindow", "0")
         if system.isOptSet("fakeGouraud"):
             Config.set("Renderer","FakeGouraud", format(system.config["fakeGouraud"]))
         else:
@@ -189,7 +185,7 @@ class Model2EmuGenerator(Generator):
             Config.write(configfile)
         
         # now run the emulator
-        commandArray = ["/usr/wine/proton/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
+        commandArray = ["/usr/wine/proton/bin/wine", "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         romname = rom.replace("/userdata/roms/model2/", "")
         smplromname = romname.replace(".zip", "")

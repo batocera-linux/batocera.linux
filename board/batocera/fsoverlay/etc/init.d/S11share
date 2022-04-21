@@ -79,7 +79,19 @@ mountDeviceOrFallback() {
     fi
 }
 
-mountNetwork() {
+mountPartSubdir() {
+    CMD_KEYPART=$1
+    CMD_PART=$2
+    CMD_SUBDIR=$3
+    CMD_TDIR=$4
+    mkdir -p "/var/batocera_subdir_${CMD_KEYPART}" || return 1
+    mount "UUID=${CMD_PART}" "/var/batocera_subdir_${CMD_KEYPART}" || return 1
+    mkdir -p "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" || return 1
+    mount --bind "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" "${CMD_TDIR}" || return 1
+    return 0
+}
+
+mountDevicesOrNetwork() {
     # /boot/batocera-boot.conf examples :
     # sharedevice=NETWORK
     #
@@ -100,10 +112,15 @@ mountNetwork() {
     # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera/saves /userdata/saves
     # or
     # sharenetwork_cmd1=mount.cifs //192.168.0.1/batocera /userdata -o guest
+    #
+    # mounting full partitions or sub folders of partitions on top of the internal partition
+    # sharedevice=DEVICES
+    # sharedevice_part1=SHARE@abcdefg-1234-5678-hijk-lmnopq0000
+    # sharedevice_part2=ROMS@68dc61b8-5008-4659-bde9-5938a547680a:/Documents/roms
 
     # execute all commands in /boot/batocera-boot.conf which are like : sharenetwork_cmd1=my command
-    if ! grep -E '^[ ]*sharenetwork_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
-        sed -e s+'^[ ]*sharenetwork_\([a-z]*\)[0-9][ ]*='+'\1 '+ |
+    if ! grep -E '^[ ]*share(network|device)_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
+         sed -e s+'^[ ]*share\(network\|device\)_\([a-z]*\)[0-9][ ]*='+'\2 '+ |
         while read -r CTYPE CMD
         do
             XTRY=5  # X tries and give up
@@ -117,10 +134,27 @@ mountNetwork() {
                 then
                     CMD_EXEC="${CMD}"
                 else
-                    CMD_TARGET=$(echo "${CMD}" | sed -e s+'^\([^@]*\)@.*$'+'\1'+)
-                    CMD_HOST=$(echo "${CMD}" | sed -e s+'^[^@]*@\([^:]*\):.*$'+'\1'+)
-                    CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
-                    CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
+		    CMD_TARGET=$(echo "${CMD}" | sed -e s+'^\([^@]*\)@.*$'+'\1'+)
+		    case "${CTYPE}" in
+			"nfs"|"smb")
+			    CMD_HOST=$(echo "${CMD}" | sed -e s+'^[^@]*@\([^:]*\):.*$'+'\1'+)
+			    CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
+			    CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
+			    ;;
+			"part")
+			    CMD_PART=$(echo "${CMD}" | sed -e s+'^[^@]*@\(.*\)$'+'\1'+)
+			    CMD_SUBDIR="/"
+			    CMD_KEYPART=$(echo "${CMD_PART}" | md5sum | cut -c 1-10)
+			    if echo "${CMD_PART}" | grep -qE ':'
+			    then
+				CMD_SUBDIR=$(echo "${CMD_PART}" | sed -e s+"^[^:]*:"++)
+				CMD_PART=$(echo "${CMD_PART}" | sed -e s+":.*$"++)
+			    fi
+			    ;;
+			*)
+			    echo "unknown type" >&2
+			    return 1
+		    esac
 
                     # MAP to the batocera directory
                     CMD_TDIR="/userdata"
@@ -168,15 +202,24 @@ mountNetwork() {
                             CMD_ADDOPT=
                             [ -n "${CMD_OPT}" ] && CMD_ADDOPT=",${CMD_OPT}"
                             CMD_EXEC="mount -o port=2049,nolock,proto=tcp${CMD_ADDOPT} ${CMD_HOST}:${CMD_RDIR} ${CMD_TDIR}"
-                        ;;
+                            ;;
                         "smb")
                             CMD_ADDOPT=
                             [ -n "${CMD_OPT}" ] && CMD_ADDOPT="-o ${CMD_OPT}"
                             CMD_EXEC="mount.cifs //${CMD_HOST}/${CMD_RDIR} ${CMD_TDIR} ${CMD_ADDOPT}"
-                        ;;
+                            ;;
+			"part")
+			    if test "${CMD_SUBDIR}" = "/"
+			    then
+				CMD_EXEC="mount UUID=${CMD_PART} ${CMD_TDIR}"
+			    else
+				CMD_EXEC="mountPartSubdir ${CMD_KEYPART} ${CMD_PART} ${CMD_SUBDIR} ${CMD_TDIR}"
+			    fi
+			    ;;
                     esac
                 fi
 
+		mkdir -p "${CMD_TDIR}" || return 1
                 echo "${CMD_EXEC}"
                 if ${CMD_EXEC}
                 then
@@ -239,7 +282,7 @@ case "${MODE}" in
     "RAM")
         mount -t tmpfs -o size=256M tmpfs /userdata
     ;;
-    "NETWORK")
+    "NETWORK"|"DEVICES")
         # first, INTERNAL mount, then, network mount over the NETWORK mounts
         # to allow to mount over /userdata, but only over /userdata/roms if wanted
         # mounting network mounts over usb key have not really sense
@@ -251,7 +294,7 @@ case "${MODE}" in
 
         # Network mounts
         # no fallback required, mounted on the share
-        mountNetwork > /tmp/mountNetwork.log 2> /tmp/mountNetwork.err # could be usefull to debug
+        mountDevicesOrNetwork > /tmp/mountDevicesOrNetwork.log 2> /tmp/mountDevicesOrNetwork.err # could be usefull to debug
     ;;
     "INTERNAL"|*)
         if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata

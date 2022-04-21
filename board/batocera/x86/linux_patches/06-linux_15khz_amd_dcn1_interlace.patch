@@ -65,14 +65,6 @@ index 4bbfd8a26a60..be7a42e6bf43 100644
  	pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
  			pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
  }
-@@ -3560,6 +3563,7 @@ static void apply_front_porch_workaround(
- 	if (timing->flags.INTERLACE == 1) {
- 		if (timing->v_front_porch < 2)
- 			timing->v_front_porch = 2;
-+		timing->v_front_porch |= 1;
- 	} else {
- 		if (timing->v_front_porch < 1)
- 			timing->v_front_porch = 1;
 @@ -3586,8 +3590,7 @@ int dcn10_get_vupdate_offset_from_vsync(struct pipe_ctx *pipe_ctx)
  
  	asic_blank_end = (patched_crtc_timing.v_total -
@@ -87,14 +79,6 @@ diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm
 index 2972392f9788..f45608615f2b 100644
 --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
 +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-@@ -51,6 +51,7 @@ static void apply_front_porch_workaround(struct dc_crtc_timing *timing)
- 	if (timing->flags.INTERLACE == 1) {
- 		if (timing->v_front_porch < 2)
- 			timing->v_front_porch = 2;
-+		timing->v_front_porch |= 1;
- 	} else {
- 		if (timing->v_front_porch < 1)
- 			timing->v_front_porch = 1;
 @@ -560,10 +561,6 @@ bool optc1_validate_timing(
  		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
  		return false;

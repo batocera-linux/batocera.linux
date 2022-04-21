@@ -3,8 +3,8 @@
 # libretro-reminiscence
 #
 ################################################################################
-# Version: Commits on Nov 3, 2021
-LIBRETRO_REMINISCENCE_VERSION = dbf2f5964c21f36e045ccd2cb50ac2513fdca75d
+# Version: Commits on Apr 6, 2022
+LIBRETRO_REMINISCENCE_VERSION = c2624c7565bbae441835db80f24902fc40f83dd1
 LIBRETRO_REMINISCENCE_SITE = $(call github,libretro,REminiscence,$(LIBRETRO_REMINISCENCE_VERSION))
 LIBRETRO_REMINISCENCE_LICENSE = GPL-3.0
 

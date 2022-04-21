@@ -93,8 +93,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     renderConfig = system.renderconfig
 
     # Basic configuration
-    retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
-    retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
+    retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
+    retroarchConfig['menu_show_restart_retroarch'] = 'false'      # this option messes everything up on Batocera if ever clicked
+    retroarchConfig['menu_show_load_content_animation'] = 'false' # hide popup when starting a game
 
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
 
@@ -140,7 +141,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
 
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
-    retroarchConfig['cache_directory'] = '/userdata/system/configs/retroarch/cache'
+
+    if not os.path.exists(batoceraFiles.CONF + '/retroarch/cache'):
+        os.makedirs(batoceraFiles.CONF + '/retroarch/cache')
+    retroarchConfig['cache_directory'] = batoceraFiles.CONF + '/retroarch/cache'
 
     # require for core informations
     retroarchConfig['libretro_directory'] = '/usr/lib/libretro'

@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.242
-MAME_VERSION = gm0242sr002h
+# Version.: Release 0.241
+MAME_VERSION = gm0241sr002g
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -201,7 +201,7 @@ define MAME_INSTALL_TARGET_CMDS
 	cp -R $(@D)/ini				$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/keymaps			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/language		$(TARGET_DIR)/usr/bin/mame/
-	cp -R $(@D)/plugins			$(TARGET_DIR)/usr/bin/mame/
+	cp -R -u $(@D)/plugins			$(TARGET_DIR)/usr/bin/mame/
 	# Skip regression tests
 	#cp -R $(@D)/regtests		$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/roms			$(TARGET_DIR)/usr/bin/mame/
@@ -238,6 +238,9 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy blank disk image(s)
 	mkdir -p $(TARGET_DIR)/usr/share/mame
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
+  
+	# Copy coin drop plugin
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
 endef
 
 define MAME_EVMAPY

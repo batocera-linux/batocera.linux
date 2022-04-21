@@ -322,6 +322,9 @@ ngp:
 ngpc:
   emulator: libretro
   core:     mednafen_ngp
+odcommander:
+  emulator: odcommander
+  core:     odcommander
 odyssey2:
   emulator: libretro
   core:     o2em
@@ -364,6 +367,11 @@ plugnplay:
 pokemini:
   emulator: libretro
   core:     pokemini
+ports:
+  emulator: sh
+  core:     sh
+  options:
+    bezel: none
 prboom:
   emulator: libretro
   core:     prboom
@@ -393,9 +401,6 @@ reminiscence:
 samcoupe:
   emulator: samcoupe
   core:     samcoupe
-sameduck:
-  emulator: libretro
-  core:     sameduck
 satellaview:
   emulator: libretro
   core:     snes9x

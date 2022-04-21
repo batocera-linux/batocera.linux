@@ -1606,6 +1606,13 @@ libretro:
                 choices:
                     "Enabled (Default)": 1
                     "Disabled":          0
+            coindropplugin:
+                group: ADVANCED OPTIONS
+                prompt:      COIN SOUND PLUGIN
+                description: Play a coin drop sound effect when an insert coin button is pressed
+                choices:
+                    "Enabled":            1
+                    "Disabled (Default)": 0
             sharemameart:
                 group: ADVANCED OPTIONS
                 prompt:      SHARE MAME ARTWORK
@@ -3434,6 +3441,13 @@ libretro:
                     "Crash-n Burn":      timing_hack1
                     "Dinopark Tycoon":   timing_hack3
                     "Microcosm":         timing_hack5
+            opera_nvram_storage:
+                group: ADVANCED OPTIONS
+                prompt:      NVRAM STORAGE
+                description: Enable shared saves for multi-disc games
+                choices:
+                    "Shared":   shared
+                    "Per Game": per game
     parallel_n64:
       features: [cheevos]
       shared: [autosave]
@@ -6000,6 +6014,13 @@ mupen64plus:
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        mupen64plus_AudioSync:
+            group: ADVANCED OPTIONS
+            prompt:      AUDIO SYNC
+            description: Enable second audio limiter. Improves audio quality at the cost of performance.
+            choices:
+                "Off":   "False"
+                "On":    "True"
         mupen64plus_AudioBuffer:
             group: ADVANCED OPTIONS
             prompt:      AUDIO BUFFER (SAMPLES)
@@ -7658,10 +7679,17 @@ mame:
                 hiscoreplugin:
                     group: ADVANCED OPTIONS
                     prompt:      HIGH SCORE PLUGIN
-                    description: Emable or disable high score saving
+                    description: Enable or disable high score saving
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
+                coindropplugin:
+                    group: ADVANCED OPTIONS
+                    prompt:      COIN SOUND PLUGIN
+                    description: Play a coin drop sound effect when an insert coin button is pressed
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
        neogeo: 
             cfeatures:
                 altlayout:
@@ -7683,6 +7711,13 @@ mame:
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
+                coindropplugin:
+                    group: ADVANCED OPTIONS
+                    prompt:      COIN SOUND PLUGIN
+                    description: Play a coin drop sound effect when an insert coin button is pressed
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
 
 wine:
   features: [padtokeyboard]
@@ -8028,12 +8063,6 @@ soniccd:
 model2emu:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        screenRatio:
-            prompt:      ASPECT RATIO
-            choices:
-                "4:3":      0
-                "16:9":     1
-                "16:10":    2
         fakeGouraud:
             group: ADVANCED OPTIONS
             prompt:      FAKE GOURAUD
@@ -8170,6 +8199,14 @@ demul:
                 "Off": 0
                 "On":  1
 
+sh:
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+
 xenia:
   features: []
+  shared: [videomode]
+
+odcommander:
+  features: [padtokeyboard]
   shared: [videomode]

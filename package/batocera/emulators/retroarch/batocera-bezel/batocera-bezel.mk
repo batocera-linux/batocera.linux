@@ -3,8 +3,8 @@
 # batocera bezel
 #
 ################################################################################
-# Version.: Commits on Feb 1, 2022
-BATOCERA_BEZEL_VERSION = 6a64404e9f0008b737c56c12ba53710d30036d6f
+# Version.: Commits on April 21, 2022
+BATOCERA_BEZEL_VERSION = b18b18e8d7116b2f6bbf22a7da708f453e82771c
 BATOCERA_BEZEL_SITE = $(call github,batocera-linux,batocera-bezel,$(BATOCERA_BEZEL_VERSION))
 
 define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
@@ -22,6 +22,7 @@ define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
 	cp -r $(@D)/default_unglazed/*               $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	cp -r $(@D)/default_nocurve_night/default.*  $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	cp -r $(@D)/default_nocurve_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
+	cp -rf $(@D)/default_standalone_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	(cd $(TARGET_DIR)/usr/share/batocera/datainit/decorations && ln -sf consoles default)
 
 	echo -e "You can find help on how to customize decorations: \n" \
