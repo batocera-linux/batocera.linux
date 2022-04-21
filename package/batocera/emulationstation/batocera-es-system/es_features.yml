@@ -6267,33 +6267,33 @@ rpcs3:
             prompt:      STRETCH TO DISPLAY AREA
             description: Distorts the output to fill the display fully.
             choices:
-                "Off (Default)": False
+                "Off":           False
                 "On":            True
         depthbuffer:
             group: ADVANCED OPTIONS
             prompt: WRITE DEPTH BUFFER
-            description: Can Fix broken graphics in some games.
+            description: May fix broken graphics in some games.
             choices:
-                "Off (Default)": False
+                "Off":           False
                 "On":            True
         sputhreads:
             group: ADVANCED OPTIONS
             prompt: PREFERRED SPU THREADS
-            description: May help to fix choppy audio on weaker CPUs.
+            description: Lower values may fix choppy audio on weaker CPUs. Leave on AUTO if slowdown occurs.
             choices:
-                "0 (Default)": 0
-                "1":           1
-                "2":           2
-                "3":           3
-                "4":           4
-                "5":           5
-                "6":           6
+                "0 (slowest, most stable)":   0
+                "1":                          1
+                "2":                          2
+                "3":                          3
+                "4":                          4
+                "5":                          5
+                "6 (fastest, most unstable)": 6
         colorbuffers:
             group: ADVANCED OPTIONS
-            prompt: WRITE COLOUR BUFFERS
-            description: Enable this option if you get missing graphics or broken lighting ingame.
+            prompt: WRITE COLOR BUFFERS
+            description: May fix missing graphics and broken lighting at the cost of performance.
             choices:
-                "Off (Default)": False
+                "Off":           False
                 "On":            True
 
 scummvm:
