@@ -5039,12 +5039,6 @@ daphne:
   features: [padtokeyboard]
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        daphne_ratio:
-            prompt:      ASPECT RATIO
-            description: Not all games support Stretch, depending on the video files.
-            choices:
-                "Original":                   original
-                "Stretch":                    stretch
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      GRAPHICS BACKEND
@@ -5052,6 +5046,20 @@ daphne:
             choices:
                 "OpenGL":                      OpenGL
                 "Vulkan":                      Vulkan
+        daphne_ratio:
+            prompt:      ASPECT RATIO
+            description: Not all games support Stretch, depending on the video files.
+            choices:
+                "Original":                   original
+                "Stretch":                    stretch
+                "Force 4:3":                  force43				
+		daphne_rotate:
+            prompt: 	SCREEN ROTATION
+            description: Rotate the screen with the emulator.
+            choices:
+                "0 degrees": 		   			0
+                "90 degrees":          			90
+                "270 degrees":         			270
         bilinear_filter:
             group: ADVANCED OPTIONS
             prompt:      BILINEAR FILTERING
@@ -5080,6 +5088,15 @@ daphne:
             choices:
                 "Off":                          0
                 "On":                           1
+        singe_joystick_range:
+            group: ADVANCED OPTIONS
+            prompt:      JOYSTICK SENSITIVITY
+            description: Adjust Singe joystick sensitivity.
+            choices:
+                "5":                  			5
+                "10":                 			10
+                "15":                 			15
+                "20":                 			20
 
 devilutionx:
   features: [padtokeyboard]
