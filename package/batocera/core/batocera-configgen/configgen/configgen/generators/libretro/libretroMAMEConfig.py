@@ -43,7 +43,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         # Set up command line for MESS or MAMEVirtual
         softDir = "/var/run/mame_software/"
-        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd" ]
+        subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
         if system.isOptSet("softList") and system.config["softList"] != "none":
             softList = system.config["softList"]
         else:
@@ -79,13 +79,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
         else:
             # Command line for MESS consoles/computers
             # Alternate system for machines that have different configs (ie computers with different hardware)
-            macModel = 'maclc3'
+            messModel = messSysName[messMode]
             if system.isOptSet("altmodel"):
-                commandLine += [ system.config["altmodel"] ]
-                if system.name == "macintosh":
-                    macModel = system.config["altmodel"]
-            else:
-                commandLine += [ messSysName[messMode] ]
+                messModel = system.config["altmodel"]
+            commandLine += [ messModel ]
 
             #TI-99 32k RAM expansion & speech modules - enabled by default
             if system.name == "ti99":
@@ -99,17 +96,17 @@ def generateMAMEConfigs(playersControllers, system, rom):
             if system.name == "macintosh":
                 if system.isOptSet("ramsize"):
                     ramSize = int(system.config["ramsize"])
-                    if macModel in [ 'maciix', 'maclc3' ]:
-                        if macModel == 'maclc3' and ramSize == 2:
+                    if messModel in [ 'maciix', 'maclc3' ]:
+                        if messModel == 'maclc3' and ramSize == 2:
                             ramSize = 4
-                        if macModel == 'maclc3' and ramSize > 80:
+                        if messModel == 'maclc3' and ramSize > 80:
                             ramSize = 80
-                        if macModel == 'maciix' and ramSize == 16:
+                        if messModel == 'maciix' and ramSize == 16:
                             ramSize = 32
-                        if macModel == 'maciix' and ramSize == 48:
+                        if messModel == 'maciix' and ramSize == 48:
                             ramSize = 64
                         commandLine += [ '-ramsize', str(ramSize) + 'M' ]
-                    if macModel == 'maciix':
+                    if messModel == 'maciix':
                         imageSlot = 'nba'
                         if system.isOptSet('imagereader'):
                             if system.config["imagereader"] == "disabled":
@@ -118,6 +115,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
                                 imageSlot = system.config["imagereader"]
                         if imageSlot != "":
                             commandLine += [ "-" + imageSlot, 'image' ]
+
+            # Auto softlist for FM Towns if there is a zip that matches the folder name
+            # Used for games that require a CD and floppy to both be inserted
+            if system.name == 'fmtowns' and softList == '':
+                romParentPath = os.path.basename(romDirname)
+                if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                    softList = 'fmtowns_cd'
 
             if softList != "":
                 # Software list ROM commands
@@ -131,7 +135,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 # Mac will auto change floppy 1 to 2 if a boot disk is enabled
                 if system.name != "macintosh":
                     if system.isOptSet("altromtype"):
-                        commandLine += [ "-" + system.config["altromtype"] ]
+                        if system.config["altromtype"] == "flop1" and messModel == "fmtmarty":
+                            commandLine += [ "-flop" ]
+                        else:
+                            commandLine += [ "-" + system.config["altromtype"] ]
                     else:
                         commandLine += [ "-" + messRomType[messMode] ]
                 else:
@@ -161,6 +168,26 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         bootType = "-hard"
                         bootDisk = '"/userdata/bios/' + system.config["bootdisk"] + '.chd"'
                     commandLine += [ bootType, bootDisk ]
+
+                # Create & add a blank disk if needed, insert into drive 2
+                # or drive 1 if drive 2 is selected manually or FM Towns Marty.
+                if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
+                    if system.name == 'fmtowns':
+                        blankDisk = '/usr/share/mame/blank.fmtowns'
+                        targetFolder = '/userdata/saves/mame/{}'.format(system.name)
+                        targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
+                    # Add elif statements here for other systems if enabled
+                    if not os.path.exists(targetFolder):
+                        os.makedirs(targetFolder)
+                    if not os.path.exists(targetDisk):
+                        shutil.copy2(blankDisk, targetDisk)
+                    # Add other single floppy systems to this if statement
+                    if messModel == "fmtmarty":
+                        commandArray += [ '-flop', targetDisk ]
+                    elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
+                        commandArray += [ '-flop1', targetDisk ]
+                    else:
+                        commandArray += [ '-flop2', targetDisk ]
 
             # UI enable - for computer systems, the default sends all keys to the emulated system.
             # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
@@ -226,6 +253,16 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 iniFile.write('autoboot_command          ' + autoRunCmd + "\n")
                 iniFile.write('autoboot_delay            ' + str(autoRunDelay))
                 iniFile.close()
+            # Create & add a blank disk if needed, insert into drive 2
+            # or drive 1 if drive 2 is selected manually.
+            if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
+                if not os.path.exists('/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0])):
+                    os.makedirs('/userdata/saves/lr-mess/{}/'.format(system.name))
+                    shutil.copy2('/usr/share/mame/blank.dsk', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]))
+                if system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2':
+                    commandLine += [ '-flop1', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+                else:
+                    commandLine += [ '-flop2', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -245,7 +282,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
             commandLine += [ "-artwork_crop" ]
 
     # Share plugins & samples with standalone MAME
-    commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]    
+    commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
     commandLine += [ "-homepath" , "/userdata/saves/mame/plugins/" ]
     if not os.path.exists("/userdata/saves/mame/plugins/"):
         os.makedirs("/userdata/saves/mame/plugins/")
@@ -263,7 +300,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     if messMode == -1:
         generateMAMEPadConfig(cfgPath, playersControllers, system, "", romBasename)
     else:
-        generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName[messMode], romBasename)
+        generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, romBasename)
 
 def prepSoftwareList(subdirSoftList, softList, softDir, hashDir, romDirname):
     if not os.path.exists(softDir):
@@ -514,7 +551,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "xegs", "socrates", "vgmplay", "pdp1" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty" ]
     if messSysName in specialControlList:
         config_alt = minidom.Document()
         configFile_alt = cfgPath + messSysName + ".cfg"
@@ -724,7 +761,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PA3.1', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "64", "64"))     # P2 Lower Right (N)
 
         # BBC Micro - joystick not emulated/supported for most games, map some to gamepad
-        if nplayer == 1 and messSysName == "bbcb":
+        if nplayer == 1 and messSysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
             xml_kbenable_alt = config_alt.createElement("keyboard")
             xml_kbenable_alt.setAttribute("tag", ":")
             xml_kbenable_alt.setAttribute("enabled", "1")
@@ -784,6 +821,10 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "512", "0"))         # Rate Hold
             xml_input.appendChild(generateSpecialPortElement(config, 'standard', nplayer, pad.index, "UI_CONFIGURE", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "", ""))
 
+        # FM Towns (Marty) Run button mapping, the rest map properly automatically.
+        if nplayer == 1 and messSysName == "fmtmarty":
+            xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':joy1_ex', nplayer, pad.index, "P1_START", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "1", "0")) # Run
+
         # Punchtape loading & Spacewar controls for PDP-1
         if nplayer <= 2 and messSysName == "pdp1":
             if nplayer == 1:
@@ -800,6 +841,38 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "64", "0"))                     # P2 Thrust
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))                    # P2 Fire
                 xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "512", "0"))                    # P2 Hyperspace
+
+        # Special case for VC4000 - uses numpad controllers
+        if nplayer <= 2 and messSysName == "vc4000":
+            if nplayer == 1:
+                # Based on Colecovision button mapping, rearranged slightly since 2 = fire, not enough inputs
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))  # 1
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "128", "0"))  # 2/Button
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "128", "0"))  # 3
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "64", "0"))   # 4
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, dpadMode, "64", "0"))   # 5
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, dpadMode, "64", "0"))   # 6
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, dpadMode, "32", "0"))   # 7
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, dpadMode, "32", "0"))   # 8
+                # ':KEYPAD1_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
+                # ':KEYPAD1_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, dpadMode, "16", "0")) # Enter
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, dpadMode, "16", "0"))   # Clear
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PANEL', nplayer, pad.index, "P1_SELECT", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, dpadMode, "128", "0"))         # Game Select
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':PANEL', nplayer, pad.index, "P1_START", mappings_use["START"], pad.inputs[mappings_use["START"]], False, dpadMode, "64", "0"))         # Start
+            elif nplayer == 2:
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, dpadMode, "128", "0"))  # 1
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, dpadMode, "128", "0"))  # 2/Button
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, dpadMode, "128", "0"))  # 3
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, dpadMode, "64", "0"))   # 4
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, dpadMode, "64", "0"))   # 5
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, dpadMode, "64", "0"))   # 6
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, dpadMode, "32", "0"))   # 7
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, dpadMode, "32", "0"))   # 8
+                # ':KEYPAD2_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
+                # ':KEYPAD2_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, dpadMode, "16", "0")) # Enter
+                xml_input_alt.appendChild(generateSpecialPortElement(config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, dpadMode, "16", "0"))   # Clear
 
         nplayer = nplayer + 1
         
