@@ -7,8 +7,8 @@ index de35eb3..591430c 100644
  		// If failed, it may be that SDLPoP is being run from the wrong different working directory.
  		// We can try to rescue the situation by loading from the directory of the executable.
 -		find_exe_dir();
--        snprintf_check(path_buffer, buffer_size, "%s/%s", exe_dir, filename);
-+        snprintf_check(path_buffer, buffer_size, "%s/%s", "/usr/share/sdlpop", filename);
-         return (const char*) path_buffer;
+-		snprintf_check(path_buffer, buffer_size, "%s/%s", exe_dir, filename);
++		snprintf_check(path_buffer, buffer_size, "%s/%s", "/usr/share/sdlpop", filename);
+ 		return (const char*) path_buffer;
  	}
  }
