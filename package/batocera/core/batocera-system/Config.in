@@ -1112,6 +1112,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 
 	# plugins
 	select BR2_PACKAGE_KODI_PVR_FREEBOX
+	select BR2_PACKAGE_KODI_VFS_RAR
 
 	# packages for kodi
 	select BR2_PACKAGE_MYSQL
