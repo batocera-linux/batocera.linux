@@ -5,7 +5,7 @@
 ################################################################################
 
 DEVILUTIONX_VERSION = 1.4.0
-DEVILUTIONX_SITE = $(call github,diasurgical,devilutionX,$(DEVILUTIONX_VERSION))
+DEVILUTIONX_SITE = https://github.com/diasurgical/devilutionX/releases/download/$(DEVILUTIONX_VERSION)
 DEVILUTIONX_SOURCE = devilutionx-src.tar.xz
 DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_image fmt libsodium libpng bzip2
 DEVILUTIONX_SUPPORTS_IN_SOURCE_BUILD = NO
