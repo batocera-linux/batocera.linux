@@ -27,9 +27,12 @@
         * add: ultimarc for pac arcade encoder on-the-fly configuration
         * add: specific partitions can now be mounted to share, roms, saves by editing batocera-boot.conf
         * add: libretro core smsplug-gx for sega master system
-        * es: added audio buffer options for Mupen64Plus
+        * add: mame coindrop plugin
+        * es: added audio buffer/sync options for Mupen64Plus
         * es: system/manufacturer names have been corrected
         * es: default keyboard mapping now includes West bound to "-" and North bound to "="
+        * es: opera (3do) option added for shared nvram (multi-disc support)
+        * es: add daphne rotate and joystick sensitivity options
         * bump: rk3399 linux kernel 5.10
         * bump: dolphin to 5.0-15993
         * bump: flycast & libretro-flycast to 1.3
@@ -70,7 +73,9 @@
         * change: splash screen version number can now be disabled
         * change: mupen64plus gliden64 disabled
         * change: default emulators optimized for rk3128
-        * change: move some savestate to /userdata/saves/<system>/<rom filelname>.<extension> (mupen, ppsspp)
+        * change: move some savestates to /userdata/saves/<system>/<rom filename>.<extension> (mupen, ppsspp)
+        * change: daphne es settings now have correct aspect ratio settings
+        * kodi: now includes VFS-RAR plugin by default
         * fix: mediatek 7921 cards
         * fix: parallel64 not starting
         * fix: lr-flycast with opengles
