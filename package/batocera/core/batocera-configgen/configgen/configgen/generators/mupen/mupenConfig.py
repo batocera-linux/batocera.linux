@@ -170,6 +170,12 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     else:
         iniConfig.set("Video-Glide64mk2", "maxframeskip", "0")
 
+    # Read framebuffer always -> for GLIDE64MK2
+    if system.isOptSet("mupen64plus_fb_read_always") and system.config["mupen64plus_fb_read_always"] != "-1":
+        iniConfig.set("Video-Glide64mk2", "fb_read_always", system.config["mupen64plus_fb_read_always"])
+    else:
+        iniConfig.set("Video-Glide64mk2", "fb_read_always", "-1") # -1 = Game default
+
     # 64DD
     if not iniConfig.has_section("64DD"):
         iniConfig.add_section("64DD")
