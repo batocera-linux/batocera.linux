@@ -5185,10 +5185,10 @@ daphne:
             prompt:      ASPECT RATIO
             description: Not all games support Stretch, depending on the video files.
             choices:
-                "Original":  original
-                "Stretch":   stretch
-                "Force 4:3": force43
-            daphne_rotate:
+                "Original":   original
+                "Stretch":    stretch
+                "Force 4:3":  force_ratio
+        daphne_rotate:
             prompt:      SCREEN ROTATION
             description: Rotate the screen with the emulator.
             choices:
@@ -5202,6 +5202,14 @@ daphne:
             choices:
                 "On":  0
                 "Off": 1
+        daphne_scanlines:
+            archs_include: [x86, x86_64]
+            group: ADVANCED OPTIONS
+            prompt:      SCANLINES
+            description: Use with Stretch aspect ratio and adjust joystick sensitivity as required.
+            choices:
+                "Off":                          0
+                "On":                           1
         blend_sprites:
             group: ADVANCED OPTIONS
             prompt:      BLEND SPRITES (SINGE)
@@ -5232,6 +5240,20 @@ daphne:
                 "10": 10
                 "15": 15
                 "20": 20
+        singe_crosshair:
+            group: ADVANCED OPTIONS
+            prompt:      HIDE LIGHTGUN CROSSHAIRS
+            description: Hide crosshairs in supported games e.g. ActionMax.
+            choices:
+                "Off":                          0
+                "On":                           1
+        daphne_texturestream:
+            group: ADVANCED OPTIONS
+            prompt:      SDL TEXTUREACCESS STREAMING
+            description: Can improve video performance. Do not use with ActionMax games or scanlines.
+            choices:
+                "Off":                          0
+                "On":                           1
 
 devilutionx:
   features: [padtokeyboard]
