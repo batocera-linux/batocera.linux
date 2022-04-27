@@ -115,6 +115,7 @@ PACKAGES_EMULATORS="amiberry
 					dosbox-x
 					duckstation
 					easyrpg-player
+					eka2l1
 					liblcf
 					flycast
 					fsuae
