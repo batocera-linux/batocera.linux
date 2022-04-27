@@ -12,3 +12,12 @@ index de35eb3..591430c 100644
  		return (const char*) path_buffer;
  	}
  }
+@@ -347,7 +346,7 @@ static FILE* open_dat_from_root_or_data_dir(const char* filename) {
+ 
+ 		if (!file_exists(data_path)) {
+ 			find_exe_dir();
+-			snprintf_check(data_path, sizeof(data_path), "%s/data/%s", exe_dir, filename);
++			snprintf_check(data_path, sizeof(data_path), "%s/data/%s", "/usr/share/sdlpop", filename);
+ 		}
+ 
+ 		// verify that this is a regular file and not a directory (otherwise, don't open)
