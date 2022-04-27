@@ -6104,6 +6104,14 @@ mupen64plus:
             choices:
                 "Off":                  "False"
                 "On":                   "True"
+        mupen64plus_fb_read_always:
+            group: ADVANCED OPTIONS
+            prompt:      READ FRAMEBUFFER EVERY FRAME (GLIDE64MK2)
+            description: Required for some effects in-game (Banjo Kazooie and DK64 transitions), can cause slowdown.
+            choices:
+                "Game default": -1
+                "Disable":      0
+                "Enable":       1
 
 openbor:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
