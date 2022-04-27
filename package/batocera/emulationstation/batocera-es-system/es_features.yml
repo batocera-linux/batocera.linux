@@ -6396,6 +6396,18 @@ rpcs3:
             choices:
                 "OpenGL":   OpenGL
                 "Vulkan":   Vulkan
+        stretchtodisplayarea:
+            prompt:      STRETCH TO DISPLAY AREA
+            description: Distorts the output to fill the display fully.
+            choices:
+                "Off":   False
+                "On":    True
+        tv_mode:
+            prompt:      TV MODE
+            description: PS3's internal ratio setting. Some games only support 16/9.
+            choices:
+                "16:9":  16/9
+                "4:3":   4/3
         spudecoder:
             group: ADVANCED OPTIONS
             prompt:      SPU DECODER
@@ -6405,12 +6417,6 @@ rpcs3:
                 "ASMJIT Recompiler":    Recompiler (ASMJIT)
                 "Fast Interpreter":     Interpreter (fast)
                 "Precise Interpreter":  Interpreter (precise)
-        tv_mode:
-            prompt:      TV MODE
-            description: PS3's internal ratio setting. Some games only support 16/9.
-            choices:
-                "16:9":  16/9
-                "4:3":   4/3
         framelimit:
             group: ADVANCED OPTIONS
             prompt:      ADDITIONAL FRAMELIMIT
@@ -6437,35 +6443,29 @@ rpcs3:
             choices:
                 "Off":         0
                 "On (slower)": 1
-        stretchtodisplayarea:
-            prompt:      STRETCH TO DISPLAY AREA
-            description: Distorts the output to fill the display fully.
-            choices:
-                "Off (Default)": False
-                "On":            True
-        depthbuffer:
+        colorbuffers:
             group: ADVANCED OPTIONS
-            prompt: WRITE DEPTH BUFFER
-            description: Can Fix broken graphics in some games.
+            prompt: WRITE COLOR BUFFERS
+            description: May fix missing graphics and broken lighting at the cost of performance.
             choices:
                 "Off (Default)": False
                 "On":            True
         sputhreads:
             group: ADVANCED OPTIONS
             prompt: PREFERRED SPU THREADS
-            description: May help to fix choppy audio on weaker CPUs.
+            description: Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. Leave on automatic if slowdown occurs.
             choices:
-                "0 (Default)": 0
-                "1":           1
-                "2":           2
-                "3":           3
-                "4":           4
-                "5":           5
-                "6":           6
-        colorbuffers:
+                "Automatic": 0
+                "1 thread":  1
+                "2 threads": 2
+                "3 threads": 3
+                "4 threads": 4
+                "5 threads": 5
+                "6 threads": 6
+        depthbuffer:
             group: ADVANCED OPTIONS
-            prompt: WRITE COLOUR BUFFERS
-            description: Enable this option if you get missing graphics or broken lighting ingame.
+            prompt: WRITE DEPTH BUFFER
+            description: May fix broken graphics in some games.
             choices:
                 "Off (Default)": False
                 "On":            True
