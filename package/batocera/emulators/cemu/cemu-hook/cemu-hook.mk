@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CEMU_HOOK_VERSION = 1251c_0575
+CEMU_HOOK_VERSION = 1262d_0577
 CEMU_HOOK_SOURCE = cemuhook_$(CEMU_HOOK_VERSION).zip
 CEMU_HOOK_SITE = https://files.sshnuke.net
 
