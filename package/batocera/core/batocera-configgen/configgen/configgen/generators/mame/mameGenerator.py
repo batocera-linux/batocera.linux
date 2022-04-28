@@ -318,7 +318,7 @@ class MameGenerator(Generator):
                                 os.unlink(softDir + "hash/" + hashFile)
                         os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
                         if softList in subdirSoftList:
-                                                        romPath = Path(romDirname)
+                            romPath = Path(romDirname)
                             os.symlink(str(romPath.parents[0]), softDir + softList, True)
                             commandArray += [ path.basename(romDirname) ]
                         else:
