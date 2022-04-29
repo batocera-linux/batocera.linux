@@ -9,7 +9,7 @@ EKA2L1_SITE = https://github.com/EKA2L1/EKA2L1.git
 EKA2L1_SITE_METHOD=git
 EKA2L1_GIT_SUBMODULES=YES
 EKA2L1_LICENSE = GPL-3.0
-EKA2L1_DEPENDENCIES = qt5base qt5tools qt5svg
+EKA2L1_DEPENDENCIES = qt5base qt5tools qt5multimedia
 # Seem to be included as external packages, maybe not needed to be included here?
 # fmt boost ffmpeg sdl2
 
