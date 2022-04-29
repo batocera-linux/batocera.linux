@@ -75,7 +75,14 @@ class MameGenerator(Generator):
                 softList = system.config["softList"]
             else:
                 softList = ""
-        
+
+        # Auto softlist for FM Towns if there is a zip that matches the folder name
+        # Used for games that require a CD and floppy to both be inserted
+        if system.name == 'fmtowns' and softList == '':
+            romParentPath = path.basename(romDirname)
+            if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                softList = 'fmtowns_cd'
+
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
@@ -114,14 +121,14 @@ class MameGenerator(Generator):
             else:
                 cfgPath = "/userdata/system/configs/mame/"
             if not os.path.exists("/userdata/system/configs/mame/"):
-                os.makedirs("/userdata/system/configs/mame/")    
+                os.makedirs("/userdata/system/configs/mame/")
         else:
             if customCfg:
                 cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/custom/"
             else:
                 cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode] + "/"
             if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
-                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")    
+                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")
         if not os.path.exists(cfgPath):
             os.makedirs(cfgPath)
 
@@ -194,13 +201,13 @@ class MameGenerator(Generator):
         # Artwork crop
         if system.isOptSet("artworkcrop") and system.getOptBoolean("artworkcrop"):
             commandArray += [ "-artwork_crop" ]
-        
+
         # UI enable - for computer systems, the default sends all keys to the emulated system.
         # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
         # Hotkey + D-Pad Up will toggle this when in use (scroll lock key)
         if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
             commandArray += [ "-ui_active" ]
-        
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         pluginsToLoad = []
@@ -253,13 +260,6 @@ class MameGenerator(Generator):
                                     imageSlot = system.config["imagereader"]
                             if imageSlot != "":
                                 commandArray += [ "-" + imageSlot, 'image' ]
-
-                # Auto softlist for FM Towns if there is a zip that matches the folder name
-                # Used for games that require a CD and floppy to both be inserted
-                if system.name == 'fmtowns' and softList == '':
-                    romParentPath = path.basename(romDirname)
-                    if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
-                        softList = 'fmtowns_cd'
 
                 if softList == "":
                     # Boot disk for Macintosh
@@ -320,6 +320,7 @@ class MameGenerator(Generator):
                         if softList in subdirSoftList:
                             romPath = Path(romDirname)
                             os.symlink(str(romPath.parents[0]), softDir + softList, True)
+                            commandArray += [ path.basename(romDirname) ]
                         else:
                             os.symlink(romDirname, softDir + softList, True)
                             commandArray += [ os.path.splitext(romBasename)[0] ]

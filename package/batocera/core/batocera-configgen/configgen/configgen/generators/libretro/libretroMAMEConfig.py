@@ -49,6 +49,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
         else:
             softList = ""
 
+        # Auto softlist for FM Towns if there is a zip that matches the folder name
+        # Used for games that require a CD and floppy to both be inserted
+        if system.name == 'fmtowns' and softList == '':
+            romParentPath = os.path.basename(romDirname)
+            if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                softList = 'fmtowns_cd'
+
         # Determine MESS system name (if needed)
         messDataFile = '/usr/share/batocera/configgen/data/mame/messSystems.csv'
         openFile = open(messDataFile, 'r')
@@ -116,17 +123,13 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         if imageSlot != "":
                             commandLine += [ "-" + imageSlot, 'image' ]
 
-            # Auto softlist for FM Towns if there is a zip that matches the folder name
-            # Used for games that require a CD and floppy to both be inserted
-            if system.name == 'fmtowns' and softList == '':
-                romParentPath = os.path.basename(romDirname)
-                if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
-                    softList = 'fmtowns_cd'
-
             if softList != "":
                 # Software list ROM commands
                 prepSoftwareList(subdirSoftList, softList, softDir, "/userdata/bios/mame/hash", romDirname)
-                commandLine += [ romDrivername ]
+                if softList in subdirSoftList:
+                    commandLine += [ os.path.basename(romDirname) ]
+                else:
+                    commandLine += [ romDrivername ]
                 commandLine += [ "-rompath", softDir + ";/userdata/bios/" ]
                 commandLine += [ "-swpath", softDir ]
                 commandLine += [ "-verbose" ]
