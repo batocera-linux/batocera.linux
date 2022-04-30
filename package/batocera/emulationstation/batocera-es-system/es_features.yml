@@ -1121,7 +1121,8 @@ libretro:
                     "NES Zapper":           258
                     "Arkanoid paddle":      514
     flycast:
-      shared: [autosave, cheevos]
+      features: [cheevos]
+      shared: [autosave]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
