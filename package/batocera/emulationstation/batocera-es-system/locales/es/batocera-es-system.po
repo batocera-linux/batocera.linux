@@ -4014,7 +4014,7 @@ msgctxt "game_options"
 msgid "Per Game"
 msgstr ""
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automático"
@@ -5699,7 +5699,7 @@ msgctxt "game_options"
 msgid "DOUBLE"
 msgstr "DOBLE"
 
-#. TRANSLATION: amiberry
+#. TRANSLATION: amiberry, daphne
 msgctxt "game_options"
 msgid "SCANLINES"
 msgstr "LÍNEAS DE ESCANEO"
@@ -5900,6 +5900,27 @@ msgctxt "game_options"
 msgid "GRAPHICS BACKEND"
 msgstr "GRAPHICS BACKEND"
 
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "Not all games support Stretch, depending on the video files."
+msgstr ""
+"No todos los juegos admiten estiramiento, depende de los archivos de video."
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "Original"
+msgstr "Original"
+
+#. TRANSLATION: daphne, openbor, pcsx2, redream, demul
+msgctxt "game_options"
+msgid "Stretch"
+msgstr "Estirar"
+
+#. TRANSLATION: daphne, dolphin, dolphin_triforce
+msgctxt "game_options"
+msgid "Force 4:3"
+msgstr "Forzar 4:3"
+
 #. TRANSLATION: daphne, melonds
 msgctxt "game_options"
 msgid "Rotate the screen with the emulator."
@@ -5924,6 +5945,12 @@ msgstr "Suavizar píxeles."
 msgctxt "game_options"
 msgid "BILINEAR FILTERING"
 msgstr "FILTRO BILINEAR"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid ""
+"Use with Stretch aspect ratio and adjust joystick sensitivity as required."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5957,12 +5984,35 @@ msgstr "INVERTIR EJE"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Adjust Singe joystick sensitivity."
+msgid ""
+"Singe automatically interprets joystick axis change as mouse movement, "
+"useful for lightgun games."
 msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "JOYSTICK SENSITIVITY"
+msgid "JOYSTICK TO CURSOR SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "Hide crosshairs in supported games e.g. ActionMax."
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "HIDE LIGHTGUN CROSSHAIRS"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid ""
+"Can improve video performance. Do not use with ActionMax games or scanlines."
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "SDL TEXTUREACCESS STREAMING"
 msgstr ""
 
 #. TRANSLATION: dolphin/uzem
@@ -6050,11 +6100,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Force 16:9"
 msgstr "Forzar 16:9"
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "Force 4:3"
-msgstr "Forzar 4:3"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7189,17 +7234,39 @@ msgctxt "game_options"
 msgid "DISABLE 4MB EXPANSION RAM PACK"
 msgstr "DESACTIVAR PACK DE EXPANSIÓN DE 4MB"
 
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid ""
+"Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
+"cause slowdown."
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "READ FRAMEBUFFER EVERY FRAME (GLIDE64MK2)"
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "Game default"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, ppsspp
+msgctxt "game_options"
+msgid "Disable"
+msgstr "Desactivar"
+
+#. TRANSLATION: mupen64plus, ppsspp
+msgctxt "game_options"
+msgid "Enable"
+msgstr "Activar"
+
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
 msgstr ""
 "Estira los juegos a pantalla completa, pero puede distorsionar la relación "
 "de aspecto"
-
-#. TRANSLATION: openbor, pcsx2, redream, demul
-msgctxt "game_options"
-msgid "Stretch"
-msgstr "Estirar"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -7506,16 +7573,6 @@ msgstr "INTERVALO DE VSYNC"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Enable"
-msgstr "Activar"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Disable"
-msgstr "Desactivar"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
 msgid "Enhancement. Enables texture upscaling textures and their size."
 msgstr "Mejora. Habilita el escalado de texturas y su tamaño."
 
@@ -7577,6 +7634,23 @@ msgstr "INTERFAZ GRÁFICA DEL USUARIO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "Distorts the output to fill the display fully."
+msgstr "Distorsiona la salida para llenar la pantalla por completo."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRETCH TO DISPLAY AREA"
+msgstr "EXTENDER AL ÁREA DE VISUALIZACIÓN"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3's internal ratio setting. Some games only support 16/9."
+msgstr ""
+"Config. de la relación de aspecto interna de PS2. Algunos juegos solo "
+"admiten 16:9."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
 "Si el juego falla, prueba ASMJIT. Si sigue fallando, prueba Fast Interpreter."
@@ -7605,13 +7679,6 @@ msgstr "Interpreter rápido"
 msgctxt "game_options"
 msgid "Precise Interpreter"
 msgstr "Interpreter preciso"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "PS3's internal ratio setting. Some games only support 16/9."
-msgstr ""
-"Config. de la relación de aspecto interna de PS2. Algunos juegos solo "
-"admiten 16:9."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7677,28 +7744,21 @@ msgstr "On (más lento)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Distorts the output to fill the display fully."
-msgstr "Distorsiona la salida para llenar la pantalla por completo."
+msgid ""
+"May fix missing graphics and broken lighting at the cost of performance."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "STRETCH TO DISPLAY AREA"
-msgstr "EXTENDER AL ÁREA DE VISUALIZACIÓN"
+msgid "WRITE COLOR BUFFERS"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Can Fix broken graphics in some games."
-msgstr "Puede solucionar los problemas en los gráficos de algunos juegos."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "ACTIVAR BÚFER DE PROFUNDIDAD"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May help to fix choppy audio on weaker CPUs."
-msgstr "Puede ayudar a corregir cortes de audio en CPUs menos potentes."
+msgid ""
+"Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
+"Leave on automatic if slowdown occurs."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7707,21 +7767,43 @@ msgstr "PROCESADO DE SPU PREFERIDO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "0 (Default)"
-msgstr "0 (Defecto)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Enable this option if you get missing graphics or broken lighting ingame."
+msgid "1 thread"
 msgstr ""
-"Activa esta opción si faltan gráficos o la iluminación no funciona en el "
-"juego."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "WRITE COLOUR BUFFERS"
-msgstr "ACTIVAR BÚFER DE COLORES"
+msgid "2 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "3 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "4 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "5 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "6 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "May fix broken graphics in some games."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE DEPTH BUFFER"
+msgstr "ACTIVAR BÚFER DE PROFUNDIDAD"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -8672,14 +8754,27 @@ msgid "ENABLE RAW INPUT"
 msgstr "HABILITAR ENTRADA SIN PROCESAR"
 
 #~ msgctxt "game_options"
-#~ msgid "Not all games support Stretch, depending on the video files."
-#~ msgstr ""
-#~ "No todos los juegos admiten estiramiento, depende de los archivos de "
-#~ "video."
+#~ msgid "Can Fix broken graphics in some games."
+#~ msgstr "Puede solucionar los problemas en los gráficos de algunos juegos."
 
 #~ msgctxt "game_options"
-#~ msgid "Original"
-#~ msgstr "Original"
+#~ msgid "May help to fix choppy audio on weaker CPUs."
+#~ msgstr "Puede ayudar a corregir cortes de audio en CPUs menos potentes."
+
+#~ msgctxt "game_options"
+#~ msgid "0 (Default)"
+#~ msgstr "0 (Defecto)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable this option if you get missing graphics or broken lighting ingame."
+#~ msgstr ""
+#~ "Activa esta opción si faltan gráficos o la iluminación no funciona en el "
+#~ "juego."
+
+#~ msgctxt "game_options"
+#~ msgid "WRITE COLOUR BUFFERS"
+#~ msgstr "ACTIVAR BÚFER DE COLORES"
 
 #~ msgctxt "game_options"
 #~ msgid ""
