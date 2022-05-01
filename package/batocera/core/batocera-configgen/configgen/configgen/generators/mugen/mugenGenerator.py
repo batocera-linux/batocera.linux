@@ -11,7 +11,7 @@ class MugenGenerator(Generator):
 
     @staticmethod
     def cleanMugenCfg(path):
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8-sig') as f:
             contents = f.read()
 
         contents = re.sub(r'^[ ]*;', ';', contents, 0, re.MULTILINE)
