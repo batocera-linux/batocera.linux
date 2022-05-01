@@ -15,7 +15,7 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('cap32_combokey', '"y"')
         # Auto Select Model
         if (system.name == 'gx4000'):
-            coreSettings.save('cap32_model', '"6128+"')
+            coreSettings.save('cap32_model', '"6128+ (experimental)"')
         elif system.isOptSet('cap32_model'):
             coreSettings.save('cap32_model', '"' + system.config['cap32_model'] + '"')
         else:
