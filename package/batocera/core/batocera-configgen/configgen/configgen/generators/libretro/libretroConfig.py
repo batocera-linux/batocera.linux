@@ -696,6 +696,19 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos:
         viewPortUsed = False
 
+    # Anbernic RG552
+    fwmodel="/sys/firmware/devicetree/base/model"
+    try:
+        if os.path.exists(fwmodel):
+            with open(fwmodel, 'rb') as ffw:
+                fline = ffw.readline().strip()
+                eslog.debug("Rotated bezels for {}.".format(fline))
+                if fline in [ b'Anbernic RG552\x00' ]:
+                    gameResolution["width"], gameResolution["height"] = gameResolution["height"], gameResolution["width"]
+                    eslog.debug("Rotated bezels done.")
+    except:
+        pass
+
     gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
 
     if viewPortUsed:
