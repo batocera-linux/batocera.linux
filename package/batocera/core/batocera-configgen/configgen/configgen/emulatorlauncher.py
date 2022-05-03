@@ -283,7 +283,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         gameResolution = videoMode.getCurrentResolution()
 
         # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
-        if system.isOptSet('resolutionIsReversed') and system.getOptBoolean('resolutionIsReversed') == True:
+        if videoMode.isResolutionReversed():
             x = gameResolution["width"]
             gameResolution["width"]  = gameResolution["height"]
             gameResolution["height"] = x
