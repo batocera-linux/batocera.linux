@@ -696,7 +696,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos:
         viewPortUsed = False
 
-    # Anbernic RG552
+    # Anbernic RG552 bezel adjustment for internal screen
     fwmodel="/sys/firmware/devicetree/base/model"
     try:
         if os.path.exists(fwmodel):
@@ -704,8 +704,14 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                 fline = ffw.readline().strip()
                 eslog.debug("Rotated bezels for {}.".format(fline))
                 if fline in [ b'Anbernic RG552\x00' ]:
-                    gameResolution["width"], gameResolution["height"] = gameResolution["height"], gameResolution["width"]
-                    eslog.debug("Rotated bezels done.")
+                    res = os.popen("batocera-resolution currentMode")
+                    resout = res.readline().strip()[0:3]
+                    eslog.debug("Current Mode: {}".format(resout))
+                    if resout in [ '0.0' ]: # Using the handheld screen
+                        gameResolution["width"], gameResolution["height"] = gameResolution["height"], gameResolution["width"]
+                        eslog.debug("Rotated bezelsi adjustment done.")
+                    else:
+                        eslog.debug("External screen used, bezel rotation cancelled.")
     except:
         pass
 
