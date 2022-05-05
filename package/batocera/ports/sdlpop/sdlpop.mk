@@ -13,6 +13,7 @@ SDLPOP_DEPENDENCIES = sdl2 sdl2_image
 define SDLPOP_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/sdlpop
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	mkdir -p /userdata/system/configs/sdlpop
 	$(INSTALL) -m 0755 $(@D)/prince -D $(TARGET_DIR)/usr/bin/SDLPoP
 	cp -pr $(@D)/data $(TARGET_DIR)/usr/share/sdlpop/
 	ln -sf /userdata/system/configs/sdlpop/SDLPoP.ini $(TARGET_DIR)/usr/share/sdlpop/SDLPoP.ini
