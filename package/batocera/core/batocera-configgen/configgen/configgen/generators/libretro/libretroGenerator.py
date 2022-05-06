@@ -13,6 +13,7 @@ import subprocess
 from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 import utils.videoMode as videoMode
+import shutil
 
 eslog = get_logger(__name__)
 
@@ -33,6 +34,7 @@ class LibretroGenerator(Generator):
                 libretroRetroarchCustom.generateRetroarchCustom()
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
+
             if system.isOptSet('lightgun_map'):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
@@ -58,6 +60,12 @@ class LibretroGenerator(Generator):
 
             libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution, gfxBackend)
             retroconfig.write()
+
+            # duplicate config to mapping files while ra now split in 2 parts
+            remapconfigDir = batoceraFiles.retroarchRoot + "/config/remaps/common"
+            if not os.path.exists(remapconfigDir):
+                os.makedirs(remapconfigDir)
+            shutil.copyfile(batoceraFiles.retroarchCustom, remapconfigDir + "/common.rmp")
 
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
