@@ -12,7 +12,6 @@ import controllersConfig
 import shutil
 import filecmp
 from . import cemuControllers
-import glob
 
 cemuConfig  = batoceraFiles.CONF + '/cemu'
 cemuHomedir = 'Z:\\userdata\\roms\\wiiu'
@@ -28,11 +27,12 @@ class CemuGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
 
         # in case of squashfs, the root directory is passed
-        rpxInDir = glob.glob(rom + "/code/*.rpx")
-        if len(rpxInDir) == 1:
-            rpxrom = rpxInDir[0]
-        else:
-            rpxrom = rom
+        rpxrom = rom
+        rpxInDir = os.listdir(rom + "/code")
+        for file in rpxInDir:
+            basename, extension = os.path.splitext(file)
+            if extension == ".rpx":
+                rpxrom = rom + "/code/" + basename + extension
 
         game_dir = cemuConfig + "/gameProfiles"
         resources_dir = cemuConfig + "/resources"
