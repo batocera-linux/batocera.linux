@@ -3103,6 +3103,30 @@ libretro:
                     "4xBRZ":      4xBRZ
                     "5xBRZ":      5xBRZ
                     "6xBRZ":      6xBRZ
+            mupen64plus-rdpPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RDP PLUGIN
+                description: Select RDP Plugin
+                choices:
+                    "GLideN64 (Fastest)":          gliden64
+                    "ParaLLEl-RDP":                parallel
+                    "Angrylion (Most Compatible)": angrylion
+            mupen64plus-rspPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RSP PLUGIN
+                description: Select RSP Plugin
+                choices:
+                    "HLE (Fastest)":       hle
+                    "ParaLLEl (Best LLE)": parallel
+                    "CXD4 (LLE Fallback)": cxd4
+            mupen64plus-cpuCore:
+                group: ADVANCED OPTIONS
+                prompt:      CPU CORE
+                description: Select CPU Core
+                choices:
+                    "Dynarec (Fastest)":                dynamic_recompiler
+                    "Cached Interpreter":               cached_interpreter
+                    "Pure Interpreter (Most Accurate)": pure_interpreter
             mupen64plus-pak1:
                 prompt:      CONTROLLER PAK 1
                 description: Emulate a pak in the controller expansion port.
