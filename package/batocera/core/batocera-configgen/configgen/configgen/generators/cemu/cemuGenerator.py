@@ -28,11 +28,12 @@ class CemuGenerator(Generator):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
-        rpxInDir = os.listdir(rom + "/code")
-        for file in rpxInDir:
-            basename, extension = os.path.splitext(file)
-            if extension == ".rpx":
-                rpxrom = rom + "/code/" + basename + extension
+        if os.path.isdir(rom + "/code"):
+            rpxInDir = os.listdir(rom + "/code")
+            for file in rpxInDir:
+                basename, extension = os.path.splitext(file)
+                if extension == ".rpx":
+                    rpxrom = rom + "/code/" + basename + extension
 
         game_dir = cemuConfig + "/gameProfiles"
         resources_dir = cemuConfig + "/resources"
