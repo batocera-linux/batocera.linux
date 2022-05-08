@@ -1,4 +1,5 @@
 config BR2_PACKAGE_ECWOLF
+    bool "ecwolf"
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_SDL2_NET
     select BR2_PACKAGE_SDL2_MIXER
@@ -8,7 +9,6 @@ config BR2_PACKAGE_ECWOLF
     select BR2_PACKAGE_OPUSFILE
     select BR2_PACKAGE_FLAC
     select BR2_PACKAGE_LIBVORBIS
-    bool "ecwolf"
     help
       ECWolf is a port of the Wolfenstein 3D engine based of Wolf4SDL.
 
