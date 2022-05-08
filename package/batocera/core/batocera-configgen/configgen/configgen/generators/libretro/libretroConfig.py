@@ -751,6 +751,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
 
         # If width or height < original, can't add black borders, need to stretch
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
+            eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
 
         if bezel_game is True:
@@ -783,7 +784,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             # or up/down for 4K
             eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
             try:
-                bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
+                bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"], bezel_stretch)
             except Exception as e:
                 eslog.debug("Failed to create the adapated image: {}".format(e))
                 return

@@ -115,16 +115,16 @@ def fast_image_size(image_file):
            return -1, -1
         return struct.unpack('>ii', head[16:24]) #image width, height
 
-def resizeImage(input_png, output_png, screen_width, screen_height):
+def resizeImage(input_png, output_png, screen_width, screen_height, bezel_stretch=False):
     imgin = Image.open(input_png)
     eslog.debug("Resizing bezel: image mode {}".format(imgin.mode))
     if imgin.mode != "RGBA":
-        alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
+        alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
     else:
         imgout = imgin.resize((screen_width, screen_height), Image.BICUBIC)
         imgout.save(output_png, mode="RGBA", format="PNG")
 
-def padImage(input_png, output_png, screen_width, screen_height, bezel_width, bezel_height):
+def padImage(input_png, output_png, screen_width, screen_height, bezel_width, bezel_height, bezel_stretch=False):
   fillcolor = 'black'
 
   wratio = screen_width / float(bezel_width)
@@ -141,9 +141,12 @@ def padImage(input_png, output_png, screen_width, screen_height, bezel_width, be
       borderh = yoffset // 2
   imgin = Image.open(input_png)
   if imgin.mode != "RGBA":
-      alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height))
+      alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
   else:
-      imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
+      if bezel_stretch:
+          imgout = ImageOps.fit(imgin, (screen_width, screen_height))
+      else:
+          imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
       imgout.save(output_png, mode="RGBA", format="PNG")
 
 def tatooImage(input_png, output_png, system):
@@ -213,7 +216,7 @@ def tatooImage(input_png, output_png, system):
   imgnew.paste(back, (0,0,w,h))
   imgnew.save(output_png, mode="RGBA", format="PNG")
 
-def alphaPaste(input_png, output_png, imgin, fillcolor, screensize):
+def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretch):
   # screensize=(screen_width, screen_height)
   imgin = Image.open(input_png)
   # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
@@ -224,5 +227,8 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize):
   ix,iy = fast_image_size(input_png)
   imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
   imgnew.paste(alpha, (0,0,ix,iy))
-  imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
+  if bezel_stretch:
+      imgout = ImageOps.fit(imgnew, screensize)
+  else:
+      imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")

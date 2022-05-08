@@ -474,11 +474,16 @@ def getHudBezel(system, rom, gameResolution):
         return None
 
     # if screen and bezel sizes doesn't match, resize
+    # stretch option
+    if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
+        bezel_stretch = True
+    else:
+        bezel_stretch = False
     if (bezel_width != gameResolution["width"] or bezel_height != gameResolution["height"]):
         eslog.debug("bezel needs to be resized")
         output_png_file = "/tmp/bezel.png"
         try:
-            bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"])
+            bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], bezel_stretch)
         except Exception as e:
             eslog.error("failed to resize the image {}".format(e))
             return None
