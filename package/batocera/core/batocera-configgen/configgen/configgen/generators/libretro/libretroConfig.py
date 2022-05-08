@@ -408,7 +408,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         if system.isOptSet('controller3_zxspec'):
             retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p3'] = '0'
+            retroarchConfig['input_libretro_device_p3'] = '259'
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
