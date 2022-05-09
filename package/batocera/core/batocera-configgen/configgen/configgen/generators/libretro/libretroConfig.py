@@ -497,6 +497,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     retroarchConfig['cheevos_verbose_enable'] = 'false'
     retroarchConfig['cheevos_auto_screenshot'] = 'false'
     retroarchConfig['cheevos_challenge_indicators'] = 'false'
+    retroarchConfig['cheevos_start_active'] = 'false'
 
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements) or (system.config['core'] in coreToRetroachievements) or (system.isOptSet('cheevos_force') and system.getOptBoolean('cheevos_force') == True):
@@ -529,6 +530,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
                 retroarchConfig['cheevos_challenge_indicators'] = 'true'
             else:
                 retroarchConfig['cheevos_challenge_indicators'] = 'false'
+            # retroarchievements_encore_mode
+            if system.isOptSet('retroachievements.encore') and system.getOptBoolean('retroachievements.encore') == True:
+                retroarchConfig['cheevos_start_active'] = 'true'
+            else:
+                retroarchConfig['cheevos_start_active'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
 
