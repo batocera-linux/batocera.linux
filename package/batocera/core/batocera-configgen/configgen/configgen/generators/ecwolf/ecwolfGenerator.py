@@ -9,6 +9,7 @@ from os import path
 import codecs
 
 ecwolfConfig = batoceraFiles.CONF + "/ecwolf"
+ecwolfConfigDir = "/userdata/system/.config/ecwolf"
 ecwolfConfigSrc = "/userdata/system/.config/ecwolf/ecwolf.cfg"
 ecwolfConfigDest = batoceraFiles.CONF + "/ecwolf/ecwolf.cfg"
 ecwolfSaves = batoceraFiles.SAVES + "/ecwolf"
@@ -16,9 +17,11 @@ ecwolfSaves = batoceraFiles.SAVES + "/ecwolf"
 class ECWolfGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        # Create config folder
+        # Create config folders
         if not path.isdir(ecwolfConfig):
             os.mkdir(ecwolfConfig)
+        if not path.isdir(ecwolfConfigDir):
+            os.mkdir(ecwolfConfigDir)
         # Create config file if not there
         if not path.isfile(ecwolfConfigSrc):
             f = codecs.open(ecwolfConfigSrc, "x")
