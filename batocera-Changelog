@@ -28,6 +28,7 @@
         * add: specific partitions can now be mounted to share, roms, saves by editing batocera-boot.conf
         * add: libretro core smsplug-gx for sega master system
         * add: mame coindrop plugin
+        * add: new default background songs
         * es: added audio buffer/sync options for Mupen64Plus
         * es: system/manufacturer names have been corrected
         * es: default keyboard mapping now includes West bound to "-" and North bound to "="
@@ -58,6 +59,8 @@
         * bump: Proton to 7.0
         * bump: DXVK to 1.10.1
         * bump: VKD3D-Proton to 2.6
+        * bump: syncthing 1.20.1
+        * bump: ECWolf
         * change: added most MAME configuration options to libretro-mame
         * change: Restored Sonic Retro Engine to non-x86 boards (using 1.1.2.1 for sonic2013 & 1.1.2 for soniccd)
         * change: MAME/MESS: speech module and 32k RAM option for TI-99, image reader enabled for Mac IIx model (x86_64)
@@ -95,6 +98,9 @@
         * fix: moonlight custom config getting overwritten
         * fix: redream controllers, hotkey now quits redream
         * fix: upgrade progress blocked at 953MB (it's just a display bug, leave it running and it will still upgrade eventually)
+        * fix: bezel resizing for 16:10 aspect ratios
+        * fix: change resolution on Dosbox and Dosbox-staging
+        * fix: SDLPoP config files location
 
 2022/02/12 - batocera.linux 33
         * add: Support for Beelink GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
