@@ -537,7 +537,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             else:
                 retroarchConfig['cheevos_start_active'] = 'false'
             # retroarchievements_rich_presence
-            if system.isOptSet('retroachievements.richpresence') and system.getOptBoolean('retroachievements.encore') == True:
+            if system.isOptSet('retroachievements.richpresence') and system.getOptBoolean('retroachievements.richpresence') == True:
                 retroarchConfig['cheevos_richpresence_enable'] = 'true'
             else:
                 retroarchConfig['cheevos_richpresence_enable'] = 'false'
