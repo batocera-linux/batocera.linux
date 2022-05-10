@@ -1980,6 +1980,16 @@ libretro:
                           "Off": 0
          bbc:
               cfeatures:
+                  sticktype:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Select which joystick to emulate.
+                      choices:
+                          "None (Default)":                   none
+                          "Acorn Analogue Joysticks":         acornjoy
+                          "Acorn Bitstik":                    bitstik1
+                          "Robo Bitstik 2":                   bitstik2
+                          "Voltmace Delta 3b Twin Joysticks": voltmace3b
                   altmodel:
                       group: ADVANCED OPTIONS
                       prompt:      BBC MODEL
@@ -7035,6 +7045,16 @@ mame:
                         "Off": 0
        bbc:
             cfeatures:
+                sticktype:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Select which joystick to emulate.
+                    choices:
+                        "None (Default)":                   none
+                        "Acorn Analogue Joysticks":         acornjoy
+                        "Acorn Bitstik":                    bitstik1
+                        "Robo Bitstik 2":                   bitstik2
+                        "Voltmace Delta 3b Twin Joysticks": voltmace3b
                 softList:
                     group: ADVANCED OPTIONS
                     prompt:      SOFTWARE LIST
