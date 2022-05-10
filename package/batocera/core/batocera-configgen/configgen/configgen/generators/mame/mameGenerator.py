@@ -34,6 +34,7 @@ class MameGenerator(Generator):
         softDir = "/var/run/mame_software/"
         softList = ""
         messModel = ""
+        specialController = "none"
         subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
 
         # Generate userdata folders if needed
@@ -237,6 +238,12 @@ class MameGenerator(Generator):
                     if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                         commandArray += ["-ioport:peb:slot3", "speech"]
 
+                # BBC Joystick
+                if system.name == "bbc":
+                    if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
+                        commandArray += ["-analogue", system.config['sticktype']]
+                        specialController = system.config['sticktype']
+
                 # Mac RAM & Image Reader (if applicable)
                 if system.name == "macintosh":
                     if system.isOptSet("ramsize"):
@@ -351,10 +358,10 @@ class MameGenerator(Generator):
                 # bbc has different boots for floppy & cassette, no special boot for carts
                 if system.name == "bbc":
                     if system.isOptSet("altromtype") or softList != "":
-                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                             autoRunCmd = '*tape\\nchain""\\n'
                             autoRunDelay = 2
-                        elif left(system.config["altromtype"], 4) == "flop" or softList[-4:] == "flop":
+                        elif (system.isOptSet('altromtype') and system.config["altromtype"].startswith("flop")) or softList.endswith("flop"):
                             autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
                             autoRunDelay = 3
                     else:
@@ -363,7 +370,7 @@ class MameGenerator(Generator):
                 # fm7 boots floppies, needs cassette loading
                 elif system.name == "fm7":
                     if system.isOptSet("altromtype") or softList != "":
-                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                             autoRunCmd = 'LOADM”“,,R\\n'
                             autoRunDelay = 5
                 else:
@@ -383,19 +390,6 @@ class MameGenerator(Generator):
                         autoRunCmd.replace("'", "")
                     commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
-        # Alternate D-Pad Mode
-        if system.isOptSet("altdpad"):
-            dpadMode = system.config["altdpad"]
-        else:
-            dpadMode = 0
-        
-        buttonLayout = getMameControlScheme(system, romBasename)
-                
-        if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
-        else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg)
-        
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
             bezelSet = None
@@ -410,6 +404,19 @@ class MameGenerator(Generator):
                 MameGenerator.writeBezelConfig(bezelSet, system, rom, "")
         except:
             MameGenerator.writeBezelConfig(None, system, rom, "")
+
+        # Alternate D-Pad Mode
+        if system.isOptSet("altdpad"):
+            dpadMode = system.config["altdpad"]
+        else:
+            dpadMode = 0
+
+        buttonLayout = getMameControlScheme(system, romBasename)
+
+        if messMode == -1:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg, specialController, bezelSet)
+        else:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg, specialController, bezelSet)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
