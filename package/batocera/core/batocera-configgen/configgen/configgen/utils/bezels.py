@@ -7,7 +7,7 @@ from .videoMode import getGameSpecial
 
 eslog = get_logger(__name__)
 
-def getBezelInfos(rom, bezel, systemName):
+def getBezelInfos(rom, bezel, systemName, retroarch = False):
     # by order choose :
     # rom name in the system subfolder of the user directory (gb/mario.png)
     # rom name in the system subfolder of the system directory (gb/mario.png)
@@ -20,7 +20,7 @@ def getBezelInfos(rom, bezel, systemName):
     # default name (default.png)
     # else return
     # mamezip files are for MAME-specific advanced artwork (bezels with overlays and backdrops, animated LEDs, etc)
-    gameSpecial = getGameSpecial(systemName, rom)
+    gameSpecial = getGameSpecial(systemName, rom, retroarch)
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
