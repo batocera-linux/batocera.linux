@@ -3106,7 +3106,6 @@ libretro:
             mupen64plus-rdpPlugin:
                 group: ADVANCED OPTIONS
                 prompt:      RDP PLUGIN
-                description: Select RDP Plugin
                 choices:
                     "GLideN64 (Fastest)":          gliden64
                     "ParaLLEl-RDP":                parallel
@@ -3114,7 +3113,6 @@ libretro:
             mupen64plus-rspPlugin:
                 group: ADVANCED OPTIONS
                 prompt:      RSP PLUGIN
-                description: Select RSP Plugin
                 choices:
                     "HLE (Fastest)":       hle
                     "ParaLLEl (Best LLE)": parallel
@@ -3122,7 +3120,6 @@ libretro:
             mupen64plus-cpuCore:
                 group: ADVANCED OPTIONS
                 prompt:      CPU CORE
-                description: Select CPU Core
                 choices:
                     "Dynarec (Fastest)":                dynamic_recompiler
                     "Cached Interpreter":               cached_interpreter
