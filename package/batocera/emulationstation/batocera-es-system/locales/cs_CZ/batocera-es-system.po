@@ -3,15 +3,15 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-05-03 20:51+0200\n"
+"PO-Revision-Date: 2022-05-08 10:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cz\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -41,7 +41,7 @@ msgstr "Čtvercový pixel"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Core provided"
-msgstr "Poskytnuté jádro"
+msgstr "Poskytnutý jádrem"
 
 #. TRANSLATION: shared, shared, libretro/mesen, libretro/gambatte
 msgctxt "game_options"
@@ -56,17 +56,17 @@ msgstr "PŘETOČIT"
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "On"
-msgstr "Zapnuto"
+msgstr "Zapnout"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "Off"
-msgstr "Vypnuto"
+msgstr "Vypnout"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTO SAVE/LOAD"
-msgstr "AUTOMAT. ULOŽIT/NAČÍST"
+msgstr "AUTOMATATICKY ULOŽIT/NAČÍST"
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
@@ -131,12 +131,12 @@ msgstr "VÝKON"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Show an image overlaid on top of the bezel."
-msgstr "Zobrazení obrázku překrytého rámečkem."
+msgstr "Zobrazení obrázku/obrazce překrytého rámečkem."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SHOW TATTOO OVER BEZEL"
-msgstr "ZOBRAZIT TETOVÁNÍ NAD RÁMEČKEM"
+msgstr "OBRAZEC V OBRAZE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -146,7 +146,7 @@ msgstr "NE"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SYSTEM CONTROLLERS"
-msgstr "OVLADAČE SYSTÉMU"
+msgstr "HERNÍ OVLADAČE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -156,7 +156,7 @@ msgstr "VLASTNÍ OBRÁZEK"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TATTOO CORNER"
-msgstr "TETOVACÍ KOUTEK"
+msgstr "UMÍSTĚNÍ OBRAZCE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -186,12 +186,12 @@ msgstr "VLASTNÍ CESTA K OBRÁZKU .PNG"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Shrink/expand tattoo to fit within the bezel's border."
-msgstr "Zmenšit/rozšířit tetování tak, aby se vešlo do rámečku."
+msgstr "Zmenšit/rozšířit obrazec/obrázek tak, aby se vešel do rámu."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RESIZE TATTOO"
-msgstr "ZMĚNIT VELIKOST TETOVÁNÍ"
+msgstr "ZMĚNIT VELIKOST OBRAZCE"
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -224,8 +224,8 @@ msgid ""
 "Enables run-ahead. Doubles CPU requirements. High numbers can result in "
 "visible jitter."
 msgstr ""
-"Povoluje RUN-AHEAD. Zdvojnásobuje nároky na CPU. Vysoká čísla mohou mít za "
-"následek viditelný jitter."
+"Povoluje RUN-AHEAD. Zdvojené nároky na CPU. Vyšší čísla mohou mít viditelný "
+"jitter."
 
 #. TRANSLATION: shared, shared, shared, shared, shared
 msgctxt "game_options"
@@ -254,8 +254,8 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
-"Automaticky dočasně sníží zpoždění snímků, aby se zabránilo jejich výpadkům. "
-"Může způsobit zadrhávání."
+"Dočasně sníží zpoždění snímků, aby se zabránilo jejich výpadkům. Může se "
+"objevit sekání."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -267,8 +267,7 @@ msgctxt "game_options"
 msgid ""
 "Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR."
 msgstr ""
-"Neodchylujte se od požadovaného základního načasování. G-Sync, FreeSync, "
-"HDMI 2.1 VRR."
+"Neodchyluje se od požadovaného načasování. G-Sync, FreeSync, HDMI 2.1 VRR."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -308,7 +307,7 @@ msgstr "Autodetekce"
 #. TRANSLATION: libretro/81, libretro/81, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "On (forced)"
-msgstr "Zapnuto (vynucené)"
+msgstr "Zapnout (vynucené)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -605,7 +604,9 @@ msgstr "Dendy"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Rotate the screen, useful for certain vertical gameplay homebrews."
-msgstr "Otáčení obrazovky, užitečné pro vertikální hraní, některých domácích produktů."
+msgstr ""
+"Otáčení obrazovky, užitečné pro vertikální hraní, některých domácích "
+"produktů."
 
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
 msgctxt "game_options"
@@ -1342,7 +1343,7 @@ msgstr "ULOŽENÍ STAVU/PŘETOČIT"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with rewind support"
-msgstr "Zapnuto s podporou přetáčení"
+msgstr "Zapnout s podporou přetáčení"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1357,7 +1358,7 @@ msgstr "AUTOMATICKÉ MAPOVÁNÍ GAMEPADU"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with game detection message"
-msgstr "Zapnuto se zprávou o detekci hry"
+msgstr "Zapnout se zprávou o detekci hry"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -2265,7 +2266,8 @@ msgstr "Povoleno (Výchozí)"
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Play a coin drop sound effect when an insert coin button is pressed"
-msgstr "Přehrát zvukový efekt pádu mince po stisknutí tlačítka pro vložení mince"
+msgstr ""
+"Přehrát zvukový efekt pádu mince po stisknutí tlačítka pro vložení mince"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
@@ -2299,7 +2301,7 @@ msgstr "SDÍLET UMĚLECKÁ DÍLA MAME"
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "On (Default)"
-msgstr "Zapnuto (Výchozí)"
+msgstr "Zapnout (Výchozí)"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
@@ -2338,7 +2340,7 @@ msgstr "ALT DPAD MODE"
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "Off (Default)"
-msgstr "Vypnuto (Výchozí)"
+msgstr "Vypnout (Výchozí)"
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
@@ -2449,12 +2451,12 @@ msgstr "KLÁVESY UI"
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Off at Start"
-msgstr "Vypnuto při Startu"
+msgstr "Vypnout při Startu"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "On at Start"
-msgstr "Zapnuto při Startu"
+msgstr "Zapnout při Startu"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
@@ -3032,7 +3034,9 @@ msgstr "Mac LC 3 (Výchozí) (4Mb RAM, Barevný, 2 HD Diskety/CD/HDD)"
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Install the image reader card to read idks image files (Mac IIx only)"
-msgstr "Instalace karty čtečky obrazů pro čtení obrazových souborů idks (pouze Mac IIx)"
+msgstr ""
+"Instalace karty čtečky obrazů pro čtení obrazových souborů idks (pouze Mac "
+"IIx)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -3069,7 +3073,8 @@ msgctxt "game_options"
 msgid ""
 "How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
 msgstr ""
-"Kolik paměti RAM bude na emulovaný Mac nainstalováno (pouze Mac IIx a Mac LC 3)"
+"Kolik paměti RAM bude na emulovaný Mac nainstalováno (pouze Mac IIx a Mac LC "
+"3)"
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -3570,6 +3575,66 @@ msgctxt "game_options"
 msgid "X2"
 msgstr "X2"
 
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RDP PLUGIN"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "GLideN64 (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl-RDP"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Angrylion (Most Compatible)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RSP PLUGIN"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "HLE (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl (Best LLE)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CXD4 (LLE Fallback)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CPU CORE"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Dynarec (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Cached Interpreter"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Pure Interpreter (Most Accurate)"
+msgstr ""
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
@@ -4039,7 +4104,7 @@ msgstr "Myš PCE"
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
-msgstr "Vypnuto je bezpečnější, zapnuto pro konkrétní hry."
+msgstr "Vypnout je bezpečnější, Zapnout pro konkrétní hry."
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
@@ -4055,7 +4120,7 @@ msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ (POUZE 32BITOVÉ)"
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "On (Speed hack)"
-msgstr "Zapnuto (Rychlostní hack)"
+msgstr "Zapnout (Rychlostní hack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
@@ -4453,8 +4518,8 @@ msgid ""
 "Manually define which resolution to use.&#x0a;Auto defaults to High and "
 "switches to Super-High when needed."
 msgstr ""
-"Ruční definice rozlišení, které se použije.&#x0a;Auto. výchozí nastavení je "
-"Vysoké a v případě potřeby se přepne na Super-Vysoké."
+"Ruční Rozlišení vyberete.&#x0a;Auto Výchozí je Vysoké a dle potřeby se "
+"přepne na Super-Vysoké."
 
 #. TRANSLATION: libretro/puae, amiberry
 msgctxt "game_options"
@@ -5602,8 +5667,8 @@ msgctxt "game_options"
 msgid ""
 "Choose which graphics API library to use. Vulkan may not work for every core."
 msgstr ""
-"Zvolte, kterou knihovnu grafického rozhraní API chcete použít. Vulkan nemusí "
-"fungovat pro každé jádro."
+"Zvolte, kterou graf. knihovnu API použít. Vulkan nemusí fungovat pro každé "
+"jádro."
 
 #. TRANSLATION: libretro, cemu, dolphin, duckstation, flycast, ...
 msgctxt "game_options"
@@ -5926,7 +5991,8 @@ msgctxt "game_options"
 msgid ""
 "Use with Stretch aspect ratio and adjust joystick sensitivity as required."
 msgstr ""
-"Používejte s Roztaženým poměrem stran a nastavte citlivost joysticku podle potřeby."
+"Používejte s Roztaženým poměrem stran a nastavte citlivost joysticku podle "
+"potřeby."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5987,7 +6053,8 @@ msgctxt "game_options"
 msgid ""
 "Can improve video performance. Do not use with ActionMax games or scanlines."
 msgstr ""
-"Může zlepšit výkon videa. Nepoužívejte s hrami ActionMax nebo se skenovacími linkami."
+"Může zlepšit výkon videa. Nepoužívejte s hrami ActionMax nebo se skenovacími "
+"linkami."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6130,7 +6197,7 @@ msgstr "PŘED-MEZIPAMĚŤ SHADERU"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Off (default)"
-msgstr "Vypnuto (výchozí)"
+msgstr "Vypnout (výchozí)"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -6988,8 +7055,8 @@ msgid ""
 "h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth "
 "efficient."
 msgstr ""
-"h265 (HEVC) je CPU zatížené a zvyšuje latenci, ale je efektivnější "
-"z hlediska šířky pásma."
+"h265 (HEVC) je CPU zatížené a zvyšuje latenci, ale je efektivnější z "
+"hlediska šířky pásma."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7039,7 +7106,8 @@ msgstr "120FPS"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Higher number for higher picture quality, but requires more bandwidth."
-msgstr "Vyšší číslo znamená vyšší kvalitu obrazu, ale vyžaduje větší šířku pásma."
+msgstr ""
+"Vyšší číslo znamená vyšší kvalitu obrazu, ale vyžaduje větší šířku pásma."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7082,17 +7150,18 @@ msgstr "DYNAMICKY VYPOČÍTAT OPTIMÁLNÍ NASTAVENÍ"
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "on"
-msgstr "zapnuto"
+msgstr "zapnout"
 
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "off"
-msgstr "vypnto"
+msgstr "vypnout"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
-msgstr "Zavření aplikace na vzdáleném hostiteli při ukončení aplikace Moonlight."
+msgstr ""
+"Zavření aplikace na vzdáleném hostiteli při ukončení aplikace Moonlight."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7124,8 +7193,7 @@ msgctxt "game_options"
 msgid ""
 "Enable second audio limiter. Improves audio quality at the cost of "
 "performance."
-msgstr ""
-"Povolit druhý omezovač zvuku. Zlepšuje kvalitu zvuku na úkor výkonu."
+msgstr "Povolit druhý omezovač zvuku. Zlepšuje kvalitu zvuku na úkor výkonu."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7215,8 +7283,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vyžadováno pro některé efekty ve hře (přechody Banjo Kazooie a DK64), "
-"může způsobit zpomalení."
+"Vyžadováno pro některé efekty ve hře (přechody Banjo Kazooie a DK64), může "
+"způsobit zpomalení."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7662,7 +7730,7 @@ msgstr "DODATEČNÝ LIMIT SNÍMKU"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Off (faster, unstable)"
-msgstr "Vypnuto (rychlejší, nestabilní)"
+msgstr "Vypnout (rychlejší, nestabilní)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7706,14 +7774,13 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "On (slower)"
-msgstr "Zapnuto (pomalé)"
+msgstr "Zapnout (pomalé)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
 "May fix missing graphics and broken lighting at the cost of performance."
-msgstr ""
-"Může opravit chybějící grafiku a nefunkční osvětlení na úkor výkonu."
+msgstr "Může opravit chybějící grafiku a nefunkční osvětlení na úkor výkonu."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7726,8 +7793,8 @@ msgid ""
 "Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
 "Leave on automatic if slowdown occurs."
 msgstr ""
-"Omezení na 1 nebo 2 může v některých hrách vyřešit zadrhávání zvuku u slabších CPU. "
-"Pokud dojde ke zpomalení, ponechte automatický režim."
+"Omezení na 1 nebo 2 může v některých hrách vyřešit zadrhávání zvuku u "
+"slabších CPU. Pokud dojde ke zpomalení, ponechte automatický režim."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8145,7 +8212,9 @@ msgstr "Mac IIx (2Mb RAM, Barevný, 2 HD Diskety/CD/HDD, Čtečka Obrazu)"
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Type of ROM file to load. Disk Image requires Mac IIx and Image Reader"
-msgstr "Typ souboru ROM, který se má načíst. Obraz Disku vyžaduje Mac IIx a Čtečku Obrazu"
+msgstr ""
+"Typ souboru ROM, který se má načíst. Obraz Disku vyžaduje Mac IIx a Čtečku "
+"Obrazu"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
@@ -8240,7 +8309,8 @@ msgctxt "game_options"
 msgid ""
 "Crop artwork to only unused space, keeping the game as large as possible."
 msgstr ""
-"Ořízne umělecké dílo pouze na nevyužité místo a zachová co největší velikost hry."
+"Ořízne umělecké dílo pouze na nevyužité místo a zachová co největší velikost "
+"hry."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
