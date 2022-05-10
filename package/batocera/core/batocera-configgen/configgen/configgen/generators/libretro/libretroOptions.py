@@ -979,6 +979,21 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
+        # RDP Plugin
+        if system.isOptSet('mupen64plus-rdpPlugin'):
+            coreSettings.save('mupen64plus-rdp-plugin', '"' + system.config['mupen64plus-rdpPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rdp-plugin', '"gliden64"')
+        # RSP Plugin
+        if system.isOptSet('mupen64plus-rspPlugin'):
+            coreSettings.save('mupen64plus-rsp-plugin', '"' + system.config['mupen64plus-rspPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rsp-plugin', '"hle"')
+        # CPU Core
+        if system.isOptSet('mupen64plus-cpuCore'):
+            coreSettings.save('mupen64plus-cpucore', '"' + system.config['mupen64plus-cpuCore'] + '"')
+        else:
+            coreSettings.save('mupen64plus-cpucore', '"dynamic_recompiler"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
