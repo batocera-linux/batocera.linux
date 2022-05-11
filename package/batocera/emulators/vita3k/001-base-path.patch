@@ -1,0 +1,14 @@
+diff --git a/vita3k/main.cpp b/vita3k/main.cpp
+index 4439ad9b6e..c26b84ff82 100644
+--- a/vita3k/main.cpp
++++ b/vita3k/main.cpp
+@@ -84,7 +84,7 @@ static void run_execv(char *argv[], EmuEnvState &emuenv) {
+ int main(int argc, char *argv[]) {
+     ZoneScoped; // Tracy - Track main function scope
+     Root root_paths;
+-    root_paths.set_base_path(string_utils::utf_to_wide(SDL_GetBasePath()));
++    root_paths.set_base_path(string_utils::utf_to_wide("/userdata/system/configs/vita3k/"));
+-    root_paths.set_pref_path(SDL_GetPrefPath(org_name, app_name));
++    root_paths.set_pref_path(string_utils::utf_to_wide("/userdata/saves/psvita/"));
+ 
+     // Create default preference path for safety

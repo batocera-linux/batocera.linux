@@ -267,6 +267,10 @@ def getGenerator(emulator):
         from generators.raze.razeGenerator import RazeGenerator
         return RazeGenerator()
 
+    if emulator == "vita3k":
+        from generators.vita3k.vita3kGenerator import Vita3kGenerator
+        return Vita3kGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),
