@@ -72,6 +72,7 @@ from generators.demul.demulGenerator import DemulGenerator
 from generators.sh.shGenerator import ShGenerator
 from generators.xenia.xeniaGenerator import XeniaGenerator
 from generators.odcommander.odcommanderGenerator import OdcommanderGenerator
+from generators.vita3k.vita3kGenerator import Vita3kGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -149,6 +150,7 @@ generators = {
     'demul': DemulGenerator(),
     'xenia': XeniaGenerator(),
     'odcommander': OdcommanderGenerator(),
+    'vita3k': Vita3kGenerator(),
     #'play': PlayGenerator(),
     'sh': ShGenerator(),
 }

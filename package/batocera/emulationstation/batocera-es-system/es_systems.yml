@@ -3195,3 +3195,17 @@ odcommander:
     A two-pane file manager in the style of Norton/Midnight Commander.
   comment_fr: |
     Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
+
+vita3k:
+  name: PS Vita
+  manufacturer: Sony
+  release: 2012
+  hardware: console
+  extensions: [pkg, zip, vpk]
+  emulators:
+    vita3k:
+      vita3k: { requireAnyOf: [BR2_PACKAGE_VITA3K] }
+  comment_en: |
+    The world's first emulator for the PlayStation Vita.
+  comment_fr: |
+    Le premier émulateur au monde pour la PlayStation Vita.
