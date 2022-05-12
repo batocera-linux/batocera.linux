@@ -99,6 +99,7 @@ ln -s /userdata/system/udev/rules.d/ /run/udev/
 # and add the machine-id
 test -e /userdata/system/machine-id || dbus-uuidgen --ensure=/userdata/system/machine-id
 ln -sf /userdata/system/machine-id /var/lib/dbus/machine-id
+ln -sf /userdata/system/machine-id /etc/machine-id
 
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version || exit 1
