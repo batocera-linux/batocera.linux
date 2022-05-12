@@ -164,9 +164,13 @@ fds:
 flash:
   emulator: ruffle
   core:     ruffle
+  options:
+    forceNoBezel: true
 flatpak:
   emulator: flatpak
   core:     flatpak
+  options:
+    forceNoBezel: true
 fm7:
   emulator: libretro
   core:     mess
@@ -265,6 +269,8 @@ megaduck:
 model2:
   emulator: model2emu
   core:     model2emu
+  options:
+    forceNoBezel: true
 model3:
   emulator: supermodel
   core:     supermodel
@@ -553,6 +559,8 @@ xbox:
 xbox360:
   emulator: xenia
   core:     xenia
+  options:
+    forceNoBezel: true
 zc210:
   emulator: libretro
   core:     zc210
