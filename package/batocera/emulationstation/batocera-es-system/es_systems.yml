@@ -27,10 +27,11 @@ snes-msu1:
   group:      snes
   emulators:
     libretro:
-      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]}
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]    }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
+      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]    }
 
 c64:
   name:       Commodore 64
@@ -1722,6 +1723,7 @@ satellaview:
   emulators:
     libretro:
       pocketsnes:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
+      snes9x_next:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT]}
       snes9x:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]     }
       mesen-s:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]     }
 
