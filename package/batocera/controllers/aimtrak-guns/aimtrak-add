@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# store the first 2 inputs into
+# /var/run/aimtrak-devs
+# then for the 3rd one, join
+# supports multi guns
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+NDEVS=$(cat "/var/run/aimtrak-devices.${USBPATHHASH}" | wc -l)
+
+echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/aimtrak-devices.seen || exit 1
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(head -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
+    DEV2=$(tail -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
+    rm "/var/run/aimtrak-devices.${USBPATHHASH}" || exit 1
+
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEVNAME}" grab persist=exit --output name="Aimtrak ATRAK" &
+else
+    echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || exit 1
+fi
