@@ -486,6 +486,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_STEAM if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_BATOCERA_MOBILE_PHONE_SYSTEMS
 
 	help
 		batocera.linux all supported emulation systems
@@ -845,14 +846,14 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 		Old computers
 
 #### Symbian phones ####
-config BR2_PACKAGE_BATOCERA_SYMBIAN_OS
-	bool "batocera.linux Symbian OS mobile phones emulation packages"
+config BR2_PACKAGE_BATOCERA_MOBILE_PHONE_SYSTEMS
+	bool "batocera.linux mobile phone emulation packages"
 
 	# Nokia Ngage
 	select BR2_PACKAGE_EKA2L1               # ALL
 
 	help
-		Most mobile phones released in the 90s/early 2000s featuring Symbian OS
+		Emulators related to mobile phones. Includes Symbian OS (90s/early 2000s).
 
 config BR2_PACKAGE_BATOCERA_RETROARCH
 	bool "batocera.linux RetroArch frontend and integration"
