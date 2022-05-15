@@ -596,7 +596,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
 
 	# Standalone Sega Model 2 emulator
-	select BR2_PACKAGE_MODEL2EMU		if BR2_PACKAGE_BATOCERA_WINE
+	#select BR2_PACKAGE_MODEL2EMU		if BR2_PACKAGE_BATOCERA_WINE
 
 	# Standalone Sega Model 3 emulator
 	select BR2_PACKAGE_SUPERMODEL           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -843,6 +843,16 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 
 	help
 		Old computers
+
+#### Symbian phones ####
+config BR2_PACKAGE_BATOCERA_SYMBIAN_OS
+	bool "batocera.linux Symbian OS mobile phones emulation packages"
+
+	# Nokia Ngage
+	select BR2_PACKAGE_EKA2L1               # ALL
+
+	help
+		Most mobile phones released in the 90s/early 2000s featuring Symbian OS
 
 config BR2_PACKAGE_BATOCERA_RETROARCH
 	bool "batocera.linux RetroArch frontend and integration"
