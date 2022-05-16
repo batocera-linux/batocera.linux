@@ -7810,7 +7810,7 @@ mame:
 
 wine:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         dxvk:
             group: ADVANCED OPTIONS
@@ -7969,7 +7969,7 @@ mugen:
 
 ruffle:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 lightspark:
   features: [padtokeyboard]
@@ -8150,7 +8150,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         fakeGouraud:
             group: ADVANCED OPTIONS
@@ -8225,19 +8225,19 @@ play:
 
 flatpak:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 steam:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 yuzu:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 ryujinx:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 simcoupe:
   features: [padtokeyboard]
@@ -8272,7 +8272,7 @@ openmsx:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 demul:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
@@ -8290,7 +8290,7 @@ demul:
 
 sh:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 xenia:
   features: []
