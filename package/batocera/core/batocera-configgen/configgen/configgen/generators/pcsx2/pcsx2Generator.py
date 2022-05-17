@@ -21,7 +21,7 @@ class Pcsx2Generator(Generator):
             return 16/9
         return 4/3
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         isAVX2 = checkAvx2()
 
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"

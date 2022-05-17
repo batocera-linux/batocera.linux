@@ -7,7 +7,7 @@ import controllersConfig
 
 class HclGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["hcl"]
 
         return Command.Command(

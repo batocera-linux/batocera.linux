@@ -13,7 +13,7 @@ class ScummVMGenerator(Generator):
     
     # Main entry of the module
     # Configure mupen and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Find rom path
         if os.path.isdir(rom):
           # rom is a directory: must contains a <game name>.scummvm file

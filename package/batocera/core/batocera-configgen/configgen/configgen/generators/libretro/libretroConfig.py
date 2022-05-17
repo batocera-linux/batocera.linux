@@ -59,11 +59,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend))
+def writeLibretroConfig(retroconfig, system, controllers, guns, rom, bezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend):
+def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -230,6 +230,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             retroarchConfig['input_libretro_device_p3'] = system.config['Controller3_snes9x']
         else:
             retroarchConfig['input_libretro_device_p3'] = '1'
+
+        # guns
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 260
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse_touchpad"]
 
     ## NES controller
     if system.config['core'] == 'fceumm':

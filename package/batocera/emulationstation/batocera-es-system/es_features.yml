@@ -182,7 +182,12 @@ shared:
       choices:
         "On": 1
         "Off": 0
-
+    use_guns:
+      prompt: Use guns
+      description: Use guns instead of pads if guns are detected on the system
+      choices:
+        "On":  1
+        "Off": 0
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
 
@@ -4152,7 +4157,7 @@ libretro:
                     "On":         enabled
     snes9x:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             reduce_sprite_flicker:
                 group: ADVANCED OPTIONS
@@ -4220,7 +4225,7 @@ libretro:
                     "Konami Justifier (P2)": 772
     snes9x_next:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING

@@ -13,7 +13,7 @@ from os import environ
 eslog = get_logger(__name__)
 
 class DuckstationGenerator(Generator):
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)

@@ -24,7 +24,7 @@ class LibretroGenerator(Generator):
 
     # Main entry of the module
     # Configure retroarch and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Settings batocera default config file if no user defined one
         if not 'configfile' in system.config:
             # Using batocera config file
@@ -58,7 +58,7 @@ class LibretroGenerator(Generator):
             # Get the graphics backend prior to writing the config
             gfxBackend = getGFXBackend(system)
 
-            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution, gfxBackend)
+            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, guns, rom, bezel, gameResolution, gfxBackend)
             retroconfig.write()
 
             # duplicate config to mapping files while ra now split in 2 parts
