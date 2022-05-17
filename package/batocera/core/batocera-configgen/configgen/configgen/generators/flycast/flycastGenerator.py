@@ -29,37 +29,22 @@ class FlycastGenerator(Generator):
         
         if not Config.has_section("input"):
             Config.add_section("input")
-        # For each pad detected
-        for index in range(len(playersControllers), 4):
-            Config.set("input", 'evdev_device_id_' + str(index+1), "-1")
-            Config.set("input", 'evdev_mapping_' + str(index+1), "")
-
+        # For each pad detected       
         for index in playersControllers:
             controller = playersControllers[index]
-        
-            # Get the event number
-            eventNum = controller.dev.replace('/dev/input/event', '')
-            
-            # Write its mapping file
-            controllerConfigFile = flycastControllers.generateControllerConfig(controller)
-            # write the arcade file variant (atomiswave & naomi)
-            flycastControllers.generateArcadeControllerConfig(controller)
-            
-            # set the evdev_device_id_X
-            Config.set("input", 'evdev_device_id_' + controller.player, eventNum)
-            
-            # Set the evdev_mapping_X
-            Config.set("input", 'evdev_mapping_' + controller.player, controllerConfigFile)
+            # Write the mapping files for Dreamcast
+            flycastControllers.generateControllerConfig(controller, "dreamcast")
+            # Write the Arcade variant (Atomiswave & Naomi/2)
+            flycastControllers.generateControllerConfig(controller, "arcade")
 
-            # Ensure controller is on Port A-B
+            # Set the controller type per Port
+            Config.set("input", 'device' + str(controller.player), "0") # Sega Controller
+            Config.set("input", 'device' + str(controller.player) + '.1', "1") # Sega VMU
+            Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
+            # Ensure controller(s) are on seperate Ports
             port = int(controller.player)-1
-            Config.set("input", 'maple_/dev/input/event' + eventNum, str(port))
+            Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
         
-        if not Config.has_section("players"):
-            Config.add_section("players")
-        # number of players
-        Config.set("players", 'nb', str(len(playersControllers)))
-
         if not Config.has_section("config"):
             Config.add_section("config")
         if not Config.has_section("window"):
@@ -90,7 +75,7 @@ class FlycastGenerator(Generator):
         else:
             Config.set("config", "pvr.rend", "0")
         
-        # dreamcast specifics
+        # [Dreamcast specifics]
         # language
         if system.isOptSet("flycast_language"):
             Config.set("config", "Dreamcast.Language", str(system.config["flycast_language"]))
@@ -150,11 +135,13 @@ class FlycastGenerator(Generator):
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         # Here is the trick to make flycast find files :
-        # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME. The latter is better
-        # VMU will be in $XDG_DATA_HOME because it needs rw access -> /userdata/saves/dreamcast
-        # BIOS will be in $XDG_DATA_DIRS
+        # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME.
+        # VMU will be in $XDG_DATA_HOME / $FLYCAST_DATADIR because it needs rw access -> /userdata/saves/dreamcast
+        # $FLYCAST_BIOS_PATH is where Flaycast should find the bios files
         # controller cfg files are set with an absolute path, so no worry
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
+            "XDG_CONFIG_DIRS":batoceraFiles.CONF,
             "XDG_DATA_HOME":batoceraFiles.flycastSaves,
+            "FLYCAST_DATADIR":batoceraFiles.flycastSaves,
             "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
             })
