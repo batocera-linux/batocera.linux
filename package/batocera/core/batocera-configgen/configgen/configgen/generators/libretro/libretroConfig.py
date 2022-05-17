@@ -175,8 +175,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
-    # force notification messages
+    # force notification messages, but not the "remap" one
     retroarchConfig['video_font_enable'] = '"true"'
+    retroarchConfig['notification_show_remap_load'] = '"false"'
 
     # prevent displaying "QUICK MENU" with "No Items" after DOSBox Pure, TyrQuake and PrBoom games exit
     retroarchConfig['load_dummy_on_core_shutdown'] = '"false"'
