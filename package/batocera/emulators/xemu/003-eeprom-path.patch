@@ -1,14 +1,22 @@
-diff --git a/ui/xemu-settings.c b/ui/xemu-settings.c
-index 6fe65ab..f459e90 100644
---- a/ui/xemu-settings.c
-+++ b/ui/xemu-settings.c
-@@ -255,6 +255,9 @@ const char *xemu_settings_get_path(void)
+--- a/ui/xemu-settings.cc	2022-05-11 02:56:58.000000000 +0200
++++ b/ui/xemu-settings.cc	2022-05-12 13:55:05.560295047 +0200
+@@ -86,7 +86,9 @@
+ 
  const char *xemu_settings_get_default_eeprom_path(void)
  {
- 	static char *eeprom_path = NULL;
+-    static char *eeprom_path = NULL;
++    return "/userdata/saves/xbox/xemu_eeprom.bin";
 +
-+        return "/userdata/saves/xbox/xemu_eeprom.bin";
-+
- 	if (eeprom_path != NULL) {
- 		return eeprom_path;
- 	}
++    /*static char *eeprom_path = NULL;
+     if (eeprom_path != NULL) {
+         return eeprom_path;
+     }
+@@ -97,7 +99,7 @@
+     assert(base != NULL);
+     eeprom_path = g_strdup_printf("%s%s", base, "eeprom.bin");
+     SDL_free(base);
+-    return eeprom_path;
++    return eeprom_path;*/
+ }
+ 
+ static ssize_t get_file_size(FILE *fd)
