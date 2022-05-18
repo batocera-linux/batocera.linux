@@ -5861,6 +5861,34 @@ flycast:
           choices:
             "Off (Default)": no
             "On"           : yes
+        flycast_ctrl1_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 1 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl2_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 2 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl3_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 3 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl4_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 4 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
