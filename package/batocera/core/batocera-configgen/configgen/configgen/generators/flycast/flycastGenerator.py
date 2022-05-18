@@ -40,7 +40,12 @@ class FlycastGenerator(Generator):
             # Set the controller type per Port
             Config.set("input", 'device' + str(controller.player), "0") # Sega Controller
             Config.set("input", 'device' + str(controller.player) + '.1', "1") # Sega VMU
-            Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
+            # Set controller pack, gui option
+            ctrlpackconfig = "flycast_ctrl{}_pack".format(controller.player)
+            if system.isOptSet(ctrlpackconfig):
+                Config.set("input", 'device' + str(controller.player) + '.2', str(system.config[ctrlpackconfig]))
+            else:
+                Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
             # Ensure controller(s) are on seperate Ports
             port = int(controller.player)-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
