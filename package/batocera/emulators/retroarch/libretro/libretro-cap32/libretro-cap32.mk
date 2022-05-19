@@ -38,6 +38,7 @@ endef
 define LIBRETRO_CAP32_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/cap32_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/cap32_libretro.so
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-cap32/amstradcpc.keys $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(generic-package))

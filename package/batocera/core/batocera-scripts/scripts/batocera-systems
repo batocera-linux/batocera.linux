@@ -646,9 +646,10 @@ systems = {
                                                 { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
 
     # ---------- GCE Vectrex ---------- #
-    "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
-                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
-                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    # Not required for libretro-vecx, the default emulator
+    # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+    #                                            { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+    #                                            { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
 }
 
 class BiosStatus:
