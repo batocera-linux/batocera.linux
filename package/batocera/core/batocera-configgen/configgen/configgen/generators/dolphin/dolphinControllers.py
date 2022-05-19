@@ -13,31 +13,31 @@ import re
 eslog = get_logger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system, playersControllers, rom):
+def generateControllerConfig(system, playersControllers, rom, sonyWorkaround):
 
     generateHotkeys(playersControllers)
     if system.name == "wii":
         if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, rom, sonyWorkaround)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             # Generate if hardcoded
-            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom, sonyWorkaround)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         elif (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom) or system.isOptSet("sideWiimote"):
             # Generate if auto and name extensions are present
-            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom, sonyWorkaround)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, rom, sonyWorkaround)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
+        generateControllerConfig_gamecube(system, playersControllers, rom, sonyWorkaround)               # Pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
-def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
+def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom, sonyWorkaround):
     wiiMapping = {
         'x':            'Buttons/2',    'b':             'Buttons/A',
         'y':            'Buttons/1',    'a':             'Buttons/B',
@@ -156,9 +156,9 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
     eslog.debug("Extra Options: {}".format(extraOptions))
     eslog.debug("Wii Mappings: {}".format(wiiMapping))
 
-    generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
+    generateControllerConfig_any(system, playersControllers, sonyWorkaround, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(system, playersControllers,rom):
+def generateControllerConfig_gamecube(system, playersControllers, rom, sonyWorkaround):
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
         'x':            'Buttons/Y',     'a':             'Buttons/X',
@@ -197,7 +197,7 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 gamecubeMapping.update(res)
                 line = cconfig.readline()
 
-    generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, sonyWorkaround, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
@@ -263,7 +263,7 @@ def generateHotkeys(playersControllers):
     f.write
     f.close()
 
-def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
+def generateControllerConfig_any(system, playersControllers, sonyWorkaround, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
@@ -285,15 +285,15 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad):
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
+                generateControllerConfig_any_auto(f, pad, sonyWorkaround, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
         else:
-            generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
+            generateControllerConfig_any_auto(f, pad, sonyWorkaround, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
 
         nplayer += 1
     f.write
     f.close()
 
-def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
+def generateControllerConfig_any_auto(f, pad, sonyWorkaround, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
     
@@ -322,9 +322,17 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
     
         # Write the configuration for this key
         if keyname is not None:
-            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
-            if 'Triggers' in keyname and input.type == 'axis':
-                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
+            if sonyWorkaround and input.name in ['l2', 'r2']:
+                if input.name == 'l2':
+                    write_key(f, keyname, 'axis', '2', '1', pad.nbaxes, False, None)
+                    write_key(f, keyname + '-Analog', 'axis', '2', '1', pad.nbaxes, False, None)
+                elif input.name == 'r2':
+                    write_key(f, keyname, 'axis', '5', '1', pad.nbaxes, False, None)
+                    write_key(f, keyname + '-Analog', 'axis', '5', '1', pad.nbaxes, False, None)
+            else:
+                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
+                if 'Triggers' in keyname and input.type == 'axis':
+                    write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
         # Write the 2nd part
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)

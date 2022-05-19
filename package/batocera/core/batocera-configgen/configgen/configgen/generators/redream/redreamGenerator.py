@@ -65,6 +65,11 @@ class RedreamGenerator(Generator):
             "r2":            3
         }
 
+        if system.isOptSet('sonyWorkaround'):
+            sonyWorkaround = system.getOptBoolean('sonyWorkaround')
+        else:
+            sonyWorkaround = False
+
         nplayer = 1
         for index in playersControllers:
             controller = playersControllers[index]
@@ -88,9 +93,15 @@ class RedreamGenerator(Generator):
                         fullprofile = fullprofile + "{}:joy{},".format(buttonname, input.id)
                     #on rare occassions when triggers are buttons
                     if input.type == "button" and input.name == "l2":
-                        fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
+                        if sonyWorkaround:
+                            fullprofile = fullprofile + "ltrig:+axis2,"
+                        else:
+                            fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
                     if input.type == "button" and input.name == "r2":
-                        fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
+                        if sonyWorkaround:
+                            fullprofile = fullprofile + "rtrig:+axis5,"
+                        else:
+                            fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
                     #on occassions when dpad directions are buttons
                     if input.type == "button":
                         if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
