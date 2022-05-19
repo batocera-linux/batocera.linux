@@ -66,7 +66,7 @@ flycastArcadeMapping = { # Directions
 sections = { 'analog', 'digital', 'emulator' }
 
 # Create the controller configuration file
-def generateControllerConfig(controller, type):
+def generateControllerConfig(controller, type, sonyWorkaround):
     # Set config file name
     if type == 'dreamcast':
         configFileName = "{}/SDL_{}.cfg".format(batoceraFiles.flycastMapping, controller.realName)
@@ -85,6 +85,7 @@ def generateControllerConfig(controller, type):
     # Parse controller inputs
     analogbind = 0
     digitalbind = 0
+
     for index in controller.inputs:
         input = controller.inputs[index]
         if type == 'dreamcast':
@@ -118,7 +119,19 @@ def generateControllerConfig(controller, type):
             digitalbind = digitalbind +1
             val = "{}:{}".format(code, var)
             Config.set(section, option, val)
-        
+
+        # Special handling for Sony triggers (l2 / r2)
+        if input.name in ['l2', 'r2'] and sonyWorkaround:
+            section = 'analog'
+            if input.name == 'l2':
+                code = '2+'
+            else:
+                code = '5+'
+            option = "bind{}".format(analogbind)
+            analogbind = analogbind +1
+            val = "{}:{}".format(code, var)
+            Config.set(section, option, val)
+
         if input.type == 'button':
             section = 'digital'
             option = "bind{}".format(digitalbind)

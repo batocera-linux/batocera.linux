@@ -29,13 +29,20 @@ class FlycastGenerator(Generator):
         
         if not Config.has_section("input"):
             Config.add_section("input")
+
+        # Load Sony trigger workaround
+        if system.isOptSet('sonyWorkaround'):
+            sonyWorkaround = system.getOptBoolean('sonyWorkaround')
+        else:
+            sonyWorkaround = False
+
         # For each pad detected       
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
-            flycastControllers.generateControllerConfig(controller, "dreamcast")
+            flycastControllers.generateControllerConfig(controller, "dreamcast", sonyWorkaround)
             # Write the Arcade variant (Atomiswave & Naomi/2)
-            flycastControllers.generateControllerConfig(controller, "arcade")
+            flycastControllers.generateControllerConfig(controller, "arcade", sonyWorkaround)
 
             # Set the controller type per Port
             Config.set("input", 'device' + str(controller.player), "0") # Sega Controller

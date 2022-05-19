@@ -5444,6 +5444,13 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        sonyWorkaround:
+            group: ADVANCED OPTIONS
+            prompt:      USE TRIGGERS AS ANALOG
+            description: Enables controllers to use triggers as analog rather than digital. Like Sony Playstation controllers.
+            choices:
+                "Digital (Button)": 0
+                "Analog (Axis)":    1
 
   systems:
     gamecube:
@@ -5818,6 +5825,13 @@ flycast:
       choices:
         "Normal": no
         "Rotate": yes
+    sonyWorkaround:
+      group: ADVANCED OPTIONS
+      prompt:      USE TRIGGERS AS ANALOG
+      description: Enables controllers to use triggers as analog rather than digital. Like Sony Playstation controllers.
+      choices:
+        "Digital (Button)": 0
+        "Analog (Axis)":    1
   systems:
     dreamcast:
       cfeatures:
@@ -6654,6 +6668,13 @@ redream:
               "VGA (Default)": vga
               "RGB":           rgb
               "Composite":     composite
+      sonyWorkaround:
+          group: ADVANCED OPTIONS
+          prompt:      USE TRIGGERS AS ANALOG
+          description: Enables controllers to use triggers as analog rather than digital. Like Sony Playstation controllers.
+          choices:
+            "Digital (Button)": 0
+            "Analog (Axis)":    1
 
 sdlpop:
   features: [padtokeyboard]
