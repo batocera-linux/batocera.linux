@@ -471,7 +471,7 @@ class MameGenerator(Generator):
         os.makedirs(tmpZipDir)
 
         # bezels infos
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name)
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
         if bz_infos is None:
             return
 
