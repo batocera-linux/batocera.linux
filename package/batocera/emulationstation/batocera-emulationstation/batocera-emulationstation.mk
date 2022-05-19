@@ -5,7 +5,7 @@
 ################################################################################
 
 # Last update: May 13, 2022
-BATOCERA_EMULATIONSTATION_VERSION = 56aa37929911dee366d3e4f07d2d3aae5ae8ce18
+BATOCERA_EMULATIONSTATION_VERSION = 5f1cd6d5efc8d4cbebcafaac18854e1916161859
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
