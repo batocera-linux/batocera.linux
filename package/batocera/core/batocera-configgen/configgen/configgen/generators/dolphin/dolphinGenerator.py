@@ -19,12 +19,7 @@ class DolphinGenerator(Generator):
         if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
 
-        if system.isOptSet('sonyWorkaround'):
-            sonyWorkaround = system.getOptBoolean('sonyWorkaround')
-        else:
-            sonyWorkaround = False
-
-        dolphinControllers.generateControllerConfig(system, playersControllers, rom, sonyWorkaround)
+        dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
         ## dolphin.ini ##
 
