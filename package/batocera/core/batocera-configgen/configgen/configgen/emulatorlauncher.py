@@ -153,6 +153,8 @@ generators = {
     'sh': ShGenerator(),
 }
 
+emulatorNoBezel = [ "sdlpop", "odcommander" ]
+
 def squashfs_begin(rom):
     eslog.debug("squashfs_begin({})".format(rom))
     rommountpoint = "/var/run/squashfs/" + os.path.basename(rom)[:-9]
@@ -385,7 +387,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     return exitCode
 
 def getHudBezel(system, rom, gameResolution):
-    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none":
+    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none" or system.config['emulator'] in emulatorNoBezel:
         return None
 
     eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
