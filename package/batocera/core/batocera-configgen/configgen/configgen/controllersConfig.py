@@ -230,20 +230,21 @@ def getGuns():
     for mouse in mouses:
         matches = re.match(r"^/dev/input/event([0-9]*)$", str(mouse.device_node))
         if matches != None:
-            if ("ID_INPUT_MOUSE" in mouse.properties and mouse.properties["ID_INPUT_MOUSE"]) == '1' or ("ID_INPUT_TOUCHPAD" in mouse.properties and mouse.properties["ID_INPUT_TOUCHPAD"] == '1'):
+            if ("ID_INPUT_MOUSE" in mouse.properties and mouse.properties["ID_INPUT_MOUSE"]) == '1':
                 mouses_clean[int(matches.group(1))] = mouse
     mouses = mouses_clean
 
-    nmousetouchpad = 0
+    nmouse = 0
     ngun   = 0
     for eventid in sorted(mouses):
+        eslog.info("found mouse {} at {} with id_mouse={}".format(nmouse, mouses[eventid].device_node, nmouse))
         if "ID_INPUT_GUN" not in mouses[eventid].properties or mouses[eventid].properties["ID_INPUT_GUN"] != "1":
-            nmousetouchpad = nmousetouchpad + 1
+            nmouse = nmouse + 1
             continue
-        # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE and ID_INPUT_TOUCHPAD
-        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse_touchpad": nmousetouchpad}
-        eslog.info("found gun {} at {} with id_mouse_touchpad={}".format(ngun, mouses[eventid].device_node, nmousetouchpad))
-        nmousetouchpad = nmousetouchpad + 1
+        # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE (TOUCHPAD are listed after mouses)
+        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse}
+        eslog.info("found gun {} at {} with id_mouse={}".format(ngun, mouses[eventid].device_node, nmouse))
+        nmouse = nmouse + 1
         ngun = ngun + 1
 
     if len(guns) == 0:

@@ -235,7 +235,7 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, 
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p2'] = 260
-                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse_touchpad"]
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
 
     ## NES controller
     if system.config['core'] == 'fceumm':
