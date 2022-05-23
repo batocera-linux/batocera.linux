@@ -231,12 +231,6 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, 
         else:
             retroarchConfig['input_libretro_device_p3'] = '1'
 
-        # guns
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p2'] = 260
-                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
-
     ## NES controller
     if system.config['core'] == 'fceumm':
         if system.isOptSet('controller1_nes'):
@@ -651,6 +645,25 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, 
             retroarchConfig['ai_service_pause'] = 'false'
     else:
         retroarchConfig['ai_service_enable'] = 'false'
+
+    # Guns
+    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 260
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+
+    if system.config['core'] == 'nestopia':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 262
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+
+    if system.config['core'] == 'fceumm':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 258
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
 
     # Bezel option
     try:

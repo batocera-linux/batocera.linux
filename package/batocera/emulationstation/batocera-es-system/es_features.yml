@@ -1046,7 +1046,7 @@ libretro:
                             "Per-game":                           per-game
     fceumm:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -3192,7 +3192,7 @@ libretro:
                     "On":           On
     nestopia:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
