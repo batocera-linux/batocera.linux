@@ -665,6 +665,21 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, 
                 retroarchConfig['input_libretro_device_p2'] = 258
                 retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
 
+    if system.config['core'] == 'fbneo':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 4
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player1_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player1_gun_start_mbtn']   = 3
+            if len(guns) >= 2:
+                retroarchConfig['input_libretro_device_p2'] = 4
+                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player2_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player2_gun_start_mbtn']   = 3
+
     # Bezel option
     try:
         writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system)
