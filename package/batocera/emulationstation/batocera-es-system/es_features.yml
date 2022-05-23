@@ -6827,6 +6827,13 @@ mame:
             choices:
                 "On":  1
                 "Off": 0
+        dataplugin:
+            group: ADVANCED OPTIONS
+            prompt:      DATA PLUGIN
+            description: Make game history, setup instructions, and special moves viewable in the menu
+            choices:
+                "Enabled":            1
+                "Disabled (Default)": 0
   systems:
        adam:
             cfeatures:
