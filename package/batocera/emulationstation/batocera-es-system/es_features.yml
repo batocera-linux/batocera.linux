@@ -3176,9 +3176,9 @@ libretro:
                 prompt:      NEO GEO CD BIOS
                 description: Universe BIOS is not compatible with cheats.
                 choices:
-                    "CDZ":          CDZ
-                    "CDZ (MAME)":   CDZ (MAME)
-                    "Universe 3.2": Universe 3.2
+                    "CDZ":          neocd_z.rom (CDZ)
+                    "CDZ MAME":   neocd.bin (CDZ)
+                    "CDZ Universe 3.3": uni-bioscd.rom (CDZ, Universe 3.3)
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
                 description: Use one save file per game.
