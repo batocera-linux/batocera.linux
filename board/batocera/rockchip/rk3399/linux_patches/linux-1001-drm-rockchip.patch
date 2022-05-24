@@ -1,4 +1,4 @@
-From b8c31533452c976e04d239bdbad7c2393f728391 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 15 Jul 2020 15:24:47 +0000
 Subject: [PATCH] drm/rockchip: vop: fix crtc duplicate state
@@ -13,7 +13,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index eb663e25ad9e..818195594705 100644
+index c6c76e8ab66c..2f98a5e7dce1 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1554,7 +1554,11 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
@@ -30,7 +30,7 @@ index eb663e25ad9e..818195594705 100644
  		return NULL;
  
 
-From 8d23aed38c07e128c8e97cb7a979ad3f510ab79c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 3 May 2020 16:51:31 +0000
 Subject: [PATCH] drm/rockchip: vop: filter modes outside 0.5% pixel clock
@@ -47,7 +47,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 54 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 818195594705..77ae88a94c55 100644
+index 2f98a5e7dce1..defa314a8f96 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1167,6 +1167,59 @@ static void vop_crtc_disable_vblank(struct drm_crtc *crtc)
@@ -119,7 +119,7 @@ index 818195594705..77ae88a94c55 100644
  	.atomic_check = vop_crtc_atomic_check,
  	.atomic_begin = vop_crtc_atomic_begin,
 
-From be33ac8e021f8d2bbbb7ac507a356cf0f54ef998 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 15:15:50 +0000
 Subject: [PATCH] drm/rockchip: vop: filter interlaced modes
@@ -133,7 +133,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 77ae88a94c55..e27314249691 100644
+index defa314a8f96..a9e6e8bdc848 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1205,6 +1205,9 @@ static enum drm_mode_status vop_crtc_mode_valid(struct drm_crtc *crtc,
@@ -147,7 +147,7 @@ index 77ae88a94c55..e27314249691 100644
  	if (rounded_rate < 0)
  		return MODE_NOCLOCK;
 
-From 0d3b3e66b77697492f586dee7f1a636c8c3d2a97 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 10 Oct 2020 14:57:30 +0000
 Subject: [PATCH] drm/rockchip: vop: define max output resolution supported
@@ -159,10 +159,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 13 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-index eab055d9b56d..1b0618147a0e 100644
+index b7169010622a..0b1984585082 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -186,6 +186,11 @@ struct vop_win_data {
+@@ -197,6 +197,11 @@ struct vop_win_data {
  	enum drm_plane_type type;
  };
  
@@ -174,7 +174,7 @@ index eab055d9b56d..1b0618147a0e 100644
  struct vop_data {
  	uint32_t version;
  	const struct vop_intr *intr;
-@@ -198,6 +203,7 @@ struct vop_data {
+@@ -209,6 +214,7 @@ struct vop_data {
  	const struct vop_win_data *win;
  	unsigned int win_size;
  	unsigned int lut_size;
@@ -243,7 +243,7 @@ index 2c55e1852c3d..cf87361108a0 100644
  	.common = &rk3328_common,
  	.modeset = &rk3328_modeset,
 
-From 2df1db483dbc4382afdd068c92d948c5894b86b9 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 11:46:16 +0000
 Subject: [PATCH] drm/rockchip: vop: filter modes above max output supported
@@ -256,7 +256,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 16 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index e27314249691..b15ee823039e 100644
+index a9e6e8bdc848..bf44282409ab 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1199,6 +1199,7 @@ static enum drm_mode_status vop_crtc_mode_valid(struct drm_crtc *crtc,
@@ -299,7 +299,7 @@ index e27314249691..b15ee823039e 100644
  	 * Clock craziness.
  	 *
 
-From 2b982bc0980b1e07a16f95dad40dfbdb7efc8cdd Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Yakir Yang <ykk@rock-chips.com>
 Date: Mon, 11 Jul 2016 19:05:39 +0800
 Subject: [PATCH] drm/rockchip: dw_hdmi: adjust cklvl & txlvl for RF/EMI
@@ -353,7 +353,7 @@ index 23de359a1dec..f78851e7ef16 100644
  	{ ~0UL,	     0x0000, 0x0000, 0x0000}
  };
 
-From 742e3b1f32865fc47c1a9972ece0f674a2fe8711 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nickey Yang <nickey.yang@rock-chips.com>
 Date: Mon, 13 Feb 2017 15:40:29 +0800
 Subject: [PATCH] drm/rockchip: dw_hdmi: add phy_config for 594Mhz pixel clock
@@ -379,7 +379,7 @@ index f78851e7ef16..a308adb56d2f 100644
  };
  
 
-From 4797a1b5012f84c96a91bda162df85c15d8648f5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Douglas Anderson <dianders@chromium.org>
 Date: Mon, 11 Jul 2016 19:05:36 +0800
 Subject: [PATCH] drm/rockchip: dw_hdmi: Set cur_ctr to 0 always
@@ -424,7 +424,7 @@ index a308adb56d2f..5b273f26f177 100644
  	}
  };
 
-From affc6bdd078237e4985809510bbe48027e1893b3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Douglas Anderson <dianders@chromium.org>
 Date: Mon, 11 Jul 2016 19:05:42 +0800
 Subject: [PATCH] drm/rockchip: dw_hdmi: Use auto-generated tables
@@ -609,7 +609,7 @@ index 5b273f26f177..b5d2cdaa24fa 100644
  	}
  };
 
-From 138a8ff48453b90953ffcd33c7b9651e11d92b85 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 8 Jan 2020 21:07:52 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: limit tmds to 340mhz
@@ -656,7 +656,7 @@ index b5d2cdaa24fa..5f7ab8e6bb72 100644
  
  static void dw_hdmi_rockchip_encoder_disable(struct drm_encoder *encoder)
 
-From 57d8a618f0660c1f3ef7b58c4eef4a6eef615574 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 3 May 2020 22:36:23 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: limit resolution to 3840x2160
@@ -680,7 +680,7 @@ index 5f7ab8e6bb72..0e7ca368314d 100644
  
  static void dw_hdmi_rockchip_encoder_disable(struct drm_encoder *encoder)
 
-From b6dc188ade16245c10b2014bd062158ce8313e81 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 8 Jan 2020 21:07:49 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: allow high tmds bit rates
@@ -706,7 +706,7 @@ index 0e7ca368314d..6f7641fbe6cc 100644
  }
  
 
-From c0252b7948385d75ef282cef84b1effe18966486 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 8 Jan 2020 21:07:52 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: remove unused plat_data on
@@ -745,7 +745,7 @@ index 6f7641fbe6cc..cc20a83fa9b8 100644
  	.phy_ops = &rk3328_hdmi_phy_ops,
  	.phy_name = "inno_dw_hdmi_phy2",
 
-From b2050e98ffc8bf954f70a6728802c7f77e1a878e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 10 Oct 2020 10:16:32 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: encoder error handling
@@ -811,7 +811,7 @@ index cc20a83fa9b8..fd614c8a3486 100644
  }
  
 
-From 33bc9ea094d95e41270658a188f7a64585951d42 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 8 Jan 2020 21:07:50 +0000
 Subject: [PATCH] clk: rockchip: set parent rate for DCLK_VOP clock on rk3228
@@ -835,7 +835,7 @@ index 47d6482dda9d..a2b4d5487514 100644
  
  	FACTOR(0, "xin12m", "xin24m", 0, 1, 2),
 
-From 19587f6585259f32b32cb868269366bd6f873f33 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 10 Oct 2020 14:32:21 +0000
 Subject: [PATCH] drm/rockchip: vop: split rk3288 vop
@@ -892,7 +892,7 @@ index cf87361108a0..05ade8ea962f 100644
  	  .data = &rk3368_vop },
  	{ .compatible = "rockchip,rk3366-vop",
 
-From d266116ccaa1810cbf0d528b6d6ac390bfc922dd Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 10 Oct 2020 14:33:30 +0000
 Subject: [PATCH] ARM: dts: rockchip: split rk3288 vop
@@ -925,7 +925,7 @@ index 01ea1f170f77..3575dea1ee29 100644
  		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
  		clocks = <&cru ACLK_VOP1>, <&cru DCLK_VOP1>, <&cru HCLK_VOP1>;
 
-From 3c30b7d610b8d68907f9874b6311d8c45410d02e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 18:00:44 +0000
 Subject: [PATCH] drm/bridge: dw-hdmi: add mtmdsclock parameter to phy
@@ -1003,7 +1003,7 @@ index ea34ca146b82..4f61ede6486d 100644
  
  struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
 
-From 1935f408ce2264ff9ab4be03d61ea7c86d9388f1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 21:34:48 +0000
 Subject: [PATCH] drm/bridge: dw-hdmi: support configuring phy for deep color
@@ -1063,7 +1063,7 @@ index 50199329ad6f..2581789178c7 100644
  
  	dw_hdmi_phy_i2c_write(hdmi, 0, HDMI_3D_TX_PHY_PLLPHBYCTRL);
 
-From aeeed2820e5c02d65c63e1a4d18b20f79561212a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 22:25:15 +0000
 Subject: [PATCH] drm/bridge: dw-hdmi: add mpll_cfg_420 for ycbcr420 mode
@@ -1102,7 +1102,7 @@ index 4f61ede6486d..0ebe01835d2a 100644
  	const struct dw_hdmi_phy_config *phy_config;
  	int (*configure_phy)(struct dw_hdmi *hdmi, void *data,
 
-From 2202e32e62d3dc8d7566887427e23675296eb50e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 15 Jul 2020 09:49:21 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: mode_valid: allow 420 clock rate
@@ -1143,7 +1143,7 @@ index fd614c8a3486..c22add144cf4 100644
  	encoder = &hdmi->encoder;
  
 
-From d56e609be90b7261040f94d0356c30adae68f7ab Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 20 Jul 2020 22:26:19 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: add YCbCr420 mpll cfg for rk3399
@@ -1213,7 +1213,7 @@ index c22add144cf4..1e558af2c9b2 100644
  	.phy_config = rockchip_phy_config,
  	.phy_data = &rk3399_chip_data,
 
-From 94976e92fdeef9d37a3f17dcf4d704c913b7ce19 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Shunqing Chen <csq@rock-chips.com>
 Date: Wed, 15 Jul 2020 15:19:11 +0800
 Subject: [PATCH] drm/rockchip: dw-hdmi: add YCbCr420 mpll cfg for rk3288w
@@ -1284,7 +1284,7 @@ index 1e558af2c9b2..6dbd0e422ca1 100644
  	.phy_config = rockchip_phy_config,
  	.phy_data = &rk3288_chip_data,
 
-From c15ee8f8d363e71a62afb95e5b7bdc59892a3caf Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 20 Dec 2019 08:12:42 +0000
 Subject: [PATCH] drm/rockchip: dw-hdmi: add bridge and switch to
@@ -1490,7 +1490,7 @@ index 6dbd0e422ca1..510ae5d5f133 100644
  }
  
 
-From 779712b530c4353b4b83c755108b86a9808309db Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 9 Oct 2020 15:24:53 +0000
 Subject: [PATCH] drm/rockchip: vop: create planes in window order
@@ -1501,7 +1501,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 4 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index b15ee823039e..def4c592b75f 100644
+index bf44282409ab..25b89ddb446d 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1854,19 +1854,10 @@ static int vop_create_crtc(struct vop *vop)
@@ -1562,7 +1562,7 @@ index b15ee823039e..def4c592b75f 100644
  
  	port = of_get_child_by_name(dev->of_node, "port");
 
-From 3f903a4d812066e582b6658573b16c1fc558f25a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 9 Oct 2020 15:29:27 +0000
 Subject: [PATCH] drm/rockchip: vop: add immutable zpos property
@@ -1587,7 +1587,7 @@ index 3aa37e177667..a2b59faa9184 100644
  	dev->mode_config.helper_private = &rockchip_mode_config_helpers;
  }
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index def4c592b75f..1dd8bf5ff4be 100644
+index 25b89ddb446d..74d7e474bf89 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1831,7 +1831,7 @@ static irqreturn_t vop_isr(int irq, void *data)
@@ -1618,7 +1618,7 @@ index def4c592b75f..1dd8bf5ff4be 100644
  			primary = plane;
  		else if (plane->type == DRM_PLANE_TYPE_CURSOR)
 
-From c2fa8a49fbbcec290b1aa8c76125c254cca48844 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 10 Oct 2020 09:20:44 +0000
 Subject: [PATCH] drm/rockchip: vop: add plane color properties
@@ -1629,7 +1629,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 1dd8bf5ff4be..5f89b51ce891 100644
+index 74d7e474bf89..d8e0c5a4df01 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1831,8 +1831,23 @@ static irqreturn_t vop_isr(int irq, void *data)
@@ -1687,7 +1687,7 @@ index 1dd8bf5ff4be..5f89b51ce891 100644
  			primary = plane;
  		else if (plane->type == DRM_PLANE_TYPE_CURSOR)
 
-From 2d0ecb95be7651cec64b039dac4db3bb2edb6f7c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nickey Yang <nickey.yang@rock-chips.com>
 Date: Mon, 17 Jul 2017 16:35:34 +0800
 Subject: [PATCH] HACK: clk: rockchip: rk3288: dedicate npll for vopb and hdmi
@@ -1738,7 +1738,7 @@ index 93c794695c46..db6c8bbb35f4 100644
  			RK3288_CLKGATE_CON(3), 1, GFLAGS),
  	COMPOSITE(DCLK_VOP1, "dclk_vop1", mux_pll_src_cpll_gpll_npll_p, 0,
 
-From ae753af7bed0ba40fba859f31084520460493ad2 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 14:51:14 +0200
 Subject: [PATCH] HACK: clk: rockchip: rk3288: use npll table to to improve
@@ -1793,7 +1793,7 @@ index db6c8bbb35f4..426309f5dd44 100644
  
  static struct clk_div_table div_hclk_cpu_t[] = {
 
-From 4a8e8c055de03a50dadcfd979a99beaff947cddc Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 28 Oct 2018 21:43:01 +0100
 Subject: [PATCH] HACK: clk: rockchip: rk3288: add more npll clocks
@@ -1845,7 +1845,7 @@ index 426309f5dd44..b3247a3a7290 100644
  };
  
 
-From 76d67146a1eac8a188fe5646547fd0bc39e6b66e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 25 May 2020 20:36:45 +0000
 Subject: [PATCH] HACK: clk: rockchip: rk3399: dedicate vpll for vopb and hdmi
@@ -1936,7 +1936,7 @@ index 7df2f1e00347..d39d9ea39aca 100644
  			RK3399_CLKGATE_CON(10), 12, GFLAGS),
  
 
-From 92d9cf4e6c2767c8c5aa8d97e684f2f77d950e7d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 19 Jul 2020 16:35:11 +0000
 Subject: [PATCH] HACK: dts: rockchip: do not use vopl for hdmi
@@ -1974,10 +1974,10 @@ index 03e86d012edd..746acfac1e92 100644
  		};
  	};
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index a855805649ef..418d16b0b648 100644
+index 2551b238b97c..ea1ef6c7455a 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1640,11 +1640,6 @@ vopl_out_edp: endpoint@1 {
+@@ -1639,11 +1639,6 @@ vopl_out_edp: endpoint@1 {
  				remote-endpoint = <&edp_in_vopl>;
  			};
  
@@ -1989,7 +1989,7 @@ index a855805649ef..418d16b0b648 100644
  			vopl_out_mipi1: endpoint@3 {
  				reg = <3>;
  				remote-endpoint = <&mipi1_in_vopl>;
-@@ -1816,10 +1811,6 @@ hdmi_in_vopb: endpoint@0 {
+@@ -1815,10 +1810,6 @@ hdmi_in_vopb: endpoint@0 {
  					reg = <0>;
  					remote-endpoint = <&vopb_out_hdmi>;
  				};
@@ -2001,7 +2001,7 @@ index a855805649ef..418d16b0b648 100644
  		};
  	};
 
-From 07203c89545ff7ec74cb8ccc87fb91810544e4a2 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 20 Dec 2019 08:12:43 +0000
 Subject: [PATCH] WIP: drm/bridge: dw-hdmi: limit mode and bus format to
@@ -2230,7 +2230,7 @@ index 6d319b95b992..c2425d7fc465 100644
  		mode_status = pdata->mode_valid(hdmi, pdata->priv_data, info,
  						mode);
 
-From da41048fb13e41ca4caffef3584c543a0ce8c49d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 20 Dec 2019 08:12:42 +0000
 Subject: [PATCH] WIP: drm/rockchip: dw_hdmi: add 10-bit rgb bus format
@@ -2348,7 +2348,7 @@ index e33c2dcd0d4b..03944e08b6c7 100644
  #define to_rockchip_crtc_state(s) \
  		container_of(s, struct rockchip_crtc_state, base)
 
-From 5a6355251e1b77b200291d48773f2b7693462f13 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 8 Dec 2019 23:42:44 +0000
 Subject: [PATCH] WIP: drm: dw-hdmi: add content type connector property
@@ -2399,7 +2399,7 @@ index c2425d7fc465..f86b8fa40ab6 100644
  		drm_object_attach_property(&connector->base,
  			connector->dev->mode_config.hdr_output_metadata_property, 0);
 
-From e388bd5e64b5bb34bd50710b01a57f48df6f9ca7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 20 Dec 2019 08:12:43 +0000
 Subject: [PATCH] WIP: drm/rockchip: add yuv444 support
@@ -2490,7 +2490,7 @@ index 43ad0278fad1..c8eaeb484672 100644
  
  static const struct dw_hdmi_plat_data rk3328_hdmi_drv_data = {
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 5f89b51ce891..409734c4425b 100644
+index d8e0c5a4df01..9fde1c27072b 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -325,6 +325,17 @@ static int vop_convert_afbc_format(uint32_t format)
@@ -2551,10 +2551,10 @@ index 5f89b51ce891..409734c4425b 100644
  	val = hact_st << 16;
  	val |= hact_end;
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-index 1b0618147a0e..896b441e4a63 100644
+index 0b1984585082..72dd670bf2a7 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -92,10 +92,16 @@ struct vop_common {
+@@ -103,10 +103,16 @@ struct vop_common {
  	struct vop_reg mmu_en;
  	struct vop_reg out_mode;
  	struct vop_reg standby;
@@ -2611,7 +2611,7 @@ index 05ade8ea962f..f276ef4b3f64 100644
  
  static const struct vop_intr rk3328_vop_intr = {
 
-From e9bebfae3a0d24b4d78ff4485ccad50c4dbe009c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 20 Dec 2019 08:12:43 +0000
 Subject: [PATCH] WIP: drm/rockchip: add yuv420 support
@@ -2688,7 +2688,7 @@ index c8eaeb484672..9fe690570e3d 100644
  
  static struct rockchip_hdmi_chip_data rk3399_chip_data = {
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 409734c4425b..d5048c111b82 100644
+index 9fde1c27072b..4d855724e1dd 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -326,6 +326,19 @@ static int vop_convert_afbc_format(uint32_t format)
@@ -2731,10 +2731,10 @@ index 409734c4425b..d5048c111b82 100644
  	VOP_REG_SET(vop, common, dsp_out_yuv, yuv_output);
  
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-index 896b441e4a63..9f50e0e00127 100644
+index 72dd670bf2a7..a997578e174a 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -94,6 +94,7 @@ struct vop_common {
+@@ -105,6 +105,7 @@ struct vop_common {
  	struct vop_reg standby;
  
  	struct vop_reg overlay_mode;
@@ -2742,7 +2742,7 @@ index 896b441e4a63..9f50e0e00127 100644
  	struct vop_reg dsp_data_swap;
  	struct vop_reg dsp_out_yuv;
  	struct vop_reg dsp_background;
-@@ -258,11 +259,12 @@ struct vop_data {
+@@ -269,11 +270,12 @@ struct vop_data {
  /*
   * display output interface supported by rockchip lcdc
   */
@@ -2780,7 +2780,7 @@ index f276ef4b3f64..8c99cc2a7eda 100644
  	.dsp_out_yuv = VOP_REG(RK3328_POST_SCL_CTRL, 0x1, 2),
  	.dsp_background = VOP_REG(RK3328_DSP_BG, 0xffffffff, 0),
 
-From 782e7df70a432c1dfb7ce40f534b561485206c7f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 15 Aug 2020 23:20:34 +0200
 Subject: [PATCH] drm/rockchip: enable ycbcr_420_allowed and ycbcr_444_allowed
@@ -2811,7 +2811,7 @@ index 9fe690570e3d..bccdbb3e0a54 100644
  
  static struct rockchip_hdmi_chip_data rk3288_chip_data = {
 
-From 0cb659fa323784a258839d4b86d90e6ed920059e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 4 Jan 2021 22:38:26 +0100
 Subject: [PATCH] drm/rockchip: seperate mode clock validation
@@ -2863,7 +2863,7 @@ index bccdbb3e0a54..a612bf3da9ee 100644
  }
  
 
-From b6c2c118e50f55b56036aab4dced57b8bd27d6ae Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 15 Aug 2020 21:11:08 +0200
 Subject: [PATCH] !fixup drm/rockchip: rk3368's vop does not support 10-bit
@@ -2889,7 +2889,7 @@ index 8c99cc2a7eda..9ca9fff0d359 100644
  	.enable = VOP_REG(RK3368_WIN0_CTRL0, 0x1, 0),
  	.format = VOP_REG(RK3368_WIN0_CTRL0, 0x7, 1),
 
-From 918ce1031f86f53a017670e38d7da2986e0d05b5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Wed, 14 Oct 2020 16:42:05 +0100
 Subject: [PATCH] drm/rockchip: split rk3328 vop for 10-bit support
@@ -2944,7 +2944,7 @@ index 9ca9fff0d359..e34482c3d2be 100644
  };
  
 
-From b3928f654f3e4fb6a4266abc01afdb91bc6eb5a2 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 18 Nov 2017 11:09:39 +0100
 Subject: [PATCH] rockchip: vop: force skip lines if image too big
@@ -2954,7 +2954,7 @@ Subject: [PATCH] rockchip: vop: force skip lines if image too big
  1 file changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index d5048c111b82..c0245f5daeb6 100644
+index 4d855724e1dd..5622ffd1b587 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -932,6 +932,7 @@ static void vop_plane_atomic_update(struct drm_plane *plane,
@@ -3000,7 +3000,7 @@ index d5048c111b82..c0245f5daeb6 100644
  
  		for (i = 0; i < NUM_YUV2YUV_COEFFICIENTS; i++) {
 
-From 90d53e7362ee4b9d9ce13a643c491ee1177df526 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 8 Jan 2020 21:07:51 +0000
 Subject: [PATCH] arm64: dts: rockchip: increase vop clock rate on rk3328
@@ -3014,7 +3014,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 72f34205fd20..9358d302f5e4 100644
+index d327fd300116..31c48c38c955 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -805,8 +805,8 @@ cru: clock-controller@ff440000 {
@@ -3028,6 +3028,7 @@ index 72f34205fd20..9358d302f5e4 100644
  			<50000000>, <100000000>,
  			<100000000>, <100000000>,
  			<50000000>, <50000000>,
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 1 Mar 2021 20:31:15 +0100
@@ -3057,6 +3058,7 @@ index b3247a3a7290..f5617529dbb5 100644
  	RK3066_PLL_RATE_NB(585000000, 6, 585, 4, 32),
  	RK3066_PLL_RATE_NB(432000000, 3, 216, 4, 32),
  	RK3066_PLL_RATE_NB(426000000, 3, 213, 4, 32),
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 10 Apr 2021 16:54:26 +0200
@@ -3083,7 +3085,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 5716aabbaf50..508738edfac8 100644
+index f86b8fa40ab6..3340aef73d8d 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 @@ -81,15 +81,15 @@ static const u16 csc_coeff_rgb_out_eitu709[3][4] = {
@@ -3109,4 +3111,394 @@ index 5716aabbaf50..508738edfac8 100644
  
  static const u16 csc_coeff_rgb_full_to_rgb_limited[3][4] = {
 
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sat, 20 Mar 2021 11:12:07 +0100
+Subject: [PATCH] clk: rockchip: RK3399: adapt VPLL rates
 
+Rockchip PLLs are kown provide the least jitter for
+vco rates between 800 MHz and 2 GHz. I converted the
+rates for VPLL which are used for VOPs dclk and there-
+fore HDMI phy in that manner and used the rates which
+require the lowest frac divs.
+Additionally I added some rates which are useful to
+provide additional VESA and non-VESA rates for HDMI
+output.
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/clk/rockchip/clk-rk3399.c | 42 ++++++++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/clk/rockchip/clk-rk3399.c b/drivers/clk/rockchip/clk-rk3399.c
+index d39d9ea39aca..16b0bf173299 100644
+--- a/drivers/clk/rockchip/clk-rk3399.c
++++ b/drivers/clk/rockchip/clk-rk3399.c
+@@ -107,20 +107,34 @@ static struct rockchip_pll_rate_table rk3399_pll_rates[] = {
+ 
+ static struct rockchip_pll_rate_table rk3399_vpll_rates[] = {
+ 	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+-	RK3036_PLL_RATE( 594000000, 1, 123, 5, 1, 0, 12582912),  /* vco = 2970000000 */
+-	RK3036_PLL_RATE( 593406592, 1, 123, 5, 1, 0, 10508804),  /* vco = 2967032965 */
+-	RK3036_PLL_RATE( 297000000, 1, 123, 5, 2, 0, 12582912),  /* vco = 2970000000 */
+-	RK3036_PLL_RATE( 296703296, 1, 123, 5, 2, 0, 10508807),  /* vco = 2967032970 */
+-	RK3036_PLL_RATE( 148500000, 1, 129, 7, 3, 0, 15728640),  /* vco = 3118500000 */
+-	RK3036_PLL_RATE( 148351648, 1, 123, 5, 4, 0, 10508800),  /* vco = 2967032960 */
+-	RK3036_PLL_RATE( 106500000, 1, 124, 7, 4, 0,  4194304),  /* vco = 2982000000 */
+-	RK3036_PLL_RATE(  74250000, 1, 129, 7, 6, 0, 15728640),  /* vco = 3118500000 */
+-	RK3036_PLL_RATE(  74175824, 1, 129, 7, 6, 0, 13550823),  /* vco = 3115384608 */
+-	RK3036_PLL_RATE(  65000000, 1, 113, 7, 6, 0, 12582912),  /* vco = 2730000000 */
+-	RK3036_PLL_RATE(  59340659, 1, 121, 7, 7, 0,  2581098),  /* vco = 2907692291 */
+-	RK3036_PLL_RATE(  54000000, 1, 110, 7, 7, 0,  4194304),  /* vco = 2646000000 */
+-	RK3036_PLL_RATE(  27000000, 1,  55, 7, 7, 0,  2097152),  /* vco = 1323000000 */
+-	RK3036_PLL_RATE(  26973026, 1,  55, 7, 7, 0,  1173232),  /* vco = 1321678323 */
++	RK3036_PLL_RATE( 594000000, 1, 74, 3, 1, 0,  4194304),  /* vco = 1782000000  fout = 594000000 */
++	RK3036_PLL_RATE( 593406592, 1, 74, 3, 1, 0,  2949838),  /* vco = 1780219777  fout = 593406592.36908 */
++	RK3036_PLL_RATE( 319750000, 1, 79, 6, 1, 0, 15728640),  /* vco = 1918500000  fout = 319750000 */
++	RK3036_PLL_RATE( 297000000, 1, 74, 6, 1, 0,  4194304),  /* vco = 1782000000  fout = 297000000 */
++	RK3036_PLL_RATE( 296703296, 1, 74, 6, 1, 0,  2949838),  /* vco = 1780219777  fout = 296703296.18454 */
++	RK3036_PLL_RATE( 241500000, 1, 60, 6, 1, 0,  6291456),  /* vco = 1449000000  fout = 241500000 */
++	RK3036_PLL_RATE( 162000000, 1, 67, 5, 2, 0,  8388608),  /* vco = 1620000000  fout = 162000000 */
++	RK3036_PLL_RATE( 148500000, 1, 74, 6, 2, 0,  4194304),  /* vco = 1782000000  fout = 148500000*/
++	RK3036_PLL_RATE( 148351648, 1, 74, 6, 2, 0,  2949838),  /* vco = 1780219777  fout = 148351648.09227 */
++	RK3036_PLL_RATE( 136750000, 1, 68, 2, 6, 0,  6291456),  /* vco = 1641000000  fout = 136750000 */
++	RK3036_PLL_RATE( 135000000, 1, 56, 5, 2, 0,  4194304),  /* vco = 1350000000  fout = 135000000 */
++	RK3036_PLL_RATE( 119000000, 1, 59, 6, 2, 0,  8388608),  /* vco = 1428000000  fout = 119000000 */
++	RK3036_PLL_RATE( 108000000, 1, 63, 7, 2, 1,        0),  /* vco = 1512000000  fout = 108000000 */
++	RK3036_PLL_RATE( 106500000, 1, 62, 7, 2, 0,  2097152),  /* vco = 1491000000  fout = 106500000 */
++	RK3036_PLL_RATE(  88750000, 1, 55, 5, 3, 0,  7864320),  /* vco = 1331250000  fout = 88750000 */
++	RK3036_PLL_RATE(  85500000, 1, 57, 4, 4, 1,        0),  /* vco = 1368000000  fout = 85500000 */
++	RK3036_PLL_RATE(  78750000, 1, 59, 6, 3, 0,  1048576),  /* vco = 1417500000  fout = 78750000 */
++	RK3036_PLL_RATE(  74250000, 1, 74, 6, 4, 0,  4194304),  /* vco = 1782000000  fout = 74250000 */
++	RK3036_PLL_RATE(  74175824, 1, 74, 6, 4, 0,  2949838),  /* vco = 1780219777  fout = 74175824.046135 */
++	RK3036_PLL_RATE(  71000000, 1, 71, 6, 4, 1,        0),  /* vco = 1704000000  fout = 71000000 */
++	RK3036_PLL_RATE(  65000000, 1, 65, 6, 4, 0,        0),  /* vco = 1560000000  fout = 65000000 */
++	RK3036_PLL_RATE(  59340659, 1, 59, 6, 4, 0,  5715310),  /* vco = 1424175816  fout = 59340659.022331 */
++	RK3036_PLL_RATE(  54000000, 1, 63, 7, 4, 1,        0),  /* vco = 1512000000  fout = 54000000 */
++	RK3036_PLL_RATE(  49500000, 1, 72, 5, 7, 0,  3145728),  /* vco = 1732500000  fout = 49500000 */
++	RK3036_PLL_RATE(  40000000, 1, 70, 7, 6, 1,        0),  /* vco = 1680000000  fout = 40000000 */
++	RK3036_PLL_RATE(  31500000, 1, 55, 7, 6, 0,  2097152),  /* vco = 1323000000  fout = 31500000 */
++	RK3036_PLL_RATE(  27000000, 1, 55, 7, 7, 0,  2097152),  /* vco = 1323000000  fout = 27000000 */
++	RK3036_PLL_RATE(  26973026, 1, 55, 7, 7, 0,  1173214),  /* vco = 1321678296  fout = 26973026.450799 */
+ 	{ /* sentinel */ },
+ };
+ 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Tue, 23 Mar 2021 19:45:07 +0100
+Subject: [PATCH] phy/rockchip: inno-hdmi: add more supported pre-pll rates
+
+This adds a bunch of new pixel clock- and tmds rates to the pre-pll
+table which are required to get more VESA and some DMT rates working.
+
+It has been completly re-calculated to match the min- and max-vco of
+(750 MHz - 3.2 GHz) requirements. If more than one configuration would
+have been possible the lowest fbdiv and refdiv (and therefore lowest
+vco rate) has been prefered.
+
+It's important to note, that RK3228 version of the phy does not support
+fractional dividers. In order to support the most possible rates for
+this version also in both 8-bit and 10-bit variant, some rates are not
+exact. The maximum deviation of the pixel clock is 0.26,
+which perfectly fits into vesa DMT recommendation of 0.5%.
+
+I tested all possible rates on serveral screens from different manufacturers
+with both RK3228 and RK3328. Both pre- and post-PLL locking are slighlty
+faster now.
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/phy/rockchip/phy-rockchip-inno-hdmi.c | 198 +++++++++++++++---
+ 1 file changed, 173 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-hdmi.c b/drivers/phy/rockchip/phy-rockchip-inno-hdmi.c
+index 3719309ad0d0..00025dcd3bb9 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-hdmi.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-hdmi.c
+@@ -292,31 +292,179 @@ struct inno_hdmi_phy_drv_data {
+ };
+ 
+ static const struct pre_pll_config pre_pll_cfg_table[] = {
+-	{ 27000000,  27000000, 1,  90, 3, 2, 2, 10, 3, 3, 4, 0, 0},
+-	{ 27000000,  33750000, 1,  90, 1, 3, 3, 10, 3, 3, 4, 0, 0},
+-	{ 40000000,  40000000, 1,  80, 2, 2, 2, 12, 2, 2, 2, 0, 0},
+-	{ 59341000,  59341000, 1,  98, 3, 1, 2,  1, 3, 3, 4, 0, 0xE6AE6B},
+-	{ 59400000,  59400000, 1,  99, 3, 1, 1,  1, 3, 3, 4, 0, 0},
+-	{ 59341000,  74176250, 1,  98, 0, 3, 3,  1, 3, 3, 4, 0, 0xE6AE6B},
+-	{ 59400000,  74250000, 1,  99, 1, 2, 2,  1, 3, 3, 4, 0, 0},
+-	{ 74176000,  74176000, 1,  98, 1, 2, 2,  1, 2, 3, 4, 0, 0xE6AE6B},
+-	{ 74250000,  74250000, 1,  99, 1, 2, 2,  1, 2, 3, 4, 0, 0},
+-	{ 74176000,  92720000, 4, 494, 1, 2, 2,  1, 3, 3, 4, 0, 0x816817},
+-	{ 74250000,  92812500, 4, 495, 1, 2, 2,  1, 3, 3, 4, 0, 0},
+-	{148352000, 148352000, 1,  98, 1, 1, 1,  1, 2, 2, 2, 0, 0xE6AE6B},
+-	{148500000, 148500000, 1,  99, 1, 1, 1,  1, 2, 2, 2, 0, 0},
+-	{148352000, 185440000, 4, 494, 0, 2, 2,  1, 3, 2, 2, 0, 0x816817},
+-	{148500000, 185625000, 4, 495, 0, 2, 2,  1, 3, 2, 2, 0, 0},
+-	{296703000, 296703000, 1,  98, 0, 1, 1,  1, 0, 2, 2, 0, 0xE6AE6B},
+-	{297000000, 297000000, 1,  99, 0, 1, 1,  1, 0, 2, 2, 0, 0},
+-	{296703000, 370878750, 4, 494, 1, 2, 0,  1, 3, 1, 1, 0, 0x816817},
+-	{297000000, 371250000, 4, 495, 1, 2, 0,  1, 3, 1, 1, 0, 0},
+-	{593407000, 296703500, 1,  98, 0, 1, 1,  1, 0, 2, 1, 0, 0xE6AE6B},
+-	{594000000, 297000000, 1,  99, 0, 1, 1,  1, 0, 2, 1, 0, 0},
+-	{593407000, 370879375, 4, 494, 1, 2, 0,  1, 3, 1, 1, 1, 0x816817},
+-	{594000000, 371250000, 4, 495, 1, 2, 0,  1, 3, 1, 1, 1, 0},
+-	{593407000, 593407000, 1,  98, 0, 2, 0,  1, 0, 1, 1, 0, 0xE6AE6B},
+-	{594000000, 594000000, 1,  99, 0, 2, 0,  1, 0, 1, 1, 0, 0},
++	{ 25175000,  25175000,  3,  125, 3, 1, 1,  1, 3, 3,  4, 0, 0xe00000},
++	{ 25175000,  31468750,  1,   41, 0, 3, 3,  1, 3, 3,  4, 0, 0xf5554f},
++	{ 27000000,  27000000,  1,   36, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 27000000,  33750000,  1,   45, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 31500000,  31500000,  1,   42, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 31500000,  39375000,  1,  105, 1, 3, 3, 10, 0, 3,  4, 0,      0x0},
++	{ 33750000,  33750000,  1,   45, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 33750000,  42187500,  1,  169, 2, 3, 3, 15, 0, 3,  4, 0,      0x0},
++	{ 35500000,  35500000,  1,   71, 2, 2, 2,  6, 0, 3,  4, 0,      0x0},
++	{ 35500000,  44375000,  1,   74, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{ 36000000,  36000000,  1,   36, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 36000000,  45000000,  1,   45, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{ 40000000,  40000000,  1,   40, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 40000000,  50000000,  1,   50, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{ 49500000,  49500000,  1,   66, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 49500000,  61875000,  1,  165, 1, 3, 3, 10, 0, 3,  4, 0,      0x0},
++	{ 50000000,  50000000,  1,   50, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 50000000,  62500000,  1,  125, 2, 2, 2, 15, 0, 2,  2, 0,      0x0},
++	{ 54000000,  54000000,  1,   36, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{ 54000000,  67500000,  1,   45, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{ 56250000,  56250000,  1,   75, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 56250000,  70312500,  1,  117, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{ 59341000,  59341000,  1,  118, 2, 2, 2,  6, 0, 3,  4, 0, 0xae978d},
++	{ 59341000,  74176250,  2,  148, 2, 1, 1, 15, 0, 1,  1, 0, 0x5a3d70},
++	{ 59400000,  59400000,  1,   99, 3, 1, 1,  1, 3, 3,  4, 0,      0x0},
++	{ 59400000,  74250000,  1,   99, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 65000000,  65000000,  1,   65, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 65000000,  81250000,  3,  325, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 68250000,  68250000,  1,   91, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 68250000,  85312500,  1,  142, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{ 71000000,  71000000,  1,   71, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 71000000,  88750000,  3,  355, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 72000000,  72000000,  1,   36, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{ 72000000,  90000000,  1,   60, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{ 73250000,  73250000,  3,  293, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 73250000,  91562500,  1,   61, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{ 74176000,  74176000,  1,   37, 2, 0, 0,  1, 1, 2,  2, 0, 0x16872b},
++	{ 74176000,  92720000,  2,  185, 2, 1, 1, 15, 0, 1,  1, 0, 0x70a3d7},
++	{ 74250000,  74250000,  1,   99, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 74250000,  92812500,  4,  495, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 75000000,  75000000,  1,   50, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{ 75000000,  93750000,  1,  125, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 78750000,  78750000,  1,  105, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 78750000,  98437500,  1,  164, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{ 79500000,  79500000,  1,   53, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{ 79500000,  99375000,  1,  199, 2, 2, 2, 15, 0, 2,  2, 0,      0x0},
++	{ 83500000,  83500000,  2,  167, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{ 83500000, 104375000,  1,  104, 2, 1, 1, 15, 0, 1,  1, 0, 0x600000},
++	{ 85500000,  85500000,  1,   57, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{ 85500000, 106875000,  1,  178, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{ 85750000,  85750000,  3,  343, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 85750000, 107187500,  1,  143, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{ 88750000,  88750000,  3,  355, 0, 3, 3,  1, 2, 3,  4, 0,      0x0},
++	{ 88750000, 110937500,  1,  110, 2, 1, 1, 15, 0, 1,  1, 0, 0xf00000},
++	{ 94500000,  94500000,  1,   63, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{ 94500000, 118125000,  1,  197, 3, 1, 1, 25, 0, 1,  1, 0,      0x0},
++	{101000000, 101000000,  1,  101, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{101000000, 126250000,  1,   42, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{102250000, 102250000,  4,  409, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{102250000, 127812500,  1,  128, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{106500000, 106500000,  1,   71, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{106500000, 133125000,  1,  133, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{108000000, 108000000,  1,   36, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{108000000, 135000000,  1,   45, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{115500000, 115500000,  1,   77, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{115500000, 144375000,  1,   48, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{117500000, 117500000,  2,  235, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{117500000, 146875000,  1,   49, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{119000000, 119000000,  1,  119, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{119000000, 148750000,  3,  148, 0, 1, 1,  1, 3, 1,  1, 0, 0xc00000},
++	{121750000, 121750000,  4,  487, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{121750000, 152187500,  1,  203, 0, 3, 3,  1, 3, 3,  4, 0,      0x0},
++	{122500000, 122500000,  2,  245, 2, 1, 1,  1, 1, 3,  4, 0,      0x0},
++	{122500000, 153125000,  1,   51, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{135000000, 135000000,  1,   45, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{135000000, 168750000,  1,  169, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{136750000, 136750000,  1,   68, 2, 0, 0,  1, 1, 2,  2, 0, 0x600000},
++	{136750000, 170937500,  1,  113, 0, 2, 2,  1, 3, 2,  2, 0, 0xf5554f},
++	{140250000, 140250000,  2,  187, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{140250000, 175312500,  1,  117, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{146250000, 146250000,  2,  195, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{146250000, 182812500,  1,   61, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{148250000, 148250000,  3,  222, 2, 0, 0,  1, 1, 2,  2, 0, 0x600000},
++	{148250000, 185312500,  1,  123, 0, 2, 2,  1, 3, 2,  2, 0, 0x8aaab0},
++	{148352000, 148352000,  2,  148, 2, 0, 0,  1, 1, 2,  2, 0, 0x5a1cac},
++	{148352000, 185440000,  3,  185, 0, 1, 1,  1, 3, 1,  1, 0, 0x70a3d7},
++	{148500000, 148500000,  1,   99, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{148500000, 185625000,  4,  495, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{154000000, 154000000,  1,   77, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{154000000, 192500000,  1,   64, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{156000000, 156000000,  1,   52, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{156000000, 195000000,  1,   65, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{156750000, 156750000,  2,  209, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{156750000, 195937500,  1,  196, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{157000000, 157000000,  2,  157, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{157000000, 196250000,  1,  131, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{157500000, 157500000,  1,  105, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{157500000, 196875000,  1,  197, 2, 1, 1, 15, 0, 1,  1, 0,      0x0},
++	{162000000, 162000000,  1,   54, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{162000000, 202500000,  2,  135, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{175500000, 175500000,  1,  117, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{175500000, 219375000,  1,   73, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{179500000, 179500000,  3,  359, 0, 2, 2,  1, 0, 3,  4, 0,      0x0},
++	{179500000, 224375000,  1,   75, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{182750000, 182750000,  1,   91, 2, 0, 0,  1, 1, 2,  2, 0, 0x600000},
++	{182750000, 228437500,  1,  152, 0, 2, 2,  1, 3, 2,  2, 0, 0x4aaab0},
++	{182750000, 228437500,  1,  152, 0, 2, 2,  1, 3, 2,  2, 0, 0x4aaab0},
++	{187000000, 187000000,  2,  187, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{187000000, 233750000,  1,   39, 0, 0, 0,  1, 3, 0,  0, 1,      0x0},
++	{187250000, 187250000,  3,  280, 2, 0, 0,  1, 1, 2,  2, 0, 0xe00000},
++	{187250000, 234062500,  1,  156, 0, 2, 2,  1, 3, 2,  2, 0,  0xaaab0},
++	{189000000, 189000000,  1,   63, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{189000000, 236250000,  1,   79, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{193250000, 193250000,  3,  289, 2, 0, 0,  1, 1, 2,  2, 0, 0xe00000},
++	{193250000, 241562500,  1,  161, 0, 2, 2,  1, 3, 2,  2, 0,  0xaaab0},
++	{202500000, 202500000,  2,  135, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{202500000, 253125000,  1,  169, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{204750000, 204750000,  4,  273, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{204750000, 255937500,  1,  171, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{208000000, 208000000,  1,  104, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{208000000, 260000000,  1,  173, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{214750000, 214750000,  1,  107, 2, 0, 0,  1, 1, 2,  2, 0, 0x600000},
++	{214750000, 268437500,  1,  178, 0, 2, 2,  1, 3, 2,  2, 0, 0xf5554f},
++	{218250000, 218250000,  4,  291, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{218250000, 272812500,  1,   91, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{229500000, 229500000,  2,  153, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{229500000, 286875000,  1,  191, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{234000000, 234000000,  1,   39, 0, 0, 0,  1, 0, 1,  1, 0,      0x0},
++	{234000000, 292500000,  1,  195, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{241500000, 241500000,  2,  161, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{241500000, 301875000,  1,  201, 0, 2, 2,  1, 3, 2,  2, 0,      0x0},
++	{245250000, 245250000,  4,  327, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{245250000, 306562500,  1,   51, 0, 0, 0,  1, 3, 0,  0, 1,      0x0},
++	{245500000, 245500000,  4,  491, 2, 0, 0,  1, 1, 2,  2, 0,      0x0},
++	{245500000, 306875000,  1,   51, 0, 0, 0,  1, 3, 0,  0, 1,      0x0},
++	{261000000, 261000000,  1,   87, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{261000000, 326250000,  1,  109, 0, 1, 1,  1, 3, 1,  1, 0,      0x0},
++	{268250000, 268250000,  9,  402, 0, 0, 0,  1, 0, 1,  1, 0, 0x600000},
++	{268250000, 335312500,  1,  111, 0, 1, 1,  1, 3, 1,  1, 0, 0xc5554f},
++	{268500000, 268500000,  2,  179, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{268500000, 335625000,  1,   56, 0, 0, 0,  1, 3, 0,  0, 1,      0x0},
++	{281250000, 281250000,  4,  375, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{281250000, 351562500,  1,  117, 0, 3, 1,  1, 3, 1,  1, 0,      0x0},
++	{288000000, 288000000,  1,   48, 0, 0, 0,  1, 0, 1,  1, 0,      0x0},
++	{288000000, 360000000,  1,   60, 0, 2, 0,  1, 3, 0,  0, 1,      0x0},
++	{296703000, 296703000,  1,   49, 0, 0, 0,  1, 0, 1,  1, 0, 0x7353f7},
++	{296703000, 370878750,  1,  123, 0, 3, 1,  1, 3, 1,  1, 0, 0xa051eb},
++	{297000000, 297000000,  1,   99, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{297000000, 371250000,  4,  495, 0, 3, 1,  1, 3, 1,  1, 0,      0x0},
++	{312250000, 312250000,  9,  468, 0, 0, 0,  1, 0, 1,  1, 0, 0x600000},
++	{312250000, 390312500,  1,  130, 0, 3, 1,  1, 3, 1,  1, 0, 0x1aaab0},
++	{317000000, 317000000,  3,  317, 0, 1, 1,  1, 0, 2,  2, 0,      0x0},
++	{317000000, 396250000,  1,   66, 0, 2, 0,  1, 3, 0,  0, 1,      0x0},
++	{319750000, 319750000,  3,  159, 0, 0, 0,  1, 0, 1,  1, 0, 0xe00000},
++	{319750000, 399687500,  3,  199, 0, 2, 0,  1, 3, 0,  0, 1, 0xd80000},
++	{333250000, 333250000,  9,  499, 0, 0, 0,  1, 0, 1,  1, 0, 0xe00000},
++	{333250000, 416562500,  1,  138, 0, 3, 1,  1, 3, 1,  1, 0, 0xdaaab0},
++	{348500000, 348500000,  9,  522, 0, 2, 0,  1, 0, 1,  1, 0, 0xc00000},
++	{348500000, 435625000,  1,  145, 0, 3, 1,  1, 3, 1,  1, 0, 0x35554f},
++	{356500000, 356500000,  9,  534, 0, 2, 0,  1, 0, 1,  1, 0, 0xc00000},
++	{356500000, 445625000,  1,  148, 0, 3, 1,  1, 3, 1,  1, 0, 0x8aaab0},
++	{380500000, 380500000,  9,  570, 0, 2, 0,  1, 0, 1,  1, 0, 0xc00000},
++	{380500000, 475625000,  1,  158, 0, 3, 1,  1, 3, 1,  1, 0, 0x8aaab0},
++	{443250000, 443250000,  1,   73, 0, 2, 0,  1, 0, 1,  1, 0, 0xe00000},
++	{443250000, 554062500,  1,   92, 0, 2, 0,  1, 3, 0,  0, 1, 0x580000},
++	{505250000, 505250000,  9,  757, 0, 2, 0,  1, 0, 1,  1, 0, 0xe00000},
++	{552750000, 552750000,  3,  276, 0, 2, 0,  1, 0, 1,  1, 0, 0x600000},
++	{593407000, 296703500,  3,  296, 0, 1, 1,  1, 0, 1,  1, 0, 0xb41893},
++	{593407000, 370879375,  4,  494, 0, 3, 1,  1, 3, 0,  0, 1, 0x817e4a},
++	{593407000, 593407000,  3,  296, 0, 2, 0,  1, 0, 1,  1, 0, 0xb41893},
++	{594000000, 297000000,  1,   99, 0, 1, 1,  1, 0, 1,  1, 0,      0x0},
++	{594000000, 371250000,  4,  495, 0, 3, 1,  1, 3, 0,  0, 1,      0x0},
++	{594000000, 594000000,  1,   99, 0, 2, 0,  1, 0, 1,  1, 0,      0x0},
+ 	{ /* sentinel */ }
+ };
+ 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Algea Cao <algea.cao@rock-chips.com>
+Date: Wed, 6 Jun 2018 15:47:12 +0800
+Subject: [PATCH] drm/bridge: synopsys: dw-hdmi: Select formula1 for csc
+ decimation
+
+Formula3 and Formula2 for csc decimation will cause hdmi yuv422
+display err.
+
+Formula3:
+The pixel color of left 0-14 columns and right 0-12 columns is
+err.
+
+Formula2:
+The pixel color of left 0-2 columns is err.
+
+Change-Id: I94fdd5fd962a24fde02dde1fe3ac10437ad117ad
+Signed-off-by: Algea Cao <algea.cao@rock-chips.com>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 3340aef73d8d..d798846579f5 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -1060,7 +1060,7 @@ static void hdmi_video_csc(struct dw_hdmi *hdmi)
+ 	if (is_color_space_interpolation(hdmi))
+ 		interpolation = HDMI_CSC_CFG_INTMODE_CHROMA_INT_FORMULA1;
+ 	else if (is_color_space_decimation(hdmi))
+-		decimation = HDMI_CSC_CFG_DECMODE_CHROMA_INT_FORMULA3;
++		decimation = HDMI_CSC_CFG_DECMODE_CHROMA_INT_FORMULA1;
+ 
+ 	switch (hdmi_bus_fmt_color_depth(hdmi->hdmi_data.enc_out_bus_format)) {
+ 	case 8:
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Tue, 1 Jun 2021 19:24:37 +0200
+Subject: [PATCH] drm/rockchip: allow 4096px with modes
+
+There is no reason to limit to modes up to 3840.
+Also drop the limitation from dw_hdmi_rockchip_mode_valid, since
+the max dimenstions of the actual vop version is validated in
+vop_crtc_mode_valid anyways.
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 2 +-
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+index a612bf3da9ee..e4cfa6adbd87 100644
+--- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+@@ -329,7 +329,7 @@ dw_hdmi_rockchip_mode_valid(struct dw_hdmi *hdmi, void *data,
+ 			return MODE_CLOCK_HIGH;
+ 	}
+ 
+-	return drm_mode_validate_size(mode, 3840, 2160);
++	return MODE_OK;
+ }
+ 
+ static void
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index 5622ffd1b587..a0d27a9a9675 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -401,8 +401,8 @@ static void scl_vop_cal_scl_fac(struct vop *vop, const struct vop_win_data *win,
+ 	if (info->is_yuv)
+ 		is_yuv = true;
+ 
+-	if (dst_w > 3840) {
+-		DRM_DEV_ERROR(vop->dev, "Maximum dst width (3840) exceeded\n");
++	if (dst_w > 4096) {
++		DRM_DEV_ERROR(vop->dev, "Maximum dst width (4096) exceeded\n");
+ 		return;
+ 	}
+ 
