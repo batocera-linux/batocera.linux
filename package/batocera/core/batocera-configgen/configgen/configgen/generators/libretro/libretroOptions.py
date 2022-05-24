@@ -15,7 +15,7 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('cap32_combokey', '"y"')
         # Auto Select Model
         if (system.name == 'gx4000'):
-            coreSettings.save('cap32_model', '"6128+"')
+            coreSettings.save('cap32_model', '"6128+ (experimental)"')
         elif system.isOptSet('cap32_model'):
             coreSettings.save('cap32_model', '"' + system.config['cap32_model'] + '"')
         else:
@@ -979,6 +979,21 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
+        # RDP Plugin
+        if system.isOptSet('mupen64plus-rdpPlugin'):
+            coreSettings.save('mupen64plus-rdp-plugin', '"' + system.config['mupen64plus-rdpPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rdp-plugin', '"gliden64"')
+        # RSP Plugin
+        if system.isOptSet('mupen64plus-rspPlugin'):
+            coreSettings.save('mupen64plus-rsp-plugin', '"' + system.config['mupen64plus-rspPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rsp-plugin', '"hle"')
+        # CPU Core
+        if system.isOptSet('mupen64plus-cpuCore'):
+            coreSettings.save('mupen64plus-cpucore', '"' + system.config['mupen64plus-cpuCore'] + '"')
+        else:
+            coreSettings.save('mupen64plus-cpucore', '"dynamic_recompiler"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
@@ -1856,7 +1871,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('neocd_bios'):
             coreSettings.save('neocd_bios', '"' + system.config['neocd_bios'] + '"')
         else:
-            coreSettings.save('neocd_bios', '"CDZ"')
+            coreSettings.save('neocd_bios', '"neocd_z.rom (CDZ)"')
         # Per-Game saves
         if system.isOptSet('neocd_per_content_saves') and system.config['neocd_per_content_saves'] == "False":
             coreSettings.save('neocd_per_content_saves', '"Off"')

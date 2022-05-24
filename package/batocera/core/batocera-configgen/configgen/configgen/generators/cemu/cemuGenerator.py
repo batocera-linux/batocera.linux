@@ -25,6 +25,16 @@ class CemuGenerator(Generator):
         return True
 
     def generate(self, system, rom, playersControllers, gameResolution):
+
+        # in case of squashfs, the root directory is passed
+        rpxrom = rom
+        if os.path.isdir(rom + "/code"):
+            rpxInDir = os.listdir(rom + "/code")
+            for file in rpxInDir:
+                basename, extension = os.path.splitext(file)
+                if extension == ".rpx":
+                    rpxrom = rom + "/code/" + basename + extension
+
         game_dir = cemuConfig + "/gameProfiles"
         resources_dir = cemuConfig + "/resources"
         cemu_exe = cemuConfig + "/Cemu.exe"
@@ -66,12 +76,12 @@ class CemuGenerator(Generator):
         if not os.path.exists(cemuhook_dll) or not filecmp.cmp(cemuDatadir + "/cemuhook.dll", cemuhook_dll):
             shutil.copyfile(cemuDatadir + "/cemuhook.dll", cemuhook_dll)
 
-        cemuControllers.generateControllerConfig(system, playersControllers, rom)
+        cemuControllers.generateControllerConfig(system, playersControllers)
 
         if rom == "config":
             commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe"]
         else:
-            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-f"]
+            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rpxrom, "-f"]
             if system.isOptSet('hud') and system.config["hud"] != "":
                commandArray.insert(0, "mangohud")
 

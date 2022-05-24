@@ -35,6 +35,9 @@ def getCurrentResolution():
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
 
+def isResolutionReversed():
+    return os.path.exists("/var/run/rk-rotation")
+
 def checkModeExists(videomode):
     proc = subprocess.Popen(["batocera-resolution listModes"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -74,11 +77,14 @@ def getGLVendor():
     except:
         return "unknown"
 
-def getGameSpecial(systemName, rom):
+def getGameSpecial(systemName, rom, retroarch):
     # Returns an ID for games that need rotated bezels/shaders or have special art
     # Vectrex will actually return an abbreviated game name for overlays, all others will return 0, 90, or 270 for rotation angle
     # 0 will be ignored.
     # Currently in use with bezels & libretro shaders
+    if not retroarch:
+        return "standalone"
+
     if not systemName in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex' ]:
         return "0"
 

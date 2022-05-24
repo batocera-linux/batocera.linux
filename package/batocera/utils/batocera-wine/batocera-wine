@@ -230,6 +230,11 @@ if test -e "${USER_DIR}/exe"; then
 			"${WINESERVER}" -w
     		;;
 
+		"${USER_DIR}/exe/vcredist_x64_2015_2022.exe" | "${USER_DIR}/exe/vcredist_x86_2015_2022.exe")
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
+    		;;
+
 		"${USER_DIR}/exe/oalinst.exe")
     		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /s &>/dev/null
 			"${WINESERVER}" -w

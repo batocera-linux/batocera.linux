@@ -45,7 +45,7 @@ cemuConfig  = batoceraFiles.CONF + '/cemu'
 # First controller will ALWAYS BE A Gamepad
 # Additional controllers will either be a Pro Controller or Wiimote
 
-def generateControllerConfig(system, playersControllers, rom):
+def generateControllerConfig(system, playersControllers):
     # -= Wii U controller types =-
 
     # xml mapping number: cemu expected XInput button number

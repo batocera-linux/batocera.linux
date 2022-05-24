@@ -35,7 +35,7 @@ class DaphneGenerator(Generator):
         # Default -fullscreen behaviour respects game aspect ratio
         if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
-        elif system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "force43":
+        elif system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "force_ratio":
             commandArray.extend(["-force_aspect_ratio"])
 
         # Backend - Default OpenGL
@@ -59,20 +59,32 @@ class DaphneGenerator(Generator):
         # Invert Axis
         if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
             commandArray.append("-tiphat")
-            
+
         # Game rotation options for vertical screens, default is 0.
         if system.isOptSet('daphne_rotate') and system.config['daphne_rotate'] == "90":
             commandArray.extend(["-rotate", "90"])
         elif system.isOptSet('daphne_rotate') and system.config['daphne_rotate'] == "270":
-            commandArray.extend(["-rotate", "270"])			
+            commandArray.extend(["-rotate", "270"])
 
         # Singe joystick sensitivity, default is 5.
-        if system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "10":
+        if os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "10":
             commandArray.extend(["-js_range", "10"])
-        elif system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "15":
+        elif os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "15":
             commandArray.extend(["-js_range", "15"])
-        elif system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "20":
-            commandArray.extend(["-js_range", "20"]) 
+        elif os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "20":
+            commandArray.extend(["-js_range", "20"])
+
+        # Scanlines
+        if system.isOptSet('daphne_scanlines') and system.getOptBoolean("daphne_scanlines"):
+            commandArray.append("-scanlines")
+
+        # Hide crosshair in supported games (e.g. ActionMax)
+        if system.isOptSet('singe_crosshair') and system.getOptBoolean("singe_crosshair"):
+            commandArray.append("-nocrosshair")
+
+        # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
+        if system.isOptSet('daphne_texturestream') and system.getOptBoolean("daphne_texturestream"):
+            commandArray.append("-texturestream") 
             
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
         if os.path.isfile(commandsFile):

@@ -316,6 +316,7 @@ class EsSystemConf:
         strval = strval.replace("<", "&lt;")
         strval = strval.replace(">", "&gt;")
         strval = strval.replace("\"", "&quot;")
+        strval = strval.replace("\n", "&#x0a;")
         return strval
 
     @staticmethod

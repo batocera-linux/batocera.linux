@@ -153,6 +153,8 @@ generators = {
     'sh': ShGenerator(),
 }
 
+emulatorNoBezel = [ "sdlpop", "odcommander" ]
+
 def squashfs_begin(rom):
     eslog.debug("squashfs_begin({})".format(rom))
     rommountpoint = "/var/run/squashfs/" + os.path.basename(rom)[:-9]
@@ -283,7 +285,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         gameResolution = videoMode.getCurrentResolution()
 
         # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
-        if system.isOptSet('resolutionIsReversed') and system.getOptBoolean('resolutionIsReversed') == True:
+        if videoMode.isResolutionReversed():
             x = gameResolution["width"]
             gameResolution["width"]  = gameResolution["height"]
             gameResolution["height"] = x
@@ -385,7 +387,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     return exitCode
 
 def getHudBezel(system, rom, gameResolution):
-    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none":
+    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none" or system.config['emulator'] in emulatorNoBezel:
         return None
 
     eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
@@ -395,7 +397,10 @@ def getHudBezel(system, rom, gameResolution):
         return None
 
     bezel = system.config['bezel']
-    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
+    if system.config['emulator'] == 'libretro':
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
+    else:
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
     if bz_infos is None:
         eslog.debug("no bezel info file found")
         return None
@@ -474,11 +479,16 @@ def getHudBezel(system, rom, gameResolution):
         return None
 
     # if screen and bezel sizes doesn't match, resize
+    # stretch option
+    if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
+        bezel_stretch = True
+    else:
+        bezel_stretch = False
     if (bezel_width != gameResolution["width"] or bezel_height != gameResolution["height"]):
         eslog.debug("bezel needs to be resized")
         output_png_file = "/tmp/bezel.png"
         try:
-            bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"])
+            bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], bezel_stretch)
         except Exception as e:
             eslog.error("failed to resize the image {}".format(e))
             return None

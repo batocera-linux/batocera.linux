@@ -8,9 +8,6 @@ import glob
 
 class DosBoxStagingGenerator(Generator):
 
-    def getResolutionMode(self, config):
-        return 'default'
-    
     # Main entry of the module
     # Return command
     def generate(self, system, rom, playersControllers, gameResolution):

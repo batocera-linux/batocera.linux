@@ -21,7 +21,8 @@ if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RG552 || BR
 endif
 
 if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 \
-    || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_VIM2 || BR2_PACKAGE_BATOCERA_TARGET_S922X
+    || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_VIM2 || BR2_PACKAGE_BATOCERA_TARGET_S922X \
+    || BR2_PACKAGE_BATOCERA_TARGET_S812
 	config BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY
 	bool "any amlogic"
 	default y
@@ -30,7 +31,7 @@ endif
 # add platforms that support GLES2 here
 # the GLES2 backend maps to OpenGL 2.1 on desktop, OpenGL ES 2.0 on mobile and WebGL 1.0 on the web.
 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY \
-    || BR2_PACKAGE_BATOCERA_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+    || BR2_PACKAGE_BATOCERA_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
     config BR2_PACKAGE_BATOCERA_GLES2
 	bool "target has gles2 support"
 	default y
@@ -39,7 +40,7 @@ endif
 # add platforms that support GLES3 here
 # the GLES3 backend maps to OpenGL 3.3 on desktop, OpenGL ES 3.0 on mobile and WebGL 2.0 on the web.
 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 || BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RG552 \
-    || BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_XU4
+    || BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 
     config BR2_PACKAGE_BATOCERA_GLES3
 	bool "target gles3 support"
 	default y
@@ -152,7 +153,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PM_UTILS                             # suspend
 	select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
 	select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
-	select BR2_PACKAGE_EVSIEVE                              # linux tool to manipuate events (like joining them)
+	select BR2_PACKAGE_EVSIEVE                              if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT                  # for util-linux compilation to work (so, may be removed in the future)
 	select BR2_PACKAGE_FBDUMP                               # tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
 	select BR2_PACKAGE_FBGRAB                               # framebuffer screenshot program, capturing the linux frambuffer and converting it to a png-picture
@@ -289,7 +290,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_I2C_TOOLS
 	select BR2_PACKAGE_MDADM # RAID
 	select BR2_PACKAGE_MC
-	select BR2_PACKAGE_OD_COMMANDER
+	select BR2_PACKAGE_OD_COMMANDER if !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	select BR2_PACKAGE_FDUPES
 	select BR2_PACKAGE_PYTHON_SERIAL    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_BATOCERA_ETHTOOL
@@ -549,7 +550,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_EASYRPG # libretro core
 
 	# Fantasy consoles
-	select BR2_PACKAGE_LIBRETRO_TIC80   # ALL
+	select BR2_PACKAGE_LIBRETRO_TIC80   if !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	select BR2_PACKAGE_LIBRETRO_RETRO8  # ALL
 	select BR2_PACKAGE_LEXALOFFLE_PICO8 # ALL
 
@@ -564,11 +565,14 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_S922X         && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+						!BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
 	select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_RPI4
 

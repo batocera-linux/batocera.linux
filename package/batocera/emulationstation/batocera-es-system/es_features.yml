@@ -108,7 +108,7 @@ shared:
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     ai_target_lang:
       prompt: TARGET LANGUAGE
       submenu: AI GAME TRANSLATION
@@ -141,7 +141,7 @@ shared:
     ai_service_pause:
       prompt: PAUSE ON TRANSLATED SCREEN
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
@@ -187,7 +187,7 @@ global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
 
 libretro:
-  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, integerscale, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4, rk3326]
@@ -320,7 +320,7 @@ libretro:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
     cap32:
-      features: [netplay, padtokeyboard]
+      features: [netplay, cheevos, padtokeyboard]
       shared: [rewind, autosave]
       cfeatures:
             cap32_model:
@@ -1121,6 +1121,7 @@ libretro:
                     "NES Zapper":           258
                     "Arkanoid paddle":      514
     flycast:
+      features: [cheevos]
       shared: [autosave]
       cfeatures:
             reicast_synchronous_rendering:
@@ -1537,6 +1538,7 @@ libretro:
       features: [netplay]
       shared: [rewind, autosave]
     kronos:
+      features: [cheevos]
       shared: [autosave]
     #lutro:
     mame:
@@ -1978,6 +1980,16 @@ libretro:
                           "Off": 0
          bbc:
               cfeatures:
+                  sticktype:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Select which joystick to emulate.
+                      choices:
+                          "None (Default)":                   none
+                          "Acorn Analogue Joysticks":         acornjoy
+                          "Acorn Bitstik":                    bitstik1
+                          "Robo Bitstik 2":                   bitstik2
+                          "Voltmace Delta 3b Twin Joysticks": voltmace3b
                   altmodel:
                       group: ADVANCED OPTIONS
                       prompt:      BBC MODEL
@@ -3101,6 +3113,27 @@ libretro:
                     "4xBRZ":      4xBRZ
                     "5xBRZ":      5xBRZ
                     "6xBRZ":      6xBRZ
+            mupen64plus-rdpPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RDP PLUGIN
+                choices:
+                    "GLideN64 (Fastest)":          gliden64
+                    "ParaLLEl-RDP":                parallel
+                    "Angrylion (Most Compatible)": angrylion
+            mupen64plus-rspPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RSP PLUGIN
+                choices:
+                    "HLE (Fastest)":       hle
+                    "ParaLLEl (Best LLE)": parallel
+                    "CXD4 (LLE Fallback)": cxd4
+            mupen64plus-cpuCore:
+                group: ADVANCED OPTIONS
+                prompt:      CPU CORE
+                choices:
+                    "Dynarec (Fastest)":                dynamic_recompiler
+                    "Cached Interpreter":               cached_interpreter
+                    "Pure Interpreter (Most Accurate)": pure_interpreter
             mupen64plus-pak1:
                 prompt:      CONTROLLER PAK 1
                 description: Emulate a pak in the controller expansion port.
@@ -3143,9 +3176,9 @@ libretro:
                 prompt:      NEO GEO CD BIOS
                 description: Universe BIOS is not compatible with cheats.
                 choices:
-                    "CDZ":          CDZ
-                    "CDZ (MAME)":   CDZ (MAME)
-                    "Universe 3.2": Universe 3.2
+                    "CDZ":          neocd_z.rom (CDZ)
+                    "CDZ MAME":   neocd.bin (CDZ)
+                    "CDZ Universe 3.3": uni-bioscd.rom (CDZ, Universe 3.3)
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
                 description: Use one save file per game.
@@ -5185,10 +5218,10 @@ daphne:
             prompt:      ASPECT RATIO
             description: Not all games support Stretch, depending on the video files.
             choices:
-                "Original":  original
-                "Stretch":   stretch
-                "Force 4:3": force43
-            daphne_rotate:
+                "Original":   original
+                "Stretch":    stretch
+                "Force 4:3":  force_ratio
+        daphne_rotate:
             prompt:      SCREEN ROTATION
             description: Rotate the screen with the emulator.
             choices:
@@ -5202,6 +5235,14 @@ daphne:
             choices:
                 "On":  0
                 "Off": 1
+        daphne_scanlines:
+            archs_include: [x86, x86_64]
+            group: ADVANCED OPTIONS
+            prompt:      SCANLINES
+            description: Use with Stretch aspect ratio and adjust joystick sensitivity as required.
+            choices:
+                "Off":                          0
+                "On":                           1
         blend_sprites:
             group: ADVANCED OPTIONS
             prompt:      BLEND SPRITES (SINGE)
@@ -5225,13 +5266,27 @@ daphne:
                 "On":  1
         singe_joystick_range:
             group: ADVANCED OPTIONS
-            prompt:      JOYSTICK SENSITIVITY
-            description: Adjust Singe joystick sensitivity.
+            prompt:      JOYSTICK TO CURSOR SENSITIVITY
+            description: Singe automatically interprets joystick axis change as mouse movement, useful for lightgun games.
             choices:
                 "5":  5
                 "10": 10
                 "15": 15
                 "20": 20
+        singe_crosshair:
+            group: ADVANCED OPTIONS
+            prompt:      HIDE LIGHTGUN CROSSHAIRS
+            description: Hide crosshairs in supported games e.g. ActionMax.
+            choices:
+                "Off":                          0
+                "On":                           1
+        daphne_texturestream:
+            group: ADVANCED OPTIONS
+            prompt:      SDL TEXTUREACCESS STREAMING
+            description: Can improve video performance. Do not use with ActionMax games or scanlines.
+            choices:
+                "Off":                          0
+                "On":                           1
 
 devilutionx:
   features: [padtokeyboard]
@@ -5425,8 +5480,7 @@ dolphin:
                     "Wiimote Sideway + Nunchuk": in
 
 dolphin_triforce:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         internal_resolution:
             prompt:      RENDERING RESOLUTION
@@ -5807,6 +5861,34 @@ flycast:
           choices:
             "Off (Default)": no
             "On"           : yes
+        flycast_ctrl1_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 1 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl2_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 2 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl3_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 3 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl4_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 4 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6104,6 +6186,14 @@ mupen64plus:
             choices:
                 "Off":                  "False"
                 "On":                   "True"
+        mupen64plus_fb_read_always:
+            group: ADVANCED OPTIONS
+            prompt:      READ FRAMEBUFFER EVERY FRAME (GLIDE64MK2)
+            description: Required for some effects in-game (Banjo Kazooie and DK64 transitions), can cause slowdown.
+            choices:
+                "Game default": -1
+                "Disable":      0
+                "Enable":       1
 
 openbor:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6388,6 +6478,18 @@ rpcs3:
             choices:
                 "OpenGL":   OpenGL
                 "Vulkan":   Vulkan
+        stretchtodisplayarea:
+            prompt:      STRETCH TO DISPLAY AREA
+            description: Distorts the output to fill the display fully.
+            choices:
+                "Off":   False
+                "On":    True
+        tv_mode:
+            prompt:      TV MODE
+            description: PS3's internal ratio setting. Some games only support 16/9.
+            choices:
+                "16:9":  16/9
+                "4:3":   4/3
         spudecoder:
             group: ADVANCED OPTIONS
             prompt:      SPU DECODER
@@ -6397,12 +6499,6 @@ rpcs3:
                 "ASMJIT Recompiler":    Recompiler (ASMJIT)
                 "Fast Interpreter":     Interpreter (fast)
                 "Precise Interpreter":  Interpreter (precise)
-        tv_mode:
-            prompt:      TV MODE
-            description: PS3's internal ratio setting. Some games only support 16/9.
-            choices:
-                "16:9":  16/9
-                "4:3":   4/3
         framelimit:
             group: ADVANCED OPTIONS
             prompt:      ADDITIONAL FRAMELIMIT
@@ -6429,35 +6525,29 @@ rpcs3:
             choices:
                 "Off":         0
                 "On (slower)": 1
-        stretchtodisplayarea:
-            prompt:      STRETCH TO DISPLAY AREA
-            description: Distorts the output to fill the display fully.
-            choices:
-                "Off (Default)": False
-                "On":            True
-        depthbuffer:
+        colorbuffers:
             group: ADVANCED OPTIONS
-            prompt: WRITE DEPTH BUFFER
-            description: Can Fix broken graphics in some games.
+            prompt: WRITE COLOR BUFFERS
+            description: May fix missing graphics and broken lighting at the cost of performance.
             choices:
                 "Off (Default)": False
                 "On":            True
         sputhreads:
             group: ADVANCED OPTIONS
             prompt: PREFERRED SPU THREADS
-            description: May help to fix choppy audio on weaker CPUs.
+            description: Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. Leave on automatic if slowdown occurs.
             choices:
-                "0 (Default)": 0
-                "1":           1
-                "2":           2
-                "3":           3
-                "4":           4
-                "5":           5
-                "6":           6
-        colorbuffers:
+                "Automatic": 0
+                "1 thread":  1
+                "2 threads": 2
+                "3 threads": 3
+                "4 threads": 4
+                "5 threads": 5
+                "6 threads": 6
+        depthbuffer:
             group: ADVANCED OPTIONS
-            prompt: WRITE COLOUR BUFFERS
-            description: Enable this option if you get missing graphics or broken lighting ingame.
+            prompt: WRITE DEPTH BUFFER
+            description: May fix broken graphics in some games.
             choices:
                 "Off (Default)": False
                 "On":            True
@@ -6567,7 +6657,7 @@ redream:
 
 sdlpop:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, hud]
 
 superbroswar:
   features: []
@@ -6982,6 +7072,16 @@ mame:
                         "Off": 0
        bbc:
             cfeatures:
+                sticktype:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Select which joystick to emulate.
+                    choices:
+                        "None (Default)":                   none
+                        "Acorn Analogue Joysticks":         acornjoy
+                        "Acorn Bitstik":                    bitstik1
+                        "Robo Bitstik 2":                   bitstik2
+                        "Voltmace Delta 3b Twin Joysticks": voltmace3b
                 softList:
                     group: ADVANCED OPTIONS
                     prompt:      SOFTWARE LIST
@@ -7738,7 +7838,7 @@ mame:
 
 wine:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         dxvk:
             group: ADVANCED OPTIONS
@@ -7897,7 +7997,7 @@ mugen:
 
 ruffle:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 lightspark:
   features: [padtokeyboard]
@@ -8078,7 +8178,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         fakeGouraud:
             group: ADVANCED OPTIONS
@@ -8153,19 +8253,19 @@ play:
 
 flatpak:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 steam:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 yuzu:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 ryujinx:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 simcoupe:
   features: [padtokeyboard]
@@ -8200,7 +8300,7 @@ openmsx:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 demul:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
@@ -8218,17 +8318,17 @@ demul:
 
 sh:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 xenia:
   features: []
   shared: [videomode]
 
-odcommander:
-  features: [padtokeyboard]
-  shared: [videomode]
-
 eka2l1:
   features: []
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+
+odcommander:
+  features: [padtokeyboard]
+  shared: [videomode, ratio, hud]
 

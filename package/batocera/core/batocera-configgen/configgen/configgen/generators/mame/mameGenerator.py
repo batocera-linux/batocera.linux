@@ -34,6 +34,7 @@ class MameGenerator(Generator):
         softDir = "/var/run/mame_software/"
         softList = ""
         messModel = ""
+        specialController = "none"
         subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
 
         # Generate userdata folders if needed
@@ -75,7 +76,14 @@ class MameGenerator(Generator):
                 softList = system.config["softList"]
             else:
                 softList = ""
-        
+
+        # Auto softlist for FM Towns if there is a zip that matches the folder name
+        # Used for games that require a CD and floppy to both be inserted
+        if system.name == 'fmtowns' and softList == '':
+            romParentPath = path.basename(romDirname)
+            if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+                softList = 'fmtowns_cd'
+
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
@@ -114,14 +122,14 @@ class MameGenerator(Generator):
             else:
                 cfgPath = "/userdata/system/configs/mame/"
             if not os.path.exists("/userdata/system/configs/mame/"):
-                os.makedirs("/userdata/system/configs/mame/")    
+                os.makedirs("/userdata/system/configs/mame/")
         else:
             if customCfg:
                 cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/custom/"
             else:
                 cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode] + "/"
             if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
-                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")    
+                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")
         if not os.path.exists(cfgPath):
             os.makedirs(cfgPath)
 
@@ -194,13 +202,13 @@ class MameGenerator(Generator):
         # Artwork crop
         if system.isOptSet("artworkcrop") and system.getOptBoolean("artworkcrop"):
             commandArray += [ "-artwork_crop" ]
-        
+
         # UI enable - for computer systems, the default sends all keys to the emulated system.
         # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
         # Hotkey + D-Pad Up will toggle this when in use (scroll lock key)
         if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
             commandArray += [ "-ui_active" ]
-        
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         pluginsToLoad = []
@@ -230,6 +238,12 @@ class MameGenerator(Generator):
                     if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                         commandArray += ["-ioport:peb:slot3", "speech"]
 
+                # BBC Joystick
+                if system.name == "bbc":
+                    if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
+                        commandArray += ["-analogue", system.config['sticktype']]
+                        specialController = system.config['sticktype']
+
                 # Mac RAM & Image Reader (if applicable)
                 if system.name == "macintosh":
                     if system.isOptSet("ramsize"):
@@ -253,13 +267,6 @@ class MameGenerator(Generator):
                                     imageSlot = system.config["imagereader"]
                             if imageSlot != "":
                                 commandArray += [ "-" + imageSlot, 'image' ]
-
-                # Auto softlist for FM Towns if there is a zip that matches the folder name
-                # Used for games that require a CD and floppy to both be inserted
-                if system.name == 'fmtowns' and softList == '':
-                    romParentPath = path.basename(romDirname)
-                    if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
-                        softList = 'fmtowns_cd'
 
                 if softList == "":
                     # Boot disk for Macintosh
@@ -320,6 +327,7 @@ class MameGenerator(Generator):
                         if softList in subdirSoftList:
                             romPath = Path(romDirname)
                             os.symlink(str(romPath.parents[0]), softDir + softList, True)
+                            commandArray += [ path.basename(romDirname) ]
                         else:
                             os.symlink(romDirname, softDir + softList, True)
                             commandArray += [ os.path.splitext(romBasename)[0] ]
@@ -350,10 +358,10 @@ class MameGenerator(Generator):
                 # bbc has different boots for floppy & cassette, no special boot for carts
                 if system.name == "bbc":
                     if system.isOptSet("altromtype") or softList != "":
-                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                             autoRunCmd = '*tape\\nchain""\\n'
                             autoRunDelay = 2
-                        elif left(system.config["altromtype"], 4) == "flop" or softList[-4:] == "flop":
+                        elif (system.isOptSet('altromtype') and system.config["altromtype"].startswith("flop")) or softList.endswith("flop"):
                             autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
                             autoRunDelay = 3
                     else:
@@ -362,7 +370,7 @@ class MameGenerator(Generator):
                 # fm7 boots floppies, needs cassette loading
                 elif system.name == "fm7":
                     if system.isOptSet("altromtype") or softList != "":
-                        if system.config["altromtype"] == "cass" or softList[-4:] == "cass":
+                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                             autoRunCmd = 'LOADM”“,,R\\n'
                             autoRunDelay = 5
                 else:
@@ -382,19 +390,6 @@ class MameGenerator(Generator):
                         autoRunCmd.replace("'", "")
                     commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
-        # Alternate D-Pad Mode
-        if system.isOptSet("altdpad"):
-            dpadMode = system.config["altdpad"]
-        else:
-            dpadMode = 0
-        
-        buttonLayout = getMameControlScheme(system, romBasename)
-                
-        if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg)
-        else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg)
-        
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
             bezelSet = None
@@ -409,6 +404,19 @@ class MameGenerator(Generator):
                 MameGenerator.writeBezelConfig(bezelSet, system, rom, "")
         except:
             MameGenerator.writeBezelConfig(None, system, rom, "")
+
+        # Alternate D-Pad Mode
+        if system.isOptSet("altdpad"):
+            dpadMode = system.config["altdpad"]
+        else:
+            dpadMode = 0
+
+        buttonLayout = getMameControlScheme(system, romBasename)
+
+        if messMode == -1:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg, specialController, bezelSet)
+        else:
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg, specialController, bezelSet)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 

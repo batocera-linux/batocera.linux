@@ -37,7 +37,7 @@ c64:
   manufacturer: Commodore
   release: 1982
   hardware: computer
-  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z]
+  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z, nib]
   platform:   c64
   group:      c64
   emulators:
@@ -1567,9 +1567,12 @@ triforce:
     dolphin_triforce:
       dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
   comment_en: |
-    Triforce is an arcade machine based on the GameCube's hardware. This build only supports booting Mario Kart GP 2.
+    Triforce is an arcade machine based on the GameCube's hardware. This build only supports certain games.
+    Playable - Mario Kart GP 1, Mario Kart GP 2 (after loading save state).
+    Intro - F-Zero AX, Virtua Striker 2002.
+    Nothing - All other Triforce games.
 
-    For the most up-to-date information, visit https://wiki.batocera.org/systems:triforce
+    For the most up-to-date information and questions about manual save state download, visit https://wiki.batocera.org/systems:triforce
 
 wii:
   name:       Wii
@@ -1783,7 +1786,7 @@ pc88:
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [d88, u88, m3u]
+  extensions: [cmt, d88, u88, m3u]
   platform:   pc88
   emulators:
     libretro:

@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.241
-MAME_VERSION = gm0241sr002g
+# Version.: Release 0.242
+MAME_VERSION = gm0242sr002h
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -229,7 +229,6 @@ define MAME_INSTALL_TARGET_CMDS
 	# Delete bgfx shaders for DX9/DX11/Metal
 	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/metal/
 	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx11/
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx9/
 
 	# Copy extra bgfx shaders
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/crt-geom-deluxe-rgb.json $(TARGET_DIR)/usr/bin/mame/bgfx/chains

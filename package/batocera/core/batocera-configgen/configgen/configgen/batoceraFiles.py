@@ -142,3 +142,9 @@ supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
 
 xemuConfig = CONF + '/xemu/xemu.ini'
+
+sdlpopConfigDir = CONF + '/sdlpop'
+sdlpopSrcCfg = sdlpopConfigDir + '/SDLPoP.cfg'
+sdlpopSrcIni = sdlpopConfigDir + '/SDLPoP.ini'
+sdlpopDestCfg = '/usr/share/sdlpop/SDLPoP.cfg'
+sdlpopDestIni = '/usr/share/sdlpop/SDLPoP.ini'
