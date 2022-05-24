@@ -14,9 +14,10 @@
 # 20200709 Add : Progress count (started from Terminal/SSH vs ES)
 # 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
 # 20211010 Fix : recursive search in roms directory
+# 20220524 Add : output unmatched ROMs when requested
 #
 
-readonly VERSION="20211010"
+readonly VERSION="20220524"
 readonly TITLE="the BezelProject for BATOCERA"
 readonly LOGS_DIR="/userdata/system/logs"
 readonly DECORATION_DIR="/userdata/decorations"
@@ -59,7 +60,7 @@ function usage() {
 		record "It accepts three modes: 'list', 'install' and 'remove' <system>'" "2"
 		record "- 'list' to list systems installed locally, which are available within TheBezelProject:" "2"
 		record "   [A]vailable to install, [I]nstalled or [?]unknown." "2"
-		record "- 'install <system>' to install the bezels for this <system>." "2"
+		record "- 'install <system> [--show-unmatched]' to install the bezels for this <system>." "2"
 		record "- 'remove <system>' to remove the bezels for this <system>." "2"
 		record "- 'remove all' to remove all the bezels from TheBezelProject." "2"
 		record " " "2"
@@ -238,6 +239,10 @@ function install() {
 		local path
 		local git_path
 		local file
+
+		local show_unmatched="$2"
+		local unmatched=()
+		local unmatched_count
 
 		record "* Install"
 		record "Path to games bezels $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR"
@@ -448,6 +453,7 @@ function install() {
 				# NOT MATCHING
 				if [ "$matching_rom" -eq 0 ]; then
 						record "NOT MATCHING : $rom_name"
+						[[ -n "$show_unmatched" ]] && unmatched+=("$rom_name")
 				fi
 
 				# is there too many warning ?
@@ -506,6 +512,15 @@ function install() {
 				else
 						record "Warning : file $(basename $url2) could not be downloaded from $(dirname $url2)"
 				fi
+		fi
+
+		# If requested (and any roms couldn't be matched), the output the list for easy lookup (only show on stdout if started from Terminal/SSH)
+		unmatched_count=${#unmatched[@]} 
+		if [[ $unmatched_count != 0 ]]; then
+			record "[$system_to_install] $unmatched_count unmatched ROM(s) (check $url$git_path to see if the bezel exists)" "$TERMINAL"
+			for (( i=0; i< "$unmatched_count"; i++ )); do
+				record "$(($i + 1)). ${unmatched[$i]}" "$TERMINAL"
+			done
 		fi
 
 		# sync disk
@@ -574,7 +589,13 @@ fi
 if [[ "$command" = "list" ]]; then
 		list
 elif [[ "$command" = "install" && -n "$system" ]]; then
-		install "$system"
+		if [[ -n "$3" && "$3" != "--show-unmatched" ]]; then
+			record "Error : unknown argument for install: $3" "1"
+			record "" "1"
+			usage
+		else
+			install "$system" "$3"
+		fi
 elif [[ "$command" = "remove" && -n "$system" ]]; then
 		remove "$system"
 else
