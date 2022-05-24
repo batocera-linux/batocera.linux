@@ -1,4 +1,4 @@
-From b24a3a7acba3235a5ea07101b3e819e9a176280b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Demetris Ierokipides <ierokipides.dem@gmail.com>
 Date: Fri, 8 Jan 2021 17:10:35 +0200
 Subject: [PATCH] ARM: dts: rockchip: add gpu node to rk3288-miqi
@@ -29,7 +29,7 @@ index cf54d5ffff2f..713f55e143c6 100644
  	ddc-i2c-bus = <&i2c5>;
  	status = "okay";
 
-From edcb4e7500aeb2e74556f50aec1446494b16404b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Sat, 19 Dec 2020 22:05:00 +0100
 Subject: [PATCH] arm64: dts: rockchip: assign a fixed index to mmc devices on
@@ -49,7 +49,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  1 file changed, 3 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index db0d5c8e5f96..56b5ee7e54c4 100644
+index 93c734d8a46c..17709faf651b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -27,6 +27,9 @@ aliases {
@@ -63,7 +63,7 @@ index db0d5c8e5f96..56b5ee7e54c4 100644
  		ethernet1 = &gmac2phy;
  	};
 
-From e67c9a39505071c77ba7f4b0adecf1cd19b96503 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Fri, 31 Jul 2020 21:33:24 +0530
 Subject: [PATCH] arm64: defconfig: Enable REGULATOR_MP8859
@@ -100,7 +100,7 @@ index 699c204090b8..9365213589bb 100644
  CONFIG_REGULATOR_PFUZE100=y
  CONFIG_REGULATOR_PWM=y
 
-From 427c81cdb8154bd171e415cc0c44a70896c522d7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Sun, 6 Dec 2020 11:37:08 +0100
 Subject: [PATCH] ARM: dts: rockchip: add QoS register compatibles for
@@ -177,7 +177,7 @@ index 859a7477909f..49bcdf46d03c 100644
  	};
  
 
-From af4e1e298a705033088c36bd766d5b4ce7d81ace Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Sun, 6 Dec 2020 11:37:09 +0100
 Subject: [PATCH] ARM: dts: rockchip: add QoS register compatibles for rk3288
@@ -289,7 +289,7 @@ index 68d5a58cfe88..01ea1f170f77 100644
  	};
  
 
-From 0fefb9cc8fa016a264d66110024916a6b8539cc4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Sun, 6 Dec 2020 11:37:11 +0100
 Subject: [PATCH] arm64: dts: rockchip: add QoS register compatibles for px30
@@ -437,7 +437,7 @@ index 64193292d26c..d8b673b486c9 100644
  	};
  
 
-From 7609f6470180b9342abac469c299ab486c070f8c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Katsuhiro Suzuki <katsuhiro@katsuster.net>
 Date: Mon, 3 Aug 2020 00:42:31 +0900
 Subject: [PATCH] arm64: dts: rockchip: enable HDMI sound nodes for
@@ -595,7 +595,7 @@ index 86cfb5c50a94..c984662043da 100644
  
  &spi0 {
 
-From 80b2c4090d255b4a8f6b7bdbf839876df337db8f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Katsuhiro Suzuki <katsuhiro@katsuster.net>
 Date: Mon, 10 Aug 2020 18:16:19 +0900
 Subject: [PATCH] arm64: dts: rockchip: add SPDIF node for rk3399-rockpro64
@@ -660,4 +660,3 @@ index 6e553ff47534..58097245994a 100644
  &spi1 {
  	status = "okay";
  
-
