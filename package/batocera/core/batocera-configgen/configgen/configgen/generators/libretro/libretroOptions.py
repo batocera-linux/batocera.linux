@@ -1442,6 +1442,10 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_hires_blend', system.config['hires_blend'])
         else:
             coreSettings.save('snes9x_hires_blend', '"disabled"')
+        if system.isOptSet('superscope_crosshair'):
+            coreSettings.save('snes9x_superscope_crosshair', system.config['superscope_crosshair'])
+        else:
+            coreSettings.save('snes9x_superscope_crosshair', '"2"')
 
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
@@ -1459,6 +1463,10 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_2010_overclock', '"' + system.config['2010_overclock_superfx'] + '"')
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
+        if system.isOptSet('2010_superscope_crosshair'):
+            coreSettings.save('snes9x_2010_superscope_crosshair', system.config['2010_superscope_crosshair'])
+        else:
+            coreSettings.save('snes9x_2010_superscope_crosshair', '"2"')
 
     # TODO: Add CORE options for BSnes and PocketSNES
 

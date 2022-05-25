@@ -59,11 +59,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend))
+def writeLibretroConfig(retroconfig, system, controllers, guns, rom, bezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend):
+def createLibretroConfig(system, controllers, guns, rom, bezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -645,6 +645,90 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
             retroarchConfig['ai_service_pause'] = 'false'
     else:
         retroarchConfig['ai_service_enable'] = 'false'
+
+    # Guns
+    # clear
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+        if len(guns) >= 1:
+            retroarchConfig['input_player1_gun_aux_a_btn'] = ''
+            retroarchConfig['input_player1_gun_aux_b_btn'] = ''
+            retroarchConfig['input_player1_gun_aux_c_btn'] = ''
+            retroarchConfig['input_player1_gun_offscreen_shot_btn'] = ''
+            retroarchConfig['input_player1_gun_trigger_btn'] = ''
+            retroarchConfig['input_player1_gun_start_btn'] = ''
+            retroarchConfig['input_player1_gun_select_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_up_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_down_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_left_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_right_btn'] = ''
+            retroarchConfig['input_player1_gun_trigger_mbtn'] = ''
+            retroarchConfig['input_player1_gun_start_mbtn'] = ''
+        if len(guns) >= 2:
+            retroarchConfig['input_player2_gun_aux_a_btn'] = ''
+            retroarchConfig['input_player2_gun_aux_b_btn'] = ''
+            retroarchConfig['input_player2_gun_aux_c_btn'] = ''
+            retroarchConfig['input_player2_gun_offscreen_shot_btn'] = ''
+            retroarchConfig['input_player2_gun_trigger_btn'] = ''
+            retroarchConfig['input_player2_gun_start_btn'] = ''
+            retroarchConfig['input_player2_gun_select_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_up_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_down_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_left_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_right_btn'] = ''
+            retroarchConfig['input_player2_gun_trigger_mbtn'] = ''
+            retroarchConfig['input_player2_gun_start_mbtn'] = ''
+
+    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 260
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'nestopia':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 262
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'fceumm':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 258
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'fbneo':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 4
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player1_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player1_gun_start_mbtn']   = 3
+            if len(guns) >= 2:
+                retroarchConfig['input_libretro_device_p2'] = 4
+                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player2_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player2_gun_start_mbtn']   = 3
+
+    if system.config['core'] == 'flycast':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 4
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn']        = 1
+                retroarchConfig['input_player1_gun_offscreen_shot_mbtn'] = 2
+                retroarchConfig['input_player1_gun_start_mbtn']          = 3
+
+            if len(guns) >= 2:
+                retroarchConfig['input_libretro_device_p2'] = 4
+                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn']        = 1
+                retroarchConfig['input_player2_gun_offscreen_shot_mbtn'] = 2
+                retroarchConfig['input_player2_gun_start_mbtn']          = 3
 
     # Bezel option
     try:
