@@ -183,6 +183,7 @@ shared:
         "On": 1
         "Off": 0
     use_guns:
+      group: LIGHTGUN
       prompt: Use guns
       description: Use guns instead of pads if guns are detected on the system
       choices:
@@ -1020,6 +1021,7 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
+                group: LIGHTGUN
                 prompt:      SHOW LIGHTGUN CROSSHAIRS
                 description: Lightgun device must be selected on at least one port.
                 choices:
@@ -1157,6 +1159,42 @@ libretro:
                     "6400x4800":  6400x4800
                     "7040x5280":  7040x5280
                     "7680x5760":  7680x5760
+            reicast_lightgun1_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun2_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun3_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun4_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
             reicast_mipmapping:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
@@ -1431,7 +1469,7 @@ libretro:
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -1486,7 +1524,7 @@ libretro:
                             "Off":         disabled
                             "On (forced)": enabled
                     gun_cursor_ms:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -6692,6 +6730,7 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
+            group:       LIGHTGUN
             prompt:      SHOW LIGHTGUN CROSSHAIRS
             description: Enable crosshairs in shooting games for the selected players.
             choices:
