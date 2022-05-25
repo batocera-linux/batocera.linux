@@ -517,9 +517,11 @@ function install() {
 		# If requested (and any roms couldn't be matched), the output the list for easy lookup (only show on stdout if started from Terminal/SSH)
 		unmatched_count=${#unmatched[@]} 
 		if [[ $unmatched_count != 0 ]]; then
+			local sorted=()
 			record "[$system_to_install] $unmatched_count unmatched ROM(s) (check $url$git_path to see if the bezel exists)" "$TERMINAL"
+			readarray -t sorted < <(for a in "${unmatched[@]}"; do echo "$a"; done | sort)
 			for (( i=0; i< "$unmatched_count"; i++ )); do
-				record "$(($i + 1)). ${unmatched[$i]}" "$TERMINAL"
+				record "$(($i + 1)). ${sorted[$i]}" "$TERMINAL"
 			done
 		fi
 
