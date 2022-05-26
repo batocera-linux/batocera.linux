@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.243
-MAME_VERSION = gm0243sr002i
+# Version.: Release 0.244
+MAME_VERSION = gm0244sr002i
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
