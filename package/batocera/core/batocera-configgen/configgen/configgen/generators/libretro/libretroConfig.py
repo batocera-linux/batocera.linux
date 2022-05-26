@@ -59,11 +59,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, shaderBezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+def writeLibretroConfig(retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
