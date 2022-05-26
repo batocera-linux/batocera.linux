@@ -69,8 +69,10 @@ sections = { 'analog', 'digital', 'emulator' }
 def generateControllerConfig(controller, type):
     # Set config file name
     if type == 'dreamcast':
+        eslog.debug("-=[ Dreamcast Controller Settings ]=-")
         configFileName = "{}/SDL_{}.cfg".format(batoceraFiles.flycastMapping, controller.realName)
     if type == 'arcade':
+        eslog.debug("-=[ Arcade Controller Settings ]=-")
         configFileName = "{}/SDL_{}_arcade.cfg".format(batoceraFiles.flycastMapping, controller.realName)
     Config = configparser.ConfigParser(interpolation=None)
 
@@ -83,6 +85,7 @@ def generateControllerConfig(controller, type):
         Config.add_section(section)
 
     # Parse controller inputs
+    eslog.debug("*** Controller Name = {} ***".format(controller.realName))
     analogbind = 0
     digitalbind = 0
     for index in controller.inputs:
@@ -129,7 +132,11 @@ def generateControllerConfig(controller, type):
         
         if input.type == 'axis':
             section = 'analog'
-            code = input.id + "-"
+            if input.name == 'l2' or input.name == 'r2':
+                # Use positive axis for full trigger control
+                code = input.id + "+"
+            else:
+                code = input.id + "-"
             option = "bind{}".format(analogbind)
             analogbind = analogbind +1
             val = "{}:{}".format(code, var)
@@ -173,11 +180,11 @@ def generateControllerConfig(controller, type):
             else:
                 Config.set(section, option, val)
 
-    # Add additional controller info
-    Config.set("emulator", "dead_zone", "10")
-    Config.set("emulator", "mapping_name", "Default") #controller.realName)
-    Config.set("emulator", "rumble_power", "100")
-    Config.set("emulator", "version", "3")
-
+        # Add additional controller info
+        Config.set("emulator", "dead_zone", "10")
+        Config.set("emulator", "mapping_name", "Default") #controller.realName)
+        Config.set("emulator", "rumble_power", "100")
+        Config.set("emulator", "version", "3")
+    
     Config.write(cfgfile)
     cfgfile.close()

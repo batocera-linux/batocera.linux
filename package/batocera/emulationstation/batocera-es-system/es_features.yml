@@ -182,7 +182,13 @@ shared:
       choices:
         "On": 1
         "Off": 0
-
+    use_guns:
+      group: LIGHTGUN
+      prompt: Use guns
+      description: Use guns instead of pads if guns are detected on the system
+      choices:
+        "On":  1
+        "Off": 0
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
 
@@ -980,7 +986,7 @@ libretro:
     #easyrpg:
     fbneo:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 group: ADVANCED OPTIONS
@@ -1015,6 +1021,7 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
+                group: LIGHTGUN
                 prompt:      SHOW LIGHTGUN CROSSHAIRS
                 description: Lightgun device must be selected on at least one port.
                 choices:
@@ -1041,7 +1048,7 @@ libretro:
                             "Per-game":                           per-game
     fceumm:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -1122,7 +1129,7 @@ libretro:
                     "Arkanoid paddle":      514
     flycast:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
@@ -1152,6 +1159,42 @@ libretro:
                     "6400x4800":  6400x4800
                     "7040x5280":  7040x5280
                     "7680x5760":  7680x5760
+            reicast_lightgun1_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun2_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun3_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun4_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
             reicast_mipmapping:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
@@ -1426,7 +1469,7 @@ libretro:
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -1481,7 +1524,7 @@ libretro:
                             "Off":         disabled
                             "On (forced)": enabled
                     gun_cursor_ms:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -3176,9 +3219,9 @@ libretro:
                 prompt:      NEO GEO CD BIOS
                 description: Universe BIOS is not compatible with cheats.
                 choices:
-                    "CDZ":          CDZ
-                    "CDZ (MAME)":   CDZ (MAME)
-                    "Universe 3.2": Universe 3.2
+                    "CDZ":          neocd_z.rom (CDZ)
+                    "CDZ MAME":   neocd.bin (CDZ)
+                    "CDZ Universe 3.3": uni-bioscd.rom (CDZ, Universe 3.3)
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
                 description: Use one save file per game.
@@ -3187,7 +3230,7 @@ libretro:
                     "On":           On
     nestopia:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -4152,7 +4195,7 @@ libretro:
                     "On":         enabled
     snes9x:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             reduce_sprite_flicker:
                 group: ADVANCED OPTIONS
@@ -4220,7 +4263,7 @@ libretro:
                     "Konami Justifier (P2)": 772
     snes9x_next:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -6657,7 +6700,7 @@ redream:
 
 sdlpop:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, hud]
 
 superbroswar:
   features: []
@@ -6687,6 +6730,7 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
+            group:       LIGHTGUN
             prompt:      SHOW LIGHTGUN CROSSHAIRS
             description: Enable crosshairs in shooting games for the selected players.
             choices:
@@ -8326,4 +8370,4 @@ xenia:
 
 odcommander:
   features: [padtokeyboard]
-  shared: [videomode]
+  shared: [videomode, ratio, hud]

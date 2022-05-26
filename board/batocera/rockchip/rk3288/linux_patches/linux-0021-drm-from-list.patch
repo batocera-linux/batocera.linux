@@ -1,4 +1,4 @@
-From 82ad763fb8892af550a264e731c372d5ce6e0df5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 22:30:13 +0000
 Subject: [PATCH] drm: drm_fourcc: add NV20 and NV30 YUV formats
@@ -43,7 +43,7 @@ index 722c7ebe4e88..2daf8a304b53 100644
  		  .num_planes = 3, .char_per_block = { 2, 2, 2 },
  		  .block_w = { 1, 1, 1 }, .block_h = { 1, 1, 1 }, .hsub = 0,
 diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
-index 82f327801267..d8e6159213dc 100644
+index 5498d7a6556a..5b5db0381729 100644
 --- a/include/uapi/drm/drm_fourcc.h
 +++ b/include/uapi/drm/drm_fourcc.h
 @@ -242,6 +242,8 @@ extern "C" {
@@ -56,7 +56,7 @@ index 82f327801267..d8e6159213dc 100644
  /*
   * 2 plane YCbCr MSB aligned
 
-From 44971d433dab751aff9975c7b0a3d98d9f3cf702 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 22:30:13 +0000
 Subject: [PATCH] drm: rockchip: add NV15, NV20 and NV30 support
@@ -148,10 +148,10 @@ index c80f7d9fd13f..eb663e25ad9e 100644
  
  		dma_addr = rk_uv_obj->dma_addr + offset + fb->offsets[1];
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-index 4a2099cb582e..eab055d9b56d 100644
+index 857d97cdc67c..b7169010622a 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -154,6 +154,7 @@ struct vop_win_phy {
+@@ -165,6 +165,7 @@ struct vop_win_phy {
  	struct vop_reg enable;
  	struct vop_reg gate;
  	struct vop_reg format;
@@ -232,6 +232,7 @@ index 80053d91a301..2c55e1852c3d 100644
  	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
  	.y_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 22),
  	.act_info = VOP_REG(RK3288_WIN0_ACT_INFO, 0x1fff1fff, 0),
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Qinglang Miao <miaoqinglang@huawei.com>
 Date: Tue, 1 Dec 2020 20:54:57 +0800

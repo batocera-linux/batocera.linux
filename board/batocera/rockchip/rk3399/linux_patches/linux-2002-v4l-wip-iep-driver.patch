@@ -1676,12 +1676,14 @@ while at that also add the mmu required
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 25 +++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index bd1e5edfbf95..b91c0bbe5ad1 100644
-@@ -767,6 +768,28 @@ vop_mmu: iommu@ff373f00 {
+index 0e5e492db9c7..f014b87c48f0 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -771,6 +771,28 @@ vop_mmu: iommu@ff373f00 {
  		status = "disabled";
  	};
  
@@ -1722,10 +1724,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 4d5004c9c778..7969aeec0bd0 100644
+index b1c7ee80d255..be839c1a7692 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1297,6 +1297,17 @@ vdec_mmu: iommu@ff660480 {
+@@ -1304,6 +1304,17 @@ vdec_mmu: iommu@ff660480 {
  		#iommu-cells = <0>;
  	};
  
@@ -1743,7 +1745,7 @@ index 4d5004c9c778..7969aeec0bd0 100644
  	iep_mmu: iommu@ff670800 {
  		compatible = "rockchip,iommu";
  		reg = <0x0 0xff670800 0x0 0x40>;
-@@ -1304,8 +1315,8 @@ iep_mmu: iommu@ff670800 {
+@@ -1311,8 +1322,8 @@ iep_mmu: iommu@ff670800 {
  		interrupt-names = "iep_mmu";
  		clocks = <&cru ACLK_IEP>, <&cru HCLK_IEP>;
  		clock-names = "aclk", "iface";
@@ -1765,7 +1767,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index ba43ee6b91e8..e9bd68cd926e 100644
+index 32e141a3955b..6b1523b38e53 100644
 --- a/arch/arm/boot/dts/rk3288.dtsi
 +++ b/arch/arm/boot/dts/rk3288.dtsi
 @@ -1002,6 +1002,17 @@ crypto: cypto-controller@ff8a0000 {

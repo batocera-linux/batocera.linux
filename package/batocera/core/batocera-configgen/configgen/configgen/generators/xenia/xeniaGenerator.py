@@ -16,7 +16,7 @@ eslog = get_logger(__name__)
 
 class XeniaGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/xenia-bottle"
         emupath = wineprefix + "/xenia"
 

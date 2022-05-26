@@ -27,7 +27,7 @@ class MameGenerator(Generator):
     def supportsInternalBezels(self):
         return True
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)

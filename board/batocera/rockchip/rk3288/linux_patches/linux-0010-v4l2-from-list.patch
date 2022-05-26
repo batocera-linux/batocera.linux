@@ -1,4 +1,4 @@
-From 8b65635fe4138a03f36cb9b909f6b4e81de61ba1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:33 +0000
 Subject: [PATCH] media: rkvdec: h264: Fix reference frame_num wrap for second
@@ -33,7 +33,7 @@ index 7cc3b478a5f4..054d2e3eed67 100644
  			continue;
  		}
 
-From 1e1fba94233ca5cd793bea80c075b7d4402a02e8 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:34 +0000
 Subject: [PATCH] media: rkvdec: Ensure decoded resolution fit coded resolution
@@ -47,7 +47,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index d25c4a37e2af..b3e067031c83 100644
+index 1263991de76f..71a6b7b0b057 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -223,6 +223,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
@@ -60,7 +60,7 @@ index d25c4a37e2af..b3e067031c83 100644
  				       &pix_mp->height,
  				       &coded_desc->frmsize);
 
-From e13033dcecad3af45820802c7138761a903e487d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:34 +0000
 Subject: [PATCH] media: rkvdec: h264: Validate and use pic width and height in
@@ -98,7 +98,7 @@ index 054d2e3eed67..d46424ba88e8 100644
  		  FRAME_MBS_ONLY_FLAG);
  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index b3e067031c83..06fc58440cd3 100644
+index 71a6b7b0b057..f405dd72ad93 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -29,8 +29,11 @@
@@ -128,7 +128,7 @@ index b3e067031c83..06fc58440cd3 100644
  	return 0;
  }
 
-From d100d0514c614e3dbb494db9cee495e8e4281a96 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:35 +0000
 Subject: [PATCH] media: rkvdec: h264: Fix bit depth wrap in pps packet
@@ -161,7 +161,7 @@ index d46424ba88e8..6536cf0d6054 100644
  	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
  	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
 
-From de23966bda3f284d66c5f14e578c59b921ffc869 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:35 +0000
 Subject: [PATCH] media: rkvdec: h264: Do not override output buffer sizeimage
@@ -195,7 +195,7 @@ index 6536cf0d6054..bf632d45282b 100644
  }
  
 
-From 846786ba47353964d074b3d8cd4ced8630562e36 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:35 +0000
 Subject: [PATCH] media: v4l2-common: Add helpers to calculate bytesperline and
@@ -324,7 +324,7 @@ index 3dc17ebe14fa..4102c373b48a 100644
  }
  EXPORT_SYMBOL_GPL(v4l2_fill_pixfmt);
 
-From 8edb607b6b0a3370fe28b1b5e35ecd01cd53aab6 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:36 +0000
 Subject: [PATCH] media: v4l2: Add NV15 and NV20 pixel formats
@@ -593,7 +593,7 @@ index 4102c373b48a..0caac755d303 100644
  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
  		{ .format = V4L2_PIX_FMT_YUV411P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 1 },
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index eeff398fbdcc..80cb42450a1b 100644
+index 9eda8b91d17a..1ff68c1bf14a 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
 @@ -1319,6 +1319,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
@@ -620,7 +620,7 @@ index 534eaa4d39bc..f21eba15ceae 100644
  #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
  #define V4L2_PIX_FMT_NV21M   v4l2_fourcc('N', 'M', '2', '1') /* 21  Y/CrCb 4:2:0  */
 
-From 6d70596d08bd5e83bfc7ec91ef2487eea16423c7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:36 +0000
 Subject: [PATCH] media: rkvdec: h264: Use bytesperline and buffer height to
@@ -665,7 +665,7 @@ index bf632d45282b..6f2d41b2e076 100644
  
  	if (sps->chroma_format_idc == 0)
 
-From fe986faea5db691dda6b63f3d681f17c772998d5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:37 +0000
 Subject: [PATCH] media: rkvdec: Extract rkvdec_fill_decoded_pixfmt helper
@@ -682,7 +682,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 06fc58440cd3..dc16bf8d57a9 100644
+index f405dd72ad93..c81ca5c7e979 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -27,6 +27,17 @@
@@ -736,7 +736,7 @@ index 06fc58440cd3..dc16bf8d57a9 100644
  	return 0;
  }
 
-From d12f5e85ce258df07965441d609c321a53fe6238 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:37 +0000
 Subject: [PATCH] media: rkvdec: Lock capture pixel format in s_ctrl and s_fmt
@@ -754,7 +754,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 55 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index dc16bf8d57a9..6b2a2f4164b2 100644
+index c81ca5c7e979..a11474214bde 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -38,6 +38,16 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -889,7 +889,7 @@ index 77a137cca88e..e95c52e3168a 100644
  	struct v4l2_ctrl_handler ctrl_hdl;
  	struct rkvdec_dev *dev;
 
-From eb2ba0433b38541aa4a231f559915cd0f9986071 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:37 +0000
 Subject: [PATCH] media: rkvdec: h264: Support High 10 and 4:2:2 profiles
@@ -947,7 +947,7 @@ index 6f2d41b2e076..c115cd362a7f 100644
  	.stop = rkvdec_h264_stop,
  	.run = rkvdec_h264_run,
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 6b2a2f4164b2..bd8ec2915fe9 100644
+index a11474214bde..b57a39ce4f48 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -31,7 +31,7 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -995,7 +995,7 @@ index 6b2a2f4164b2..bd8ec2915fe9 100644
  
  static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
 
-From 68c5e697048b29149089aee45547362a80284eaf Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:38 +0000
 Subject: [PATCH] media: rkvdec: h264: Support profile and level controls
@@ -1014,7 +1014,7 @@ Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
  1 file changed, 13 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index bd8ec2915fe9..87987a782d75 100644
+index b57a39ce4f48..9492822c12ae 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -132,6 +132,19 @@ static const struct rkvdec_ctrl_desc rkvdec_h264_ctrl_descs[] = {

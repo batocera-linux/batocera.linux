@@ -17,7 +17,7 @@ class FlycastGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
@@ -33,9 +33,11 @@ class FlycastGenerator(Generator):
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
-            flycastControllers.generateControllerConfig(controller, "dreamcast")
-            # Write the Arcade variant (Atomiswave & Naomi/2)
-            flycastControllers.generateControllerConfig(controller, "arcade")
+            if system == "dreamcast":
+                flycastControllers.generateControllerConfig(controller, "dreamcast")
+            else:
+                # Write the Arcade variant (Atomiswave & Naomi/2)
+                flycastControllers.generateControllerConfig(controller, "arcade")
 
             # Set the controller type per Port
             Config.set("input", 'device' + str(controller.player), "0") # Sega Controller

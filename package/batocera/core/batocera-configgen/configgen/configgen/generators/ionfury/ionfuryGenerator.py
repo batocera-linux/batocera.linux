@@ -7,7 +7,7 @@ import controllersConfig
 
 class IonfuryGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["ionfury", "-game_dir", "/userdata/roms/ionfury", "-g", rom]
 
         return Command.Command(
