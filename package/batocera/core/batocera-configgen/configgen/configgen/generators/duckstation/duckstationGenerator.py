@@ -69,8 +69,6 @@ class DuckstationGenerator(Generator):
         ## [UI]
         if not settings.has_section("UI"):
             settings.add_section("UI")
-        # Show Messages
-        settings.set("UI", "ShowOSDMessages", "true")
 
         ## [CONSOLE]
         if not settings.has_section("Console"):
@@ -179,6 +177,11 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "DisplayAllFrames", "true")
         else:
             settings.set("Display", "DisplayAllFrames", "false")
+        # OSD Messages
+        if system.isOptSet("duckstation_osd"):
+            settings.set("Display", "ShowOSDMessages", system.config["duckstation_osd"])
+        else:
+            settings.set("Display", "ShowOSDMessages", "false")
 
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
