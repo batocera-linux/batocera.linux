@@ -75,10 +75,11 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
-    RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles --enable-opengles3_1 --enable-opengles3_2
-    RETROARCH_DEPENDENCIES += libgles
+    RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles --enable-opengles3_1
+	RETROARCH_DEPENDENCIES += libgles
 endif 
-
+# don't enable --enable-opengles3_2, breaks lr-swanstation
+    
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
     RETROARCH_CONF_OPTS += --enable-opengles
     RETROARCH_DEPENDENCIES += libgles
