@@ -5874,6 +5874,16 @@ flycast:
       choices:
         "Normal": no
         "Rotate": yes
+    flycast_anisotropic:
+      group: ADVANCED OPTIONS
+      prompt:      ANISOTROPIC FILTERING
+      description: Higher values make textures viewed at oblique angles look sharper.
+      choices:
+        "Disbaled (Default)": 1
+        "2x"                : 2
+        "4x"                : 4
+        "8x"                : 8
+        "16x"               : 16
   systems:
     dreamcast:
       cfeatures:
@@ -5945,6 +5955,12 @@ flycast:
           choices:
             "2nd VMU (Default)": 1
             "Purupuru (Rumble)": 3
+        flycast_DSP:
+          prompt:      DIGITAL SOUND PROCESSOR
+          description: Enable the Dreamcast DSP. Only recommended for fast systems.
+          choices:
+            "Disbaled (Default)": "no"
+            "Enabled"           : "yes"      
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

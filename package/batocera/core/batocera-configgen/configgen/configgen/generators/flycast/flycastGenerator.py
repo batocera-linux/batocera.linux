@@ -81,6 +81,11 @@ class FlycastGenerator(Generator):
             Config.set("config", "pvr.rend", str(system.config["flycast_renderer"]))
         else:
             Config.set("config", "pvr.rend", "0")
+        # anisotropic filtering
+        if system.isOptSet("flycast_anisotropic"):
+            Config.set("config", "rend.AnisotropicFiltering", str(system.config["flycast_anisotropic"]))
+        else:
+            Config.set("config", "rend.AnisotropicFiltering", "1")
         
         # [Dreamcast specifics]
         # language
@@ -107,6 +112,11 @@ class FlycastGenerator(Generator):
             Config.set("config", "Dreamcast.ForceWindowsCE", str(system.config["flycast_winCE"]))
         else:
             Config.set("config", "Dreamcast.ForceWindowsCE", "no")
+        # DSP
+        if system.isOptSet("flycast_DSP"):
+             Config.set("config", "aica.DSPEnabled", str(system.config["flycast_DSP"]))
+        else:
+            Config.set("config", "aica.DSPEnabled", "no")           
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:
