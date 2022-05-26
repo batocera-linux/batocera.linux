@@ -5827,6 +5827,13 @@ duckstation:
                 "Namco GunCon (Rumble)":         NamcoGunCon
                 "PlayStation Mouse":             PlayStationMouse
                 "NeGcon (Rumble)":               NeGcon
+        duckstation_pgxp:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE PGXP CORRECTIONS
+            description: Reduces wobbly polygongs & warping textures.
+            choices:
+                "Disabled":          "false"
+                "Enabled (Default)": "true"
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

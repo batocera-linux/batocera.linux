@@ -147,6 +147,17 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
+        # PGXP - enabled by default
+        if system.isOptSet("duckstation_pgxp"):
+           settings.set("GPU", "PGXPEnable", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPCulling", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPTextureCorrection", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPPreserveProjFP", system.config["duckstation_pgxp"])
+        else:
+           settings.set("GPU", "PGXPEnable", "true")
+           settings.set("GPU", "PGXPCulling", "true")
+           settings.set("GPU", "PGXPTextureCorrection", "true")
+           settings.set("GPU", "PGXPPreserveProjFP", "true")
 
         ## [DISPLAY]
         if not settings.has_section("Display"):
