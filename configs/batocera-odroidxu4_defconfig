@@ -34,6 +34,8 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scrip
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 
 # Linux headers same as kernel, a 5.10 series
+# Demetris: we should freeze that board on 5.10.x kernel
+# Demetris: since no panfrost support there is no meaning to continue upgrading it
 BR2_KERNEL_HEADERS_AS_KERNEL=y
 BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10=y
 
