@@ -5668,6 +5668,12 @@ duckstation:
             choices:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
+        duckstation_osd:
+            prompt:      SHOW OSD MESSAGES
+            description: Choose whether to show on the display, configuration messages.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"            
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
