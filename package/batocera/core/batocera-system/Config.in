@@ -1081,6 +1081,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
 	select BR2_PACKAGE_AIMTRAK_GUNS    # aimtrak guns
 	select BR2_PACKAGE_DOLPHINBAR_GUNS # dolphinbar guns
 	select BR2_PACKAGE_SINDEN_GUNS if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sinden guns
+	select BR2_PACKAGE_GUN4IR_GUNS     # gun4ir guns
 
 config BR2_PACKAGE_BATOCERA_KODI19
 	bool "batocera.linux Kodi19 packages selection"
