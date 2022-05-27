@@ -1268,8 +1268,19 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):
-        # Nestopia Mouse mode for Zapper
-        coreSettings.save('nestopia_zapper_device', '"mouse"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('nestopia_zapper_device', '"lightgun"')
+        else:
+            # Mouse mode for Zapper
+            coreSettings.save('nestopia_zapper_device', '"mouse"')
+
+        # gun cross
+        if system.isOptSet('nestopia_show_crosshair') and system.config['nestopia_show_crosshair'] == "disabled":
+            coreSettings.save('nestopia_show_crosshair', '"disabled"')
+        else:
+            coreSettings.save('nestopia_show_crosshair', '"enabled"')
+
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
