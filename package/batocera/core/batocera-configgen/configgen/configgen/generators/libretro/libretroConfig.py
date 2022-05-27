@@ -79,7 +79,7 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
         coreSettings = UnixSettings(retroarchCore, separator=' ')
 
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(coreSettings, system, rom)
+    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':

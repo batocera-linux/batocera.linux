@@ -7,7 +7,7 @@ import batoceraFiles
 import csv
 from pathlib import Path
 
-def generateCoreSettings(coreSettings, system, rom):
+def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Amstrad CPC / GX4000
     if (system.config['core'] == 'cap32'):
@@ -1310,8 +1310,19 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('nestopia_select_adapter', '"auto"')
 
     if (system.config['core'] == 'fceumm'):
-        # FCEumm Mouse mode for Zapper
-        coreSettings.save('fceumm_zapper_mode', '"mouse"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('fceumm_zapper_mode', '"lightgun"')
+        else:
+            # FCEumm Mouse mode for Zapper
+            coreSettings.save('fceumm_zapper_mode', '"mouse"')
+
+        # gun cross
+        if system.isOptSet('fceumm_show_crosshair') and system.config['fceumm_show_crosshair'] == "disabled":
+            coreSettings.save('fceumm_show_crosshair', '"disabled"')
+        else:
+            coreSettings.save('fceumm_show_crosshair', '"enabled"')
+
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
