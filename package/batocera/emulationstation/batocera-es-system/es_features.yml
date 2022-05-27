@@ -1050,6 +1050,12 @@ libretro:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
       cfeatures:
+            fceumm_show_crosshair:
+                group: LIGHTGUN
+                prompt:      SHOW LIGHTGUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
@@ -3232,6 +3238,12 @@ libretro:
       features: [netplay]
       shared: [rewind, autosave, use_guns]
       cfeatures:
+            nestopia_show_crosshair:
+                group: LIGHTGUN
+                prompt:      SHOW LIGHTGUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
