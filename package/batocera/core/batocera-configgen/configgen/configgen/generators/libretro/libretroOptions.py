@@ -1720,7 +1720,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         elif system.isOptSet('gun_cursor_ms') and system.name == 'mastersystem':
             coreSettings.save('genesis_plus_gx_gun_cursor', system.config['gun_cursor_ms'])
         else:
-            coreSettings.save('genesis_plus_gx_gun_cursor', '"disabled"')
+            coreSettings.save('genesis_plus_gx_gun_cursor', '"enabled"')
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
@@ -1740,6 +1740,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('genesis_plus_gx_gg_extra', system.config['gg_extra'])
         else:
             coreSettings.save('genesis_plus_gx_gg_extra', '"disabled"')
+
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('genesis_plus_gx_gun_input', '"lightgun"')
 
     # Sega 32X (Sega Megadrive / MegaCD / Master System)
     if system.config['core'] == 'picodrive':

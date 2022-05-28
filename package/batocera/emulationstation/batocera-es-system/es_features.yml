@@ -1464,6 +1464,7 @@ libretro:
                     "On":                 enabled
       systems:
             megadrive:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_md:
                         group: ADVANCED OPTIONS
@@ -1511,6 +1512,7 @@ libretro:
                             "Menacer Light Gun":             516
                             "Konami Justifiers":             772
             mastersystem:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_ms:
                         group: ADVANCED OPTIONS
