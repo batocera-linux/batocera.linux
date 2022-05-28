@@ -699,6 +699,13 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
                 retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
                 retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
 
+    if system.config['core'] == 'genesisplusgx':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 260
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+
     if system.config['core'] == 'fbneo':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
