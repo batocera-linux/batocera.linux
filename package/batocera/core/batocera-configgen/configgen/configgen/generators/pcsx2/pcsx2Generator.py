@@ -269,9 +269,9 @@ def configureGFX(config_directory, system):
 
     # Skipdraw Hack
     if system.isOptSet('skipdraw'):
-        pcsx2GFXSettings.save('UserHacks_SkipDraw', system.config['skipdraw'])
+        pcsx2GFXSettings.save('UserHacks_SkipDraw_Start', system.config['skipdraw'])
     else:
-        pcsx2GFXSettings.save('UserHacks_SkipDraw', '0')
+        pcsx2GFXSettings.save('UserHacks_SkipDraw_Start', '0')
 
     # Align sprite Hack
     if system.isOptSet('align_sprite'):
