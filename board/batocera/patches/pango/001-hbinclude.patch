@@ -1,16 +1,3 @@
-diff --git a/meson.build b/meson.build
-index 27a7b19..3c15282 100644
---- a/meson.build
-+++ b/meson.build
-@@ -239,7 +239,7 @@ harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: f
- if harfbuzz_dep.found()
-   harfbuzz_pc = 'harfbuzz'
- else
--  if cc.get_id() == 'msvc' and cc.has_header('hb.h')
-+  if cc.get_id() == 'msvc' and cc.has_header('harfbuzz/hb.h')
-     # The CMake build files for HarfBuzz (which is used for MSVC builds) do not
-     # generate pkg-config files, so look for harfbuzz.lib.  Ensure that we
-     # we look for HarfBuzz 2.0.0 or later.
 diff --git a/pango/pango-coverage.h b/pango/pango-coverage.h
 index 7467dbd..57c9659 100644
 --- a/pango/pango-coverage.h
