@@ -1,7 +1,7 @@
-SUBSYSTEM=="input", ATTRS{name}=="Nintendo Wii Remote Classic Controller", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote Classic Controller", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEY}="0"
 
-SUBSYSTEM=="input", ATTRS{name}=="Nintendo Wii Remote", MODE="0666", PROGRAM="/usr/bin/virtual-wii-mouse-bar-joystick-status", ENV{ID_INPUT_JOYSTICK}="%c", RUN+="/usr/bin/virtual-wii-mouse-bar-add"
-SUBSYSTEM=="input", ATTRS{name}=="Nintendo Wii Remote IR", MODE="0666", RUN+="/usr/bin/virtual-wii-mouse-bar-add"
-SUBSYSTEM=="input", ATTRS{name}=="Nintendo Wii Remote Accelerometer", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote", MODE="0666", PROGRAM="/usr/bin/virtual-wii-mouse-bar-joystick-status", ENV{ID_INPUT_JOYSTICK}="%c", RUN+="/usr/bin/virtual-wii-mouse-bar-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote IR", MODE="0666", RUN+="/usr/bin/virtual-wii-mouse-bar-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote Accelerometer", ENV{ID_INPUT_JOYSTICK}="0"
 
-SUBSYSTEM=="input", ATTRS{name}=="virtual wii mouse bar", MODE="0666", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="1"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="virtual wii mouse bar", MODE="0666", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="1"
