@@ -180,7 +180,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_OPENVPN                              # VPN support
 	select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
 	select BR2_PACKAGE_UMTOOL								# command line tool for configuring Ultimarc arcade hardware
-	
+
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
 	select BR2_PACKAGE_USBMOUNT                             # usb key/sd card mounter
@@ -234,8 +234,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RCLONE                               if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sync files in the cloud (require x86_64)
 	select BR2_PACKAGE_BTOP                                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # htop alternative (require x86_64)
 
-	# RaspberryPi Firmwares
-	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth and wifi firmware
+	# RaspberryPi Firmwares bluetooth and wifi
+	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI           if BR2_PACKAGE_BATOCERA_RPI_ANY
+	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_BT        if BR2_PACKAGE_BATOCERA_RPI_ANY
+	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_WIFI      if BR2_PACKAGE_BATOCERA_RPI_ANY
 
 	# Case
 	select BR2_PACKAGE_GPICASE              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # retroflag gpicase
@@ -265,7 +267,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3128         && \
 												!BR2_PACKAGE_BATOCERA_TARGET_S922X
-		
+
 	select BR2_PACKAGE_RTL8812AU        if BR2_PACKAGE_BATOCERA_TARGET_S922X
 	select BR2_PACKAGE_RTL8821CU        if BR2_PACKAGE_BATOCERA_TARGET_S922X
 
@@ -1124,7 +1126,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE    # audio resampler
 	select BR2_PACKAGE_LIBCDIO_PARANOIA     # cd-audio
 	select BR2_PACKAGE_LIBOPENH264          # openh264
-    
+
     # AV1 support for x86_64
     select BR2_PACKAGE_DAV1D           if BR2_PACKAGE_BATOCERA_TARGET_X86_64       # AV1
 
