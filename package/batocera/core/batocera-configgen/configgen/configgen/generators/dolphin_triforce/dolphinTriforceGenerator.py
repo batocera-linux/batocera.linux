@@ -10,7 +10,7 @@ from . import dolphinTriforceControllers
 
 class DolphinTriforceGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinTriforceIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinTriforceIni))
 

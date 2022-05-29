@@ -18,7 +18,7 @@ class MugenGenerator(Generator):
         with open(path, 'w') as f:
             f.write(contents)
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         settings = configparser.ConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
         # To prevent ConfigParser from converting to lower case

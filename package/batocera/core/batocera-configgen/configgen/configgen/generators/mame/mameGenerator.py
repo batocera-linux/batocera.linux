@@ -27,7 +27,7 @@ class MameGenerator(Generator):
     def supportsInternalBezels(self):
         return True
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
@@ -209,186 +209,188 @@ class MameGenerator(Generator):
         if not (system.isOptSet("enableui") and not system.getOptBoolean("enableui")):
             commandArray += [ "-ui_active" ]
 
-        # Finally we pass game name
-        # MESS will use the full filename and pass the system & rom type parameters if needed.
+        # Load selected plugins
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             pluginsToLoad += [ "hiscore" ]
         if system.isOptSet("coindropplugin") and system.getOptBoolean("coindropplugin"):
             pluginsToLoad += [ "coindrop" ]
-        if messMode == -1 and len(pluginsToLoad) > 0:
-            commandArray += [ romBasename ]
+        if system.isOptSet("dataplugin") and system.getOptBoolean("dataplugin"):
+            pluginsToLoad += [ "data" ]
+        if len(pluginsToLoad) > 0:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
+
+        # Finally we pass game name
+        # MESS will use the full filename and pass the system & rom type parameters if needed.
+        if messSysName[messMode] == "" or messMode == -1:
+            commandArray += [ romBasename ]
         else:
-            if messSysName[messMode] == "":
-                commandArray += [ romBasename ]
-            else:
-                messModel = messSysName[messMode]
-                # Alternate system for machines that have different configs (ie computers with different hardware)
-                if system.isOptSet("altmodel"):
-                    messModel = system.config["altmodel"]
-                commandArray += [ messModel ]
+            messModel = messSysName[messMode]
+            # Alternate system for machines that have different configs (ie computers with different hardware)
+            if system.isOptSet("altmodel"):
+                messModel = system.config["altmodel"]
+            commandArray += [ messModel ]
 
 
-                #TI-99 32k RAM expansion & speech modules - enabled by default
-                if system.name == "ti99":
-                    commandArray += [ "-ioport", "peb" ]
-                    if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
-                        commandArray += ["-ioport:peb:slot2", "32kmem"]
-                    if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
-                        commandArray += ["-ioport:peb:slot3", "speech"]
+            #TI-99 32k RAM expansion & speech modules - enabled by default
+            if system.name == "ti99":
+                commandArray += [ "-ioport", "peb" ]
+                if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                    commandArray += ["-ioport:peb:slot2", "32kmem"]
+                if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
+                    commandArray += ["-ioport:peb:slot3", "speech"]
 
-                # BBC Joystick
-                if system.name == "bbc":
-                    if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
-                        commandArray += ["-analogue", system.config['sticktype']]
-                        specialController = system.config['sticktype']
+            # BBC Joystick
+            if system.name == "bbc":
+                if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
+                    commandArray += ["-analogue", system.config['sticktype']]
+                    specialController = system.config['sticktype']
 
-                # Mac RAM & Image Reader (if applicable)
-                if system.name == "macintosh":
-                    if system.isOptSet("ramsize"):
-                        ramSize = int(system.config["ramsize"])
-                        if messModel in [ 'maciix', 'maclc3' ]:
-                            if messModel == 'maclc3' and ramSize == 2:
-                                ramSize = 4
-                            if messModel == 'maclc3' and ramSize > 80:
-                                ramSize = 80
-                            if messModel == 'maciix' and ramSize == 16:
-                                ramSize = 32
-                            if messModel == 'maciix' and ramSize == 48:
-                                ramSize = 64
-                            commandArray += [ '-ramsize', str(ramSize) + 'M' ]
-                        if messModel == 'maciix':
-                            imageSlot = 'nba'
-                            if system.isOptSet('imagereader'):
-                                if system.config["imagereader"] == "disabled":
-                                    imageSlot = ''
-                                else:
-                                    imageSlot = system.config["imagereader"]
-                            if imageSlot != "":
-                                commandArray += [ "-" + imageSlot, 'image' ]
-
-                if softList == "":
-                    # Boot disk for Macintosh
-                    # Will use Floppy 1 or Hard Drive, depending on the disk.
-                    if system.name == "macintosh" and system.isOptSet("bootdisk"):
-                        if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                            bootType = "-flop1"
-                            bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
-                        else:
-                            bootType = "-hard"
-                            bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
-                        commandArray += [ bootType, bootDisk ]
-
-                    # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
-                    # Mac will auto change floppy 1 to 2 if a boot disk is enabled
-                    # Only one drive on FMTMarty
-                    if system.name != "macintosh":
-                        if system.isOptSet("altromtype"):
-                            if messModel == "fmtmarty" and system.config["altromtype"] == "flop1":
-                                commandArray += [ "-flop" ]
+            # Mac RAM & Image Reader (if applicable)
+            if system.name == "macintosh":
+                if system.isOptSet("ramsize"):
+                    ramSize = int(system.config["ramsize"])
+                    if messModel in [ 'maciix', 'maclc3' ]:
+                        if messModel == 'maclc3' and ramSize == 2:
+                            ramSize = 4
+                        if messModel == 'maclc3' and ramSize > 80:
+                            ramSize = 80
+                        if messModel == 'maciix' and ramSize == 16:
+                            ramSize = 32
+                        if messModel == 'maciix' and ramSize == 48:
+                            ramSize = 64
+                        commandArray += [ '-ramsize', str(ramSize) + 'M' ]
+                    if messModel == 'maciix':
+                        imageSlot = 'nba'
+                        if system.isOptSet('imagereader'):
+                            if system.config["imagereader"] == "disabled":
+                                imageSlot = ''
                             else:
-                                commandArray += [ "-" + system.config["altromtype"] ]
+                                imageSlot = system.config["imagereader"]
+                        if imageSlot != "":
+                            commandArray += [ "-" + imageSlot, 'image' ]
+
+            if softList == "":
+                # Boot disk for Macintosh
+                # Will use Floppy 1 or Hard Drive, depending on the disk.
+                if system.name == "macintosh" and system.isOptSet("bootdisk"):
+                    if system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                        bootType = "-flop1"
+                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".img"
+                    else:
+                        bootType = "-hard"
+                        bootDisk = "/userdata/bios/" + system.config["bootdisk"] + ".chd"
+                    commandArray += [ bootType, bootDisk ]
+
+                # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
+                # Mac will auto change floppy 1 to 2 if a boot disk is enabled
+                # Only one drive on FMTMarty
+                if system.name != "macintosh":
+                    if system.isOptSet("altromtype"):
+                        if messModel == "fmtmarty" and system.config["altromtype"] == "flop1":
+                            commandArray += [ "-flop" ]
+                        else:
+                            commandArray += [ "-" + system.config["altromtype"] ]
+                    else:
+                        commandArray += [ "-" + messRomType[messMode] ]
+                else:
+                    if system.isOptSet("bootdisk"):
+                        if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
+                            commandArray += [ "-flop2" ]
+                        elif system.isOptSet("altromtype"):
+                            commandArray += [ "-" + system.config["altromtype"] ]
                         else:
                             commandArray += [ "-" + messRomType[messMode] ]
                     else:
-                        if system.isOptSet("bootdisk"):
-                            if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
-                                commandArray += [ "-flop2" ]
-                            elif system.isOptSet("altromtype"):
-                                commandArray += [ "-" + system.config["altromtype"] ]
-                            else:
-                                commandArray += [ "-" + messRomType[messMode] ]
+                        if system.isOptSet("altromtype"):
+                            commandArray += [ "-" + system.config["altromtype"] ]
                         else:
-                            if system.isOptSet("altromtype"):
-                                commandArray += [ "-" + system.config["altromtype"] ]
-                            else:
-                                commandArray += [ "-" + messRomType[messMode] ]
-                    # Use the full filename for MESS ROMs
-                    commandArray += [ rom ]
+                            commandArray += [ "-" + messRomType[messMode] ]
+                # Use the full filename for MESS ROMs
+                commandArray += [ rom ]
+            else:
+                # Prepare software lists
+                if softList != "":
+                    if not os.path.exists(softDir):
+                        os.makedirs(softDir)
+                    for fileName in os.listdir(softDir):
+                        checkFile = os.path.join(softDir, fileName)
+                        if os.path.islink(checkFile):
+                            os.unlink(checkFile)
+                        if os.path.isdir(checkFile):
+                            shutil.rmtree(checkFile)
+                    if not os.path.exists(softDir + "hash/"):
+                        os.makedirs(softDir + "hash/")
+                    # Clear existing hashfile links
+                    for hashFile in os.listdir(softDir + "hash/"):
+                        if hashFile.endswith('.xml'):
+                            os.unlink(softDir + "hash/" + hashFile)
+                    os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
+                    if softList in subdirSoftList:
+                        romPath = Path(romDirname)
+                        os.symlink(str(romPath.parents[0]), softDir + softList, True)
+                        commandArray += [ path.basename(romDirname) ]
+                    else:
+                        os.symlink(romDirname, softDir + softList, True)
+                        commandArray += [ os.path.splitext(romBasename)[0] ]
+
+            # Create & add a blank disk if needed, insert into drive 2
+            # or drive 1 if drive 2 is selected manually or FM Towns Marty.
+            if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
+                if system.name == 'fmtowns':
+                    blankDisk = '/usr/share/mame/blank.fmtowns'
+                    targetFolder = '/userdata/saves/mame/{}'.format(system.name)
+                    targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
+                # Add elif statements here for other systems if enabled
+                if not os.path.exists(targetFolder):
+                    os.makedirs(targetFolder)
+                if not os.path.exists(targetDisk):
+                    shutil.copy2(blankDisk, targetDisk)
+                # Add other single floppy systems to this if statement
+                if messModel == "fmtmarty":
+                    commandArray += [ '-flop', targetDisk ]
+                elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
+                    commandArray += [ '-flop1', targetDisk ]
                 else:
-                    # Prepare software lists
-                    if softList != "":
-                        if not os.path.exists(softDir):
-                            os.makedirs(softDir)
-                        for fileName in os.listdir(softDir):
-                            checkFile = os.path.join(softDir, fileName)
-                            if os.path.islink(checkFile):
-                                os.unlink(checkFile)
-                            if os.path.isdir(checkFile):
-                                shutil.rmtree(checkFile)
-                        if not os.path.exists(softDir + "hash/"):
-                            os.makedirs(softDir + "hash/")
-                        # Clear existing hashfile links
-                        for hashFile in os.listdir(softDir + "hash/"):
-                            if hashFile.endswith('.xml'):
-                                os.unlink(softDir + "hash/" + hashFile)
-                        os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
-                        if softList in subdirSoftList:
-                            romPath = Path(romDirname)
-                            os.symlink(str(romPath.parents[0]), softDir + softList, True)
-                            commandArray += [ path.basename(romDirname) ]
-                        else:
-                            os.symlink(romDirname, softDir + softList, True)
-                            commandArray += [ os.path.splitext(romBasename)[0] ]
+                    commandArray += [ '-flop2', targetDisk ]
 
-                # Create & add a blank disk if needed, insert into drive 2
-                # or drive 1 if drive 2 is selected manually or FM Towns Marty.
-                if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
-                    if system.name == 'fmtowns':
-                        blankDisk = '/usr/share/mame/blank.fmtowns'
-                        targetFolder = '/userdata/saves/mame/{}'.format(system.name)
-                        targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
-                    # Add elif statements here for other systems if enabled
-                    if not os.path.exists(targetFolder):
-                        os.makedirs(targetFolder)
-                    if not os.path.exists(targetDisk):
-                        shutil.copy2(blankDisk, targetDisk)
-                    # Add other single floppy systems to this if statement
-                    if messModel == "fmtmarty":
-                        commandArray += [ '-flop', targetDisk ]
-                    elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
-                        commandArray += [ '-flop1', targetDisk ]
-                    else:
-                        commandArray += [ '-flop2', targetDisk ]
-
-                autoRunCmd = ""
-                autoRunDelay = 0
-                # Autostart computer games where applicable
-                # bbc has different boots for floppy & cassette, no special boot for carts
-                if system.name == "bbc":
-                    if system.isOptSet("altromtype") or softList != "":
-                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
-                            autoRunCmd = '*tape\\nchain""\\n'
-                            autoRunDelay = 2
-                        elif (system.isOptSet('altromtype') and system.config["altromtype"].startswith("flop")) or softList.endswith("flop"):
-                            autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
-                            autoRunDelay = 3
-                    else:
+            autoRunCmd = ""
+            autoRunDelay = 0
+            # Autostart computer games where applicable
+            # bbc has different boots for floppy & cassette, no special boot for carts
+            if system.name == "bbc":
+                if system.isOptSet("altromtype") or softList != "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
+                        autoRunCmd = '*tape\\nchain""\\n'
+                        autoRunDelay = 2
+                    elif (system.isOptSet('altromtype') and system.config["altromtype"].startswith("flop")) or softList.endswith("flop"):
                         autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
                         autoRunDelay = 3
-                # fm7 boots floppies, needs cassette loading
-                elif system.name == "fm7":
-                    if system.isOptSet("altromtype") or softList != "":
-                        if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
-                            autoRunCmd = 'LOADM”“,,R\\n'
-                            autoRunDelay = 5
                 else:
-                    # Check for an override file, otherwise use generic (if it exists)
-                    autoRunCmd = messAutoRun[messMode]
-                    autoRunFile = '/usr/share/batocera/configgen/data/mame/{}_autoload.csv'.format(softList)
-                    if os.path.exists(autoRunFile):
-                        openARFile = open(autoRunFile, 'r')
-                        with openARFile:
-                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                            for row in autoRunList:
-                                if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
-                                    autoRunCmd = row[1] + "\\n"
-                                    autoRunDelay = 3
-                if autoRunCmd != "":
-                    if autoRunCmd.startswith("'"):
-                        autoRunCmd.replace("'", "")
-                    commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
+                    autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
+                    autoRunDelay = 3
+            # fm7 boots floppies, needs cassette loading
+            elif system.name == "fm7":
+                if system.isOptSet("altromtype") or softList != "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
+                        autoRunCmd = 'LOADM”“,,R\\n'
+                        autoRunDelay = 5
+            else:
+                # Check for an override file, otherwise use generic (if it exists)
+                autoRunCmd = messAutoRun[messMode]
+                autoRunFile = '/usr/share/batocera/configgen/data/mame/{}_autoload.csv'.format(softList)
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
+                                autoRunCmd = row[1] + "\\n"
+                                autoRunDelay = 3
+            if autoRunCmd != "":
+                if autoRunCmd.startswith("'"):
+                    autoRunCmd.replace("'", "")
+                commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
         # bezels
         if 'bezel' not in system.config or system.config['bezel'] == '':
@@ -418,6 +420,8 @@ class MameGenerator(Generator):
         else:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg, specialController, bezelSet)
 
+        # Change directory to MAME folder (allows data plugin to load properly)
+        os.chdir('/usr/bin/mame')
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
     @staticmethod

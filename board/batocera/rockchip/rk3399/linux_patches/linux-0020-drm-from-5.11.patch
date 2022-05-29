@@ -1,4 +1,4 @@
-From a65d599157434672923aa2100e38de9c3e5fdcf4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Thomas Zimmermann <tzimmermann@suse.de>
 Date: Wed, 23 Sep 2020 12:21:51 +0200
 Subject: [PATCH] drm/rockchip: Convert to drm_gem_object_funcs
@@ -82,7 +82,7 @@ index 62e5d0970525..1cf4631461c9 100644
   */
  void rockchip_gem_free_object(struct drm_gem_object *obj)
 
-From ef5187c01a38422facb8385a9fdb2bdca48b5063 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Thomas Zimmermann <tzimmermann@suse.de>
 Date: Mon, 28 Sep 2020 10:16:43 +0200
 Subject: [PATCH] drm/rockchip: Include <drm/drm_gem_cma_helper> for
@@ -125,7 +125,7 @@ index 1cf4631461c9..7d5ebb10323b 100644
  #include <drm/drm_vma_manager.h>
  
 
-From c0d3455e8abdb62b4088d6b0833f722bea8856c4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Qinglang Miao <miaoqinglang@huawei.com>
 Date: Mon, 21 Sep 2020 21:10:19 +0800
 Subject: [PATCH] drm/panfrost: simplify the return expression of
@@ -169,7 +169,7 @@ index bf7c34cfb84c..a83b2ff5837a 100644
  
  static void panfrost_reset_fini(struct panfrost_device *pfdev)
 
-From 0c18323036a4a28bc7be740d247dc117228e80eb Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Qinglang Miao <miaoqinglang@huawei.com>
 Date: Mon, 21 Sep 2020 21:10:21 +0800
 Subject: [PATCH] drm/panfrost: simplify the return expression of
@@ -211,7 +211,7 @@ index 8ab025d0035f..913eaa6d0bc6 100644
  
  static void panfrost_devfreq_reset(struct panfrost_devfreq *pfdevfreq)
 
-From 730780b7c9d26a7dd5a103f17ceb3035d1f58264 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Rikard Falkeborn <rikard.falkeborn@gmail.com>
 Date: Sun, 4 Oct 2020 22:06:53 +0200
 Subject: [PATCH] drm: bridge: dw-hdmi: Constify dw_hdmi_i2s_ops
@@ -242,7 +242,7 @@ index 9fef6413741d..feb04f127b55 100644
  	.audio_startup  = dw_hdmi_i2s_audio_startup,
  	.audio_shutdown	= dw_hdmi_i2s_audio_shutdown,
 
-From 40ec605e1723e52775bbba80b36870d7dd7e7019 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Liu Shixin <liushixin2@huawei.com>
 Date: Sat, 19 Sep 2020 18:08:50 +0800
 Subject: [PATCH] drm/lima: simplify the return expression of
@@ -282,7 +282,7 @@ index bbe02817721b..5914442936ed 100644
  
  static void lima_devfreq_reset(struct lima_devfreq *devfreq)
 
-From 6d6bd7b07ce09052d1b1d4116eb866d18c3cbb8a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Lee Jones <lee.jones@linaro.org>
 Date: Fri, 13 Nov 2020 13:49:13 +0000
 Subject: [PATCH] drm/lima/lima_drv: Demote kernel-doc formatting abuse
@@ -317,7 +317,7 @@ index ab460121fd52..065c80c14d10 100644
   *
   * - 1.1.0 - add heap buffer support
 
-From 9d003fb17fd9a2c55debe6c7a96003093f4c2429 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Lee Jones <lee.jones@linaro.org>
 Date: Fri, 13 Nov 2020 13:49:21 +0000
 Subject: [PATCH] drm/lima/lima_sched: Remove unused and unnecessary variable
@@ -348,7 +348,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20201113134938.4004947-24-le
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/lima/lima_sched.c b/drivers/gpu/drm/lima/lima_sched.c
-index dc6df9e9a40d..3f5075bd158f 100644
+index f6e7a88a56f1..040ea27b28ce 100644
 --- a/drivers/gpu/drm/lima/lima_sched.c
 +++ b/drivers/gpu/drm/lima/lima_sched.c
 @@ -223,7 +223,6 @@ static struct dma_fence *lima_sched_run_job(struct drm_sched_job *job)
@@ -369,7 +369,7 @@ index dc6df9e9a40d..3f5075bd158f 100644
  	pipe->current_task = task;
  
 
-From 4748c72bc711c423127ceb78220d696ee2a170a8 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Viresh Kumar <viresh.kumar@linaro.org>
 Date: Wed, 28 Oct 2020 12:14:21 +0530
 Subject: [PATCH] drm/lima: Unconditionally call dev_pm_opp_of_remove_table()
@@ -425,7 +425,7 @@ index 5eed2975a375..2d9b3008ce77 100644
  	ktime_t busy_time;
  	ktime_t idle_time;
 
-From d007ec94509b760c77f9509d9cc58921d1c2aa34 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Viresh Kumar <viresh.kumar@linaro.org>
 Date: Fri, 6 Nov 2020 12:18:39 +0530
 Subject: [PATCH] drm/lima: dev_pm_opp_put_*() accepts NULL argument
@@ -463,4 +463,3 @@ index da7099d20bd5..5686ad4aaf7c 100644
  }
  
  int lima_devfreq_init(struct lima_device *ldev)
-

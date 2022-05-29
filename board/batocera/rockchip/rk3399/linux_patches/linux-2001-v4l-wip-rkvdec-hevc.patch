@@ -78,7 +78,7 @@ index d585909bc4e2..f817c643761b 100644
  	Buffers associated with this pixel format must contain the appropriate
  	number of macroblocks to decode a full corresponding frame.
 diff --git a/drivers/media/v4l2-core/v4l2-ctrls.c b/drivers/media/v4l2-core/v4l2-ctrls.c
-index 1666a7ec873a..92bbfb81610d 100644
+index 7ed11f296008..a2609de88d26 100644
 --- a/drivers/media/v4l2-core/v4l2-ctrls.c
 +++ b/drivers/media/v4l2-core/v4l2-ctrls.c
 @@ -1026,6 +1026,7 @@ const char *v4l2_ctrl_get_name(u32 id)
@@ -109,7 +109,7 @@ index 1666a7ec873a..92bbfb81610d 100644
  	case V4L2_CTRL_TYPE_AREA:
  		area = p;
  		if (!area->width || !area->height)
-@@ -2866,6 +2873,9 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
+@@ -2883,6 +2890,9 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
  	case V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS:
  		elem_size = sizeof(struct v4l2_ctrl_hevc_slice_params);
  		break;
@@ -2464,7 +2464,7 @@ index 000000000000..03ba848411c6
 +	/* write pps */
 +	WRITE_PPS(pps->pic_parameter_set_id, PIC_PARAMETER_SET_ID);
 +	WRITE_PPS(sps->seq_parameter_set_id, PPS_SEQ_PARAMETER_SET_ID);
-+	WRITE_PPS(!!(pps->flags & V4L2_HEVC_PPS_FLAG_DEPENDENT_SLICE_SEGMENT),
++	WRITE_PPS(!!(pps->flags & V4L2_HEVC_PPS_FLAG_DEPENDENT_SLICE_SEGMENT_ENABLED),
 +		  DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG);
 +	WRITE_PPS(!!(pps->flags & V4L2_HEVC_PPS_FLAG_OUTPUT_FLAG_PRESENT),
 +		  OUTPUT_FLAG_PRESENT_FLAG);
@@ -2898,7 +2898,7 @@ index 3acc914888f6..4addfaefdfb4 100644
  #define RKVDEC_MODE_VP9					2
  #define RKVDEC_RPS_MODE					BIT(24)
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 7b4ac2292751..c005e2fba128 100644
+index f3578c5ea902..a44db1aa161e 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -162,6 +162,61 @@ static const u32 rkvdec_h264_decoded_fmts[] = {
@@ -3038,7 +3038,7 @@ index 03ba848411c6..b8ad7fc2271c 100644
  	.stop = rkvdec_hevc_stop,
  	.run = rkvdec_hevc_run,
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index c005e2fba128..55a54a1f8496 100644
+index a44db1aa161e..7419ae7027ab 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -79,6 +79,26 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
@@ -3098,7 +3098,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
-index a6be4eebef74..8a94fc04980f 100644
+index b8ad7fc2271c..943f3f4a644a 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
 @@ -2164,9 +2164,9 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
@@ -3113,6 +3113,7 @@ index a6be4eebef74..8a94fc04980f 100644
  			  ROW_HEIGHT(0));
  	}
  
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Wed, 14 Apr 2021 17:26:43 +0200
@@ -3124,7 +3125,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
-index b8ad7fc2271c..7c6d46bc69e9 100644
+index 943f3f4a644a..93b4e09e5bf1 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
 @@ -2194,8 +2194,8 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
@@ -3163,11 +3164,10 @@ Subject: [PATCH] WIP: media: rkvdec: hevc: implement lowdelay
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
  drivers/staging/media/rkvdec/rkvdec-hevc.c | 16 ++++++++++++++--
- include/media/hevc-ctrls.h                 |  1 +
- 2 files changed, 15 insertions(+), 2 deletions(-)
+ 1 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
-index 7c6d46bc69e9..a6be4eebef74 100644
+index 93b4e09e5bf1..8a94fc04980f 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
 @@ -2185,6 +2185,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
@@ -3207,19 +3207,6 @@ index 7c6d46bc69e9..a6be4eebef74 100644
  
  		WRITE_RPS(sl_params->long_term_ref_pic_set_size +
  			  sl_params->short_term_ref_pic_set_size,
-diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index b33e1a8141e1..bda0ea61f331 100644
---- a/include/media/hevc-ctrls.h
-+++ b/include/media/hevc-ctrls.h
-@@ -168,6 +168,7 @@ struct v4l2_hevc_pred_weight_table {
- #define V4L2_HEVC_SLICE_PARAMS_FLAG_USE_INTEGER_MV		(1ULL << 6)
- #define V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_DEBLOCKING_FILTER_DISABLED (1ULL << 7)
- #define V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED (1ULL << 8)
-+#define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT   (1ULL << 9)
- 
- struct v4l2_ctrl_hevc_slice_params {
- 	__u32	bit_size;
-
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 30 Jan 2021 18:16:39 +0100
@@ -3242,7 +3229,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  2 files changed, 84 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 55a54a1f8496..2a056413e4b4 100644
+index 7419ae7027ab..ab8b42f4f98c 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -14,6 +14,7 @@
@@ -3395,7 +3382,7 @@ index 55a54a1f8496..2a056413e4b4 100644
  		return -EINVAL;
  
  	f->pixelformat = rkvdec_coded_fmts[f->index].fourcc;
-@@ -1041,14 +1066,17 @@ static int rkvdec_init_ctrls(struct rkvdec_ctx *ctx)
+@@ -1040,14 +1065,17 @@ static int rkvdec_init_ctrls(struct rkvdec_ctx *ctx)
  	int ret;
  
  	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++)
@@ -3417,7 +3404,7 @@ index 55a54a1f8496..2a056413e4b4 100644
  	}
  
  	ret = v4l2_ctrl_handler_setup(&ctx->ctrl_hdl);
-@@ -1252,8 +1280,17 @@ static void rkvdec_watchdog_func(struct work_struct *work)
+@@ -1251,8 +1279,17 @@ static void rkvdec_watchdog_func(struct work_struct *work)
  	}
  }
  
@@ -3436,7 +3423,7 @@ index 55a54a1f8496..2a056413e4b4 100644
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, of_rkvdec_match);
-@@ -1266,6 +1303,7 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1265,6 +1302,7 @@ static int rkvdec_probe(struct platform_device *pdev)
  {
  	struct rkvdec_dev *rkvdec;
  	struct resource *res;
@@ -3444,7 +3431,7 @@ index 55a54a1f8496..2a056413e4b4 100644
  	unsigned int i;
  	int ret, irq;
  
-@@ -1291,6 +1329,12 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1290,6 +1328,12 @@ static int rkvdec_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
@@ -3455,8 +3442,8 @@ index 55a54a1f8496..2a056413e4b4 100644
 +	rkvdec->capabilities = variant->capabilities;
 +
  	/*
- 	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
- 	 * When 4k video playback.
+ 	 * Don't bump ACLK to max. possible freq. (500 MHz) to improve performance,
+ 	 * since it will lead to non-recoverable decoder lockups in case of decoding
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
 index 975fe4b5dd68..cc505bc4a042 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
@@ -3514,10 +3501,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 2a056413e4b4..1c0e35f9d84f 100644
+index ab8b42f4f98c..162623567a1d 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -1286,11 +1286,19 @@ static const struct rkvdec_variant rk3399_rkvdec_variant = {
+@@ -1285,11 +1285,19 @@ static const struct rkvdec_variant rk3399_rkvdec_variant = {
  			   RKVDEC_CAPABILITY_VP9
  };
  

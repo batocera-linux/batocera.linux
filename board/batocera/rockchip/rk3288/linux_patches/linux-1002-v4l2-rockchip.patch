@@ -10,7 +10,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 87987a782d75..a1c33905970d 100644
+index 9492822c12ae..b49541f8ecf5 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -1024,7 +1024,8 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
@@ -46,7 +46,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index a1c33905970d..8c2ff05e01f7 100644
+index b49541f8ecf5..51e257a0233d 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -1145,9 +1145,9 @@ static int rkvdec_remove(struct platform_device *pdev)
@@ -647,9 +647,9 @@ Subject: [PATCH] WIP: media: rkvdec: implement reset controls
 ---
  .../bindings/media/rockchip,vdec.yaml         | 19 +++++++
  drivers/staging/media/rkvdec/rkvdec-regs.h    |  5 ++
- drivers/staging/media/rkvdec/rkvdec.c         | 54 +++++++++++++++++++
+ drivers/staging/media/rkvdec/rkvdec.c         | 53 +++++++++++++++++++
  drivers/staging/media/rkvdec/rkvdec.h         | 11 +++-
- 4 files changed, 88 insertions(+), 1 deletion(-)
+ 4 files changed, 87 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
 index 8d35c327018b..dfafdb671798 100644
@@ -712,7 +712,7 @@ index 15b9bee92016..3acc914888f6 100644
  #define RKVDEC_REG_SYSCTRL				0x008
  #define RKVDEC_IN_ENDIAN				BIT(0)
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 8c2ff05e01f7..a0a1149ca1a8 100644
+index 51e257a0233d..c05ba31ed656 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -10,12 +10,15 @@
@@ -743,7 +743,7 @@ index 8c2ff05e01f7..a0a1149ca1a8 100644
  	rkvdec_job_finish_no_pm(ctx, result);
  }
  
-@@ -762,6 +770,34 @@ static void rkvdec_device_run(void *priv)
+@@ -762,6 +770,33 @@ static void rkvdec_device_run(void *priv)
  
  	if (WARN_ON(!desc))
  		return;
@@ -760,7 +760,6 @@ index 8c2ff05e01f7..a0a1149ca1a8 100644
 +		}
 +
 +		if (rkvdec->reset_mask & RESET_HARD) {
-+			pm_runtime_suspend(rkvdec->dev);
 +			rockchip_pmu_idle_request(rkvdec->dev, true);
 +			ret = reset_control_assert(rkvdec->rstc);
 +			if (!ret) {
@@ -772,13 +771,13 @@ index 8c2ff05e01f7..a0a1149ca1a8 100644
 +				dev_notice_ratelimited(rkvdec->dev,
 +							"hardreset failed\n");
 +		}
-+
 +		rkvdec->reset_mask = RESET_NONE;
++		pm_runtime_suspend(rkvdec->dev);
 +	}
  
  	ret = pm_runtime_get_sync(rkvdec->dev);
  	if (ret < 0) {
-@@ -1029,6 +1065,11 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
+@@ -1029,6 +1064,11 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
  	if (cancel_delayed_work(&rkvdec->watchdog_work)) {
  		struct rkvdec_ctx *ctx;
  
@@ -790,7 +789,7 @@ index 8c2ff05e01f7..a0a1149ca1a8 100644
  		ctx = v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
  		rkvdec_job_finish(ctx, state);
  	}
-@@ -1046,6 +1087,7 @@ static void rkvdec_watchdog_func(struct work_struct *work)
+@@ -1046,6 +1086,7 @@ static void rkvdec_watchdog_func(struct work_struct *work)
  	ctx = v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
  	if (ctx) {
  		dev_err(rkvdec->dev, "Frame processing timed out!\n");
@@ -798,7 +797,7 @@ index 8c2ff05e01f7..a0a1149ca1a8 100644
  		writel(RKVDEC_CONFIG_DEC_CLK_GATE_E | RKVDEC_IRQ_DIS,
  		       rkvdec->regs + RKVDEC_REG_INTERRUPT);
  		writel(0, rkvdec->regs + RKVDEC_REG_SYSCTRL);
-@@ -1125,6 +1167,18 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1125,6 +1166,18 @@ static int rkvdec_probe(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -947,7 +946,7 @@ index dfafdb671798..360b750e5514 100644
    reg:
      maxItems: 1
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 31c48c38c955..dad09ad7e501 100644
+index 31c48c38c955..bd0ec27cf49b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -326,6 +326,10 @@ pd_hevc@RK3328_PD_HEVC {
@@ -972,7 +971,7 @@ index 31c48c38c955..dad09ad7e501 100644
 +		interrupt-names = "vdpu";
 +		assigned-clocks = <&cru ACLK_RKVDEC>, <&cru SCLK_VDEC_CABAC>,
 +				  <&cru SCLK_VDEC_CORE>;
-+		assigned-clock-rates = <500000000>, <300000000>, <250000000>;
++		assigned-clock-rates = <400000000>, <400000000>, <300000000>;
 +		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>,
 +			 <&cru SCLK_VDEC_CABAC>, <&cru SCLK_VDEC_CORE>;
 +		clock-names = "axi", "ahb", "cabac", "core";
@@ -997,3 +996,34 @@ index 31c48c38c955..dad09ad7e501 100644
  	};
  
  	vop: vop@ff370000 {
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 3 May 2020 18:34:56 +0200
+Subject: [PATCH] WIP: media/rkvdec: don't overclock IP
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/staging/media/rkvdec/rkvdec.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+index c05ba31ed656..4111155d62f4 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.c
++++ b/drivers/staging/media/rkvdec/rkvdec.c
+@@ -1134,10 +1134,12 @@ static int rkvdec_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/*
+-	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
+-	 * When 4k video playback.
++	 * Don't bump ACLK to max. possible freq. (500 MHz) to improve performance,
++	 * since it will lead to non-recoverable decoder lockups in case of decoding
++	 * errors, instead put it to 400 MHz, which seems to have no drawbacks
++	 * in decoding performance and doesn't result in those hangs.
+ 	 */
+-	clk_set_rate(rkvdec->clocks[0].clk, 500 * 1000 * 1000);
++	clk_set_rate(rkvdec->clocks[0].clk, 400 * 1000 * 1000);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	rkvdec->regs = devm_ioremap_resource(&pdev->dev, res);

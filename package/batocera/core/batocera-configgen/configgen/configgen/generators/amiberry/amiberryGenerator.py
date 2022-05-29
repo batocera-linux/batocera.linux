@@ -17,7 +17,7 @@ eslog = get_logger(__name__)
 
 class AmiberryGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         retroconfig = UnixSettings(batoceraFiles.amiberryRetroarchCustom, separator=' ')
         if not os.path.exists(dirname(batoceraFiles.amiberryRetroarchCustom)):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))

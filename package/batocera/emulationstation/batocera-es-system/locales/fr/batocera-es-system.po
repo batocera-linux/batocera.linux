@@ -279,6 +279,21 @@ msgctxt "game_options"
 msgid "THREADED VIDEO"
 msgstr "VIDÉO THREADÉE"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use guns instead of pads if guns are detected on the system"
+msgstr ""
+
+#. TRANSLATION: shared, libretro/fbneo, libretro/fceumm, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "LIGHTGUN"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use guns"
+msgstr ""
+
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
@@ -431,7 +446,7 @@ msgctxt "game_options"
 msgid "BLARGG NTSC FILTER"
 msgstr "FILTRE NTSC BLARGG"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/mame, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Désactivé"
@@ -1628,7 +1643,7 @@ msgctxt "game_options"
 msgid "Lightgun device must be selected on at least one port."
 msgstr "Le périphérique Lightgun doit être sélectionné sur au moins un port."
 
-#. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, supermodel
+#. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
 msgid "SHOW LIGHTGUN CROSSHAIRS"
 msgstr "AFFICHER LA CIBLE DU LIGHTGUN"
@@ -1782,6 +1797,31 @@ msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "RENDU SYNCHRONE"
 
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 1"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Red"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Blue"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Green"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "White"
+msgstr ""
+
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
 msgid "Smooth textures on distant 3D objects based on angle."
@@ -1798,7 +1838,7 @@ msgid "Improves clarity of distant textures when mip-mapping is enabled."
 msgstr ""
 "Améliore la clarté des textures distantes lorsque le mip-mapping est activé."
 
-#. TRANSLATION: libretro/flycast, dolphin, dolphin_triforce, mupen64plus, pcsx2, ...
+#. TRANSLATION: libretro/flycast, dolphin, dolphin_triforce, flycast, mupen64plus, ...
 msgctxt "game_options"
 msgid "ANISOTROPIC FILTERING"
 msgstr "FILTRAGE ANISOTROPE"
@@ -2268,7 +2308,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "PLUGIN HIGH SCORE"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, mame/uzem, mame/uzem, ...
+#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, duckstation, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Activé (par défaut)"
@@ -2283,12 +2323,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, duckstation, flycast/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, duckstation, mame/uzem, mame/uzem, mame
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr ""
@@ -3748,8 +3788,13 @@ msgstr "CDZ"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
-msgid "CDZ (MAME)"
-msgstr "CDZ (MAME)"
+msgid "CDZ MAME"
+msgstr ""
+
+#. TRANSLATION: libretro/neocd
+msgctxt "game_options"
+msgid "CDZ Universe 3.3"
+msgstr ""
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -6468,6 +6513,16 @@ msgstr "Par 1s, 120s au total (1320 Mo|240 Mo)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
+msgid "Choose whether to show on the display, configuration messages."
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "SHOW OSD MESSAGES"
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
 msgid "Interpreter is the most accurate, but is the slowest."
 msgstr "L'interpréteur est le plus précis, mais le plus lent."
 
@@ -6621,6 +6676,16 @@ msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (Vibration)"
 
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygongs & warping textures."
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr ""
+
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "Choose the emulator language."
@@ -6736,6 +6801,21 @@ msgctxt "game_options"
 msgid "CONTROLLER 4 FEATURE PACK"
 msgstr ""
 
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Enable the Dreamcast DSP. Only recommended for fast systems."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "DIGITAL SOUND PROCESSOR"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, flycast
+msgctxt "game_options"
+msgid "Disbaled (Default)"
+msgstr ""
+
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Choose which screen ratio you want to use."
@@ -6825,6 +6905,11 @@ msgstr "TOURNER L'ÉCRAN DE 90 DEGRÉS"
 msgctxt "game_options"
 msgid "Rotate"
 msgstr "Tourner"
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Higher values make textures viewed at oblique angles look sharper."
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -8421,6 +8506,17 @@ msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "RECADRER LES ILLUSTATIONS"
 
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid ""
+"Make game history, setup instructions, and special moves viewable in the menu"
+msgstr ""
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "DATA PLUGIN"
+msgstr ""
+
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Converts DirectX 9/10/11/12 calls to Vulkan."
@@ -8887,6 +8983,10 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "ACTIVER L'ENTRÉE RAW"
+
+#~ msgctxt "game_options"
+#~ msgid "CDZ (MAME)"
+#~ msgstr "CDZ (MAME)"
 
 #~ msgctxt "game_options"
 #~ msgid "Can Fix broken graphics in some games."

@@ -14,7 +14,7 @@ eslog = get_logger(__name__)
 class OpenborGenerator(Generator):
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         configDir = batoceraFiles.CONF + '/openbor'
         if not os.path.exists(configDir):
             os.makedirs(configDir)

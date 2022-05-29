@@ -797,7 +797,6 @@ neogeocd:
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
 
 colecovision:
   name:       ColecoVision
@@ -3182,6 +3181,18 @@ xbox360:
 
     Note: It is possible to build Xenia for Linux but functionality as of writing is extremely poor.
 
+ngage:
+  name: N-Gage
+  manufacturer: Nokia
+  release: 2003
+  hardware: portable
+  extensions: [n-gage, sisx, sis, zip]
+  platform: ngage
+  theme: ngage
+  emulators:
+    eka2l1:
+      eka2l1: { requireAnyOf: [BR2_PACKAGE_EKA2L1] }
+
 odcommander:
   name: OD-Commander
   manufacturer: Ports
@@ -3196,16 +3207,4 @@ odcommander:
     A two-pane file manager in the style of Norton/Midnight Commander.
   comment_fr: |
     Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
-
-ngage:
-  name: N-Gage
-  manufacturer: Nokia
-  release: 2003
-  hardware: portable
-  extensions: [n-gage, sisx, sis, zip]
-  platform: ngage
-  theme: ngage
-  emulators:
-    eka2l1:
-      eka2l1: { requireAnyOf: [BR2_PACKAGE_EKA2L1] }
 
