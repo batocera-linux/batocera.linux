@@ -311,6 +311,17 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
         else:
             retroarchConfig['input_libretro_device_p2'] = '769'
 
+    ## Sega Saturn controller
+    if system.config['core'] == 'yabasanshiro' and system.name == 'saturn':
+        if system.isOptSet('controller1_saturn'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_saturn']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1' # Saturn pad
+        if system.isOptSet('controller2_saturn'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_saturn']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1' # Saturn pad
+
     ## NEC PCEngine controller
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
         if system.isOptSet('controller1_pce'):
