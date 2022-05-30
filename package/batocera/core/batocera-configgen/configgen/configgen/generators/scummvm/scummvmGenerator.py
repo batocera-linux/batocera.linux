@@ -13,7 +13,7 @@ class ScummVMGenerator(Generator):
     
     # Main entry of the module
     # Configure mupen and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Find rom path
         if os.path.isdir(rom):
           # rom is a directory: must contains a <game name>.scummvm file
@@ -28,6 +28,7 @@ class ScummVMGenerator(Generator):
 
         # pad number
         nplayer = 1
+        id = 0
         for playercontroller, pad in sorted(playersControllers.items()):
             if nplayer == 1:
                 id=pad.index
@@ -45,4 +46,3 @@ class ScummVMGenerator(Generator):
         return Command.Command(array=commandArray,env={
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         })
-

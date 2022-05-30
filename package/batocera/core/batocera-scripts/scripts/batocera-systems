@@ -103,7 +103,16 @@ systems = {
 
     # ---------- SNK ----------#
     "neogeo":   { "name": "NeoGeo", "biosFiles":    [  { "md5": "dffb72f116d36d025068b23970a4f6df", "file": "bios/neogeo.zip" } ] },
-    "neogeocd": { "name": "NeoGeo CD", "biosFiles": [  { "md5": "c733b4b7bd30fa849874d96c591c8639", "file": "bios/neocdz.zip" } ] },
+    "neogeocd":  { "name": "NeoGeo CD", "biosFiles": [ { "md5": "8834880c33164ccbe6476b559f3e37de", "file": "bios/neocd/neocd_f.rom" },
+                                                       { "md5": "043d76d5f0ef836500700c34faef774d", "file": "bios/neocd/neocd_sf.rom" },
+                                                       { "md5": "de3cf45d227ad44645b22aa83b49f450", "file": "bios/neocd/neocd_t.rom" },
+                                                       { "md5": "f6325a33c6d63ea4b9162a3fa8c32727", "file": "bios/neocd/neocd_st.rom" },
+                                                       { "md5": "11526d58d4c524daef7d5d677dc6b004", "file": "bios/neocd/neocd_z.rom" },
+                                                       { "md5": "971ee8a36fb72da57aed01758f0a37f5", "file": "bios/neocd/neocd_sz.rom" },
+                                                       { "md5": "5c2366f25ff92d71788468ca492ebeca", "file": "bios/neocd/front-sp1.bin" },
+                                                       { "md5": "122aee210324c72e8a11116e6ef9c0d0", "file": "bios/neocd/top-sp1.bin" },
+                                                       { "md5": "f39572af7584cb5b3f70ae8cc848aba2", "file": "bios/neocd/neocd.bin"},
+                                                       { "md5": "08ca8b2dba6662e8024f9e789711c6fc", "file": "bios/neocd/uni-bioscd.rom"} ] },
 
     # ---------- Sharp ---------- #
     # https://github.com/libretro/libretro-super/blob/master/dist/info/px68k_libretro.info
@@ -257,7 +266,21 @@ systems = {
                                   { "md5": "0585b19930d4a7f4c71bcc8a33746588", "file": "bios/fmtowns/FMT_DOS.ROM" },
                                   { "md5": "ac0c7021e9bf48ca84b51ab651169a88", "file": "bios/fmtowns/FMT_F20.ROM" },
                                   { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
-                                  { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" } ] },
+                                  { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" },
+                                  { "md5": "", "file": "bios/fmtmarty.zip" },
+                                  { "md5": "6618519b2c104cf9b7e71a48381b44a9", "zippedFile": "mrom.m36", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "75a5c7afb4bc8221bab8cf24db417950", "zippedFile": "mrom.m37", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "", "file": "bios/fmtowns.zip" },
+                                  { "md5": "34847786d7de94b5d1133c956ab1d75d", "zippedFile": "fmt_dic.rom", "file": "bios/fmtowns.zip"},
+                                  { "md5": "0585b19930d4a7f4c71bcc8a33746588", "zippedFile": "fmt_dos.rom", "file": "bios/fmtowns.zip"},
+                                  { "md5": "eb44f2093f51eb7159f03e170b13af76", "zippedFile": "fmt_fnt.rom", "file": "bios/fmtowns.zip"},
+                                  { "md5": "feaf8c5675151e00cfe3ad27673bff29", "zippedFile": "fmt_sys.rom", "file": "bios/fmtowns.zip"},
+                                  { "md5": "", "file": "bios/fmtownsux.zip" },
+                                  { "md5": "8fa4e553f28cfc0c30a0a1e589799942", "zippedFile": "fmt_dic.rom", "file": "bios/fmtownsux.zip"},
+                                  { "md5": "03c8fac9a5f5f5f35fb5de5a5d0d018f", "zippedFile": "fmt_dos_a.rom", "file": "bios/fmtownsux.zip"},
+                                  { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "zippedFile": "fmt_fnt.rom", "file": "bios/fmtownsux.zip"},
+                                  { "md5": "90b5e01d42aaa93e8f4503a5e94e120b", "zippedFile": "fmt_sys_a.rom", "file": "bios/fmtownsux.zip"},
+                                  { "md5": "1a15f6c1b58ec7e5f850118610a787a7", "zippedFile": "mytownsux.rom", "file": "bios/fmtownsux.zip"} ] },
 
     # ---------- Future Pinball ---------- #
     "fpinball":   { "name": "Future Pinball", "biosFiles":  [ { "md5": "65a8ebf870420316a939ac44fd4c731d", "file": "bios/wsh57/scripten.exe"  } ] },
@@ -269,7 +292,7 @@ systems = {
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
 
     # ---------- Zelda Classic ---------- #
-    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.data"  },
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
                                                   { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
     "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM"  },
@@ -407,6 +430,22 @@ systems = {
                                                 { "md5": "1d250b0242e447e9106e8bfd1f27ea84", "zippedFile": "wedfs144.rom", "file": "bios/bbc_acorn8271.zip"},
                                                 { "md5": "", "file": "bios/saa5050.zip"  },
                                                 { "md5": "8b3c10a2317808ed94d6c6073b5b3327", "zippedFile": "saa5050", "file": "bios/saa5050.zip"},
+                                                { "md5": "", "file": "bios/bbc_tube_80186.zip"  },
+                                                { "md5": "33d097349f12526584fcac21eccf3012", "zippedFile": "m512_hi_ic32.rom", "file": "bios/bbc_tube_80186.zip"},
+                                                { "md5": "e6e84221c29b5d31d07055039583c8e7", "zippedFile": "m512_lo_ic31.rom", "file": "bios/bbc_tube_80186.zip"},
+                                                { "md5": "", "file": "bios/bbcm.zip"  },
+                                                { "md5": "b159012f9f301bab33316fd3bf55db79", "zippedFile": "mos320.cmos", "file": "bios/bbcm.zip"},
+                                                { "md5": "fed079c5e2c595b354529a8ea703b5fb", "zippedFile": "mos320.ic24", "file": "bios/bbcm.zip"},
+                                                { "md5": "ca0527f13f83bc95ef4b6833ee440afa", "zippedFile": "mos329.ic24", "file": "bios/bbcm.zip"},
+                                                { "md5": "ee9fc46252b7d7fe341b9c7f92575099", "zippedFile": "mos350.cmos", "file": "bios/bbcm.zip"},
+                                                { "md5": "3f3dd4614db30f6e383794731272076a", "zippedFile": "mos350.ic24", "file": "bios/bbcm.zip"},
+                                                { "md5": "", "file": "bios/bbcmc.zip"  },
+                                                { "md5": "55586a88477505d8fd28edfae646e2e3", "zippedFile": "mos500.ic49", "file": "bios/bbcmc.zip"},
+                                                { "md5": "956bf71da840943050836ade2474ef7b", "zippedFile": "mos510.ic49", "file": "bios/bbcmc.zip"},
+                                                { "md5": "", "file": "bios/bbc_bitstik1.zip"  },
+                                                { "md5": "baf5cb5564ff6e6b4400243e7612f323", "zippedFile": "bitstik1.rom", "file": "bios/bbc_bitstik1.zip"},
+                                                { "md5": "", "file": "bios/bbc_bitstik2.zip"  },
+                                                { "md5": "c196c145b3de630f85f625ca762e5504", "zippedFile": "bitstik2.rom", "file": "bios/bbc_bitstik2.zip"},
                                                 { "md5": "", "file": "bios/mame/samples/bbc.zip"  },
                                                 { "md5": "", "zippedFile": "motoroff.wav", "file": "bios/mame/samples/bbc.zip"},
                                                 { "md5": "", "zippedFile": "motoron.wav", "file": "bios/mame/samples/bbc.zip"} ] },
@@ -496,6 +535,21 @@ systems = {
                                                 { "md5": "62f5e1d3dae3a68d8fe4406a6f603dc3", "zippedFile": "pres_adfs_113.rom", "file": "bios/electron_plus3.zip"},
                                                 { "md5": "5c39baa89fe8a40a5167a53cc5ae7791", "zippedFile": "pres_adfs_115.rom", "file": "bios/electron_plus3.zip"} ] },
 
+    # ---------- Apple ][ ---------- #
+    "apple2":   { "name": "Apple II", "biosFiles":  [ { "md5": "", "file": "bios/apple2e.zip"  },
+                                                { "md5": "4431aea380185e3f509285540d7cb418", "zippedFile": "342-0132-c.e12", "file": "bios/apple2e.zip"},
+                                                { "md5": "e6d453d8738e6df4f73df8c8051df3e8", "zippedFile": "342-0133-a.chr", "file": "bios/apple2e.zip"},
+                                                { "md5": "72924019cf1719765e4fde35e59c1c7d", "zippedFile": "342-0134-a.64", "file": "bios/apple2e.zip"},
+                                                { "md5": "0b150f4bfa090770a866cc5d214703f4", "zippedFile": "342-0135-b.64", "file": "bios/apple2e.zip"} ] },
+
+    # ---------- Apple IIgs ---------- #
+    "apple2gs":   { "name": "Apple IIgs", "biosFiles":  [ { "md5": "", "file": "bios/apple2gs.zip"  },
+                                                { "md5": "b956c537e7b6b85ffa5c3493b1490d8a", "zippedFile": "341-0132-d.e12", "file": "bios/apple2gs.zip"},
+                                                { "md5": "b9f94f5d1be27dafcb8fe619ca3f4d15", "zippedFile": "341-0728", "file": "bios/apple2gs.zip"},
+                                                { "md5": "e8e632aa592a61ef373b38af10ed54e1", "zippedFile": "341-0748", "file": "bios/apple2gs.zip"},
+                                                { "md5": "c9e0e059faec0393fc429131a3af4ee9", "zippedFile": "341s0632-2.bin", "file": "bios/apple2gs.zip"},
+                                                { "md5": "68ff96a624237d233e8d4c701f660dd1", "zippedFile": "apple2gs.chr", "file": "bios/apple2gs.zip"} ] },
+
     # ---------- Camputers Lynx ---------- #
     "camplynx":   { "name": "Camputers Lynx", "biosFiles":  [ { "md5": "", "file": "bios/lynx48k.zip"  },
                                                 { "md5": "b0ad5bf3070aea27b637e1998c81fa8c", "zippedFile": "lynx48-1.ic46", "file": "bios/lynx48k.zip"},
@@ -573,16 +627,38 @@ systems = {
                                                 { "md5": "3d20cf7550f1b723158b42a1fd5bac62", "zippedFile": "zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206", "file": "bios/cdimono1.zip"} ] },
     
     # ---------- Naomi 2 ---------- #
-    "naomi2":   { "name": "Naomi 2", "biosFiles":  [ { "md5": "fc7c2b9363a1e21b9ad42003e165598c", "file": "bios/naomi2.zip"  } ] },
+    "naomi2":   { "name": "Naomi 2", "biosFiles":  [ { "md5": "", "file": "bios/dc/naomi2.zip"  },
+                                                { "md5": "728bfe038ce280872057e365ebfc0fee", "zippedFile": "315-6146.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "baf83367044924067e09856ba164aa6f", "zippedFile": "315-6215.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "6f8ad6e3ab04c8ae1cbcaa652b91cf4e", "zippedFile": "epr-23605.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "f3f39513484df216d9979f6ae7577942", "zippedFile": "epr-23605a.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "ab046e62c51d67fb89eade2b8d5f6a8d", "zippedFile": "epr-23605b.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "096a5217ff6e6c6cafe65a03336760ab", "zippedFile": "epr-23605c.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "659d579ba9aef5b025d87323044e83f4", "zippedFile": "epr-23605c_multi.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "cbe0984d03d73869c23da5a3dd2ce207", "zippedFile": "epr-23607.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "b624ec7b3b90fdf3be103cdfb1679d1d", "zippedFile": "epr-23607b.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "a9d82db14b823a5a57885bea1a998eb7", "zippedFile": "epr-23607c.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "3b1315be24dc8d17f4fa18f3bfc5fe5c", "zippedFile": "epr-23608.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "0143cf852cb2a8a41f217bc688f62105", "zippedFile": "epr-23608a.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "8b88c1f5a06e9b560e887c3b9f879237", "zippedFile": "epr-23608b.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "b49702e4fadb3b5f9143a3d20afd04b5", "zippedFile": "epr-23608c.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "ecadb008179ca1e6f4fe3fa091ab5df2", "zippedFile": "epr-23609b.ic27", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "edeed38a9795e062a9af28c3eba22040", "zippedFile": "main_eeprom.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "14e6bffff0d4dff6a5a547e7c43680ff", "zippedFile": "sp5001.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "689d2228b00fb59781f82af6e8ecdb78", "zippedFile": "sp5001-a.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "8373a11106c1c2fc21ac839f75ea488f", "zippedFile": "sp5001-b.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "7eecfb8e8f82b47ffab92a0c5528100e", "zippedFile": "sp5002-a.bin", "file": "bios/dc/naomi2.zip"},
+                                                { "md5": "960ece0dc22a7c5ff81c812a2993e7cc", "zippedFile": "x76f100_eeprom.bin", "file": "bios/dc/naomi2.zip"} ] },
 
     # ---------- Hikaru ---------- #
     "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip" },
                                                 { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
 
     # ---------- GCE Vectrex ---------- #
-    "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
-                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
-                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    # Not required for libretro-vecx, the default emulator
+    # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+    #                                            { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+    #                                            { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
 }
 
 class BiosStatus:

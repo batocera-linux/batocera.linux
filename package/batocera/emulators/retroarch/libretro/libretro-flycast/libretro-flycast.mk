@@ -3,8 +3,8 @@
 # libretro-flycast
 #
 ################################################################################
-# Version: Commits on Mar 24, 2022
-LIBRETRO_FLYCAST_VERSION = 03f9955f8bf966aec25136f328ebf7b5ce0b537d
+# Version: Commits on May 16, 2022
+LIBRETRO_FLYCAST_VERSION = 221060cc707c66326efca7df9af229f6ac24d1ea
 LIBRETRO_FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 LIBRETRO_FLYCAST_SITE_METHOD=git
 LIBRETRO_FLYCAST_GIT_SUBMODULES=YES
@@ -17,9 +17,11 @@ LIBRETRO_FLYCAST_CONF_OPTS = -DUSE_OPENMP=ON -DLIBRETRO=ON \
     -DBUILD_SHARED_LIBS=OFF -DBUILD_EXTERNAL=OFF
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-# Batocera - RPi4 prefer GLES
+  # Batocera - RPi4 prefer GLES
   ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
     LIBRETRO_FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON
+  else
+    LIBRETRO_FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF
   endif
 else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
     LIBRETRO_FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF

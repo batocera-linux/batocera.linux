@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-# Version: Release on Mar 5, 2022
-RETROARCH_VERSION = v1.10.2
+# Version: Release on Apr 15, 2022
+RETROARCH_VERSION = v1.10.3
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -75,10 +75,11 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
-    RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles --enable-opengles3_1 --enable-opengles3_2
-    RETROARCH_DEPENDENCIES += libgles
+    RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles --enable-opengles3_1
+	RETROARCH_DEPENDENCIES += libgles
 endif 
-
+# don't enable --enable-opengles3_2, breaks lr-swanstation
+    
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
     RETROARCH_CONF_OPTS += --enable-opengles
     RETROARCH_DEPENDENCIES += libgles

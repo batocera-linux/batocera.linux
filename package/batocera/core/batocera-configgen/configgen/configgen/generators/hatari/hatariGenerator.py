@@ -12,7 +12,7 @@ eslog = get_logger(__name__)
 
 class HatariGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         model_mapping = {
             "520st_auto":   { "machine": "st",      "tos": "auto" },

@@ -197,6 +197,8 @@ mountDevicesOrNetwork() {
                         ;;
                     esac
 
+                    mkdir -p "${CMD_TDIR}" || return 1
+
                     case "${CTYPE}" in
                         "nfs")
                             CMD_ADDOPT=
@@ -219,7 +221,6 @@ mountDevicesOrNetwork() {
                     esac
                 fi
 
-		mkdir -p "${CMD_TDIR}" || return 1
                 echo "${CMD_EXEC}"
                 if ${CMD_EXEC}
                 then

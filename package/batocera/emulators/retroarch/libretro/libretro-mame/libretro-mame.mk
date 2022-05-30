@@ -3,8 +3,8 @@
 # libretro-mame
 #
 ################################################################################
-# Version: Commits on Mar 18, 2022 (v0.241)
-LIBRETRO_MAME_VERSION = 012bb32965339b7ad7c0328a5fb6b35806d39fb2
+# Version: Commits on Apr 11, 2022 (v0.242)
+LIBRETRO_MAME_VERSION = b7dd999590717638ceade2e24d16d63147aa12ad
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 LIBRETRO_MAME_DEPENDENCIES = retroarch
@@ -65,6 +65,14 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mamevirtual_libretro.so
 	mkdir -p $(TARGET_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
+
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
+	
+	# Copy coin drop plugin
+	mkdir -p $(TARGET_DIR)/usr/bin/mame/
+  cp -R -u $(@D)/plugins $(TARGET_DIR)/usr/bin/mame/
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins  
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
@@ -76,6 +84,8 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 		$(STAGING_DIR)/usr/lib/libretro/mamevirtual_libretro.so
 	mkdir -p $(STAGING_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(STAGING_DIR)/usr/share/lr-mame
+	mkdir -p $(TARGET_DIR)/usr/share/mame
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 endef
 
 $(eval $(generic-package))

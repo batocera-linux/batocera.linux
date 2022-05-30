@@ -284,6 +284,21 @@ msgctxt "game_options"
 msgid "THREADED VIDEO"
 msgstr "МНОГОПОТОЧНОЕ ВИДЕО"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use guns instead of pads if guns are detected on the system"
+msgstr ""
+
+#. TRANSLATION: shared, libretro/fbneo, libretro/fceumm, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "LIGHTGUN"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use guns"
+msgstr ""
+
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
@@ -436,7 +451,7 @@ msgctxt "game_options"
 msgid "BLARGG NTSC FILTER"
 msgstr "BLARGG NTSC ФИЛЬТР"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/mame, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Отключено"
@@ -613,7 +628,7 @@ msgctxt "game_options"
 msgid "DISPLAY ROTATION"
 msgstr "ПОВОРОТ ЭКРАНА"
 
-#. TRANSLATION: libretro/mesen, melonds
+#. TRANSLATION: libretro/mesen, daphne, melonds
 msgctxt "game_options"
 msgid "90 degrees"
 msgstr "90 градусов"
@@ -623,7 +638,7 @@ msgctxt "game_options"
 msgid "180 degrees"
 msgstr "180 градусов"
 
-#. TRANSLATION: libretro/mesen, melonds
+#. TRANSLATION: libretro/mesen, daphne, melonds
 msgctxt "game_options"
 msgid "270 degrees"
 msgstr "270 градусов"
@@ -1631,7 +1646,7 @@ msgid "Lightgun device must be selected on at least one port."
 msgstr ""
 "Устройство Lightgun должно быть выбрано по крайней мере на одном порту."
 
-#. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, supermodel
+#. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
 msgid "SHOW LIGHTGUN CROSSHAIRS"
 msgstr "ПОКАЗАТЬ ПЕРЕКРЕСТИЕ ДЛЯ LIGHTGUN"
@@ -1676,7 +1691,7 @@ msgctxt "game_options"
 msgid "MEMORY CARD MODE"
 msgstr "РЕЖИМ КАРТЫ ПАМЯТИ"
 
-#. TRANSLATION: libretro/fbneo
+#. TRANSLATION: libretro/fbneo, libretro/opera
 msgctxt "game_options"
 msgid "Shared"
 msgstr "Общий"
@@ -1785,6 +1800,31 @@ msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "СИНХРОННЫЙ РЕНДЕРИНГ"
 
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 1"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Red"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Blue"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Green"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "White"
+msgstr ""
+
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
 msgid "Smooth textures on distant 3D objects based on angle."
@@ -1800,7 +1840,7 @@ msgctxt "game_options"
 msgid "Improves clarity of distant textures when mip-mapping is enabled."
 msgstr "Улучшает чёткость удаленных текстур при включенном mip-mapping."
 
-#. TRANSLATION: libretro/flycast, dolphin, dolphin_triforce, mupen64plus, pcsx2, ...
+#. TRANSLATION: libretro/flycast, dolphin, dolphin_triforce, flycast, mupen64plus, ...
 msgctxt "game_options"
 msgid "ANISOTROPIC FILTERING"
 msgstr "АНИЗОТРОПНАЯ ФИЛЬТРАЦИЯ"
@@ -2259,7 +2299,7 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Rotated 4-Way Stick (Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Emable or disable high score saving"
 msgstr "Включить или отключить сохранение рекордов"
@@ -2269,10 +2309,30 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "ПЛАГИН РЕКОРДОВ"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, mame/uzem, mame/uzem, ...
+#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, duckstation, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Включено (по умолчанию)"
+
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Play a coin drop sound effect when an insert coin button is pressed"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "COIN SOUND PLUGIN"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, duckstation, flycast/uzem, mame/uzem, mame/uzem, ...
+msgctxt "game_options"
+msgid "Enabled"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, duckstation, mame/uzem, mame/uzem, mame
+msgctxt "game_options"
+msgid "Disabled (Default)"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
 msgctxt "game_options"
@@ -2326,7 +2386,7 @@ msgctxt "game_options"
 msgid "ALT DPAD MODE"
 msgstr "АЛЬТЕРНАТИВНЫЙ РЕЖИМ КРЕСТОВИНЫ"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Выкл (по умолчанию)"
@@ -2468,6 +2528,61 @@ msgctxt "game_options"
 msgid "APF M-1000 cartridges"
 msgstr "APF M-1000 cartridges"
 
+#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Apple II cleanly cracked disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Apple II miscellaneous disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Apple II original disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+msgctxt "game_options"
+msgid "Cassette"
+msgstr "Кассета"
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Apple IIgs cleanly cracked disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Apple IIgs miscellaneous disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Apple IIgs original disks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "5 1/4 Disk (Drive 1)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "5 1/4 Disk (Drive 2)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "3 1/2 Disk (Drive 3)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "3 1/2 Disk (Drive 4)"
+msgstr ""
+
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
 msgid "Emerson Arcadia 2001 cartridges"
@@ -2488,7 +2603,7 @@ msgctxt "game_options"
 msgid "Acorn Archimedes ROM images"
 msgstr "Acorn Archimedes ROM images"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, mame/uzem, ...
 msgctxt "game_options"
 msgid "Select model to emulate"
 msgstr "Выберите модель для эмуляции"
@@ -2540,18 +2655,73 @@ msgstr "Acorn Atom Utility ROMs"
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
-msgid "Cassette"
-msgstr "Кассета"
-
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
-msgctxt "game_options"
 msgid "Cartridge"
 msgstr "Картридж"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Quickload"
 msgstr "Быстрая загрузка"
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Select which joystick to emulate."
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "JOYSTICK TYPE"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "None (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Acorn Analogue Joysticks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Acorn Bitstik"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Robo Bitstik 2"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Voltmace Delta 3b Twin Joysticks"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC MODEL"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro Model B (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Master 128"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Master 512"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Master Compact"
+msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -2578,27 +2748,72 @@ msgctxt "game_options"
 msgid "Acorn BBC Micro Model B Original disks"
 msgstr "Acorn BBC Micro Model B Original disks"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
 msgctxt "game_options"
-msgid "ROM (Slot 1)"
-msgstr "ROM (Слот 1)"
+msgid "Acorn BBC Master cartridges"
+msgstr ""
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
 msgctxt "game_options"
-msgid "ROM (Slot 2)"
-msgstr "ROM (Слот 2)"
+msgid "Acorn BBC Master disks"
+msgstr ""
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
 msgctxt "game_options"
-msgid "ROM (Slot 3)"
-msgstr "ROM (Слот 3)"
+msgid "Acorn BBC Master Compact disks"
+msgstr ""
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
 msgctxt "game_options"
-msgid "ROM (Slot 4)"
-msgstr "ROM (Слот 4)"
+msgid "Olivetti Prodest PC 128S disks (BBC Master Compact)"
+msgstr ""
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro/Master Cassette"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro/Master ROM (Slot 1)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro ROM (Slot 2)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro ROM (Slot 3)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro ROM (Slot 4)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro/Master Disk (Drive 1)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Micro/Master Disk (Drive 2)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Master Cartridge (Slot 1)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess
+msgctxt "game_options"
+msgid "BBC Master Cartridge (Slot 2)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "CUSTOM CONFIG"
 msgstr "ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ"
@@ -2737,6 +2952,78 @@ msgstr "Fujitsu FM-7 disk images"
 msgctxt "game_options"
 msgid "FM-7 MODEL"
 msgstr "МОДЕЛЬ FM-7"
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "FM TOWNS MODEL"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "FM Towns Marty (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "FM Towns (Model 1/2)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "FM Towns II UX"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid ""
+"Insert a disk into the floppy drive, a blank will be used if one doesn't "
+"exist"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "ADD USER DISK"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Fujitsu FM Towns CD-ROMs"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Fujitsu FM Towns cracked floppy disk images"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Fujitsu FM Towns miscellaneous floppy disk images"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Fujitsu FM Towns original floppy disk images"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Floppy Disk (Drive 1)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Floppy Disk (Drive 2 - Model 1/2 & II UX)"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "CD-ROM"
+msgstr ""
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "Hard Drive (II UX)"
+msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -3369,6 +3656,66 @@ msgctxt "game_options"
 msgid "X2"
 msgstr "X2"
 
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RDP PLUGIN"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "GLideN64 (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl-RDP"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Angrylion (Most Compatible)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RSP PLUGIN"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "HLE (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl (Best LLE)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CXD4 (LLE Fallback)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CPU CORE"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Dynarec (Fastest)"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Cached Interpreter"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Pure Interpreter (Most Accurate)"
+msgstr ""
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
@@ -3441,8 +3788,13 @@ msgstr "CDZ"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
-msgid "CDZ (MAME)"
-msgstr "CDZ (MAME)"
+msgid "CDZ MAME"
+msgstr ""
+
+#. TRANSLATION: libretro/neocd
+msgctxt "game_options"
+msgid "CDZ Universe 3.3"
+msgstr ""
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -3780,7 +4132,22 @@ msgctxt "game_options"
 msgid "Microcosm"
 msgstr "Microcosm"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp
+#. TRANSLATION: libretro/opera
+msgctxt "game_options"
+msgid "Enable shared saves for multi-disc games"
+msgstr ""
+
+#. TRANSLATION: libretro/opera
+msgctxt "game_options"
+msgid "NVRAM STORAGE"
+msgstr ""
+
+#. TRANSLATION: libretro/opera
+msgctxt "game_options"
+msgid "Per Game"
+msgstr ""
+
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Автоматический"
@@ -5460,7 +5827,7 @@ msgctxt "game_options"
 msgid "DOUBLE"
 msgstr "ДВОЙНОЙ"
 
-#. TRANSLATION: amiberry
+#. TRANSLATION: amiberry, daphne
 msgctxt "game_options"
 msgid "SCANLINES"
 msgstr "СКАНЛАЙНЫ"
@@ -5655,6 +6022,16 @@ msgstr "РЕЖИМ NEW 3DS"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
+msgid "Choose your graphics rendering"
+msgstr "Выберите графический рендеринг"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "GRAPHICS BACKEND"
+msgstr "ГРАФИЧЕСКИЙ БЭКЭНД"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
 msgid "Not all games support Stretch, depending on the video files."
 msgstr "Не все игры поддерживают Растягивание, зависит от видеофайлов."
 
@@ -5668,15 +6045,25 @@ msgctxt "game_options"
 msgid "Stretch"
 msgstr "Растянуть"
 
-#. TRANSLATION: daphne
+#. TRANSLATION: daphne, dolphin, dolphin_triforce
 msgctxt "game_options"
-msgid "Choose your graphics rendering"
-msgstr "Выберите графический рендеринг"
+msgid "Force 4:3"
+msgstr "Принудительно 4:3"
+
+#. TRANSLATION: daphne, melonds
+msgctxt "game_options"
+msgid "Rotate the screen with the emulator."
+msgstr "Поворот экрана с помощью эмулятора."
+
+#. TRANSLATION: daphne, melonds
+msgctxt "game_options"
+msgid "SCREEN ROTATION"
+msgstr "ПОВОРОТ ЭКРАНА"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "GRAPHICS BACKEND"
-msgstr "ГРАФИЧЕСКИЙ БЭКЭНД"
+msgid "0 degrees"
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5687,6 +6074,12 @@ msgstr "Гладкие пиксели."
 msgctxt "game_options"
 msgid "BILINEAR FILTERING"
 msgstr "БИЛИНЕАРНАЯ ФИЛЬТРАЦИЯ"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid ""
+"Use with Stretch aspect ratio and adjust joystick sensitivity as required."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5717,6 +6110,39 @@ msgstr "Инвертирует джойстик в играх с полетам�
 msgctxt "game_options"
 msgid "INVERT AXIS"
 msgstr "ИНВЕРТИРОВАТЬ ОСЬ"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid ""
+"Singe automatically interprets joystick axis change as mouse movement, "
+"useful for lightgun games."
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "JOYSTICK TO CURSOR SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "Hide crosshairs in supported games e.g. ActionMax."
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "HIDE LIGHTGUN CROSSHAIRS"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid ""
+"Can improve video performance. Do not use with ActionMax games or scanlines."
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "SDL TEXTUREACCESS STREAMING"
+msgstr ""
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -5802,11 +6228,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Force 16:9"
 msgstr "Принудительно 16:9"
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "Force 4:3"
-msgstr "Принудительно 4:3"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -6077,6 +6498,16 @@ msgstr "За 1s, всего 120s (1320MB|240MB)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
+msgid "Choose whether to show on the display, configuration messages."
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "SHOW OSD MESSAGES"
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
 msgid "Interpreter is the most accurate, but is the slowest."
 msgstr "Интерпретатор является самым точным, но самым медленным."
 
@@ -6231,6 +6662,16 @@ msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (вибрация)"
 
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygongs & warping textures."
+msgstr ""
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr ""
+
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "Choose the emulator language."
@@ -6310,6 +6751,56 @@ msgstr "Принудительно включает режим Dreamcast Windows
 msgctxt "game_options"
 msgid "FORCE WINDOWS CE"
 msgstr "ПРИНУДИТЕЛЬНЫЙ WINDOWS CE"
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "Choose second feature pack for the controller."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 1 FEATURE PACK"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "2nd VMU (Default)"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "Purupuru (Rumble)"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 2 FEATURE PACK"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 3 FEATURE PACK"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 4 FEATURE PACK"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Enable the Dreamcast DSP. Only recommended for fast systems."
+msgstr ""
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "DIGITAL SOUND PROCESSOR"
+msgstr ""
+
+#. TRANSLATION: flycast/uzem, flycast
+msgctxt "game_options"
+msgid "Disbaled (Default)"
+msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -6401,6 +6892,11 @@ msgstr "ПОВЕРНУТЬ ЭКРАН НА 90 ГРАДУСОВ"
 msgctxt "game_options"
 msgid "Rotate"
 msgstr "Повернуть"
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
+msgid "Higher values make textures viewed at oblique angles look sharper."
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -6586,16 +7082,6 @@ msgstr "Включает улучшенное разделение полиго�
 msgctxt "game_options"
 msgid "ENABLE POLYGON SPLITTING"
 msgstr "ВКЛЮЧИТЬ РАЗДЕЛЕНИЕ ПОЛИГОНОВ"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Rotate the screen with the emulator."
-msgstr "Поворот экрана с помощью эмулятора."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "SCREEN ROTATION"
-msgstr "ПОВОРОТ ЭКРАНА"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6870,6 +7356,18 @@ msgstr "ПРОПУСК КАДРОВ (ТОЛЬКО GL64MK2)"
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
+"Enable second audio limiter. Improves audio quality at the cost of "
+"performance."
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "AUDIO SYNC"
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid ""
 "Lower values reduce audio latency and improve performance, but can cause "
 "audio issues."
 msgstr ""
@@ -6941,6 +7439,33 @@ msgstr "Зеркальный"
 msgctxt "game_options"
 msgid "DISABLE 4MB EXPANSION RAM PACK"
 msgstr "ОТКЛЮЧИТЬ 4MB EXPANSION RAM PACK"
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid ""
+"Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
+"cause slowdown."
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "READ FRAMEBUFFER EVERY FRAME (GLIDE64MK2)"
+msgstr ""
+
+#. TRANSLATION: mupen64plus
+msgctxt "game_options"
+msgid "Game default"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, ppsspp
+msgctxt "game_options"
+msgid "Disable"
+msgstr "Отключить"
+
+#. TRANSLATION: mupen64plus, ppsspp
+msgctxt "game_options"
+msgid "Enable"
+msgstr "Включить"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -7252,16 +7777,6 @@ msgstr "VSYNC ИНТЕРВАЛ"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Enable"
-msgstr "Включить"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Disable"
-msgstr "Отключить"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
 msgid "Enhancement. Enables texture upscaling textures and their size."
 msgstr "Улучшение. Включает апскейлинг текстур и их размера."
 
@@ -7323,6 +7838,22 @@ msgstr "ГРАФИЧЕСКИЙ ИНТЕРФЕЙС"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "Distorts the output to fill the display fully."
+msgstr "Искажает вывод для полного заполнения экрана."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRETCH TO DISPLAY AREA"
+msgstr "РАСТЯНУТЬ ПО ЭКРАНУ"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3's internal ratio setting. Some games only support 16/9."
+msgstr ""
+"PS3 настройка соотношения сторон. Некоторые игры поддерживают только 16/9."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
 "Если игра вылетает, попробуйте ASMJIT. Если сбой всё ещё происходит, "
@@ -7352,12 +7883,6 @@ msgstr "Интерпретатор (быстро)"
 msgctxt "game_options"
 msgid "Precise Interpreter"
 msgstr "Интерпретатор (точно)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "PS3's internal ratio setting. Some games only support 16/9."
-msgstr ""
-"PS3 настройка соотношения сторон. Некоторые игры поддерживают только 16/9."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7423,28 +7948,21 @@ msgstr "Вкл. (медленнее)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Distorts the output to fill the display fully."
-msgstr "Искажает вывод для полного заполнения экрана."
+msgid ""
+"May fix missing graphics and broken lighting at the cost of performance."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "STRETCH TO DISPLAY AREA"
-msgstr "РАСТЯНУТЬ ПО ЭКРАНУ"
+msgid "WRITE COLOR BUFFERS"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Can Fix broken graphics in some games."
-msgstr "Может исправить сломанную графику в некоторых играх."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "WRITE DEPTH BUFFER"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May help to fix choppy audio on weaker CPUs."
-msgstr "Может помочь исправить прерывистый звук на более слабых CPU."
+msgid ""
+"Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
+"Leave on automatic if slowdown occurs."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7453,21 +7971,43 @@ msgstr "PREFERRED SPU THREADS"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "0 (Default)"
-msgstr "0 (по умолчанию)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Enable this option if you get missing graphics or broken lighting ingame."
+msgid "1 thread"
 msgstr ""
-"Включите эту опцию, если у вас отсутствует графика или не работает освещение "
-"в игре."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "WRITE COLOUR BUFFERS"
-msgstr "WRITE COLOUR BUFFERS"
+msgid "2 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "3 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "4 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "5 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "6 threads"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "May fix broken graphics in some games."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE DEPTH BUFFER"
+msgstr "WRITE DEPTH BUFFER"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -7810,6 +8350,36 @@ msgstr "ПРИНУДИТЕЛЬНО 386DX CPU"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
+msgid "ROM (Slot 1)"
+msgstr "ROM (Слот 1)"
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "ROM (Slot 2)"
+msgstr "ROM (Слот 2)"
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "ROM (Slot 3)"
+msgstr "ROM (Слот 3)"
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "ROM (Slot 4)"
+msgstr "ROM (Слот 4)"
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Mount a floppy for user data, creates if needed"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "USER DISK"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)"
 msgstr "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader)"
 
@@ -7824,6 +8394,16 @@ msgstr ""
 msgctxt "game_options"
 msgid "Disk Image"
 msgstr "Образа диска"
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Interton VC 4000 cartridges"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid "Enable or disable high score saving"
+msgstr ""
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -7910,6 +8490,17 @@ msgstr ""
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "ОБРЕЗАТЬ АРТ"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid ""
+"Make game history, setup instructions, and special moves viewable in the menu"
+msgstr ""
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "DATA PLUGIN"
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -8373,6 +8964,33 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "ВКЛЮЧИТЬ RAW-ВВОД"
+
+#~ msgctxt "game_options"
+#~ msgid "CDZ (MAME)"
+#~ msgstr "CDZ (MAME)"
+
+#~ msgctxt "game_options"
+#~ msgid "Can Fix broken graphics in some games."
+#~ msgstr "Может исправить сломанную графику в некоторых играх."
+
+#~ msgctxt "game_options"
+#~ msgid "May help to fix choppy audio on weaker CPUs."
+#~ msgstr "Может помочь исправить прерывистый звук на более слабых CPU."
+
+#~ msgctxt "game_options"
+#~ msgid "0 (Default)"
+#~ msgstr "0 (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable this option if you get missing graphics or broken lighting ingame."
+#~ msgstr ""
+#~ "Включите эту опцию, если у вас отсутствует графика или не работает "
+#~ "освещение в игре."
+
+#~ msgctxt "game_options"
+#~ msgid "WRITE COLOUR BUFFERS"
+#~ msgstr "WRITE COLOUR BUFFERS"
 
 #~ msgctxt "game_options"
 #~ msgid ""

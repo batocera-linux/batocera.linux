@@ -1,13 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 123a3082ae..da2321ac76 100644
+index caeb2ab8ef..8240544db6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -201,7 +201,7 @@ macro(yuzu_find_packages)
+@@ -206,7 +206,7 @@ macro(yuzu_find_packages)
+     unset(FN_FORCE_REQUIRED)
  endmacro()
  
- if (NOT YUZU_USE_BUNDLED_BOOST)
--    find_package(Boost 1.73.0 CONFIG COMPONENTS context headers QUIET)
-+    find_package(Boost 1.75.0 COMPONENTS context REQUIRED)
- endif()
+-find_package(Boost 1.73.0 COMPONENTS context headers)
++find_package(Boost 1.75.0 COMPONENTS context REQUIRED)
  if (Boost_FOUND)
      set(Boost_LIBRARIES Boost::boost)
+     # Conditionally add Boost::context only if the active version of the Conan or system Boost package provides it

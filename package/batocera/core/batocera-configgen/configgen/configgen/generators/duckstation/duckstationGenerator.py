@@ -13,7 +13,7 @@ from os import environ
 eslog = get_logger(__name__)
 
 class DuckstationGenerator(Generator):
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)
@@ -69,8 +69,6 @@ class DuckstationGenerator(Generator):
         ## [UI]
         if not settings.has_section("UI"):
             settings.add_section("UI")
-        # Show Messages
-        settings.set("UI", "ShowOSDMessages", "true")
 
         ## [CONSOLE]
         if not settings.has_section("Console"):
@@ -147,6 +145,17 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
+        # PGXP - enabled by default
+        if system.isOptSet("duckstation_pgxp"):
+           settings.set("GPU", "PGXPEnable", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPCulling", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPTextureCorrection", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPPreserveProjFP", system.config["duckstation_pgxp"])
+        else:
+           settings.set("GPU", "PGXPEnable", "true")
+           settings.set("GPU", "PGXPCulling", "true")
+           settings.set("GPU", "PGXPTextureCorrection", "true")
+           settings.set("GPU", "PGXPPreserveProjFP", "true")
 
         ## [DISPLAY]
         if not settings.has_section("Display"):
@@ -168,6 +177,11 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "DisplayAllFrames", "true")
         else:
             settings.set("Display", "DisplayAllFrames", "false")
+        # OSD Messages
+        if system.isOptSet("duckstation_osd"):
+            settings.set("Display", "ShowOSDMessages", system.config["duckstation_osd"])
+        else:
+            settings.set("Display", "ShowOSDMessages", "false")
 
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):

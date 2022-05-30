@@ -11,3 +11,9 @@ wii:
   core:     dolphin
   options:
     platform: drm
+fmtowns:
+  emulator: libretro
+  core:     mess
+psx:
+  options:
+    hud_support: false # duckstation doesn't like it on n2+

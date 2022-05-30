@@ -3,8 +3,8 @@
 # libretro-cap32
 #
 ################################################################################
-# Version: Commits on Mar 17, 2022
-LIBRETRO_CAP32_VERSION = ef0ee894ea77b6d82b61201b69f40a717afc08a9
+# Version: Commits on Apr 16, 2022
+LIBRETRO_CAP32_VERSION = 4450f5aa3c6bae613bbaf0d74ae09df85941c041
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
 LIBRETRO_CAP32_LICENSE = GPLv2
 
@@ -38,6 +38,7 @@ endef
 define LIBRETRO_CAP32_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/cap32_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/cap32_libretro.so
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-cap32/amstradcpc.keys $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(generic-package))

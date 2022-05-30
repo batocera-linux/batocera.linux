@@ -1,13 +1,14 @@
 ################################################################################
 #
-# model 2 emulator
+# model2emu
 #
 ################################################################################
 
 # version 1.1a - closed source
 # not developed since 2014
 MODEL2EMU_SOURCE = m2emulator.zip
-MODEL2EMU_SITE = http://nebula.emulatronia.com/files
+# source location updated since previous website is now unavailable
+MODEL2EMU_SITE = https://github.com/batocera-linux/model2emu/raw/main
 
 define MODEL2EMU_EXTRACT_CMDS
 	mkdir -p $(@D) && cd $(@D) && unzip -x $(DL_DIR)/$(MODEL2EMU_DL_SUBDIR)/$(MODEL2EMU_SOURCE)

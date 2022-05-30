@@ -164,9 +164,15 @@ fds:
 flash:
   emulator: ruffle
   core:     ruffle
+  options:
+    forceNoBezel: true
+    hud_support: false
 flatpak:
   emulator: flatpak
   core:     flatpak
+  options:
+    forceNoBezel: true
+    hud_support: false
 fm7:
   emulator: libretro
   core:     mess
@@ -265,6 +271,9 @@ megaduck:
 model2:
   emulator: model2emu
   core:     model2emu
+  options:
+    forceNoBezel: true
+    hud_support: false
 model3:
   emulator: supermodel
   core:     supermodel
@@ -302,8 +311,8 @@ naomi:
   emulator: libretro
   core:     flycast
 naomi2:
-  emulator: demul
-  core:     demul
+  emulator: libretro
+  core:     flycast
 nds:
   emulator: libretro
   core:     desmume
@@ -401,9 +410,6 @@ reminiscence:
 samcoupe:
   emulator: samcoupe
   core:     samcoupe
-sameduck:
-  emulator: libretro
-  core:     sameduck
 satellaview:
   emulator: libretro
   core:     snes9x
@@ -411,7 +417,7 @@ saturn:
   emulator: libretro
   core:     yabasanshiro
 scummvm:
-  emulator: libretro
+  emulator: scummvm
   core:     scummvm
 scv:
   emulator: libretro
@@ -469,6 +475,7 @@ switch:
   core:     yuzu
   options:
     forceNoBezel: true
+    hud_support: false
 
 # T-Z
 
@@ -493,6 +500,9 @@ tyrquake:
 uzebox:
   emulator: libretro
   core:     uzem
+vc4000:
+  emulator: libretro
+  core:     mess
 vectrex:
   emulator: libretro
   core:     vecx
@@ -519,11 +529,13 @@ windows:
   core:     proton
   options:
     forceNoBezel: true
+    hud_support: false
 windows_installers:
   emulator: wine
   core:     proton
   options:
     forceNoBezel: true
+    hud_support: false
 wswan:
   emulator: libretro
   core:     mednafen_wswan
@@ -541,6 +553,7 @@ xash3d_fwgs:
   core:     xash3d_fwgs
   options:
     forceNoBezel: true
+    hud_support: false
 xegs:
   emulator: libretro
   core:     mess
@@ -553,6 +566,9 @@ xbox:
 xbox360:
   emulator: xenia
   core:     xenia
+  options:
+    forceNoBezel: true
+    hud_support: false
 zc210:
   emulator: libretro
   core:     zc210

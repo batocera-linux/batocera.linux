@@ -26,10 +26,15 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     else:
         iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
 
-    # Disable AUDIO_SYNC while it causes issues
+    # Create section for Audio-SDL
     if not iniConfig.has_section("Audio-SDL"):
         iniConfig.add_section("Audio-SDL")
-    iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
+
+    # Default to disable while it causes issues
+    if system.isOptSet("mupen64plus_AudioSync") and system.config["mupen64plus_AudioSync"] == 'True':
+        iniConfig.set("Audio-SDL", "AUDIO_SYNC", "True")
+    else:
+        iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
 
     # Audio buffer settings
     # In the future, add for Audio-OMX too?
@@ -164,6 +169,12 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
             iniConfig.set("Video-Glide64mk2", "maxframeskip", system.config["mupen64plus_frameskip"])
     else:
         iniConfig.set("Video-Glide64mk2", "maxframeskip", "0")
+
+    # Read framebuffer always -> for GLIDE64MK2
+    if system.isOptSet("mupen64plus_fb_read_always") and system.config["mupen64plus_fb_read_always"] != "-1":
+        iniConfig.set("Video-Glide64mk2", "fb_read_always", system.config["mupen64plus_fb_read_always"])
+    else:
+        iniConfig.set("Video-Glide64mk2", "fb_read_always", "-1") # -1 = Game default
 
     # 64DD
     if not iniConfig.has_section("64DD"):

@@ -105,6 +105,12 @@ menu "Controllers"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xone/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xpad-noone/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xow/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/aimtrak-guns/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/dolphinbar-guns/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/sinden-guns/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/gun4ir-guns/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guncon/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/wiimotes-rules/Config.in"
 endmenu
 
 menu "Emulators"
@@ -209,7 +215,6 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-uzem/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-play/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-pcsx2/Config.in"
-      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-duckstation/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-2048/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-chailove/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-craft/Config.in"
@@ -223,6 +228,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-minivmac/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-mesen/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-superbroswar/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-smsplus-gx/Config.in"
      endmenu
   endmenu
 
@@ -384,6 +390,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/btop/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/picade/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/od-commander/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xwiimote/Config.in"
 endmenu
 
 menu "Libraries"

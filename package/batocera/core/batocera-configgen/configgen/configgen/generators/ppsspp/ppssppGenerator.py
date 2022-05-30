@@ -18,7 +18,7 @@ class PPSSPPGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         ppssppConfig.writePPSSPPConfig(system)
         # For each pad detected
         for index in playersControllers :
@@ -42,6 +42,10 @@ class PPSSPPGenerator(Generator):
         # I've played with this option on PC to fix menu size in Hi-Resolution and it not working fine. I'm almost sure this option break the emulator (Darknior)
         if PPSSPPGenerator.isLowResolution(gameResolution):
             commandArray.extend(["--dpi", "0.5"])
+
+        # state_slot option
+        if system.isOptSet('state_filename'):
+            commandArray.extend(["--state", "/userdata/saves/psp/{}".format(system.config['state_filename'])])
 
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]

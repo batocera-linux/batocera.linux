@@ -5,7 +5,7 @@ class Generator(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         pass
 
     def getResolutionMode(self, config):

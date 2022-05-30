@@ -9,7 +9,7 @@ ryujinxHome = batoceraFiles.CONF
 
 class RyujinxGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         #commandArray = ["/usr/ryujinx/Ryujinx", rom ]
         return Command.Command(

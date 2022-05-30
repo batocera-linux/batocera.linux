@@ -37,7 +37,7 @@ c64:
   manufacturer: Commodore
   release: 1982
   hardware: computer
-  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z]
+  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z, nib]
   platform:   c64
   group:      c64
   emulators:
@@ -200,9 +200,9 @@ n64:
   extensions: [z64, n64, v64, zip, 7z]
   emulators:
     mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
-      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64], incompatible_extensions: [zip, 7z] }
+      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2], incompatible_extensions: [zip, 7z] }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE], incompatible_extensions: [zip, 7z] }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
@@ -345,6 +345,7 @@ fds:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 virtualboy:
   name:       Virtual Boy
@@ -485,6 +486,7 @@ mastersystem:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
 
 gamegear:
   name:       Game Gear
@@ -496,6 +498,7 @@ gamegear:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
 
 sg1000:
   name:       SG-1000
@@ -795,7 +798,6 @@ neogeocd:
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
 
 colecovision:
   name:       ColecoVision
@@ -1502,12 +1504,16 @@ apple2:
   manufacturer: Apple
   release: 1977
   hardware: computer
-  extensions: [nib, do, po, dsk]
+  extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
-      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
     linapple:
-      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
 
 saturn:
   name:       Saturn
@@ -1561,9 +1567,12 @@ triforce:
     dolphin_triforce:
       dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
   comment_en: |
-    Triforce is an arcade machine based on the GameCube's hardware. This build only supports booting Mario Kart GP 2.
+    Triforce is an arcade machine based on the GameCube's hardware. This build only supports certain games.
+    Playable - Mario Kart GP 1, Mario Kart GP 2 (after loading save state).
+    Intro - F-Zero AX, Virtua Striker 2002.
+    Nothing - All other Triforce games.
 
-    For the most up-to-date information, visit https://wiki.batocera.org/systems:triforce
+    For the most up-to-date information and questions about manual save state download, visit https://wiki.batocera.org/systems:triforce
 
 wii:
   name:       Wii
@@ -1777,7 +1786,7 @@ pc88:
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [d88, u88, m3u]
+  extensions: [cmt, d88, u88, m3u]
   platform:   pc88
   emulators:
     libretro:
@@ -1799,11 +1808,15 @@ fmtowns:
   manufacturer: Fujitsu
   release: 1987
   hardware: computer
-  extensions: [bin, m3u, cue, d88, d77, xdf, iso]
+  extensions: [bin, m3u, cue, d88, d77, xdf, iso, chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z]
   platform:   fmtowns
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [xdf, m3u] }
     tsugaru:
-      tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU] }
+      tsugaru: { requireAnyOf: [BR2_PACKAGE_TSUGARU], incompatible_extensions: [chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z] }
 
 ports:
   name:       Ports
@@ -2293,10 +2306,14 @@ apple2gs:
   manufacturer: Apple
   release: 1986
   hardware: computer
-  extensions: [2mg, do, nib, po, dsk]
+  extensions: [2mg, do, nib, po, dsk, mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z]
   emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
-      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
 
 uzebox:
   name:       Uzebox
@@ -2349,7 +2366,7 @@ plugnplay:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 megaduck:
-  name:       Mega Duck
+  name:       Mega Duck / Cougar Boy
   manufacturer: Welback Holdings
   release: 1993
   hardware: portable
@@ -2357,8 +2374,11 @@ megaduck:
   emulators:
     libretro:
       mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK], incompatible_extensions: [zip, 7z] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Use unzipped ROMs (BIN format) if using Sameduck.
 
 pv1000:
   name:       PV-1000
@@ -2679,6 +2699,18 @@ coco:
   comment_en: |
           Requires MAME BIOS file coco.zip
 
+vc4000:
+  name:       VC 4000
+  manufacturer: Interton
+  release: 1978
+  hardware: console
+  extensions: [bin, rom, pgm, tvc, zip, 7z]
+  emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 vgmplay:
   name:       Video Game Music Player
   manufacturer: Various
@@ -2765,16 +2797,6 @@ vemulator:
   emulators:
     libretro:
       vemulator:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VEMULATOR] }
-
-sameduck:
-  name:       Mega Duck / Cougar Boy
-  manufacturer: Welback Holdings
-  release: 1993
-  hardware: portable
-  extensions: [bin]
-  emulators:
-    libretro:
-      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
 
 openjazz:
   name:       Jazz Jackrabbit
@@ -2908,21 +2930,30 @@ naomi2:
   extensions: [zip, 7z]
   platform: naomi2, arcade
   emulators:
+    libretro:
+      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+    flycast:
+      flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     demul:
-      demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+      demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
   comment_en: |
     ---------------------------------
     ## NAOMI 2 IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Naomi 2 games using Demul with Wine.
+    You can now play limited Naomi 2 games using the Flycast emulators.
     Roms should be stored in the appropriate naomi2 directory.
-    You will need a Naomi 2 bios, please add the naomi2.zip file to your bios directory.
+    You will need a Naomi 2 bios, please add the naomi2.zip file to your bios/dc directory.
+
+    --------------------------------
+    ## DEMUL - CURRENTLY DISABLED ##
+    --------------------------------
+    
+    An alternative is to use Demul with Wine.
+    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     Performance depends on your x86_64 system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
-
-    Note: Your graphics card requires Vulkan drivers for Demul to work.
 
     -----------
     First Start
@@ -3165,4 +3196,3 @@ odcommander:
     A two-pane file manager in the style of Norton/Midnight Commander.
   comment_fr: |
     Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
-

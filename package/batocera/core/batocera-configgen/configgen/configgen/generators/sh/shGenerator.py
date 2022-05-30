@@ -5,7 +5,7 @@ import Command
 
 class ShGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         commandArray = ["/bin/sh", rom]
         return Command.Command(array=commandArray)

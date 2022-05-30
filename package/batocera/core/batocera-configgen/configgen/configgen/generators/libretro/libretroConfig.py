@@ -36,7 +36,7 @@ systemToRetroachievements = {'amstradcpc', 'atari2600', 'atari7800', 'jaguar', '
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
-coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'nestopia', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
+coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
 
 # Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
@@ -59,11 +59,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend))
+def writeLibretroConfig(retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBackend):
+def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -79,7 +79,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         coreSettings = UnixSettings(retroarchCore, separator=' ')
 
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(coreSettings, system, rom)
+    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
@@ -175,8 +175,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
-    # force notification messages
+    # force notification messages, but not the "remap" one
     retroarchConfig['video_font_enable'] = '"true"'
+    retroarchConfig['notification_show_remap_load'] = '"false"'
 
     # prevent displaying "QUICK MENU" with "No Items" after DOSBox Pure, TyrQuake and PrBoom games exit
     retroarchConfig['load_dummy_on_core_shutdown'] = '"false"'
@@ -363,7 +364,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         # If set manually, proritize that.
         # Otherwise, set to portrait for games listed as 90 degrees, manual (default) if not.
         if not system.isOptSet('wswan_rotate_display'):
-            wswanGameRotation = videoMode.getGameSpecial(system.name, rom)
+            wswanGameRotation = videoMode.getGameSpecial(system.name, rom, True)
             if wswanGameRotation == "90":
                 wswanOrientation = "portrait"
             else:
@@ -408,7 +409,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
         if system.isOptSet('controller3_zxspec'):
             retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p3'] = '0'
+            retroarchConfig['input_libretro_device_p3'] = '259'
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
@@ -497,6 +498,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     retroarchConfig['cheevos_verbose_enable'] = 'false'
     retroarchConfig['cheevos_auto_screenshot'] = 'false'
     retroarchConfig['cheevos_challenge_indicators'] = 'false'
+    retroarchConfig['cheevos_start_active'] = 'false'
 
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements) or (system.config['core'] in coreToRetroachievements) or (system.isOptSet('cheevos_force') and system.getOptBoolean('cheevos_force') == True):
@@ -529,6 +531,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
                 retroarchConfig['cheevos_challenge_indicators'] = 'true'
             else:
                 retroarchConfig['cheevos_challenge_indicators'] = 'false'
+            # retroarchievements_encore_mode
+            if system.isOptSet('retroachievements.encore') and system.getOptBoolean('retroachievements.encore') == True:
+                retroarchConfig['cheevos_start_active'] = 'true'
+            else:
+                retroarchConfig['cheevos_start_active'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
 
@@ -639,12 +646,103 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution, gfxBac
     else:
         retroarchConfig['ai_service_enable'] = 'false'
 
+    # Guns
+    # clear
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+        if len(guns) >= 1:
+            retroarchConfig['input_player1_gun_aux_a_btn'] = ''
+            retroarchConfig['input_player1_gun_aux_b_btn'] = ''
+            retroarchConfig['input_player1_gun_aux_c_btn'] = ''
+            retroarchConfig['input_player1_gun_offscreen_shot_btn'] = ''
+            retroarchConfig['input_player1_gun_trigger_btn'] = ''
+            retroarchConfig['input_player1_gun_start_btn'] = ''
+            retroarchConfig['input_player1_gun_select_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_up_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_down_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_left_btn'] = ''
+            retroarchConfig['input_player1_gun_dpad_right_btn'] = ''
+            retroarchConfig['input_player1_gun_trigger_mbtn'] = ''
+            retroarchConfig['input_player1_gun_start_mbtn'] = ''
+        if len(guns) >= 2:
+            retroarchConfig['input_player2_gun_aux_a_btn'] = ''
+            retroarchConfig['input_player2_gun_aux_b_btn'] = ''
+            retroarchConfig['input_player2_gun_aux_c_btn'] = ''
+            retroarchConfig['input_player2_gun_offscreen_shot_btn'] = ''
+            retroarchConfig['input_player2_gun_trigger_btn'] = ''
+            retroarchConfig['input_player2_gun_start_btn'] = ''
+            retroarchConfig['input_player2_gun_select_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_up_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_down_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_left_btn'] = ''
+            retroarchConfig['input_player2_gun_dpad_right_btn'] = ''
+            retroarchConfig['input_player2_gun_trigger_mbtn'] = ''
+            retroarchConfig['input_player2_gun_start_mbtn'] = ''
+
+    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 260
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'nestopia':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 262
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'fceumm':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p2'] = 258
+                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'genesisplusgx':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 260
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+
+    if system.config['core'] == 'fbneo':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 4
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player1_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player1_gun_start_mbtn']   = 3
+            if len(guns) >= 2:
+                retroarchConfig['input_libretro_device_p2'] = 4
+                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                retroarchConfig['input_player2_gun_aux_a_mbtn']   = 2 # for all games ?
+                retroarchConfig['input_player2_gun_start_mbtn']   = 3
+
+    if system.config['core'] == 'flycast':
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if len(guns) >= 1:
+                retroarchConfig['input_libretro_device_p1'] = 4
+                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
+                retroarchConfig['input_player1_gun_trigger_mbtn']        = 1
+                retroarchConfig['input_player1_gun_offscreen_shot_mbtn'] = 2
+                retroarchConfig['input_player1_gun_start_mbtn']          = 3
+
+            if len(guns) >= 2:
+                retroarchConfig['input_libretro_device_p2'] = 4
+                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
+                retroarchConfig['input_player2_gun_trigger_mbtn']        = 1
+                retroarchConfig['input_player2_gun_offscreen_shot_mbtn'] = 2
+                retroarchConfig['input_player2_gun_start_mbtn']          = 3
+
     # Bezel option
     try:
-        writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system)
+        writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system)
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(None, retroarchConfig, rom, gameResolution, system)
+        writeBezelConfig(None, shaderBezel, retroarchConfig, rom, gameResolution, system)
         eslog.error(f"Error with bezel {bezel}: {e}")
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -658,7 +756,7 @@ def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
+def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -673,7 +771,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     if bezel is None:
         return
 
-    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
+    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
     if bz_infos is None:
         return
 
@@ -693,7 +791,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     # if image is not at the correct size, find the correct size
     bezelNeedAdaptation = False
     viewPortUsed = True
-    if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos:
+    if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos or shaderBezel:
         viewPortUsed = False
 
     gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
@@ -723,9 +821,11 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                 pass # outch, no ratio will be applied.
         if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
             bezelNeedAdaptation = False
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
+        if not shaderBezel:
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
 
-    retroarchConfig['input_overlay_enable']       = "true"
+    if not shaderBezel:
+        retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
     retroarchConfig['input_overlay']              = overlay_cfg_file
     retroarchConfig['input_overlay_hide_in_menu'] = "true"
@@ -751,6 +851,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
 
         # If width or height < original, can't add black borders, need to stretch
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
+            eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
 
         if bezel_game is True:
@@ -783,7 +884,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             # or up/down for 4K
             eslog.debug(f"Generating a new adapted bezel file {output_png_file}")
             try:
-                bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
+                bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"], bezel_stretch)
             except Exception as e:
                 eslog.debug(f"Failed to create the adapated image: {e}")
                 return
@@ -807,6 +908,27 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
+
+    # For shaders that will want to use Batocera's decoration as part of the shader instead of an overlay
+    if shaderBezel:
+        # Create path if needed, clear old bezels
+        shaderBezelPath = '/var/run/shader_bezels'
+        shaderBezelFile = shaderBezelPath + '/bezel.png'
+        if not os.path.exists(shaderBezelPath):
+            os.makedirs(shaderBezelPath)
+            eslog.debug("Creating shader bezel path {}".format(overlay_png_file))
+        if os.path.exists(shaderBezelFile):
+            eslog.debug("Removing old shader bezel {}".format(shaderBezelFile))
+            if os.path.islink(shaderBezelFile):
+                os.unlink(shaderBezelFile)
+            else:
+                os.remove(shaderBezelFile)
+
+        # Link bezel png file to the fixed path.
+        # Shaders should use this path to find the art.
+        os.symlink(overlay_png_file, shaderBezelFile)
+        eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
+
 
 def isLowResolution(gameResolution):
     return gameResolution["width"] <= 480 or gameResolution["height"] <= 480

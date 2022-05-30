@@ -11,14 +11,14 @@ class MugenGenerator(Generator):
 
     @staticmethod
     def cleanMugenCfg(path):
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8-sig') as f:
             contents = f.read()
 
         contents = re.sub(r'^[ ]*;', ';', contents, 0, re.MULTILINE)
         with open(path, 'w') as f:
             f.write(contents)
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         settings = configparser.ConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
         # To prevent ConfigParser from converting to lower case

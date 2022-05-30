@@ -13,6 +13,7 @@ import subprocess
 from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 import utils.videoMode as videoMode
+import shutil
 
 eslog = get_logger(__name__)
 
@@ -23,7 +24,39 @@ class LibretroGenerator(Generator):
 
     # Main entry of the module
     # Configure retroarch and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
+        # Get the graphics backend first
+        gfxBackend = getGFXBackend(system)
+
+        # Get the shader before writing the config, we may need to disable bezels based on the shader.
+        renderConfig = system.renderconfig
+        gameSpecial = videoMode.getGameSpecial(system.name, rom, True)
+        gameShader = None
+        shaderBezel = False
+        if gameSpecial == "0":
+            if 'shader' in renderConfig:
+                gameShader = renderConfig['shader']
+        else:
+            if ('shader-' + str(gameSpecial)) in renderConfig:
+                gameShader = renderConfig['shader-' + str(gameSpecial)]
+            else:
+                gameShader = renderConfig['shader']
+        if 'shader' in renderConfig and gameShader != None:
+            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
+                shaderFilename = gameShader + ".slangp"
+            else:
+                shaderFilename = gameShader + ".glslp"
+            eslog.debug("searching shader {}".format(shaderFilename))
+            if os.path.exists("/userdata/shaders/" + shaderFilename):
+                video_shader_dir = "/userdata/shaders"
+                eslog.debug("shader {} found in /userdata/shaders".format(shaderFilename))
+            else:
+                video_shader_dir = "/usr/share/batocera/shaders"
+            video_shader = video_shader_dir + "/" + shaderFilename
+            # If the shader filename contains noBezel, activate Shader Bezel mode.
+            if "noBezel" in video_shader:
+                shaderBezel = True
+
         # Settings batocera default config file if no user defined one
         if not 'configfile' in system.config:
             # Using batocera config file
@@ -33,6 +66,7 @@ class LibretroGenerator(Generator):
                 libretroRetroarchCustom.generateRetroarchCustom()
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
+
             if system.isOptSet('lightgun_map'):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
@@ -53,11 +87,14 @@ class LibretroGenerator(Generator):
             if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
                 bezel = None
 
-            # Get the graphics backend prior to writing the config
-            gfxBackend = getGFXBackend(system)
-
-            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution, gfxBackend)
+            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend)
             retroconfig.write()
+
+            # duplicate config to mapping files while ra now split in 2 parts
+            remapconfigDir = batoceraFiles.retroarchRoot + "/config/remaps/common"
+            if not os.path.exists(remapconfigDir):
+                os.makedirs(remapconfigDir)
+            shutil.copyfile(batoceraFiles.retroarchCustom, remapconfigDir + "/common.rmp")
 
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
@@ -209,29 +246,7 @@ class LibretroGenerator(Generator):
             configToAppend.append(overlayFile)
 
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
-        renderConfig = system.renderconfig
-        gameSpecial = videoMode.getGameSpecial(system.name, rom)
-        gameShader = None
-        if gameSpecial == "0":
-            if 'shader' in renderConfig:
-                gameShader = renderConfig['shader']
-        else:
-            if ('shader-' + str(gameSpecial)) in renderConfig:
-                gameShader = renderConfig['shader-' + str(gameSpecial)]
-            else:
-                gameShader = renderConfig['shader']
         if 'shader' in renderConfig and gameShader != None:
-            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
-                shaderFilename = gameShader + ".slangp"
-            else:
-                shaderFilename = gameShader + ".glslp"
-            eslog.debug(f"searching shader {shaderFilename}")
-            if os.path.exists("/userdata/shaders/" + shaderFilename):
-                video_shader_dir = "/userdata/shaders"
-                eslog.debug(f"shader {shaderFilename} found in /userdata/shaders")
-            else:
-                video_shader_dir = "/usr/share/batocera/shaders"
-            video_shader = video_shader_dir + "/" + shaderFilename
             commandArray.extend(["--set-shader", video_shader])
 
         # Generate the append

@@ -9,7 +9,7 @@ from . import mupenControllers
 
 class MupenGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         # Read the configuration file
         iniConfig = configparser.ConfigParser(interpolation=None)
@@ -33,6 +33,11 @@ class MupenGenerator(Generator):
 
         # Command
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']), "--configdir", batoceraFiles.mupenConf, "--datadir", batoceraFiles.mupenConf]
+
+        # state_slot option
+        if system.isOptSet('state_filename'):
+            commandArray.extend(["--savestate", "/userdata/saves/n64/{}".format(system.config['state_filename'])])
+
         commandArray.append(rom)
 
         return Command.Command(array=commandArray)
