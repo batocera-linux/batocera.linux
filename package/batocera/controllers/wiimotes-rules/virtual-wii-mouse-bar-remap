@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# kill any existing virtul-wii-mouse-bar
+ls /var/run/virtual-wii-mouse-devices*.pid 2>/dev/null |
+    while read VWMB
+    do
+	PID=$(cat "${VWMB}")
+	echo "killing virtual wii mouse with pid ${PID}"
+	kill -15 "${PID}"
+    done
+
+# remove exiting flags
+rm -rf /var/run/virtual-wii-mouse-devices* || exit 1
+
+# rerun events
+for EVT in /dev/input/event*
+do
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Nintendo Wii Remote IR"$'
+    then
+	echo "remapping ${EVT}"
+	udevadm trigger --action remove "${EVT}"
+	udevadm trigger --action add "${EVT}"
+    fi
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Nintendo Wii Remote"$'
+    then
+	echo "remapping ${EVT}"
+	udevadm trigger --action remove "${EVT}"
+	udevadm trigger --action add "${EVT}"
+    fi
+done
+
+exit 0
