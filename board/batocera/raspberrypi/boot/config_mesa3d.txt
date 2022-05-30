@@ -124,11 +124,7 @@ initramfs boot/initrd.gz
 # Additional overlays and parameters are documented /boot/overlays/README
 
 # Configure GPU memory based on SDRAM size
-# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
-# Default GPU memory split (do not change if you do not know what you are doing)
-gpu_mem=128
-
-# Configure GPU memory based on SDRAM size - overrides above setting
+# https://www.raspberrypi.com/documentation/computers/config_txt.html#gpu_mem
 gpu_mem_256=112
 gpu_mem_512=160
 gpu_mem_1024=256
@@ -139,30 +135,19 @@ dtparam=audio=on
 # Optional 'Fake' KMS for displays that won't work with 'Full' KMS
 #dtoverlay=vc4-fkms-v3d
 
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+# Preferred 'Full' Kernel Mode Setting (KMS)
+dtoverlay=vc4-kms-v3d
+
 [DPI]
 # Put any DPI required display code here
 # i.e. Official 7" DSI Raspberry Pi Touch Display for 'Full' KMS
 #ignore_lcd=1
 #dtoverlay=vc4-kms-dsi-7inch
 
-[pi02]
-# 64-bit mode
-arm_64bit=1
-
-start_file=start_x.elf
-fixup_file=fixup_x.dat
-
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d,cma-128
-
 [pi2]
 start_file=start_x.elf
 fixup_file=fixup_x.dat
-
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d
 
 [pi3]
 # 64-bit mode
@@ -171,22 +156,15 @@ arm_64bit=1
 start_file=start_x.elf
 fixup_file=fixup_x.dat
 
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d
-
 [pi4]
 # 64-bit mode
 arm_64bit=1
+
 # Run as fast as firmware / board allows
 arm_boost=1
 
 start_file=start4x.elf
 fixup_file=fixup4x.dat
-
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d-pi4
 
 # Ensure only one display output can be used on the Pi4 with batocera
 max_framebuffers=1
