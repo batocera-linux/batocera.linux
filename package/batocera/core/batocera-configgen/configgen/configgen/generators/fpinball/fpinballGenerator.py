@@ -13,7 +13,7 @@ eslog = get_logger(__name__)
 
 class FpinballGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/fpinball"
 
         if not os.path.exists(wineprefix):

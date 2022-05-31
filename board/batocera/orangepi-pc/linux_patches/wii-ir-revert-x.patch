@@ -1,0 +1,13 @@
+diff --git a/drivers/hid/hid-wiimote-modules.c b/drivers/hid/hid-wiimote-modules.c
+index d48f3f7..dfdee3a 100644
+--- a/drivers/hid/hid-wiimote-modules.c
++++ b/drivers/hid/hid-wiimote-modules.c
+@@ -597,7 +597,7 @@ static void wiimod_ir_in_ir(struct wiimote_data *wdata, const __u8 *ir,
+ 		y = ir[1] | ((ir[2] & 0xc0) << 2);
+ 	}
+ 
+-	input_report_abs(wdata->ir, xid, x);
++	input_report_abs(wdata->ir, xid, 1024-x);
+ 	input_report_abs(wdata->ir, yid, y);
+ 
+ 	if (sync)

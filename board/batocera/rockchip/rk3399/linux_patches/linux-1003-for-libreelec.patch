@@ -1,88 +1,12 @@
-From e7cc7e8e0812ce96035ad1d286d79a37f3ea81d2 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Sat, 16 Jan 2021 12:24:58 +0000
-Subject: [PATCH] ARM64: dts: rockchip: RK3328: enable USB3 for supported
- boards
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3328-a1.dts    | 21 +++++++++++++++++++
- .../arm64/boot/dts/rockchip/rk3328-rock64.dts | 21 +++++++++++++++++++
- 2 files changed, 42 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-index 37f307cfa4cc..4013f16bb368 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-@@ -352,6 +352,27 @@ &usb_host0_ehci {
- 	status = "okay";
- };
- 
-+&usbdrd3 {
-+	status = "okay";
-+};
-+
-+&usbdrd_dwc3 {
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usb3phy {
-+	status = "okay";
-+};
-+
-+&usb3phy_utmi {
-+	status = "okay";
-+};
-+
-+&usb3phy_pipe {
-+	status = "okay";
-+};
-+
- &vop {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts b/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
-index c984662043da..89fde87f7650 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
-@@ -384,6 +384,27 @@ &usb_host0_ohci {
- 	status = "okay";
- };
- 
-+&usbdrd3 {
-+	status = "okay";
-+};
-+
-+&usbdrd_dwc3 {
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usb3phy {
-+	status = "okay";
-+};
-+
-+&usb3phy_utmi {
-+	status = "okay";
-+};
-+
-+&usb3phy_pipe {
-+	status = "okay";
-+};
-+
- &vop {
- 	status = "okay";
- };
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Wed, 2 Sep 2020 19:52:02 +0200
 Subject: [PATCH] arm64: dts: rockchip: add gpu powerdomain, gpu opp-table and
- cooling cell
+ cooling cell for RK3328
 
 Note: since the regulator that supplies the GPU usually also supplies
 other SoC components, we have to make sure voltage is never lower then
-1050 mV.
+1075 mV.
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -90,18 +14,18 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 33 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index b54ff9055e5f..2fae7fa6b000 100644
+index bd0ec27cf49b..21e32ddb21a0 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -321,6 +321,10 @@ power: power-controller {
  			#address-cells = <1>;
  			#size-cells = <0>;
  
-+			pd_gpu@RK3328_PD_GPU {
++			power-domain@RK3328_PD_GPU {
 +				reg = <RK3328_PD_GPU>;
 +				clocks = <&cru ACLK_GPU>;
 +			};
- 			pd_hevc@RK3328_PD_HEVC {
+ 			power-domain@RK3328_PD_HEVC {
  				reg = <RK3328_PD_HEVC>;
  			};
 @@ -546,6 +550,11 @@ map0 {
@@ -131,15 +55,15 @@ index b54ff9055e5f..2fae7fa6b000 100644
 +
 +		opp-200000000 {
 +			opp-hz = /bits/ 64 <200000000>;
-+			opp-microvolt = <1050000>;
++			opp-microvolt = <1075000>;
 +		};
 +		opp-300000000 {
 +			opp-hz = /bits/ 64 <300000000>;
-+			opp-microvolt = <1050000>;
++			opp-microvolt = <1075000>;
 +		};
 +		opp-400000000 {
 +			opp-hz = /bits/ 64 <400000000>;
-+			opp-microvolt = <1050000>;
++			opp-microvolt = <1075000>;
 +		};
 +		opp-500000000 {
 +			opp-hz = /bits/ 64 <500000000>;
@@ -152,7 +76,7 @@ index b54ff9055e5f..2fae7fa6b000 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 10 Feb 2020 19:22:41 +0100
-Subject: [PATCH] ARM64: dts: rk3328 add sdmmc ext node
+Subject: [PATCH] arm64: dts: rockchip: add sdmmc ext node for RK3328
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -160,10 +84,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 3d933d74c2b3..bd1e5edfbf95 100644
+index 21e32ddb21a0..18d663aacd07 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -1104,6 +1104,20 @@ usbdrd_dwc3: dwc3@ff600000 {
+@@ -1109,6 +1109,20 @@ usbdrd_dwc3: dwc3@ff600000 {
  		};
  	};
  
@@ -188,7 +112,7 @@ index 3d933d74c2b3..bd1e5edfbf95 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Tue, 2 Feb 2021 17:22:21 +0200
-Subject: [PATCH] arm: dts: rk3288 miqi add hdmi sound nodes
+Subject: [PATCH] ARM: dts: RK3288 miqi add hdmi sound nodes
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -237,7 +161,7 @@ index 713f55e143c6..8d30c49f406e 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Fri, 2 Apr 2021 17:54:22 +0200
-Subject: [PATCH] ARM64/ARM: dts: align sound card names
+Subject: [PATCH] ARM/arm64: dts: rockchip: align sound card names
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -440,11 +364,12 @@ index 403d4c6a49a8..7505c3eee4c1 100644
  };
  
  struct hdmi_codec_priv {
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 27 Feb 2021 17:41:48 +0100
-Subject: [PATCH] ARM64: dts: rockchip: fix gpu register width and supplies
- for RK3328
+Subject: [PATCH] arm64: dts: rockchip: fix GPU register width and supplies for
+ RK3328
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -484,7 +409,7 @@ index 89fde87f7650..bd62349a9390 100644
  	status = "okay";
  };
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 2dc257098002..f86f10f7e64e 100644
+index 18d663aacd07..0e5e492db9c7 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -619,7 +619,7 @@ saradc: adc@ff280000 {
@@ -496,33 +421,40 @@ index 2dc257098002..f86f10f7e64e 100644
  		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
  			     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
  			     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Kamil=20Trzci=C5=84ski?= <ayufan@ayufan.eu>
-Date: Sun, 30 Dec 2018 13:32:47 +0100
-Subject: [PATCH] ayufan: dts: rockpro64: change rx_delay for gmac
 
-Change-Id: Ib3899f684188aa1ed1545717af004bba53fe0e07
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 2 May 2021 20:44:21 +0200
+Subject: [PATCH] arm64: dts: rockchip: Fix gmac delays for rockpro64 board
+
+Values are measured by RK's delayline tool in vendor kernel
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
-index 58097245994a..0da80295f09f 100644
+index 58097245994a..c7c515c6c5cb 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
-@@ -248,7 +248,7 @@ &gmac {
+@@ -247,8 +247,8 @@ &gmac {
+ 	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
  	snps,reset-active-low;
  	snps,reset-delays-us = <0 10000 50000>;
- 	tx_delay = <0x28>;
+-	tx_delay = <0x28>;
 -	rx_delay = <0x11>;
-+	rx_delay = <0x20>;
++	tx_delay = <0x23>;
++	rx_delay = <0x1e>;
  	status = "okay";
  };
  
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 27 Feb 2021 17:52:02 +0100
-Subject: [PATCH] ARM64: dts: rockchip: add SPDIF nodes for RK3328 A1/ROC CC
+Subject: [PATCH] arm64: dts: rockchip: add SPDIF nodes for RK3328 A1/ROC CC
+ boards
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -612,10 +544,11 @@ index 8607514437f5..6ca08854aef3 100644
  &tsadc {
  	status = "okay";
  };
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 27 Feb 2021 18:01:13 +0100
-Subject: [PATCH] ARM64: dts: rockchip: Add ir-receiver node for RK3328 ROC CC
+Subject: [PATCH] arm64: dts: rockchip: Add ir-receiver node for RK3328 ROC CC
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
@@ -654,6 +587,7 @@ index 6ca08854aef3..fb21ad1324bc 100644
  	pmic {
  		pmic_int_l: pmic-int-l {
  			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 1 Mar 2021 21:24:15 +0100
@@ -664,7 +598,7 @@ Subject: [PATCH] ARM: dts: add cec pinctrl for RK3288 miqi board
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
-index 2420d8e1c66f..55ec4a273f59 100644
+index 8d30c49f406e..6d90db5a3b75 100644
 --- a/arch/arm/boot/dts/rk3288-miqi.dts
 +++ b/arch/arm/boot/dts/rk3288-miqi.dts
 @@ -145,6 +145,8 @@ &gpu {
@@ -680,7 +614,7 @@ index 2420d8e1c66f..55ec4a273f59 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 1 Mar 2021 19:22:15 +0100
-Subject: [PATCH] HACK: ARM64: dts: enable FE phy for Beelink A1 also
+Subject: [PATCH] HACK: arm64: dts: enable FE phy for Beelink A1 also
 
 ---
  arch/arm64/boot/dts/rockchip/rk3328-a1.dts | 8 ++++++++
@@ -705,6 +639,7 @@ index 1bb3f4a6e496..99f28dac0791 100644
  &gpu {
  	mali-supply = <&vdd_logic>;
  };
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Tue, 26 Feb 2019 20:45:14 +0000
@@ -715,7 +650,7 @@ Subject: [PATCH] WIP: dw-hdmi-cec: sleep 100ms on error
  1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
-index 70ab4fbdc23e..4dbc370e538f 100644
+index 70ab4fbdc23e..bf54bc70624f 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
 @@ -4,6 +4,7 @@
@@ -739,7 +674,7 @@ index 70ab4fbdc23e..4dbc370e538f 100644
 +	 * mitigate the issue with failed transmit attempts.
 +	 */
 +	if ((stat & (CEC_STAT_DONE|CEC_STAT_ERROR_INIT)) == (CEC_STAT_DONE|CEC_STAT_ERROR_INIT)) {
-+		pr_info("dw_hdmi_cec_hardirq: stat=%02x LOW_DRIVE\n", stat);
++		pr_debug("dw_hdmi_cec_hardirq: stat=%02x LOW_DRIVE\n", stat);
 +		cec->tx_status = CEC_TX_STATUS_LOW_DRIVE;
  		cec->tx_done = true;
  		ret = IRQ_WAKE_THREAD;
@@ -764,4 +699,187 @@ index 70ab4fbdc23e..4dbc370e538f 100644
  		cec_transmit_attempt_done(adap, cec->tx_status);
  	}
  	if (cec->rx_done) {
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Wed, 5 May 2021 19:11:12 +0200
+Subject: [PATCH] arm64: boot: dts: Increase ACLK_PERILP0 clock rate for RK3399
+
+As per vendor kernel. Leaving this clock at the lower rate will
+result in poor DMA controller performance
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 9c2ac03c154b..b1c7ee80d255 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1390,7 +1390,7 @@ cru: clock-controller@ff760000 {
+ 			<1000000000>,
+ 			 <150000000>,   <75000000>,
+ 			  <37500000>,
+-			 <100000000>,  <100000000>,
++			 <300000000>,  <100000000>,
+ 			  <50000000>, <600000000>,
+ 			 <100000000>,   <50000000>,
+ 			 <400000000>, <400000000>,
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Wed, 5 May 2021 22:09:44 +0200
+Subject: [PATCH] arm64: dts: rockchip: limit emmc clockrate to 150 MHz for
+ Rock Pi4 board
+
+as per https://github.com/radxa/kernel/commit/db9dfc2cdd25103c553845d24967e4cb31852b61
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
+index fb7599f07af4..155f22b53103 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
+@@ -593,6 +593,7 @@ &sdmmc {
  
+ &sdhci {
+ 	bus-width = <8>;
++	max-frequency = <150000000>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
+ 	non-removable;
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Rudi Heitbaum <rudi@heitbaum.com>
+Date: Tue, 1 Jun 2021 19:42:31 +0200
+Subject: [PATCH] arm64: dts: rockchip: dts additions for Rock Pi N10
+
+---
+ .../dts/rockchip/rk3399pro-rock-pi-n10.dts    |  4 +
+ .../dts/rockchip/rk3399pro-vmarc-som.dtsi     | 83 +++++++++++++++++++
+ 2 files changed, 87 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399pro-rock-pi-n10.dts b/arch/arm64/boot/dts/rockchip/rk3399pro-rock-pi-n10.dts
+index 369de5dc0ebd..48ac0cfa93c0 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399pro-rock-pi-n10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399pro-rock-pi-n10.dts
+@@ -20,3 +20,7 @@ chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ };
++
++&uart2 {
++    status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399pro-vmarc-som.dtsi b/arch/arm64/boot/dts/rockchip/rk3399pro-vmarc-som.dtsi
+index 7257494d2831..9e2994e27d05 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399pro-vmarc-som.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399pro-vmarc-som.dtsi
+@@ -57,6 +57,22 @@ &hdmi {
+ 	pinctrl-0 = <&hdmi_cec>;
+ };
+ 
++&hdmi_sound {
++	status = "okay";
++};
++
++&gpu {
++	mali-supply = <&vdd_gpu>;
++	assigned-clocks = <&cru ACLK_GPU>;
++	assigned-clock-rates = <200000000>;
++	status = "okay";
++	/delete-property/ operating-points-v2;
++};
++
++&vopl {
++	status = "disabled";
++};
++
+ &i2c0 {
+ 	clock-frequency = <400000>;
+ 	i2c-scl-falling-time-ns = <30>;
+@@ -280,6 +296,50 @@ regulator-state-mem {
+ 			};
+ 		};
+ 	};
++
++	vdd_cpu_b: tcs4525@1c {
++		compatible = "tcs,tcs4525";
++		reg = <0x1c>;
++		vin-supply = <&vcc5v0_sys>;
++		regulator-compatible = "fan53555-reg";
++		pinctrl-0 = <&vsel1_gpio>;
++		vsel-gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
++		regulator-name = "vdd_cpu_b";
++		regulator-min-microvolt = <712500>;
++		regulator-max-microvolt = <1500000>;
++		regulator-ramp-delay = <2300>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-initial-state = <3>;
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++
++	vdd_gpu: tcs4526@10 {
++		compatible = "tcs,tcs4526";
++		reg = <0x10>;
++		vin-supply = <&vcc5v0_sys>;
++		regulator-compatible = "fan53555-reg";
++		pinctrl-0 = <&vsel2_gpio>;
++		vsel-gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_HIGH>;
++		regulator-name = "vdd_gpu";
++		regulator-min-microvolt = <735000>;
++		regulator-max-microvolt = <1400000>;
++		regulator-ramp-delay = <1000>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-initial-state = <3>;
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++};
++
++&i2s2 {
++	status = "okay";
+ };
+ 
+ &i2c1 {
+@@ -351,6 +411,29 @@ pmic {
+ 		pmic_int_l: pmic-int-l {
+ 			rockchip,pins = <1 RK_PC2 0 &pcfg_pull_up>;
+ 		};
++		vsel1_gpio: vsel1-gpio {
++			rockchip,pins =
++				<1 RK_PC1 0 &pcfg_pull_down>;
++		};
++		vsel2_gpio: vsel2-gpio {
++			rockchip,pins =
++				<1 RK_PB6 0 &pcfg_pull_down>;
++		};
++
++		soc_slppin_gpio: soc-slppin-gpio {
++			rockchip,pins =
++				<1 RK_PA5 0 &pcfg_output_low>;
++		};
++
++		soc_slppin_slp: soc-slppin-slp {
++			rockchip,pins =
++				<1 RK_PA5 1 &pcfg_pull_down>;
++		};
++
++		soc_slppin_rst: soc-slppin-rst {
++			rockchip,pins =
++				<1 RK_PA5 2 &pcfg_pull_none>;
++		};
+ 	};
+ 
+ 	sdio-pwrseq {

@@ -24,7 +24,7 @@ class CemuGenerator(Generator):
     def hasInternalMangoHUDCall(self):
         return True
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
