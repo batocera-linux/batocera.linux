@@ -7,7 +7,7 @@ import controllersConfig
 
 class DevilutionXGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ['devilutionx', '--data-dir', '/userdata/roms/devilutionx',
                         '--config-dir', '/userdata/system/configs/devilutionx',
                         '--save-dir', '/userdata/saves/devilutionx']

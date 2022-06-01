@@ -15,6 +15,8 @@
 # 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
 # 20211010 Fix : recursive search in roms directory
 # 20220524 Fix : Properly URL encode bezel file names
+# 20220524 Add : support symlinks to roms directories and roms themselves
+# 20220524 Add : output unmatched ROMs when requested
 #
 
 readonly VERSION="20220524"
@@ -60,7 +62,7 @@ function usage() {
 		record "It accepts three modes: 'list', 'install' and 'remove' <system>'" "2"
 		record "- 'list' to list systems installed locally, which are available within TheBezelProject:" "2"
 		record "   [A]vailable to install, [I]nstalled or [?]unknown." "2"
-		record "- 'install <system>' to install the bezels for this <system>." "2"
+		record "- 'install <system> [--show-unmatched]' to install the bezels for this <system>." "2"
 		record "- 'remove <system>' to remove the bezels for this <system>." "2"
 		record "- 'remove all' to remove all the bezels from TheBezelProject." "2"
 		record " " "2"
@@ -153,7 +155,7 @@ function git_name() {
 function files_count() {
 		# we want only files and not those starting with '.' or '_' or "gamelist*"
 		# support for daphne : there is a sub-folder called roms we want to parse
-		[[ $(grep "daphne" <<< "$1") && -d "$1"/roms ]] && echo `find "$1"/roms -type f -iname "[!._]*" | wc -l` || echo `find "$1" -type f -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)" | wc -l`
+		[[ $(grep "daphne" <<< "$1") && -d "$1"/roms ]] && echo `find "$1"/roms  \( -type f -or -type l \) -iname "[!._]*" | wc -l` || echo `find "$1"  \( -type f -or -type l \) -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)" | wc -l`
 }
 
 ###############################
@@ -166,6 +168,7 @@ function list() {
 		local url
 		local path
 		local file
+		local dir
 
 		record "* List"
 		record "Path to games bezels $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR"
@@ -193,11 +196,12 @@ function list() {
 				# Is this line a comment ?
 				[ "$system_name" = "#" ] && continue
 				# check if roms/<system> directory exists
-				if [ ! -d "$ROMS_DIR/$system_name" ]; then continue; fi
+				dir=$(readlink -f "$ROMS_DIR/$system_name")
+				if [ ! -d "$dir" ]; then continue; fi
 				let systems_count+=1
 				record "System #$systems_count $system_name"
 				# there is at least one ROM in the roms/<system_name> directory
-				roms_filescount=$(files_count "$ROMS_DIR/$system_name")
+				roms_filescount=$(files_count "$dir")
 				if [ "$roms_filescount" -eq 0 ]; then continue; fi
 				let systems_available+=1
 				# check if url is valid and returns [A] or [?]
@@ -247,6 +251,10 @@ function install() {
 		local path
 		local git_path
 		local file
+
+		local show_unmatched="$2"
+		local unmatched=()
+		local unmatched_count
 
 		record "* Install"
 		record "Path to games bezels $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR"
@@ -299,13 +307,14 @@ function install() {
 		fi
 
 		# check if roms/<system_name> directory exists
-		if [ ! -d "$ROMS_DIR/$system_to_install" ]; then
+		dir=$(readlink -f "$ROMS_DIR/$system_to_install")
+		if [ ! -d "$dir" ]; then
 				record "Error : ROMs directory for system $system_to_install could not be found" "1"
 				return 1
 		fi
 
 		# check that there is at least one ROM in roms/<system_name> directory
-		roms_filescount=$(files_count "$ROMS_DIR/$system_to_install")
+		roms_filescount=$(files_count "$dir")
 		record "Found $roms_filescount ROMs in $ROMS_DIR/$system_to_install"
 		if [ "$roms_filescount" -eq 0 ]; then
 				record "Error : ROMs directory for system $system_to_install is empty" "1"
@@ -360,7 +369,7 @@ function install() {
 		record "[$system_to_install] $roms_filescount ROMs found" "1"
 
 		# support for daphne : there is a sub-folder called roms we want to parse
-		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR/$system_to_install/roms" ]] && daphne="/roms"
+		[[ $(grep "daphne" <<< "$system_to_install") && -d "$dir/roms" ]] && daphne="/roms"
 
 		# debug purpose (started from Terminal/SSH vs ES)
 		#TERMINAL=0
@@ -457,6 +466,7 @@ function install() {
 				# NOT MATCHING
 				if [ "$matching_rom" -eq 0 ]; then
 						record "NOT MATCHING : $rom_name"
+						[[ -n "$show_unmatched" ]] && unmatched+=("$rom_name")
 				fi
 
 				# is there too many warning ?
@@ -470,7 +480,7 @@ function install() {
  						echo -ne  "[$system_to_install] Installing bezel $roms_count / $roms_filescount\r"
 				fi
 
-		done < <(find "$ROMS_DIR/$system_to_install$daphne" -type f -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)")
+		done < <(find "$dir$daphne" \( -type f -or -type l \) -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)")
 		rm "$TMP_INDEX_LIST"
 
 		if [  "$TERMINAL" -eq 0 ]; then
@@ -515,6 +525,17 @@ function install() {
 				else
 						record "Warning : file $(basename $url2) could not be downloaded from $(dirname $url2)"
 				fi
+		fi
+
+		# If requested (and any roms couldn't be matched), the output the list for easy lookup (only show on stdout if started from Terminal/SSH)
+		unmatched_count=${#unmatched[@]} 
+		if [[ $unmatched_count != 0 ]]; then
+			local sorted=()
+			record "[$system_to_install] $unmatched_count unmatched ROM(s) (check $url$git_path to see if the bezel exists)" "$TERMINAL"
+			readarray -t sorted < <(for a in "${unmatched[@]}"; do echo "$a"; done | sort)
+			for (( i=0; i< "$unmatched_count"; i++ )); do
+				record "$(($i + 1)). ${sorted[$i]}" "$TERMINAL"
+			done
 		fi
 
 		# sync disk
@@ -583,7 +604,13 @@ fi
 if [[ "$command" = "list" ]]; then
 		list
 elif [[ "$command" = "install" && -n "$system" ]]; then
-		install "$system"
+		if [[ -n "$3" && "$3" != "--show-unmatched" ]]; then
+			record "Error : unknown argument for install: $3" "1"
+			record "" "1"
+			usage
+		else
+			install "$system" "$3"
+		fi
 elif [[ "$command" = "remove" && -n "$system" ]]; then
 		remove "$system"
 else

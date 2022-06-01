@@ -108,7 +108,7 @@ shared:
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     ai_target_lang:
       prompt: TARGET LANGUAGE
       submenu: AI GAME TRANSLATION
@@ -141,7 +141,7 @@ shared:
     ai_service_pause:
       prompt: PAUSE ON TRANSLATED SCREEN
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
@@ -182,7 +182,13 @@ shared:
       choices:
         "On": 1
         "Off": 0
-
+    use_guns:
+      group: LIGHTGUN
+      prompt: Use guns
+      description: Use guns instead of pads if guns are detected on the system
+      choices:
+        "On":  1
+        "Off": 0
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
 
@@ -980,7 +986,7 @@ libretro:
     #easyrpg:
     fbneo:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 group: ADVANCED OPTIONS
@@ -1015,6 +1021,7 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
+                group: LIGHTGUN
                 prompt:      SHOW LIGHTGUN CROSSHAIRS
                 description: Lightgun device must be selected on at least one port.
                 choices:
@@ -1041,8 +1048,14 @@ libretro:
                             "Per-game":                           per-game
     fceumm:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
+            fceumm_show_crosshair:
+                group: LIGHTGUN
+                prompt:      SHOW LIGHTGUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
@@ -1122,7 +1135,7 @@ libretro:
                     "Arkanoid paddle":      514
     flycast:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
@@ -1152,6 +1165,42 @@ libretro:
                     "6400x4800":  6400x4800
                     "7040x5280":  7040x5280
                     "7680x5760":  7680x5760
+            reicast_lightgun1_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun2_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun3_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun4_crosshair:
+                group: LIGHTGUN
+                prompt:      Target color for player 1
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
             reicast_mipmapping:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
@@ -1415,6 +1464,7 @@ libretro:
                     "On":                 enabled
       systems:
             megadrive:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_md:
                         group: ADVANCED OPTIONS
@@ -1426,7 +1476,7 @@ libretro:
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -1462,6 +1512,7 @@ libretro:
                             "Menacer Light Gun":             516
                             "Konami Justifiers":             772
             mastersystem:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_ms:
                         group: ADVANCED OPTIONS
@@ -1481,7 +1532,7 @@ libretro:
                             "Off":         disabled
                             "On (forced)": enabled
                     gun_cursor_ms:
-                        group: ADVANCED OPTIONS
+                        group: LIGHTGUN
                         prompt:      SHOW LIGHTGUN CROSSHAIRS
                         description: Lightgun device must be selected on at least one port.
                         choices:
@@ -3176,9 +3227,9 @@ libretro:
                 prompt:      NEO GEO CD BIOS
                 description: Universe BIOS is not compatible with cheats.
                 choices:
-                    "CDZ":          CDZ
-                    "CDZ (MAME)":   CDZ (MAME)
-                    "Universe 3.2": Universe 3.2
+                    "CDZ":          neocd_z.rom (CDZ)
+                    "CDZ MAME":   neocd.bin (CDZ)
+                    "CDZ Universe 3.3": uni-bioscd.rom (CDZ, Universe 3.3)
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
                 description: Use one save file per game.
@@ -3187,8 +3238,14 @@ libretro:
                     "On":           On
     nestopia:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
+            nestopia_show_crosshair:
+                group: LIGHTGUN
+                prompt:      SHOW LIGHTGUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
@@ -4152,7 +4209,7 @@ libretro:
                     "On":         enabled
     snes9x:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             reduce_sprite_flicker:
                 group: ADVANCED OPTIONS
@@ -4220,7 +4277,7 @@ libretro:
                     "Konami Justifier (P2)": 772
     snes9x_next:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -5036,6 +5093,20 @@ libretro:
                     "Port1":    port1
                     "Port2":    port2
                     "Port1+2":  port12
+            controller1_saturn:
+                prompt:      CONTROLLER 1 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
+            controller2_saturn:
+                prompt:      CONTROLLER 2 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
 
     gong:
       shared: [autosave]
@@ -5480,8 +5551,7 @@ dolphin:
                     "Wiimote Sideway + Nunchuk": in
 
 dolphin_triforce:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         internal_resolution:
             prompt:      RENDERING RESOLUTION
@@ -5626,6 +5696,12 @@ duckstation:
             choices:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
+        duckstation_osd:
+            prompt:      SHOW OSD MESSAGES
+            description: Choose whether to show on the display, configuration messages.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"            
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -5785,6 +5861,13 @@ duckstation:
                 "Namco GunCon (Rumble)":         NamcoGunCon
                 "PlayStation Mouse":             PlayStationMouse
                 "NeGcon (Rumble)":               NeGcon
+        duckstation_pgxp:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE PGXP CORRECTIONS
+            description: Reduces wobbly polygongs & warping textures.
+            choices:
+                "Disabled":          "false"
+                "Enabled (Default)": "true"
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -5819,6 +5902,16 @@ flycast:
       choices:
         "Normal": no
         "Rotate": yes
+    flycast_anisotropic:
+      group: ADVANCED OPTIONS
+      prompt:      ANISOTROPIC FILTERING
+      description: Higher values make textures viewed at oblique angles look sharper.
+      choices:
+        "Disbaled (Default)": 1
+        "2x"                : 2
+        "4x"                : 4
+        "8x"                : 8
+        "16x"               : 16
   systems:
     dreamcast:
       cfeatures:
@@ -5862,6 +5955,40 @@ flycast:
           choices:
             "Off (Default)": no
             "On"           : yes
+        flycast_ctrl1_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 1 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl2_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 2 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl3_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 3 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl4_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 4 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_DSP:
+          prompt:      DIGITAL SOUND PROCESSOR
+          description: Enable the Dreamcast DSP. Only recommended for fast systems.
+          choices:
+            "Disbaled (Default)": "no"
+            "Enabled"           : "yes"      
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6630,7 +6757,7 @@ redream:
 
 sdlpop:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, hud]
 
 superbroswar:
   features: []
@@ -6660,6 +6787,7 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
+            group:       LIGHTGUN
             prompt:      SHOW LIGHTGUN CROSSHAIRS
             description: Enable crosshairs in shooting games for the selected players.
             choices:
@@ -6800,6 +6928,13 @@ mame:
             choices:
                 "On":  1
                 "Off": 0
+        dataplugin:
+            group: ADVANCED OPTIONS
+            prompt:      DATA PLUGIN
+            description: Make game history, setup instructions, and special moves viewable in the menu
+            choices:
+                "Enabled":            1
+                "Disabled (Default)": 0
   systems:
        adam:
             cfeatures:
@@ -7811,7 +7946,7 @@ mame:
 
 wine:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         dxvk:
             group: ADVANCED OPTIONS
@@ -7970,7 +8105,7 @@ mugen:
 
 ruffle:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 lightspark:
   features: [padtokeyboard]
@@ -8151,7 +8286,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         fakeGouraud:
             group: ADVANCED OPTIONS
@@ -8226,19 +8361,19 @@ play:
 
 flatpak:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 steam:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 yuzu:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 ryujinx:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 simcoupe:
   features: [padtokeyboard]
@@ -8273,7 +8408,7 @@ openmsx:
   shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 demul:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
@@ -8291,7 +8426,7 @@ demul:
 
 sh:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 xenia:
   features: []
@@ -8299,4 +8434,4 @@ xenia:
 
 odcommander:
   features: [padtokeyboard]
-  shared: [videomode]
+  shared: [videomode, ratio, hud]
