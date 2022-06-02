@@ -600,6 +600,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Emulated Hardware
         if system.isOptSet('o2em_bios'):
             coreSettings.save('o2em_bios', system.config['o2em_bios'])
+        elif system.name == 'videopacplus':
+            coreSettings.save('o2em_bios', '"g7400.bin"')
         else:
             coreSettings.save('o2em_bios', '"o2rom.bin"')
         # Emulated Hardware

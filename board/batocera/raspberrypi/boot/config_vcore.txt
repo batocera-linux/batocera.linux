@@ -58,8 +58,8 @@ boot_delay=3
 # uncomment if you don't want the rainbow at startup
 disable_splash=1
 
-# Overclock
-# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
+# Configure GPU memory based on SDRAM size
+# https://www.raspberrypi.com/documentation/computers/config_txt.html#gpu_mem
 gpu_mem_256=128
 gpu_mem_512=160
 gpu_mem_1024=384
