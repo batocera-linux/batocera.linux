@@ -1434,6 +1434,17 @@ odyssey2:
     libretro:
       o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
 
+videopacplus:
+  name:       Videopac+ G7400
+  manufacturer: Philips
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  path:       videopacplus
+  emulators:
+    libretro:
+      o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
+
 zx81:
   name:       ZX81
   manufacturer: Sinclair
