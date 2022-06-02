@@ -260,9 +260,13 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             eslog.debug("emulator: {}".format(system.config["emulator"]))
 
     # search guns in case use_guns is enabled for this game
+    # force use_guns in case es tells it has a gun
+    if system.isOptSet('use_guns') == False and args.lightgun:
+        system.config["use_guns"] = True
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         guns = controllers.getGuns()
     else:
+        eslog.info("guns disabled.");
         guns = []
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
@@ -644,6 +648,7 @@ if __name__ == '__main__':
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
     parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
     parser.add_argument("-gameinfoxml", help="game info xml", type=str, nargs='?', default='/dev/null', required=False)
+    parser.add_argument("-lightgun", help="configure lightguns", action="store_true")
 
     args = parser.parse_args()
     try:
