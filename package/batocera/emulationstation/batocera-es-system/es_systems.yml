@@ -122,6 +122,7 @@ amiga500:
       A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:amiga500
   comment_fr: |
@@ -144,6 +145,7 @@ amiga1200:
       A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:amiga500
   comment_fr: |
@@ -162,6 +164,7 @@ amigacd32:
       CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
 
 amigacdtv:
   name:       Amiga CDTV
@@ -174,6 +177,7 @@ amigacdtv:
       CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
 
 nes:
   name:       Nintendo Entertainment System
