@@ -1,0 +1,32 @@
+diff --git a/Makefile b/Makefile
+index b834962..c1f37dc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -37,12 +37,26 @@ ifneq (,$(findstring unix,$(platform)))
+    endif
+ 
+ # RPI
+-else ifeq ($(platform), rpi)
++else ifneq (,$(findstring rpi,$(platform)))
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC
+ 	LDFLAGS := -lpthread -lm -ldl
+ 	SHARED := -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,--as-needed -Wl,--no-undefined
+ 
++   ifneq (,$(findstring rpi1,$(platform)))
++		CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++	else ifneq (,$(findstring rpi2,$(platform)))
++		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++	else ifneq (,$(findstring rpi3,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
++            CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++	else ifneq (,$(findstring rpi4,$(platform)))
++         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	endif
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ 
