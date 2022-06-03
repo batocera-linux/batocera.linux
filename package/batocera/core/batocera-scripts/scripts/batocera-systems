@@ -268,8 +268,8 @@ systems = {
                                   { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
                                   { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" },
                                   { "md5": "", "file": "bios/fmtmarty.zip" },
-                                  { "md5": "6618519b2c104cf9b7e71a48381b44a9", "zippedFile": "mrom.m36", "file": "bios/fmtmarty.zip"},
-                                  { "md5": "75a5c7afb4bc8221bab8cf24db417950", "zippedFile": "mrom.m37", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "f6322f99bebb27f7935d9300ee0a787d", "zippedFile": "mrom.m36", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "511d2818a4428ee76996d36b3effb9d2", "zippedFile": "mrom.m37", "file": "bios/fmtmarty.zip"},
                                   { "md5": "", "file": "bios/fmtowns.zip" },
                                   { "md5": "34847786d7de94b5d1133c956ab1d75d", "zippedFile": "fmt_dic.rom", "file": "bios/fmtowns.zip"},
                                   { "md5": "0585b19930d4a7f4c71bcc8a33746588", "zippedFile": "fmt_dos.rom", "file": "bios/fmtowns.zip"},
@@ -281,6 +281,15 @@ systems = {
                                   { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "zippedFile": "fmt_fnt.rom", "file": "bios/fmtownsux.zip"},
                                   { "md5": "90b5e01d42aaa93e8f4503a5e94e120b", "zippedFile": "fmt_sys_a.rom", "file": "bios/fmtownsux.zip"},
                                   { "md5": "1a15f6c1b58ec7e5f850118610a787a7", "zippedFile": "mytownsux.rom", "file": "bios/fmtownsux.zip"} ] },
+
+    # ---------- GamePark GP32 ---------- #
+    "gp32":  { "name": "GamePark GP32", "biosFiles": [  { "md5": "", "file": "bios/gp32.zip" },
+                                  { "md5": "e64ad881b5e1d86547f2edc3034946d9", "zippedFile": "x2c32.jed", "file": "bios/gp32.zip"},
+                                  { "md5": "f78092f15f6ffe15975901ee4e92c680", "zippedFile": "gp32166m.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "19021cc891119c0872d46e87fc0ffe35", "zippedFile": "gp32157e.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "1e4d3216719acea231b81dfcf6069aef", "zippedFile": "gp32156k.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "cac4b56c0db80922cae75403faef40af", "zippedFile": "gp32100k.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "d4af2bc352bdaf4972ea40902feda114", "zippedFile": "gp32mfv2.bin", "file": "bios/gp32.zip"} ] },
 
     # ---------- Future Pinball ---------- #
     "fpinball":   { "name": "Future Pinball", "biosFiles":  [ { "md5": "65a8ebf870420316a939ac44fd4c731d", "file": "bios/wsh57/scripten.exe"  } ] },
@@ -691,8 +700,10 @@ def checkInsideZip(container, fileName, md5sum):
                 if hash.hexdigest() == md5sum:
                     return True
                 else:
+                    print('Mismatch inside .zip: File {} in {} has MD5 {} (expected {})'.format(fileName, container, hash.hexdigest(), md5sum))
                     return False
     # File was not found in zip.
+    print('Missing file inside .zip: File {} not found in {}'.format(fileName, container))
     return False
 
 def checkBios(systems, prefix):
