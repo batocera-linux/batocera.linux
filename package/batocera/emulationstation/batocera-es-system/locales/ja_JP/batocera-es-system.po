@@ -7828,6 +7828,31 @@ msgstr "PS3のアスペクト比設定。一部のゲームは16/9のみ使用�
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "LLVM is fastest, use the Interpreter settings if there are issues."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PPU DECODER"
+msgstr ""
+
+#. TRANSLATION: rpcs3, rpcs3
+msgctxt "game_options"
+msgid "LLVM Recompiler"
+msgstr "LLVM リコンパイラ"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Dynamic Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Static Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr "ゲームが停止する時は[ASMJIT]、[インタープリタ(速い)]を試してください"
 
@@ -7835,11 +7860,6 @@ msgstr "ゲームが停止する時は[ASMJIT]、[インタープリタ(速い)]
 msgctxt "game_options"
 msgid "SPU DECODER"
 msgstr "SPU デコーダー"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "LLVM Recompiler"
-msgstr "LLVM リコンパイラ"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7929,6 +7949,28 @@ msgstr "カラーバッファ書き込み"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
+"Disables the vertex cache. Might resolve missing or flickering graphics "
+"output but degrade performance."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "DISABLE VERTEX CACHE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "May fix broken graphics in some games."
+msgstr "一部のゲームの壊れたグラフィックを修正する場合があります"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE DEPTH BUFFER"
+msgstr "深度バッファ書き込み"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
 "Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
 "Leave on automatic if slowdown occurs."
 msgstr ""
@@ -7969,16 +8011,6 @@ msgstr "5　スレッド"
 msgctxt "game_options"
 msgid "6 threads"
 msgstr "6　スレッド"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May fix broken graphics in some games."
-msgstr "一部のゲームの壊れたグラフィックを修正する場合があります"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "深度バッファ書き込み"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
