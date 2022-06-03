@@ -1,6 +1,26 @@
+2022/xx/xx - batocera.linux 35 -
+        * add: support for aimtrak lightgun out of the box
+        * add: gun support in emulationstation
+        * add: MediaTek MT7921U & MT7986 wifi, RealTek RTL8852A wifi & better AMD sound SOC support. (Kernel 5.18)
+        * add: Additional RPCS3 options & auto aspect ratio
+        * bump: x86_64 linux kernel to 5.18
+        * bump: Nvidia linux driver to 515.48.07
+        * bump: btop to 1.2.7
+        * bump: Mame to 244
+        * bump: RPCS3 to 0.0.22-13657
+        * bump: Ruffle
+        * bump: lightspark
+        * bump: pcsx2 to v1.7.2866 (note: memory cards now saved to /userdata/saves/ps2)
+        * bump: amiberry to v5.2
+        * change: enabled more flycast standalone options (DSP & anisotropic)
+        * change: enabled more duckstation options (PGXP & OSD)
+        * fix: lr-swanstation not working on some SBC's with OpenGLES
 
-2022/xx/xx - batocera.linux 34 - blue morpho
+2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
+        * add: board PS5000
+        * add: board PS7000
+        * add: board Powkiddy A13
         * add: dolphin-triforce (x86_64)
         * add: libretro-mesen
         * add: libretro-mesen-s enabled on some sbcs
@@ -102,6 +122,7 @@
         * fix: bezel resizing for 16:10 aspect ratios
         * fix: change resolution on Dosbox and Dosbox-staging
         * fix: SDLPoP config files location
+        * fix: Duckstation (standalone) performance
 
 2022/02/12 - batocera.linux 33
         * add: Support for Beelink GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"

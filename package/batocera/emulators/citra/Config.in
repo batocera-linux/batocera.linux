@@ -13,6 +13,7 @@ config BR2_PACKAGE_CITRA
     select BR2_PACKAGE_BOOST
     select BR2_PACKAGE_FFMPEG  
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_FDK_AAC
     help
       Citra is an open-source emulator for the Nintendo 3DS.
 

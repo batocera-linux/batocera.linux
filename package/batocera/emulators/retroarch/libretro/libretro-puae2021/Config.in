@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_PUAE2021
+    bool "libretro-puae2021"
+    depends on BR2_PACKAGE_RETROARCH
+    depends on BR2_INSTALL_LIBSTDCPP
+      help
+        2021 libretro AMIGA emulator core for ARM.
+        
+        http://www.libretro.com
+        https://github.com/libretro/libretro-uae/tree/2.6.1
+
+comment "LIBRETRO_PUAE needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

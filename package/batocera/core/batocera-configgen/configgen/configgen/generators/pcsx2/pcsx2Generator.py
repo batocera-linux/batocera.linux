@@ -21,7 +21,7 @@ class Pcsx2Generator(Generator):
             return 16/9
         return 4/3
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         isAVX2 = checkAvx2()
 
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
@@ -269,9 +269,9 @@ def configureGFX(config_directory, system):
 
     # Skipdraw Hack
     if system.isOptSet('skipdraw'):
-        pcsx2GFXSettings.save('UserHacks_SkipDraw', system.config['skipdraw'])
+        pcsx2GFXSettings.save('UserHacks_SkipDraw_Start', system.config['skipdraw'])
     else:
-        pcsx2GFXSettings.save('UserHacks_SkipDraw', '0')
+        pcsx2GFXSettings.save('UserHacks_SkipDraw_Start', '0')
 
     # Align sprite Hack
     if system.isOptSet('align_sprite'):

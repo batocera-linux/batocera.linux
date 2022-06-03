@@ -1,4 +1,4 @@
-From b4b584ce10d458e20051c766f795efdb13c14fc7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Robin Murphy <robin.murphy@arm.com>
 Date: Mon, 26 Oct 2020 11:17:20 +0000
 Subject: [PATCH] clk: rockchip: Add appropriate arch dependencies
@@ -98,7 +98,7 @@ index 47cd6c5de837..effd05032e85 100644
  	help
  	  Build the driver for RK3399 Clock Driver.
 
-From 6a9528bb32e07fac71965605c270f4d449d4aa95 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Xu Wang <vulab@iscas.ac.cn>
 Date: Fri, 27 Nov 2020 09:05:51 +0000
 Subject: [PATCH] clk: rockchip: Remove redundant null check before
@@ -130,7 +130,7 @@ index b443169dd408..336481bc6cc7 100644
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_protect_critical);
 
-From 33f193b83873d8d570ac5e4e990fc254aaf6ed9c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Wed, 18 Nov 2020 14:58:16 +0100
 Subject: [PATCH] clk: rockchip: add CLK_SET_RATE_PARENT to sclk for rk3066a
@@ -253,7 +253,7 @@ index 730020fcc7fe..db8c588139de 100644
  			RK2928_CLKGATE_CON(0), 12, GFLAGS,
  			&rk3066a_i2s2_fracmux),
 
-From e027775aa51cbaaa2828abcfa0227736ffa1b663 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Wed, 18 Nov 2020 14:58:17 +0100
 Subject: [PATCH] clk: rockchip: fix i2s gate bits on rk3066 and rk3188
@@ -315,7 +315,7 @@ index db8c588139de..0b76ad34de00 100644
  	GATE(0, "hclk_imem1", "hclk_cpu", 0, RK2928_CLKGATE_CON(4), 15, GFLAGS),
  
 
-From 22fa5e351f8d8f8b139e206e545e610173860ac8 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alexandru Stan <amstan@chromium.org>
 Date: Wed, 21 Oct 2020 22:04:43 -0700
 Subject: [PATCH] ARM: dts: rockchip: Remove 0 point from brightness-levels on
@@ -385,7 +385,7 @@ index 069f0c2c1fdf..52a84cbe7a90 100644
  };
  
 
-From 79b3eebc9012ed02fe41819b1544d49c1330e79b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Mon, 16 Nov 2020 16:07:56 +0100
 Subject: [PATCH] ARM: dts: rockchip: rename wdt nodename to watchdog on rv1108
@@ -423,7 +423,7 @@ index a1a08cb9364e..e491964b1c3d 100644
  		reg = <0x10360000 0x100>;
  		interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
 
-From 584d663fe6d38f0be2cd41bb20b774934ec86ec3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 30 Nov 2020 14:28:14 +0100
 Subject: [PATCH] ARM: dts: rockchip: Add rtc node for VMARC SOM
@@ -481,7 +481,7 @@ index 4a373f5aa600..da80bfd5f2d5 100644
  		drive-strength = <8>;
  	};
 
-From 7338ce1b96ce9c9f034ce135150b5ce7307b162e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Fri, 23 Oct 2020 23:48:14 +0530
 Subject: [PATCH] ARM: dts: rockchip: Add SDIO0 node for VMARC SOM
@@ -617,7 +617,7 @@ index 5d087be04af8..7257494d2831 100644
  	bus-width = <8>;
  	mmc-hs400-1_8v;
 
-From d6ccdfe82b00db675ff2783b4b89a303ca15f8af Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:15 +0530
 Subject: [PATCH] arm64: defconfig: Enable ROCKCHIP_LVDS
@@ -647,7 +647,7 @@ index 5cfe3cf6f2ac..3ebba7dcb98f 100644
  CONFIG_DRM_RCAR_DW_HDMI=m
  CONFIG_DRM_SUN4I=m
 
-From 96a2300cbc54a3985ae356540822f04cf1990047 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:16 +0530
 Subject: [PATCH] arm64: defconfig: Enable PHY_ROCKCHIP_INNO_DSIDPHY
@@ -678,7 +678,7 @@ index 3ebba7dcb98f..d50826dd7d68 100644
  CONFIG_PHY_ROCKCHIP_TYPEC=y
  CONFIG_PHY_UNIPHIER_USB2=y
 
-From 6d5ff472008e78e2e1e0f3de8a451a3ba29a5778 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:17 +0530
 Subject: [PATCH] arm64: defconfig: Enable USB_SERIAL_CP210X
@@ -710,7 +710,7 @@ index d50826dd7d68..41a2d489f0a2 100644
  CONFIG_USB_HSIC_USB3503=y
  CONFIG_NOP_USB_XCEIV=y
 
-From a8b4abbfd284508abb7e8eb3d18111b76e32c794 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Fri, 23 Oct 2020 23:48:13 +0530
 Subject: [PATCH] arm64: defconfig: Enable RTC_DRV_HYM8563
@@ -740,7 +740,7 @@ index 41a2d489f0a2..699c204090b8 100644
  CONFIG_RTC_DRV_RK808=m
  CONFIG_RTC_DRV_PCF85363=m
 
-From 53d92e22359d06623f2c409198689745c0bc12d1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Lee Jones <lee.jones@linaro.org>
 Date: Tue, 3 Nov 2020 15:28:18 +0000
 Subject: [PATCH] soc: rockchip: io-domain: Remove incorrect and incomplete
@@ -778,7 +778,7 @@ index b29e829e815e..cf8182fc3642 100644
  	int grf_offset;
  	const char *supply_names[MAX_SUPPLIES];
 
-From 62e33371a6343e4b64eabac5af66f916628839e4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 Date: Wed, 14 Oct 2020 22:00:29 +0200
 Subject: [PATCH] dt-bindings: vendor-prefixes: Add kobol prefix
@@ -810,7 +810,7 @@ index 2735be1a8470..259faf1b382c 100644
      description: Kaohsiung Opto-Electronics Inc.
    "^kontron,.*":
 
-From 90c206503d82a1824a574276d7d8c3b8257258e2 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 Date: Wed, 14 Oct 2020 22:00:30 +0200
 Subject: [PATCH] arm64: dts: rockchip: Add basic support for Kobol's Helios64
@@ -1230,7 +1230,7 @@ index 000000000000..2a561be724b2
 +	status = "okay";
 +};
 
-From 101e24cc374b48db4f59ae10268d370aaa81081c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 Date: Mon, 2 Nov 2020 16:06:58 +0100
 Subject: [PATCH] dt-bindings: arm: rockchip: Add Kobol Helios64
@@ -1266,7 +1266,7 @@ index b621752aaa65..ad1dbf349c33 100644
          items:
            - const: mecer,xms6
 
-From 4812e1f87c28f8b0281fd32c7c2f915ca9c8c5e3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 Date: Sat, 4 Jul 2020 00:14:13 +0200
 Subject: [PATCH] arm64: dts: rockchip: add adc joystick to Odroid Go Advance
@@ -1316,7 +1316,7 @@ index 337681038519..97fb93e1cc00 100644
  		compatible = "pwm-backlight";
  		power-supply = <&vcc_bl>;
 
-From 8ab3c3a51695225b53dd46fee046f44c69548b06 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:11 +0530
 Subject: [PATCH] dt-bindings: arm: rockchip: Add Engicam PX30.Core EDIMM2.2
@@ -1358,7 +1358,7 @@ index ad1dbf349c33..cef95eb26ca6 100644
          items:
            - enum:
 
-From 0ea91553684644f7ec2105300b496693697821c3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:12 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam EDIMM2.2 Starter Kit
@@ -1455,7 +1455,7 @@ index 000000000000..cb00988953e9
 +
 +#include "px30-engicam-common.dtsi"
 
-From c12ee859634a1d34851b2c1f80f07a7b124b5006 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Michael Trimarchi <michael@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:13 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam PX30.Core SOM
@@ -1725,7 +1725,7 @@ index 000000000000..db22f776c68f
 +	status = "okay";
 +};
 
-From bc5016747913df8ad96175f3a5038c7331006d1f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:14 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam PX30.Core EDIMM2.2 Starter
@@ -1789,7 +1789,7 @@ index 000000000000..e54d1e480daa
 +	};
 +};
 
-From 5955bbcde3dbb12889de8dcf502fbe4fc026bb1f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:15 +0530
 Subject: [PATCH] dt-bindings: arm: rockchip: Add Engicam PX30.Core C.TOUCH 2.0
@@ -1830,7 +1830,7 @@ index cef95eb26ca6..37fd456170d2 100644
          items:
            - const: engicam,px30-core-edimm2.2
 
-From ad2313ab08f6f49e4359f20c4ccd5d5b5e6ec63b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:16 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam C.TOUCH 2.0
@@ -1876,7 +1876,7 @@ index 000000000000..58425b1e559f
 +
 +#include "px30-engicam-common.dtsi"
 
-From 4558410f03ab777e4e413d25f6f317008c9af309 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Tue, 29 Sep 2020 14:02:17 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam PX30.Core C.TOUCH 2.0
@@ -1941,7 +1941,7 @@ index 000000000000..5a0ecb8faecf
 +	};
 +};
 
-From 92e3be2defa5ca887abd0219e532062354314c16 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Chen-Yu Tsai <wens@csie.org>
 Date: Thu, 26 Nov 2020 15:33:35 +0800
 Subject: [PATCH] arm64: dts: rockchip: Enable HDMI audio on rk3328-roc-cc
@@ -1986,7 +1986,7 @@ index b76282e704de..697fce709031 100644
  	status = "okay";
  
 
-From f124c7ee4abd51988d6b4330087c91db04e8c58a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Chen-Yu Tsai <wens@csie.org>
 Date: Thu, 26 Nov 2020 15:33:36 +0800
 Subject: [PATCH] arm64: dts: rockchip: Enable analog audio on rk3328-roc-cc
@@ -2036,7 +2036,7 @@ index 697fce709031..19959bfba451 100644
  	status = "okay";
  
 
-From e144a0e75bf59398255eb5715dad961d9de0264d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Johan Jonker <jbx6244@gmail.com>
 Date: Mon, 16 Nov 2020 14:23:11 +0100
 Subject: [PATCH] arm64: dts: rockchip: rename sdhci nodename to mmc on rk3399
@@ -2061,7 +2061,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 7a9a7aca86c6..865729ec867f 100644
+index 7e69603fb41c..4d9a2ea3e6bf 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 @@ -331,7 +331,7 @@ sdmmc: mmc@fe320000 {
@@ -2074,7 +2074,7 @@ index 7a9a7aca86c6..865729ec867f 100644
  		reg = <0x0 0xfe330000 0x0 0x10000>;
  		interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH 0>;
 
-From a3c1dcd6f79ffbf29f14cf8d97a17d0c113b64c1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:09 +0530
 Subject: [PATCH] arm64: dts: rockchip: Enable USB Host, OTG on px30-enagicam
@@ -2129,7 +2129,7 @@ index bd5bde989e8d..fbbdbb0a40af 100644
 +	status = "okay";
 +};
 
-From 588353617f30d2a7ce1b9ba6b8daac2fd3c7f58f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:10 +0530
 Subject: [PATCH] arm64: dts: rockchip: Enable LVDS panel on
@@ -2248,7 +2248,7 @@ index db22f776c68f..cdacd3483600 100644
  				regulator-name = "vcc5v0_host";
  				regulator-always-on;
 
-From fea98a305fea5b7359caf1c4a5a203c0170b697e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:11 +0530
 Subject: [PATCH] dt-bindings: arm: rockchip: Add Engicam PX30.Core C.TOUCH 2.0
@@ -2292,7 +2292,7 @@ index 37fd456170d2..ef4544ad6f82 100644
          items:
            - const: engicam,px30-core-edimm2.2
 
-From a9fd5f2e8d3b27b5cd46014c563e09944e956047 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jagan Teki <jagan@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:12 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add Engicam PX30.Core C.TOUCH 2.0 10.1"
@@ -2415,7 +2415,7 @@ index 000000000000..47aa30505a42
 +	status = "okay";
 +};
 
-From c8dd7795b4781bcd100e263bd6bcea57cf4dccc4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Suniel Mahesh <sunil@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:13 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add WiFi support on px30-engicam
@@ -2537,7 +2537,7 @@ index e54d1e480daa..913444548b59 100644
 +	reset-gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;
 +};
 
-From 52ebf8f400b0eda0bda923fb06f2fc7c5d63ac46 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Suniel Mahesh <sunil@amarulasolutions.com>
 Date: Mon, 9 Nov 2020 23:40:14 +0530
 Subject: [PATCH] arm64: dts: rockchip: Add BT support on px30-engicam
@@ -2636,7 +2636,7 @@ index 913444548b59..d759478e1c84 100644
 +	enable-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
 +};
 
-From ae3d6a662eeb8259e23bee05648c94c5f97b2dc3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alexis Ballier <aballier@gentoo.org>
 Date: Thu, 22 Oct 2020 13:35:32 +0200
 Subject: [PATCH] arm64: dts: rockchip: Properly define the type C connector on
@@ -2763,7 +2763,7 @@ index 6163ae8063a7..ad7c4d00888f 100644
  
  &usbdrd3_1 {
 
-From fedebdb66a4cfd3685831f83e55b6b562c36c668 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Shunqian Zheng <zhengsq@rock-chips.com>
 Date: Tue, 20 Oct 2020 16:38:49 -0300
 Subject: [PATCH] arm64: dts: rockchip: add isp0 node for rk3399
@@ -2784,10 +2784,10 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  1 file changed, 26 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 865729ec867f..f5dee5f447bb 100644
+index 4d9a2ea3e6bf..2551b238b97c 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1726,6 +1726,32 @@ vopb_mmu: iommu@ff903f00 {
+@@ -1725,6 +1725,32 @@ vopb_mmu: iommu@ff903f00 {
  		status = "disabled";
  	};
  
@@ -2821,7 +2821,7 @@ index 865729ec867f..f5dee5f447bb 100644
  		compatible = "rockchip,iommu";
  		reg = <0x0 0xff914000 0x0 0x100>, <0x0 0xff915000 0x0 0x100>;
 
-From 8f501e29cd0029de7da8548c0ab717709a01c8e4 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Eddie Cai <eddie.cai.linux@gmail.com>
 Date: Tue, 20 Oct 2020 16:38:50 -0300
 Subject: [PATCH] arm64: dts: rockchip: add isp and sensors for Scarlet
@@ -2939,7 +2939,7 @@ index 60cd1c18cd4e..beee5fbb3443 100644
  	status = "okay";
  	clock-master;
 
-From ff8fd76e7482e5fd9695f505b9c6079bcc393404 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Vicente Bergas <vicencb@gmail.com>
 Date: Tue, 1 Dec 2020 16:41:30 +0100
 Subject: [PATCH] arm64: dts: rockchip: fix supplies on rk3399-rock-pi-4
@@ -2996,7 +2996,7 @@ index 678a336010bf..06df2397bbb4 100644
  					regulator-off-in-suspend;
  				};
 
-From d8bc550f8290ae4afcbb9eaa46aaa10867b1ca72 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Vicente Bergas <vicencb@gmail.com>
 Date: Tue, 1 Dec 2020 16:41:31 +0100
 Subject: [PATCH] arm64: dts: rockchip: fix I2S conflict on rk3399-rock-pi-4
@@ -3031,7 +3031,7 @@ index 06df2397bbb4..63b029a543c1 100644
  };
  
 
-From 4be36380ae5fc643977959a10acba1f59f29c84f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Vicente Bergas <vicencb@gmail.com>
 Date: Tue, 1 Dec 2020 16:41:32 +0100
 Subject: [PATCH] arm64: dts: rockchip: use USB host by default on

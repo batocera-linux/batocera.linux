@@ -122,6 +122,7 @@ amiga500:
       A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:amiga500
   comment_fr: |
@@ -144,6 +145,7 @@ amiga1200:
       A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:amiga500
   comment_fr: |
@@ -162,6 +164,7 @@ amigacd32:
       CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
 
 amigacdtv:
   name:       Amiga CDTV
@@ -174,6 +177,7 @@ amigacdtv:
       CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+      puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
 
 nes:
   name:       Nintendo Entertainment System
@@ -345,6 +349,7 @@ fds:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 virtualboy:
   name:       Virtual Boy
@@ -797,7 +802,6 @@ neogeocd:
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
 
 colecovision:
   name:       ColecoVision
@@ -1430,6 +1434,17 @@ odyssey2:
   hardware: console
   extensions: [bin, zip, 7z]
   path:       o2em
+  emulators:
+    libretro:
+      o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
+
+videopacplus:
+  name:       Videopac+ G7400
+  manufacturer: Philips
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  path:       videopacplus
   emulators:
     libretro:
       o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
@@ -3196,4 +3211,3 @@ odcommander:
     A two-pane file manager in the style of Norton/Midnight Commander.
   comment_fr: |
     Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
-

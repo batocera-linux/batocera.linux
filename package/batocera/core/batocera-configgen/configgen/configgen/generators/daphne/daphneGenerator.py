@@ -10,7 +10,7 @@ from . import daphneControllers
 class DaphneGenerator(Generator):
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         if not os.path.exists(os.path.dirname(batoceraFiles.daphneConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.daphneConfig))
 

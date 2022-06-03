@@ -1,6 +1,6 @@
 diff --color -uri commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/def.h od-commander-lbrpdx/def.h
---- commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/def.h	2021-07-01 00:54:17.000000000 -0700
-+++ od-commander-lbrpdx/def.h	2022-05-17 10:00:19.800728261 -0700
+--- commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/def.h    2021-07-01 00:54:17.000000000 -0700
++++ od-commander-lbrpdx/def.h   2022-05-22 08:47:55.838773761 -0700
 @@ -5,7 +5,11 @@
  #define INHIBIT(X) /* X */
 
@@ -8,7 +8,7 @@ diff --color -uri commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/def.h od-co
 +#ifdef BATOCERA_HANDHELD
  #define FONTS {"/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",10},{"FreeSans.ttf",10},{"DroidSansFallback.ttf",9}
 +#else
-+#define FONTS {"/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",14},{"FreeSans.ttf",14},{"DroidSansFallback.ttf",12}
++#define FONTS {"/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",20},{"FreeSans.ttf",20},{"DroidSansFallback.ttf",18}
 +#endif // BATOCERA_HANDHELD
  #endif
 
@@ -53,8 +53,40 @@ diff --color -uri commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/def.h od-co
  #define DIALOG_PADDING 8
 +#else
 +#define DIALOG_BORDER 5
-+#define DIALOG_PADDING 10
++#define DIALOG_PADDING 4
 +#endif // BATOCERA_HANDHELD
  // Colors
  #define COLOR_TITLE_BG 102, 85, 74
  #define COLOR_KEY 255, 0, 255
+diff --color -uri commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/keyboard.cpp od-commander-lbrpdx/keyboard.cpp
+--- commander-60e30e2e8f0819bc118cf546ee7fd52fc8b91e87/keyboard.cpp     2021-07-01 00:54:17.000000000 -0700
++++ od-commander-lbrpdx/keyboard.cpp    2022-05-22 09:43:15.816641259 -0700
+@@ -23,14 +23,25 @@
+ static std::string kSpace = " ";
+ static std::string kTab = "\t";
+
++#ifdef BATOCERA_HANDHELD
+ constexpr std::size_t kKeyBorderW = 1;
+-constexpr std::size_t kMaxKeyW = 19 + kKeyBorderW;
+-constexpr std::size_t kMaxKeyH = 17 + kKeyBorderW;
++constexpr std::size_t kMaxKeyW = 22 + kKeyBorderW;
++constexpr std::size_t kMaxKeyH = 24 + kKeyBorderW;
+ constexpr std::size_t kMaxKeyGap = 2;
+ constexpr std::size_t kFrameBorder = 2;
+-constexpr std::size_t kTextFieldHeight = 19;
++constexpr std::size_t kTextFieldHeight = 30;
+ constexpr std::size_t kTextFieldMarginBottom = 2;
+ constexpr std::size_t kTextFieldBorder = 2;
++#else
++constexpr std::size_t kKeyBorderW = 2;
++constexpr std::size_t kMaxKeyW = 30 + kKeyBorderW;
++constexpr std::size_t kMaxKeyH = 30 + kKeyBorderW;
++constexpr std::size_t kMaxKeyGap = 2;
++constexpr std::size_t kFrameBorder = 2;
++constexpr std::size_t kTextFieldHeight = 35;
++constexpr std::size_t kTextFieldMarginBottom = 2;
++constexpr std::size_t kTextFieldBorder = 2;
++#endif
+
+ KeyboardLayout UsAsciiLayout(bool support_tabs)
+ {

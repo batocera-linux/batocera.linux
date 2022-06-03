@@ -1,0 +1,7 @@
+config BR2_PACKAGE_WIIMOTES_RULES
+	bool "wiimotes-rules"
+	select BR2_PACKAGE_EVSIEVE
+	select BR2_PACKAGE_BATOCERA_GUN_CALIBRATOR
+
+	help
+	  wiimote support

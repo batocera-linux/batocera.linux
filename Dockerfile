@@ -1,4 +1,4 @@
-FROM ubuntu:21.10
+FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
 	apt-get update && \
@@ -34,7 +34,7 @@ RUN dpkg --add-architecture i386 && \
 		gettext \
 		locales \
 		graphviz \
-		python \
+		python3 \
 		gcc-multilib \
 		g++-multilib \
 	&& apt-get clean \

@@ -15,7 +15,7 @@ from . import rpcs3Controllers
 
 class Rpcs3Generator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
 
@@ -68,6 +68,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Miscellaneous"] = {}
         
         # [Core]
+        # Set the PPU Decoder based on config
+        if system.isOptSet("spudecoder"):
+            rpcs3ymlconfig["Core"]['PPU Decoder'] = system.config["ppudecoder"]
+        else:
+            rpcs3ymlconfig["Core"]['PPU Decoder'] = 'Recompiler (LLVM)'
         # Set the SPU Decoder based on config
         if system.isOptSet("spudecoder"):
             rpcs3ymlconfig["Core"]['SPU Decoder'] = system.config["spudecoder"]
@@ -95,10 +100,8 @@ class Rpcs3Generator(Generator):
             elif system.config['tv_mode'] == '16/9':
                 rpcs3ymlconfig["Video"]['Aspect ratio'] = '16:9'
         else:
-            # This is where the code that automatically works out the ratio of your screen and applies the respective aspect ratio would go.
-            # For now, we will simply remove the key if it exists, thus using RPCS3's default setting.
-            if 'Aspect ratio' in rpcs3ymlconfig["Video"]:
-                del rpcs3ymlconfig["Video"]['Aspect ratio']
+            # If not set, see if the screen ratio is closer to 4:3 or 16:9 and pick that.
+            rpcs3ymlconfig["Video"]['Aspect ratio'] = Rpcs3Generator.getClosestRatio(gameResolution)
         # Shader compilation
         if system.isOptSet("shadermode"):
             rpcs3ymlconfig["Video"]['Shader Mode'] = system.config['shadermode']
@@ -130,6 +133,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]['Write Color Buffers'] = system.config['colorbuffers']
         else:
             rpcs3ymlconfig["Video"]['Write Color Buffers'] = False
+        # Disable Vertex Cache
+        if system.isOptSet("vertexcache"):
+            rpcs3ymlconfig["Video"]['Disable Vertex Cache'] = system.config['vertexcache']
+        else:
+            rpcs3ymlconfig["Video"]['Disable Vertex Cache'] = False
 
         # [Audio]
         rpcs3ymlconfig["Audio"]['Renderer'] = 'Cubeb' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
@@ -138,7 +146,7 @@ class Rpcs3Generator(Generator):
         
         # [Miscellaneous]
         rpcs3ymlconfig["Miscellaneous"]['Exit RPCS3 when process finishes'] = True
-        rpcs3ymlconfig["Miscellaneous"]['Start games in fullscreen mode'] = True       
+        rpcs3ymlconfig["Miscellaneous"]['Start games in fullscreen mode'] = True
 
         with open(batoceraFiles.rpcs3config, 'w') as file:
             documents = yaml.safe_dump(rpcs3ymlconfig, file, default_flow_style=False)
@@ -161,6 +169,16 @@ class Rpcs3Generator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--installfw", "/userdata/bios/PS3UPDAT.PUP"]
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+
+    def getClosestRatio(gameResolution):
+        # Works out the closest screen aspect ratio between the two rpcs3 options - 4:3 and 16:9.
+        # 4:3 = 1.33, 16:10 (Steam Deck) = 1.6, 16:9 = 1.77.
+        # We assume if the ratio is narrower than 16:10 we probably want 4:3, otherwise 16:10 or wider will return 16:9.
+        screenRatio = gameResolution['width'] / gameResolution['height']
+        if screenRatio < 1.6:
+            return '4:3'
+        else:
+            return '16:9'
 
     def getInGameRatio(self, config, gameResolution, rom):
         # If stretchy-boy mode has been set, just assume the display resolution is the aspect ratio.

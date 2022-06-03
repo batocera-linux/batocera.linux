@@ -17,7 +17,7 @@ class FlycastGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
@@ -33,14 +33,21 @@ class FlycastGenerator(Generator):
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
-            flycastControllers.generateControllerConfig(controller, "dreamcast")
-            # Write the Arcade variant (Atomiswave & Naomi/2)
-            flycastControllers.generateControllerConfig(controller, "arcade")
+            if system == "dreamcast":
+                flycastControllers.generateControllerConfig(controller, "dreamcast")
+            else:
+                # Write the Arcade variant (Atomiswave & Naomi/2)
+                flycastControllers.generateControllerConfig(controller, "arcade")
 
             # Set the controller type per Port
             Config.set("input", 'device' + str(controller.player), "0") # Sega Controller
             Config.set("input", 'device' + str(controller.player) + '.1', "1") # Sega VMU
-            Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
+            # Set controller pack, gui option
+            ctrlpackconfig = "flycast_ctrl{}_pack".format(controller.player)
+            if system.isOptSet(ctrlpackconfig):
+                Config.set("input", 'device' + str(controller.player) + '.2', str(system.config[ctrlpackconfig]))
+            else:
+                Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
             # Ensure controller(s) are on seperate Ports
             port = int(controller.player)-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
@@ -74,6 +81,11 @@ class FlycastGenerator(Generator):
             Config.set("config", "pvr.rend", str(system.config["flycast_renderer"]))
         else:
             Config.set("config", "pvr.rend", "0")
+        # anisotropic filtering
+        if system.isOptSet("flycast_anisotropic"):
+            Config.set("config", "rend.AnisotropicFiltering", str(system.config["flycast_anisotropic"]))
+        else:
+            Config.set("config", "rend.AnisotropicFiltering", "1")
         
         # [Dreamcast specifics]
         # language
@@ -100,6 +112,11 @@ class FlycastGenerator(Generator):
             Config.set("config", "Dreamcast.ForceWindowsCE", str(system.config["flycast_winCE"]))
         else:
             Config.set("config", "Dreamcast.ForceWindowsCE", "no")
+        # DSP
+        if system.isOptSet("flycast_DSP"):
+             Config.set("config", "aica.DSPEnabled", str(system.config["flycast_DSP"]))
+        else:
+            Config.set("config", "aica.DSPEnabled", "no")           
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:

@@ -153,6 +153,8 @@ generators = {
     'sh': ShGenerator(),
 }
 
+emulatorNoBezel = [ "sdlpop", "odcommander" ]
+
 def squashfs_begin(rom):
     eslog.debug("squashfs_begin({})".format(rom))
     rommountpoint = "/var/run/squashfs/" + os.path.basename(rom)[:-9]
@@ -235,6 +237,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
     # Read the controller configuration
     playersControllers = controllers.loadControllerConfig(controllersInput)
+
     # find the system to run
     systemName = args.system
     eslog.debug("Running system: {}".format(systemName))
@@ -255,6 +258,16 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     else:
         if "emulator" in system.config:
             eslog.debug("emulator: {}".format(system.config["emulator"]))
+
+    # search guns in case use_guns is enabled for this game
+    # force use_guns in case es tells it has a gun
+    if system.isOptSet('use_guns') == False and args.lightgun:
+        system.config["use_guns"] = True
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+        guns = controllers.getGuns()
+    else:
+        eslog.info("guns disabled.");
+        guns = []
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
@@ -345,7 +358,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            cmd = generators[system.config['emulator']].generate(system, rom, playersControllers, gameResolution)
+            cmd = generators[system.config['emulator']].generate(system, rom, playersControllers, guns, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, rom, gameResolution)
@@ -385,7 +398,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     return exitCode
 
 def getHudBezel(system, rom, gameResolution):
-    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none":
+    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none" or system.config['emulator'] in emulatorNoBezel:
         return None
 
     eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
@@ -632,6 +645,7 @@ if __name__ == '__main__':
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
     parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
     parser.add_argument("-gameinfoxml", help="game info xml", type=str, nargs='?', default='/dev/null', required=False)
+    parser.add_argument("-lightgun", help="configure lightguns", action="store_true")
 
     args = parser.parse_args()
     try:

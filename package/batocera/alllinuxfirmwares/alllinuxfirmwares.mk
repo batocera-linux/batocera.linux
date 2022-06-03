@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20220411
+ALLLINUXFIRMWARES_VERSION = 20220509
 ALLLINUXFIRMWARES_SITE = http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 ALLLINUXFIRMWARES_SITE_METHOD = git
 
@@ -23,6 +23,7 @@ endef
 # because it adds so non required files on the rpi ; we prefer the specific rpi firmware packages
 define ALLLINUXFIRMWARES_DELETE_BRCM
     rm -rf $(@D)/brcm
+    rm -rf $(@D)/cypress
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)

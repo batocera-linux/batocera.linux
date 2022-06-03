@@ -103,7 +103,16 @@ systems = {
 
     # ---------- SNK ----------#
     "neogeo":   { "name": "NeoGeo", "biosFiles":    [  { "md5": "dffb72f116d36d025068b23970a4f6df", "file": "bios/neogeo.zip" } ] },
-    "neogeocd": { "name": "NeoGeo CD", "biosFiles": [  { "md5": "c733b4b7bd30fa849874d96c591c8639", "file": "bios/neocdz.zip" } ] },
+    "neogeocd":  { "name": "NeoGeo CD", "biosFiles": [ { "md5": "8834880c33164ccbe6476b559f3e37de", "file": "bios/neocd/neocd_f.rom" },
+                                                       { "md5": "043d76d5f0ef836500700c34faef774d", "file": "bios/neocd/neocd_sf.rom" },
+                                                       { "md5": "de3cf45d227ad44645b22aa83b49f450", "file": "bios/neocd/neocd_t.rom" },
+                                                       { "md5": "f6325a33c6d63ea4b9162a3fa8c32727", "file": "bios/neocd/neocd_st.rom" },
+                                                       { "md5": "11526d58d4c524daef7d5d677dc6b004", "file": "bios/neocd/neocd_z.rom" },
+                                                       { "md5": "971ee8a36fb72da57aed01758f0a37f5", "file": "bios/neocd/neocd_sz.rom" },
+                                                       { "md5": "5c2366f25ff92d71788468ca492ebeca", "file": "bios/neocd/front-sp1.bin" },
+                                                       { "md5": "122aee210324c72e8a11116e6ef9c0d0", "file": "bios/neocd/top-sp1.bin" },
+                                                       { "md5": "f39572af7584cb5b3f70ae8cc848aba2", "file": "bios/neocd/neocd.bin"},
+                                                       { "md5": "08ca8b2dba6662e8024f9e789711c6fc", "file": "bios/neocd/uni-bioscd.rom"} ] },
 
     # ---------- Sharp ---------- #
     # https://github.com/libretro/libretro-super/blob/master/dist/info/px68k_libretro.info
@@ -283,7 +292,7 @@ systems = {
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
 
     # ---------- Zelda Classic ---------- #
-    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.data"  },
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
                                                   { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
     "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM"  },
@@ -646,9 +655,10 @@ systems = {
                                                 { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
 
     # ---------- GCE Vectrex ---------- #
-    "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
-                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
-                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    # Not required for libretro-vecx, the default emulator
+    # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+    #                                            { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+    #                                            { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
 }
 
 class BiosStatus:
