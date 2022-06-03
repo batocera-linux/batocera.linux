@@ -1,35 +1,44 @@
-#!/bin/sh
+#!/bin/bash
+## Use Framebuffer as picture overlay, you can see it if you load a ROM or shutdown ES
 
-# This is the BATOCERA system splash service
-# It shows the unique BATOCERA logo in early boot stage
+SPLASH_DIR=/userdata/splash/framebuffer
+FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
+
+do_filerandomize ()
+{
+    local array
+    [[ -d "$SPLASH_DIR" ]] || return 1
+    readarray -t array < <(find "$SPLASH_DIR" -regex "$1" -maxdepth 1 -type f)
+    if [[ ${#array[@]} -gt 0 ]]; then
+        echo "${array[$RANDOM % ${#array[@]}]}"
+    fi
+}
+
+do_defaultimage ()
+{
+    image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
+    if ! [[ -f "$image" ]]; then
+        image="/usr/share/batocera/splash/boot-logo.png"
+        [[ -f "$image" ]] || exit 1
+    fi
+}
 
 do_start ()
 {
-    image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
-    if ! [ -f "$image" ]; then
-        image="/usr/share/batocera/splash/boot-logo.png"
-        [ -f "$image" ] || exit 1
-    fi
-
-    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
-    N=0
-    while ! test -e /dev/fb0 -o $N -gt 80
-    do
-        sleep 0.25
-        N=$((N+1))
-    done
-
+    image=$(do_filerandomize "$FM_IMAGE")
+    [[ -z "$image" ]] && do_defaultimage  
     FBV_OPTS="-f -e"
     # FBV_OPTS can be set differently for some boards to work
     MODELOPTS=/etc/opts.$(cat /sys/firmware/devicetree/base/model)
     test -e "${MODELOPTS}" && . "${MODELOPTS}"
 
-    test -e /dev/fb0 && fbv ${FBV_OPTS} -i "${image}"
+    test -e /dev/fb0 && fbv -f -e -i "${image}"
 }
 
 case "$1" in
     start)
-        do_start &
+    ES_FBPICTURE=$(/usr/bin/batocera-settings-get es.fbpicture.enabled)
+    [ "${ES_FBPICTURE}" = "1" ] && do_start &
         ;;
     stop)
         ;;
