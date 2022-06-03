@@ -6606,6 +6606,14 @@ rpcs3:
             choices:
                 "16:9":  16/9
                 "4:3":   4/3
+        ppudecoder:
+            group: ADVANCED OPTIONS
+            prompt:      PPU DECODER
+            description: LLVM is fastest, use the Interpreter settings if there are issues.
+            choices:
+                "LLVM Recompiler":     Recompiler (LLVM)
+                "Dynamic Interpreter": Interpreter (dynamic)
+                "Static Interpreter":  Interpreter (static)
         spudecoder:
             group: ADVANCED OPTIONS
             prompt:      SPU DECODER
@@ -6648,6 +6656,20 @@ rpcs3:
             choices:
                 "Off (Default)": False
                 "On":            True
+        vertexcache:
+            group: ADVANCED OPTIONS
+            prompt: DISABLE VERTEX CACHE
+            description: Disables the vertex cache. Might resolve missing or flickering graphics output but degrade performance.
+            choices:
+                "Off (Default)": False
+                "On":            True
+        depthbuffer:
+            group: ADVANCED OPTIONS
+            prompt: WRITE DEPTH BUFFER
+            description: May fix broken graphics in some games.
+            choices:
+                "Off (Default)": False
+                "On":            True
         sputhreads:
             group: ADVANCED OPTIONS
             prompt: PREFERRED SPU THREADS
@@ -6660,13 +6682,6 @@ rpcs3:
                 "4 threads": 4
                 "5 threads": 5
                 "6 threads": 6
-        depthbuffer:
-            group: ADVANCED OPTIONS
-            prompt: WRITE DEPTH BUFFER
-            description: May fix broken graphics in some games.
-            choices:
-                "Off (Default)": False
-                "On":            True
 
 scummvm:
   features: [padtokeyboard]
