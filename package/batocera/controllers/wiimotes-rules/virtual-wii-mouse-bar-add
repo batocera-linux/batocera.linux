@@ -4,7 +4,7 @@ test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 WIIMOTEMODE=$(batocera-settings-get controllers.wiimote.mode)
-test "${WIIMOTEMODE}" == 'gun' || exit 0 # gun mode not enabled
+test "${WIIMOTEMODE}" != 'gun' -a "${WIIMOTEMODE}" != "" && exit 0 # gun mode not enabled
 
 USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
 NDEVS=$(cat "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}" | wc -l)
