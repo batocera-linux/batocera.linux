@@ -169,5 +169,6 @@ fixup_file=fixup4x.dat
 # Ensure only one display output can be used on the Pi4 with batocera
 max_framebuffers=1
 
-# custom config
 [all]
+# Custom config, use userconfig.txt for customized changes only
+include userconfig.txt
