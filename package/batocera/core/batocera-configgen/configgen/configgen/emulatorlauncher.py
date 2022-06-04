@@ -408,10 +408,7 @@ def getHudBezel(system, rom, gameResolution):
         return None
 
     bezel = system.config['bezel']
-    if system.config['emulator'] == 'libretro':
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
-    else:
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
+    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config['emulator'])
     if bz_infos is None:
         eslog.debug("no bezel info file found")
         return None
