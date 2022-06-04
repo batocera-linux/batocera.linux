@@ -21,7 +21,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG),y)
 # they should be built prior to those packages, and the only simple
 # way to do so is to make nvidia-driver depend on them.
 #batocera enable nvidia-driver and mesa3d to coexist in the same fs
-BATOCERA_NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd
+BATOCERA_NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd batocera-nvidia-legacy-driver
 # BATOCERA_NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
 
 # batocera modified to suport the vendor-neutral "dispatching" API/ABI
@@ -201,10 +201,8 @@ endef
 define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	$(call BATOCERA_NVIDIA_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
 	$(call BATOCERA_NVIDIA_DRIVER_INSTALL_32,$(TARGET_DIR))
-	$(foreach m,$(BATOCERA_NVIDIA_DRIVER_X_MODS), \
-		$(INSTALL) -D -m 0644 $(@D)/$(notdir $(m)) \
-			$(TARGET_DIR)/usr/lib/xorg/modules/$(m)
-	)
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
+			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia_production_drv.so
 	$(foreach p,$(BATOCERA_NVIDIA_DRIVER_PROGS), \
 		$(INSTALL) -D -m 0755 $(@D)/$(p) \
 			$(TARGET_DIR)/usr/bin/$(p)
@@ -213,14 +211,14 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 
 # batocera install files needed by Vulkan
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
-		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_production_layers.json
 
 # batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
-		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia_production.json
 
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
-		$(TARGET_DIR)/usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+		$(TARGET_DIR)/usr/share/X11/xorg.conf.d/10-nvidia-production-drm-outputclass.conf
 
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
@@ -232,14 +230,14 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 endef
 
 define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_production_icd.x86_64.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_production_icd.x86_64.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_production_icd.i686.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_production_icd.i686.json
 endef
 
 define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_production_icd.i686.json
 endef
 
 ifeq ($(BR2_x86_64),y)
@@ -248,5 +246,25 @@ endif
 ifeq ($(BR2_i686),y)
 	BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
 endif
+
+KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
+
+# keep a copy of the production driver for legacy - production migrations
+define BATOCERA_NVIDIA_DRIVER_RENAME_KERNEL_MODULES
+    # rename the kernel modules to avoid conflict
+	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-production.ko
+	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset-production.ko
+	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm-production.ko	
+	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm-production.ko
+	# set the driver version file
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia
+	echo $(BATOCERA_NVIDIA_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/production.version
+endef
+
+BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_RENAME_KERNEL_MODULES
 
 $(eval $(generic-package))
