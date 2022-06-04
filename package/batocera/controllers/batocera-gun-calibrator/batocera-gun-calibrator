@@ -174,5 +174,8 @@ except KeyboardInterrupt:
     poll.unregister(input.fd)
     target.close()    
 except Exception as e:
+    import traceback
+    with open('/var/run/gun-calibrator.crash', 'w') as fd:
+        fd.write(traceback.format_exc())
     raise e
 ###
