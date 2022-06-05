@@ -14,72 +14,6 @@ do_scanlist() {
     do_list
 }
 
-do_enable() {
-    SSID=$1
-    PSK=$2
-
-    mkdir -p "/var/lib/connman" || return 1
-    cat > "/var/lib/connman/batocera_wifi.config" <<EOF
-[global]
-Name=batocera
-
-[service_batocera_default]
-Type=wifi
-Name=${SSID}
-EOF
-    if test "${PSK}" != ""
-    then
-	echo "Passphrase=${PSK}" >> "/var/lib/connman/batocera_wifi.config"
-    fi
-
-    connmanctl disable wifi
-    sleep 1
-
-    N=0
-    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    while test $? -ne 0 -a $N -lt 5 # 5 tries
-    do
-        N=$((N+1))
-        sleep 1
-        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    done
-
-    connmanctl enable wifi || return 1
-    connmanctl scan   wifi || return 1
-    return 0
-}
-
-do_disable() {
-    N=0
-    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    while test $? -ne 0 -a $N -lt 5 # 5 tries
-    do
-        N=$((N+1))
-        sleep 1
-        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    done
-    connmanctl disable wifi
-}
-
-do_start() {
-    settingsWlan="$(/usr/bin/batocera-settings-get wifi.enabled)"
-    if [ "$settingsWlan" != "1" ];then
-        return 0
-    fi
-
-    N=0
-    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    while test $? -ne 0 -a $N -lt 5 # 5 tries
-    do
-        N=$((N+1))
-        sleep 1
-        connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-    done
-
-    connmanctl enable wifi || return 1
-    connmanctl scan   wifi || return 1
-}
-
 
 if [ $# -eq 0 ]; then
 	do_help
@@ -97,15 +31,30 @@ case "${ACTION}" in
 	do_scanlist
 	;;
     "start")
-	do_start
+	/etc/init.d/S08connman restart
 	;;
     "enable")
-	SSID=$1
-	PSK=$2
-	do_enable "${SSID}" "${PSK}" || exit 1
+	batocera-settings-set wifi.enabled 1
+	if [ "$#" -eq 2 ]; then
+		batocera-settings-set wifi.ssid "$1"
+		batocera-settings-set wifi.key "$2"
+	fi
+	/etc/init.d/S08connman reload
+
+	# wait up to 5 sec for an IP address
+	N=0
+	ifconfig | grep "inet addr" | grep -qv "127\.0\.0\.1"
+	while test $? -ne 0 -a $N -lt 10 # 10 tries
+	do
+		N=$((N+1))
+		sleep 0.5
+		ifconfig | grep "inet addr" | grep -qv "127\.0\.0\.1"
+	done
+
 	;;
     "disable")
-	do_disable || exit 1
+	batocera-settings-set wifi.enabled 0
+	/etc/init.d/S08connman reload
 	;;
 	*)
 		do_help
