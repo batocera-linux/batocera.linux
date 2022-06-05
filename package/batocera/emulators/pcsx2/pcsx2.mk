@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Apr 14, 2022
-PCSX2_VERSION = v1.7.2589
+#Version: Commits on Jun 3, 2022
+PCSX2_VERSION = v1.7.2866
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -37,6 +37,7 @@ define PCSX2_INSTALL_TARGET_CMDS
 	cp -p $(@D)/buildroot-build/3rdparty/imgui/libimgui.so $(TARGET_DIR)/usr/pcsx2/lib
 	cp -p $(@D)/buildroot-build/3rdparty/rapidyaml/rapidyaml/libryml.so.0.4.1 $(TARGET_DIR)/usr/pcsx2/lib
 	cp -p $(@D)/buildroot-build/3rdparty/glslang/libglslang.so $(TARGET_DIR)/usr/pcsx2/lib
+	cp -p $(@D)/buildroot-build/3rdparty/zstd/libpcsx2-zstd.so $(TARGET_DIR)/usr/pcsx2/lib
 endef
 
 define PCSX2_EVMAPY
