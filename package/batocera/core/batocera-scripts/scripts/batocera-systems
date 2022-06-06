@@ -268,8 +268,8 @@ systems = {
                                   { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
                                   { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" },
                                   { "md5": "", "file": "bios/fmtmarty.zip" },
-                                  { "md5": "f6322f99bebb27f7935d9300ee0a787d", "zippedFile": "mrom.m36", "file": "bios/fmtmarty.zip"},
-                                  { "md5": "511d2818a4428ee76996d36b3effb9d2", "zippedFile": "mrom.m37", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "6618519b2c104cf9b7e71a48381b44a9", "zippedFile": "mrom.m36", "file": "bios/fmtmarty.zip"},
+                                  { "md5": "75a5c7afb4bc8221bab8cf24db417950", "zippedFile": "mrom.m37", "file": "bios/fmtmarty.zip"},
                                   { "md5": "", "file": "bios/fmtowns.zip" },
                                   { "md5": "34847786d7de94b5d1133c956ab1d75d", "zippedFile": "fmt_dic.rom", "file": "bios/fmtowns.zip"},
                                   { "md5": "0585b19930d4a7f4c71bcc8a33746588", "zippedFile": "fmt_dos.rom", "file": "bios/fmtowns.zip"},
@@ -605,9 +605,9 @@ systems = {
 
     # ---------- VTech V.Smile ---------- #
     "vsmile":   { "name": "VTech V.Smile", "biosFiles":  [ { "md5": "", "file": "bios/vsmile.zip"  },
-                                                { "md5": "0a58d75b804c23c2edbd6a3698c6e12a", "zippedFile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "4623919fb453a6427fbb19b16478c98b", "zippedFile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "6668b21fb6287813639a70aaafe8fafa", "zippedFile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
+                                                { "md5": "851ff77a89ec3f4f2793eb4aede30e5f", "zippedFile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "f41fcc19ebe1e90fa359cd0df6293fab", "zippedFile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "11e59253c578c8f16ea2375ec398e4e9", "zippedFile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
 
     # ---------- VTech Socrates ---------- #
     "socrates":   { "name": "VTech Socrates", "biosFiles":  [ { "md5": "", "file": "bios/socrates.zip"  },
@@ -690,18 +690,22 @@ def checkInsideZip(container, fileName, md5sum):
         if fname.casefold() == fileName.casefold():
             if md5sum == "":
                 return True
-            entry = archive.open(fname)
-            hash = md5()
-            while True:
-                block = entry.read(blocksize)
-                if not block:
-                    break
-                hash.update(block)
-                if hash.hexdigest() == md5sum:
-                    return True
-                else:
-                    print('Mismatch inside .zip: File {} in {} has MD5 {} (expected {})'.format(fileName, container, hash.hexdigest(), md5sum))
-                    return False
+            archive = zipfile.ZipFile(container)
+            blocksize = 1024**2  #1M chunks
+            for fname in archive.namelist():
+                if fname == fileName:
+                    entry = archive.open(fname)
+                    zippedHash = md5()
+                    while True:
+                        block = entry.read(blocksize)
+                        if not block:
+                            break
+                        zippedHash.update(block)
+                    if zippedHash.hexdigest() == md5sum:
+                        return True
+                    else:
+                        print('Mismatch inside .zip: File {} in {} has MD5 {} (expected {})'.format(fileName, container, zippedHash.hexdigest(), md5sum))
+                        return False
     # File was not found in zip.
     print('Missing file inside .zip: File {} not found in {}'.format(fileName, container))
     return False
@@ -719,10 +723,17 @@ def checkBios(systems, prefix):
                             missingBios[system] = {}
                         missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
                 else:
-                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
-                        if system not in missingBios:
-                            missingBios[system] = {}
-                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                    if 'altmd5' in file:
+                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
+                            print('Debug: Alternate MD5 Exists')
+                            if system not in missingBios:
+                                missingBios[system] = {}
+                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                    else:
+                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
+                            if system not in missingBios:
+                                missingBios[system] = {}
+                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
             else:
                 if system not in missingBios:
                     missingBios[system] = {}
