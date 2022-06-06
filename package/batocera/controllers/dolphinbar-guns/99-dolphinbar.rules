@@ -1,1 +1,1 @@
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HJZ Mayflash Wiimote PC Adapter Mouse", MODE="0666", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-gun-calibrator-daemon $env{DEVNAME}"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HJZ Mayflash Wiimote PC Adapter Mouse", MODE="0666", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="1"
