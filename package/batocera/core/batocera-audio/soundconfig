@@ -119,10 +119,10 @@ mixer $card 'Power Amplifier Mute' on
 mixer $card Headphone 0db on
 mixer $card 'AIF1 Slot 0 Digital DAC' on
 
-ARCH=$(cat /usr/share/batocera/batocera.arch)
+BOARD=$(cat /boot/boot/batocera.board)
 # Amlogic G12 HDMI
-case ${ARCH} in
-    azw,gsking-x|khadas,vim3*) #TDM_A
+case ${BOARD} in
+    vim3*) #TDM_A
       mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 0'
       mixer $card 'FRDDR_A SRC 1 EN' on
       mixer $card 'TDMOUT_A SRC SEL' 'IN 0'

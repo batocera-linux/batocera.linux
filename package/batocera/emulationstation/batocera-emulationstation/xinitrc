@@ -26,7 +26,7 @@ fi
 ### nvidia ###
 # these are 3 variables used only by nvidia to take nvidia gpu over intel cards when such hybrid cards are available
 nvidia_driver="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-driver)"
-if test "${nvidia_driver}" = "true"
+if test "${nvidia_driver}" = "true" || test "${nvidia_driver}" = "legacy"
 then
     nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
     if test "${nvidia_prime}" = "true"
