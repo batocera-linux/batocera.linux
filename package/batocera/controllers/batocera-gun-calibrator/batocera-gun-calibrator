@@ -47,7 +47,7 @@ target = evdev.UInput(name="lightgun", events={
         (ecodes.ABS_X, evdev.AbsInfo(value=0, min=0, max=outputSize[0], fuzz=0, flat=0, resolution=0)),
         (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1], fuzz=0, flat=0, resolution=0))
     ],
-    ecodes.EV_KEY: [ ecodes.BTN_LEFT, ecodes.BTN_RIGHT, ecodes.BTN_MIDDLE ]})
+    ecodes.EV_KEY: [ ecodes.BTN_LEFT, ecodes.BTN_RIGHT, ecodes.BTN_MIDDLE, ecodes.KEY_CONFIG ]})
 
 needSync = False
 calibration_timeChecker = None
@@ -132,12 +132,16 @@ try:
                                     calibration_step = 0
                                     calibration_mode = False
                                     saveCalibration(devpath, inputkey, pCenter, pInputWindow)
+                                    target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                    target.syn()
                 else:
                     if calibration_timeChecker is not None:
                         if time.time() - calibration_timeChecker > 3: # 3 seconds
                             calibration_mode = True
                             calibration_timeChecker  = None
                             calibration_step = 1
+                            target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 1)
+                            target.syn()
                             moveTargetTo([outputSize[0]//2, 0], [outputSize[0]//2, outputSize[1]//2])
         
                     # could be enabled by the timeChecker
