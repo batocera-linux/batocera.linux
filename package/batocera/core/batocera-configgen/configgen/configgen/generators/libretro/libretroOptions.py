@@ -6,6 +6,7 @@ from settings.unixSettings import UnixSettings
 import batoceraFiles
 import csv
 from pathlib import Path
+import controllersConfig
 
 def generateCoreSettings(coreSettings, system, rom, guns):
 
@@ -1281,7 +1282,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('nestopia_show_crosshair') and system.config['nestopia_show_crosshair'] == "disabled":
             coreSettings.save('nestopia_show_crosshair', '"disabled"')
         else:
-            coreSettings.save('nestopia_show_crosshair', '"enabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('nestopia_show_crosshair', status)
 
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
@@ -1334,7 +1339,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('fceumm_show_crosshair') and system.config['fceumm_show_crosshair'] == "disabled":
             coreSettings.save('fceumm_show_crosshair', '"disabled"')
         else:
-            coreSettings.save('fceumm_show_crosshair', '"enabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('fceumm_show_crosshair', status)
 
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
@@ -1469,8 +1478,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_superscope_crosshair', system.config['superscope_crosshair'])
         else:
-            coreSettings.save('snes9x_superscope_crosshair', '"2"')
-
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"2"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('snes9x_superscope_crosshair', status)
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
         if system.isOptSet('2010_reduce_sprite_flicker'):
@@ -1490,7 +1502,14 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('2010_superscope_crosshair'):
             coreSettings.save('snes9x_2010_superscope_crosshair', system.config['2010_superscope_crosshair'])
         else:
-            coreSettings.save('snes9x_2010_superscope_crosshair', '"2"')
+            if system.isOptSet('superscope_crosshair'):
+                coreSettings.save('snes9x_2010_superscope_crosshair', system.config['2010_superscope_crosshair'])
+            else:
+                if controllersConfig.gunsNeedCrosses(guns):
+                    status = '"2"'
+                else:
+                    status = '"disabled"'
+                coreSettings.save('snes9x_2010_superscope_crosshair', status)
 
     # TODO: Add CORE options for BSnes and PocketSNES
 
@@ -1631,19 +1650,35 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('reicast_lightgun1_crosshair'):
             coreSettings.save('reicast_lightgun1_crosshair', system.config['reicast_lightgun1_crosshair'])
         else:
-            coreSettings.save('reicast_lightgun1_crosshair', '"Red"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Red"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun1_crosshair', status)
         if system.isOptSet('reicast_lightgun2_crosshair'):
             coreSettings.save('reicast_lightgun2_crosshair', system.config['reicast_lightgun2_crosshair'])
         else:
-            coreSettings.save('reicast_lightgun2_crosshair', '"Blue"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Blue"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun2_crosshair', status)
         if system.isOptSet('reicast_lightgun3_crosshair'):
             coreSettings.save('reicast_lightgun3_crosshair', system.config['reicast_lightgun3_crosshair'])
         else:
-            coreSettings.save('reicast_lightgun3_crosshair', '"Green"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Green"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun3_crosshair', status)
         if system.isOptSet('reicast_lightgun4_crosshair'):
             coreSettings.save('reicast_lightgun4_crosshair', system.config['reicast_lightgun4_crosshair'])
         else:
-            coreSettings.save('reicast_lightgun4_crosshair', '"White"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"White"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun4_crosshair', status)
         # Video resolution
         if system.isOptSet('reicast_internal_resolution'):
             coreSettings.save('reicast_internal_resolution', system.config['reicast_internal_resolution'])
@@ -1722,7 +1757,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         elif system.isOptSet('gun_cursor_ms') and system.name == 'mastersystem':
             coreSettings.save('genesis_plus_gx_gun_cursor', system.config['gun_cursor_ms'])
         else:
-            coreSettings.save('genesis_plus_gx_gun_cursor', '"enabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('genesis_plus_gx_gun_cursor', status)
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
@@ -1879,7 +1918,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('fbneo-lightgun-hide-crosshair'):
             coreSettings.save('fbneo-lightgun-hide-crosshair', system.config['fbneo-lightgun-hide-crosshair'])
         else:
-            coreSettings.save('fbneo-lightgun-hide-crosshair', '"disabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('fbneo-lightgun-hide-crosshair', status)
 
         # NEOGEO
         if system.name == 'neogeo':

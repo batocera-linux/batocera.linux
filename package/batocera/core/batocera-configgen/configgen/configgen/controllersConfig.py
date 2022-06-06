@@ -218,6 +218,12 @@ def generateSdlGameControllerPadsOrderConfig(controllers):
         res = res + str(controller.index)
     return res
 
+def gunsNeedCrosses(guns):
+    for gun in guns:
+        if guns[gun]["need_cross"]:
+            return True
+    return False
+
 def getGuns():
     guns = {}
     context = pyudev.Context()
@@ -242,7 +248,8 @@ def getGuns():
             nmouse = nmouse + 1
             continue
         # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE (TOUCHPAD are listed after mouses)
-        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse}
+        need_cross = "ID_INPUT_GUN_NEED_CROSS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"] == '1'
+        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross}
         eslog.info("found gun {} at {} with id_mouse={}".format(ngun, mouses[eventid].device_node, nmouse))
         nmouse = nmouse + 1
         ngun = ngun + 1
