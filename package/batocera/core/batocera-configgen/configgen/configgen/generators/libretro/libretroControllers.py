@@ -130,11 +130,11 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun):
         if jskey in controller.inputs:
             input = controller.inputs[jskey]
             if input.value == '-1':
-                config['input_player{}_{}_minus_axis'.format(controller.player, jsvalue)] = '-%s' % input.id
-                config['input_player{}_{}_plus_axis'.format(controller.player, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
             else:
-                config['input_player{}_{}_minus_axis'.format(controller.player, jsvalue)] = '+%s' % input.id
-                config['input_player{}_{}_plus_axis'.format(controller.player, jsvalue)] = '-%s' % input.id
+                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
     if controller.player == '1':
         specialMap = retroarchspecials
         for specialkey in specialMap:

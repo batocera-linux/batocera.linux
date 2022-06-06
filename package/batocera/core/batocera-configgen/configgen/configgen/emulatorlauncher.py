@@ -186,7 +186,7 @@ def squashfs_begin(rom):
     # if the squashfs contains a single file with the same name, take it as the rom file
     romsingle = rommountpoint + "/" + os.path.basename(rom)[:-9]
     if len(os.listdir(rommountpoint)) == 1 and  os.path.exists(romsingle):
-        eslog.debug(f"squashfs: single rom ")
+        eslog.debug(f"squashfs: single rom {romsingle}")
         return True, rommountpoint, romsingle
 
     return True, rommountpoint, rommountpoint
