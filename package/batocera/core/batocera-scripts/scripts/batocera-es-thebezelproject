@@ -14,6 +14,7 @@
 # 20200709 Add : Progress count (started from Terminal/SSH vs ES)
 # 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
 # 20211010 Fix : recursive search in roms directory
+# 20220524 Fix : Properly URL encode bezel file names
 # 20220524 Add : support symlinks to roms directories and roms themselves
 # 20220524 Add : output unmatched ROMs when requested
 #
@@ -133,6 +134,14 @@ function record() {
 # check if url format is valid
 function check_url() {
 		[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
+}
+
+###############################
+#
+function url_encode() {
+	# Properly escape all URL special characters
+	local url=$(printf %s "$1" | jq -s -R -r @uri)
+	echo "$url"
 }
 
 ###############################
@@ -421,10 +430,10 @@ function install() {
 										if [ "$bezel_md5" != "$index_bezel_md5" ]; then
 												# MODIFIED (updated)
 												record "MODIFIED : $index_bezel_name"
-												# replace all spaces with %20 for url request
-												formated_index_bezel_name=${index_bezel_name// /%20}
+												# Clean up the URL for the bezel name
+												formated_index_bezel_name=$(url_encode "$index_bezel_name")
 												let bezels_installed+=1
-												curl -sfL "$ur$git_path$formated_index_bezel_name" -o "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext"
+												curl -sfL "$url$git_path$formated_index_bezel_name" -o "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext"
 												if [ "$?" -ne 0 ]; then
 														record "Warning : file $index_bezel_name could not be downloaded from $url"
 														let NB_WARNING+=1
@@ -437,8 +446,8 @@ function install() {
 								else
 											# COPIED
 											record "COPIED : $index_bezel_name"
-											# replace all spaces with %20 for url request
-											formated_index_bezel_name=${index_bezel_name// /%20}
+											# Clean up the URL for the bezel name
+											formated_index_bezel_name=$(url_encode "$index_bezel_name")
 											let bezels_installed+=1
 											curl -sfL "$url$git_path$formated_index_bezel_name" -o "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext"
 											if [ "$?" -ne 0 ]; then
