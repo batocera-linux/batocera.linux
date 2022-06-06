@@ -20,7 +20,7 @@ EKA2L1_DEPENDENCIES = qt5base qt5tools qt5multimedia
 EKA2L1_CONF_OPTS = -DBUILD_SHARED_LIBS=OFF -DEKA2L1_BUILD_TESTS=OFF
 
 # Does this matter? The readme says to do it if not using Qt5Creator but I'm not seeing where this would actually be in Batocera.
-#EKA2L1_CONF_OPT += -DCMAKE_PREFIX_PATH="$(STAGING_DIR)"
+#EKA2L1_CONF_OPTS += -DCMAKE_PREFIX_PATH="$(STAGING_DIR)"
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 EKA2L1_SUPPORTS_IN_SOURCE_BUILD = NO
