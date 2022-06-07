@@ -47,7 +47,7 @@ target = evdev.UInput(name="lightgun", events={
         (ecodes.ABS_X, evdev.AbsInfo(value=0, min=0, max=outputSize[0], fuzz=0, flat=0, resolution=0)),
         (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1], fuzz=0, flat=0, resolution=0))
     ],
-    ecodes.EV_KEY: [ ecodes.BTN_LEFT, ecodes.BTN_RIGHT, ecodes.BTN_MIDDLE, ecodes.KEY_CONFIG ]})
+    ecodes.EV_KEY: list(range(ecodes.KEY_MAX+1))})
 
 needSync = False
 calibration_timeChecker = None
