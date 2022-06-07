@@ -282,6 +282,15 @@ systems = {
                                   { "md5": "90b5e01d42aaa93e8f4503a5e94e120b", "zippedFile": "fmt_sys_a.rom", "file": "bios/fmtownsux.zip"},
                                   { "md5": "1a15f6c1b58ec7e5f850118610a787a7", "zippedFile": "mytownsux.rom", "file": "bios/fmtownsux.zip"} ] },
 
+    # ---------- GamePark GP32 ---------- #
+    "gp32":  { "name": "GamePark GP32", "biosFiles": [  { "md5": "", "file": "bios/gp32.zip" },
+                                  { "md5": "e64ad881b5e1d86547f2edc3034946d9", "zippedFile": "x2c32.jed", "file": "bios/gp32.zip"},
+                                  { "md5": "f78092f15f6ffe15975901ee4e92c680", "zippedFile": "gp32166m.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "19021cc891119c0872d46e87fc0ffe35", "zippedFile": "gp32157e.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "1e4d3216719acea231b81dfcf6069aef", "zippedFile": "gp32156k.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "cac4b56c0db80922cae75403faef40af", "zippedFile": "gp32100k.bin", "file": "bios/gp32.zip"},
+                                  { "md5": "d4af2bc352bdaf4972ea40902feda114", "zippedFile": "gp32mfv2.bin", "file": "bios/gp32.zip"} ] },
+
     # ---------- Future Pinball ---------- #
     "fpinball":   { "name": "Future Pinball", "biosFiles":  [ { "md5": "65a8ebf870420316a939ac44fd4c731d", "file": "bios/wsh57/scripten.exe"  } ] },
 
@@ -596,9 +605,9 @@ systems = {
 
     # ---------- VTech V.Smile ---------- #
     "vsmile":   { "name": "VTech V.Smile", "biosFiles":  [ { "md5": "", "file": "bios/vsmile.zip"  },
-                                                { "md5": "0a58d75b804c23c2edbd6a3698c6e12a", "zippedFile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "4623919fb453a6427fbb19b16478c98b", "zippedFile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
-                                                { "md5": "6668b21fb6287813639a70aaafe8fafa", "zippedFile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
+                                                { "md5": "851ff77a89ec3f4f2793eb4aede30e5f", "zippedFile": "vsmile_v100.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "f41fcc19ebe1e90fa359cd0df6293fab", "zippedFile": "vsmile_v102.bin", "file": "bios/vsmile.zip"},
+                                                { "md5": "11e59253c578c8f16ea2375ec398e4e9", "zippedFile": "vsmile_v103.bin", "file": "bios/vsmile.zip"} ] },
 
     # ---------- VTech Socrates ---------- #
     "socrates":   { "name": "VTech Socrates", "biosFiles":  [ { "md5": "", "file": "bios/socrates.zip"  },
@@ -681,18 +690,24 @@ def checkInsideZip(container, fileName, md5sum):
         if fname.casefold() == fileName.casefold():
             if md5sum == "":
                 return True
-            entry = archive.open(fname)
-            hash = md5()
-            while True:
-                block = entry.read(blocksize)
-                if not block:
-                    break
-                hash.update(block)
-                if hash.hexdigest() == md5sum:
-                    return True
-                else:
-                    return False
+            archive = zipfile.ZipFile(container)
+            blocksize = 1024**2  #1M chunks
+            for fname in archive.namelist():
+                if fname == fileName:
+                    entry = archive.open(fname)
+                    zippedHash = md5()
+                    while True:
+                        block = entry.read(blocksize)
+                        if not block:
+                            break
+                        zippedHash.update(block)
+                    if zippedHash.hexdigest() == md5sum:
+                        return True
+                    else:
+                        print('Mismatch inside .zip: File {} in {} has MD5 {} (expected {})'.format(fileName, container, zippedHash.hexdigest(), md5sum))
+                        return False
     # File was not found in zip.
+    print('Missing file inside .zip: File {} not found in {}'.format(fileName, container))
     return False
 
 def checkBios(systems, prefix):
@@ -708,10 +723,17 @@ def checkBios(systems, prefix):
                             missingBios[system] = {}
                         missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
                 else:
-                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
-                        if system not in missingBios:
-                            missingBios[system] = {}
-                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                    if 'altmd5' in file:
+                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
+                            print('Debug: Alternate MD5 Exists')
+                            if system not in missingBios:
+                                missingBios[system] = {}
+                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                    else:
+                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
+                            if system not in missingBios:
+                                missingBios[system] = {}
+                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
             else:
                 if system not in missingBios:
                     missingBios[system] = {}

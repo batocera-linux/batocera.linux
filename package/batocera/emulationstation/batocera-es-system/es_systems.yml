@@ -3211,3 +3211,17 @@ odcommander:
     A two-pane file manager in the style of Norton/Midnight Commander.
   comment_fr: |
     Un gestionnaire de fichiers a deux volets, dans le style Norton/Midnight Commander.
+
+gp32:
+  name:       GP32
+  manufacturer: GamePark
+  release: 2001
+  hardware: handheld
+  extensions: [smc, zip, 7z]
+  emulators:
+    libretro:
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file gp32.zip

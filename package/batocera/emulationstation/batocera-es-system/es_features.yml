@@ -2386,6 +2386,22 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         gp32:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":            none
+                          "GamePark GP32 SmartMedia cards": gp32
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM GAME CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          macintosh:
               cfeatures:
                   softList:
@@ -7536,6 +7552,22 @@ mame:
                     choices:
                         "Don't Use (Default)":            none
                         "Hartung Game Master cartridges": gmaster
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       gp32:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":            none
+                        "GamePark GP32 SmartMedia cards": gp32
                 pergamecfg:
                     group: ADVANCED OPTIONS
                     prompt:      CUSTOM GAME CONFIG
