@@ -5,7 +5,7 @@
         * add: MediaTek MT7921U & MT7986 wifi, RealTek RTL8852A wifi & better AMD sound SOC support. (Kernel 5.18)
         * add: Additional RPCS3 options & auto aspect ratio
         * add: GamePark GP32 using MAME/MESS
-        * add: Config option to use the Nvidia legacy drivers 'nvidia-driver=legacy'
+        * add: fallback config option to use the Nvidia legacy drivers 'nvidia-driver=legacy'
         * add: Nvidia 'legacy' linux driver 470.129.06
         # add: RTL8189es SDIO drivers for the Amlogic S905x devices
         * bump: x86_64 linux kernel to 5.18
@@ -20,6 +20,7 @@
         * change: enabled more flycast standalone options (DSP & anisotropic)
         * change: enabled more duckstation options (PGXP & OSD)
         * change: enabled VSync option for standalone MAME
+        * change: We now detect Nvidia GPU's & install the supported driver
         * fix: lr-swanstation not working on some SBC's with OpenGLES
 
 2022/05/24 - batocera.linux 34 - blue morpho

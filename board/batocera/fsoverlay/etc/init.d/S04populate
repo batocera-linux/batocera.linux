@@ -37,14 +37,47 @@ mkdir -p /var/log
 # flatpak and probably more
 mkdir -p /var/tmp
 
-# set the proprietary nvidia driver if requested
-if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+# detect the appropriate Nvidia driver
+NV_DRIVER()
+{
+PCIDEVID=$1
+LISTDIR=/usr/share/nvidia
+
+if grep -q -i $PCIDEVID $LISTDIR/production.list 2>/dev/null
 then
+  echo "Detected PCI device ID in production list"
+	/usr/bin/batocera-nvidia production
+elif grep -q -i $PCIDEVID $LISTDIR/legacy.list 2>/dev/null
+then
+  echo "Detected PCI device ID in legacy list"
+	/usr/bin/batocera-nvidia legacy
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+then
+  echo "Manually setting production driver"
   /usr/bin/batocera-nvidia production
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy[ ]*$" /boot/batocera-boot.conf
 then
+  echo "Manually setting legacy driver"
   /usr/bin/batocera-nvidia legacy
 else
+  echo "Failing back to OpenSource Mesa Nouveau driver"
 	[ -f /etc/modprobe.d/blacklist-nouveau.conf ] && rm /etc/modprobe.d/blacklist-nouveau.conf;
 	[ -f /etc/modprobe.d/nvidia-drm.conf ] && rm /etc/modprobe.d/nvidia-drm.conf;
+fi
+}
+
+# detect if we have a Nvidia GPU
+NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
+if [ "$NVIDIA_DEV" ]; then
+	echo "Detected the following NVIDIA GPUs:"
+	for d in $NVIDIA_DEV ; do
+		lspci -nn -s $d
+	done
+	for d in $NVIDIA_DEV ; do
+		echo -e "\nChecking card: $(lspci -s $d | awk -F: '{print $3}')"
+		echo
+		NV_DRIVER "$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }')"
+	done
+else
+  echo "No NVIDIA GPU detected."
 fi
