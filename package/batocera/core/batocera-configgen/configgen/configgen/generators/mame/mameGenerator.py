@@ -193,6 +193,14 @@ class MameGenerator(Generator):
             commandArray += [ "-nochangeres" ]
             commandArray += [ "-noswitchres" ]
 
+        # Refresh rate options to help with screen tearing
+        # syncrefresh is unlisted, it requires specific display timings and 99.9% of users will get unplayable games.
+        # Leaving it so it can be set manually, for CRT or other arcade-specific display users.
+        if system.isOptSet("vsync") and system.getOptBoolean("vsync"):
+            commandArray += [ "-waitvsync" ]
+        if system.isOptSet("syncrefresh") and system.getOptBoolean("syncrefresh"):
+            commandArray += [ "-syncrefresh" ]
+
         # Rotation / TATE options
         if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
             commandArray += [ "-autoror" ]
