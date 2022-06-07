@@ -294,7 +294,7 @@ msgid "Use guns instead of pads if guns are detected on the system"
 msgstr ""
 "Use pistolas em vez de controles se as pistolas forem detectadas pelo sistema"
 
-#. TRANSLATION: shared, libretro/fbneo, libretro/flycast, libretro/flycast, libretro/flycast, ...
+#. TRANSLATION: shared, libretro/fbneo, libretro/fceumm, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
 msgid "LIGHTGUN"
 msgstr "PISTOLAS"
@@ -1659,7 +1659,7 @@ msgctxt "game_options"
 msgid "Lightgun device must be selected on at least one port."
 msgstr "O dispositivo Pistola deve ser selecionado em pelo menos uma porta."
 
-#. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, supermodel
+#. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
 msgid "SHOW LIGHTGUN CROSSHAIRS"
 msgstr "MOSTRAR MIRA DA PISTOLA"
@@ -2335,12 +2335,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "EXTENSÃO PARA SOM DE MOEDA"
 
-#. TRANSLATION: libretro/mame, duckstation, flycast/uzem, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, duckstation, flycast/uzem, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Ativado"
 
-#. TRANSLATION: libretro/mame, duckstation, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, duckstation, mame/uzem, mame/uzem, mame
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Desativado (Padrão)"
@@ -3057,6 +3057,11 @@ msgstr "Cartuchos Epoch Game Pocket Computer"
 msgctxt "game_options"
 msgid "Hartung Game Master cartridges"
 msgstr "Cartuchos Hartung Game Master"
+
+#. TRANSLATION: libretro/mess, mame/uzem
+msgctxt "game_options"
+msgid "GamePark GP32 SmartMedia cards"
+msgstr ""
 
 #. TRANSLATION: libretro/mess, mame/uzem
 msgctxt "game_options"
@@ -4028,6 +4033,16 @@ msgstr "Videopac+ G7400 (Europeu)"
 msgctxt "game_options"
 msgid "Videopac+ G7400 (France)"
 msgstr "Videopac+ G7400 (França)"
+
+#. TRANSLATION: libretro/o2em
+msgctxt "game_options"
+msgid "NTSC 60Hz"
+msgstr ""
+
+#. TRANSLATION: libretro/o2em
+msgctxt "game_options"
+msgid "PAL 50Hz"
+msgstr ""
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
@@ -5772,6 +5787,21 @@ msgstr "4k"
 msgctxt "game_options"
 msgid "Allows up to 7 or 12 controllers in supported games."
 msgstr "Permite até 7 ou 12 controles em jogos compatíveis."
+
+#. TRANSLATION: libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Not all games support 3D pad."
+msgstr ""
+
+#. TRANSLATION: libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Saturn Pad"
+msgstr ""
+
+#. TRANSLATION: libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Saturn 3D Pad"
+msgstr ""
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -7897,6 +7927,31 @@ msgstr "Ajuste de proporção interna do PS3. Alguns jogos suportam apenas 16/9.
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "LLVM is fastest, use the Interpreter settings if there are issues."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PPU DECODER"
+msgstr ""
+
+#. TRANSLATION: rpcs3, rpcs3
+msgctxt "game_options"
+msgid "LLVM Recompiler"
+msgstr "Recompilador LLVM"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Dynamic Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Static Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
 "Se o jogo travar, tente ASMJIT. Se ainda travar, tente o Intérprete rápido."
@@ -7905,11 +7960,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "SPU DECODER"
 msgstr "DECODIFICADOR SPU"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "LLVM Recompiler"
-msgstr "Recompilador LLVM"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8004,6 +8054,28 @@ msgstr "ESCREVE CORES NO ARMAZENAMENTO TEMPORÁRIO"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
+"Disables the vertex cache. Might resolve missing or flickering graphics "
+"output but degrade performance."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "DISABLE VERTEX CACHE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "May fix broken graphics in some games."
+msgstr "Pode corrigir gráficos quebrados em alguns jogos."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE DEPTH BUFFER"
+msgstr "ARMAZENAMENTO TEMPORÁRIO DE PROFUNDIDADE DE ESCRITA"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
 "Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
 "Leave on automatic if slowdown occurs."
 msgstr ""
@@ -8044,16 +8116,6 @@ msgstr "5 encadeamentos de execução"
 msgctxt "game_options"
 msgid "6 threads"
 msgstr "6 encadeamentos de execução"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May fix broken graphics in some games."
-msgstr "Pode corrigir gráficos quebrados em alguns jogos."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "ARMAZENAMENTO TEMPORÁRIO DE PROFUNDIDADE DE ESCRITA"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -8469,6 +8531,11 @@ msgstr "Acelerar"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
+msgid "Fix screen tearing, but may drop frames."
+msgstr ""
+
+#. TRANSLATION: mame
+msgctxt "game_options"
 msgid ""
 "Depends on video mode being set to BGFX. Vulkan is better, when supported."
 msgstr ""
@@ -8537,6 +8604,17 @@ msgstr ""
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "CORTE DE ARTE"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid ""
+"Make game history, setup instructions, and special moves viewable in the menu"
+msgstr ""
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "DATA PLUGIN"
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
