@@ -6882,6 +6882,12 @@ mame:
                 "BGFX":            bgfx
                 "Accel":           accel
                 "OpenGL":          opengl
+        vsync:
+            prompt:      VSYNC
+            description: Fix screen tearing, but may drop frames.
+            choices:
+                "Off (Default)": 0
+                "On":            1
         bgfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326]
             prompt:      BGFX GRAPHICS API
