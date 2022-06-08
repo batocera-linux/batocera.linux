@@ -213,9 +213,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_RG552 # xbox receiver (require linux >= 4.15)
 	select BR2_PACKAGE_XOW                                  if BR2_PACKAGE_BATOCERA_TARGET_RK3326 && BR2_PACKAGE_BATOCERA_TARGET_RK3128 # xbox receiver (require linux >= 4.5)
 	select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
-	select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
+	select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # wiimotes
 	select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
-	select BR2_PACKAGE_BATOCERA_GUNS
+	select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 	select BR2_SYSTEM_ENABLE_NLS                            # locales
 	select BR2_PACKAGE_ACPID                                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_AVAHI                                # service discovery on local network
