@@ -1743,7 +1743,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('gpgx_no_sprite_limit'):
             coreSettings.save('genesis_plus_gx_no_sprite_limit', system.config['gpgx_no_sprite_limit'])
         else:
-            coreSettings.save('genesis_plus_gx_no_sprite_limit', '"enabled"')
+            coreSettings.save('genesis_plus_gx_no_sprite_limit', '"disabled"')
         # Blargg NTSC filter
         if system.isOptSet('gpgx_blargg_filter_md') and system.name == 'megadrive':
             coreSettings.save('genesis_plus_gx_blargg_ntsc_filter', system.config['gpgx_blargg_filter_md'])
