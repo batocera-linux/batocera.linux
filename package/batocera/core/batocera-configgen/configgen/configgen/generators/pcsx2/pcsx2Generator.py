@@ -41,9 +41,6 @@ class Pcsx2Generator(Generator):
         # Fullscreen
         commandArray.append("--fullscreen")
 
-        # No GUI
-        commandArray.append("--nogui")
-
         # Fullboot
         if system.isOptSet('fullboot') and system.config['fullboot'] == '0':
             eslog.debug("Fast Boot and skip BIOS")
