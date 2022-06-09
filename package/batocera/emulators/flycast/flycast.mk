@@ -34,7 +34,7 @@ else
 endif
 
 # RPI: use the legacy Broadcom GLES libraries
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
     FLYCAST_CONF_OPTS += -DUSE_VIDEOCORE=ON
 endif
 
