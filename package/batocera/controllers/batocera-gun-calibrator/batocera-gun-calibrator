@@ -22,6 +22,7 @@ import sys
 import time
 import os
 import hashlib
+import math
 
 if len(sys.argv) != 2:
     print("mising device argument")
@@ -72,6 +73,13 @@ def moveTargetTo(fromPosition, toPosition):
         target.write(ecodes.EV_ABS, ecodes.ABS_Y, currentPosition[1])
         target.syn()
         time.sleep(0.001) # x1000 = 1 second
+
+def failAnimation(originalPosition):
+    for i in range(0, 50):
+        target.write(ecodes.EV_ABS, ecodes.ABS_X, originalPosition[0]+int(20*math.cos(i)))
+        target.write(ecodes.EV_ABS, ecodes.ABS_Y, originalPosition[1]+int(20*math.sin(i)))
+        target.syn()
+        time.sleep(0.01) # x1000 = 1 second
 
 def saveCalibration(devpath, key, pCenter, pInputWindow):
     # save a general file, available after boot
@@ -133,6 +141,7 @@ try:
                                     if calibrationFailed(pLast):
                                         calibration_step = 0
                                         calibration_mode = False
+                                        failAnimation([outputSize[0]//2, outputSize[1]//2])
                                         target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
                                         target.syn()
                                     else:
@@ -158,6 +167,7 @@ try:
                                         pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
                                         calibration_step = 0
                                         calibration_mode = False
+                                        failAnimation([outputSize[0]//4, outputSize[1]//4])
                                         target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
                                         target.syn()
                                     else:
