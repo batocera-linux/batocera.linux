@@ -1766,6 +1766,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     if (system.config['core'] == 'genesisplusgx'):
         # Allows each game to have its own one brm file for save without lack of space
         coreSettings.save('genesis_plus_gx_bram', '"per game"')
+        # Sometimes needs to be forced to NTSC-U for MSU-MD to work (this is to avoid an intentionally coded lock-out screen):
+        # https://arcadetv.github.io/msu-md-patches/wiki/Lockout-screen.html
+        if system.isOptSet('gpgx_region'):
+            coreSettings.save('genesis_plus_region_detect', system.config['gpgx_region'])
+        else:
+            coreSettings.save('genesis_plus_region_detect', '"auto"')
         # Reduce sprite flickering
         if system.isOptSet('gpgx_no_sprite_limit'):
             coreSettings.save('genesis_plus_gx_no_sprite_limit', system.config['gpgx_no_sprite_limit'])
@@ -1808,6 +1814,26 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('genesis_plus_gx_gg_extra', system.config['gg_extra'])
         else:
             coreSettings.save('genesis_plus_gx_gg_extra', '"disabled"')
+
+        # system.name == 'msu-md'
+        # MSU-MD/MegaCD
+
+        # Needs to be forced to sega/mega cd for MSU-MD to work.
+        if system.isOptSet('gpgx_cd_add_on'):
+            coreSettings.save('genesis_plus_gx_add_on', system.config['gpgx_cd_add_on'])
+        elif system.name == 'msu-md':
+            coreSettings.save('genesis_plus_gx_add_on', '"sega/mega cd"')
+        else:
+            coreSettings.save('genesis_plus_gx_add_on', '"auto"')
+
+        # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
+        # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
+        if system.isOptSet('gpgx_cdda_volume'):
+            coreSettings.save('genesis_plus_gx_cdda_volume', system.config['gpgx_cdda_volume'])
+        elif system.name == 'msu-md':
+            coreSettings.save('genesis_plus_gx_cdda_volume', '"70"')
+        else:
+            coreSettings.save('genesis_plus_gx_cdda_volume', '"100"')
 
         # gun
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
