@@ -119,7 +119,7 @@ def readCalibration(devpath, key, pCenter, pInputWindow):
 pCenter, pInputWindow = readCalibration(devpath, inputkey, pCenter, pInputWindow)
 
 def calibrationFailed(val):
-    if val[0] == 1 and val[1] == 1023: # no point detected
+    if (val[0] == 1 and val[1] == 1023) or (val[0] == 0 and val[1] == 0): # generally, what we get meaning nothing : no point detected
         print("Calibration failed")
         return True
     # should we care about other points if too distant from the first one ?
