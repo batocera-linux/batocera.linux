@@ -16,7 +16,18 @@ then
     DEV1=$(head -1 "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}")
     rm "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}" || exit 1
 
-    nohup evsieve --input "${DEV1}" "${DEVNAME}" grab persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map btn:mode btn:middle --map btn:east btn:left --map btn:south btn:right --output name="virtual wii mouse bar" 2>"/var/log/virtual-wii-mouse-devices.${USBPATHHASH}.log" &
+    # 1:     left     / b
+    # 2:     right    / a
+    # 3:     middle   / home
+    # -:     button_1 / select
+    # 1:     button_2 / a
+    # 2:     button_3 / b
+    # +:     button_4 / c
+    # up:    button_5 / up
+    # down:  button_6 / down
+    # left:  button_7 / left
+    # right: button_8 / right
+    nohup evsieve --input "${DEV1}" "${DEVNAME}" grab persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="wiigun" 2>"/var/log/virtual-wii-mouse-devices.${USBPATHHASH}.log" &
     echo $! > "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}.pid"
 else
     echo "${DEVNAME}" >> "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}" || exit 1

@@ -667,92 +667,52 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
     # clear
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         if len(guns) >= 1:
-            retroarchConfig['input_player1_gun_aux_a_btn'] = ''
-            retroarchConfig['input_player1_gun_aux_b_btn'] = ''
-            retroarchConfig['input_player1_gun_aux_c_btn'] = ''
-            retroarchConfig['input_player1_gun_offscreen_shot_btn'] = ''
-            retroarchConfig['input_player1_gun_trigger_btn'] = ''
-            retroarchConfig['input_player1_gun_start_btn'] = ''
-            retroarchConfig['input_player1_gun_select_btn'] = ''
-            retroarchConfig['input_player1_gun_dpad_up_btn'] = ''
-            retroarchConfig['input_player1_gun_dpad_down_btn'] = ''
-            retroarchConfig['input_player1_gun_dpad_left_btn'] = ''
-            retroarchConfig['input_player1_gun_dpad_right_btn'] = ''
-            retroarchConfig['input_player1_gun_trigger_mbtn'] = ''
-            retroarchConfig['input_player1_gun_start_mbtn'] = ''
+            clearGunInputsForPlayer(1, retroarchConfig)
         if len(guns) >= 2:
-            retroarchConfig['input_player2_gun_aux_a_btn'] = ''
-            retroarchConfig['input_player2_gun_aux_b_btn'] = ''
-            retroarchConfig['input_player2_gun_aux_c_btn'] = ''
-            retroarchConfig['input_player2_gun_offscreen_shot_btn'] = ''
-            retroarchConfig['input_player2_gun_trigger_btn'] = ''
-            retroarchConfig['input_player2_gun_start_btn'] = ''
-            retroarchConfig['input_player2_gun_select_btn'] = ''
-            retroarchConfig['input_player2_gun_dpad_up_btn'] = ''
-            retroarchConfig['input_player2_gun_dpad_down_btn'] = ''
-            retroarchConfig['input_player2_gun_dpad_left_btn'] = ''
-            retroarchConfig['input_player2_gun_dpad_right_btn'] = ''
-            retroarchConfig['input_player2_gun_trigger_mbtn'] = ''
-            retroarchConfig['input_player2_gun_start_mbtn'] = ''
+            clearGunInputsForPlayer(2, retroarchConfig)
 
     if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p2'] = 260
-                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
 
     if system.config['core'] == 'nestopia':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p2'] = 262
-                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
 
     if system.config['core'] == 'fceumm':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p2'] = 258
-                retroarchConfig['input_player2_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
+                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
 
     if system.config['core'] == 'genesisplusgx':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p1'] = 260
-                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
+                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
 
     if system.config['core'] == 'fbneo':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p1'] = 4
-                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player1_gun_trigger_mbtn'] = 1
-                retroarchConfig['input_player1_gun_aux_a_mbtn']   = 2 # for all games ?
-                retroarchConfig['input_player1_gun_start_mbtn']   = 3
+                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
             if len(guns) >= 2:
                 retroarchConfig['input_libretro_device_p2'] = 4
-                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
-                retroarchConfig['input_player2_gun_trigger_mbtn'] = 1
-                retroarchConfig['input_player2_gun_aux_a_mbtn']   = 2 # for all games ?
-                retroarchConfig['input_player2_gun_start_mbtn']   = 3
+                configureGunInputsForPlayer(2, guns[1], controllers, retroarchConfig)
 
     if system.config['core'] == 'flycast':
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p1'] = 4
-                retroarchConfig['input_player1_mouse_index'] = guns[0]["id_mouse"]
-                retroarchConfig['input_player1_gun_trigger_mbtn']        = 1
-                retroarchConfig['input_player1_gun_offscreen_shot_mbtn'] = 2
-                retroarchConfig['input_player1_gun_start_mbtn']          = 3
+                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
 
             if len(guns) >= 2:
                 retroarchConfig['input_libretro_device_p2'] = 4
-                retroarchConfig['input_player2_mouse_index'] = guns[1]["id_mouse"]
-                retroarchConfig['input_player2_gun_trigger_mbtn']        = 1
-                retroarchConfig['input_player2_gun_offscreen_shot_mbtn'] = 2
-                retroarchConfig['input_player2_gun_start_mbtn']          = 3
+                configureGunInputsForPlayer(2, guns[1], controllers, retroarchConfig)
 
     # Bezel option
     try:
@@ -768,6 +728,63 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
             retroarchConfig[user_config[10:]] = systemConfig[user_config]
 
     return retroarchConfig
+
+def clearGunInputsForPlayer(n, retroarchConfig):
+    # mapping
+    keys = [ "gun_trigger", "gun_offscreen_shot", "gun_aux_a", "gun_aux_b", "gun_aux_c", "gun_start", "gun_select", "gun_dpad_up", "gun_dpad_down", "gun_dpad_left", "gun_dpad_right" ]
+    for key in keys:
+        for type in ["btn", "mbtn"]:
+            retroarchConfig['input_player{}_{}_{}'.format(n, key, type)] = ''
+
+def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig):
+    # gun mapping
+    retroarchConfig['input_player{}_mouse_index'            .format(n)] = gun["id_mouse"]
+    retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = 1
+    retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = 2
+    retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 3
+
+    retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = 4
+    retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 5
+    retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 6
+    retroarchConfig['input_player{}_gun_aux_c_mbtn'         .format(n)] = 7
+    retroarchConfig['input_player{}_gun_dpad_up_mbtn'       .format(n)] = 8
+    retroarchConfig['input_player{}_gun_dpad_down_mbtn'     .format(n)] = 9
+    retroarchConfig['input_player{}_gun_dpad_left_mbtn'     .format(n)] = 10
+    retroarchConfig['input_player{}_gun_dpad_right_mbtn'    .format(n)] = 11
+
+    # mapping
+    mapping = {
+        "gun_trigger"        : "b",
+        "gun_offscreen_shot" : "a",
+        "gun_aux_a"          : "x",
+        "gun_aux_b"          : "y",
+        "gun_aux_c"          : "pageup",
+        "gun_start"          : "start",
+        "gun_select"         : "select",
+        "gun_dpad_up"        : "up",
+        "gun_dpad_down"      : "down",
+        "gun_dpad_left"      : "left",
+        "gun_dpad_right"     : "right"
+    }
+
+    # controller mapping
+    hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
+    nplayer = 1
+    for controller, pad in sorted(controllers.items()):
+        if nplayer == n:
+            for m in mapping:
+                if mapping[m] in pad.inputs:
+                    eslog.error("A5 {}".format(pad.inputs[mapping[m]].type))
+                    if pad.inputs[mapping[m]].type == "button":
+                        retroarchConfig['input_player{}_{}_btn'.format(n, m)] = pad.inputs[mapping[m]].id
+                    elif pad.inputs[mapping[m]].type == "hat":
+                        retroarchConfig['input_player{}_{}_btn'.format(n, m)] = "h0" + hatstoname[pad.inputs[mapping[m]].value]
+                    elif pad.inputs[mapping[m]].type == "axis":
+                        aval = "+"
+                        if int(pad.inputs[mapping[m]].value) < 0:
+                            aval = "-"
+                        retroarchConfig['input_player{}_{}_axis'.format(n, m)] = aval + pad.inputs[mapping[m]].id
+        nplayer += 1
 
 def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:

@@ -42,7 +42,7 @@ inputkey = hashlib.md5(input.name.encode()).hexdigest()[0:8]
 
 # output
 outputSize = [1000, 1000] # output rectangle
-target = evdev.UInput(name="lightgun", events={
+target = evdev.UInput(name=input.name+" calibrated", events={
     ecodes.EV_ABS: [
         (ecodes.ABS_X, evdev.AbsInfo(value=0, min=0, max=outputSize[0], fuzz=0, flat=0, resolution=0)),
         (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1], fuzz=0, flat=0, resolution=0))
@@ -134,6 +134,9 @@ try:
                                     saveCalibration(devpath, inputkey, pCenter, pInputWindow)
                                     target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
                                     target.syn()
+                            else:
+                                target.write(event.type, event.code, event.value)
+                                target.syn()
                 else:
                     if calibration_timeChecker is not None:
                         if time.time() - calibration_timeChecker > 3: # 3 seconds
