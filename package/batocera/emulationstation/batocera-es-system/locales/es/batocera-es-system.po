@@ -293,20 +293,18 @@ msgstr "VIDEO MEJORADO"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Use guns instead of pads if guns are detected on the system"
+msgid "Use light guns instead of pads if light guns are connected."
 msgstr ""
-"Usar pistolas en vez de los mandos si se detectan pistolas (lightgun) en el "
-"sistema"
 
 #. TRANSLATION: shared, libretro/fbneo, libretro/fceumm, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
-msgid "LIGHTGUN"
-msgstr "LIGHTGUN"
+msgid "LIGHT GUN"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Use guns"
-msgstr "Usar pistolas (lightguns)"
+msgid "USE LIGHT GUNS"
+msgstr ""
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -1655,13 +1653,13 @@ msgstr "Sin saltar"
 
 #. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
-msgid "Lightgun device must be selected on at least one port."
-msgstr "El periférico de pistola debe seleccionarse en al menos un mando."
+msgid "Light gun device must be selected on at least one port."
+msgstr ""
 
 #. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
-msgid "SHOW LIGHTGUN CROSSHAIRS"
-msgstr "MOSTRAR MIRA DE PISTOLA (LIGHTGUN)"
+msgid "SHOW LIGHT GUN CROSSHAIRS"
+msgstr ""
 
 #. TRANSLATION: libretro/fbneo, libretro/mame078plus
 msgctxt "game_options"
@@ -1812,10 +1810,10 @@ msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "RENDERIZADO SINCRÓNICO"
 
-#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+#. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 1"
-msgstr "Color del puntero para el jugador 1"
+msgid "Target color for player 1."
+msgstr ""
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -1836,6 +1834,26 @@ msgstr "Verde"
 msgctxt "game_options"
 msgid "White"
 msgstr "White"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 2."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 3."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "LIGHTGUN"
+msgstr "LIGHTGUN"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 4."
+msgstr ""
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -2207,8 +2225,8 @@ msgstr "Joypad 6 Botones + Teamplayer"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
-msgid "Lightguns can only be used in port 2."
-msgstr "Las pistolas (Lightgun) solo se pueden usar en el puerto 2."
+msgid "Light guns can only be used in port 2."
+msgstr ""
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -5199,8 +5217,8 @@ msgstr "40 MHz"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
-msgid "Lightguns/multitap."
-msgstr "Lightguns/multitap."
+msgid "Light guns/multitap."
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -5846,13 +5864,13 @@ msgstr "PERMITIR ROTACIÓN"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "Map controller inputs to lightgun inputs"
-msgstr "Asigna los controles del mando a la pistola (lightgun)"
+msgid "Map controller inputs to light gun inputs."
+msgstr ""
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "CONTROLLER TO LIGHTGUN"
-msgstr "MANDO A PISTOLA"
+msgid "CONTROLLER TO LIGHT GUN"
+msgstr ""
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6141,8 +6159,8 @@ msgstr "BLEND SPRITES (SINGE)"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Use with Singe HD lightgun games."
-msgstr "Usar con los juegos de pistola Singe HD."
+msgid "Use with Singe HD light gun games."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6163,10 +6181,8 @@ msgstr "INVERTIR EJE"
 msgctxt "game_options"
 msgid ""
 "Singe automatically interprets joystick axis change as mouse movement, "
-"useful for lightgun games."
+"useful for light gun games."
 msgstr ""
-"Singe interpreta automáticamente el cambio del eje del joystick como un "
-"movimiento del mouse, útil para juegos de pistola."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6180,8 +6196,8 @@ msgstr "Ocultar puntos de mira en juegos compatibles, por ej. ActionMax."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "HIDE LIGHTGUN CROSSHAIRS"
-msgstr "OCULTAR MIRAS DE PISTOLA"
+msgid "HIDE LIGHT GUN CROSSHAIRS"
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -9072,6 +9088,60 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "HABILITAR ENTRADA SIN PROCESAR"
+
+#~ msgctxt "game_options"
+#~ msgid "Use guns instead of pads if guns are detected on the system"
+#~ msgstr ""
+#~ "Usar pistolas en vez de los mandos si se detectan pistolas (lightgun) en "
+#~ "el sistema"
+
+#~ msgctxt "game_options"
+#~ msgid "Use guns"
+#~ msgstr "Usar pistolas (lightguns)"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightgun device must be selected on at least one port."
+#~ msgstr "El periférico de pistola debe seleccionarse en al menos un mando."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW LIGHTGUN CROSSHAIRS"
+#~ msgstr "MOSTRAR MIRA DE PISTOLA (LIGHTGUN)"
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 1"
+#~ msgstr "Color del puntero para el jugador 1"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns can only be used in port 2."
+#~ msgstr "Las pistolas (Lightgun) solo se pueden usar en el puerto 2."
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns/multitap."
+#~ msgstr "Lightguns/multitap."
+
+#~ msgctxt "game_options"
+#~ msgid "Map controller inputs to lightgun inputs"
+#~ msgstr "Asigna los controles del mando a la pistola (lightgun)"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER TO LIGHTGUN"
+#~ msgstr "MANDO A PISTOLA"
+
+#~ msgctxt "game_options"
+#~ msgid "Use with Singe HD lightgun games."
+#~ msgstr "Usar con los juegos de pistola Singe HD."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Singe automatically interprets joystick axis change as mouse movement, "
+#~ "useful for lightgun games."
+#~ msgstr ""
+#~ "Singe interpreta automáticamente el cambio del eje del joystick como un "
+#~ "movimiento del mouse, útil para juegos de pistola."
+
+#~ msgctxt "game_options"
+#~ msgid "HIDE LIGHTGUN CROSSHAIRS"
+#~ msgstr "OCULTAR MIRAS DE PISTOLA"
 
 #~ msgctxt "game_options"
 #~ msgid "CDZ (MAME)"

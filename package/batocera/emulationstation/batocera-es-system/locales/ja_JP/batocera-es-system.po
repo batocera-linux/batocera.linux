@@ -283,17 +283,17 @@ msgstr "映像処理(映像スレッド)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Use guns instead of pads if guns are detected on the system"
+msgid "Use light guns instead of pads if light guns are connected."
 msgstr ""
 
 #. TRANSLATION: shared, libretro/fbneo, libretro/fceumm, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
-msgid "LIGHTGUN"
+msgid "LIGHT GUN"
 msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Use guns"
+msgid "USE LIGHT GUNS"
 msgstr ""
 
 #. TRANSLATION: libretro/81
@@ -1626,13 +1626,13 @@ msgstr "スキップなし"
 
 #. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
-msgid "Lightgun device must be selected on at least one port."
-msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
+msgid "Light gun device must be selected on at least one port."
+msgstr ""
 
 #. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
-msgid "SHOW LIGHTGUN CROSSHAIRS"
-msgstr "ガンコンクロスエア(照準)を表示"
+msgid "SHOW LIGHT GUN CROSSHAIRS"
+msgstr ""
 
 #. TRANSLATION: libretro/fbneo, libretro/mame078plus
 msgctxt "game_options"
@@ -1780,9 +1780,9 @@ msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "同期レンダリング"
 
-#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+#. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 1"
+msgid "Target color for player 1."
 msgstr ""
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
@@ -1803,6 +1803,26 @@ msgstr ""
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
 msgid "White"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 2."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 3."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "LIGHTGUN"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 4."
 msgstr ""
 
 #. TRANSLATION: libretro/flycast, mupen64plus
@@ -2173,8 +2193,8 @@ msgstr "ジョイパッド 6ボタン+チームプレイ"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
-msgid "Lightguns can only be used in port 2."
-msgstr "ライトガン(ガンコン)はポート2でのみ使用できます"
+msgid "Light guns can only be used in port 2."
+msgstr ""
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -5150,8 +5170,8 @@ msgstr "40 MHz"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
-msgid "Lightguns/multitap."
-msgstr "ガンコン/マルチタップ"
+msgid "Light guns/multitap."
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -5794,13 +5814,13 @@ msgstr "回転を可能にする"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "Map controller inputs to lightgun inputs"
-msgstr "コントローラー入力をガンコン入力に割り当てます"
+msgid "Map controller inputs to light gun inputs."
+msgstr ""
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "CONTROLLER TO LIGHTGUN"
-msgstr "銃操作をコントローラーに割り当て"
+msgid "CONTROLLER TO LIGHT GUN"
+msgstr ""
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6087,8 +6107,8 @@ msgstr "ブレンドスプライト（SINGE）"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Use with Singe HD lightgun games."
-msgstr "Singe HD ライトガンゲームで使用します"
+msgid "Use with Singe HD light gun games."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6109,10 +6129,8 @@ msgstr "スティック軸を反転"
 msgctxt "game_options"
 msgid ""
 "Singe automatically interprets joystick axis change as mouse movement, "
-"useful for lightgun games."
+"useful for light gun games."
 msgstr ""
-"Singeは、ジョイスティックの軸の変化をマウスの動きとして自動的に判断します。ラ"
-"イトガンゲームに役立ちます"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6126,8 +6144,8 @@ msgstr "サポートしているゲームで十字線を非表示にします(Ac
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "HIDE LIGHTGUN CROSSHAIRS"
-msgstr "ガンコンクロスエア(照準)を非表示"
+msgid "HIDE LIGHT GUN CROSSHAIRS"
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -8960,6 +8978,46 @@ msgstr "2人用のシューティングゲームで２つ同時にマウスを�
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "RAW入力を有効"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightgun device must be selected on at least one port."
+#~ msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW LIGHTGUN CROSSHAIRS"
+#~ msgstr "ガンコンクロスエア(照準)を表示"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns can only be used in port 2."
+#~ msgstr "ライトガン(ガンコン)はポート2でのみ使用できます"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns/multitap."
+#~ msgstr "ガンコン/マルチタップ"
+
+#~ msgctxt "game_options"
+#~ msgid "Map controller inputs to lightgun inputs"
+#~ msgstr "コントローラー入力をガンコン入力に割り当てます"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER TO LIGHTGUN"
+#~ msgstr "銃操作をコントローラーに割り当て"
+
+#~ msgctxt "game_options"
+#~ msgid "Use with Singe HD lightgun games."
+#~ msgstr "Singe HD ライトガンゲームで使用します"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Singe automatically interprets joystick axis change as mouse movement, "
+#~ "useful for lightgun games."
+#~ msgstr ""
+#~ "Singeは、ジョイスティックの軸の変化をマウスの動きとして自動的に判断しま"
+#~ "す。ライトガンゲームに役立ちます"
+
+#~ msgctxt "game_options"
+#~ msgid "HIDE LIGHTGUN CROSSHAIRS"
+#~ msgstr "ガンコンクロスエア(照準)を非表示"
 
 #~ msgctxt "game_options"
 #~ msgid "CDZ (MAME)"
