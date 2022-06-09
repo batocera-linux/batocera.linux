@@ -110,6 +110,14 @@ def readCalibration(devpath, key, pCenter, pInputWindow):
 
 pCenter, pInputWindow = readCalibration(devpath, inputkey, pCenter, pInputWindow)
 
+def calibrationFailed(val):
+    if val[0] == 1 and val[1] == 1023: # no point detected
+        print("Calibration failed")
+        return True
+    # should we care about other points if too distant from the first one ?
+    print("calibration with x={}, y={}".format(val[0], val[1]))
+    return False
+
 try:
         while True:
             if poll.poll(1000):
@@ -122,18 +130,45 @@ try:
                                 pLast[1] = event.value
                             elif event.type == ecodes.EV_KEY and event.code == ecodes.BTN_LEFT and event.value == 1:
                                 if calibration_step == 1:
-                                    pCenter = [pLast[0]-(absVals[0][1] - absVals[0][0])//2, pLast[1]-(absVals[1][1] - absVals[1][0])//2]
-                                    calibration_step = 2
+                                    if calibrationFailed(pLast):
+                                        calibration_step = 0
+                                        calibration_mode = False
+                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                        target.syn()
+                                    else:
+                                        pCenter = [pLast[0]-(absVals[0][1] - absVals[0][0])//2, pLast[1]-(absVals[1][1] - absVals[1][0])//2]
+                                        calibration_step = 2
                                     moveTargetTo([outputSize[0]//2, outputSize[1]//2], [0, 0])
                                 elif calibration_step == 2:
-                                    pInputWindow = [((absVals[0][1] - absVals[0][0])//2 + pCenter[0] - pLast[0])*2, ((absVals[1][1] - absVals[1][0])//2 + pCenter[1] - pLast[1])*2]
-                                    if pInputWindow[0] == 0 or pInputWindow[1] == 0: # calibration failed, reset to defaults
+                                    if calibrationFailed(pLast):
+                                        # hum, retry in step 3
+                                        calibration_step = 3
+                                        moveTargetTo([0, 0], [outputSize[0]//4, outputSize[1]//4])
+                                    else:
+                                        pInputWindow = [((absVals[0][1] - absVals[0][0])//2 + pCenter[0] - pLast[0])*2, ((absVals[1][1] - absVals[1][0])//2 + pCenter[1] - pLast[1])*2]
+                                        if pInputWindow[0] == 0 or pInputWindow[1] == 0: # calibration failed, reset to defaults
+                                            pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
+                                        calibration_step = 0
+                                        calibration_mode = False
+                                        saveCalibration(devpath, inputkey, pCenter, pInputWindow)
+                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                        target.syn()
+                                elif calibration_step == 3: # step 3 in case of error (not far enough from the tv)
+                                    if calibrationFailed(pLast):
                                         pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
-                                    calibration_step = 0
-                                    calibration_mode = False
-                                    saveCalibration(devpath, inputkey, pCenter, pInputWindow)
-                                    target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
-                                    target.syn()
+                                        calibration_step = 0
+                                        calibration_mode = False
+                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                        target.syn()
+                                    else:
+                                        pInputWindow = [((absVals[0][1] - absVals[0][0])//2 + pCenter[0] - (pLast[0]-((absVals[0][1] - absVals[0][0])//2+pCenter[0]-pLast[0])))*2, ((absVals[1][1] - absVals[1][0])//2 + pCenter[1] - (pLast[1]-((absVals[1][1] - absVals[1][0])//2+pCenter[1]-pLast[1])))*2]
+                                        if pInputWindow[0] == 0 or pInputWindow[1] == 0: # calibration failed, reset to defaults
+                                            pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
+                                        calibration_step = 0
+                                        calibration_mode = False
+                                        saveCalibration(devpath, inputkey, pCenter, pInputWindow)
+                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                        target.syn()
                             else:
                                 target.write(event.type, event.code, event.value)
                                 target.syn()
