@@ -5,9 +5,11 @@ shared:
   cfeatures:
     videomode:
       prompt: VIDEO MODE
+      description: Force the emulator to run at this resolution.
       preset: videomodes
     ratio:
       prompt: GAME ASPECT RATIO
+      description: Force the game to render in this aspect ratio. Decorations override this setting.
       choices:
         "4/3":           "4/3"
         "16/9":          "16/9"
@@ -36,27 +38,29 @@ shared:
         "Custom":        "custom"
     rewind:
       prompt: REWIND
+      description: Store past states to rewind to in realtime, if the core supports it.
       choices:
         "On":  1
         "Off": 0
     autosave:
-      prompt: AUTO SAVE/LOAD
+      prompt: AUTO SAVE/LOAD ON GAME LAUNCH
+      description: Load latest save state on game launch and save state when exiting game.
       choices:
         "On":  1
         "Off": 0
     shaderset:
       prompt: SHADER SET
-      submenu: GAME RENDERING
+      submenu: GAME RENDERING & SHADERS
       preset: shaderset
     smooth:
       prompt: SMOOTH GAMES (BILINEAR FILTERING)
-      submenu: GAME RENDERING
+      submenu: GAME RENDERING & SHADERS
       choices:
         "On":  1
         "Off": 0
     integerscale:
       prompt:      INTEGER SCALING (PIXEL PERFECT)
-      submenu: GAME RENDERING
+      submenu: GAME RENDERING & SHADERS
       choices:
         "On": 1
         "Off": 0
@@ -92,10 +96,10 @@ shared:
       prompt: TATTOO CORNER
       submenu: DECORATIONS
       choices:
-        "NORTH WEST": "NW"
-        "NORTH EAST": "NE"
-        "SOUTH EAST": "SE"
-        "SOUTH WEST": "SW"
+        "TOP LEFT (NW)": "NW"
+        "TOP RIGHT (NE)": "NE"
+        "BOTTOM RIGHT (SE)": "SE"
+        "BOTTOM LEFT (SW)": "SW"
     bezel.tattoo_file:
       prompt: "CUSTOM .PNG IMAGE PATH"
       submenu: DECORATIONS
@@ -107,6 +111,7 @@ shared:
       preset: switchon
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
+      description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
       submenu: AI GAME TRANSLATION
       preset: switch
     ai_target_lang:
