@@ -408,8 +408,8 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         except:
             pass # reinit the file
 
-    if system.isOptSet('customCfg'):
-        customCfg = system.getOptBoolean('customCfg')
+    if system.isOptSet('customcfg'):
+        customCfg = system.getOptBoolean('customcfg')
     else:
         customCfg = False
     # Don't overwrite if using custom configs
