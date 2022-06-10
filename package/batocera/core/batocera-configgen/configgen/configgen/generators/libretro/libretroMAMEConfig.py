@@ -22,10 +22,15 @@ def generateMAMEConfigs(playersControllers, system, rom):
     romDrivername = os.path.splitext(romBasename)[0]
     specialController = 'none'
 
+    if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+        corePath = 'lr-' + system.config['core']
+    else:
+        corePath = system.config['core']
+
     if system.config['core'] == 'mame':
         # Set up command line for MAME
         if system.getOptBoolean("customcfg"):
-            cfgPath = "/userdata/system/configs/lr-mame/custom/"
+            cfgPath = "/userdata/system/configs/{}/custom/".format(corePath)
         else:
             cfgPath = "/userdata/saves/mame/mame/cfg/"
         if not os.path.exists(cfgPath):
@@ -76,7 +81,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
         if messSysName[messMode] == "":
             # Command line for non-arcade, non-system ROMs (lcdgames, plugnplay)
             if system.getOptBoolean("customcfg"):
-                cfgPath = "/userdata/system/configs/lr-mame/custom/"
+                cfgPath = "/userdata/system/configs/{}/custom/".format(corePath)
             else:
                 cfgPath = "/userdata/saves/mame/mame/cfg/"
             if not os.path.exists(cfgPath):
@@ -206,11 +211,11 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
             # MESS config folder
             if system.getOptBoolean("customcfg"):
-                cfgPath = "/userdata/system/configs/lr-mame/" + messSysName[messMode] + "/custom/"
+                cfgPath = "/userdata/system/configs/{}/{}/custom/".format(corePath, messSysName[messMode])
             else:
-                cfgPath = "/userdata/saves/mame/mame/cfg/" + messSysName[messMode] + "/"
+                cfgPath = "/userdata/saves/mame/mame/cfg/{}/".format(messSysName[messMode])
             if system.getOptBoolean("pergamecfg"):
-                cfgPath = "/userdata/system/configs/lr-mame/" + messSysName[messMode] + "/" + romBasename + "/"
+                cfgPath = "/userdata/system/configs/{}/{}/{}/".format(corePath, messSysName[messMode], romBasename)
             if not os.path.exists(cfgPath):
                 os.makedirs(cfgPath)
             commandLine += [ '-cfg_directory', cfgPath ]
@@ -276,11 +281,12 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
-    if not (system.isOptSet("sharemameart") and not system.getOptBoolean('sharemameart')):
-        artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/"
-    else:
-        artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/"
-    commandLine += [ '-artpath', artPath ]
+    if system.config['core'] != 'same_cdi':
+        if not (system.isOptSet("sharemameart") and not system.getOptBoolean('sharemameart')):
+            artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/"
+        else:
+            artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/"
+        commandLine += [ '-artpath', artPath ]
 
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
@@ -299,7 +305,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
 
     # Write command line file
-    cmdFilename = "/var/run/lr-mame.cmd"
+    cmdFilename = "/var/run/{}.cmd".format(corePath)
     if os.path.exists(cmdFilename):
         os.remove(cmdFilename)
     cmdFile = open(cmdFilename, "w")

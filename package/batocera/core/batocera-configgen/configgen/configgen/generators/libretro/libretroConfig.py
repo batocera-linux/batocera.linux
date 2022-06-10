@@ -85,7 +85,7 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
     if system.name == 'atarist':
         libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
 
-    if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+    if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom)
 
     retroarchConfig = dict()

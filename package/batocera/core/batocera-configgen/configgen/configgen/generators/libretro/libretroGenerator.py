@@ -71,7 +71,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
                     lightgun = False
                 else:
                     lightgun = True
@@ -276,9 +276,13 @@ class LibretroGenerator(Generator):
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
         # Use command line instead of ROM file for MAME variants
-        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
-            commandArray.append("/var/run/lr-mame.cmd")
+            if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+                corePath = 'lr-' + system.config['core']
+            else:
+                corePath = system.config['core']
+            commandArray.append("/var/run/{}.cmd".format(corePath))
 
         if dontAppendROM == False:
             commandArray.append(rom)

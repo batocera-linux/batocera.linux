@@ -2351,7 +2351,7 @@ cdi:
   extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      same_cdi: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAME_CDI], incompatible_extensions: [cue, toc, nrg, gdi, cdr] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
