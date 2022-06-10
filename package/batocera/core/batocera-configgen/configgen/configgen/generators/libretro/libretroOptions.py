@@ -1481,7 +1481,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"2"'
             else:
-                status = '"disabled"'
+                status = '"0"'
             coreSettings.save('snes9x_superscope_crosshair', status)
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
