@@ -97,7 +97,7 @@ def getBezelInfos(rom, bezel, systemName, emulator):
                                             bezel_game = True
                                             if not os.path.exists(overlay_png_file):
                                               return None
-    eslog.debug("Original bezel file used: {}".format(overlay_png_file))
+    eslog.debug(f"Original bezel file used: {overlay_png_file}")
     return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "mamezip": overlay_mamezip_file, "specific_to_game": bezel_game }
 
 # Much faster than PIL Image.size
@@ -117,7 +117,7 @@ def fast_image_size(image_file):
 
 def resizeImage(input_png, output_png, screen_width, screen_height, bezel_stretch=False):
     imgin = Image.open(input_png)
-    eslog.debug("Resizing bezel: image mode {}".format(imgin.mode))
+    eslog.debug(f"Resizing bezel: image mode {imgin.mode}")
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
     else:
@@ -157,19 +157,19 @@ def tatooImage(input_png, output_png, system):
               tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening controller overlay: {}".format(tattoo_file))
+          eslog.error(f"Error opening controller overlay: {tattoo_file}")
   elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
       try:
           tattoo_file = system.config['bezel.tattoo_file']
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening custom file: {}".format(tattoo_file))
+          eslog.error(f"Error opening custom file: {tattoo_file}")
   else:
       try:
           tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
           tattoo = Image.open(tattoo_file)
       except:
-          eslog.error("Error opening custom file: {}".format(tattoo_file))
+          eslog.error(f"Error opening custom file: {tattoo_file}")
   # Open the existing bezel...
   back = Image.open(input_png)
   # Convert it otherwise it implodes later on...

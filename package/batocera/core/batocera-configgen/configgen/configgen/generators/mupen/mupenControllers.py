@@ -101,13 +101,13 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
         value = ''
         inputType = input.type
         if inputType == 'button':
-                value = "button({})".format(input.id)
+                value = f"button({input.id})"
         elif inputType == 'hat':
                 if mupenSettingName in ["X Axis", "Y Axis"]: # special case for these 2 axis...
                     if input.value == "1" or input.value == "8": # only for the lower value to avoid duplicate
-                        value = "hat({} {} {})".format(input.id, mupenHatToAxis[input.value], mupenHatToReverseAxis[input.value])
+                        value = f"hat({input.id} {mupenHatToAxis[input.value]} {mupenHatToReverseAxis[input.value]})"
                 else:
-                    value = "hat({} {})".format(input.id, mupenHatToAxis[input.value])
+                    value = f"hat({input.id} {mupenHatToAxis[input.value]})"
         elif inputType == 'axis':
                 # Generic case for joystick1up and joystick1left
                 if mupenSettingName in mupenDoubleAxis.values():
@@ -116,14 +116,14 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                         # we configure only left and down to not configure 2 times each axis
                         if input.name in [ "left", "up", "joystick1left", "joystick1up", "joystick2left", "joystick2up" ]:
                             if input.value == "-1":
-                                value = "axis({}-,{}+)".format(input.id, input.id)
+                                value = f"axis({input.id}-,{input.id}+)"
                             else:
-                                value = "axis({}+,{}-)".format(input.id, input.id)
+                                value = f"axis({input.id}+,{input.id}-)"
                 else:
                         if input.value == "1":
-                                value = "axis({}+)".format(input.id)
+                                value = f"axis({input.id}+)"
                         else:
-                                value = "axis({}-)".format(input.id)
+                                value = f"axis({input.id}-)"
         return value
 
 def fillIniPlayer(nplayer, iniConfig, controller, config):

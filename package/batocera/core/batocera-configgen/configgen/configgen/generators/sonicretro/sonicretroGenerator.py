@@ -137,7 +137,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.add_section("Keyboard 1")
         
         for x in sonicKeys:
-            sonicConfig.set("Keyboard 1", "{}".format(x), "{}".format(sonicKeys[x]))
+            sonicConfig.set("Keyboard 1", f"{x}", f"{sonicKeys[x]}")
         
         # [Controller 1]
         if not sonicConfig.has_section("Controller 1"):
@@ -148,7 +148,7 @@ class SonicRetroGenerator(Generator):
             if controller.player != "1":
                 continue
             for x in sonicButtons:
-                sonicConfig.set("Controller 1", "{}".format(x), "{}".format(sonicButtons[x]))
+                sonicConfig.set("Controller 1", f"{x}", f"{sonicButtons[x]}")
             break
         
         with open(iniFile, 'w') as configfile:

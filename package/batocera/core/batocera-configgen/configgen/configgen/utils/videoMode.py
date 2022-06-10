@@ -14,9 +14,9 @@ eslog = get_logger(__name__)
 # Set a specific video mode
 def changeMode(videomode):
     if checkModeExists(videomode):
-        cmd = "batocera-resolution setMode \"{}\"".format(videomode)
+        cmd = f"batocera-resolution setMode \"{videomode}\""
         if cmd is not None:
-            eslog.debug("setVideoMode({}): {} ".format(videomode, cmd))
+            eslog.debug(f"setVideoMode({videomode}): {cmd} ")
             os.system(cmd)
 
 def getCurrentMode():
@@ -45,11 +45,11 @@ def checkModeExists(videomode):
         vals = valmod.split(":")
         if(videomode == vals[0]):
             return True
-    eslog.error("invalid video mode {}".format(videomode))
+    eslog.error(f"invalid video mode {videomode}")
     return False
 
 def changeMouse(mode):
-    eslog.debug("changeMouseMode({})".format(mode))
+    eslog.debug(f"changeMouseMode({mode})")
     if mode:
         cmd = "unclutter-remote -s"
     else:

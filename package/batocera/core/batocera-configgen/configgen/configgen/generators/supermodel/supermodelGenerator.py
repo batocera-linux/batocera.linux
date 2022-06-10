@@ -222,16 +222,16 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
         if button in pad.inputs:
             input = pad.inputs[button]
             if input.type == "button":
-                return "JOY{}_BUTTON{}".format(joynum+1, int(input.id)+1)
+                return f"JOY{joynum+1}_BUTTON{int(input.id)+1}"
             elif input.type == "hat":
                 if input.value == "1":
-                    return "JOY{}_UP".format(joynum+1)
+                    return f"JOY{joynum+1}_UP"
                 elif input.value == "2":
-                    return "JOY{}_RIGHT".format(joynum+1)
+                    return f"JOY{joynum+1}_RIGHT"
                 elif input.value == "4":
-                    return "JOY{}_DOWN".format(joynum+1)
+                    return f"JOY{joynum+1}_DOWN"
                 elif input.value == "8":
-                    return "JOY{}_LEFT".format(joynum+1)
+                    return f"JOY{joynum+1}_LEFT"
             elif input.type == "axis":
                 sidestr = ""
                 if axisside is not None:
@@ -247,16 +247,16 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                             sidestr = "_NEG"
 
                 if button == "joystick1left" or button == "left":
-                    return "JOY{}_XAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_XAXIS{sidestr}"
                 elif button == "joystick1up" or button == "up":
-                    return "JOY{}_YAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_YAXIS{sidestr}"
                 elif button == "joystick2left":
-                    return "JOY{}_RXAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RXAXIS{sidestr}"
                 elif button == "joystick2up":
-                    return "JOY{}_RYAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RYAXIS{sidestr}"
                 elif button == "l2":
-                    return "JOY{}_ZAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_ZAXIS{sidestr}"
                 elif button == "r2":
-                    return "JOY{}_RZAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RZAXIS{sidestr}"
 
     return None

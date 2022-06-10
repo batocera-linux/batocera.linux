@@ -231,17 +231,17 @@ class LibretroGenerator(Generator):
 
 
         # Custom configs - per core
-        customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
+        customCfg = f"{batoceraFiles.retroarchRoot}/{system.name}.cfg"
         if os.path.isfile(customCfg):
             configToAppend.append(customCfg)
 
         # Custom configs - per game
-        customGameCfg = "{}/{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name, romName)
+        customGameCfg = f"{batoceraFiles.retroarchRoot}/{system.name}/{romName}.cfg"
         if os.path.isfile(customGameCfg):
             configToAppend.append(customGameCfg)
 
         # Overlay management
-        overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
+        overlayFile = f"{batoceraFiles.OVERLAYS}/{system.name}/{romName}.cfg"
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
 

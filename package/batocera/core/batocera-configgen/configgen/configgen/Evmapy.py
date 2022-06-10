@@ -39,7 +39,7 @@ class Evmapy():
                 "/usr/share/evmapy/{}.keys" .format (system)
         ]:
             if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
-                eslog.debug("evmapy on {}".format(keysfile))
+                eslog.debug(f"evmapy on {keysfile}")
                 subprocess.call(["batocera-evmapy", "clear"])
     
                 padActionConfig = json.load(open(keysfile))

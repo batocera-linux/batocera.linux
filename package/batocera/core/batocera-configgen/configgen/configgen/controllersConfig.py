@@ -182,16 +182,16 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
         'dpup:-a1'
     """
     if type == 'button':
-        return '{}:b{}'.format(keyname, id)
+        return f'{keyname}:b{id}'
     elif type == 'hat':
-        return '{}:h{}.{}'.format(keyname, id, value)
+        return f'{keyname}:h{id}.{value}'
     elif type == 'axis':
         if 'joystick' in name:
             return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
         elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
             return '{}:{}a{}'.format(keyname, '-' if int(value) < 0 else '+', id)
         else:
-            return '{}:a{}'.format(keyname, id)
+            return f'{keyname}:a{id}'
     elif type == 'key':
         return None
     else:

@@ -33,7 +33,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -47,7 +47,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -61,7 +61,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -75,7 +75,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -89,7 +89,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -103,7 +103,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -117,7 +117,7 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode

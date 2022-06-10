@@ -171,9 +171,9 @@ class CitraGenerator(Generator):
             if controller.player != "1":
                 continue
             for x in citraButtons:
-                citraConfig.set("Controls", "profiles\\1\\" + x, '"{}"'.format(CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)))
+                citraConfig.set("Controls", "profiles\\1\\" + x, f'"{CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)}"')
             for x in citraAxis:
-                citraConfig.set("Controls", "profiles\\1\\" + x, '"{}"'.format(CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs)))
+                citraConfig.set("Controls", "profiles\\1\\" + x, f'"{CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs)}"')
             break
 
         ## Update the configuration file

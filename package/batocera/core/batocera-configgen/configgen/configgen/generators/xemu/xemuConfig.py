@@ -73,11 +73,11 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     # Fill input section
     # first, clear
     for i in range(1,5):
-        iniConfig.set("input", "controller_{}_guid".format(i), "")
+        iniConfig.set("input", f"controller_{i}_guid", "")
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer <= 4:
-            iniConfig.set("input", "controller_{}_guid".format(nplayer), pad.guid)
+            iniConfig.set("input", f"controller_{nplayer}_guid", pad.guid)
         nplayer = nplayer + 1
 
     # Fill network section

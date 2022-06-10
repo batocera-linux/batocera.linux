@@ -156,7 +156,7 @@ generators = {
 emulatorNoBezel = [ "sdlpop", "odcommander" ]
 
 def squashfs_begin(rom):
-    eslog.debug("squashfs_begin({})".format(rom))
+    eslog.debug(f"squashfs_begin({rom})")
     rommountpoint = "/var/run/squashfs/" + os.path.basename(rom)[:-9]
 
     if not os.path.exists("/var/run/squashfs"):
@@ -164,41 +164,41 @@ def squashfs_begin(rom):
 
     # first, try to clean an empty remaining directory (for example because of a crash)
     if os.path.exists(rommountpoint) and os.path.isdir(rommountpoint):
-        eslog.debug("squashfs_begin: {} already exists".format(rommountpoint))
+        eslog.debug(f"squashfs_begin: {rommountpoint} already exists")
         # try to remove an empty directory, else, run the directory, ignoring the .squashfs
         try:
             os.rmdir(rommountpoint)
         except:
-            eslog.debug("squashfs_begin: failed to rmdir {}".format(rommountpoint))
+            eslog.debug(f"squashfs_begin: failed to rmdir {rommountpoint}")
             return False, None, rommountpoint
 
     # ok, the base directory doesn't exist, let's create it and mount the squashfs on it
     os.mkdir(rommountpoint)
     return_code = subprocess.call(["mount", rom, rommountpoint])
     if return_code != 0:
-        eslog.debug("squashfs_begin: mounting {} failed".format(rommountpoint))
+        eslog.debug(f"squashfs_begin: mounting {rommountpoint} failed")
         try:
             os.rmdir(rommountpoint)
         except:
             pass
-        raise Exception("unable to mount the file {}".format(rom))
+        raise Exception(f"unable to mount the file {rom}")
 
     # if the squashfs contains a single file with the same name, take it as the rom file
     romsingle = rommountpoint + "/" + os.path.basename(rom)[:-9]
     if len(os.listdir(rommountpoint)) == 1 and  os.path.exists(romsingle):
-        eslog.debug("squashfs: single rom ".format(romsingle))
+        eslog.debug(f"squashfs: single rom {romsingle}")
         return True, rommountpoint, romsingle
 
     return True, rommountpoint, rommountpoint
 
 def squashfs_end(rommountpoint):
-    eslog.debug("squashfs_end({})".format(rommountpoint))
+    eslog.debug(f"squashfs_end({rommountpoint})")
 
     # umount
     return_code = subprocess.call(["umount", rommountpoint])
     if return_code != 0:
-        eslog.debug("squashfs_begin: unmounting {} failed".format(rommountpoint))
-        raise Exception("unable to umount the file {}".format(rommountpoint))
+        eslog.debug(f"squashfs_begin: unmounting {rommountpoint} failed")
+        raise Exception(f"unable to umount the file {rommountpoint}")
 
     # cleaning the empty directory
     os.rmdir(rommountpoint)
@@ -240,7 +240,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
     # find the system to run
     systemName = args.system
-    eslog.debug("Running system: {}".format(systemName))
+    eslog.debug(f"Running system: {systemName}")
     system = Emulator(systemName, romConfiguration)
 
     if args.emulator is not None:
@@ -252,7 +252,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     debugDisplay = system.config.copy()
     if "retroachievements.password" in debugDisplay:
         debugDisplay["retroachievements.password"] = "***"
-    eslog.debug("Settings: {}".format(debugDisplay))
+    eslog.debug(f"Settings: {debugDisplay}")
     if "emulator" in system.config and "core" in system.config:
         eslog.debug("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
     else:
@@ -281,14 +281,14 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
         if system.config["videomode"] == "" or system.config["videomode"] == "default":
             eslog.debug("minTomaxResolution")
-            eslog.debug("video mode before minmax: {}".format(systemMode))
+            eslog.debug(f"video mode before minmax: {systemMode}")
             videoMode.minTomaxResolution()
             newsystemMode = videoMode.getCurrentMode()
             if newsystemMode != systemMode:
                 resolutionChanged = True
 
-        eslog.debug("current video mode: {}".format(newsystemMode))
-        eslog.debug("wanted video mode: {}".format(wantedGameMode))
+        eslog.debug(f"current video mode: {newsystemMode}")
+        eslog.debug(f"wanted video mode: {wantedGameMode}")
 
         if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
             videoMode.changeMode(wantedGameMode)
@@ -422,7 +422,7 @@ def getHudBezel(system, rom, gameResolution):
         try:
             infos = json.load(open(overlay_info_file))
         except:
-            eslog.warning("unable to read {}".format(overlay_info_file))
+            eslog.warning(f"unable to read {overlay_info_file}")
             infos = {}
     else:
         infos = {}
@@ -430,10 +430,10 @@ def getHudBezel(system, rom, gameResolution):
     if "width" in infos and "height" in infos:
         bezel_width  = infos["width"]
         bezel_height = infos["height"]
-        eslog.info("bezel size read from {}".format(overlay_info_file))
+        eslog.info(f"bezel size read from {overlay_info_file}")
     else:
         bezel_width, bezel_height = bezelsUtil.fast_image_size(overlay_png_file)
-        eslog.info("bezel size read from {}".format(overlay_png_file))
+        eslog.info(f"bezel size read from {overlay_png_file}")
 
     # max cover proportion and ratio distortion
     max_cover = 0.05 # 5%
@@ -444,7 +444,7 @@ def getHudBezel(system, rom, gameResolution):
 
     # the screen and bezel ratio must be approximatly the same
     if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
-        eslog.debug("screen ratio ({}) is too far from the bezel one ({}) : {} - {} > {}".format(screen_ratio, bezel_ratio, screen_ratio, bezel_ratio, max_ratio_delta))
+        eslog.debug(f"screen ratio ({screen_ratio}) is too far from the bezel one ({bezel_ratio}) : {screen_ratio} - {bezel_ratio} > {max_ratio_delta}")
         return None
 
     # the ingame image and the bezel free space must feet
@@ -464,19 +464,19 @@ def getHudBezel(system, rom, gameResolution):
     img_width  = img_height * ingame_ratio
 
     if "left" not in infos:
-        eslog.debug("bezel has no left info in {}".format(overlay_info_file))
+        eslog.debug(f"bezel has no left info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
         infos_left = (bezel_width - (bezel_height / 3 * 4)) / 2
         if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-            eslog.debug("bezel left covers too much the game image : {} / {} > {}".format(infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+            eslog.debug(f"bezel left covers too much the game image : {infos_left  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
             return None
         
     if "right" not in infos:
-        eslog.debug("bezel has no right info in {}".format(overlay_info_file))
+        eslog.debug(f"bezel has no right info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
         infos_right = (bezel_width - (bezel_height / 3 * 4)) / 2
         if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-            eslog.debug("bezel right covers too much the game image : {} / {} > {}".format(infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+            eslog.debug(f"bezel right covers too much the game image : {infos_right  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
             return None
     
     if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
@@ -498,7 +498,7 @@ def getHudBezel(system, rom, gameResolution):
         try:
             bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], bezel_stretch)
         except Exception as e:
-            eslog.error("failed to resize the image {}".format(e))
+            eslog.error(f"failed to resize the image {e}")
             return None
         overlay_png_file = output_png_file
 
@@ -507,7 +507,7 @@ def getHudBezel(system, rom, gameResolution):
         bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
         overlay_png_file = output_png_file
 
-    eslog.debug("applying bezel {}".format(overlay_png_file))
+    eslog.debug(f"applying bezel {overlay_png_file}")
     return overlay_png_file
 
 def extractGameInfosFromXml(xml):
@@ -548,7 +548,7 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
     configstr = ""
 
     if bezel != "" and bezel is not None:
-        configstr = "background_image={}\nlegacy_layout=false\n".format(hudConfig_protectStr(bezel))
+        configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
     if not system.isOptSet('hud'):
         return configstr + "background_alpha=0\n" # hide the background
@@ -587,9 +587,9 @@ def runCommand(command):
     global proc
 
     command.env.update(os.environ)
-    eslog.debug("command: {}".format(str(command)))
-    eslog.debug("command: {}".format(str(command.array)))
-    eslog.debug("env: {}".format(str(command.env)))
+    eslog.debug(f"command: {str(command)}")
+    eslog.debug(f"command: {str(command.array)}")
+    eslog.debug(f"env: {str(command.env)}")
     exitcode = -1
     if command.array:
         proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -654,7 +654,7 @@ if __name__ == '__main__':
     except Exception as e:
         eslog.error("configgen exception: ", exc_info=True)
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
-    eslog.debug("Exiting configgen with status {}".format(str(exitcode)))
+    eslog.debug(f"Exiting configgen with status {str(exitcode)}")
     exit(exitcode)
 
 # Local Variables:
