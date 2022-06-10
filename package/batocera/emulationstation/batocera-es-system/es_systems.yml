@@ -857,6 +857,7 @@ atari800:
   release: 1979
   hardware: computer
   extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
+  group:      atari8bit
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
@@ -867,6 +868,7 @@ xegs:
   release: 1987
   hardware: computer
   extensions: [atr, dsk, xfd, bin, rom, car, zip, 7z]
+  group:      atari8bit
   emulators:
     libretro:
       mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
