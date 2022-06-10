@@ -1,8 +1,8 @@
 diff --git a/configure b/configure
-index 36a857e..b33643d 100755
+index d2dc502b84..ec6dc19e6d 100644
 --- a/configure
 +++ b/configure
-@@ -1574,9 +1574,6 @@ for ac_option in $@; do
+@@ -1491,9 +1491,6 @@ for ac_option in $@; do
  			engine_disable ${engine_name}
  		done
  		;;
@@ -12,7 +12,7 @@ index 36a857e..b33643d 100755
  	esac;
  done;
  
-@@ -3260,17 +3257,18 @@ if test -n "$_host"; then
+@@ -3230,13 +3227,13 @@ if test -n "$_host"; then
  			# but Raspbian does.
  			# Be careful as it's the linker (LDFLAGS) which must know about sysroot.
  			# These are needed to build against Raspbian's libSDL.
@@ -21,8 +21,6 @@ index 36a857e..b33643d 100755
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pulseaudio"
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
--			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/opt/vc/lib"
--			append_var LDFLAGS "-L$RPI_ROOT/opt/vc/lib"
 -			append_var CXXFLAGS "-isystem $RPI_ROOT/usr/include/arm-linux-gnueabihf"
 -			append_var CXXFLAGS "-I$RPI_ROOT/usr/include"
 +			#append_var LDFLAGS "--sysroot=$RPI_ROOT"
@@ -30,14 +28,8 @@ index 36a857e..b33643d 100755
 +			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pulseaudio"
 +			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
 +			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/opt/vc/lib"
-+			#append_var LDFLAGS "-L$RPI_ROOT/opt/vc/lib"
-+			append_var LDFLAGS "-Wl,--copy-dt-needed-entries"
 +			#append_var CXXFLAGS "-isystem $RPI_ROOT/usr/include/arm-linux-gnueabihf"
 +			#append_var CXXFLAGS "-I$RPI_ROOT/usr/include"
- 			# This is so optional OpenGL ES includes are found.
--			append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
-+			#append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
  			# We prefer SDL2 on the Raspberry Pi: acceleration now depends on it
  			# since SDL2 manages dispmanx/GLES2 very well internally.
  			# SDL1 is bit-rotten on this platform.
