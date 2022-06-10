@@ -13,13 +13,14 @@
 # 20200708 Fix : Default bezel was never copied
 # 20200709 Add : Progress count (started from Terminal/SSH vs ES)
 # 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
-# 20211010 Fix : recursive search in roms directory
+# 20211010 Fix : Recursive search in roms directory
 # 20220524 Fix : Properly URL encode bezel file names
-# 20220524 Add : support symlinks to roms directories and roms themselves
-# 20220524 Add : output unmatched ROMs when requested
+# 20220524 Add : Support symlinks to roms directories and roms themselves
+# 20220524 Add : Output unmatched ROMs when requested
+# 20220606 Add : Support installing all available systems
 #
 
-readonly VERSION="20220524"
+readonly VERSION="20220606"
 readonly TITLE="the BezelProject for BATOCERA"
 readonly LOGS_DIR="/userdata/system/logs"
 readonly DECORATION_DIR="/userdata/decorations"
@@ -63,6 +64,7 @@ function usage() {
 		record "- 'list' to list systems installed locally, which are available within TheBezelProject:" "2"
 		record "   [A]vailable to install, [I]nstalled or [?]unknown." "2"
 		record "- 'install <system> [--show-unmatched]' to install the bezels for this <system>." "2"
+		record "- 'install all [--show-unmatched]' to install the bezels for all locally installed supported systems." "2"
 		record "- 'remove <system>' to remove the bezels for this <system>." "2"
 		record "- 'remove all' to remove all the bezels from TheBezelProject." "2"
 		record " " "2"
@@ -546,6 +548,25 @@ function install() {
 
 ###############################
 #
+function install_all() {
+        local show_unmatched="$1"
+        local system
+        local systems=()
+
+        # List returns the status of each local system one per line
+        readarray -t systems < <(list)
+
+        record "${#systems[@]} local system(s) found." "2"
+
+        for system_status in "${systems[@]}"; do
+                system=($system_status)
+                # The column for the system is the second one
+                install "${system[1]}" "$show_unmatched"
+        done
+}
+
+###############################
+#
 function remove() {
 		local system_name="$1"
 
@@ -604,13 +625,15 @@ fi
 if [[ "$command" = "list" ]]; then
 		list
 elif [[ "$command" = "install" && -n "$system" ]]; then
-		if [[ -n "$3" && "$3" != "--show-unmatched" ]]; then
-			record "Error : unknown argument for install: $3" "1"
-			record "" "1"
-			usage
-		else
-			install "$system" "$3"
-		fi
+        if [[ -n "$3" && "$3" != "--show-unmatched" ]]; then
+        	record "Error : unknown argument for install: $3" "1"
+            record "" "1"
+            usage
+        elif [[ "$system" = "all" ]]; then
+            install_all "$3"
+        else
+            install "$system" "$3"
+        fi
 elif [[ "$command" = "remove" && -n "$system" ]]; then
 		remove "$system"
 else
