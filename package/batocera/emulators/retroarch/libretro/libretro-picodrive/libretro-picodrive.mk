@@ -4,8 +4,8 @@
 #
 ################################################################################
 # Version: Commits on Mar 12, 2022
-LIBRETRO_PICODRIVE_VERSION = d26d4c29652003d39a139775c122217ac95000a8
-LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
+LIBRETRO_PICODRIVE_VERSION = 7ff457f2f833570013f2a7e2608ac40632e0735d
+LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng
