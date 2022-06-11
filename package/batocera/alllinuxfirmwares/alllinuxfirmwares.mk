@@ -4,45 +4,46 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20220509
-ALLLINUXFIRMWARES_SITE = http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
-ALLLINUXFIRMWARES_SITE_METHOD = git
+ALLLINUXFIRMWARES_VERSION = 20220610
+ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
+ALLLINUXFIRMWARES_SITE = https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot
 
-define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
-    mkdir -p $(TARGET_DIR)/lib/firmware
+# exclude some dirs not required on batocera
+ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome
 
-    # exclude some dirs not required on batocera
-    rm -rf $(@D)/liquidio
-    rm -rf $(@D)/netronome
-
-    # -n is mandatory while some other packages provides firmwares too
-    # this is not ideal, but i don't know how to tell to buildroot to install this package first (and not worry about all packages installing firmwares)
-    cp -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
-endef
-
-# because it adds so non required files on the rpi ; we prefer the specific rpi firmware packages
-define ALLLINUXFIRMWARES_DELETE_BRCM
-    rm -rf $(@D)/brcm
-    rm -rf $(@D)/cypress
-endef
-
-ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_FIRMWARE_WLAN_AML),y)
-    ALLLINUXFIRMWARES_PRE_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_DELETE_BRCM
+ifeq ($(BR2_arm)$(BR2_aarch64),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/i915 $(@D)/nvidia $(@D)/radeon $(@D)/qcom $(@D)/s5p-* $(@D)/qat_* $(@D)/ql2*
 endif
 
-# realtek uses symbolic links for some firmware between different cards
-define ALLLINUXFIRMWARES_REALTEK_POST_PROCESS
-    # create realtek wifi symbolic links
-    cd $(TARGET_DIR)/lib/firmware/rtlwifi ; \
-    ln -sf rtl8192eu_nic.bin rtl8192eefw.bin ; \
-    ln -sf rtl8723bu_ap_wowlan.bin rtl8723bs_ap_wowlan.bin ; \
-    ln -sf rtl8723bu_nic.bin rtl8723bs_nic.bin
-    # create realtek bluetooth symbolic links
-    cd $(TARGET_DIR)/lib/firmware/rtl_bt ; \
-    ln -sf rtl8723bs_config-OBDA8723.bin rtl8723bs_config-OBDA0623.bin ; \
-    ln -sf rtl8821c_config.bin rtl8821a_config.bin
-endef
+ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_FIRMWARE_WLAN_AML),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/brcm
+endif
 
-ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_REALTEK_POST_PROCESS
+define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/lib/firmware
+
+    # exclude some dirs not required on batocera
+    rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
+
+	# -n is mandatory while some other packages provides firmwares too
+    # this is not ideal, but i don't know how to tell to buildroot to install this package first (and not worry about all packages installing firmwares)
+    cp -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
+
+    # Some firmware are distributed as a symlink, for drivers to load them using a
+    # defined name other than the real one. Since 9cfefbd7fbda ("Remove duplicate
+    # symlinks") those symlink aren't distributed in linux-firmware but are created
+    # automatically by its copy-firmware.sh script during the installation, which
+    # parses the WHENCE file where symlinks are described. We follow the same logic
+    # here, adding symlink only for firmwares installed in the target directory.
+    cd $(TARGET_DIR)/lib/firmware ; \
+    sed -r -e '/^Link: (.+) -> (.+)$$/!d; s//\1 \2/' $(@D)/WHENCE | \
+	while read f d; do \
+		if test -f $$(readlink -m $$(dirname "$$f")/$$d); then \
+            if test -f $(TARGET_DIR)/lib/firmware/$$(dirname "$$f")/$$d; then \
+                ln -sf $$d "$$f" || exit 1; \
+            fi \
+		fi ; \
+	done
+endef
 
 $(eval $(generic-package))
