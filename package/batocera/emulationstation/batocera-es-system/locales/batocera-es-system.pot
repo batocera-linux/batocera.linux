@@ -16,9 +16,21 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Force the emulator to run at this resolution."
+msgstr ""
+
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
 msgid "VIDEO MODE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Force the game to render in this aspect ratio. Decorations override this "
+"setting."
 msgstr ""
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
@@ -51,6 +63,11 @@ msgctxt "game_options"
 msgid "Custom"
 msgstr ""
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr ""
+
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
 msgid "REWIND"
@@ -68,12 +85,17 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "AUTO SAVE/LOAD"
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
 msgstr ""
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
-msgid "GAME RENDERING"
+msgid "GAME RENDERING & SHADERS"
 msgstr ""
 
 #. TRANSLATION: shared
@@ -163,22 +185,22 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "NORTH WEST"
+msgid "TOP LEFT (NW)"
 msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "NORTH EAST"
+msgid "TOP RIGHT (NE)"
 msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "SOUTH EAST"
+msgid "BOTTOM RIGHT (SE)"
 msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "SOUTH WEST"
+msgid "BOTTOM LEFT (SW)"
 msgstr ""
 
 #. TRANSLATION: shared
@@ -194,6 +216,13 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RESIZE TATTOO"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
+"libretro cores."
 msgstr ""
 
 #. TRANSLATION: shared, shared, shared, shared
@@ -530,12 +559,12 @@ msgctxt "game_options"
 msgid "SUPER GAME BOY 2"
 msgstr ""
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/same_cdi, ...
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
 msgstr ""
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/same_cdi, ...
 msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
 msgstr ""
@@ -2354,37 +2383,37 @@ msgctxt "game_options"
 msgid "CROP ARTWORK"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "CUSTOM MAME CONFIG"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "If the D-Pad is oriented incorrectly for your controller."
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "ALT DPAD MODE"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, ...
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mess, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "DS3 Orientation"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "X360 Orientation"
 msgstr ""

@@ -13,10 +13,22 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 3.0.1\n"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Force the emulator to run at this resolution."
+msgstr ""
+
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
 msgid "VIDEO MODE"
 msgstr "REŽIM VIDEA"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Force the game to render in this aspect ratio. Decorations override this "
+"setting."
+msgstr ""
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
 msgctxt "game_options"
@@ -48,6 +60,11 @@ msgctxt "game_options"
 msgid "Custom"
 msgstr "Vlastní"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr ""
+
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
 msgid "REWIND"
@@ -65,13 +82,18 @@ msgstr "Vypnout"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "AUTO SAVE/LOAD"
-msgstr "AUTOMATATICKY ULOŽIT/NAČÍST"
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
+msgstr ""
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
-msgid "GAME RENDERING"
-msgstr "RENDERING HRY"
+msgid "GAME RENDERING & SHADERS"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -160,23 +182,23 @@ msgstr "UMÍSTĚNÍ OBRAZCE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "NORTH WEST"
-msgstr "SEVEROZÁPAD"
+msgid "TOP LEFT (NW)"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "NORTH EAST"
-msgstr "SEVEROVÝCHOD"
+msgid "TOP RIGHT (NE)"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "SOUTH EAST"
-msgstr "JIHOVÝCHOD"
+msgid "BOTTOM RIGHT (SE)"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "SOUTH WEST"
-msgstr "JIHOZÁPAD"
+msgid "BOTTOM LEFT (SW)"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -192,6 +214,13 @@ msgstr "Zmenšit/rozšířit obrazec/obrázek tak, aby se vešel do rámu."
 msgctxt "game_options"
 msgid "RESIZE TATTOO"
 msgstr "ZMĚNIT VELIKOST OBRAZCE"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
+"libretro cores."
+msgstr ""
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -538,13 +567,13 @@ msgctxt "game_options"
 msgid "SUPER GAME BOY 2"
 msgstr "SUPER GAME BOY 2"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/same_cdi, ...
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
 msgstr ""
 "Vylepšení. Snižuje zpomalení systému. Způsobuje problémy v některých hrách."
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/same_cdi, ...
 msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
 msgstr "PŘETAKTOVÁNÍ (NESTABILNÍ)"
@@ -2376,38 +2405,38 @@ msgctxt "game_options"
 msgid "CROP ARTWORK"
 msgstr "UMĚLECKÁ DÍLA CROP"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
 msgstr ""
 "Nastavení ovládacích prvků pro celý systém prostřednictvím nabídky MAME"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "CUSTOM MAME CONFIG"
 msgstr "VLASTNÍ KONFIGURACE MAME"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "If the D-Pad is oriented incorrectly for your controller."
 msgstr "Pokud je D-Pad orientován nesprávně pro váš ovladač."
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "ALT DPAD MODE"
 msgstr "ALT DPAD MODE"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, ...
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mess, libretro/mamevirtual, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Vypnout (Výchozí)"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "DS3 Orientation"
 msgstr "Orientace DS3"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, libretro/same_cdi, libretro/mess, libretro/mamevirtual, mame
 msgctxt "game_options"
 msgid "X360 Orientation"
 msgstr "Orientace X360"
@@ -9028,6 +9057,30 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "POVOLIT VSTUP RAW"
+
+#~ msgctxt "game_options"
+#~ msgid "AUTO SAVE/LOAD"
+#~ msgstr "AUTOMATATICKY ULOŽIT/NAČÍST"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME RENDERING"
+#~ msgstr "RENDERING HRY"
+
+#~ msgctxt "game_options"
+#~ msgid "NORTH WEST"
+#~ msgstr "SEVEROZÁPAD"
+
+#~ msgctxt "game_options"
+#~ msgid "NORTH EAST"
+#~ msgstr "SEVEROVÝCHOD"
+
+#~ msgctxt "game_options"
+#~ msgid "SOUTH EAST"
+#~ msgstr "JIHOVÝCHOD"
+
+#~ msgctxt "game_options"
+#~ msgid "SOUTH WEST"
+#~ msgstr "JIHOZÁPAD"
 
 #~ msgctxt "game_options"
 #~ msgid "Use guns instead of pads if guns are detected on the system"
