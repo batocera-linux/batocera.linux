@@ -1,13 +1,11 @@
-import sys
 import os
 import batoceraFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
-import shlex
-from utils.logger import get_logger
 import yaml
 import collections
 
+from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 class Emulator():

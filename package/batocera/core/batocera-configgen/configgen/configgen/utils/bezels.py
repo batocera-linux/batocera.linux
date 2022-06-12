@@ -2,9 +2,9 @@ import os
 import batoceraFiles
 import struct
 from PIL import Image, ImageOps
-from .logger import get_logger
 from .videoMode import getAltDecoration
 
+from .logger import get_logger
 eslog = get_logger(__name__)
 
 def getBezelInfos(rom, bezel, systemName, emulator):
