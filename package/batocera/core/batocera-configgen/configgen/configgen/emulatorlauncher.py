@@ -1,11 +1,23 @@
 #!/usr/bin/env python
 
+import os
+profiler = None
+
+# 1) touch /var/run/emulatorlauncher.perf
+# 2) start a game
+# 3) gprof2dot.py -f pstats /var/run/emulatorlauncher.prof -o emulatorlauncher.dot # wget https://raw.githubusercontent.com/jrfonseca/gprof2dot/master/gprof2dot.py
+# 4) dot -Tpng emulatorlauncher.dot -o emulatorlauncher.png
+
+if os.path.exists("/var/run/emulatorlauncher.perf"):
+    import cProfile
+    profiler = cProfile.Profile()
+    profiler.enable()
+
 ### import always needed ###
 import argparse
 import GeneratorImporter
 import signal
 import time
-import os
 from sys import exit
 import subprocess
 import batoceraFiles
@@ -84,6 +96,8 @@ def main(args, maxnbplayers):
         return start_rom(args, maxnbplayers, args.rom, args.rom)
 
 def start_rom(args, maxnbplayers, rom, romConfiguration):
+    global profiler
+
     # controllers
     playersControllers = dict()
 
@@ -240,7 +254,11 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                     if generator.hasInternalMangoHUDCall() == False:
                         cmd.array.insert(0, "mangohud")
 
+            if profiler:
+                profiler.disable()
             exitCode = runCommand(cmd)
+            if profiler:
+                profiler.enable()
         finally:
             Evmapy.stop()
 
@@ -523,8 +541,16 @@ if __name__ == '__main__':
         exitcode = main(args, maxnbplayers)
     except Exception as e:
         eslog.error("configgen exception: ", exc_info=True)
+
+    if profiler:
+        import io
+        import pstats
+        profiler.disable()
+        profiler.dump_stats('/var/run/emulatorlauncher.prof')
+
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
     eslog.debug(f"Exiting configgen with status {str(exitcode)}")
+
     exit(exitcode)
 
 # Local Variables:
