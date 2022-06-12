@@ -4,9 +4,9 @@ import subprocess
 import json
 import re
 import os
-from utils.logger import get_logger
 import evdev
 
+from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 class Evmapy():

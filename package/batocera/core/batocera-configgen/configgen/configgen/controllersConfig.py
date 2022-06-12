@@ -2,13 +2,9 @@
 
 import xml.etree.ElementTree as ET
 import batoceraFiles
-import pyudev
-import re
+
 from utils.logger import get_logger
-
 eslog = get_logger(__name__)
-
-esInputs = batoceraFiles.esInputs
 
 """Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
 _DEFAULT_SDL_MAPPING = {
@@ -56,7 +52,7 @@ class Controller:
 # Load all controllers from the es_input.cfg
 def loadAllControllersConfig():
     controllers = dict()
-    tree = ET.parse(esInputs)
+    tree = ET.parse(batoceraFiles.esInputs)
     root = tree.getroot()
     for controller in root.findall(".//inputConfig"):
         controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
@@ -72,7 +68,7 @@ def loadAllControllersConfig():
 # Load all controllers from the es_input.cfg
 def loadAllControllersByNameConfig():
     controllers = dict()
-    tree = ET.parse(esInputs)
+    tree = ET.parse(batoceraFiles.esInputs)
     root = tree.getroot()
     for controller in root.findall(".//inputConfig"):
         controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
@@ -225,6 +221,9 @@ def gunsNeedCrosses(guns):
     return False
 
 def getGuns():
+    import pyudev
+    import re
+
     guns = {}
     context = pyudev.Context()
 
