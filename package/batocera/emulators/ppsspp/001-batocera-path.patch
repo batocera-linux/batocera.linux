@@ -64,7 +64,7 @@ index 31f720be2e..412930ac00 100644
 +		return memStickDirectory / "PPSSPP_STATE";
  	case DIRECTORY_CACHE:
 -		return pspDirectory / "SYSTEM/CACHE";
-+		return Path("/userdata/system/.cache/ppsspp/");
++		return Path("/userdata/system/cache/ppsspp/");
  	case DIRECTORY_TEXTURES:
  		return pspDirectory / "TEXTURES";
  	case DIRECTORY_PLUGINS:
@@ -73,7 +73,7 @@ index 31f720be2e..412930ac00 100644
  			return g_Config.appCacheDirectory;
  		}
 -		return pspDirectory / "SYSTEM/CACHE";
-+		return Path("/userdata/system/.cache/ppsspp/");
++		return Path("/userdata/system/cache/ppsspp/");
  	case DIRECTORY_VIDEO:
  		return pspDirectory / "VIDEO";
  	case DIRECTORY_AUDIO:

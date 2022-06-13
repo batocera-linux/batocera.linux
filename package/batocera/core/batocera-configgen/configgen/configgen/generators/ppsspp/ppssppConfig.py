@@ -36,8 +36,7 @@ def createPPSSPPConfig(iniConfig, system):
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
 
-    # Graphics Backend : TODO VULKAN support (Not used for now)
-    iniConfig.set("Graphics", "FailedGraphicsBackends", "0 (OPENGL)")
+    # Graphics Backend
     if system.isOptSet('gfxbackend'):
         iniConfig.set("Graphics", "GraphicsBackend", system.config["gfxbackend"])
     else:
@@ -133,6 +132,15 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("General", "EnableCheats", system.config["enable_cheats"])
     else:
         iniConfig.set("General", "EnableCheats", "False")
+    # Don't check for a new version
+    iniConfig.set("General", "CheckForNewVersion", "False")
+
+    ## [UPGRADE] - don't upgrade
+    if not iniConfig.has_section("Upgrade"):
+        iniConfig.add_section("Upgrade")
+    iniConfig.set("Upgrade", "UpgradeMessage", "")
+    iniConfig.set("Upgrade", "UpgradeVersion", "")
+    iniConfig.set("Upgrade", "DismissedVersion", "")
 
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for user_config in system.config:
