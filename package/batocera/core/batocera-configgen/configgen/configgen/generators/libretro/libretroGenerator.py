@@ -297,7 +297,8 @@ def getGFXBackend(system):
             setManually = True
         else:
             setManually = False
-            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:
+            # glvendor check first, to avoid a 2nd testing on intel boards
+            if videoMode.getGLVendor() in ["nvidia", "amd"] and videoMode.getGLVersion() >= 3.1:
                 backend = "glcore"
             else:
                 backend = "gl"

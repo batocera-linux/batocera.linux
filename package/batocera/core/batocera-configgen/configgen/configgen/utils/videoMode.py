@@ -59,6 +59,10 @@ def changeMouse(mode):
 
 def getGLVersion():
     try:
+        # optim for most sbc having not glxinfo
+        if os.path.exists("/usr/bin/glxinfo") == False:
+            return 0
+
         glxVerCmd = 'glxinfo | grep "OpenGL version"'
         glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)
         glVerString = glVerOutput.split()
@@ -69,6 +73,10 @@ def getGLVersion():
 
 def getGLVendor():
     try:
+        # optim for most sbc having not glxinfo
+        if os.path.exists("/usr/bin/glxinfo") == False:
+            return "unknown"
+
         glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
         glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)
         glVendString = glVendOutput.split()
