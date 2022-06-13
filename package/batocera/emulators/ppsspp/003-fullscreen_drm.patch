@@ -49,10 +49,10 @@ index 7551231..475bb63 100644
  		pixel_xres = g_DesktopWidth;
  		pixel_yres = g_DesktopHeight;
  		g_Config.bFullScreen = true;
-@@ -667,7 +667,7 @@ int main(int argc, char *argv[]) {
+@@ -716,7 +716,7 @@ int main(int argc, char *argv[]) {
  
  	// Use the setting from the config when initing the window.
- 	if (g_Config.bFullScreen)
+ 	if (g_Config.UseFullScreen())
 -		mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 +		mode |= SDL_WINDOW_FULLSCREEN;
  

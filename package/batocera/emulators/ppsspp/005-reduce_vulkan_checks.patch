@@ -1,0 +1,16 @@
+diff --git a/Common/GPU/Vulkan/VulkanLoader.cpp b/Common/GPU/Vulkan/VulkanLoader.cpp
+index 7037d5889e..e2688b20e4 100644
+--- a/Common/GPU/Vulkan/VulkanLoader.cpp
++++ b/Common/GPU/Vulkan/VulkanLoader.cpp
+@@ -238,8 +238,9 @@ static VulkanLibraryHandle vulkanLibrary;
+ #endif
+ const char *VulkanResultToString(VkResult res);
+ 
+-bool g_vulkanAvailabilityChecked = false;
+-bool g_vulkanMayBeAvailable = false;
++// Batocera - set to true to avoid long load times
++bool g_vulkanAvailabilityChecked = true;
++bool g_vulkanMayBeAvailable = true;
+ 
+ #define LOAD_INSTANCE_FUNC(instance, x) x = (PFN_ ## x)vkGetInstanceProcAddr(instance, #x); if (!x) {INFO_LOG(G3D, "Missing (instance): %s", #x);}
+ #define LOAD_DEVICE_FUNC(instance, x) x = (PFN_ ## x)vkGetDeviceProcAddr(instance, #x); if (!x) {INFO_LOG(G3D, "Missing (device): %s", #x);}
