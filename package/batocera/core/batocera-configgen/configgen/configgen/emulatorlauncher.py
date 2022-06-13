@@ -5,8 +5,9 @@ profiler = None
 
 # 1) touch /var/run/emulatorlauncher.perf
 # 2) start a game
-# 3) gprof2dot.py -f pstats /var/run/emulatorlauncher.prof -o emulatorlauncher.dot # wget https://raw.githubusercontent.com/jrfonseca/gprof2dot/master/gprof2dot.py
+# 3) gprof2dot.py -f pstats -n 5 /var/run/emulatorlauncher.prof -o emulatorlauncher.dot # wget https://raw.githubusercontent.com/jrfonseca/gprof2dot/master/gprof2dot.py
 # 4) dot -Tpng emulatorlauncher.dot -o emulatorlauncher.png
+# 3) or upload the file /var/run/emulatorlauncher.prof on https://nejc.saje.info/pstats-viewer.html
 
 if os.path.exists("/var/run/emulatorlauncher.perf"):
     import cProfile
