@@ -1931,6 +1931,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     if (system.config['core'] == 'fbneo'):
         # Diagnostic input
         coreSettings.save('fbneo-diagnostic-input', '"Start + L + R"')
+        # Allow RetroAchievements in hardcore mode with FBNeo
+        coreSettings.save('fbneo-allow-patched-romsets', '"disabled"')
         # CPU Clock
         if system.isOptSet('fbneo-cpu-speed-adjust'):
             coreSettings.save('fbneo-cpu-speed-adjust', system.config['fbneo-cpu-speed-adjust'])
