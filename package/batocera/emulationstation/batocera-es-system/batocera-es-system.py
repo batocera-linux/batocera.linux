@@ -334,13 +334,13 @@ class EsSystemConf:
             description = infos["description"]
         submenustr = ""
         if "submenu" in infos:
-            submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(EsSystemConf.protectXml(infos["submenu"])))
+            submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(infos["submenu"]))
         groupstr = ""
         if "group" in infos:
-            groupstr = " group=\"{}\"".format(EsSystemConf.protectXml(EsSystemConf.protectXml(infos["group"])))
+            groupstr = " group=\"{}\"".format(EsSystemConf.protectXml(infos["group"]))
         orderstr = ""
         if "order" in infos:
-            orderstr = " order=\"{}\"".format(EsSystemConf.protectXml(EsSystemConf.protectXml(infos["order"])))
+            orderstr = " order=\"{}\"".format(EsSystemConf.protectXml(infos["order"]))
         presetstr = ""
         if "preset" in infos:
             presetstr = " preset=\"{}\"".format(EsSystemConf.protectXml(infos["preset"]))
