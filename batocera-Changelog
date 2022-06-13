@@ -19,6 +19,7 @@
         * bump: lightspark
         * bump: pcsx2 to v1.7.2866 (note: memory cards now saved to /userdata/saves/ps2)
         * bump: amiberry to v5.2
+        * bump: PPSSPP emulator
         * change: enabled more flycast standalone options (DSP & anisotropic)
         * change: enabled more duckstation options (PGXP & OSD)
         * change: enabled VSync option for standalone MAME
@@ -28,6 +29,8 @@
         * fix: lr-swanstation not working on some SBC's with OpenGLES
         * fix: segacd now scrapes successfully again
         * fix: "none" shader set sometimes not actually allowing for retroarch to take control over the shader selection
+        * fix: slow load times with PPSSPP, note: Vulkan loading times still not as fast as OpenGL
+        * fix: PPSSPP texture cache now in the correct directory
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
