@@ -3,12 +3,12 @@ default:
     libretro:
       opera:
         explanation: |
-          only available on selected boards: requires a powerfull one
+          Only available on selected boards; requires a powerful one.
   3ds:
     citra:
       citra: &citra_standalone_core
         explanation: |
-          Standalone citra works better, but it lacks  mouse and bezels features which libretro/citra has.
+          Standalone citra works better, but lacks mouse and bezels support which libretro/citra has.
     libretro:
       citra: *citra_standalone_core
 
@@ -108,6 +108,29 @@ rpi3:
     mupen64plus:
       gliden64:
         flags: [slow_games]
+
+rpizero2:
+  n64:
+    mupen64plus:
+      glide64mk2:
+        explanation: |
+          Too slow to run.
+  saturn:
+    libretro:
+      yabasanshiro:
+        explanation: |
+          Too slow to run.
+  psp:
+    ppsspp:
+      ppsspp:
+        explanation: |
+          Too slow to run.
+  dreamcast:
+    flycast:
+      flycast:
+        explanation: |
+          Too slow to run.
+
 s922x:
   megadrive:
     libretro:
