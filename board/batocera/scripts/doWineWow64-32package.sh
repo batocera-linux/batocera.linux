@@ -212,8 +212,11 @@ done
 # icd.d json files
 # path needs to be updated to fit /lib32
 mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
-cp -pr "${G_TARGETDIR}/usr/share/vulkan/icd.d" "${TMPOUT}/usr/share/vulkan/" || exit 1
-sed -i -e s+"\"/usr/lib/"+"\"/lib32/"+ "${TMPOUT}/usr/share/vulkan/icd.d/"*.json || exit 1
+cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
+cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.x86_64.json" || exit 1
+cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
+cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.x86_64.json" || exit 1
+sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/icd.d/"*i686.json || exit 1
 
 # ld
 echo "ld..."
