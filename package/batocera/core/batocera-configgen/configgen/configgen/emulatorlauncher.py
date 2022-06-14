@@ -444,6 +444,14 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
         return configstr + "background_alpha=0\n" # hide the background
 
     mode = system.config["hud"]
+    hud_position = "bottom-left"
+    if system.isOptSet('hud_corner') and system.config["hud_corner"] != "" :
+        if system.config["hud_corner"] == "NW":
+            hud_position = "top-left"
+        elif system.config["hud_corner"] == "NE":
+            hud_position = "top-right"
+        elif system.config["hud_corner"] == "SE":
+            hud_position = "bottom-right"
 
     emulatorstr = emulator
     if emulator != core and core is not None:
@@ -458,9 +466,9 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
 
     # predefined values
     if mode == "perf":
-        configstr += "position=bottom-left\nbackground_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
+        configstr += "position=" + hud_position + "\nbackground_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
     elif mode == "game":
-        configstr += "position=bottom-left\nbackground_alpha=0\nlegacy_layout=false\nfont_size=32\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
+        configstr += "position=" + hud_position + "\nbackground_alpha=0\nlegacy_layout=false\nfont_size=32\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
     elif mode == "custom" and system.isOptSet('hud_custom') and system.config["hud_custom"] != "" :
         configstr += system.config["hud_custom"].replace("\\n", "\n")
     else:

@@ -10,6 +10,7 @@
         * add: RTL8189es SDIO drivers for the Amlogic S905x devices
         * add: libretro PUAE 2021 core for weaker SBCs (faster but less accurate than current)
         * add: videopacplus as its own system folder (using o2em with different config)
+        * add: choose corner for heads up display
         * bump: x86_64 linux kernel to 5.18
         * bump: Nvidia linux driver to 515.48.07
         * bump: btop to 1.2.7
@@ -26,11 +27,13 @@
         * change: We now detect Nvidia GPU's & install the supported driver
         * change: group atari800 and xegs together as atari8bit
         * change: better _info files for msx1
+        * change: reduced game launch time
         * fix: lr-swanstation not working on some SBC's with OpenGLES
         * fix: segacd now scrapes successfully again
         * fix: "none" shader set sometimes not actually allowing for retroarch to take control over the shader selection
         * fix: slow load times with PPSSPP, note: Vulkan loading times still not as fast as OpenGL
         * fix: PPSSPP texture cache now in the correct directory
+        * fix: ES file selector for custom tatoo image
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
