@@ -26,7 +26,7 @@ if BR2_PACKAGE_BATOCERA_TARGET_RK3128
 		Selected when a Rockchip gles2 platform is being built
 endif
 
-if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RG552 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_RK3128
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RG552 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3
 	bool "rockchip_gles3"
 	default y
@@ -163,7 +163,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WPA_SUPPLICANT                       # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_CLI                   # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION    # wifi
-	select BR2_PACKAGE_WPA_SUPPLICANT_WIRED                 # wpa_supplicant driver
+	select BR2_PACKAGE_WPA_SUPPLICANT_WIRED                 if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 # wpa_supplicant driver, 2.10 requires kernel > 4.4
 	select BR2_PACKAGE_WPA_SUPPLICANT_WPA3                  # wifi
 	select BR2_PACKAGE_WPA_SUPPLICANT_NL80211               # wpa_supplicant driver
 	select BR2_PACKAGE_WPA_SUPPLICANT_WEXT                  # wpa_supplicant driver
@@ -1117,7 +1117,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
 	select BR2_PACKAGE_DOLPHINBAR_GUNS # dolphinbar guns
 	select BR2_PACKAGE_SINDEN_GUNS if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # sinden guns
 	select BR2_PACKAGE_GUN4IR_GUNS     # gun4ir guns
-	select BR2_PACKAGE_GUNCON          # guncon
+	select BR2_PACKAGE_GUNCON      if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 # guncon
 
 config BR2_PACKAGE_BATOCERA_KODI19
 	bool "batocera.linux Kodi19 packages selection"
