@@ -644,16 +644,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S812
-    select BR2_PACKAGE_LIBRETRO_SAME_CDI        if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RG552      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI3        || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S812
+    select BR2_PACKAGE_LIBRETRO_SAME_CDI        if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 
 	# Mainline MAME
