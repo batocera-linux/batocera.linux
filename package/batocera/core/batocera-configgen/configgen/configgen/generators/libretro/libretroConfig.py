@@ -880,6 +880,7 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
     else:
         bezel_stretch = False
 
+    tattoo_output_png = "/tmp/bezel_tattooed.png"
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -888,14 +889,24 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
             eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
-
         if bezel_game is True:
             output_png_file = "/tmp/bezel_game_adapted.png"
             create_new_bezel_file = True
         else:
-            # The logic to cache system bezels is not true anymore now that we have tattoos
+            # The logic to cache system bezels is not always true anymore now that we have tattoos
             output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
-            create_new_bezel_file = True
+            if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+                create_new_bezel_file = True
+            else:
+                if (not os.path.exists(tattoo_output_png)) and os.path.exists(output_png_file):
+                    create_new_bezel_file = False
+                    eslog.debug(f"Using cached bezel file {output_png_file}")
+                else:
+                    try:
+                        os.remove(tattoo_output_png)
+                    except:
+                        pass
+                    create_new_bezel_file = True
 
         if bezel_stretch:
             retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
@@ -925,9 +936,8 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
-            output_png = "/tmp/bezel_tattooed.png"
-            bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
-            overlay_png_file = output_png_file
+            bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
+            overlay_png_file = tattoo_output_png
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
@@ -937,9 +947,8 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
-            output_png = "/tmp/bezel_tattooed.png"
-            bezelsUtil.tatooImage(overlay_png_file, output_png, system)
-            overlay_png_file = output_png
+            bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
+            overlay_png_file = tattoo_output_png
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
