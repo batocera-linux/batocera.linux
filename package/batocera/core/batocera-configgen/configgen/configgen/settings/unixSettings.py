@@ -55,8 +55,7 @@ class UnixSettings():
     def disableAll(self, name):
         eslog.debug(f"Disabling {name} from {self.settingsFile}")
         for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + name, key)
-            if m:
+            if key[0:len(name)] == name:
                 self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
