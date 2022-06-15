@@ -211,7 +211,7 @@ done
 
 # icd.d json files
 # path needs to be updated to fit /lib32
-mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
+mkdir -p "${TMPOUT}/usr/share/vulkan/icd.d" || exit 1
 cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
 cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.x86_64.json" || exit 1
 cp -a "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
