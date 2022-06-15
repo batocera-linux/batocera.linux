@@ -51,6 +51,15 @@ elif grep -q -i $PCIDEVID $LISTDIR/legacy.list 2>/dev/null
 then
   echo "Detected PCI device ID in legacy list"
 	/usr/bin/batocera-nvidia legacy
+elif grep -q -i $PCIDEVID $LISTDIR/legacy390.list 2>/dev/null
+then
+  echo "Detected PCI device ID in legacy390 list"
+	/usr/bin/batocera-nvidia legacy390
+#elif grep -q -i $PCIDEVID $LISTDIR/legacy340.list 2>/dev/null
+#then
+#  echo "Detected PCI device ID in legacy340 list"
+#	/usr/bin/batocera-nvidia legacy340
+# manual options
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
 then
   echo "Manually setting production driver"
@@ -59,6 +68,14 @@ elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy[ ]*$" /boot/batocera-boot.conf
 then
   echo "Manually setting legacy driver"
   /usr/bin/batocera-nvidia legacy
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf
+then
+  echo "Manually setting legacy 390.xx driver"
+  /usr/bin/batocera-nvidia legacy390
+#elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf
+#then
+#  echo "Manually setting legacy 340.xx driver"
+#  /usr/bin/batocera-nvidia legacy340
 else
   echo "Failing back to OpenSource Mesa Nouveau driver"
 	[ -f /etc/modprobe.d/blacklist-nouveau.conf ] && rm /etc/modprobe.d/blacklist-nouveau.conf;

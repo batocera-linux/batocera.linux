@@ -1,18 +1,21 @@
 #!/bin/sh
 
-# batocera-nvidia applies either the installed production or legacy driver
-# configuration is set using batoceta-boot.conf
+# batocera-nvidia applies either the installed production or legacy driver(s)
+# this is detected at boot in S04populate
+# configuration can also be set using batoceta-boot.conf
 
 # kernel version
 LINUX_VER=$(uname -r)
 # production driver version
 BATOCERA_NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
-# legacy driver version
-BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy.version)
+# legacy driver versions
+BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy.version) # currently 470.xx.xx
+BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy390.version)
+#BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
 
 if test "$1" = "production"
 then
-	echo "Using NVIDIA Production driver"
+	echo "Using NVIDIA Production driver - ${BATOCERA_NVIDIA_DRIVER_VERSION}"
 	echo
 	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
@@ -137,9 +140,16 @@ then
 	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-drm-production.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
 	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-uvm-production.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko	
 	for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
-elif test "$1" = "legacy"
+elif [[ "$1" == *"legacy"* ]]
 then
-    echo "Using NVIDIA Legacy driver"
+    if [[ "$1" == *"340"* ]]
+	then
+	    BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION
+	elif [[ "$1" == *"390"* ]]
+	then
+	    BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION
+	fi
+    echo "Using NVIDIA Legacy driver version - ${BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION}"
 	echo
 	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
@@ -242,26 +252,80 @@ then
 	ln -sf /var/run/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
 	ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/lib/libglxserver_nvidia.so.1
 	ln -sf /var/run/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
-	# link Xorg driver
-	ln -sf /usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so /var/run/lib/nvidia_drv.so
-	ln -sf /var/run/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-	# link GL config files
-	mkdir -p /var/run/configs
-	ln -sf /usr/share/vulkan/implicit_layer.d/nvidia_legacy_layers.json /var/run/configs/nvidia_layers.json
-	ln -sf /var/run/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
-	ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia_legacy.json /var/run/configs/10_nvidia.json
-	ln -sf /var/run/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-	ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-legacy-drm-outputclass.conf /var/run/configs/10-nvidia-drm-outputclass.conf
-	ln -sf /var/run/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
-	# link Vulkan icd files
-	ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.x86_64.json /var/run/configs/nvidia_icd.x86_64.json
-	ln -sf /var/run/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-	ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.i686.json /var/run/configs/nvidia_icd.i686.json
-	ln -sf /var/run/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
-	# finally copy kernel modules & run them
-	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
-	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-modeset-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
-	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-drm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
-	cp -fp /lib/modules/$LINUX_VER/extra/nvidia-uvm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko	
+	# [variations per legacy version]
+	# 340 version
+	if [[ "$1" == *"340"* ]]
+	then
+	    # link Xorg driver
+		ln -sf /usr/lib/xorg/modules/drivers/nvidia340_legacy_drv.so /var/run/lib/nvidia_drv.so
+		ln -sf /var/run/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
+		ln -sf /usr/lib/xorg/modules/extensions/libglx.so.$BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION /usr/lib/xorg/modules/extensions/libglx.so
+		# link GL config files
+		mkdir -p /var/run/configs
+		ln -sf /usr/share/vulkan/implicit_layer.d/nvidia340_legacy_layers.json /var/run/configs/nvidia_layers.json
+		ln -sf /var/run/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+		ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia340_legacy.json /var/run/configs/10_nvidia.json
+		ln -sf /var/run/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+		ln -sf /usr/share/X11/xorg.conf.d/10-nvidia340-legacy-drm-outputclass.conf /var/run/configs/10-nvidia-drm-outputclass.conf
+		ln -sf /var/run/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+		# link Vulkan icd files
+		ln -sf /usr/share/vulkan/icd.d/nvidia340_legacy_icd.x86_64.json /var/run/configs/nvidia_icd.x86_64.json
+		ln -sf /var/run/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+		ln -sf /usr/share/vulkan/icd.d/nvidia340_legacy_icd.i686.json /var/run/configs/nvidia_icd.i686.json
+		ln -sf /var/run/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
+		# finally copy kernel modules & run them
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia340-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia340-modeset-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia340-drm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia340-uvm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+	# 390 version
+	elif [[ "$1" == *"390"* ]]
+	then
+	    # link Xorg driver
+		ln -sf /usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so /var/run/lib/nvidia_drv.so
+		ln -sf /var/run/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
+		ln -sf /usr/lib/xorg/modules/extensions/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION /usr/lib/xorg/modules/extensions/libglx.so
+		# link GL config files
+		mkdir -p /var/run/configs
+		ln -sf /usr/share/vulkan/implicit_layer.d/nvidia390_legacy_layers.json /var/run/configs/nvidia_layers.json
+		ln -sf /var/run/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+		ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia390_legacy.json /var/run/configs/10_nvidia.json
+		ln -sf /var/run/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+		ln -sf /usr/share/X11/xorg.conf.d/10-nvidia390-legacy-drm-outputclass.conf /var/run/configs/10-nvidia-drm-outputclass.conf
+		ln -sf /var/run/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+		# link Vulkan icd files
+		ln -sf /usr/share/vulkan/icd.d/nvidia390_legacy_icd.x86_64.json /var/run/configs/nvidia_icd.x86_64.json
+		ln -sf /var/run/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+		ln -sf /usr/share/vulkan/icd.d/nvidia390_legacy_icd.i686.json /var/run/configs/nvidia_icd.i686.json
+		ln -sf /var/run/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
+		# finally copy kernel modules & run them
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia390-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia390-modeset-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia390-drm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia390-uvm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+	# 470 version
+	else
+	    # link Xorg driver
+		ln -sf /usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so /var/run/lib/nvidia_drv.so
+		ln -sf /var/run/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
+		# link GL config files
+		mkdir -p /var/run/configs
+		ln -sf /usr/share/vulkan/implicit_layer.d/nvidia_legacy_layers.json /var/run/configs/nvidia_layers.json
+		ln -sf /var/run/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+		ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia_legacy.json /var/run/configs/10_nvidia.json
+		ln -sf /var/run/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+		ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-legacy-drm-outputclass.conf /var/run/configs/10-nvidia-drm-outputclass.conf
+		ln -sf /var/run/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+		# link Vulkan icd files
+		ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.x86_64.json /var/run/configs/nvidia_icd.x86_64.json
+		ln -sf /var/run/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+		ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.i686.json /var/run/configs/nvidia_icd.i686.json
+		ln -sf /var/run/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
+		# finally copy kernel modules & run them
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia-modeset-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia-drm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+		cp -fp /lib/modules/$LINUX_VER/extra/nvidia-uvm-legacy.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+	fi
 	for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
 fi
