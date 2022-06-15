@@ -485,6 +485,19 @@ sega32x:
     libretro:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
+msu-md:
+  name:       MSU-MD
+  manufacturer: Sega
+  release: 2020
+  hardware: console
+  extensions: [md, zip, 7z]
+  platform:   genesis, megadrive
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+
 mastersystem:
   name:       Master System
   manufacturer: Sega

@@ -1470,6 +1470,13 @@ libretro:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
       cfeatures:
+            gpgx_region:
+                prompt:      REGION
+                description: Games may run faster/slower than normal if the incorrect region is selected.
+                choices:
+                    "NTSC-U":             ntsc-u
+                    "PAL":                pal
+                    "NTSC-J":             ntsc-j
             gpgx_no_sprite_limit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eighty sprites per line limit.
@@ -1525,6 +1532,52 @@ libretro:
                             "Mouse":                         2
                             "Menacer Light Gun":             516
                             "Konami Justifiers":             772
+            megacd:
+                cfeatures:
+                    gpgx_cd_add_on:
+                        prompt:      CD ADD-ON
+                        choices:
+                            "Sega/Mega CD":       sega/mega cd
+                            "MegaSD":             megasd
+                            "None":               none
+                    gpgx_cdda_volume:
+                        prompt:      CD-DA VOLUME
+                        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+                        choices:
+                            "100":    100
+                            "90":     90
+                            "80":     80
+                            "70":     70
+                            "60":     60
+                            "50":     50
+                            "40":     40
+                            "30":     30
+                            "20":     20
+                            "10":     10
+                            "0":      0
+            msu-md:
+                cfeatures:
+                    gpgx_cd_add_on:
+                        prompt:      CD ADD-ON
+                        choices:
+                            "Sega/Mega CD":       sega/mega cd
+                            "MegaSD":             megasd
+                            "None":               none
+                    gpgx_cdda_volume:
+                        prompt:      CD-DA VOLUME
+                        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+                        choices:
+                            "100":    100
+                            "90":     90
+                            "80":     80
+                            "70":     70
+                            "60":     60
+                            "50":     50
+                            "40":     40
+                            "30":     30
+                            "20":     20
+                            "10":     10
+                            "0":      0
             mastersystem:
                 shared: [use_guns]
                 cfeatures:
