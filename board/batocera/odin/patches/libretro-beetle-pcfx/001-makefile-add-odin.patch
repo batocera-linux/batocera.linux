@@ -1,0 +1,20 @@
+--- a/Makefile
++++ b/Makefile
+@@ -155,6 +155,17 @@
+    FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+    ASFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 
++else ifneq (,$(findstring odin,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC ?= gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a75
++   ASFLAGS += -mcpu=cortex-a75
++
+ # iOS
+ else ifneq (,$(findstring ios,$(platform)))
+ 
