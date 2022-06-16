@@ -8310,6 +8310,26 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
+        drastic_frameskip_type:
+            prompt:      FRAMESKIP TYPE
+            description: Skip frames to improve performance, at the cost of choppy motion. Can cause visual glitches.
+            choices:
+                "None":      0
+                "Manual":    1
+                "Automatic": 2
+        drastic_frameskip_value:
+            prompt:      FRAMESKIP VALUE
+            description: When frameskip type is on automatic or manual, skip up to this many frames consecutively.
+            choices:
+                "1": 1
+                "2": 2
+                "3": 3
+                "4": 4
+                "5": 5
+                "6": 6
+                "7": 7
+                "8": 8
+                "9": 9
         drastic_threaded:
             group: ADVANCED OPTIONS
             prompt:      THREADED 3D
@@ -8319,8 +8339,8 @@ drastic:
                 "On":  1
         drastic_fix2d:
             group: ADVANCED OPTIONS
-            prompt:      FIX 2D SCREEN
-            description: Fix main 2D screen to follow action.
+            prompt:      KEEP MAIN SCREEN ON TOP
+            description: Force 3D geometry to always render on the top screen. Useful for single-screen devices/games.
             choices:
                 "Off": 0
                 "On":  1
