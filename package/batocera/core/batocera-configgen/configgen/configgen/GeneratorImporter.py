@@ -258,6 +258,10 @@ def getGenerator(emulator):
     if emulator == 'odcommander':
         from generators.odcommander.odcommanderGenerator import OdcommanderGenerator
         return OdcommanderGenerator()
+    
+    if emulator == 'gzdoom':
+        from generators.gzdoom.gzdoomGenerator import GZDoomGenerator
+        return GZDoomGenerator()
 
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
