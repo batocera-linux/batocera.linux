@@ -8,7 +8,6 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-import subprocess
 from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
@@ -890,7 +889,7 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
             eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
         if bezel_game is True:
-            output_png_file = "/tmp/bezel_game_adapted.png"
+            output_png_file = "/tmp/bezel_per_game.png"
             create_new_bezel_file = True
         else:
             # The logic to cache system bezels is not always true anymore now that we have tattoos
@@ -907,6 +906,19 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
                     except:
                         pass
                     create_new_bezel_file = True
+            if create_new_bezel_file:
+                fadapted = [ "/tmp/"+f for f in os.listdir("/tmp/") if (f[-12:] == '_adapted.png') ]
+                fadapted.sort(key=lambda x: os.path.getmtime(x))
+                # Keep only last 10 generated bezels to save space on tmpfs /tmp
+                if len(fadapted) >= 10:
+                    for i in range (10):
+                        fadapted.pop()
+                    eslog.debug(f"Removing unused bezel file: {fadapted}")
+                    for fr in fadapted:
+                        try:
+                            os.remove(fr)
+                        except:
+                            pass
 
         if bezel_stretch:
             retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
