@@ -3601,7 +3601,7 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the sixteen sprites per line limit."
 msgstr "Mejora. Elimina los dieciséis sprites por límite de línea."
 
-#. TRANSLATION: libretro/mednafen_wswan
+#. TRANSLATION: libretro/mednafen_wswan, drastic
 msgctxt "game_options"
 msgid "Manual"
 msgstr "Manual"
@@ -4275,7 +4275,7 @@ msgctxt "game_options"
 msgid "Per Game"
 msgstr "Por Juego"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automático"
@@ -8895,6 +8895,30 @@ msgstr "RESOLUCIÓN DE RENDERIZADO MEJORADA"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid ""
+"Skip frames to improve performance, at the cost of choppy motion. Can cause "
+"visual glitches."
+msgstr ""
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid "FRAMESKIP TYPE"
+msgstr ""
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid ""
+"When frameskip type is on automatic or manual, skip up to this many frames "
+"consecutively."
+msgstr ""
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid "FRAMESKIP VALUE"
+msgstr ""
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid "Improves performance in 3D games. Can cause glitches."
 msgstr "Mejora el rendimiento en juegos 3D. Puede causar fallos."
 
@@ -8905,13 +8929,15 @@ msgstr "3D MEJORADO"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "Fix main 2D screen to follow action."
-msgstr "Repara la pantalla principal 2D para seguir la acción."
+msgid ""
+"Force 3D geometry to always render on the top screen. Useful for single-"
+"screen devices/games."
+msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "FIX 2D SCREEN"
-msgstr "REPARAR PANTALLA 2D"
+msgid "KEEP MAIN SCREEN ON TOP"
+msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -9162,6 +9188,14 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "HABILITAR ENTRADA SIN PROCESAR"
+
+#~ msgctxt "game_options"
+#~ msgid "Fix main 2D screen to follow action."
+#~ msgstr "Repara la pantalla principal 2D para seguir la acción."
+
+#~ msgctxt "game_options"
+#~ msgid "FIX 2D SCREEN"
+#~ msgstr "REPARAR PANTALLA 2D"
 
 #~ msgctxt "game_options"
 #~ msgid "AUTO SAVE/LOAD"
