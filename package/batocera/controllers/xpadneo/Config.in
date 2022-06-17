@@ -1,0 +1,7 @@
+config BR2_PACKAGE_XPADNEO
+	bool "xpadneo"
+	select BR2_PACKAGE_BLUEZ5_UTILS
+	  help
+	    Linux kernel driver for Xbox One and Xbox Series X|S accessories using Bluetooth
+	    
+	    https://atar-axis.github.io/xpadneo/
