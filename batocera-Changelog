@@ -1,21 +1,23 @@
 2022/xx/xx - batocera.linux 35 -
         * add: support for aimtrak lightgun out of the box
         * add: gun support in emulationstation
-        * add: add virtual dolphinbar (dolphinbar is no more needed, only a simple wiibar)
-        * add: wiimote calibration (the wiimote is now precise and can be use as a gun without drawing the target on screen)
+        * add: add virtual dolphinbar (dolphinbar is no longer needed, only a simple wiibar)
+        * add: wiimote calibration (the wiimote is now precise and can be used as a gun without drawing the target on screen)
         * add: MediaTek MT7921U & MT7986 wifi, RealTek RTL8852A wifi & better AMD sound SOC support. (Kernel 5.18)
         * add: Additional RPCS3 options & auto aspect ratio
         * add: GamePark GP32 using MAME/MESS
         * add: fallback config option to use the Nvidia legacy drivers 'nvidia-driver=legacy' or legacy390
-        * add: Nvidia 'legacy' linux driver 470.129.06
+        * add: Nvidia 'legacy' linux driver 470.129.06 & 390.151
         * add: RTL8189es SDIO drivers for the Amlogic S905x devices
         * add: libretro PUAE 2021 core for weaker SBCs (faster but less accurate than current)
         * add: videopacplus as its own system folder (using o2em with different config)
         * add: choose corner for heads up display
-        * add: swap (memory) to Powkiddy A12/A13
+        * add: swap (memory) to Powkiddy A12/A13 devices
         * add: melonds and drastic to rg552
         * add: msu-md as its own system (using genesisplusgx with different config)
-        * bump: x86_64 linux kernel to 5.18
+        * add: xpadneo for supported xbox bluetooth gamepads
+        * add: gzdoom for higher resolution & 3d rendering of the classic doom engine games
+        * bump: x86_64 linux kernel to 5.18.4
         * bump: Nvidia linux driver to 515.48.07
         * bump: btop to 1.2.7
         * bump: Mame to 244
@@ -26,6 +28,7 @@
         * bump: amiberry to v5.2
         * bump: PPSSPP emulator
         * bump: Proton to 7.0-3
+        * bump: mesa to 22.1.2
         * change: enabled more flycast standalone options (DSP & anisotropic)
         * change: enabled more duckstation options (PGXP & OSD)
         * change: enabled VSync option for standalone MAME
