@@ -3245,3 +3245,20 @@ gp32:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gp32.zip
+
+gzdoom:
+  name:         GZDoom
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [wad, iwad, pwad, gz]
+  group: ports
+  emulators:
+    gzdoom:
+      gzdoom: { requireAnyOf: [BR2_PACKAGE_GZDOOM] }
+  comment_en: |
+    Put your WAD files in this directory.
+    The gz extension allow you to add customer mods - blah blah (tbd)
+    i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+
+    Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively

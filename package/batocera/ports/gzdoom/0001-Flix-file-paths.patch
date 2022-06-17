@@ -1,0 +1,74 @@
+From 99e82d0644fee9a21e967b7b8708ff253e7528d5 Mon Sep 17 00:00:00 2001
+From: Jan Cholasta <jan@cholasta.net>
+Date: Tue, 25 Feb 2020 12:53:07 +0100
+Subject: [PATCH] Fix file paths
+
+---
+ src/common/platform/posix/sdl/i_main.cpp | 14 +-------------
+ src/gameconfigfile.cpp                   | 10 ++--------
+ 2 files changed, 3 insertions(+), 21 deletions(-)
+
+diff --git a/src/common/platform/posix/sdl/i_main.cpp b/src/common/platform/posix/sdl/i_main.cpp
+index a28b90f01..7299029fd 100644
+--- a/src/common/platform/posix/sdl/i_main.cpp
++++ b/src/common/platform/posix/sdl/i_main.cpp
+@@ -175,19 +175,7 @@ int main (int argc, char **argv)
+ 	Args = new FArgs(argc, argv);
+ 
+ 	// Should we even be doing anything with progdir on Unix systems?
+-	char program[PATH_MAX];
+-	if (realpath (argv[0], program) == NULL)
+-		strcpy (program, argv[0]);
+-	char *slash = strrchr (program, '/');
+-	if (slash != NULL)
+-	{
+-		*(slash + 1) = '\0';
+-		progdir = program;
+-	}
+-	else
+-	{
+-		progdir = "./";
+-	}
++	progdir = "/usr/lib/gzdoom/";
+ 
+ 	I_StartupJoysticks();
+ 
+diff --git a/src/gameconfigfile.cpp b/src/gameconfigfile.cpp
+index 17898f3ae..7bfb63205 100644
+--- a/src/gameconfigfile.cpp
++++ b/src/gameconfigfile.cpp
+@@ -119,8 +119,7 @@ FGameConfigFile::FGameConfigFile ()
+ 		// Arch Linux likes them in /usr/share/doom
+ 		// Debian likes them in /usr/share/games/doom
+ 		// I assume other distributions don't do anything radically different
+-		SetValueForKey ("Path", "/usr/local/share/doom", true);
+-		SetValueForKey ("Path", "/usr/local/share/games/doom", true);
++		SetValueForKey ("Path", "/userdata/roms/gzdoom", true);
+ 		SetValueForKey ("Path", "/usr/share/doom", true);
+ 		SetValueForKey ("Path", "/usr/share/games/doom", true);
+ #endif
+@@ -141,8 +139,7 @@ FGameConfigFile::FGameConfigFile ()
+ 		SetValueForKey ("Path", "$HOME/" GAME_DIR, true);
+ 		SetValueForKey ("Path", "$HOME/.local/share/games/doom", true);
+ 		SetValueForKey ("Path", SHARE_DIR, true);
+-		SetValueForKey ("Path", "/usr/local/share/doom", true);
+-		SetValueForKey ("Path", "/usr/local/share/games/doom", true);
++		SetValueForKey ("Path", "/userdata/roms/gzdoom", true);
+ 		SetValueForKey ("Path", "/usr/share/doom", true);
+ 		SetValueForKey ("Path", "/usr/share/games/doom", true);
+ #endif
+@@ -170,10 +166,8 @@ FGameConfigFile::FGameConfigFile ()
+ 		SetValueForKey("Path", "$HOME/" GAME_DIR "/fm_banks", true);
+ 		SetValueForKey("Path", "$HOME/.local/share/games/doom/soundfonts", true);
+ 		SetValueForKey("Path", "$HOME/.local/share/games/doom/fm_banks", true);
+-		SetValueForKey("Path", "/usr/local/share/doom/soundfonts", true);
+-		SetValueForKey("Path", "/usr/local/share/doom/fm_banks", true);
+-		SetValueForKey("Path", "/usr/local/share/games/doom/soundfonts", true);
+-		SetValueForKey("Path", "/usr/local/share/games/doom/fm_banks", true);
++		SetValueForKey("Path", "/userdata/system/configs/" GAMENAMELOWERCASE "/soundfonts", true);
++		SetValueForKey("Path", "/userdata/system/configs/" GAMENAMELOWERCASE "/fm_banks", true);
+ 		SetValueForKey("Path", "/usr/share/doom/soundfonts", true);
+ 		SetValueForKey("Path", "/usr/share/doom/fm_banks", true);
+ 		SetValueForKey("Path", "/usr/share/games/doom/soundfonts", true);
+-- 
+2.34.1
