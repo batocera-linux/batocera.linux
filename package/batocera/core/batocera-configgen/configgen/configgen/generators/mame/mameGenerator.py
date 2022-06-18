@@ -415,18 +415,12 @@ class MameGenerator(Generator):
         except:
             MameGenerator.writeBezelConfig(None, system, rom, "")
 
-        # Alternate D-Pad Mode
-        if system.isOptSet("altdpad"):
-            dpadMode = system.config["altdpad"]
-        else:
-            dpadMode = 0
-
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", dpadMode, buttonLayout, customCfg, specialController, bezelSet)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, dpadMode, buttonLayout, customCfg, specialController, bezelSet)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
