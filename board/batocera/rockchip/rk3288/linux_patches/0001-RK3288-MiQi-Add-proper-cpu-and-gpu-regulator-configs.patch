@@ -1,0 +1,75 @@
+From ad836f410a77c6617f851001821bbe0a50e145ed Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Sat, 18 Jun 2022 13:23:36 +0300
+Subject: [PATCH] RK3288-MiQ:Add proper cpu and gpu regulator configs and
+ actual cpu frequencies the board can support - These changes actually need
+ upstreaming
+
+Signed-off-by: Demetris Ierokipides <ierokipides.dem@gmail.com>
+---
+ arch/arm/boot/dts/rk3288-miqi.dts | 32 +++++++++++++++++++++++++------
+ 1 file changed, 26 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
+index 713f55e14..92d45331f 100644
+--- a/arch/arm/boot/dts/rk3288-miqi.dts
++++ b/arch/arm/boot/dts/rk3288-miqi.dts
+@@ -96,6 +96,25 @@ &cpu3 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+ 
++&cpu_opp_table {
++	opp-1704000000 {
++		opp-hz = /bits/ 64 <1704000000>;
++		opp-microvolt = <1350000>;
++	};
++	opp-1800000000 {
++		opp-hz = /bits/ 64 <1800000000>;
++		opp-microvolt = <1400000>;
++	};
++	opp-1900000000 {
++		opp-hz = /bits/ 64 <1900000000>;
++		opp-microvolt = <1450000>;
++	};
++	opp-2000000000 {
++		opp-hz = /bits/ 64 <2000000000>;
++		opp-microvolt = <1500000>;
++	};
++};
++
+ &emmc {
+ 	bus-width = <8>;
+ 	cap-mmc-highspeed;
+@@ -142,12 +161,11 @@ vdd_cpu: syr827@40 {
+ 		fcs,suspend-voltage-selector = <1>;
+ 		reg = <0x40>;
+ 		regulator-name = "vdd_cpu";
+-		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-min-microvolt = <712500>;
++		regulator-max-microvolt = <1500000>;
++		regulator-ramp-delay = <1000>;
+ 		regulator-always-on;
+ 		regulator-boot-on;
+-		regulator-enable-ramp-delay = <300>;
+-		regulator-ramp-delay = <8000>;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+ 
+@@ -156,9 +174,11 @@ vdd_gpu: syr828@41 {
+ 		fcs,suspend-voltage-selector = <1>;
+ 		reg = <0x41>;
+ 		regulator-name = "vdd_gpu";
+-		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-min-microvolt = <712500>;
++		regulator-max-microvolt = <1500000>;
++		regulator-ramp-delay = <1000>;
+ 		regulator-always-on;
++		regulator-boot-on;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+ 
+-- 
+2.34.1
+
