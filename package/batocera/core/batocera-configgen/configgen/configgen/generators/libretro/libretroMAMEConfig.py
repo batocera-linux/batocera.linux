@@ -442,17 +442,16 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         "JOYSTICKRIGHT_DOWN": "joystick2down",
         "JOYSTICKRIGHT_LEFT": "joystick2left",
         "JOYSTICKRIGHT_RIGHT": "joystick2right",
-        # For some reason, lr-mame is inverting A/B, X/Y, L2/R2, and L3/R3
-        "BUTTON1": "a",
-        "BUTTON2": "b",
+        "BUTTON1": "b",
+        "BUTTON2": "a",
         "BUTTON3": "y",
         "BUTTON4": "x",
         "BUTTON5": "pageup",
         "BUTTON6": "pagedown",
-        "BUTTON7": "r2",
-        "BUTTON8": "l2",
-        "BUTTON9": "r3",
-        "BUTTON10": "l3",
+        "BUTTON7": "l2",
+        "BUTTON8": "r2",
+        "BUTTON9": "l3",
+        "BUTTON10": "r3",
         "START": "start",
         "COIN": "select"
         #"BUTTON11": "",
@@ -464,92 +463,99 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
 
     # Buttons that change based on game/setting
     if altButtons == "sfsnes": # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pageup"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
+        mappings.update({"BUTTON4": "b"})
+        mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "pagedown"})
     elif altButtons == "mksnes": # MK 6-button Mapping (Based on Mortal Kombat 3 for SNES)
-        mappings.update({"BUTTON1": "x"})
+        mappings.update({"BUTTON1": "y"})
         mappings.update({"BUTTON2": "pageup"})
-        mappings.update({"BUTTON3": "y"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
+        mappings.update({"BUTTON3": "x"})
+        mappings.update({"BUTTON4": "b"})
+        mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "pagedown"})
     elif altButtons == "kisnes": # KI 6-button Mapping (Based on Killer Instinct for SNES)
         mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "x"})
-        mappings.update({"BUTTON3": "y"})
+        mappings.update({"BUTTON2": "y"})
+        mappings.update({"BUTTON3": "x"})
         mappings.update({"BUTTON4": "pagedown"})
-        mappings.update({"BUTTON5": "a"})
-        mappings.update({"BUTTON6": "b"})
-    elif altButtons == "sfstick": # Capcom 6-button Mapping (the "modern fightstick" layout used in SFIV and above)
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
-        mappings.update({"BUTTON6": "l2"})
-        mappings.update({"BUTTON8": "pageup"})
-    elif altButtons == "mkstick": # Similar to the Genesis mapping
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "l2"})
-        mappings.update({"BUTTON6": "b"})
-        mappings.update({"BUTTON7": "pageup"})
-        mappings.update({"BUTTON8": "r2"})
-    elif altButtons == "megadrive": # Genesis-style controller layout
-        mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "x"})
-        mappings.update({"BUTTON5": "a"})
-        mappings.update({"BUTTON6": "b"})
-    elif altButtons == "mkmegadrive": # Genesis-style controller layout (Ultimate Mortal Kombat 3 version)
-        mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "x"})
         mappings.update({"BUTTON5": "b"})
         mappings.update({"BUTTON6": "a"})
-    elif altButtons == "neomini": # Neo Geo Mini
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "a"})
-        mappings.update({"BUTTON3": "y"})
-        mappings.update({"BUTTON4": "b"})
-    elif altButtons == "neoccd": # Neo Geo CD
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "b"})
-        mappings.update({"BUTTON3": "x"})
-        mappings.update({"BUTTON4": "y"})
-    elif altButtons == "neostick": # Neo Geo Fightstick
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "y"})
+    elif altButtons == "sfstick": # Capcom 6-button Mapping (the "modern fightstick" layout used in SFIV and above)
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "x"})
         mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "b"})
+        mappings.update({"BUTTON5": "a"})
+        mappings.update({"BUTTON6": "r2"})
+        mappings.update({"BUTTON8": "pageup"})
+    elif altButtons == "mkstick": # Similar to the Genesis mapping
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "x"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "b"})
+        mappings.update({"BUTTON5": "r2"})
+        mappings.update({"BUTTON6": "a"})
+        mappings.update({"BUTTON7": "pageup"})
+        mappings.update({"BUTTON8": "l2"})
+    elif altButtons == "mddefault": # Swap of the default controls to match Megadrive, puts buttons 1 - 3 on the bottom row for 3-button controller support.
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "b"})
+        mappings.update({"BUTTON3": "a"})
         mappings.update({"BUTTON4": "pageup"})
         mappings.update({"BUTTON5": "x"})
+        mappings.update({"BUTTON6": "pagedown"})
+    elif altButtons == "megadrive": # Genesis-style controller layout
+        mappings.update({"BUTTON1": "pageup"})
+        mappings.update({"BUTTON2": "x"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "y"})
+        mappings.update({"BUTTON5": "b"})
+        mappings.update({"BUTTON6": "a"})
+    elif altButtons == "mkmegadrive": # Genesis-style controller layout (Ultimate Mortal Kombat 3 version)
+        mappings.update({"BUTTON1": "pageup"})
+        mappings.update({"BUTTON2": "x"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "y"})
+        mappings.update({"BUTTON5": "a"})
         mappings.update({"BUTTON6": "b"})
+    elif altButtons == "neomini": # Neo Geo Mini
+        mappings.update({"BUTTON1": "y"})
+        mappings.update({"BUTTON2": "b"})
+        mappings.update({"BUTTON3": "x"})
+        mappings.update({"BUTTON4": "a"})
+    elif altButtons == "neoccd": # Neo Geo CD
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "a"})
+        mappings.update({"BUTTON3": "y"})
+        mappings.update({"BUTTON4": "x"})
+    elif altButtons == "neostick": # Neo Geo Fightstick
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "x"})
+        mappings.update({"BUTTON3": "pagedown"})
+        mappings.update({"BUTTON4": "pageup"})
+        mappings.update({"BUTTON5": "y"})
+        mappings.update({"BUTTON6": "a"})
     elif altButtons == "twinstick": # Twinstick with Buttons (Battle Zone, virtual On)
-        mappings.update({"BUTTON1": "r2"})
+        mappings.update({"BUTTON1": "l2"})
         mappings.update({"BUTTON2": "pageup"})
-        mappings.update({"BUTTON3": "l2"})
+        mappings.update({"BUTTON3": "r2"})
         mappings.update({"BUTTON4": "pagedown"})
-        mappings.update({"BUTTON5": "r3"})
-        mappings.update({"BUTTON6": "l3"})
+        mappings.update({"BUTTON5": "l3"})
+        mappings.update({"BUTTON6": "r3"})
         mappings.update({"BUTTON7": ""})
         mappings.update({"BUTTON8": ""})
         mappings.update({"BUTTON9": ""})
         mappings.update({"BUTTON10": ""})
     elif altButtons == "fightstick": # Generic 8-button Fightstick
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "b"})
-        mappings.update({"BUTTON3": "l2"})
-        mappings.update({"BUTTON4": "r2"})
-        mappings.update({"BUTTON5": "x"})
-        mappings.update({"BUTTON6": "y"})
+        mappings.update({"BUTTON1": "b"})
+        mappings.update({"BUTTON2": "a"})
+        mappings.update({"BUTTON3": "r2"})
+        mappings.update({"BUTTON4": "l2"})
+        mappings.update({"BUTTON5": "y"})
+        mappings.update({"BUTTON6": "x"})
         mappings.update({"BUTTON7": "pagedown"})
         mappings.update({"BUTTON8": "pageup"})
 
