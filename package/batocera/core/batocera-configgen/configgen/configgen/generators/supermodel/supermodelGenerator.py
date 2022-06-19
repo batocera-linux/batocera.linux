@@ -283,7 +283,7 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                 elif input.value == "4":
                     return "JOY{}_DOWN,JOY{}_POV1_DOWN".format(joynum+1,joynum+1)
                 elif input.value == "8":
-                    return "JOY{}_LEFT,JOY{}_POV1_LEFT".format(joynum+1,joynum+1))
+                    return "JOY{}_LEFT,JOY{}_POV1_LEFT".format(joynum+1,joynum+1)
             elif input.type == "axis":
                 sidestr = ""
                 if axisside is not None:
