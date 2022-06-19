@@ -1306,8 +1306,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('nestopia_zapper_device', '"mouse"')
 
         # gun cross
-        if system.isOptSet('nestopia_show_crosshair') and system.config['nestopia_show_crosshair'] == "disabled":
-            coreSettings.save('nestopia_show_crosshair', '"disabled"')
+        if system.isOptSet('nestopia_show_crosshair'):
+            coreSettings.save('nestopia_show_crosshair', system.config['nestopia_show_crosshair'])
         else:
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"enabled"'
@@ -1363,8 +1363,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('fceumm_zapper_mode', '"mouse"')
 
         # gun cross
-        if system.isOptSet('fceumm_show_crosshair') and system.config['fceumm_show_crosshair'] == "disabled":
-            coreSettings.save('fceumm_show_crosshair', '"disabled"')
+        if system.isOptSet('fceumm_show_crosshair'):
+            coreSettings.save('fceumm_show_crosshair', system.config['fceumm_show_crosshair'])
         else:
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"enabled"'
@@ -1526,17 +1526,14 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_2010_overclock', '"' + system.config['2010_overclock_superfx'] + '"')
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
-        if system.isOptSet('2010_superscope_crosshair'):
-            coreSettings.save('snes9x_2010_superscope_crosshair', system.config['2010_superscope_crosshair'])
+        if system.isOptSet('superscope_crosshair'):
+            coreSettings.save('snes9x_2010_superscope_crosshair', system.config['superscope_crosshair'])
         else:
-            if system.isOptSet('superscope_crosshair'):
-                coreSettings.save('snes9x_2010_superscope_crosshair', system.config['2010_superscope_crosshair'])
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"2"'
             else:
-                if controllersConfig.gunsNeedCrosses(guns):
-                    status = '"2"'
-                else:
-                    status = '"disabled"'
-                coreSettings.save('snes9x_2010_superscope_crosshair', status)
+                status = '"disabled"'
+            coreSettings.save('snes9x_2010_superscope_crosshair', status)
 
     # TODO: Add CORE options for BSnes and PocketSNES
 
