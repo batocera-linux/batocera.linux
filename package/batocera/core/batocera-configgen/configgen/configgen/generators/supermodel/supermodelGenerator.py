@@ -277,13 +277,13 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                 return f"JOY{joynum+1}_BUTTON{int(input.id)+1}"
             elif input.type == "hat":
                 if input.value == "1":
-                    return "JOY{}_UP,JOY{}_POV1_UP".format(joynum+1,joynum+1)
+                    return f"JOY{joynum+1}_UP,JOY{joynum+1}_POV1_UP"
                 elif input.value == "2":
-                    return "JOY{}_RIGHT,JOY{}_POV1_RIGHT".format(joynum+1,joynum+1)
+                    return f"JOY{joynum+1}_RIGHT,JOY{joynum+1}_POV1_RIGHT"
                 elif input.value == "4":
-                    return "JOY{}_DOWN,JOY{}_POV1_DOWN".format(joynum+1,joynum+1)
+                    return f"JOY{joynum+1}_DOWN,JOY{joynum+1}_POV1_DOWN"
                 elif input.value == "8":
-                    return "JOY{}_LEFT,JOY{}_POV1_LEFT".format(joynum+1,joynum+1)
+                    return f"JOY{joynum+1}_LEFT,JOY{joynum+1}_POV1_LEFT"
             elif input.type == "axis":
                 sidestr = ""
                 if axisside is not None:
