@@ -695,7 +695,7 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
                 retroarchConfig['input_libretro_device_p1'] = 260
                 configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
 
-    if system.config['core'] == 'fbneo':
+    if system.config['core'] == 'fbneo' or system.config['core'] == 'mame078plus' or system.config['core'] == 'mame0139' :
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             if len(guns) >= 1:
                 retroarchConfig['input_libretro_device_p1'] = 4
