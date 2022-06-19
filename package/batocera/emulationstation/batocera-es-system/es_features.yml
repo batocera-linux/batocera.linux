@@ -2926,9 +2926,13 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+
+    mame0139:
+      shared: [use_guns]
+
     mame078plus:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             mame2003-plus_analog:
                 prompt:      CONTROL MAPPING
