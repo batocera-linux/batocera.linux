@@ -75,7 +75,8 @@ def generateControllerConfig(system, playersControllers):
             "21": "41",
             "22": "47",
             "23": "46",
-            "24": "40"
+            "24": "40",
+            "25": "7"
     }
     # Wii U Pro Controller (no mapping 11)
     wiiUProButtons = {
