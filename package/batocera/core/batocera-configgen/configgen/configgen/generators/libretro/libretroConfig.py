@@ -671,48 +671,28 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
         if len(guns) >= 2:
             clearGunInputsForPlayer(2, retroarchConfig)
 
-    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p2'] = 260
-                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
+    gun_mapping = {
+        "snes9x"        : { "device": 260,          "p2": 0 },
+        "snes9x_next"   : { "device": 260,          "p2": 0 },
+        "nestopia"      : { "device": 262,          "p2": 0 },
+        "fceumm"        : { "device": 258,          "p2": 0 },
+        "genesisplusgx" : { "device": 260, "p1": 0, "p2": 1 },
+        "fbneo"         : { "device":   4, "p1": 0, "p2": 1 },
+        "mame078plus"   : { "device":   4, "p1": 0, "p2": 1 },
+        "mame0139"      : { "device":   4, "p1": 0, "p2": 1 },
+        "flycast"       : { "device":   4, "p1": 0, "p2": 1 },
+        "pcsx_rearmed"  : { "device": 260, "p1": 0, "p2": 1 },
+        "beetle-saturn" : { "device": 260,          "p2": 0 }
+    }
 
-    if system.config['core'] == 'nestopia':
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p2'] = 262
-                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
-
-    if system.config['core'] == 'fceumm':
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p2'] = 258
-                configureGunInputsForPlayer(2, guns[0], controllers, retroarchConfig)
-
-    if system.config['core'] == 'genesisplusgx':
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p1'] = 260
-                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
-
-    if system.config['core'] == 'fbneo' or system.config['core'] == 'mame078plus' or system.config['core'] == 'mame0139' :
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p1'] = 4
-                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
-            if len(guns) >= 2:
-                retroarchConfig['input_libretro_device_p2'] = 4
-                configureGunInputsForPlayer(2, guns[1], controllers, retroarchConfig)
-
-    if system.config['core'] == 'flycast':
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if len(guns) >= 1:
-                retroarchConfig['input_libretro_device_p1'] = 4
-                configureGunInputsForPlayer(1, guns[0], controllers, retroarchConfig)
-
-            if len(guns) >= 2:
-                retroarchConfig['input_libretro_device_p2'] = 4
-                configureGunInputsForPlayer(2, guns[1], controllers, retroarchConfig)
+    # apply mapping
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+        if system.config['core'] in gun_mapping:
+            ragunconf = gun_mapping[system.config['core']]
+            for nplayer in range(1, 2+1):
+                if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
+                    retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
 
     # Bezel option
     try:
