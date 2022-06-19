@@ -319,7 +319,7 @@ libretro:
                             "On":      enabled
     beetle-saturn:
       features: [netplay, cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
     fmsx:
        features: [netplay, cheevos]
        shared: [rewind, autosave]
@@ -3773,7 +3773,7 @@ libretro:
                     "On":         enabled
     pcsx_rearmed:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
