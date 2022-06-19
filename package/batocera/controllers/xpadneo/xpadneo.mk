@@ -10,10 +10,11 @@ XPADNEO_MODULE_SUBDIRS = hid-xpadneo/src
 
 define XPADNEO_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib/udev/rules.d
-	cp -v $(@D)/hid-xpadneo/etc-udev-rules.d/*.rules $(TARGET_DIR)/usr/lib/udev/rules.d/
+	cp -v $(@D)/hid-xpadneo/etc-udev-rules.d/*.rules $(TARGET_DIR)/etc/udev/rules.d/
 	cp -v $(@D)/hid-xpadneo/etc-modprobe.d/*.conf $(TARGET_DIR)/etc/modprobe.d/
 	echo "options hid_xpadneo trigger_rumble_mode=2" >> $(TARGET_DIR)/etc/modprobe.d/xpadneo.conf
 	echo "options bluetooth disable_ertm=1" >> $(TARGET_DIR)/etc/modprobe.d/xpadneo.conf
+	echo "hid-xpadneo" >> $(TARGET_DIR)/etc/modules.conf
 endef
 
 $(eval $(kernel-module))
