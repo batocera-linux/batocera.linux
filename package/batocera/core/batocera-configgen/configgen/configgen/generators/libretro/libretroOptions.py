@@ -1889,6 +1889,16 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('yabasanshiro_multitap_port2', '"disabled"')
 
     # TODO: Add CORE options for Beetle-saturn and Kronos
+    # gun cross
+    if (system.config['core'] == 'beetle-saturn'):
+        if system.isOptSet('beetle-saturn_crosshair'):
+            coreSettings.save('beetle_saturn_virtuagun_crosshair', system.config['beetle-saturn_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Cross"'
+            else:
+                status = '"Off"'
+            coreSettings.save('nestopia_show_crosshair', status)
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
