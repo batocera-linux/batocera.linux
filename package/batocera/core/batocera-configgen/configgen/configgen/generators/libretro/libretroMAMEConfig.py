@@ -46,6 +46,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
         if len(pluginsToLoad) > 0:
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
         messMode = -1
+        messModel = ''
     else:
         # Set up command line for MESS or MAMEVirtual
         softDir = "/var/run/mame_software/"
@@ -78,6 +79,12 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 messAutoRun.append(row[3])
         messMode = messSystems.index(system.name)
 
+        # Alternate system for machines that have different configs (ie computers with different hardware)
+        messModel = messSysName[messMode]
+        if system.isOptSet("altmodel"):
+            messModel = system.config["altmodel"]
+        commandLine += [ messModel ]
+
         if messSysName[messMode] == "":
             # Command line for non-arcade, non-system ROMs (lcdgames, plugnplay)
             if system.getOptBoolean("customcfg"):
@@ -91,12 +98,6 @@ def generateMAMEConfigs(playersControllers, system, rom):
             commandLine += [ '-rompath', romDirname + ";/userdata/bios/" ]
         else:
             # Command line for MESS consoles/computers
-            # Alternate system for machines that have different configs (ie computers with different hardware)
-            messModel = messSysName[messMode]
-            if system.isOptSet("altmodel"):
-                messModel = system.config["altmodel"]
-            commandLine += [ messModel ]
-
             #TI-99 32k RAM expansion & speech modules - enabled by default
             if system.name == "ti99":
                 commandLine += [ "-ioport", "peb" ]
