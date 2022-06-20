@@ -93,7 +93,11 @@ def configPadsIni(playersControllers, altControl):
             "axisZ": "l2",
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": "r2"
+            "axisRZ": "r2",
+            "left": "joystick1left",
+            "right": "joystick1right",
+            "up": "joystick1up",
+            "down": "joystick1down"
         }
     else:
         templateFile = "/usr/share/supermodel/Supermodel.ini.template"
@@ -113,13 +117,21 @@ def configPadsIni(playersControllers, altControl):
             "axisZ": None,
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": None
+            "axisRZ": None,
+            "left": "joystick1left",
+            "right": "joystick1right",
+            "up": "joystick1up",
+            "down": "joystick1down"
         }
     targetFile = "/userdata/system/configs/supermodel/Supermodel.ini"
 
     mapping_fallback = {
         "axisX": "left",
-        "axisY": "up"
+        "axisY": "up",
+        "right": "right",
+        "down": "down",
+        "left": "left",
+        "up": "up"
     }
 
     # template
@@ -177,20 +189,43 @@ def transformElement(elt, playersControllers, mapping, mapping_fallback):
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        # check joystick type if it's hat or axis 
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_up = "up"
+        else:
+            key_up = "axisY"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_up, mapping, mapping_fallback)
+        print(mp)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_down = "down"
+        else:
+            key_down = "axisY"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_down, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_left = "left"
+        else:
+            key_left = "axisX"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_left, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_right = "right"
+        else:
+            key_right = "axisX"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_right, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
+
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axis" + matches.group(2)])
@@ -216,6 +251,19 @@ def joy2realjoyid(playersControllers, joy):
         return playersControllers[joy].index
     return None
 
+def hatOrAxis(playersControllers, player):
+    #default to axis
+    type = "axis"
+    if (player) in playersControllers:
+        pad = playersControllers[(player)]
+        for button in pad.inputs:
+            input = pad.inputs[button]
+            if input.type == "hat":
+                type = "hat"
+            elif input.type == "axis":
+                type = "axis"
+    return type
+
 def input2input(playersControllers, player, joynum, button, axisside = None):
     if (player) in playersControllers:
         pad = playersControllers[(player)]
@@ -225,13 +273,13 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                 return f"JOY{joynum+1}_BUTTON{int(input.id)+1}"
             elif input.type == "hat":
                 if input.value == "1":
-                    return f"JOY{joynum+1}_UP"
+                    return f"JOY{joynum+1}_UP,JOY{joynum+1}_POV1_UP"
                 elif input.value == "2":
-                    return f"JOY{joynum+1}_RIGHT"
+                    return f"JOY{joynum+1}_RIGHT,JOY{joynum+1}_POV1_RIGHT"
                 elif input.value == "4":
-                    return f"JOY{joynum+1}_DOWN"
+                    return f"JOY{joynum+1}_DOWN,JOY{joynum+1}_POV1_DOWN"
                 elif input.value == "8":
-                    return f"JOY{joynum+1}_LEFT"
+                    return f"JOY{joynum+1}_LEFT,JOY{joynum+1}_POV1_LEFT"
             elif input.type == "axis":
                 sidestr = ""
                 if axisside is not None:
