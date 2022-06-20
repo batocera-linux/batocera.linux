@@ -1898,7 +1898,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 status = '"Cross"'
             else:
                 status = '"Off"'
-            coreSettings.save('nestopia_show_crosshair', status)
+            coreSettings.save('beetle_saturn_virtuagun_crosshair', status)
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
