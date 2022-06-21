@@ -18,14 +18,14 @@ case "$1" in
     # check if governor is set
     if ! governor="$(/usr/bin/batocera-settings-get system.cpu.governor)"
     then
-      save_current_governor
+      #save_current_governor
       exit 0
     fi
 
     # try to apply governor
     if ! echo $governor > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor 2>/dev/null
     then
-      save_current_governor
+      #save_current_governor
       exit 0
     fi
 
