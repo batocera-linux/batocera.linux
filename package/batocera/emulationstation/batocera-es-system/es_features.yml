@@ -8483,7 +8483,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  shared: [videomode]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         fakeGouraud:
             group: ADVANCED OPTIONS
