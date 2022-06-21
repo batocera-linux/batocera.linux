@@ -220,6 +220,12 @@ def gunsNeedCrosses(guns):
             return True
     return False
 
+def gunsNeedBorders(guns):
+    for gun in guns:
+        if guns[gun]["need_borders"]:
+            return True
+    return False
+
 def getGuns():
     import pyudev
     import re
@@ -247,8 +253,9 @@ def getGuns():
             nmouse = nmouse + 1
             continue
         # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE (TOUCHPAD are listed after mouses)
-        need_cross = "ID_INPUT_GUN_NEED_CROSS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"] == '1'
-        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross}
+        need_cross   = "ID_INPUT_GUN_NEED_CROSS"   in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"]   == '1'
+        need_borders = "ID_INPUT_GUN_NEED_BORDERS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_BORDERS"] == '1'
+        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross, "need_borders": need_borders}
         eslog.info("found gun {} at {} with id_mouse={}".format(ngun, mouses[eventid].device_node, nmouse))
         nmouse = nmouse + 1
         ngun = ngun + 1

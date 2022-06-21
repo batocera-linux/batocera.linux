@@ -232,3 +232,24 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretc
   else:
       imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")
+
+def gunBorderImage(input_png, output_png, borderSizePer = 1, borderColor = "#ffffff"):
+    from PIL import ImageDraw
+    w,h = fast_image_size(input_png)
+    borderSize = h * borderSizePer // 100 # use only h to have homogen border size
+    if borderSize < 1: # minimal size
+        borderSize = 1
+    shapes = [ [(0, 0), (w, borderSize)], [(w-borderSize, 0), (w, h)], [(0, h-borderSize), (w, h)], [(0, 0), (borderSize, h)] ]
+    back = Image.open(input_png)
+    imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
+    imgnew.paste(back, (0,0,w,h))
+    imgnewdraw = ImageDraw.Draw(imgnew)
+    for shape in shapes:
+        imgnewdraw.rectangle(shape, fill=borderColor)
+    imgnew.save(output_png, mode="RGBA", format="PNG")
+
+def createTransparentBezel(output_png, width, height):
+    from PIL import ImageDraw
+    imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
+    imgnewdraw = ImageDraw.Draw(imgnew)
+    imgnew.save(output_png, mode="RGBA", format="PNG")
