@@ -12,6 +12,7 @@ from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
 import utils.videoMode as videoMode
+import controllersConfig
 
 eslog = get_logger(__name__)
 sys.path.append(
@@ -696,10 +697,10 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
 
     # Bezel option
     try:
-        writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system)
+        writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(None, shaderBezel, retroarchConfig, rom, gameResolution, system)
+        writeBezelConfig(None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
         eslog.error(f"Error with bezel {bezel}: {e}")
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -770,7 +771,7 @@ def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system):
+def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsNeedBorder):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -782,12 +783,24 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
     retroarchConfig['video_message_pos_x']  = 0.05
     retroarchConfig['video_message_pos_y']  = 0.05
 
-    if bezel is None:
-        return
+    # special text...
+    if bezel == "none" or bezel == "":
+        bezel = None
 
-    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
-    if bz_infos is None:
-        return
+    # create a fake bezel if guns need it
+    if bezel is None and gunsNeedBorder:
+        eslog.debug("guns need border")
+        gunBezelFile     = "/tmp/bezel_gun_black.png"
+        gunBezelInfoFile = "/tmp/bezel_gun_black.info" # not existing file
+        bezelsUtil.createTransparentBezel(gunBezelFile, gameResolution["width"], gameResolution["height"])
+        # if the game needs a specific bezel, to draw border, consider it as a specific game bezel, like for thebezelproject to avoir caches
+        bz_infos = { "png": gunBezelFile, "info": gunBezelInfoFile, "layout": None, "mamezip": None, "specific_to_game": True }
+    else:
+        if bezel is None:
+            return
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, True)
+        if bz_infos is None:
+            return
 
     overlay_info_file = bz_infos["info"]
     overlay_png_file  = bz_infos["png"]
@@ -942,6 +955,12 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
 
+    if gunsNeedBorder:
+        eslog.debug("Draw gun borders")
+        output_png_file = "/tmp/bezel_gunborders.png"
+        bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
+        overlay_png_file = output_png_file
+
     eslog.debug(f"Bezel file set to {overlay_png_file}")
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
@@ -964,7 +983,6 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
         # Shaders should use this path to find the art.
         os.symlink(overlay_png_file, shaderBezelFile)
         eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
-
 
 def isLowResolution(gameResolution):
     return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
