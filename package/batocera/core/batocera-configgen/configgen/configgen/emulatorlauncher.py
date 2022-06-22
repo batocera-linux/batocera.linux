@@ -285,23 +285,35 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     return exitCode
 
 def getHudBezel(system, generator, rom, gameResolution):
-    if 'bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none":
-        return None
-
-    eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
-
     if generator.supportsInternalBezels():
         eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
         return None
 
-    bezel = system.config['bezel']
-    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config['emulator'])
-    if bz_infos is None:
-        eslog.debug("no bezel info file found")
+    # no good reason for a bezel
+    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and  not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0"):
         return None
 
-    overlay_info_file = bz_infos["info"]
-    overlay_png_file  = bz_infos["png"]
+    # no bezel, generate a transparent one for the tatoo/gun borders ... and so on
+    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none"):
+        overlay_png_file  = "/tmp/bezel_transhud_black.png"
+        overlay_info_file = "/tmp/bezel_transhud_black.info"
+        bezelsUtil.createTransparentBezel(overlay_png_file, gameResolution["width"], gameResolution["height"])
+
+        w = gameResolution["width"]
+        h = gameResolution["height"]
+        with open(overlay_info_file, "w") as fd:
+            fd.write("{" + f' "width":{w}, "height":{h}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000' + "}")
+    else:
+        eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
+
+        bezel = system.config['bezel']
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config['emulator'])
+        if bz_infos is None:
+            eslog.debug("no bezel info file found")
+            return None
+
+        overlay_info_file = bz_infos["info"]
+        overlay_png_file  = bz_infos["png"]
 
     # check the info file
     # bottom, top, left and right must not cover too much the image to be considered as compatible
@@ -437,7 +449,7 @@ def hudConfig_protectStr(str):
 def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
     configstr = ""
 
-    if bezel != "" and bezel is not None:
+    if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
     if not system.isOptSet('hud'):
