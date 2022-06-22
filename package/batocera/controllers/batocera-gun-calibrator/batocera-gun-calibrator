@@ -43,12 +43,32 @@ inputkey = hashlib.md5(input.name.encode()).hexdigest()[0:8]
 
 # output
 outputSize = [1000, 1000] # output rectangle
+evkeys = []
+for x in range(ecodes.KEY_MAX):
+    if x not in [
+            ecodes.BTN_DIGI,
+            ecodes.BTN_TOOL_PEN,
+            ecodes.BTN_TOOL_RUBBER,
+            ecodes.BTN_TOOL_BRUSH,
+            ecodes.BTN_TOOL_PENCIL,
+            ecodes.BTN_TOOL_AIRBRUSH,
+            ecodes.BTN_TOOL_FINGER,
+            ecodes.BTN_TOOL_MOUSE,
+            ecodes.BTN_TOOL_LENS,
+            ecodes.BTN_TOUCH,
+            ecodes.BTN_STYLUS,
+            ecodes.BTN_STYLUS2,
+            ecodes.BTN_TOOL_DOUBLETAP,
+            ecodes.BTN_TOOL_TRIPLETAP,
+            ecodes.BTN_TOOL_QUADTAP]: # avoid some buttons causing issues to libinput
+        evkeys.append(x)
+
 target = evdev.UInput(name=input.name+" calibrated", events={
     ecodes.EV_ABS: [
         (ecodes.ABS_X, evdev.AbsInfo(value=0, min=0, max=outputSize[0], fuzz=0, flat=0, resolution=0)),
         (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1], fuzz=0, flat=0, resolution=0))
     ],
-    ecodes.EV_KEY: list(range(ecodes.KEY_MAX+1))})
+    ecodes.EV_KEY: evkeys})
 
 needSync = False
 calibration_timeChecker = None
