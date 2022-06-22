@@ -792,20 +792,22 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         eslog.debug("guns need border")
         gunBezelFile     = "/tmp/bezel_gun_black.png"
         gunBezelInfoFile = "/tmp/bezel_gun_black.info"
-        with open(gunBezelInfoFile, "w") as fd:
-            w = gameResolution["width"]
-            h = gameResolution["height"]
-            h5 = bezelsUtil.gunsBorderSize(w, h)
 
-            # could be better to compute the ratio while on ra it is forced to 4/3...
-            ratio = generator.getInGameRatio(system.config, gameResolution, rom)
-            top    = h5
-            left   = h5
-            bottom = h5
-            right  = h5
-            if ratio == 4/3:
-                left = (w - (h-2*h5)*4/3)//2
-                right = left
+        w = gameResolution["width"]
+        h = gameResolution["height"]
+        h5 = bezelsUtil.gunsBorderSize(w, h)
+
+        # could be better to compute the ratio while on ra it is forced to 4/3...
+        ratio = generator.getInGameRatio(system.config, gameResolution, rom)
+        top    = h5
+        left   = h5
+        bottom = h5
+        right  = h5
+        if ratio == 4/3:
+            left = (w - (h-2*h5)*4/3)//2
+            right = left
+
+        with open(gunBezelInfoFile, "w") as fd:
             fd.write("{" + f' "width":{w}, "height":{h}, "top":{top}, "left":{left}, "bottom":{bottom}, "right":{right}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000' + "}")
         bezelsUtil.createTransparentBezel(gunBezelFile, gameResolution["width"], gameResolution["height"])
         # if the game needs a specific bezel, to draw border, consider it as a specific game bezel, like for thebezelproject to avoir caches
