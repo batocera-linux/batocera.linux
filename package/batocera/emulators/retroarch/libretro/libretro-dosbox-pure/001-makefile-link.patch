@@ -1,0 +1,38 @@
+--- libretro-dosbox-pure-lbrpdx/Makefile	2022-06-22 14:18:58.757161987 -0700
++++ libretro-dosbox-pure-e812468bb69824f3d4b7460384bc06165c9790da/Makefile	2022-06-22 14:26:38.983075060 -0700
+@@ -33,7 +33,7 @@
+   src/*/*/*.cpp
+ 
+ CPUFLAGS := $(MAKE_CPUFLAGS)
+-STRIPCMD := strip --strip-all
++STRIPCMD := $(STRIP) --strip-all
+ ifneq ($(ISWIN),)
+   OUTNAME := dosbox_pure_libretro.dll
+   CXX     ?= g++
+@@ -58,7 +58,7 @@
+     MINVERSION = -miphoneos-version-min=5.0
+   endif
+   COMMONFLAGS += $(MINVERSION) -Wno-ignored-optimization-argument -Wno-unknown-warning-option
+-  STRIPCMD := strip -xS
++  STRIPCMD := $(STRIP) -xS
+ else ifeq ($(platform),tvos-arm64)
+   ifeq ($(IOSSDK),)
+     IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
+@@ -67,7 +67,7 @@
+   CXX     = c++ -arch arm64 -isysroot $(IOSSDK)
+   LDFLAGS := -Wl,-dead_strip
+   COMMONFLAGS += -DDISABLE_DYNAREC=1 -Wno-unknown-warning-option
+-  STRIPCMD := strip -xS
++  STRIPCMD := $(STRIP) -xS
+ else ifneq ($(ISMAC),)
+   OUTNAME := dosbox_pure_libretro.dylib
+   CXX     ?= c++
+@@ -81,7 +81,7 @@
+   endif
+   COMMONFLAGS  += $(ARCHFLAGS)
+   LDFLAGS      += $(ARCHFLAGS)
+-  STRIPCMD := strip -xS
++  STRIPCMD := $(STRIP) -xS
+ else ifeq ($(platform),windows) # For MSYS2 only
+   OUTNAME := dosbox_pure_libretro.dll
+   CXX     ?= g++
