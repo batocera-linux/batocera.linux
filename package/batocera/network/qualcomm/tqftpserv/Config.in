@@ -1,0 +1,7 @@
+config BR2_PACKAGE_TQFTPSERV
+	bool "tqftpserv"
+	select BR2_PACKAGE_QRTR
+	help
+	  Trivial File Transfer Protocol server over AF_QIPCRTR.
+
+	  https://github.com/andersson/tqftpserv
