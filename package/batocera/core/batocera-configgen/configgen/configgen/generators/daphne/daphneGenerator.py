@@ -53,6 +53,9 @@ class DaphneGenerator(Generator):
         if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
             commandArray.append("-blend_sprites")
 
+        if controllersConfig.gunsNeedBorders(guns):
+            commandArray.extend(["-sinden", "2", "w"])
+
         # Oversize Overlay (Singe) for HD lightgun games
         if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
             commandArray.append("-oversize_overlay")
