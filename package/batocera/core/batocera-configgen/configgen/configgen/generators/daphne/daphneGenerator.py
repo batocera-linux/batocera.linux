@@ -6,6 +6,7 @@ from generators.Generator import Generator
 import shutil
 import os
 from . import daphneControllers
+import controllersConfig
 
 class DaphneGenerator(Generator):
 
@@ -26,7 +27,7 @@ class DaphneGenerator(Generator):
         if os.path.isfile(singeFile):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
-                            "-manymouse", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+                            "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
@@ -55,6 +56,14 @@ class DaphneGenerator(Generator):
         # Oversize Overlay (Singe) for HD lightgun games
         if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
             commandArray.append("-oversize_overlay")
+
+        # crosshair
+        if system.isOptSet('daphne_crosshair'):
+            if not system.getOptBoolean("daphne_crosshair"):
+                commandArray.append("-nocrosshair")
+        else:
+            if not controllersConfig.gunsNeedCrosses(guns):
+                commandArray.append("-nocrosshair")
 
         # Invert Axis
         if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
