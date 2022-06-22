@@ -233,20 +233,55 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretc
       imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")
 
-def gunBorderImage(input_png, output_png, borderSizePer = 1, borderColor = "#ffffff"):
+def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, innerBorderColor = "#ffffff", outerBorderSizePer = 3, outerBorderColor = "#000000"):
+    # good default border that works in most circumstances is:
+    # 
+    # 2% of the screen width in white.  Surrounded by 3% screen width of
+    # black.  I have attached an example.  The black helps the lightgun detect
+    # the border against a bright background behind the tv.
+    # 
+    # The ideal solution is to draw the games inside the border rather than
+    # overlap.  Then you can see the whole game.  The lightgun thinks that the
+    # outer edge of the border is the edge of the game screen.  So you have to
+    # make some adjustments in the lightgun settings to keep it aligned.  This
+    # is why normally the border overlaps as it means that people do not need
+    # to calculate an adjustment and is therefore easier.
+    # 
+    # If all the games are drawn with the border this way then the settings
+    # are static and the adjustment only needs to be calculated once.
+
     from PIL import ImageDraw
     w,h = fast_image_size(input_png)
-    borderSize = h * borderSizePer // 100 # use only h to have homogen border size
-    if borderSize < 1: # minimal size
-        borderSize = 1
-    shapes = [ [(0, 0), (w, borderSize)], [(w-borderSize, 0), (w, h)], [(0, h-borderSize), (w, h)], [(0, 0), (borderSize, h)] ]
+
+    # outer border
+    outerBorderSize = h * outerBorderSizePer // 100 # use only h to have homogen border size
+    if outerBorderSize < 1: # minimal size
+        outerBorderSize = 1
+    outerShapes = [ [(0, 0), (w, outerBorderSize)], [(w-outerBorderSize, 0), (w, h)], [(0, h-outerBorderSize), (w, h)], [(0, 0), (outerBorderSize, h)] ]
+
+    # inner border
+    innerBorderSize = w * innerBorderSizePer // 100 # use only h to have homogen border size
+    if innerBorderSize < 1: # minimal size
+        innerBorderSize = 1
+    innerShapes = [ [(outerBorderSize, outerBorderSize), (w-outerBorderSize, outerBorderSize+innerBorderSize)],
+                    [(w-outerBorderSize-innerBorderSize, outerBorderSize), (w-outerBorderSize, h-outerBorderSize)],
+                    [(outerBorderSize, h-outerBorderSize-innerBorderSize), (w-outerBorderSize, h-outerBorderSize)],
+                    [(outerBorderSize, outerBorderSize), (outerBorderSize+innerBorderSize, h-outerBorderSize)] ]
+    
     back = Image.open(input_png)
     imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
     imgnew.paste(back, (0,0,w,h))
     imgnewdraw = ImageDraw.Draw(imgnew)
-    for shape in shapes:
-        imgnewdraw.rectangle(shape, fill=borderColor)
+    for shape in outerShapes:
+        imgnewdraw.rectangle(shape, fill=outerBorderColor)
+    for shape in innerShapes:
+        imgnewdraw.rectangle(shape, fill=innerBorderColor)
     imgnew.save(output_png, mode="RGBA", format="PNG")
+
+    return outerBorderSize + innerBorderSize
+
+def gunsBorderSize(w, h, innerBorderSizePer = 2, outerBorderSizePer = 3):
+    return (h * (innerBorderSizePer + outerBorderSizePer)) // 100
 
 def createTransparentBezel(output_png, width, height):
     from PIL import ImageDraw

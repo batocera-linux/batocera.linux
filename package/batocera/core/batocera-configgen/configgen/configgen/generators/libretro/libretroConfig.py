@@ -59,11 +59,11 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def writeLibretroConfig(retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+def writeLibretroConfig(generator, retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -697,10 +697,10 @@ def createLibretroConfig(system, controllers, guns, rom, bezel, shaderBezel, gam
 
     # Bezel option
     try:
-        writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
+        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
+        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
         eslog.error(f"Error with bezel {bezel}: {e}")
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -771,7 +771,7 @@ def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsNeedBorder):
+def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsNeedBorder):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -791,7 +791,22 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
     if bezel is None and gunsNeedBorder:
         eslog.debug("guns need border")
         gunBezelFile     = "/tmp/bezel_gun_black.png"
-        gunBezelInfoFile = "/tmp/bezel_gun_black.info" # not existing file
+        gunBezelInfoFile = "/tmp/bezel_gun_black.info"
+        with open(gunBezelInfoFile, "w") as fd:
+            w = gameResolution["width"]
+            h = gameResolution["height"]
+            h5 = bezelsUtil.gunsBorderSize(w, h)
+
+            # could be better to compute the ratio while on ra it is forced to 4/3...
+            ratio = generator.getInGameRatio(system.config, gameResolution, rom)
+            top    = h5
+            left   = h5
+            bottom = h5
+            right  = h5
+            if ratio == 4/3:
+                left = (w - (h-2*h5)*4/3)//2
+                right = left
+            fd.write("{" + f' "width":{w}, "height":{h}, "top":{top}, "left":{left}, "bottom":{bottom}, "right":{right}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000' + "}")
         bezelsUtil.createTransparentBezel(gunBezelFile, gameResolution["width"], gameResolution["height"])
         # if the game needs a specific bezel, to draw border, consider it as a specific game bezel, like for thebezelproject to avoir caches
         bz_infos = { "png": gunBezelFile, "info": gunBezelInfoFile, "layout": None, "mamezip": None, "specific_to_game": True }
@@ -958,7 +973,7 @@ def writeBezelConfig(bezel, shaderBezel, retroarchConfig, rom, gameResolution, s
     if gunsNeedBorder:
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
-        bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
         overlay_png_file = output_png_file
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")
