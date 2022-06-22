@@ -215,6 +215,10 @@ def generateSdlGameControllerPadsOrderConfig(controllers):
     return res
 
 def gunsNeedCrosses(guns):
+    # no gun, enable the cross for joysticks, mouses...
+    if len(guns) == 0:
+        return True
+
     for gun in guns:
         if guns[gun]["need_cross"]:
             return True
