@@ -209,10 +209,13 @@ class LibretroGenerator(Generator):
                 os.chmod(scriptFile, fileStat.st_mode | 0o111)
         # PURE zip games uses the same commandarray of all cores. .pc and .rom  uses owns
         elif system.name == 'dos':
-            romDOSName = os.path.splitext(romName)[0]
             romDOSName, romExtension = os.path.splitext(romName)
-            if romExtension == '.dos' or romExtension == '.pc':
-                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
+            if (romExtension == '.dos' or romExtension == '.pc'):
+                if os.path.exists(os.path.join(rom, romDOSName + ".bat")):
+                    exe = os.path.join(rom, romDOSName + ".bat")
+                else:
+                    exe = os.path.join(rom, "dosbox.bat")
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         # Pico-8 multi-carts (might work only with official Lexaloffe engine right now)
