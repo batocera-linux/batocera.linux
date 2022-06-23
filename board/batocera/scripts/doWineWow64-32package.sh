@@ -50,7 +50,6 @@ findDeps() {
 }
 
 findLibDir() {
-    # "${G_TARGETDIR}/usr/lib/pulseaudio"
     for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/lutris/lib"  "${G_TARGETDIR}/usr/wine/proton/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
@@ -66,10 +65,6 @@ cpLib() {
     fi
     return 0
 }
-
-#G_TARGETDIR="${1}"
-#TMPOUT="${2}"
-#TARGET_IMAGE="${3}"
 
 G_TARGETDIR="${TARGET_DIR}"
 TMPOUT="${BINARIES_DIR}/wine"
@@ -91,14 +86,6 @@ if ! mkdir -p "${TMPOUT}/lib32/vdpau"
 then
     exit 1
 fi
-#if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
-#then
-#    exit 1
-#fi
-#if ! mkdir -p "${TMPOUT}/usr/share/wine"
-#then
-#    exit 1
-#fi
 if ! mkdir -p "${TMPOUT}/usr/share/gst-plugins-base"
 then
     exit 1
@@ -109,14 +96,10 @@ then
 fi
 
 # libs32
-# "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
-#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
 cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
-#ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
@@ -128,18 +111,10 @@ cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/vdpau/"* "${TMPOUT}/lib32/vdpau" || exit 1
-#"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
-
-# add .so for lutris
-(cd "${G_TARGETDIR}/usr/wine/lutris/lib" && ln -sf libwine.so.1 libwine.so) || exit 1
 
 for BIN in \
 "${G_TARGETDIR}/usr/wine/lutris/bin/wine" \
 "${G_TARGETDIR}/usr/wine/proton/bin/wine" \
-"${G_TARGETDIR}/usr/wine/lutris/lib/"*.so \
-"${G_TARGETDIR}/usr/wine/proton/lib/"*.so \
-"${G_TARGETDIR}/usr/wine/lutris/lib/wine/"*.so \
-"${G_TARGETDIR}/usr/wine/proton/lib/wine/"*.so \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
@@ -223,7 +198,7 @@ echo "ld..."
 mkdir -p "${TMPOUT}/lib"                                      || exit 1
 ENDINGNAME=$(echo "${G_TARGETDIR}/lib/ld-linux"* | sed -e s+'^.*/\([^/]*\)$'+'\1'+)
 echo  "   ${ENDINGNAME}"
-(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so "${ENDINGNAME}") || exit 1
+(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so.* "${ENDINGNAME}") || exit 1
 
 if echo "${TARGET_IMAGE}" | grep -qE "^/"
 then
