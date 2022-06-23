@@ -175,7 +175,7 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_32,$(TARGET_DIR))
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
-			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so
+			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so
 	$(INSTALL) -D -m 0644 $(@D)/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/drivers/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
