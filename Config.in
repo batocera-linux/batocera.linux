@@ -83,6 +83,10 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8192eu/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8812au/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821cu/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/pd-mapper/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/qrtr/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/rmtfs/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/tqftpserv/Config.in"
   endmenu
 
   menu "Device trees"
