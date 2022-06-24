@@ -203,13 +203,13 @@ KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
 # move to avoid the production driver
 define BATOCERA_NVIDIA340_LEGACY_DRIVER_RENAME_KERNEL_MODULES
     # rename the kernel modules to avoid conflict
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
 	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia340-legacy.ko
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
 	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia340-modeset-legacy.ko
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
 	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia340-drm-legacy.ko	
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
 	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia340-uvm-legacy.ko
 	# set the driver version file
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
