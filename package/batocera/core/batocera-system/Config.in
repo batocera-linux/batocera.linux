@@ -1363,8 +1363,8 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_XSERVER_XORG_SERVER
 
 	# xwayland based architecture (no more ddx drivers)
-	select BR2_PACKAGE_LIBEPOXY		# required to enable xorg glamor
-	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+	select BR2_PACKAGE_LIBEPOXY             # required to enable xorg glamor
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS    if BR2_PACKAGE_WAYLAND
 	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
 
 	# drivers

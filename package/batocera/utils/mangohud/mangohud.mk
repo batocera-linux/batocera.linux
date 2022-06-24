@@ -7,7 +7,7 @@
 MANGOHUD_VERSION = v0.6.6-1
 MANGOHUD_SITE =  $(call github,flightlessmango,MangoHud,$(MANGOHUD_VERSION))
 
-MANGOHUD_DEPENDENCIES = host-libcurl host-python-mako host-glslang
+MANGOHUD_DEPENDENCIES = host-libcurl host-python-mako
 
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
 	MANGOHUD_DEPENDENCIES += libdrm
@@ -18,7 +18,7 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 endif
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS),y)
-	MANGOHUD_DEPENDENCIES += vulkan-headers
+	MANGOHUD_DEPENDENCIES += vulkan-headers host-glslang
 endif
 
 MANGOHUD_CONF_OPTS = -Dwith_xnvctrl=disabled
