@@ -7,6 +7,16 @@ WIIMOTEMODE=$(batocera-settings-get controllers.wiimote.mode)
 test "${WIIMOTEMODE}" != 'gun' -a "${WIIMOTEMODE}" != "" && exit 0 # gun mode not enabled
 
 USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+
+# lock
+N=0
+while ! mkdir "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}.lock"
+do
+    sleep 1
+    let N++
+    test "${N}" -gt 30 && exit 1 # give up
+done
+
 NDEVS=$(cat "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}" | wc -l)
 
 echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/virtual-wii-mouse-devices.seen || exit 1
@@ -32,3 +42,6 @@ then
 else
     echo "${DEVNAME}" >> "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}" || exit 1
 fi
+
+# unlock
+rmdir "/var/run/virtual-wii-mouse-devices.${USBPATHHASH}.lock"
