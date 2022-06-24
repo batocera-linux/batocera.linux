@@ -254,17 +254,18 @@ KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
 
 # keep a copy of the production driver for legacy - production migrations
 define BATOCERA_NVIDIA_DRIVER_RENAME_KERNEL_MODULES
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
     # rename the kernel modules to avoid conflict
 	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-production.ko
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-production.ko
 	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset-production.ko
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-production.ko
 	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm-production.ko	
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-production.ko	
 	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm-production.ko
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-production.ko
 	# set the driver version file
-	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	echo $(BATOCERA_NVIDIA_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/production.version
 endef
 
