@@ -15,8 +15,8 @@ FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 
 # determine the best OpenGL version to use
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-  # Batocera - RPi4 prefer GLES
-  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+  # Batocera - SBC prefer GLES
+  ifneq ($(BR2_PACKAGE_BATOCERA_SBC_XORG),y)
     FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON
   else
     FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF

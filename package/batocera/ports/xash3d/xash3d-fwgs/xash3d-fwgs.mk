@@ -22,8 +22,8 @@ XASH3D_FWGS_CONF_OPTS += --64bits
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-# Batocera - RPi4 prefer GLES
-  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+# Batocera - SBC prefer GLES
+  ifneq ($(BR2_PACKAGE_BATOCERA_SBC_XORG),y)
     XASH3D_FWGS_DEPENDENCIES += libgl
   endif
 else
