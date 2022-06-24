@@ -18,7 +18,7 @@ define BATOCERA_NVIDIA_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/glvnd/egl_vendor.d
 	mkdir -p $(TARGET_DIR)/usr/share/X11/xorg.conf.d
 	mkdir -p $(TARGET_DIR)/usr/share/vulkan/icd.d
-	mkdir -p $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra
+	#mkdir -p $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra
 	mkdir -p $(TARGET_DIR)/usr/lib/xorg/modules/extensions
 
 	ln -sf /var/run/nvidia/lib/libGLX_nvidia.so         	      $(TARGET_DIR)/usr/lib/libGLX_nvidia.so
@@ -68,10 +68,10 @@ define BATOCERA_NVIDIA_INSTALL_TARGET_CMDS
 	ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json 	      $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
 	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json   	      $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
 
-	ln -sf /var/run/nvidia/modules/nvidia.ko         	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia.ko
-	ln -sf /var/run/nvidia/modules/nvidia-modeset.ko 	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-modeset.ko
-	ln -sf /var/run/nvidia/modules/nvidia-drm.ko     	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-drm.ko
-	ln -sf /var/run/nvidia/modules/nvidia-uvm.ko     	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-uvm.ko
+	#ln -sf /var/run/nvidia/modules/nvidia.ko         	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia.ko
+	#ln -sf /var/run/nvidia/modules/nvidia-modeset.ko 	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-modeset.ko
+	#ln -sf /var/run/nvidia/modules/nvidia-drm.ko     	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-drm.ko
+	#ln -sf /var/run/nvidia/modules/nvidia-uvm.ko     	      $(TARGET_DIR)/lib/modules/$(BR2_LINUX_KERNEL_VERSION)/extra/nvidia-uvm.ko
 
 	# for driver 390
 	ln -sf /var/run/nvidia/xorg/libglx.so $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so

@@ -49,7 +49,7 @@ then
 fi
 
 # kernel version
-LINUX_VER=$(uname -r)
+#LINUX_VER=$(uname -r)
 # production driver version
 BATOCERA_NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
 # legacy driver versions
@@ -64,7 +64,7 @@ then
     echo "Using NVIDIA Production driver - ${BATOCERA_NVIDIA_DRIVER_VERSION}"
     echo
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
-    echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
+    echo "options nvidia-drm-production modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
     # symbolic link 64-bit library files
     mkdir -p /var/run/nvidia/lib
     # libGLX_nvidia.so
@@ -140,12 +140,12 @@ then
     ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
     ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.i686.json   /var/run/nvidia/configs/nvidia_icd.i686.json
     # finally copy kernel modules & run them
-    mkdir -p /var/run/nvidia/modules
-    ln -sf /lib/modules/$LINUX_VER/extra/nvidia-production.ko         /var/run/nvidia/modules/nvidia.ko
-    ln -sf /lib/modules/$LINUX_VER/extra/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
-    ln -sf /lib/modules/$LINUX_VER/extra/nvidia-drm-production.ko     /var/run/nvidia/modules/nvidia-drm.ko
-    ln -sf /lib/modules/$LINUX_VER/extra/nvidia-uvm-production.ko     /var/run/nvidia/modules/nvidia-uvm.ko
-    for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+    #mkdir -p /var/run/nvidia/modules
+    #ln -sf /lib/modules/$LINUX_VER/extra/nvidia-production.ko         /var/run/nvidia/modules/nvidia.ko
+    #ln -sf /lib/modules/$LINUX_VER/extra/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
+    #ln -sf /lib/modules/$LINUX_VER/extra/nvidia-drm-production.ko     /var/run/nvidia/modules/nvidia-drm.ko
+    #ln -sf /lib/modules/$LINUX_VER/extra/nvidia-uvm-production.ko     /var/run/nvidia/modules/nvidia-uvm.ko
+    for m in nvidia-production nvidia_modeset-production nvidia_uvm-production nvidia_drm-production ; do modprobe $m ; done
 elif [[ "${MODE}" == *"legacy"* ]]
 then
     if [[ "${MODE}" == *"340"* ]]
@@ -158,7 +158,6 @@ then
     echo "Using NVIDIA Legacy driver version - ${BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION}"
     echo
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
-    echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
     # symbolic link 64-bit library files
     mkdir -p /var/run/nvidia/lib
     # libGLX_nvidia.so
@@ -299,11 +298,13 @@ then
 	ln -sf /usr/share/vulkan/icd.d/nvidia390_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
 	ln -sf /usr/share/vulkan/icd.d/nvidia390_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	# finally copy kernel modules & run them
-	mkdir -p /var/run/nvidia/modules
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-legacy.ko /var/run/nvidia/modules/nvidia.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+	#mkdir -p /var/run/nvidia/modules
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-legacy.ko /var/run/nvidia/modules/nvidia.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia390-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+	echo "options nvidia390-drm-legacy modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
+	for m in nvidia390-legacy nvidia390_modeset-legacy nvidia390_uvm-legacy nvidia390_drm-legacy ; do modprobe $m ; done
     # 470 version
     else
 	# link Xorg driver
@@ -317,11 +318,12 @@ then
 	ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
 	ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	# finally copy kernel modules & run them
-	mkdir -p /var/run/nvidia/modules
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia-legacy.ko /var/run/nvidia/modules/nvidia.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-	ln -sf /lib/modules/$LINUX_VER/extra/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+	#mkdir -p /var/run/nvidia/modules
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia-legacy.ko /var/run/nvidia/modules/nvidia.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
+	#ln -sf /lib/modules/$LINUX_VER/extra/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+	echo "options nvidia-drm-legacy modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
+	for m in nvidia-legacy nvidia_modeset-legacy nvidia_uvm-legacy nvidia_drm-legacy ; do modprobe $m ; done
     fi
-    for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
 fi
