@@ -673,6 +673,8 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             clearGunInputsForPlayer(2, retroarchConfig)
 
     gun_mapping = {
+        "bsnes"         : { "device": 260,          "p2": 0 },
+        "mesen-s"       : { "device": 262,          "p2": 0 },
         "snes9x"        : { "device": 260,          "p2": 0 },
         "snes9x_next"   : { "device": 260,          "p2": 0 },
         "nestopia"      : { "device": 262,          "p2": 0 },
@@ -682,8 +684,11 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "mame078plus"   : { "device":   4, "p1": 0, "p2": 1 },
         "mame0139"      : { "device":   4, "p1": 0, "p2": 1 },
         "flycast"       : { "device":   4, "p1": 0, "p2": 1 },
+        "mednafen_psx"  : { "device": 260, "p1": 0, "p2": 1 },
         "pcsx_rearmed"  : { "device": 260, "p1": 0, "p2": 1 },
-        "beetle-saturn" : { "device": 260,          "p2": 0 }
+        "swanstation"   : { "device": 260, "p1": 0, "p2": 1 },
+        "beetle-saturn" : { "device": 260,          "p2": 0 },
+        "opera"         : { "device": 260, "p1": 0, "p2": 1 }
     }
 
     # apply mapping
