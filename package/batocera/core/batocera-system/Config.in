@@ -970,6 +970,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Gamecube / Wii
 	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X
+	select BR2_PACKAGE_LIBRETRO_DOLPHIN             if  BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
+                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X
 
     # Triforce
     select BR2_PACKAGE_DOLPHIN_TRIFORCE             if  BR2_PACKAGE_BATOCERA_TARGET_X86_64
