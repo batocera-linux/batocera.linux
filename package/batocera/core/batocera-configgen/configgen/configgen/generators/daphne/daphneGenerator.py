@@ -55,6 +55,8 @@ class DaphneGenerator(Generator):
 
         if controllersConfig.gunsNeedBorders(guns):
             commandArray.extend(["-sinden", "2", "w"])
+        else:
+            commandArray.extend(["-manymouse"]) # sinden implies manymouse
 
         # Oversize Overlay (Singe) for HD lightgun games
         if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
