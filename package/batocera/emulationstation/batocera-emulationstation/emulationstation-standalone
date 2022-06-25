@@ -25,7 +25,7 @@ do
     export LC_ALL="${settings_lang}.UTF-8"
     export LANG=${LC_ALL}
     ###################
-    
+
     ### video output ###
     # because of xinerama breaking es, enable only one screen at a time
     settings_output="$(batocera-settings-get global.videooutput)"
@@ -61,22 +61,23 @@ do
 
     ### rotation ###
     display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
     EXTRA_OPTS=
     if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
     then
 	case "${display_rotate}" in
 	    "1")
-		xrandr -o right
+		xrandr --output "${OUTPUT}" --rotate right
 		;;
 	    "2")
-		xrandr -o inverted
+		xrandr --output "${OUTPUT}" --rotate inverted
 		;;
 	    "3")
-		xrandr -o left
+		xrandr --output "${OUTPUT}" --rotate left
 		;;
 	    *)
 		# in case of reboot of es
-		xrandr -o normal
+		xrandr --output "${OUTPUT}" --rotate normal
 	esac
     else
 	if test -n "${display_rotate}"; then
