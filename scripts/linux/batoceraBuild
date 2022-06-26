@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /batocera/archs/common || exit 1
+cd /batocera/batocera.linux || exit 1
 
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
@@ -107,6 +107,11 @@ buildAll() {
 	fi
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
+	# cleaning system and splash package for timestamp regeneration
+	if ! rm -rf "output/${arch}/build/batocera-system-"* "output/${arch}/build/batocera-splash-"* 2>/dev/null
+	then
+	    return 1
+	fi
 	echo_msg "${NEXTITEM}" "building..."
 	if make "${NEXTITEM}-build" > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
