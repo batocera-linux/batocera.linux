@@ -40,11 +40,9 @@ LIBRETRO_PICODRIVE_PLATFORM = unix
 endif
 
 define LIBRETRO_PICODRIVE_BUILD_CMDS
-	# forces full path in include path cause of compilation of the tool directory (for some boards like rpizero2)
-	$(SED) 's+-I platform/libretro/libretro-common/include+-I $(@D)/platform/libretro/libretro-common/include+' $(@D)/Makefile.libretro
-
 	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h
-	# force -j 1 to avoid parallel issues in the makefile
+
+    # force -j 1 to avoid parallel issues in the makefile
 	cd $(@D) && $(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)" \
         GIT_VERSION=" $(shell echo $(LIBRETRO_PICODRIVE_VERSION) | cut -c 1-7)"
 endef
