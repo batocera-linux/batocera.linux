@@ -9,6 +9,16 @@ test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+
+# lock
+N=0
+while ! mkdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
+do
+    sleep 1
+    let N++
+    test "${N}" -gt 30 && exit 1 # give up
+done
+
 NDEVS=$(cat "/var/run/aimtrak-devices.${USBPATHHASH}" | wc -l)
 
 echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/aimtrak-devices.seen || exit 1
@@ -23,3 +33,6 @@ then
 else
     echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || exit 1
 fi
+
+# unlock
+rmdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
