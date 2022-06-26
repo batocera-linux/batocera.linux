@@ -30,6 +30,7 @@ PACKAGES_LIBRETRO="	libretro-81
 					libretro-cheats
 					libretro-citra
 					libretro-desmume
+					libretro-dolphin
 					libretro-dosbox-pure
 					libretro-easyrpg
 					libretro-fbneo
