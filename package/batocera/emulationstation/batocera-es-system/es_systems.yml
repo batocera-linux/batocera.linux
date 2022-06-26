@@ -3217,6 +3217,18 @@ xbox360:
 
     Note: It is possible to build Xenia for Linux but functionality as of writing is extremely poor.
 
+ngage:
+  name: N-Gage
+  manufacturer: Nokia
+  release: 2003
+  hardware: portable
+  extensions: [n-gage, sisx, sis, zip]
+  platform: ngage
+  theme: ngage
+  emulators:
+    eka2l1:
+      eka2l1: { requireAnyOf: [BR2_PACKAGE_EKA2L1] }
+
 odcommander:
   name: OD-Commander
   manufacturer: Ports
@@ -3262,3 +3274,4 @@ gzdoom:
     i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
     Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
+

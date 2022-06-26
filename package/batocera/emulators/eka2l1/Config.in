@@ -1,0 +1,16 @@
+config BR2_PACKAGE_EKA2L1
+    bool "eka2l1"
+    select BR2_PACKAGE_QT5
+    select BR2_PACKAGE_QT5_VERSION_LATEST
+    select BR2_PACKAGE_QT5BASE
+    select BR2_PACKAGE_QT5BASE_OPENGL
+    select BR2_PACKAGE_QT5BASE_XCB if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+    select BR2_PACKAGE_QT5MULTIMEDIA
+    select BR2_PACKAGE_QT5BASE_FONTCONFIG
+    select BR2_PACKAGE_QT5TOOLS
+    select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+    help
+      EKA2L1 is a Symbian emulator that can run applications designed for
+      older phones such as the Nokia N-Gage.
+
+      https://12z1.com/
