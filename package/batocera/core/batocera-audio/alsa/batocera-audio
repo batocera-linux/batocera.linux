@@ -78,7 +78,7 @@ case "${ACTION}" in
 	    VOLUME="$2"
 	    case "${VOLUME}" in
 		"mute")
-		    pactl set-sink-mute @DEFAULT_SINK@ toggle || exit 1
+		    pactl set-sink-mute @DEFAULT_SINK@ 1 || exit 1
 		    ;;
 		"unmute")
 		    pactl set-sink-mute @DEFAULT_SINK@ 0 || exit 1
