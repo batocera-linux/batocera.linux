@@ -18,7 +18,7 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 endif
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS),y)
-	MANGOHUD_DEPENDENCIES += vulkan-headers host-glslang
+	MANGOHUD_DEPENDENCIES += vulkan-headers
 endif
 
 MANGOHUD_CONF_OPTS = -Dwith_xnvctrl=disabled
