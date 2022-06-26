@@ -196,9 +196,9 @@ sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/icd.d/"*i686.json || 
 # ld
 echo "ld..."
 mkdir -p "${TMPOUT}/lib"                                      || exit 1
-ENDINGNAME=$(echo "${G_TARGETDIR}/lib/ld-linux"* | sed -e s+'^.*/\([^/]*\)$'+'\1'+)
+ENDINGNAME=$(echo "${G_TARGETDIR}/lib32/ld-linux.so."* | sed -e s+'^.*/\([^/]*\)$'+'\1'+)
 echo  "   ${ENDINGNAME}"
-(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so.* "${ENDINGNAME}") || exit 1
+(cd "${TMPOUT}/lib" && ln -sf "../lib32/${ENDINGNAME}" "${ENDINGNAME}") || exit 1
 
 if echo "${TARGET_IMAGE}" | grep -qE "^/"
 then
