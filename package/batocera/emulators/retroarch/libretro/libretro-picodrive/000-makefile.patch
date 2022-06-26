@@ -1,0 +1,36 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 967a0c3..e08f817 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -235,7 +235,6 @@ else ifeq ($(platform), ctr)
+ 
+ # Raspberry Pi
+ else ifneq (,$(findstring rpi,$(platform)))
+-	CFLAGS += -Wall -mword-relocations
+ 	CFLAGS += -fomit-frame-pointer -ffast-math
+ 
+ 	TARGET := $(TARGET_NAME)_libretro.so
+@@ -243,11 +242,20 @@ else ifneq (,$(findstring rpi,$(platform)))
+ 	fpic := -fPIC
+ 	
+ 	ifneq (,$(findstring rpi1,$(platform)))
+-	  CFLAGS += -marm -mfpu=vfp -mfloat-abi=hard -march=armv6j
++	  	CFLAGS += -Wall -mword-relocations	
++	  	CFLAGS += -marm -mfpu=vfp -mfloat-abi=hard -march=armv6j
+ 	else ifneq (,$(findstring rpi2,$(platform)))
+-	  CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++		CFLAGS += -Wall -mword-relocations
++	  	CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+ 	else ifneq (,$(findstring rpi3,$(platform)))
+-	  CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++	  	ifneq (,$(findstring rpi3_64,$(platform)))
++            CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CFLAGS += -Wall -mword-relocations
++			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++	else ifneq (,$(findstring rpi4,$(platform)))
++    	CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 	endif
+ 
+ # Vita
