@@ -18,6 +18,8 @@
         * add: msu-md as its own system (using genesisplusgx with different config)
         * add: xpadneo for supported xbox bluetooth gamepads
         * add: gzdoom for higher resolution & 3d rendering of the classic doom engine games
+        * add: libretro-dolphin to x86_64 & s922x devices
+        * add: btop now works across all devices
         * bump: x86_64 linux kernel to 5.18.4
         * bump: Nvidia linux driver to 515.48.07
         * bump: btop to 1.2.7
@@ -27,10 +29,14 @@
         * bump: lightspark
         * bump: pcsx2 to v1.7.2866 (note: memory cards now saved to /userdata/saves/ps2)
         * bump: amiberry to v5.2
-        * bump: PPSSPP emulator
-        * bump: Proton to 7.0-3
+        * bump: PPSSPP emulators to June 26 builds
+        * bump: Proton to 7.0-2
         * bump: mesa to 22.1.2
         * bump: Dosbox-pure to 0.9.5
+        * bump: Redream to 1.5.0-1045-g9f00768
+        * bump: Flycast emulators to June 24 builds
+        * bump: Cemu to 1.27.1
+        * bump: RPCS3 to 0.0.22-13825
         * change: enabled more flycast standalone options (DSP & anisotropic)
         * change: enabled more duckstation options (PGXP & OSD)
         * change: enabled VSync option for standalone MAME
@@ -51,6 +57,8 @@
         * fix: Vulkan icd files
         * fix: Wine library folder
         * fix: bluetooth LE required for modern Xbox controllers
+        * fix: mupen64plus-next with s905gen3 devices
+        * fix: btop UTF-8 error
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
