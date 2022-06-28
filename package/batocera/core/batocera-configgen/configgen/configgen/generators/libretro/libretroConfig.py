@@ -626,23 +626,11 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     else:
         retroarchConfig['fps_show'] = 'false'
 
-    # Adaptation for small resolution (GPICase)
-    if isLowResolution(gameResolution):
-        retroarchConfig['width']  = gameResolution["width"]
-        retroarchConfig['height'] = gameResolution["height"]
-        retroarchConfig['video_font_size'] = '12'
-        retroarchConfig['menu_widget_scale_auto'] = 'false'
-        retroarchConfig['menu_widget_scale_factor'] = '2.0000'
-        retroarchConfig['menu_widget_scale_factor_windowed'] = '2.0000'
-    else:
-        retroarchConfig['video_font_size'] = '32'
-        retroarchConfig['menu_widget_scale_auto'] = 'true'
-        # don't force any so that the user can choose
-        #retroarchConfig['menu_driver'] = 'ozone'
-        # force the assets directory while it was wrong in some beta versions
-        retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
-        retroarchConfig['width']  = gameResolution["width"]  # default value
-        retroarchConfig['height'] = gameResolution["height"] # default value
+    # On-Screen Display
+    retroarchConfig['width']  = gameResolution["width"]  # default value
+    retroarchConfig['height'] = gameResolution["height"] # default value
+    # force the assets directory while it was wrong in some beta versions
+    retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
 
     # AI option (service for game translations)
     if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
@@ -1005,9 +993,6 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         # Shaders should use this path to find the art.
         os.symlink(overlay_png_file, shaderBezelFile)
         eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
-
-def isLowResolution(gameResolution):
-    return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
