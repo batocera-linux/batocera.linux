@@ -263,6 +263,14 @@ def getGenerator(emulator):
         from generators.gzdoom.gzdoomGenerator import GZDoomGenerator
         return GZDoomGenerator()
 
+    if emulator == "ionfury":
+        from generators.ionfury.ionfuryGenerator import IonFuryGenerator
+        return IonFuryGenerator()
+
+    if emulator == "raze":
+        from generators.raze.razeGenerator import RazeGenerator
+        return RazeGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),

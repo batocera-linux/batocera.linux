@@ -1,0 +1,131 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_TAB"
+        },
+    	{
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_E"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_D"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_S"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_F"
+        },
+    	{
+            "trigger": "joystick2",
+            "type": "mouse"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_PAGEUP"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_PAGEDOWN"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_END"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_HOME"
+        },
+        {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_DELETE"
+        },
+        {
+            "trigger": "r3",
+            "type": "key",
+            "target": "KEY_INSERT"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_X"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_B"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_Y"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_A"
+        },
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "exec",
+            "target": "killall -9 raze"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": "KEY_F6",
+            "description": "quicksave"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "quickload"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_F12",
+            "description": "screenshot"
+        }
+    ]
+}
