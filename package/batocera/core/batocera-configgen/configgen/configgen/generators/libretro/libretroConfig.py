@@ -106,7 +106,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     with open("/usr/share/batocera/batocera.arch") as fb:
         arch = fb.readline().strip()
 
-    if (system.isOptSet("display.rotate") and arch not in [ 'x86_64', 'x86']):
+    if (system.isOptSet("display.rotate") and arch not in [ 'x86_64', 'x86', 'rpi4', 'rpi3', 'rpizero2']):
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
         if system.config["display.rotate"] == "0":
             retroarchConfig['video_rotation'] = "0"
