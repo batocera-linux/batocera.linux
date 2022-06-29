@@ -5,6 +5,8 @@ then
   exit 0
 fi
 
+# This function is used by /board/batocera/rockchip/rk3326/fsoverlay/usr/share/batocera/configgen/scripts
+# It should be reworked to simply be included here instead of relying on an fsoverlay.
 save_current_governor() {
   if current_governor="$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor)"
   then
@@ -38,6 +40,9 @@ case "$1" in
       fi
     done
 
+    ;;
+  save)
+    save_current_governor
     ;;
   list)
     cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors
