@@ -20,7 +20,7 @@ Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 7cc3b478a5f4..054d2e3eed67 100644
+index 76e97cbe2512..af44a16c0c4a 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -752,7 +752,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
@@ -47,10 +47,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 1263991de76f..71a6b7b0b057 100644
+index 7131156c1f2c..65a8334a188b 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -223,6 +223,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -233,6 +233,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
  
  	/* Always apply the frmsize constraint of the coded end. */
@@ -83,7 +83,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 054d2e3eed67..d46424ba88e8 100644
+index af44a16c0c4a..9852c3519f56 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -671,8 +671,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
@@ -98,7 +98,7 @@ index 054d2e3eed67..d46424ba88e8 100644
  		  FRAME_MBS_ONLY_FLAG);
  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 71a6b7b0b057..f405dd72ad93 100644
+index 65a8334a188b..f4c5ee4a1e26 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -29,8 +29,11 @@
@@ -107,7 +107,7 @@ index 71a6b7b0b057..f405dd72ad93 100644
  {
 +	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
 +
- 	if (ctrl->id == V4L2_CID_MPEG_VIDEO_H264_SPS) {
+ 	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
  		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
 +		unsigned int width, height;
  		/*
@@ -131,73 +131,6 @@ index 71a6b7b0b057..f405dd72ad93 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 6 Jul 2020 21:54:35 +0000
-Subject: [PATCH] media: rkvdec: h264: Fix bit depth wrap in pps packet
-
-The luma and chroma bit depth fields in the pps packet is 3 bits wide.
-8 is wrongly added to the bit depth value written to these 3-bit fields.
-Because only the 3 LSB is written the hardware is configured correctly.
-
-Correct this by not adding 8 to the luma and chroma bit depth value.
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index d46424ba88e8..6536cf0d6054 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -661,8 +661,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	WRITE_PPS(0xff, PROFILE_IDC);
- 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
- 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
--	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
--	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
-+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
- 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
- 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
- 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Mon, 6 Jul 2020 21:54:35 +0000
-Subject: [PATCH] media: rkvdec: h264: Do not override output buffer sizeimage
-
-The output buffer sizeimage is currently forced to 2 bytes per pixel, this
-can lead to high memory usage for 4K content when multiple output buffers
-is created by userspace.
-
-Do not override output buffer sizeimage and let userspace have control of
-output buffer sizeimage by only setting sizeimage if none is provided.
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 6536cf0d6054..bf632d45282b 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -1015,8 +1015,9 @@ static int rkvdec_h264_adjust_fmt(struct rkvdec_ctx *ctx,
- 	struct v4l2_pix_format_mplane *fmt = &f->fmt.pix_mp;
- 
- 	fmt->num_planes = 1;
--	fmt->plane_fmt[0].sizeimage = fmt->width * fmt->height *
--				      RKVDEC_H264_MAX_DEPTH_IN_BYTES;
-+	if (!fmt->plane_fmt[0].sizeimage)
-+		fmt->plane_fmt[0].sizeimage = fmt->width * fmt->height *
-+					      RKVDEC_H264_MAX_DEPTH_IN_BYTES;
- 	return 0;
- }
- 
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Mon, 6 Jul 2020 21:54:35 +0000
 Subject: [PATCH] media: v4l2-common: Add helpers to calculate bytesperline and
  sizeimage
 
@@ -214,7 +147,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 38 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-index 3dc17ebe14fa..4102c373b48a 100644
+index 04af03285a20..ae585828c388 100644
 --- a/drivers/media/v4l2-core/v4l2-common.c
 +++ b/drivers/media/v4l2-core/v4l2-common.c
 @@ -333,6 +333,33 @@ static inline unsigned int v4l2_format_block_height(const struct v4l2_format_inf
@@ -345,241 +278,13 @@ of 8 for NV15 and 4 for NV20.
 
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 ---
- .../userspace-api/media/v4l/pixfmt-nv15.rst   | 101 ++++++++++++++++++
- .../userspace-api/media/v4l/pixfmt-nv20.rst   |  99 +++++++++++++++++
- .../userspace-api/media/v4l/yuv-formats.rst   |   2 +
- drivers/media/v4l2-core/v4l2-common.c         |   3 +
- drivers/media/v4l2-core/v4l2-ioctl.c          |   2 +
- include/uapi/linux/videodev2.h                |   3 +
- 6 files changed, 210 insertions(+)
- create mode 100644 Documentation/userspace-api/media/v4l/pixfmt-nv15.rst
- create mode 100644 Documentation/userspace-api/media/v4l/pixfmt-nv20.rst
+ drivers/media/v4l2-core/v4l2-common.c | 3 +++
+ drivers/media/v4l2-core/v4l2-ioctl.c  | 2 ++
+ include/uapi/linux/videodev2.h        | 3 +++
+ 3 files changed, 8 insertions(+)
 
-diff --git a/Documentation/userspace-api/media/v4l/pixfmt-nv15.rst b/Documentation/userspace-api/media/v4l/pixfmt-nv15.rst
-new file mode 100644
-index 000000000000..d059db58c6e0
---- /dev/null
-+++ b/Documentation/userspace-api/media/v4l/pixfmt-nv15.rst
-@@ -0,0 +1,101 @@
-+.. Permission is granted to copy, distribute and/or modify this
-+.. document under the terms of the GNU Free Documentation License,
-+.. Version 1.1 or any later version published by the Free Software
-+.. Foundation, with no Invariant Sections, no Front-Cover Texts
-+.. and no Back-Cover Texts. A copy of the license is included at
-+.. Documentation/userspace-api/media/fdl-appendix.rst.
-+..
-+.. TODO: replace it to GFDL-1.1-or-later WITH no-invariant-sections
-+
-+.. _V4L2-PIX-FMT-NV15:
-+
-+**************************
-+V4L2_PIX_FMT_NV15 ('NV15')
-+**************************
-+
-+Format with ½ horizontal and vertical chroma resolution, also known as
-+YUV 4:2:0. One luminance and one chrominance plane with alternating
-+chroma samples similar to ``V4L2_PIX_FMT_NV12`` but with 10-bit samples
-+that are grouped into four and packed into five bytes.
-+
-+The '15' suffix refers to the optimum effective bits per pixel which is
-+achieved when the total number of luminance samples is a multiple of 8.
-+
-+
-+Description
-+===========
-+
-+This is a packed 10-bit two-plane version of the YUV 4:2:0 format. The
-+three components are separated into two sub-images or planes. The Y plane
-+is first. The Y plane has five bytes per each group of four pixels. A
-+combined CbCr plane immediately follows the Y plane in memory. The CbCr
-+plane is the same width, in bytes, as the Y plane (and of the image), but
-+is half as tall in pixels. Each CbCr pair belongs to four pixels. For
-+example, Cb\ :sub:`00`/Cr\ :sub:`00` belongs to Y'\ :sub:`00`,
-+Y'\ :sub:`01`, Y'\ :sub:`10`, Y'\ :sub:`11`.
-+
-+If the Y plane has pad bytes after each row, then the CbCr plane has as
-+many pad bytes after its rows.
-+
-+**Byte Order.**
-+Little endian. Each cell is one byte. Pixels cross the byte boundary.
-+
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * - start + 0:
-+      - Y'\ :sub:`00[7:0]`
-+      - Y'\ :sub:`01[5:0]`\ Y'\ :sub:`00[9:8]`
-+      - Y'\ :sub:`02[3:0]`\ Y'\ :sub:`01[9:6]`
-+      - Y'\ :sub:`03[1:0]`\ Y'\ :sub:`02[9:4]`
-+      - Y'\ :sub:`03[9:2]`
-+    * - start + 5:
-+      - Y'\ :sub:`10[7:0]`
-+      - Y'\ :sub:`11[5:0]`\ Y'\ :sub:`10[9:8]`
-+      - Y'\ :sub:`12[3:0]`\ Y'\ :sub:`11[9:6]`
-+      - Y'\ :sub:`13[1:0]`\ Y'\ :sub:`12[9:4]`
-+      - Y'\ :sub:`13[9:2]`
-+    * - start + 10:
-+      - Cb'\ :sub:`00[7:0]`
-+      - Cr'\ :sub:`00[5:0]`\ Cb'\ :sub:`00[9:8]`
-+      - Cb'\ :sub:`01[3:0]`\ Cr'\ :sub:`00[9:6]`
-+      - Cr'\ :sub:`01[1:0]`\ Cb'\ :sub:`01[9:4]`
-+      - Cr'\ :sub:`01[9:2]`
-+
-+
-+**Color Sample Location:**
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * -
-+      - 0
-+      -
-+      - 1
-+      - 2
-+      -
-+      - 3
-+    * - 0
-+      - Y
-+      -
-+      - Y
-+      - Y
-+      -
-+      - Y
-+    * -
-+      -
-+      - C
-+      -
-+      -
-+      - C
-+      -
-+    * - 1
-+      - Y
-+      -
-+      - Y
-+      - Y
-+      -
-+      - Y
-diff --git a/Documentation/userspace-api/media/v4l/pixfmt-nv20.rst b/Documentation/userspace-api/media/v4l/pixfmt-nv20.rst
-new file mode 100644
-index 000000000000..a8123be0baa3
---- /dev/null
-+++ b/Documentation/userspace-api/media/v4l/pixfmt-nv20.rst
-@@ -0,0 +1,99 @@
-+.. Permission is granted to copy, distribute and/or modify this
-+.. document under the terms of the GNU Free Documentation License,
-+.. Version 1.1 or any later version published by the Free Software
-+.. Foundation, with no Invariant Sections, no Front-Cover Texts
-+.. and no Back-Cover Texts. A copy of the license is included at
-+.. Documentation/userspace-api/media/fdl-appendix.rst.
-+..
-+.. TODO: replace it to GFDL-1.1-or-later WITH no-invariant-sections
-+
-+.. _V4L2-PIX-FMT-NV20:
-+
-+**************************
-+V4L2_PIX_FMT_NV20 ('NV20')
-+**************************
-+
-+Format with ½ horizontal chroma resolution, also known as YUV 4:2:2.
-+One luminance and one chrominance plane with alternating chroma samples
-+similar to ``V4L2_PIX_FMT_NV16`` but with 10-bit samples
-+that are grouped into four and packed into five bytes.
-+
-+The '20' suffix refers to the optimum effective bits per pixel which is
-+achieved when the total number of luminance samples is a multiple of 4.
-+
-+
-+Description
-+===========
-+
-+This is a packed 10-bit two-plane version of the YUV 4:2:2 format. The
-+three components are separated into two sub-images or planes. The Y plane
-+is first. The Y plane has five bytes per each group of four pixels. A
-+combined CbCr plane immediately follows the Y plane in memory. The CbCr
-+plane is the same width and height, in bytes, as the Y plane (and of the
-+image). Each CbCr pair belongs to two pixels. For example,
-+Cb\ :sub:`00`/Cr\ :sub:`00` belongs to Y'\ :sub:`00`, Y'\ :sub:`01`.
-+
-+If the Y plane has pad bytes after each row, then the CbCr plane has as
-+many pad bytes after its rows.
-+
-+**Byte Order.**
-+Little endian. Each cell is one byte. Pixels cross the byte boundary.
-+
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * - start + 0:
-+      - Y'\ :sub:`00[7:0]`
-+      - Y'\ :sub:`01[5:0]`\ Y'\ :sub:`00[9:8]`
-+      - Y'\ :sub:`02[3:0]`\ Y'\ :sub:`01[9:6]`
-+      - Y'\ :sub:`03[1:0]`\ Y'\ :sub:`02[9:4]`
-+      - Y'\ :sub:`03[9:2]`
-+    * - start + 5:
-+      - Y'\ :sub:`10[7:0]`
-+      - Y'\ :sub:`11[5:0]`\ Y'\ :sub:`10[9:8]`
-+      - Y'\ :sub:`12[3:0]`\ Y'\ :sub:`11[9:6]`
-+      - Y'\ :sub:`13[1:0]`\ Y'\ :sub:`12[9:4]`
-+      - Y'\ :sub:`13[9:2]`
-+    * - start + 10:
-+      - Cb'\ :sub:`00[7:0]`
-+      - Cr'\ :sub:`00[5:0]`\ Cb'\ :sub:`00[9:8]`
-+      - Cb'\ :sub:`01[3:0]`\ Cr'\ :sub:`00[9:6]`
-+      - Cr'\ :sub:`01[1:0]`\ Cb'\ :sub:`01[9:4]`
-+      - Cr'\ :sub:`01[9:2]`
-+    * - start + 15:
-+      - Cb'\ :sub:`10[7:0]`
-+      - Cr'\ :sub:`10[5:0]`\ Cb'\ :sub:`10[9:8]`
-+      - Cb'\ :sub:`11[3:0]`\ Cr'\ :sub:`10[9:6]`
-+      - Cr'\ :sub:`11[1:0]`\ Cb'\ :sub:`11[9:4]`
-+      - Cr'\ :sub:`11[9:2]`
-+
-+
-+**Color Sample Location:**
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * -
-+      - 0
-+      -
-+      - 1
-+      - 2
-+      -
-+      - 3
-+    * - 0
-+      - Y
-+      - C
-+      - Y
-+      - Y
-+      - C
-+      - Y
-+    * - 1
-+      - Y
-+      - C
-+      - Y
-+      - Y
-+      - C
-+      - Y
-diff --git a/Documentation/userspace-api/media/v4l/yuv-formats.rst b/Documentation/userspace-api/media/v4l/yuv-formats.rst
-index 4a05a105a9e6..e08e5dbdacea 100644
---- a/Documentation/userspace-api/media/v4l/yuv-formats.rst
-+++ b/Documentation/userspace-api/media/v4l/yuv-formats.rst
-@@ -54,4 +54,6 @@ to brightness information.
-     pixfmt-nv16
-     pixfmt-nv16m
-     pixfmt-nv24
-+    pixfmt-nv15
-+    pixfmt-nv20
-     pixfmt-m420
 diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-index 4102c373b48a..0caac755d303 100644
+index ae585828c388..5bafbdbe30b0 100644
 --- a/drivers/media/v4l2-core/v4l2-common.c
 +++ b/drivers/media/v4l2-core/v4l2-common.c
 @@ -267,6 +267,9 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
@@ -593,10 +298,10 @@ index 4102c373b48a..0caac755d303 100644
  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
  		{ .format = V4L2_PIX_FMT_YUV411P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 1 },
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 9eda8b91d17a..1ff68c1bf14a 100644
+index 05d5db3d85e5..fe43d785414c 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1319,6 +1319,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+@@ -1282,6 +1282,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
@@ -606,12 +311,12 @@ index 9eda8b91d17a..1ff68c1bf14a 100644
  	case V4L2_PIX_FMT_NV21M:	descr = "Y/CrCb 4:2:0 (N-C)"; break;
  	case V4L2_PIX_FMT_NV16M:	descr = "Y/CbCr 4:2:2 (N-C)"; break;
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 534eaa4d39bc..f21eba15ceae 100644
+index 9260791b8438..169f8ad6fade 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -609,6 +609,9 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+@@ -603,6 +603,9 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
+ #define V4L2_PIX_FMT_HM12    v4l2_fourcc('H', 'M', '1', '2') /*  8  YUV 4:2:0 16x16 macroblocks */
  
 +#define V4L2_PIX_FMT_NV15    v4l2_fourcc('N', 'V', '1', '5') /* 15  Y/CbCr 4:2:0 10-bit packed */
 +#define V4L2_PIX_FMT_NV20    v4l2_fourcc('N', 'V', '2', '0') /* 20  Y/CbCr 4:2:2 10-bit packed */
@@ -637,7 +342,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index bf632d45282b..6f2d41b2e076 100644
+index 503ae683d0fd..88f5f4bb320b 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -893,9 +893,9 @@ static void config_registers(struct rkvdec_ctx *ctx,
@@ -682,7 +387,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index f405dd72ad93..c81ca5c7e979 100644
+index f4c5ee4a1e26..d8d0eab9e25d 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -27,6 +27,17 @@
@@ -703,7 +408,7 @@ index f405dd72ad93..c81ca5c7e979 100644
  static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
  {
  	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
-@@ -167,13 +178,9 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
+@@ -177,13 +188,9 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
  
  	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
  	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -720,7 +425,7 @@ index f405dd72ad93..c81ca5c7e979 100644
  }
  
  static int rkvdec_enum_framesizes(struct file *file, void *priv,
-@@ -239,13 +246,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -249,13 +256,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  				       &pix_mp->height,
  				       &coded_desc->frmsize);
  
@@ -754,7 +459,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 55 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index c81ca5c7e979..a11474214bde 100644
+index d8d0eab9e25d..d31344c4acaa 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -38,6 +38,16 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -793,7 +498,7 @@ index c81ca5c7e979..a11474214bde 100644
 +{
 +	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
 +
-+	if (ctrl->id == V4L2_CID_MPEG_VIDEO_H264_SPS && !ctx->valid_fmt) {
++	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS && !ctx->valid_fmt) {
 +		ctx->valid_fmt = rkvdec_valid_fmt(ctx, ctrl);
 +		if (ctx->valid_fmt) {
 +			struct v4l2_pix_format_mplane *pix_mp;
@@ -813,7 +518,7 @@ index c81ca5c7e979..a11474214bde 100644
  };
  
  static const struct rkvdec_ctrl_desc rkvdec_h264_ctrl_descs[] = {
-@@ -176,6 +209,7 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
+@@ -186,6 +219,7 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
  {
  	struct v4l2_format *f = &ctx->decoded_fmt;
  
@@ -821,7 +526,7 @@ index c81ca5c7e979..a11474214bde 100644
  	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
  	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
  	f->fmt.pix_mp.width = ctx->coded_fmt.fmt.pix_mp.width;
-@@ -231,13 +265,17 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -241,13 +275,17 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  	if (WARN_ON(!coded_desc))
  		return -EINVAL;
  
@@ -845,7 +550,7 @@ index c81ca5c7e979..a11474214bde 100644
  
  	/* Always apply the frmsize constraint of the coded end. */
  	pix_mp->width = max(pix_mp->width, ctx->coded_fmt.fmt.pix_mp.width);
-@@ -312,6 +350,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
+@@ -322,6 +360,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
  		return ret;
  
  	ctx->decoded_fmt = *f;
@@ -853,7 +558,7 @@ index c81ca5c7e979..a11474214bde 100644
  	return 0;
  }
  
-@@ -401,6 +440,14 @@ static int rkvdec_enum_capture_fmt(struct file *file, void *priv,
+@@ -411,6 +450,14 @@ static int rkvdec_enum_capture_fmt(struct file *file, void *priv,
  	if (WARN_ON(!ctx->coded_fmt_desc))
  		return -EINVAL;
  
@@ -869,10 +574,10 @@ index c81ca5c7e979..a11474214bde 100644
  		return -EINVAL;
  
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 77a137cca88e..e95c52e3168a 100644
+index 52ac3874c5e5..7b6f44ee8a1a 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
 +++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -63,6 +63,7 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
+@@ -62,6 +62,7 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
  struct rkvdec_coded_fmt_ops {
  	int (*adjust_fmt)(struct rkvdec_ctx *ctx,
  			  struct v4l2_format *f);
@@ -880,7 +585,7 @@ index 77a137cca88e..e95c52e3168a 100644
  	int (*start)(struct rkvdec_ctx *ctx);
  	void (*stop)(struct rkvdec_ctx *ctx);
  	int (*run)(struct rkvdec_ctx *ctx);
-@@ -96,6 +97,7 @@ struct rkvdec_ctx {
+@@ -95,6 +96,7 @@ struct rkvdec_ctx {
  	struct v4l2_fh fh;
  	struct v4l2_format coded_fmt;
  	struct v4l2_format decoded_fmt;
@@ -909,7 +614,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 29 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 6f2d41b2e076..c115cd362a7f 100644
+index 88f5f4bb320b..c9a551dbd9bc 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -1021,6 +1021,25 @@ static int rkvdec_h264_adjust_fmt(struct rkvdec_ctx *ctx,
@@ -947,7 +652,7 @@ index 6f2d41b2e076..c115cd362a7f 100644
  	.stop = rkvdec_h264_stop,
  	.run = rkvdec_h264_run,
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index a11474214bde..b57a39ce4f48 100644
+index d31344c4acaa..d068383aeea8 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -31,7 +31,7 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -960,7 +665,7 @@ index a11474214bde..b57a39ce4f48 100644
  		DIV_ROUND_UP(pix_mp->width, 16) *
  		DIV_ROUND_UP(pix_mp->height, 16);
 @@ -55,19 +55,15 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
- 	if (ctrl->id == V4L2_CID_MPEG_VIDEO_H264_SPS) {
+ 	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
  		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
  		unsigned int width, height;
 -		/*
@@ -984,7 +689,7 @@ index a11474214bde..b57a39ce4f48 100644
  			return -EINVAL;
  
  		if (ctx->valid_fmt && ctx->valid_fmt != rkvdec_valid_fmt(ctx, ctrl))
-@@ -145,6 +141,9 @@ static const struct rkvdec_ctrls rkvdec_h264_ctrls = {
+@@ -155,6 +151,9 @@ static const struct rkvdec_ctrls rkvdec_h264_ctrls = {
  
  static const u32 rkvdec_h264_decoded_fmts[] = {
  	V4L2_PIX_FMT_NV12,
@@ -994,46 +699,3 @@ index a11474214bde..b57a39ce4f48 100644
  };
  
  static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Mon, 6 Jul 2020 21:54:38 +0000
-Subject: [PATCH] media: rkvdec: h264: Support profile and level controls
-
-The Rockchip Video Decoder used in RK3399 supports H.264 profiles from
-Baseline to High 4:2:2 up to Level 5.1, except for the Extended profile.
-
-Expose the V4L2_CID_MPEG_VIDEO_H264_PROFILE and the
-V4L2_CID_MPEG_VIDEO_H264_LEVEL control, so that userspace can query the
-driver for the list of supported profiles and level.
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
----
- drivers/staging/media/rkvdec/rkvdec.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index b57a39ce4f48..9492822c12ae 100644
---- a/drivers/staging/media/rkvdec/rkvdec.c
-+++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -132,6 +132,19 @@ static const struct rkvdec_ctrl_desc rkvdec_h264_ctrl_descs[] = {
- 		.cfg.def = V4L2_MPEG_VIDEO_H264_START_CODE_ANNEX_B,
- 		.cfg.max = V4L2_MPEG_VIDEO_H264_START_CODE_ANNEX_B,
- 	},
-+	{
-+		.cfg.id = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
-+		.cfg.min = V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE,
-+		.cfg.max = V4L2_MPEG_VIDEO_H264_PROFILE_HIGH_422,
-+		.cfg.menu_skip_mask =
-+			BIT(V4L2_MPEG_VIDEO_H264_PROFILE_EXTENDED),
-+		.cfg.def = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
-+	},
-+	{
-+		.cfg.id = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
-+		.cfg.min = V4L2_MPEG_VIDEO_H264_LEVEL_1_0,
-+		.cfg.max = V4L2_MPEG_VIDEO_H264_LEVEL_5_1,
-+	},
- };
- 
- static const struct rkvdec_ctrls rkvdec_h264_ctrls = {
