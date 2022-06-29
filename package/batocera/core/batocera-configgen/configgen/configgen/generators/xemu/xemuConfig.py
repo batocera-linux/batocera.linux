@@ -80,11 +80,39 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
             iniConfig.set("input", f"controller_{nplayer}_guid", pad.guid)
         nplayer = nplayer + 1
 
-    # Fill network section
-    iniConfig.set("network", "enabled", "false")
-    iniConfig.set("network", "backend", "user")
-    iniConfig.set("network", "local_addr", "0.0.0.0:9368")
-    iniConfig.set("network", "remote_addr", "1.2.3.4:9368")
+    # Determine the current default network connection
+    currentDefaultNetwork = defaultNetworkInterface()
+
+    if currentDefaultNetwork:
+        # Fill network section
+        iniConfig.set("network", "enabled", "true")
+        iniConfig.set("network", "backend", "pcap")
+        iniConfig.set("network", "local_addr", "0.0.0.0:9368")
+        iniConfig.set("network", "remote_addr", "1.2.3.4:9368")
+        iniConfig.set("network", "pcap_iface", currentDefaultNetwork)
+    else:
+        iniConfig.set("network", "enabled", "false")
+        iniConfig.set("network", "backend", "user")
+        iniConfig.set("network", "local_addr", "0.0.0.0:9368")
+        iniConfig.set("network", "remote_addr", "1.2.3.4:9368")
 
     # Fill misc section
     iniConfig.set("misc", "user_token", "")
+
+def defaultNetworkInterface():
+    # This function returns the name of the first interface that routes to the "default" destination. If there is no such interface, return None instead.
+
+    n = 0
+    # Open the route network information.
+    with open("/proc/net/route") as f:
+        for line in f:
+            n += 1
+            # Check to make sure we are skipping over the first line (as it is just the header).
+            if n > 1:
+                words = line.split("\t")
+                # If the "Destination" of the route is the default "00000000":
+                if words[1] == "00000000":
+                    # Return the name of that "Iface" and immediately exit this function:
+                    return words[0]
+    # Otherwise, this loop repeats for all the remaining routes. If none are found, return None.
+    return None
