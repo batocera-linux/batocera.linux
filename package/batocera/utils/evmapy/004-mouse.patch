@@ -38,7 +38,7 @@ index a9f0730..c0e0153 100644
          self._uinput = None
 -
 -        valid_events={ecodes.EV_KEY: [
-+        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.05, "speed": 4.0 }
++        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.2, "speed": 4.0 }
 +        global_config_filepath = "/etc/evmapy.json"
 +        # { "mouse_config": { "every": 0.005, "deadzone": 0.06 } }
 +        if os.path.exists(global_config_filepath):
