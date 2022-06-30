@@ -1,0 +1,135 @@
+From 1839c307004f9608fa47bc305a524964a03bfaaa Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Thu, 30 Jun 2022 22:23:34 +0700
+Subject: [PATCH] Add Odin configuration
+
+---
+ ucm2/Odin/HiFi.conf                           | 82 +++++++++++++++++++
+ ucm2/Odin/Odin.conf                           |  6 ++
+ .../AYNTechnologiesCo.Ltd.-OdinBase-odin.conf |  1 +
+ .../AYNTechnologiesCo.Ltd.-OdinPro-odin.conf  |  1 +
+ 4 files changed, 90 insertions(+)
+ create mode 100644 ucm2/Odin/HiFi.conf
+ create mode 100644 ucm2/Odin/Odin.conf
+ create mode 120000 ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinBase-odin.conf
+ create mode 120000 ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinPro-odin.conf
+
+diff --git a/ucm2/Odin/HiFi.conf b/ucm2/Odin/HiFi.conf
+new file mode 100644
+index 0000000..6e432c1
+--- /dev/null
++++ b/ucm2/Odin/HiFi.conf
+@@ -0,0 +1,82 @@
++SectionVerb {
++
++	EnableSequence [
++		cset "name='SLIMBUS_0_RX Audio Mixer MultiMedia1' 1"
++		cset "name='SLIM RX1 MUX' AIF1_PB"
++		cset "name='SLIM RX2 MUX' AIF1_PB"
++		cset "name='SLIM RX6 MUX' ZERO"
++		cset "name='SLIM RX7 MUX' ZERO"
++		cset "name='SLIM RX3 MUX' ZERO"
++		cset "name='SLIM RX4 MUX' ZERO"
++		cset "name='SLIM RX5 MUX' ZERO"
++		cset "name='AIF1_CAP Mixer SLIM TX0' 1"
++		cset "name='RX INT7_1 MIX1 INP0' RX1"
++		cset "name='RX INT8_1 MIX1 INP0' RX2"
++		cset "name='RX INT1_2 MUX' RX1"
++		cset "name='RX INT2_2 MUX' RX2"
++		cset "name='CDC_IF TX0 MUX' DEC0"
++		cset "name='SpkrLeft COMP Switch' 1"
++		cset "name='SpkrLeft BOOST Switch' 1"
++		cset "name='SpkrLeft DAC Switch' 1"
++		cset "name='SpkrLeft VISENSE Switch' 0"
++		cset "name='SpkrRight COMP Switch' 1"
++		cset "name='SpkrRight BOOST Switch' 1"
++		cset "name='SpkrRight DAC Switch' 1"
++		cset "name='SpkrRight VISENSE Switch' 0"
++	]
++
++	DisableSequence [
++		cset "name='RX INT7_1 MIX1 INP0' ZERO"
++		cset "name='RX INT8_1 MIX1 INP0' ZERO"
++		cset "name='RX INT1_2 MUX' ZERO"
++		cset "name='RX INT2_2 MUX' ZERO"
++		cset "name='CDC_IF TX0 MUX' ZERO"
++		cset "name='SLIMBUS_0_RX Audio Mixer MultiMedia1' 0"
++	]
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker playback"
++
++	EnableSequence [
++		cset "name='COMP7 Switch' 1"
++		cset "name='COMP8 Switch' 1"
++		cset "name='RX7 Digital Volume' 80"
++		cset "name='RX8 Digital Volume' 80"
++		cset "name='SpkrLeft COMP Switch' 1"
++		cset "name='SpkrLeft BOOST Switch' 1"
++		cset "name='SpkrLeft DAC Switch' 1"
++		cset "name='SpkrLeft VISENSE Switch' 0"
++		cset "name='SpkrLeft PA Volume' 12"
++		cset "name='SpkrRight COMP Switch' 1"
++		cset "name='SpkrRight BOOST Switch' 1"
++		cset "name='SpkrRight DAC Switch' 1"
++		cset "name='SpkrRight VISENSE Switch' 0"
++		cset "name='SpkrRight PA Volume' 12"
++	]
++
++	DisableSequence [
++		cset "name='SpkrLeft COMP Switch' 0"
++		cset "name='SpkrLeft BOOST Switch' 0"
++		cset "name='SpkrLeft DAC Switch' 0"
++		cset "name='SpkrLeft VISENSE Switch' 0"
++		cset "name='SpkrRight COMP Switch' 0"
++		cset "name='SpkrRight BOOST Switch' 0"
++		cset "name='SpkrRight DAC Switch' 0"
++		cset "name='SpkrRight VISENSE Switch' 0"
++		cset "name='RX7 Digital Volume' 0"
++		cset "name='RX8 Digital Volume' 0"
++		cset "name='COMP7 Switch' 0"
++		cset "name='COMP8 Switch' 0"
++	]
++
++	Value {
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackVolume "RX1 Digital Volume"
++	}
++}
+diff --git a/ucm2/Odin/Odin.conf b/ucm2/Odin/Odin.conf
+new file mode 100644
+index 0000000..ceba910
+--- /dev/null
++++ b/ucm2/Odin/Odin.conf
+@@ -0,0 +1,6 @@
++Syntax 3
++
++SectionUseCase."HiFi" {
++	File "/Odin/HiFi.conf"
++	Comment "HiFi quality Music."
++}
+diff --git a/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinBase-odin.conf b/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinBase-odin.conf
+new file mode 120000
+index 0000000..1a8d968
+--- /dev/null
++++ b/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinBase-odin.conf
+@@ -0,0 +1 @@
++../../Odin/Odin.conf
+\ No newline at end of file
+diff --git a/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinPro-odin.conf b/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinPro-odin.conf
+new file mode 120000
+index 0000000..1a8d968
+--- /dev/null
++++ b/ucm2/conf.d/sdm845/AYNTechnologiesCo.Ltd.-OdinPro-odin.conf
+@@ -0,0 +1 @@
++../../Odin/Odin.conf
+\ No newline at end of file
+-- 
+2.34.1
+

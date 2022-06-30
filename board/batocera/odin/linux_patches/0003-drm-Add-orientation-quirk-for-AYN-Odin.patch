@@ -1,0 +1,41 @@
+From d7cab3a2f47509556ec8a0491cf2ffb76d99e7cc Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Fri, 1 Jul 2022 04:02:11 +0700
+Subject: [PATCH 3/5] drm: Add orientation quirk for AYN Odin
+
+---
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 4e853acfd1e8..82f1df62ce55 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -121,6 +121,12 @@ static const struct drm_dmi_panel_orientation_data lcd1600x2560_leftside_up = {
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
+ };
+ 
++static const struct drm_dmi_panel_orientation_data ayn_odin = {
++	.width = 1080,
++	.height = 1920,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
++};
++
+ static const struct dmi_system_id orientation_data[] = {
+ 	{	/* Acer One 10 (S1003) */
+ 		.matches = {
+@@ -312,6 +318,11 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "LTH17"),
+ 		},
+ 		.driver_data = (void *)&lcd800x1280_rightside_up,
++	}, {	/* AYN ODIN */
++		.matches = {
++		  DMI_MATCH(DMI_PRODUCT_NAME, "Odin Pro"),
++		},
++		.driver_data = (void *)&ayn_odin,
+ 	},
+ 	{}
+ };
+-- 
+2.34.1
+
