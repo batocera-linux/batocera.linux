@@ -5220,6 +5220,32 @@ libretro:
       features: [padtokeyboard]
       shared: [rewind, autosave]
     #xash3d_fwgs:
+    xrick:
+      cfeatures:
+            xrick_crop_borders:
+                prompt:      CROP BORDER
+                description: Remove the padding on the sides of the screen.
+                choices:
+                    "On (Default)": 1
+                    "Off":          0
+            xrick_cheat1:
+                prompt:      TRAINER MODE
+                description: Always have 6 bullets, 6 dynamite, 6 lives.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
+            xrick_cheat2:
+                prompt:      INVULNERABILITY MODE
+                description: Nothing can kill Rick, may break the game.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
+            xrick_cheat3:
+                prompt:      EXPOSE MODE
+                description: Highlight all entities on the game map.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
     yabasanshiro:
       shared: [autosave]
       cfeatures:

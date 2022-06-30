@@ -1641,6 +1641,29 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('opera_nvram_storage', '"per game"')
 
+    # Rick Dangerous
+    if (system.config['core'] == 'xrick'):
+        # Crop Borders
+        if system.isOptSet('xrick_crop_borders') and system.getOptBoolean('xrick_crop_borders') == False:
+            coreSettings.save('xrick_crop_borders', '"disabled"')
+        else:
+            coreSettings.save('xrick_crop_borders', '"enabled"')
+        # Cheat 1 (Trainer Mode)
+        if system.isOptSet('xrick_cheat1') and system.getOptBoolean('xrick_cheat1'):
+            coreSettings.save('xrick_cheat1', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat1', '"disabled"')
+        # Cheat 2 (Invulnerablilty Mode)
+        if system.isOptSet('xrick_cheat2') and system.getOptBoolean('xrick_cheat2'):
+            coreSettings.save('xrick_cheat2', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat2', '"disabled"')
+        # Cheat 3 (Expose Mode)
+        if system.isOptSet('xrick_cheat3') and system.getOptBoolean('xrick_cheat3'):
+            coreSettings.save('xrick_cheat3', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat3', '"disabled"')
+
     # ScummVM CORE Options
     if (system.config['core'] == 'scummvm'):
         # Analog Deadzone
