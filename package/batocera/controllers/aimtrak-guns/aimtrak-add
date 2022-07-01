@@ -10,6 +10,11 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
 
+cleanAndExit() {
+    rmdir "/var/run/virtual-aimtrak-devices.${USBPATHHASH}.lock"
+    exit "${1}"
+}
+
 # lock
 N=0
 while ! mkdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
@@ -21,18 +26,18 @@ done
 
 NDEVS=$(cat "/var/run/aimtrak-devices.${USBPATHHASH}" | wc -l)
 
-echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/aimtrak-devices.seen || exit 1
+echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/aimtrak-devices.seen || cleanAndExit 1
 
 if test "${NDEVS}" = 2
 then
     DEV1=$(head -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
     DEV2=$(tail -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
-    rm "/var/run/aimtrak-devices.${USBPATHHASH}" || exit 1
+    rm "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
 
     nohup evsieve --input "${DEV1}" "${DEV2}" "${DEVNAME}" persist=exit --map btn:trigger btn:middle --map btn:thumb btn:right --output name="Aimtrak ATRAK" &
 else
-    echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || exit 1
+    echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
 fi
 
 # unlock
-rmdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
+cleanAndExit 0

@@ -1,7 +1,9 @@
 config BR2_PACKAGE_SINDEN_GUNS
 	bool "sinden-guns"
 	select BR2_PACKAGE_MONO
-	depends on BR2_x86_64
+	select BR2_PACKAGE_LIBV4L
+	select BR2_PACKAGE_LIBV4L_UTILS
+	select BR2_PACKAGE_LIBGDIPLUS
 
 	help
 	  sinden guns support
