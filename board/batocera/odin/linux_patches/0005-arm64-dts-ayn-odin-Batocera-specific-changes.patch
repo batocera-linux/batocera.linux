@@ -1,0 +1,427 @@
+From 3a94e19d219421f87d33dedeed83e2b45cb69497 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Fri, 1 Jul 2022 01:45:19 +0700
+Subject: [PATCH 5/5] arm64: dts: ayn-odin: Batocera specific changes
+
+---
+ arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts | 273 ++++++++++++++++---
+ 1 file changed, 235 insertions(+), 38 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+index 562a2c50dfd3..758ba7d0f771 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -31,7 +31,6 @@ chosen {
+ 
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+-		autorepeat;
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&volume_up_gpio>;
+@@ -43,6 +42,133 @@ vol-up {
+ 		};
+ 	};
+ 
++	gamepad: odin-gamepad {
++		compatible = "odin-gamepad";
++
++		gamepad-name = "Odin Gamepad";
++		gamepad-vendor = <0x2020>;
++		gamepad-product = <0x0111>;
++		gamepad-revision = <0x0001>;
++
++		status = "okay";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&btn_pins &btn_en_active>;
++
++		io-channel-names = "abs_x", "abs_y",
++				 "abs_rx", "abs_ry",
++				 "abs_z", "abs_rz";
++		io-channels = <&pm8998_adc ADC5_GPIO2>,
++					  <&pm8998_adc ADC5_GPIO3>,
++					  <&pm8998_adc ADC5_GPIO5>,
++					  <&pm8998_adc ADC5_GPIO6_DIV3>,
++					  <&pm8998_adc ADC5_GPIO1>,
++					  <&pm8998_adc ADC5_GPIO4>;
++
++		poll-interval = <10>;
++
++		adc-count = <6>;
++		adc-fuzz = <30>;
++		adc-flat = <30>;
++		adc-deadzone = <20>;
++		adc-x-range = <12000>;
++		adc-y-range = <12000>;
++		adc-rx-range = <12000>;
++		adc-ry-range = <12000>;
++		adc-z-range = <12000>;
++		adc-rz-range = <12000>;
++
++		btn_gpio01 {
++				gpios = <&tlmm 96 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio01";
++				linux,code = <BTN_EAST>;
++		};
++
++		btn_gpio02 {
++				gpios = <&tlmm 95 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio02";
++				linux,code = <BTN_SOUTH>;
++		};
++
++		btn_gpio03 {
++				gpios = <&tlmm 41 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio03";
++				linux,code = <BTN_WEST>;
++		};
++
++		btn_gpio04 {
++				gpios = <&tlmm 92 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio04";
++				linux,code = <BTN_NORTH>;
++		};
++
++		btn_gpio05 {
++				gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio05";
++				linux,code = <BTN_TL>;
++		};
++
++		btn_gpio06 {
++				gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio06";
++				linux,code = <BTN_TR>;
++		};
++
++		btn_gpio07 {
++		        gpios = <&tlmm 0 GPIO_ACTIVE_LOW>;
++		        label = "btn_gpio07";
++		        linux,code = <BTN_SELECT>;
++		};
++
++		btn_gpio08 {
++		        gpios = <&tlmm 3 GPIO_ACTIVE_LOW>;
++		        label = "btn_gpio08";
++		        linux,code = <BTN_START>;
++		};
++
++		btn_gpio09 {
++				gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio09";
++				linux,code = <BTN_THUMBL>;
++		};
++
++		btn_gpio10 {
++				gpios = <&tlmm 22 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio10";
++				linux,code = <BTN_THUMBR>;
++		};
++
++		btn_gpio11 {
++				gpios = <&tlmm 124 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio11";
++				linux,code = <BTN_DPAD_UP>;
++		};
++
++		btn_gpio12 {
++				gpios = <&tlmm 128 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio12";
++				linux,code = <BTN_DPAD_DOWN>;
++		};
++
++		btn_gpio13 {
++				gpios = <&tlmm 52 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio13";
++				linux,code = <BTN_DPAD_LEFT>;
++		};
++
++		btn_gpio14 {
++				gpios = <&tlmm 122 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio14";
++				linux,code = <BTN_DPAD_RIGHT>;
++		};
++
++		btn_gpio15 {
++				gpios = <&tlmm 49 GPIO_ACTIVE_LOW>;
++				label = "btn_gpio15";
++				linux,code = <BTN_MODE>;
++		};
++	};
++
+ 	battery: battery {
+ 		compatible = "simple-battery";
+ 
+@@ -74,7 +200,7 @@ vreg_s4a_1p8: pm8998-smps4 {
+ 
+ &adsp_pas {
+ 	status = "okay";
+-	firmware-name = "qcom/sdm845/odin/adsp.mbn";
++	firmware-name = "qcom/sdm845/adsp.mbn";
+ };
+ 
+ &apps_rsc {
+@@ -192,6 +318,12 @@ vreg_l21a_2p95: ldo21 {
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
++		vreg_l23a_3p3: ldo23 {
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3312000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
+ 		vreg_l24a_3p075: ldo24 {
+ 			regulator-min-microvolt = <3088000>;
+ 			regulator-max-microvolt = <3088000>;
+@@ -250,7 +382,7 @@ vreg_s3c_0p6: smps3 {
+ 
+ &cdsp_pas {
+ 	status = "okay";
+-	firmware-name = "qcom/sdm845/odin/cdsp.mbn";
++	firmware-name = "qcom/sdm845/cdsp.mbn";
+ };
+ 
+ &dsi0 {
+@@ -314,15 +446,10 @@ &gpu {
+ 	status = "okay";
+ 	zap-shader {
+ 		memory-region = <&gpu_mem>;
+-		firmware-name = "qcom/sdm845/odin/a630_zap.mbn";
++		firmware-name = "qcom/sdm845/a630_zap.mbn";
+ 	};
+ };
+ 
+-&pmi8998_haptics {
+-	status = "okay";
+-	qcom,wave-play-rate-us = <4255>;
+-};
+-
+ &i2c5 {
+ 	status = "okay";
+ 	clock-frequency = <400000>;
+@@ -384,7 +511,51 @@ &mdss {
+ 
+ &mss_pil {
+ 	status = "okay";
+-	firmware-name = "qcom/sdm845/odin/mba.mbn", "qcom/sdm845/odin/modem.mbn";
++	firmware-name = "qcom/sdm845/mba.mbn", "qcom/sdm845/modem.mbn";
++};
++
++&pm8998_adc {
++	adc-chan@12 {
++		reg = <ADC5_GPIO1>;
++		label = "gpio1";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	adc-chan@13 {
++		reg = <ADC5_GPIO2>;
++		label = "gpio2";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	adc-chan@14 {
++		reg = <ADC5_GPIO3>;
++		label = "gpio3";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	adc-chan@15 {
++		reg = <ADC5_GPIO4>;
++		label = "gpio4";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	adc-chan@16 {
++		reg = <ADC5_GPIO5>;
++		label = "gpio5";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	adc-chan@97 {
++		reg = <ADC5_GPIO6_DIV3>;
++		label = "gpio6";
++		qcom,decimation = <256>;
++		qcom,pre-scaling = <1 3>;
++	};
+ };
+ 
+ &pm8998_gpio {
+@@ -407,17 +578,18 @@ volume_down_resin: resin {
+ 	};
+ };
+ 
+-&pmi8998_fg {
++&pmi8998_charger {
+ 	status = "okay";
+ 	monitored-battery = <&battery>;
+-	power-supplies = <&pmi8998_charger>;
+ };
+ 
+-&pmi8998_rradc {
++&pmi8998_fg {
+ 	status = "okay";
++	monitored-battery = <&battery>;
++	power-supplies = <&pmi8998_charger>;
+ };
+ 
+-&pmi8998_charger {
++&pmi8998_rradc {
+ 	status = "okay";
+ 	monitored-battery = <&battery>;
+ };
+@@ -428,14 +600,6 @@ &pmi8998_wled {
+ 	qcom,num-strings = <2>;
+ };
+ 
+-/* QUAT I2S Uses 1 I2S SD Line for audio on HDMI Bridge */
+-&q6afedai {
+-	qi2s@22 {
+-		reg = <22>;
+-		qcom,sd-lines = <0>;
+-	};
+-};
+-
+ &q6asmdai {
+ 	dai@0 {
+ 		reg = <0>;
+@@ -508,22 +672,18 @@ &sdhc_2 {
+ 	cd-gpios = <&tlmm 126 GPIO_ACTIVE_LOW>;
+ };
+ 
+-&slpi_pas {
+-	status = "okay";
+-	firmware-name = "qcom/sdm845/odin/slpi.mbn";
+-};
+-
+ &sound {
+-	compatible = "qcom,db845c-sndcard";
+-	pinctrl-0 = <&quat_mi2s_active
+-			&quat_mi2s_sd0_active>;
+-	pinctrl-names = "default";
++	compatible = "qcom,sdm845-sndcard";
+ 	model = "Odin";
++
+ 	audio-routing =
+ 		"RX_BIAS", "MCLK",
+-		"AMIC1", "MIC BIAS1",
+ 		"AMIC2", "MIC BIAS2",
+-		"AMIC3", "MIC BIAS3";
++		"SpkrLeft IN", "SPK1 OUT",
++		"SpkrRight IN", "SPK2 OUT",
++		"MM_DL1",  "MultiMedia1 Playback",
++		"MM_DL3",  "MultiMedia3 Playback",
++		"MultiMedia2 Capture", "MM_UL2";
+ 
+ 	mm1-dai-link {
+ 		link-name = "MultiMedia1";
+@@ -575,11 +735,24 @@ codec {
+ 			sound-dai = <&wcd9340 1>;
+ 		};
+ 	};
++
++	slim-wcd-dai-link {
++		link-name = "SLIM WCD Playback";
++		cpu {
++			sound-dai = <&q6afedai SLIMBUS_1_RX>;
++		};
++
++		platform {
++			sound-dai = <&q6routing>;
++		};
++
++		codec {
++			sound-dai =  <&wcd9340 2>;
++		};
++	};
+ };
+ 
+ &tlmm {
+-	gpio-reserved-ranges = <0 4>, <81 4>;
+-
+ 	sdc2_default_state: sdc2-default {
+ 		clk {
+ 			pins = "sdc2_clk";
+@@ -607,9 +780,8 @@ sdc2_card_det_n: sd-card-det-n {
+ 	};
+ 
+ 	wcd_intr_default: wcd_intr_default {
+-		pins = <54>;
++		pins = "gpio54";
+ 		function = "gpio";
+-
+ 		input-enable;
+ 		bias-pull-down;
+ 		drive-strength = <2>;
+@@ -629,6 +801,26 @@ ts_reset_active: ts-reset-active {
+ 		drive-strength = <16>;
+ 		bias-pull-up;
+ 	};
++
++	btn_en_active: btn-en-active {
++		pins = "gpio88";
++		function = "gpio";
++		drive-strength = <8>;
++		bias-disable;
++		output-high;
++	};
++
++	btn_pins: btn-pins {
++		mux {
++			pins =	"gpio96", "gpio95", "gpio41", "gpio92",
++				"gpio26", "gpio91", "gpio0", "gpio3",
++				"gpio40", "gpio22", "gpio124", "gpio128",
++				"gpio52", "gpio122", "gpio49";
++			function = "gpio";
++			drive-strength = <16>;
++			bias-pull-up;
++		};
++	};
+ };
+ 
+ &uart6 {
+@@ -641,6 +833,7 @@ bluetooth {
+ 		vddxo-supply = <&vreg_l7a_1p8>;
+ 		vddrf-supply = <&vreg_l17a_1p3>;
+ 		vddch0-supply = <&vreg_l25a_3p3>;
++		vddch1-supply = <&vreg_l23a_3p3>;
+ 		max-speed = <3200000>;
+ 	};
+ };
+@@ -695,7 +888,7 @@ &usb_1_qmpphy {
+ 
+ &venus {
+ 	status = "okay";
+-	firmware-name = "qcom/sdm845/odin/venus.mbn";
++	firmware-name = "qcom/venus-5.2/venus.mbn";
+ };
+ 
+ &wcd9340{
+@@ -709,6 +902,9 @@ &wcd9340{
+ 	vdd-tx-supply = <&vreg_s4a_1p8>;
+ 	vdd-rx-supply = <&vreg_s4a_1p8>;
+ 	vdd-io-supply = <&vreg_s4a_1p8>;
++	qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000 500000 500000 500000>;
++	qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
++	qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+ 
+ 	swm: swm@c85 {
+ 		left_spkr: wsa8810-left{
+@@ -738,6 +934,7 @@ &wifi {
+ 	vdd-1.8-xo-supply = <&vreg_l7a_1p8>;
+ 	vdd-1.3-rfa-supply = <&vreg_l17a_1p3>;
+ 	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
++	vdd-3.3-ch1-supply = <&vreg_l23a_3p3>;
+ 
+ 	qcom,snoc-host-cap-8bit-quirk;
+ };
+-- 
+2.34.1
+
