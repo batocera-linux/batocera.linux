@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-16 12:57+0100\n"
-"PO-Revision-Date: 2022-06-07 21:06+0200\n"
+"PO-Revision-Date: 2022-06-14 16:23+0200\n"
 "Last-Translator: pajarorrojo\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -21,7 +21,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Force the emulator to run at this resolution."
-msgstr ""
+msgstr "Obliga al emulador a correr en esta resolución."
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -34,6 +34,8 @@ msgid ""
 "Force the game to render in this aspect ratio. Decorations override this "
 "setting."
 msgstr ""
+"Obliga a visualizar los juegos en esta relación de aspecto. Las decoraciones "
+"anulan esta configuración."
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
 msgctxt "game_options"
@@ -69,6 +71,8 @@ msgstr "Personalizado"
 msgctxt "game_options"
 msgid "Store past states to rewind to in realtime, if the core supports it."
 msgstr ""
+"Almacena estados pasados del juego en caché para rebobinar en tiempo real. "
+"Si el núcleo lo soporta."
 
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
@@ -89,16 +93,17 @@ msgstr "Off"
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
 msgstr ""
+"Carga la última partida guardada al iniciar un juego y la guarda al salir."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
-msgstr ""
+msgstr "AUTO GUARDAR/CARGAR AL INICIAR JUEGO"
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "GAME RENDERING & SHADERS"
-msgstr ""
+msgstr "RENDERIZADO DE JUEGOS Y SHADERS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -163,22 +168,22 @@ msgstr ""
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP LEFT (NW)"
-msgstr ""
+msgstr "SUPERIOR IZQUIERDA"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP RIGHT (NE)"
-msgstr ""
+msgstr "SUPERIOR DERECHA"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM RIGHT (SE)"
-msgstr ""
+msgstr "INFERIOR DERECHA"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM LEFT (SW)"
-msgstr ""
+msgstr "INFERIOR IZQUIERDA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -231,6 +236,8 @@ msgid ""
 "During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
 "libretro cores."
 msgstr ""
+"Presiona Hotkey + R1 para traducir el texto en pantalla. Solo en núcleos "
+"libretro."
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -328,17 +335,17 @@ msgstr "VIDEO MEJORADO"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use light guns instead of pads if light guns are connected."
-msgstr ""
+msgstr "Usar pistolas (light guns) si están conectadas en lugar de los mandos."
 
 #. TRANSLATION: shared, libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, libretro/flycast, ...
 msgctxt "game_options"
 msgid "LIGHT GUN"
-msgstr ""
+msgstr "LIGHT GUN"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE LIGHT GUNS"
-msgstr ""
+msgstr "USAR PISTOLAS"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -444,7 +451,7 @@ msgstr ""
 #. TRANSLATION: libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, ...
 msgctxt "game_options"
 msgid "SHOW LIGHT GUN CROSSHAIRS"
-msgstr ""
+msgstr "MOSTRAR EL PUNTO DE MIRA DE LA PISTOLA"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
@@ -953,8 +960,7 @@ msgstr "SALTO DE FRAMES"
 msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
 msgstr ""
-"Desactiva para acceder a la configuración del sistema, como la hora y el "
-"idioma."
+"Desactiva para acceder a los ajustes del sistema, como la hora y el idioma."
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1857,7 +1863,7 @@ msgstr "RENDERIZADO SINCRÓNICO"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 1."
-msgstr ""
+msgstr "Color del punto del jugador 1."
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -1882,12 +1888,12 @@ msgstr "White"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 2."
-msgstr ""
+msgstr "Color del punto del jugador 2."
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 3."
-msgstr ""
+msgstr "Color del punto del jugador 3."
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
@@ -1897,7 +1903,7 @@ msgstr "LIGHTGUN"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 4."
-msgstr ""
+msgstr "Color del punto del jugador 4."
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -1968,7 +1974,7 @@ msgstr "Ratón"
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
 msgid "Light Gun"
-msgstr "Pistola Lightgun"
+msgstr "Pistola Light Gun"
 
 #. TRANSLATION: libretro/flycast, libretro/snes9x
 msgctxt "game_options"
@@ -2291,7 +2297,7 @@ msgstr "Joypad 6 Botones + Teamplayer"
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
 msgid "Light guns can only be used in port 2."
-msgstr ""
+msgstr "Las pistolas solo pueden utilizarse en el puerto 2."
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -2607,7 +2613,7 @@ msgstr "Encendido al iniciar"
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
 msgid "Enable per-game custom configuration via MAME menu."
-msgstr "Activar la config. personalizada por juego vía menú de MAME."
+msgstr "Activar la configuración personalizada por juego vía menú de MAME."
 
 #. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
 msgctxt "game_options"
@@ -5290,7 +5296,7 @@ msgstr "40 MHz"
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
 msgid "Light guns/multitap."
-msgstr ""
+msgstr "Light guns/multitap."
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -5977,12 +5983,12 @@ msgstr "PERMITIR ROTACIÓN"
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "Map controller inputs to light gun inputs."
-msgstr ""
+msgstr "Configuración de los botones del mando a la la pistola."
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "CONTROLLER TO LIGHT GUN"
-msgstr ""
+msgstr "MANDO A PISTOLA (LIGHT GUN)"
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6272,7 +6278,7 @@ msgstr "BLEND SPRITES (SINGE)"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Use with Singe HD light gun games."
-msgstr ""
+msgstr "Usar con juegos de pistola Singe HD."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6295,6 +6301,8 @@ msgid ""
 "Singe automatically interprets joystick axis change as mouse movement, "
 "useful for light gun games."
 msgstr ""
+"Singe interpreta automáticamente el movimiento del joystick como el de un "
+"mouse, útil para juegos de pistola."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6309,7 +6317,7 @@ msgstr "Ocultar puntos de mira en juegos compatibles, por ej. ActionMax."
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "HIDE LIGHT GUN CROSSHAIRS"
-msgstr ""
+msgstr "OCULTAR LOS PUNTOS DE MIRA"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6402,7 +6410,7 @@ msgstr "8x 5K (5120x4224)"
 msgctxt "game_options"
 msgid "The final output image, unrelated to the Wii's emulated NAND setting."
 msgstr ""
-"La imagen de salida final, no relacionada con la configuración NAND emulada "
+"La imagen de salida final, no está relacionada con los ajustes NAND emulados "
 "de Wii."
 
 #. TRANSLATION: dolphin, dolphin_triforce
@@ -6479,7 +6487,7 @@ msgstr "HACKS DE RENDIMIENTO"
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "Search for custom configured joystick profiles."
-msgstr "Busca perfiles de config. de joystick personalizados."
+msgstr "Busca perfiles de configuración de joysticks personalizados."
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -9218,6 +9226,10 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "HABILITAR ENTRADA SIN PROCESAR"
+
+#~ msgctxt "game_options"
+#~ msgid "Light gun device must be selected on at least one port."
+#~ msgstr "Una pistola debe ser seleccionada en al menos un puerto."
 
 #~ msgctxt "game_options"
 #~ msgid "If the D-Pad is oriented incorrectly for your controller."
