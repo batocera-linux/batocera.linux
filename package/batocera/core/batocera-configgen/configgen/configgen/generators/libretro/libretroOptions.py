@@ -174,10 +174,14 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('vice_joyport', '"2"')
         # Select Controller Type
-        if system.isOptSet('vice_joyport_type'):
-            coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('vice_joyport_type', '"14"')
         else:
-            coreSettings.save('vice_joyport_type', '"1"')
+            if system.isOptSet('vice_joyport_type'):
+                coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+            else:
+                coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])

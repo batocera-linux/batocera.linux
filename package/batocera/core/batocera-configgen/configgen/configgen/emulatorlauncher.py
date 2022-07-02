@@ -244,7 +244,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             cmd = generator.generate(system, rom, playersControllers, guns, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
-                hud_bezel = getHudBezel(system, generator, rom, gameResolution)
+                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsNeedBorders(guns))
                 if (system.isOptSet('hud') and system.config["hud"] != "" and system.config["hud"] != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
@@ -284,7 +284,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     # exit
     return exitCode
 
-def getHudBezel(system, generator, rom, gameResolution):
+def getHudBezel(system, generator, rom, gameResolution, addBorders):
     if generator.supportsInternalBezels():
         eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
         return None
@@ -405,6 +405,13 @@ def getHudBezel(system, generator, rom, gameResolution):
     if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
         output_png_file = "/tmp/bezel_tattooed.png"
         bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
+        overlay_png_file = output_png_file
+
+    # borders
+    if addBorders:
+        eslog.debug("Draw gun borders")
+        output_png_file = "/tmp/bezel_gunborders.png"
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
         overlay_png_file = output_png_file
 
     eslog.debug(f"applying bezel {overlay_png_file}")
