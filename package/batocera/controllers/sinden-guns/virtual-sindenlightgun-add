@@ -21,8 +21,6 @@ done
 
 NDEVS=$(cat "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}" | wc -l)
 
-echo "${DEVNAME} ${USBPATHHASH} ${ID_PATH}" >> /var/run/virtual-sindenlightgun-devices.seen || cleanAndExit 1
-
 if test "${NDEVS}" = 1
 then
     DEV1=$(head -1 "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}")

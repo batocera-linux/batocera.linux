@@ -7,7 +7,13 @@ SINDEN_GUNS_VERSION = 1.07
 SINDEN_GUNS_SOURCE=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION).zip
 SINDEN_GUNS_SITE=https://www.sindenlightgun.com/software
 
-SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/X86/64bit/Lightgun/Player1
+ifeq ($(BR2_x86_64),y)
+  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/X86/64bit/Lightgun/Player1
+else ifeq ($(BR2_aarch64)$(BR2_arm),y)
+  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/Pi-Arm/Lightgun/Player1
+else
+  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=invalid_directory
+endif
 
 define SINDEN_GUNS_EXTRACT_CMDS
 	mkdir -p $(@D) && cd $(@D) && unzip -x $(DL_DIR)/$(SINDEN_GUNS_DL_SUBDIR)/$(SINDEN_GUNS_SOURCE)
