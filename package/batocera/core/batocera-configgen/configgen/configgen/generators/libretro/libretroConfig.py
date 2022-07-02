@@ -667,7 +667,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "snes9x_next"   : { "device": 260,          "p2": 0 },
         "nestopia"      : { "device": 262,          "p2": 0 },
         "fceumm"        : { "device": 258,          "p2": 0 },
-        "genesisplusgx" : { "device": 260, "p1": 0, "p2": 1 },
+        "genesisplusgx" : { "device": 772,          "p2": 0 },
         "fbneo"         : { "device":   4, "p1": 0, "p2": 1 },
         "mame078plus"   : { "device":   4, "p1": 0, "p2": 1 },
         "mame0139"      : { "device":   4, "p1": 0, "p2": 1 },
@@ -676,7 +676,8 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "pcsx_rearmed"  : { "device": 260, "p1": 0, "p2": 1 },
         "swanstation"   : { "device": 260, "p1": 0, "p2": 1 },
         "beetle-saturn" : { "device": 260,          "p2": 0 },
-        "opera"         : { "device": 260, "p1": 0, "p2": 1 }
+        "opera"         : { "device": 260, "p1": 0, "p2": 1 },
+        "stella"        : { "device":   4, "p1": 0, "p2": 1 }
     }
 
     # apply mapping
