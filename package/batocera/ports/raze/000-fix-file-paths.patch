@@ -1,0 +1,94 @@
+Index: source/core/gameconfigfile.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/core/gameconfigfile.cpp b/source/core/gameconfigfile.cpp
+--- a/source/core/gameconfigfile.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
++++ b/source/core/gameconfigfile.cpp	(date 1656490394489)
+@@ -141,6 +141,7 @@
+ 		SetValueForKey ("Path", "/usr/local/share/games/eduke32", true);
+ 		SetValueForKey ("Path", "/usr/share/games/nblood", true);
+ 		SetValueForKey ("Path", "/usr/local/share/games/nblood", true);
++		SetValueForKey ("Path", "/usr/lib/raze", true); // raze.pk3
+ #endif
+ 	}
+
+@@ -161,6 +162,7 @@
+ 		SetValueForKey("Path", "/usr/local/share/games/" GAME_DIR "/soundfonts", true);
+ 		SetValueForKey("Path", "/usr/share/" GAME_DIR "/soundfonts", true);
+ 		SetValueForKey("Path", "/usr/share/games/" GAME_DIR "/soundfonts", true);
++		SetValueForKey("Path", "/usr/share/raze", true); // raze.sf2
+ #endif
+ 	}
+
+Index: source/common/platform/posix/unix/i_specialpaths.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/common/platform/posix/unix/i_specialpaths.cpp
+--- a/source/common/platform/posix/unix/i_specialpaths.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
++++ b/source/common/platform/posix/unix/i_specialpaths.cpp	(date 1656479487982)
+@@ -150,7 +150,7 @@
+
+ FString M_GetAutoexecPath()
+ {
+-	return GetUserFile("autoexec.cfg");
++	return FString("/userdata/system/configs/raze/autoexec.cfg");
+ }
+
+ //===========================================================================
+@@ -165,7 +165,7 @@
+
+ FString M_GetConfigPath(bool for_reading)
+ {
+-	return GetUserFile(GAMENAMELOWERCASE ".ini");
++	return FString("/userdata/system/configs/raze/raze.ini");
+ }
+
+ //===========================================================================
+@@ -178,7 +178,7 @@
+
+ FString M_GetScreenshotsPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/screenshots/");
++	return FString("/userdata/screenshots/raze/");
+ }
+
+ //===========================================================================
+@@ -191,7 +191,7 @@
+
+ FString M_GetSavegamesPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/");
++	return FString("/userdata/saves/raze/");
+ }
+
+ //===========================================================================
+@@ -204,7 +204,7 @@
+
+ FString M_GetDocumentsPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/");
++	return M_GetSavegamesPath();
+ }
+
+ //===========================================================================
+Index: source/core/gamecontrol.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/core/gamecontrol.cpp b/source/core/gamecontrol.cpp
+--- a/source/core/gamecontrol.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
++++ b/source/core/gamecontrol.cpp	(date 1656285193363)
+@@ -971,7 +971,7 @@
+ 	FString logfile = Args->TakeValue("+logfile");
+
+ 	// As long as this engine is still in prerelease mode let's always write a log file.
+-	if (logfile.IsEmpty()) logfile.Format("%s" GAMENAMELOWERCASE ".log", M_GetDocumentsPath().GetChars());
++	if (logfile.IsEmpty()) logfile.Format("%s" GAMENAMELOWERCASE ".log", FString("/userdata/system/logs/raze.log").GetChars());
+
+ 	if (logfile.IsNotEmpty())
+ 	{

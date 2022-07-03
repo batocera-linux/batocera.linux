@@ -121,6 +121,7 @@ PACKAGES_EMULATORS="amiberry
 					flycast
 					fsuae
 					hatari
+					ionfury
 					lightspark
 					linapple
 					mame
@@ -130,6 +131,7 @@ PACKAGES_EMULATORS="amiberry
 					pcsx2-avx2
 					ppsspp
 					python-pygame2
+					raze
 					rpcs3
 					ruffle
 					scummvm

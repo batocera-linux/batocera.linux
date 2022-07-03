@@ -1,0 +1,14 @@
+config BR2_PACKAGE_RAZE
+    bool "raze"
+    depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_NET
+    select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_LIBJPEG
+    select BR2_PACKAGE_LIBGL
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_ZMUSIC
+    help
+      Raze is a source port, powered by GZDoom tech, for playing classic Build Engine games like Duke Nukem 3D.
+
+      https://raze.zdoom.org/about
