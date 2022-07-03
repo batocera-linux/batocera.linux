@@ -560,7 +560,7 @@ config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 
 	# Flash Player Emulator
 	select BR2_PACKAGE_RUFFLE           if BR2_PACKAGE_XORG7 && BR2_PACKAGE_BATOCERA_TARGET_X86_64 # need to be configured to support crosscompilation
-	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_XORG7 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
