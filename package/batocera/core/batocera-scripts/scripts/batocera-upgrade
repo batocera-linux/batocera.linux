@@ -141,7 +141,7 @@ fi
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
 do_upgmsg "Backing up config files ..." 0.5
-BOOTFILES="config.txt batocera-boot.conf"
+BOOTFILES="config.txt userconfig.txt batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"

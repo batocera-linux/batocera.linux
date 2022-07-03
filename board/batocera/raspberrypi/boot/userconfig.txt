@@ -1,17 +1,9 @@
 # For more options and information see
-# http://rpf.io/configtxt
+# https://www.raspberrypi.com/documentation/computers/config_txt.html
 # Some settings may impact device functionality. See link above for details
-
-# sets the initial CEC name of the device
-cec_osd_name=batocera
 
 # uncomment will lead to "safe mode" settings being used to try to boot with maximum HDMI compatibility.
 #hdmi_safe=1
-
-# uncomment this if your display has a black border of unused pixels visible
-# and your display can output without overscan
-# at 0, it causes flickering on hdmi output
-disable_overscan=1
 
 # uncomment the following to adjust overscan. Use positive numbers if console
 # goes off screen, and negative if there is too much border
@@ -36,7 +28,7 @@ disable_overscan=1
 
 # uncomment to apply an appropriate CEA or DMT mode for your display
 # see the web site below for valid options depending on the hdmi_group setting
-# https://www.raspberrypi.org/documentation/configuration/config-txt/video.md
+# https://www.raspberrypi.com/documentation/computers/config_txt.html#video-options
 #hdmi_mode=4
 
 # uncomment to force a HDMI mode rather than DVI. This can make audio work in
@@ -61,9 +53,6 @@ disable_overscan=1
 # 3 = EDID_ContentType_Cinema, content type cinema
 # 4 = EDID_ContentType_Game, content type game
 #edid_content_type=4
-
-# if you plug your tv at the same time as your rpi and that the rpi switches from the hdmi or give a low resolution because tv had no enough time to initialize it
-boot_delay=3
 
 # uncomment to enable composite output via 4 pole TRRS ("headphone") socket.
 # note: slightly slows down the entire system on Pi 4 models.
@@ -102,12 +91,6 @@ boot_delay=3
 # uncomment for lirc-rpi
 #dtoverlay=lirc-rpi
 
-# uncomment if you don't want the rainbow at startup
-disable_splash=1
-
-kernel=boot/linux
-initramfs boot/initrd.gz
-
 # enable UART (required for for retroflag)
 # affect rpi performances
 # enable_uart=1
@@ -121,53 +104,11 @@ initramfs boot/initrd.gz
 #dtoverlay=gpio-ir,gpio_pin=17
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
-# Additional overlays and parameters are documented /boot/overlays/README
-
-# Configure GPU memory based on SDRAM size
-# https://www.raspberrypi.com/documentation/computers/config_txt.html#gpu_mem
-gpu_mem_256=112
-gpu_mem_512=160
-gpu_mem_1024=256
-
-# Enable audio (loads snd_bcm2835)
-dtparam=audio=on
-
 # Optional 'Fake' KMS for displays that won't work with 'Full' KMS
 #dtoverlay=vc4-fkms-v3d
-
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d
 
 [DPI]
 # Put any DPI required display code here
 # i.e. Official 7" DSI Raspberry Pi Touch Display for 'Full' KMS
 #ignore_lcd=1
 #dtoverlay=vc4-kms-dsi-7inch
-
-[pi2]
-start_file=start_x.elf
-fixup_file=fixup_x.dat
-
-[pi3]
-# 64-bit mode
-arm_64bit=1
-
-start_file=start_x.elf
-fixup_file=fixup_x.dat
-
-[pi4]
-# 64-bit mode
-arm_64bit=1
-
-# Run as fast as firmware / board allows
-arm_boost=1
-
-start_file=start4x.elf
-fixup_file=fixup4x.dat
-
-# Ensure only one display output can be used on the Pi4 with batocera
-max_framebuffers=1
-
-# custom config
-[all]
