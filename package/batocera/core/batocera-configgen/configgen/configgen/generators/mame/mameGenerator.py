@@ -57,25 +57,16 @@ class MameGenerator(Generator):
                 messRomType.append(row[2])
                 messAutoRun.append(row[3])
         
-        # Identify the current system, select MAME or MESS as needed.
+        # Identify the current system
         try:
             messMode = messSystems.index(system.name)
         except ValueError:
             messMode = -1
-        if messMode == -1:
-            commandArray =  [ "/usr/bin/mame/mame" ]
-        elif system.name == "vgmplay":
-            commandArray =  [ "/usr/bin/mame/vgmplay" ]
-            if system.isOptSet("softList") and system.config["softList"] != "none":
-                softList = system.config["softList"]
-            else:
-                softList = ""
+
+        if system.isOptSet("softList") and system.config["softList"] != "none":
+            softList = system.config["softList"]
         else:
-            commandArray =  [ "/usr/bin/mame/mess" ]
-            if system.isOptSet("softList") and system.config["softList"] != "none":
-                softList = system.config["softList"]
-            else:
-                softList = ""
+            softList = ""
 
         # Auto softlist for FM Towns if there is a zip that matches the folder name
         # Used for games that require a CD and floppy to both be inserted
@@ -84,6 +75,7 @@ class MameGenerator(Generator):
             if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
                 softList = 'fmtowns_cd'
 
+        commandArray =  [ "/usr/bin/mame/mame" ]
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]

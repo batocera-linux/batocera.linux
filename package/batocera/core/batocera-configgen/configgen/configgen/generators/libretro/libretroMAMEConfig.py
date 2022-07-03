@@ -27,8 +27,9 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         corePath = system.config['core']
 
-    if system.config['core'] == 'mame':
-        # Set up command line for MAME
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay' ]:
+        # Set up command line for basic systems
+        # ie. no media, softlists, etc.
         if system.getOptBoolean("customcfg"):
             cfgPath = "/userdata/system/configs/{}/custom/".format(corePath)
         else:
