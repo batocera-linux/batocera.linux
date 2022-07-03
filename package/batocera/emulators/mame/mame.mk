@@ -63,7 +63,7 @@ define MAME_BUILD_CMDS
 	cd $(@D); \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
-	TARGET=mame SUBTARGET=tiny \
+	TARGET=mame SUBTARGET=tiny\
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
 
@@ -77,77 +77,7 @@ define MAME_BUILD_CMDS
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
-	SUBTARGET=arcade \
-	OVERRIDE_CC="$(TARGET_CC)" \
-	OVERRIDE_CXX="$(TARGET_CXX)" \
-	OVERRIDE_LD="$(TARGET_LD)" \
-	OVERRIDE_AR="$(TARGET_AR)" \
-	OVERRIDE_STRIP="$(TARGET_STRIP)" \
-	CROSS_BUILD=1 \
-	CROSS_ARCH="$(MAME_CROSS_ARCH)" \
-	$(MAME_CROSS_OPTS) \
-	NO_USE_PORTAUDIO=1 \
-	USE_SYSTEM_LIB_ZLIB=1 \
-	USE_SYSTEM_LIB_JPEG=1 \
-	USE_SYSTEM_LIB_FLAC=1 \
-	USE_SYSTEM_LIB_SQLITE3=1 \
-	USE_SYSTEM_LIB_RAPIDJSON=1 \
-	USE_SYSTEM_LIB_EXPAT=1 \
-	USE_SYSTEM_LIB_GLM=1 \
-	OPENMP=1 \
-	SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
-	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
-	REGENIE=1 \
-	LDOPTS="-lasound -lfontconfig" \
-	SYMBOLS=0 \
-	STRIP_SYMBOLS=1 \
-	TOOLS=1
-
-	# Compile emulation target (MESS)
-	cd $(@D); \
-	PATH="$(HOST_DIR)/bin:$$PATH" \
-	SYSROOT="$(STAGING_DIR)" \
-	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
-	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
-	TARGET=mame \
-	SUBTARGET=mess \
-	OVERRIDE_CC="$(TARGET_CC)" \
-	OVERRIDE_CXX="$(TARGET_CXX)" \
-	OVERRIDE_LD="$(TARGET_LD)" \
-	OVERRIDE_AR="$(TARGET_AR)" \
-	OVERRIDE_STRIP="$(TARGET_STRIP)" \
-	CROSS_BUILD=1 \
-	CROSS_ARCH="$(MAME_CROSS_ARCH)" \
-	$(MAME_CROSS_OPTS) \
-	NO_USE_PORTAUDIO=1 \
-	USE_SYSTEM_LIB_ZLIB=1 \
-	USE_SYSTEM_LIB_JPEG=1 \
-	USE_SYSTEM_LIB_FLAC=1 \
-	USE_SYSTEM_LIB_SQLITE3=1 \
-	USE_SYSTEM_LIB_RAPIDJSON=1 \
-	USE_SYSTEM_LIB_EXPAT=1 \
-	USE_SYSTEM_LIB_GLM=1 \
-	OPENMP=1 \
-	SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
-	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
-	REGENIE=1 \
-	LDOPTS="-lasound -lfontconfig" \
-	SYMBOLS=0 \
-	STRIP_SYMBOLS=1 \
-	TOOLS=1
-
-	# Compile emulation target (Virtual Devices)
-	cd $(@D); \
-	PATH="$(HOST_DIR)/bin:$$PATH" \
-	SYSROOT="$(STAGING_DIR)" \
-	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
-	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
-	TARGET=mame \
-	SUBTARGET=virtual \
+	SUBTARGET=mame \
 	OVERRIDE_CC="$(TARGET_CC)" \
 	OVERRIDE_CXX="$(TARGET_CXX)" \
 	OVERRIDE_LD="$(TARGET_LD)" \
@@ -188,9 +118,7 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/roms
 
 	# Install binaries and default distro
-	$(INSTALL) -D $(@D)/mamearcade	$(TARGET_DIR)/usr/bin/mame/mame
-	$(INSTALL) -D $(@D)/mess		$(TARGET_DIR)/usr/bin/mame/mess
-	$(INSTALL) -D $(@D)/mamevirtual	$(TARGET_DIR)/usr/bin/mame/vgmplay
+	$(INSTALL) -D $(@D)/mame	$(TARGET_DIR)/usr/bin/mame/mame
 	cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
 	cp $(@D)/README.md			$(TARGET_DIR)/usr/bin/mame/
 	cp $(@D)/uismall.bdf		$(TARGET_DIR)/usr/bin/mame/
