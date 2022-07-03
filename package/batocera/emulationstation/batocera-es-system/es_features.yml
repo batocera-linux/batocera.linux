@@ -8658,3 +8658,25 @@ xenia:
 odcommander:
   features: [padtokeyboard]
   shared: [videomode, ratio, hud]
+
+ionfury:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: []
+  cfeatures:
+    nologo:
+      prompt: SKIP INTRO VIDEOS
+      description: Skip introduction animations and logos; default is show
+      choices:
+        "Skip": 1
+        "Show": 0
+
+raze:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  cfeatures:
+    nologo:
+      prompt: SKIP INTRO VIDEOS
+      description: Skip introduction animations and logos; default is show
+      choices:
+        "Skip": 1
+        "Show": 0

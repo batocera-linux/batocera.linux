@@ -3262,3 +3262,96 @@ gzdoom:
     i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
     Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
+
+ionfury:
+  name: Ion Fury
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [grp]
+  group: ports
+  emulators:
+    ionfury:
+      ionfury: { requireAnyOf: [BR2_PACKAGE_IONFURY] }
+  comment_en: |
+    Ion Fury is a new Build Engine game from the creators of the EDuke32 source port.
+    Place the following files in this directory:
+      * fury.grp
+      * fury.grpinfo
+
+raze:
+  name: Raze
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [raze]
+  group: ports
+  emulators:
+    raze:
+      raze: { requireAnyOf: [BR2_PACKAGE_RAZE] }
+  comment_en: |
+    Raze is a source port, powered by GZDoom tech, for playing classic Build Engine games like Duke Nukem 3D.
+
+    Each game must be organized in the raze directory properly and have a .raze file created for it.
+
+    The Build Engine uses a file override system similar to Doom and WAD files. Each game requires different files and
+    some are optional for things like movies and music. Batocera uses text files with the .raze extension that contain a
+    list of paths to files--one path per line. This tells Raze how to load a game. For example, there is a single line
+    inside DukeNukem3D.raze:
+        DUKE3D.GRP
+    This line provides the relative path to the .grp file Raze needs to load the game. For another example, there
+    are two lines inside BloodCrypticPassage.raze:
+        blood/BLOOD.RFF
+        cryptic.zip
+    The first line is the Blood launcher file. The second line is the relative path to the zip file containing the
+    Cryptic Passage expansion. In this way, Raze loads the Blood game first and then loads the expansion on top of it.
+    So base games are listed first and then expansions. The base game is normally a .grp file unless denoted as a
+    special launcher file (see below). You can also load mods like HRP for Duke Nukem 3D, Death Wish for Blood, etc.
+
+    You will want to structure the raze directory something like the following depending on which games you are
+    installing. You just do not want files conflicting with each other. After that, create the .raze file for each game,
+    placing one relative path on each line.
+
+    See the wiki for more information.
+
+    /userdata/roms/raze
+    |__ *.raze
+    |__ /blood (Blood)
+       |__ /movies/*.ogv
+       |__ blood.ini, *.art, *.dat, *.rff (blood.rff is launcher)
+       |__ *.ogg (optional; named blood02.ogg, etc. or track02.ogg, etc.)
+    |__ cryptic.zip (Blood: Cryptic Passage expansion)
+       |__ /movies/*.ogv
+       |__ *.art, *.ini, *.map
+    |__ ps (PowerSlave/Exhumed)
+       |__ book.mov, demo.vcr, stuff.dat (launcher)
+       |__ *.ogg (optional; named exhumed02.ogg, etc. or track02.ogg, etc.)
+    |__ rr
+       |__ redneck.grp (Redneck Rampage)
+       |__ route66.zip (Redneck Rampage: Suckin' Grits on Route 66 Expansion)
+          |__ /ROUTE66/*.map
+          |__ *.anm, *.art, *.con, *.voc
+       |__ *.ogg (optional; named redneck02.ogg, etc. or track02.ogg, etc.)
+    |__ rides.grp (Redneck Rampage Rides Again) (Note: rename from redneck.grp)
+    |__ sw
+       |__ sw.grp (Shadow Warrior)
+       |__ td.grp (Shadow Warrior: Twin Dragon Expansion)
+       |__ wd.grp (Shadow Warrior: Wanton Destruction)
+       |__ *.ogg (optional; named shadow02.ogg, etc. or track02.ogg, etc.)
+    |__ duke3d.grp (Duke Nukem 3D)
+    |__ dukedc.grp (Duke Nukem 3D: Duke It Out In D.C Expansion)
+    |__ nwinter.grp (Duke Nukem 3D: Duke Caribbean: Life's a Beach Expansion)
+    |__ vacation.grp (Duke Nukem 3D: Nuclear Winter Expansion)
+    |__ worldtour.zip (Duke Nukem 3D: Twentieth Anniversary World Tour Expansion)
+       |__ /def/*
+       |__ /maps/*
+       |__ /music/*
+       |__ /sound/*
+       |__ /textures/*
+       |__ *.art, *.con, *.dmo
+    |__ nam.grp (NAM/Naplam)
+    |__ nam.con
+    |__ ww2gi.con
+    |__ ww2gi.grp (WWII GI/World War II GI)
+    |__ platoonl.dat
+    |__ platoonl.def (World War II GI: Platoon Leader Expansion) (launcher)

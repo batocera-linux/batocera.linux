@@ -292,8 +292,9 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/abuse-data/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/abuse/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/hcl/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/gzdoom/zmusic/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/gzdoom/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/ionfury/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/raze/Config.in"
   endmenu
 
   menu "mupen64plus"
@@ -408,6 +409,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/od-commander/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xwiimote/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/alsa-ucm-conf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/zmusic/Config.in"
 endmenu
 
 menu "Libraries"
