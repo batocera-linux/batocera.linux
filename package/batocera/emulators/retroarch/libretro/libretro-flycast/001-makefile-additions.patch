@@ -1,0 +1,52 @@
+--- libretro-flycast-a659b57e63a9b58b8d1f9a4937723d8456f06c22/CMakeLists.txt	2022-06-30 05:11:26.000000000 -0700
++++ libretro-flycast-lbrpdx/CMakeLists.txt	2022-07-03 11:55:15.668559809 -0700
+@@ -19,6 +19,11 @@
+ option(LIBRETRO "Build libretro core" OFF)
+ option(USE_OPENGL "Use Open GL API" ON)
+ option(USE_VIDEOCORE "RPI: use the legacy Broadcom GLES libraries" OFF)
++option(USE_MALI "Use mali" OFF)
++option(RG552 "Optimize for RG552" OFF)
++option(RPI4 "Optimize for RPi4" OFF)
++option(RK3326 "Optimize for RK3326" OFF)
++option(S922X "Optimize for S922X" OFF)
+ 
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
+ 
+@@ -106,6 +111,19 @@
+     set(CMAKE_SHARED_LIBRARY_PREFIX "")
+     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+     target_compile_definitions(${PROJECT_NAME} PRIVATE LIBRETRO)
++    if (RG552)
++	    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53")
++	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53")
++    elseif(RK3326)
++	    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a35 -mtune=cortex-a35")
++	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a35 -mtune=cortex-a35")
++    elseif(RPI4)
++	    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72")
++	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72")
++    elseif(S922X)
++	    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
++	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
++    endif()
+     if(ANDROID OR USE_GLES)
+ 		target_compile_definitions(${PROJECT_NAME} PRIVATE GLES GLES3 HAVE_OPENGLES HAVE_OPENGLES3)
+ 		find_library(GLES3_LIBRARIES NAMES GLESv3 GLESv2 NO_CACHE REQUIRED)
+@@ -142,6 +160,10 @@
+     add_executable(${PROJECT_NAME} MACOSX_BUNDLE core/emulator.cpp)
+ endif()
+ 
++if(USE_MALI)
++  target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
++endif()
++
+ if(WINDOWS_STORE)
+ 	set(USE_OPENGL OFF)
+     target_compile_features(${PROJECT_NAME} PRIVATE c_std_11 cxx_std_17)
+@@ -1508,4 +1530,4 @@
+ endif()
+ 
+ file(GLOB_RECURSE SRC_FILES *.h *.cpp *.c *.mm)
+-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SRC_FILES})
+\ No newline at end of file
++source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SRC_FILES})
