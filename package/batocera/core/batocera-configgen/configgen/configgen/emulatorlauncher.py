@@ -288,11 +288,9 @@ def getHudBezel(system, generator, rom, gameResolution, addBorders):
     if generator.supportsInternalBezels():
         eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
         return None
-
     # no good reason for a bezel
-    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and  not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0"):
+    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0") and not addBorders:
         return None
-
     # no bezel, generate a transparent one for the tatoo/gun borders ... and so on
     if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none"):
         overlay_png_file  = "/tmp/bezel_transhud_black.png"
