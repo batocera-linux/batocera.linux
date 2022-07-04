@@ -671,7 +671,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "snes9x_next"   : { "default" : { "device": 260,          "p2": 0 } },
         "nestopia"      : { "default" : { "device": 262,          "p2": 0 } },
         "fceumm"        : { "default" : { "device": 258,          "p2": 0 } },
-        "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0 }, "mastersystem" : { "device": 260, "p1": 0, "p2": 1 }, "segacd" : { "device": 516, "p2": 0 } },
+        "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0,
+                                            "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "513" } ] },
+                            "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
+                            "segacd" : { "device": 516, "p2": 0 } },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame0139"      : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
@@ -687,10 +690,19 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     # apply mapping
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         if system.config['core'] in gun_mapping:
+            # conf from general mapping
             if system.name in gun_mapping[system.config['core']]:
                 ragunconf = gun_mapping[system.config['core']][system.name]
             else:
                 ragunconf = gun_mapping[system.config['core']]["default"]
+
+            # overwrite configuration by gungames.xml
+            if "gameDependant" in ragunconf:
+                gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+                for gd in ragunconf["gameDependant"]:
+                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"]:
+                        ragunconf[gd["mapkey"]] = gd["mapvalue"]
+
             for nplayer in range(1, 2+1):
                 if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
                     retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
