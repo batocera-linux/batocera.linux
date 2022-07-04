@@ -672,7 +672,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "nestopia"      : { "default" : { "device": 262,          "p2": 0 } },
         "fceumm"        : { "default" : { "device": 258,          "p2": 0 } },
         "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0,
-                                            "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "513" } ] },
+                                            "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ] },
                             "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
                             "segacd" : { "device": 516, "p2": 0 } },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
