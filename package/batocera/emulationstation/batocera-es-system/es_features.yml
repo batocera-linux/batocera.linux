@@ -354,7 +354,7 @@ libretro:
                     "On":  ON
     bsnes:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
     bsnes_hd:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
@@ -379,7 +379,7 @@ libretro:
                     "576+KB":  576
     mesen-s:
       features: [netplay, padtokeyboard]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             mesen-s_ntsc_filter:
                 group: ADVANCED OPTIONS
@@ -842,7 +842,7 @@ libretro:
                     "Custom Keyboard Binds (best for Pad2Key)":             3
     swanstation:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1487,7 +1487,7 @@ libretro:
       shared: [rewind, autosave]
     genesisplusgx:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             gpgx_region:
                 prompt:      REGION
@@ -2923,7 +2923,7 @@ libretro:
       shared: [rewind, autosave]
     mednafen_psx:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             beetle_psx_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -3558,7 +3558,7 @@ libretro:
                     "90%":                         90
     opera:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             high_resolution:
                 prompt:      RENDERING RESOLUTION
@@ -4410,7 +4410,7 @@ libretro:
                     "On":                                 enabled
     stella:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
     tgbdual:
       features: [netplay]
       shared: [rewind, autosave]
