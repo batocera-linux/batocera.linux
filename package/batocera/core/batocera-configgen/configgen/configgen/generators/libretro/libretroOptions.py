@@ -541,9 +541,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('puae_video_resolution', '"hires"')
         # Zoom Mode
         if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
-            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+            coreSettings.save('puae_crop', system.config['zoom_mode'])
         else:
-            coreSettings.save('puae_zoom_mode', '"auto"')
+            coreSettings.save('puae_crop', '"auto"')
+        coreSettings.save('puae_zoom_mode', '"deprecated"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
