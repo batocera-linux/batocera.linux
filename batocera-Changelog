@@ -23,6 +23,7 @@
         * add: core options to xrick
         * add: select rumble force feedback (0 to 100%) for supported emulators and controllers
         * add: build engine source ports: ion fury and raze for duke nukem 3d, shadow warrior, blood etc.
+        * add: xemu netplay support now enabled and auto-configured by default
         * bump: x86_64 linux kernel to 5.18.4
         * bump: Nvidia linux driver to 515.48.07
         * bump: btop to 1.2.7
@@ -50,7 +51,9 @@
         * change: disable cec in es (causing issues in some circonstances)
         * change: dolphin is back on s922x with libretro-dolphin
         * change: RPi3 now runs under Xorg window server
+        * change: od-commander south and east buttons swapped to match ES
         * es: add frameskip options for Drastic
+        * es: wii/gamecube added json as acceptable file extension
         * fix: optimize game startup
         * fix: lr-swanstation not working on some SBC's with OpenGLES
         * fix: segacd now scrapes successfully again
