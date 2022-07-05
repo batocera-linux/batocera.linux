@@ -1,0 +1,470 @@
+From 617a45dd0fce8a4e63693d62578ef720941f9784 Mon Sep 17 00:00:00 2001
+From: Yuntian Zhang <yt@radxa.com>
+Date: Thu, 13 Jan 2022 21:34:52 +0800
+Subject: [PATCH] arm64: dts: meson: Add initial dt overlays for Radxa Zero 2
+
+Signed-off-by: Yuntian Zhang <yt@radxa.com>
+---
+ arch/arm64/boot/dts/amlogic/overlay/Makefile  | 16 ++++-
+ .../dts/amlogic/overlay/README.meson-overlays | 58 ++++++++++++++++++-
+ .../meson-g12b-i2c-ee-m0-gpioz-0-1.dts        | 15 +++++
+ .../meson-g12b-i2c-ee-m0-gpioz-1-7.dts        | 15 +++++
+ .../meson-g12b-i2c-ee-m1-gpioh-6-7.dts        | 15 +++++
+ .../meson-g12b-i2c-ee-m3-gpioa-14-15.dts      | 15 +++++
+ .../overlay/meson-g12b-pwm-b-gpioh-7.dts      | 17 ++++++
+ .../overlay/meson-g12b-pwm-b-gpioz-0.dts      | 17 ++++++
+ .../overlay/meson-g12b-pwm-c-d-gpioz-1-2.dts  | 17 ++++++
+ .../overlay/meson-g12b-pwm-c-gpioz-1.dts      | 17 ++++++
+ .../overlay/meson-g12b-pwm-d-gpioz-2.dts      | 17 ++++++
+ .../overlay/meson-g12b-pwm-f-gpioh-5.dts      | 17 ++++++
+ .../meson-g12b-spi-b-gpioh-4-5-6-7.dts        | 23 ++++++++
+ .../meson-g12b-uart-ao-a-gpioao-0-1.dts       | 15 +++++
+ .../meson-g12b-uart-ao-b-gpioao-8-9.dts       | 15 +++++
+ .../meson-g12b-uart-ee-c-gpioh-4-5-6-7.dts    | 15 +++++
+ 16 files changed, 302 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-0-1.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-1-7.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m1-gpioh-6-7.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m3-gpioa-14-15.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioh-7.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioz-0.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-d-gpioz-1-2.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-gpioz-1.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-d-gpioz-2.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-f-gpioh-5.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-spi-b-gpioh-4-5-6-7.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-a-gpioao-0-1.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-b-gpioao-8-9.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ee-c-gpioh-4-5-6-7.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/Makefile b/arch/arm64/boot/dts/amlogic/overlay/Makefile
+index 6fdb664e6e6cf..15267f1b990dd 100644
+--- a/arch/arm64/boot/dts/amlogic/overlay/Makefile
++++ b/arch/arm64/boot/dts/amlogic/overlay/Makefile
+@@ -10,7 +10,21 @@ dtbo-$(CONFIG_ARCH_MESON) += \
+ 	meson-g12a-uart-ao-a-on-gpioao-0-gpioao-1.dtbo \
+ 	meson-g12a-uart-ao-b-on-gpioao-2-gpioao-3.dtbo \
+ 	meson-g12a-uart-ao-b-on-gpioao-8-gpioao-9.dtbo \
+-	meson-g12a-uart-ee-c.dtbo
++	meson-g12a-uart-ee-c.dtbo \
++	meson-g12b-i2c-ee-m0-gpioz-0-1.dtbo \
++	meson-g12b-i2c-ee-m0-gpioz-1-7.dtbo \
++	meson-g12b-i2c-ee-m1-gpioh-6-7.dtbo \
++	meson-g12b-i2c-ee-m3-gpioa-14-15.dtbo \
++	meson-g12b-pwm-b-gpioh-7.dtbo \
++	meson-g12b-pwm-b-gpioz-0.dtbo \
++	meson-g12b-pwm-c-gpioz-1.dtbo \
++	meson-g12b-pwm-d-gpioz-2.dtbo \
++	meson-g12b-pwm-c-d-gpioz-1-2.dtbo \
++	meson-g12b-pwm-f-gpioh-5.dtbo \
++	meson-g12b-spi-b-gpioh-4-5-6-7.dtbo \
++	meson-g12b-uart-ao-a-gpioao-0-1.dtbo \
++	meson-g12b-uart-ao-b-gpioao-8-9.dtbo \
++	meson-g12b-uart-ee-c-gpioh-4-5-6-7.dtbo
+ 
+ scr-$(CONFIG_ARCH_MESON) += \
+ 	meson-fixup.scr
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/README.meson-overlays b/arch/arm64/boot/dts/amlogic/overlay/README.meson-overlays
+index c9aa45c709fc1..d64ca3fd8bca7 100644
+--- a/arch/arm64/boot/dts/amlogic/overlay/README.meson-overlays
++++ b/arch/arm64/boot/dts/amlogic/overlay/README.meson-overlays
+@@ -4,10 +4,13 @@ This document describes overlays provided in the kernel packages.
+ For generic device tree overlays documentation please see
+ https://wiki.radxa.com/Device-tree-overlays
+ 
+-## Platform and Chips:
++## Platform and Chips
+ 
+ Amlogic
+ - meson-g12a / S905Y2
++- meson-g12b / A311D
++
++### g12a
+ 
+ #### usage
+ 
+@@ -166,3 +169,56 @@ param_spidev_max_freq (int)
+     Default: 10000000
+     Range: 3000 - 100000000
+ 
++### g12b
++
++#### Usage
++
++Kernel provided DT overlay files are in `/boot/dtbs/$(uname -r)/amlogic/overlay`
++
++`/boot/uEnv.txt` syntax:
++
++    overlays=<space-seprated-list-of-overlays>
++
++#### How to read the overlay file name
++
++The overlay file name follows the following convention:
++
++    <soc-family>-<soc-variant>-<function>-<location>-<gpio-bank>-<gpio-pins>
++
++- soc-family: must be `meson`
++- soc-variant: can be one of `g12a`, or `g12b`. For Radxa Zero2, use `g12b` variant.
++- function: can be one of `i2c`, `pwm`, `spi`, or `uart`
++- location: specify the exact controller that implements the function
++- gpio-bank & gpio-pins: specify the exact GPIO pins that is muxed with the function
++
++You can specify multiple overlays in `/boot/uEnv.txt`.
++However, for any given pin they can only have 1 function,
++and for any given function they can only have 1 set of pins.
++
++For example, you cannot specify both `meson-g12b-i2c-ee-m0-gpioz-0-1`
++and `meson-g12b-i2c-ee-m0-gpioz-1-7` at the same time,
++as that assigned the same `i2c-ee-m0` function to 2 different sets of pins.
++
++#### Available overlays
++
++##### I2C
++- meson-g12b-i2c-ee-m0-gpioz-0-1
++- meson-g12b-i2c-ee-m0-gpioz-1-7
++- meson-g12b-i2c-ee-m1-gpioh-6-7
++- meson-g12b-i2c-ee-m3-gpioa-14-15
++
++##### PWM
++- meson-g12b-pwm-b-gpioh-7
++- meson-g12b-pwm-b-gpioz-0
++- meson-g12b-pwm-c-gpioz-1
++- meson-g12b-pwm-d-gpioz-2
++- meson-g12b-pwm-c-d-gpioz-1-2
++- meson-g12b-pwm-f-gpioh-5
++
++##### SPI
++- meson-g12b-spi-b-gpioh-4-5-6-7
++
++##### UART
++- meson-g12b-uart-ao-a-gpioao-0-1
++- meson-g12b-uart-ao-b-gpioao-8-9
++- meson-g12b-uart-ee-c-gpioh-4-5-6-7
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-0-1.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-0-1.dts
+new file mode 100644
+index 0000000000000..d75240bd6f77a
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-0-1.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c0_sck_z1_pins &i2c0_sda_z0_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-1-7.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-1-7.dts
+new file mode 100644
+index 0000000000000..14a78efcec056
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m0-gpioz-1-7.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c0_sck_z1_pins &i2c0_sda_z7_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m1-gpioh-6-7.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m1-gpioh-6-7.dts
+new file mode 100644
+index 0000000000000..2622068fba962
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m1-gpioh-6-7.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&i2c1>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c1_sck_h7_pins &i2c1_sda_h6_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m3-gpioa-14-15.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m3-gpioa-14-15.dts
+new file mode 100644
+index 0000000000000..689d856dadb95
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-i2c-ee-m3-gpioa-14-15.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&i2c3>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c3_sck_a_pins &i2c3_sda_a_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioh-7.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioh-7.dts
+new file mode 100644
+index 0000000000000..0e3077b34c63a
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioh-7.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_ab>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_a_e_pins &pwm_b_h7_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin0";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioz-0.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioz-0.dts
+new file mode 100644
+index 0000000000000..d456ff83d4511
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-b-gpioz-0.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_ab>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_a_e_pins &pwm_b_z0_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin0";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-d-gpioz-1-2.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-d-gpioz-1-2.dts
+new file mode 100644
+index 0000000000000..f101edb3387e6
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-d-gpioz-1-2.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_cd>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_c_z1_pins &pwm_d_z2_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin1";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-gpioz-1.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-gpioz-1.dts
+new file mode 100644
+index 0000000000000..88e779ab8b90e
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-c-gpioz-1.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_cd>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_c_z1_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin1";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-d-gpioz-2.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-d-gpioz-2.dts
+new file mode 100644
+index 0000000000000..9579329eda3ce
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-d-gpioz-2.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_cd>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_d_z2_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin1";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-f-gpioh-5.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-f-gpioh-5.dts
+new file mode 100644
+index 0000000000000..7d17231376f46
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-pwm-f-gpioh-5.dts
+@@ -0,0 +1,17 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&pwm_ef>;
++		__overlay__ {
++			pinctrl-0 = <&pwm_e_pins &pwm_f_h_pins>;
++			pinctrl-names = "default";
++			clocks = <&xtal>;
++			clock-names = "clkin2";
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-spi-b-gpioh-4-5-6-7.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-spi-b-gpioh-4-5-6-7.dts
+new file mode 100644
+index 0000000000000..605f0ec65a63e
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-spi-b-gpioh-4-5-6-7.dts
+@@ -0,0 +1,23 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&spicc1>;
++		__overlay__ {
++			pinctrl-0 = <&spicc1_pins &spicc1_ss0_pins>;
++			pinctrl-names = "default";
++			#address-cells = <1>;
++			#size-cells = <0>;
++            status = "okay";
++			spidev@0 {
++				compatible = "linux,spidev";
++				status = "okay";
++				spi-max-frequency = <10000000>;
++				reg = <0>;
++			};
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-a-gpioao-0-1.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-a-gpioao-0-1.dts
+new file mode 100644
+index 0000000000000..4a0ff41cc6b0f
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-a-gpioao-0-1.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&uart_AO>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart_ao_a_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-b-gpioao-8-9.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-b-gpioao-8-9.dts
+new file mode 100644
+index 0000000000000..72f79f4dc1765
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ao-b-gpioao-8-9.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&uart_AO_B>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart_ao_b_tx_8_rx_9_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ee-c-gpioh-4-5-6-7.dts b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ee-c-gpioh-4-5-6-7.dts
+new file mode 100644
+index 0000000000000..5ab6ab8ca6846
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/overlay/meson-g12b-uart-ee-c-gpioh-4-5-6-7.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,zero2", "amlogic,a311d", "amlogic,g12b";
++
++	fragment@0 {
++		target = <&uart_C>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart_c_pins &uart_c_cts_rts_pins>;
++			pinctrl-names = "default";
++		};
++	};
++};
+\ No newline at end of file
