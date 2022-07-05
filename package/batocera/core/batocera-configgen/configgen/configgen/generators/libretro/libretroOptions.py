@@ -153,11 +153,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -217,11 +218,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -275,11 +277,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_plus4_external_palette'):
             coreSettings.save('vice_plus4_external_palette', system.config['vice_plus4_external_palette'])
@@ -333,11 +336,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_vic20_external_palette'):
             coreSettings.save('vice_vic20_external_palette', system.config['vice_vic20_external_palette'])
@@ -391,11 +395,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_pet_external_palette'):
             coreSettings.save('vice_pet_external_palette', system.config['vice_pet_external_palette'])
