@@ -118,11 +118,11 @@ PACKAGES_EMULATORS="amiberry
 					dosbox-x
 					duckstation
 					easyrpg-player
+					eduke32
 					liblcf
 					flycast
 					fsuae
 					hatari
-					ionfury
 					lightspark
 					linapple
 					mame
