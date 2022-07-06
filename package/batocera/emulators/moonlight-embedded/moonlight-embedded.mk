@@ -17,7 +17,7 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
 endif
 
