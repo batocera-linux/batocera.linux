@@ -1,15 +1,15 @@
-From 0b935817f749ca7f25c82df7cc14ab54af5e906b Mon Sep 17 00:00:00 2001
+From d87487ea66770754854c444684a381c3e74824c7 Mon Sep 17 00:00:00 2001
 From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Tue, 5 Jul 2022 18:52:00 +0000
+Date: Wed, 6 Jul 2022 19:39:28 +0000
 Subject: [PATCH] lightgun udev driver
 
 Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
 ---
  scripts/src/main.lua                  |   1 +
  scripts/src/osd/modules.lua           |   1 +
- src/osd/modules/input/input_udev.cpp  | 363 ++++++++++++++++++++++++++
+ src/osd/modules/input/input_udev.cpp  | 364 ++++++++++++++++++++++++++
  src/osd/modules/lib/osdobj_common.cpp |   1 +
- 4 files changed, 366 insertions(+)
+ 4 files changed, 367 insertions(+)
  create mode 100644 src/osd/modules/input/input_udev.cpp
 
 diff --git a/scripts/src/main.lua b/scripts/src/main.lua
@@ -38,10 +38,10 @@ index 034f6b2..2c0d051 100644
  		MAME_DIR .. "src/osd/modules/input/input_xinput.cpp",
 diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
 new file mode 100644
-index 0000000..4173248
+index 0000000..cc0b8e8
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,363 @@
+@@ -0,0 +1,364 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
@@ -248,6 +248,7 @@ index 0000000..4173248
 +public:
 +  udev_lightgun_module() : input_module_base(OSD_LIGHTGUNINPUT_PROVIDER, "udev") {
 +    m_ndevices = 0;
++    m_udev = NULL;
 +  }
 +
 +  ~udev_lightgun_module() {
