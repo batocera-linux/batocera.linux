@@ -29,6 +29,7 @@ def generateRetroarchCustom():
     retroarchSettings.save('menu_show_load_content',            '"false"')
     retroarchSettings.save('menu_show_online_updater',          '"false"')
     retroarchSettings.save('menu_show_core_updater',            '"false"')
+    retroarchSettings.save('fps_update_interval',               '"10"')
 
     # Input
     retroarchSettings.save('input_autodetect_enable',           '"false"')
