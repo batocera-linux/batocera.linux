@@ -77,7 +77,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-loader/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-tools/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-samples/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-lists/Config.in" 
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-lists/Config.in"
   endmenu
 
   menu "Network"
@@ -141,6 +141,7 @@ menu "Emulators"
      endmenu
     menu "cores"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-atari800/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-a5200/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-pocketsnes/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-beetle-vb/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-snes9x/Config.in"

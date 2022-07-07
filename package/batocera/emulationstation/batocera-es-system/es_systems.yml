@@ -915,6 +915,7 @@ atari5200:
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+      a5200:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_A5200]    }
 
 atari7800:
   name:       Atari 7800
@@ -2928,7 +2929,7 @@ xrick:
     Put the data.zip in this directory.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
-    
+
 macintosh:
   name:       Macintosh
   manufacturer: Apple
@@ -2983,7 +2984,7 @@ naomi2:
     --------------------------------
     ## DEMUL - CURRENTLY DISABLED ##
     --------------------------------
-    
+
     An alternative is to use Demul with Wine.
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
@@ -3016,7 +3017,7 @@ naomi2:
 
     Controller 1 = 0x100 & 0x200 for the buttons & the 2x analog sticks.
     Controller 2 = 0x101 & 0x201 etc.
-    
+
     Device input hex codes are listed in the appropriate linux kernel input.h depending on the controller type.
     i.e. A gamepad's 'start' button is 0x13b
     Therefore controller 1's start button is 0100013b in hex or 16777531 in decimal.

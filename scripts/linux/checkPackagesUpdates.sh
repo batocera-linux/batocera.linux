@@ -13,6 +13,7 @@ PACKAGES_RETROARCH="retroarch
 
 PACKAGES_LIBRETRO="	libretro-81
 					libretro-atari800
+                    libretro-a5200
 					libretro-beetle-lynx
 					libretro-beetle-ngp
 					libretro-beetle-pce

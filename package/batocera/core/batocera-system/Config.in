@@ -862,6 +862,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Atari 800 computers
 	select BR2_PACKAGE_LIBRETRO_ATARI800    # ALL
 
+    # Atari 5200 computers
+	select BR2_PACKAGE_LIBRETRO_A5200       # ALL
+
 	# Sinclair ZX Spectrum
 	select BR2_PACKAGE_LIBRETRO_FUSE        # ALL
 
