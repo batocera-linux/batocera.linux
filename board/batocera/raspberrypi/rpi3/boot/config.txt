@@ -15,16 +15,14 @@ fixup_file=fixup.dat
 kernel=boot/linux
 initramfs boot/initrd.gz
 
-# GPU memory
-gpu_mem_256=128
-gpu_mem_512=160
-gpu_mem_1024=384
-
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
 # Enable DRM VC4 V3D driver
-dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-v3d,cma-512
 
 # Model 3B, Model 3B+, Model 3A+, Compute Module 3, Compute Module 3+
 [pi3]
