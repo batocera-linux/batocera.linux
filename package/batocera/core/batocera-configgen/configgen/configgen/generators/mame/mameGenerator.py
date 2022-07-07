@@ -221,6 +221,14 @@ class MameGenerator(Generator):
         if len(pluginsToLoad) > 0:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
 
+        # guns
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            commandArray += [ "-lightgunprovider", "udev" ]
+            commandArray += [ "-lightgun_device", "lightgun" ]
+        else:
+            commandArray += [ "-lightgunprovider", "auto" ]
+            commandArray += [ "-lightgun_device", "mouse" ]
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messSysName[messMode] == "" or messMode == -1:
