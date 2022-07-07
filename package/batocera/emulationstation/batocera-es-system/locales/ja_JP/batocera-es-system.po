@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v35beta(2022/06/04)\n"
+"Project-Id-Version: batocera-es v35beta(2022/07/05)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-06-04 12:51+0900\n"
+"PO-Revision-Date: 2022-07-05 13:15+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -16,7 +16,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Force the emulator to run at this resolution."
-msgstr ""
+msgstr "エミュレータを指定解像度で実行します"
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -29,6 +29,7 @@ msgid ""
 "Force the game to render in this aspect ratio. Decorations override this "
 "setting."
 msgstr ""
+"ゲームを指定アスペクト比で表示します。ベゼル装飾はこの設定を上書きします"
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
 msgctxt "game_options"
@@ -64,6 +65,7 @@ msgstr "カスタム"
 msgctxt "game_options"
 msgid "Store past states to rewind to in realtime, if the core supports it."
 msgstr ""
+"コアが対応している場合は、過去の状態を保存してリアルタイムで巻き戻します"
 
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
@@ -84,16 +86,17 @@ msgstr "使用しない"
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
 msgstr ""
+"ゲーム開始時に最新ステートを読込み、ゲーム終了時にステートセーブします"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
-msgstr ""
+msgstr "自動ステート読込でゲームを開始"
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "GAME RENDERING & SHADERS"
-msgstr ""
+msgstr "ゲーム レンダリング & シェーダー"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -153,27 +156,27 @@ msgstr "パフォーマンス"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "HEADS UP DISPLAY CORNER"
-msgstr ""
+msgstr "ヘッドアップディスプレイ位置"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP LEFT (NW)"
-msgstr ""
+msgstr "左上（←↑）"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP RIGHT (NE)"
-msgstr ""
+msgstr "右上（→↑）"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM RIGHT (SE)"
-msgstr ""
+msgstr "右下（→↓）"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM LEFT (SW)"
-msgstr ""
+msgstr "左下（←↓）"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -183,7 +186,7 @@ msgstr "ベゼル上にイメージ画像を表示します"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SHOW TATTOO OVER BEZEL"
-msgstr "ベゼル上にイメージを表示"
+msgstr "ベゼル上にイメージ画像を表示"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -203,7 +206,7 @@ msgstr "カスタム画像"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TATTOO CORNER"
-msgstr "画像表示位置"
+msgstr "イメージ画像表示位置"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -213,7 +216,7 @@ msgstr "カスタム画像(png)のパス"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Shrink/expand tattoo to fit within the bezel's border."
-msgstr "ベゼル内に収まるようにイメージ画像を縮小/拡大します(通常はオフ推奨)"
+msgstr "ベゼル内に収まるようにイメージ画像を縮小/拡大します"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -226,6 +229,8 @@ msgid ""
 "During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
 "libretro cores."
 msgstr ""
+"ゲームプレイ中に、ホットキー+R1で、画面上のテキストを翻訳します(libretroコア"
+"のみ) "
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -318,28 +323,29 @@ msgstr "映像処理(映像スレッド)"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use light guns instead of pads if light guns are connected."
-msgstr ""
+msgstr "システムでガンコンが検出された場合は、パッドの代わりに使用します"
 
 #. TRANSLATION: shared, libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, libretro/flycast, ...
 msgctxt "game_options"
 msgid "LIGHT GUN"
-msgstr ""
+msgstr "ライトガン"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE LIGHT GUNS"
-msgstr ""
+msgstr "ライトガン(ガンコン)を使用"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid ""
 "For emulators and controllers supporting force feedback, scale from 0 to 100%"
 msgstr ""
+"対応するエミュレーターとコントローラーで使用します (調整：0〜100％)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUMBLE GAIN"
-msgstr ""
+msgstr "振動機能 調整"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -439,22 +445,22 @@ msgstr "ジョイスティックハック（ROBOTRON 2084用）"
 #. TRANSLATION: libretro/beetle-saturn, libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, libretro/snes9x, ...
 msgctxt "game_options"
 msgid "Show crosshairs in game"
-msgstr ""
+msgstr "ゲームで照準(十字線)を表示します"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, ...
 msgctxt "game_options"
 msgid "SHOW LIGHT GUN CROSSHAIRS"
-msgstr ""
+msgstr "ライトガン(ガンコン)クロスエアを表示"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "Cross"
-msgstr ""
+msgstr "Ｘ(下のボタン)"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "Dot"
-msgstr ""
+msgstr "ドット"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
@@ -1788,7 +1794,7 @@ msgstr "RGB（鮮明な画像）"
 msgctxt "game_options"
 msgid "Only supported games. Higher settings increase system requirements."
 msgstr ""
-"サポートされているゲームのみ。設定を高くすると、システム要件が増加します"
+"対応しているゲームのみ。設定を高くすると、システム要件が増加します"
 
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
@@ -1838,7 +1844,7 @@ msgstr "同期レンダリング"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 1."
-msgstr ""
+msgstr "プレイヤー1のターゲットカラー"
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -1863,17 +1869,17 @@ msgstr "白"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 2."
-msgstr ""
+msgstr "プレイヤー2のターゲットカラー"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 3."
-msgstr ""
+msgstr "プレイヤー3のターゲットカラー"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "Target color for player 4."
-msgstr ""
+msgstr "プレイヤー4のターゲットカラー"
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -1969,9 +1975,9 @@ msgstr "画面の向き"
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games used the borders."
 msgstr ""
-"多くのゲームの境界線を非表示にします。一部のゲームは境界線を使用していました"
+"多くのゲームの境界線を非表示にします。一部のゲームは境界線を使用しています"
 
-#. TRANSLATION: libretro/fuse, vice
+#. TRANSLATION: libretro/fuse, libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "ZOOM (HIDE BORDERS)"
 msgstr "ズーム（境界線を非表示）"
@@ -2206,6 +2212,8 @@ msgctxt "game_options"
 msgid ""
 "Games may run faster/slower than normal if the incorrect region is selected."
 msgstr ""
+"間違ったリージョンが選択された場合、ゲームは通常より速く/遅く実行される可能性"
+"があります"
 
 #. TRANSLATION: libretro/genesisplusgx, redream
 msgctxt "game_options"
@@ -2215,7 +2223,7 @@ msgstr "リージョン(地域)"
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
 msgid "NTSC-U"
-msgstr ""
+msgstr "NTSC-U"
 
 #. TRANSLATION: libretro/genesisplusgx, duckstation
 msgctxt "game_options"
@@ -2265,7 +2273,7 @@ msgstr "ジョイパッド 6ボタン+チームプレイ"
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
 msgid "Light guns can only be used in port 2."
-msgstr ""
+msgstr "ライトガン(ガンコン)はポート2でのみ使用できます"
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -2280,17 +2288,17 @@ msgstr "コナミ ザ・ジャスティファイアー"
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "CD ADD-ON"
-msgstr ""
+msgstr "CD アドオン"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Sega/Mega CD"
-msgstr ""
+msgstr "セガ/メガCD"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "MegaSD"
-msgstr ""
+msgstr "メガSD"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
@@ -2298,16 +2306,18 @@ msgid ""
 "Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are "
 "not affected."
 msgstr ""
+"CDオーディオのミキシングを調整します。 MSU-MDでは、カートリッジソースの効果音"
+"は影響を受けません"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "CD-DA VOLUME"
-msgstr ""
+msgstr "CD-DA ボリューム"
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Enhanced sound output support for compatible games."
-msgstr "互換性のあるゲームの拡張サウンド出力のサポート"
+msgstr "互換性のあるゲームの拡張サウンド出力に対応"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
@@ -3118,7 +3128,7 @@ msgstr "Hartung Game Master カートリッジ"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "GamePark GP32 SmartMedia cards"
-msgstr ""
+msgstr "GamePark GP32 スマートメディアカード"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -4714,11 +4724,6 @@ msgstr "多くのゲームの境界線を非表示にします。一部のゲー
 
 #. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
-msgid "ZOOM/CROP (HIDE BORDERS)"
-msgstr ""
-
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
 msgid "Auto zoom"
 msgstr "自動ズーム"
 
@@ -5252,7 +5257,7 @@ msgstr "40 MHz"
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
 msgid "Light guns/multitap."
-msgstr ""
+msgstr "ガンコン/マルチタップ"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -5820,42 +5825,42 @@ msgstr "DOOM RES ハック"
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "Remove the padding on the sides of the screen."
-msgstr ""
+msgstr "画面の側面にあるパディングを削除します"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "CROP BORDER"
-msgstr ""
+msgstr "クロップボーダー"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "Always have 6 bullets, 6 dynamite, 6 lives."
-msgstr ""
+msgstr "常に6つの弾丸、6つのダイナマイト、6つの命を持ちます"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "TRAINER MODE"
-msgstr ""
+msgstr "トレーナーモード"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "Nothing can kill Rick, may break the game."
-msgstr ""
+msgstr "リックを殺すことはできず、ゲームを壊す可能性があります"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "INVULNERABILITY MODE"
-msgstr ""
+msgstr "不死身モード"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "Highlight all entities on the game map."
-msgstr ""
+msgstr "マップ上の全エンティティ(実体)を強調表示します"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "EXPOSE MODE"
-msgstr ""
+msgstr "ゲーム公開モード"
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
@@ -5936,12 +5941,12 @@ msgstr "回転を可能にする"
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "Map controller inputs to light gun inputs."
-msgstr ""
+msgstr "コントローラー入力をガンコン入力に割り当てます"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "CONTROLLER TO LIGHT GUN"
-msgstr ""
+msgstr "銃操作をコントローラーに割り当て"
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6229,7 +6234,7 @@ msgstr "ブレンドスプライト（SINGE）"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Use with Singe HD light gun games."
-msgstr ""
+msgstr "Singe HD ライトガンゲームで使用します"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6252,6 +6257,8 @@ msgid ""
 "Singe automatically interprets joystick axis change as mouse movement, "
 "useful for light gun games."
 msgstr ""
+"Singeは、ジョイスティックの軸の変化をマウスの動きとして自動的に判断します。ラ"
+"イトガンゲームに役立ちます"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6261,12 +6268,12 @@ msgstr "ジョイスティックの感度"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Hide crosshairs in supported games e.g. ActionMax."
-msgstr "サポートしているゲームで十字線を非表示にします(ActionMax)"
+msgstr "対応しているゲームで十字線を隠します(例:ActionMax)"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "HIDE LIGHT GUN CROSSHAIRS"
-msgstr ""
+msgstr "ガンコンクロスエア(照準)を非表示"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -8552,7 +8559,7 @@ msgstr "Accel"
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "Fix screen tearing, but may drop frames."
-msgstr ""
+msgstr "画面のティアリングを修正しますが、フレーム落ちする可能性があります"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -8833,11 +8840,13 @@ msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
 msgstr ""
+"フレームスキップしてパフォーマンスを向上させますが、動きの途切れ、視覚的な不"
+"具合が出る可能性があります"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
 msgid "FRAMESKIP TYPE"
-msgstr ""
+msgstr "フレームスキップ タイプ"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -8845,11 +8854,13 @@ msgid ""
 "When frameskip type is on automatic or manual, skip up to this many frames "
 "consecutively."
 msgstr ""
+"フレームスキップタイプが自動または手動の場合、この数のフレームまで連続してス"
+"キップします"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
 msgid "FRAMESKIP VALUE"
-msgstr ""
+msgstr "フレームスキップ 値"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -8867,11 +8878,13 @@ msgid ""
 "Force 3D geometry to always render on the top screen. Useful for single-"
 "screen devices/games."
 msgstr ""
+"3Dジオメトリを常に最前画面にレンダリングするように強制します。シングルスク"
+"リーンデバイス/ゲームに便利です"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
 msgid "KEEP MAIN SCREEN ON TOP"
-msgstr ""
+msgstr "メイン画面を最前面に表示"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -9124,127 +9137,62 @@ msgstr "RAW入力を有効"
 #. TRANSLATION: ionfury, raze
 msgctxt "game_options"
 msgid "Skip introduction animations and logos; default is show"
-msgstr ""
+msgstr "イントロビデオとロゴをスキップします。通常は「表示」"
 
 #. TRANSLATION: ionfury, raze
 msgctxt "game_options"
 msgid "SKIP INTRO VIDEOS"
-msgstr ""
+msgstr "イントロビデオをスキップ"
 
-#~ msgctxt "game_options"
-#~ msgid "LIGHTGUN"
-#~ msgstr "ライトガン"
+msgctxt "game_options"
+msgid "If the D-Pad is oriented incorrectly for your controller."
+msgstr "方向パッドが正しい方向にいかない場合に選択します"
 
-#~ msgctxt "game_options"
-#~ msgid "If the D-Pad is oriented incorrectly for your controller."
-#~ msgstr "方向パッドが正しい方向にいかない場合に選択します"
+msgctxt "game_options"
+msgid "DS3 Orientation"
+msgstr "デュアルショック3 構成"
 
-#~ msgctxt "game_options"
-#~ msgid "ALT DPAD MODE"
-#~ msgstr "ALT DPAD モード"
+msgctxt "game_options"
+msgid "X360 Orientation"
+msgstr "X360 構成"
 
-#~ msgctxt "game_options"
-#~ msgid "DS3 Orientation"
-#~ msgstr "デュアルショック3 構成"
+msgctxt "game_options"
+msgid "Fix main 2D screen to follow action."
+msgstr "アクションに従うようにメインの2D画面を修正します"
 
-#~ msgctxt "game_options"
-#~ msgid "X360 Orientation"
-#~ msgstr "X360 構成"
+msgctxt "game_options"
+msgid "NORTH WEST"
+msgstr "左上"
 
-#~ msgctxt "game_options"
-#~ msgid "Fix main 2D screen to follow action."
-#~ msgstr "アクションに従うようにメインの2D画面を修正します"
+msgctxt "game_options"
+msgid "NORTH EAST"
+msgstr "右上"
 
-#~ msgctxt "game_options"
-#~ msgid "FIX 2D SCREEN"
-#~ msgstr "2D画面を修正"
+msgctxt "game_options"
+msgid "SOUTH EAST"
+msgstr "右下"
 
-#~ msgctxt "game_options"
-#~ msgid "AUTO SAVE/LOAD"
-#~ msgstr "オートセーブ/ロード"
+msgctxt "game_options"
+msgid "SOUTH WEST"
+msgstr "左下"
 
-#~ msgctxt "game_options"
-#~ msgid "GAME RENDERING"
-#~ msgstr "ゲーム レンダリング"
+msgctxt "game_options"
+msgid "Use guns"
+msgstr "銃(ガンコン)を使用"
 
-#~ msgctxt "game_options"
-#~ msgid "NORTH WEST"
-#~ msgstr "左上"
+msgctxt "game_options"
+msgid "Lightgun device must be selected on at least one port."
+msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
 
-#~ msgctxt "game_options"
-#~ msgid "NORTH EAST"
-#~ msgstr "右上"
+msgctxt "game_options"
+msgid "May help to fix choppy audio on weaker CPUs."
+msgstr "弱いCPUでオーディオの修正に有効な場合があります"
 
-#~ msgctxt "game_options"
-#~ msgid "SOUTH EAST"
-#~ msgstr "右下"
+msgctxt "game_options"
+msgid ""
+"Enable this option if you get missing graphics or broken lighting ingame."
+msgstr "ゲーム内で映像や明るさがおかしい場合は、有効にします"
 
-#~ msgctxt "game_options"
-#~ msgid "SOUTH WEST"
-#~ msgstr "左下"
-
-#~ msgctxt "game_options"
-#~ msgid "Use guns instead of pads if guns are detected on the system"
-#~ msgstr ""
-#~ "システムで銃が検出された場合は、パッドの代わりに銃を使用してください"
-
-#~ msgctxt "game_options"
-#~ msgid "Use guns"
-#~ msgstr "銃(ガンコン)を使用"
-
-#~ msgctxt "game_options"
-#~ msgid "Lightgun device must be selected on at least one port."
-#~ msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
-
-#~ msgctxt "game_options"
-#~ msgid "SHOW LIGHTGUN CROSSHAIRS"
-#~ msgstr "ガンコンクロスエア(照準)を表示"
-
-#~ msgctxt "game_options"
-#~ msgid "Target color for player 1"
-#~ msgstr "プレイヤー1のターゲットカラー"
-
-#~ msgctxt "game_options"
-#~ msgid "Lightguns can only be used in port 2."
-#~ msgstr "ライトガン(ガンコン)はポート2でのみ使用できます"
-
-#~ msgctxt "game_options"
-#~ msgid "Lightguns/multitap."
-#~ msgstr "ガンコン/マルチタップ"
-
-#~ msgctxt "game_options"
-#~ msgid "Map controller inputs to lightgun inputs"
-#~ msgstr "コントローラー入力をガンコン入力に割り当てます"
-
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER TO LIGHTGUN"
-#~ msgstr "銃操作をコントローラーに割り当て"
-
-#~ msgctxt "game_options"
-#~ msgid "Use with Singe HD lightgun games."
-#~ msgstr "Singe HD ライトガンゲームで使用します"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Singe automatically interprets joystick axis change as mouse movement, "
-#~ "useful for lightgun games."
-#~ msgstr ""
-#~ "Singeは、ジョイスティックの軸の変化をマウスの動きとして自動的に判断しま"
-#~ "す。ライトガンゲームに役立ちます"
-
-#~ msgctxt "game_options"
-#~ msgid "HIDE LIGHTGUN CROSSHAIRS"
-#~ msgstr "ガンコンクロスエア(照準)を非表示"
-
-#~ msgctxt "game_options"
-#~ msgid "May help to fix choppy audio on weaker CPUs."
-#~ msgstr "弱いCPUでオーディオの修正に有効な場合があります"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Enable this option if you get missing graphics or broken lighting ingame."
-#~ msgstr "ゲーム内で映像や明るさがおかしい場合は、有効にします"
-
-#~ msgctxt "game_options"
-#~ msgid "Adjust Singe joystick sensitivity."
-#~ msgstr "Singeジョイスティックの感度を調整します"
+msgctxt "game_options"
+msgid "Adjust Singe joystick sensitivity."
+msgstr "Singeジョイスティックの感度を調整します"
