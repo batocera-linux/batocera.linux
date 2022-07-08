@@ -1,0 +1,8 @@
+#!/bin/sh
+
+CASE_MODEL=$(cat /var/run/powerswitch-by-udevrule 2>/dev/null | head -n1 | cut -d " " -f1)
+
+if [[ "$CASE_MODEL" == "RETROFLAG_GPI" ]]
+then
+    /usr/bin/batocera-settings-set "display.rotate" 1
+fi
