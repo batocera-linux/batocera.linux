@@ -24,9 +24,14 @@ import os
 import hashlib
 import math
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 2 and len(sys.argv) != 3:
     print("mising device argument")
     exit(1)
+
+if len(sys.argv) == 3:
+    bCalibration = int(sys.argv[2])
+else:
+    bCalibration = ecodes.BTN_RIGHT
 
 # input
 devpath = sys.argv[1]
@@ -230,7 +235,7 @@ try:
                                 if needSync:
                                     target.syn()
                                     needSync = False
-                            elif event.type == ecodes.EV_KEY and event.code == ecodes.BTN_RIGHT:
+                            elif event.type == ecodes.EV_KEY and event.code == bCalibration:
                                 if event.value == 1:
                                     calibration_timeChecker = time.time()
                                     target.write(event.type, event.code, event.value)
