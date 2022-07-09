@@ -22,6 +22,9 @@
 #v2.2 - add PISTATION_LCD support - @dmanlfc
 #by cyperghost 11.11.2019
 
+# Configurations file
+GRPICONFFILE="/boot/userconfig.txt"
+
 ### Array for Powerdevices, add/remove entries here
 
 powerdevices=(
@@ -172,9 +175,9 @@ function onoffshim_start()
 {
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
-    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "${GRPICONFFILE}"; then
         mount -o remount, rw /boot
-        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "${GRPICONFFILE}"
     fi
 
     # This is Button command (GPIO17 default)
@@ -207,9 +210,9 @@ function onoffshim_config()
 {
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
-    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "${GRPICONFFILE}"; then
         mount -o remount, rw /boot
-        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "${GRPICONFFILE}"
     fi
 }
 
@@ -218,19 +221,19 @@ function onoffshim_config()
 function powerhat_start()
 {
     #Check if dtooverlay is setted in /boot/config.txt
-    #This is needed to do proper restarts/shutdowns  
+    #This is needed to do proper restarts/shutdowns
     # (GPIO18 default)
-    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "${GRPICONFFILE}"; then
         mount -o remount,rw /boot
-        echo "" >> "/boot/config.txt"
-        echo "[powerhat]" >> "/boot/config.txt"
-        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "/boot/config.txt"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[powerhat]" >> "${GRPICONFFILE}"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "${GRPICONFFILE}"
     fi
 
     # This is Button command (GPIO17 default)
-    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "${GRPICONFFILE}"; then
         mount -o remount,rw /boot
-        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "${GRPICONFFILE}"
     fi
 }
 
@@ -243,18 +246,18 @@ function powerhat_stop()
 function powerhat_config()
 {
     #Check if dtooverlay is setted in /boot/config.txt
-    #This is needed to do proper restarts/shutdowns  
+    #This is needed to do proper restarts/shutdowns
     # (GPIO18 default)
-    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "${GRPICONFFILE}"; then
         mount -o remount,rw /boot
-        echo "" >> "/boot/config.txt"
-        echo "[powerhat]" >> "/boot/config.txt"
-        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "/boot/config.txt"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[powerhat]" >> "${GRPICONFFILE}"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "${GRPICONFFILE}"
     fi
     # This is Button command (GPIO17 default)
-    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "${GRPICONFFILE}"; then
         mount -o remount,rw /boot
-        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "${GRPICONFFILE}"
     fi
 }
 
@@ -365,10 +368,10 @@ function retroflag_start()
     #Check if dtooverlay is setted in /boot/config -- Do this arch related!
     case $(cat /usr/share/batocera/batocera.arch) in
         rpi4)
-            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "${GRPICONFFILE}"; then
                 mount -o remount, rw /boot
-                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
-                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "${GRPICONFFILE}"
+                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "${GRPICONFFILE}"
             fi
         ;;
     esac
@@ -394,10 +397,10 @@ function retroflag_config()
     #Check if dtooverlay is setted in /boot/config -- Do this arch related!
     case $(cat /usr/share/batocera/batocera.arch) in
         rpi4)
-            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "${GRPICONFFILE}"; then
                 mount -o remount, rw /boot
-                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
-                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "${GRPICONFFILE}"
+                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "${GRPICONFFILE}"
             fi
         ;;
     esac
@@ -406,17 +409,17 @@ function retroflag_config()
 #https://www.argon40.com/argon-one-raspberry-pi-4-case.html
 function argonone_start()
 {
-    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+    if ! grep -q "^dtparam=i2c_arm=on" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+         echo "dtparam=i2c_arm=on" >> "${GRPICONFFILE}"
     fi
-    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
+    if ! grep -q "^dtparam=i2c-1=on" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "dtparam=i2c-1=on" >> "/boot/config.txt"
+         echo "dtparam=i2c-1=on" >> "${GRPICONFFILE}"
     fi
-    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
+    if ! grep -q "^enable_uart=1" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "enable_uart=1" >> "/boot/config.txt"
+         echo "enable_uart=1" >> "${GRPICONFFILE}"
     fi
     modprobe i2c-dev
     modprobe i2c-bcm2708
@@ -443,17 +446,17 @@ function argonone_stop()
 
 function argonone_config()
 {
-    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+    if ! grep -q "^dtparam=i2c_arm=on" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+         echo "dtparam=i2c_arm=on" >> "${GRPICONFFILE}"
     fi
-    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
+    if ! grep -q "^dtparam=i2c-1=on" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "dtparam=i2c-1=on" >> "/boot/config.txt"
+         echo "dtparam=i2c-1=on" >> "${GRPICONFFILE}"
     fi
-    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
+    if ! grep -q "^enable_uart=1" "${GRPICONFFILE}"; then
          mount -o remount, rw /boot
-         echo "enable_uart=1" >> "/boot/config.txt"
+         echo "enable_uart=1" >> "${GRPICONFFILE}"
     fi
 }
 
@@ -484,20 +487,20 @@ function kintaro_config()
 function deskpipro_start()
 {
     # Check config.txt for fan & front USB
-    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "${GRPICONFFILE}"; then
         echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
         mount -o remount, rw /boot
         # Remove other dtoverlay=dwc2 type configs to avoid conflicts
-        sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
-        echo "" >> "/boot/config.txt"
-        echo "[Deskpi Pro Case]" >> "/boot/config.txt"
-        echo "dtoverlay=dwc2,dr_mode=host" >> "/boot/config.txt"
+        sed -i '/dtoverlay=dwc2*/d' "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[Deskpi Pro Case]" >> "${GRPICONFFILE}"
+        echo "dtoverlay=dwc2,dr_mode=host" >> "${GRPICONFFILE}"
     fi
     # Check config.txt for Infrared
-    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "${GRPICONFFILE}"; then
         echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
         mount -o remount, rw /boot
-        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' "${GRPICONFFILE}"
     fi
     # Add Infrared parameters
     if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
@@ -526,20 +529,20 @@ function deskpipro_stop()
 function deskpipro_config()
 {
     # Check config.txt for fan & front USB
-    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
+    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "${GRPICONFFILE}"; then
         echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
         mount -o remount, rw /boot
         # Remove other dtoverlay=dwc2 type configs to avoid conflicts
-        sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
-        echo "" >> "/boot/config.txt"
-        echo "[Deskpi Pro Case]" >> "/boot/config.txt"
-        echo "dtoverlay=dwc2,dr_mode=host" >> "/boot/config.txt"
+        sed -i '/dtoverlay=dwc2*/d' "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[Deskpi Pro Case]" >> "${GRPICONFFILE}"
+        echo "dtoverlay=dwc2,dr_mode=host" >> "${GRPICONFFILE}"
     fi
     # Check config.txt for Infrared
-    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "${GRPICONFFILE}"; then
         echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
         mount -o remount, rw /boot
-        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' "${GRPICONFFILE}"
     fi
     # Add Infrared parameters
     if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
@@ -561,30 +564,30 @@ function deskpipro_config()
 function pistation_start()
 {
     # Check config.txt for fkms
-    if ! grep -Fxq "vc4-fkms-v3d-pi4" "/boot/config.txt"; then
+    if ! grep -Fxq "vc4-fkms-v3d-pi4" "${GRPICONFFILE}"; then
         echo "*** Adding PiStation LCD kms config.txt parameter ***"
         mount -o remount, rw /boot
         # Remove default vc4-kms-v3d-pi4 type config to avoid conflict
-        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' /boot/config.txt
-        echo "" >> "/boot/config.txt"
-        echo "[PiStation LCD]" >> "/boot/config.txt"
-        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "/boot/config.txt"
-        echo "vc4-fkms-v3d-pi4" >> "/boot/config.txt"
+        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[PiStation LCD]" >> "${GRPICONFFILE}"
+        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "${GRPICONFFILE}"
+        echo "vc4-fkms-v3d-pi4" >> "${GRPICONFFILE}"
         mount -o remount, ro /boot
     fi
     # Check config.txt for EDID
-    if ! grep -Fxq "[EDID=YDK-YD2680]" "/boot/config.txt"; then
+    if ! grep -Fxq "[EDID=YDK-YD2680]" "${GRPICONFFILE}"; then
         echo "*** Adding PiStation LCD EDID config.txt parameter ***"
         mount -o remount, rw /boot
-        echo "" >> "/boot/config.txt"
-        echo "# PiStation LCD EDID" >> "/boot/config.txt"
-        echo "# remove the section below if no longer needed" >> "/boot/config.txt"
-        echo "[EDID=YDK-YD2680]" >> "/boot/config.txt"
-        echo "hdmi_group=2" >> "/boot/config.txt"
-        echo "hdmi_mode=87" >> "/boot/config.txt"
-        echo "hdmi_drive=2" >> "/boot/config.txt"
-        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "/boot/config.txt"
-        echo "" >> "/boot/config.txt"
+        echo "" >> "${GRPICONFFILE}"
+        echo "# PiStation LCD EDID" >> "${GRPICONFFILE}"
+        echo "# remove the section below if no longer needed" >> "${GRPICONFFILE}"
+        echo "[EDID=YDK-YD2680]" >> "${GRPICONFFILE}"
+        echo "hdmi_group=2" >> "${GRPICONFFILE}"
+        echo "hdmi_mode=87" >> "${GRPICONFFILE}"
+        echo "hdmi_drive=2" >> "${GRPICONFFILE}"
+        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
         mount -o remount, ro /boot
     fi
 }
@@ -597,30 +600,30 @@ function pistation_stop()
 function pistation_config()
 {
     # Check config.txt for fkms
-    if ! grep -Fxq "vc4-fkms-v3d-pi4" "/boot/config.txt"; then
+    if ! grep -Fxq "vc4-fkms-v3d-pi4" "${GRPICONFFILE}"; then
         echo "*** Adding PiStation LCD kms config.txt parameter ***"
         mount -o remount, rw /boot
         # Remove default vc4-kms-v3d-pi4 type config to avoid conflict
-        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' /boot/config.txt
-        echo "" >> "/boot/config.txt"
-        echo "[PiStation LCD]" >> "/boot/config.txt"
-        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "/boot/config.txt"
-        echo "vc4-fkms-v3d-pi4" >> "/boot/config.txt"
+        sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
+        echo "[PiStation LCD]" >> "${GRPICONFFILE}"
+        echo "# we have the use 'fake' kms for the PiStation LCD panel" >> "${GRPICONFFILE}"
+        echo "vc4-fkms-v3d-pi4" >> "${GRPICONFFILE}"
         mount -o remount, ro /boot
     fi
     # Check config.txt for EDID
-    if ! grep -Fxq "[EDID=YDK-YD2680]" "/boot/config.txt"; then
+    if ! grep -Fxq "[EDID=YDK-YD2680]" "${GRPICONFFILE}"; then
         echo "*** Adding PiStation LCD EDID config.txt parameter ***"
         mount -o remount, rw /boot
-        echo "" >> "/boot/config.txt"
-        echo "# PiStation LCD EDID" >> "/boot/config.txt"
-        echo "# remove the section below if no longer needed" >> "/boot/config.txt"
-        echo "[EDID=YDK-YD2680]" >> "/boot/config.txt"
-        echo "hdmi_group=2" >> "/boot/config.txt"
-        echo "hdmi_mode=87" >> "/boot/config.txt"
-        echo "hdmi_drive=2" >> "/boot/config.txt"
-        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "/boot/config.txt"
-        echo "" >> "/boot/config.txt"
+        echo "" >> "${GRPICONFFILE}"
+        echo "# PiStation LCD EDID" >> "${GRPICONFFILE}"
+        echo "# remove the section below if no longer needed" >> "${GRPICONFFILE}"
+        echo "[EDID=YDK-YD2680]" >> "${GRPICONFFILE}"
+        echo "hdmi_group=2" >> "${GRPICONFFILE}"
+        echo "hdmi_mode=87" >> "${GRPICONFFILE}"
+        echo "hdmi_drive=2" >> "${GRPICONFFILE}"
+        echo "hdmi_cvt=800 480 60 6 0 0 0" >> "${GRPICONFFILE}"
+        echo "" >> "${GRPICONFFILE}"
         mount -o remount, ro /boot
     fi
 }
@@ -628,8 +631,7 @@ function pistation_config()
 #https://www.experimentalpi.com/PiBoy-DMG--Kit_p_18.html
 function piboy_start()
 {
-    PIBOY_CONFIG_FILE=/boot/config.txt
-    PIBOY_CHECK=$(tail "${PIBOY_CONFIG_FILE}" | grep PIBOY | sed 's/PIBOY=//g')
+    PIBOY_CHECK=$(tail "${GRPICONFFILE}" | grep PIBOY | sed 's/PIBOY=//g')
     PIBOY_CONFIG='
 # ====== PiBoy Case setup section =====
 avoid_warnings=2
@@ -671,9 +673,9 @@ PIBOY=true
     else
         echo "Check Error Piboy is not installed"
         mount -o remount,rw /boot
-        sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' /boot/config.txt
-        sed -i 's/dtoverlay=vc4-fkms-v3d/#dtoverlay=vc4-fkms-v3d/g' /boot/config.txt
-        echo -e "${PIBOY_CONFIG}" >> "${PIBOY_CONFIG_FILE}" || exit 1
+        sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' "${GRPICONFFILE}"
+        sed -i 's/dtoverlay=vc4-fkms-v3d/#dtoverlay=vc4-fkms-v3d/g' "${GRPICONFFILE}"
+        echo -e "${PIBOY_CONFIG}" >> "${GRPICONFFILE}" || exit 1
         mount -o remount,ro /boot
         shutdown -h now
     fi
