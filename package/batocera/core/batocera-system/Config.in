@@ -563,7 +563,7 @@ config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 
 	# Flash Player Emulator
 	select BR2_PACKAGE_RUFFLE           if BR2_PACKAGE_XORG7 && BR2_PACKAGE_BATOCERA_TARGET_X86_64 # need to be configured to support crosscompilation
-	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_XORG7 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
@@ -618,7 +618,6 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	# Dreamcast / Naomi / Atomiswave emulation
 	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
@@ -626,10 +625,9 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY   && \
 												!BR2_PACKAGE_BATOCERA_TARGET_ODIN
-	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
 	select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_RPI4
@@ -667,7 +665,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 
 	# RetroArch MAME derivatives
 	select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS   # ALL
-	select BR2_PACKAGE_LIBRETRO_IMAME           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 # IMAME
+	select BR2_PACKAGE_LIBRETRO_IMAME           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # IMAME
 	select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # MAME2010
     select BR2_PACKAGE_LIBRETRO_MAME            if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
@@ -722,12 +720,10 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 	# PSP
 	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	select BR2_PACKAGE_LIBRETRO_PPSSPP          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	# Neo Geo Pocket
 	select BR2_PACKAGE_LIBRETRO_BEETLE_NGP      # ALL
@@ -865,6 +861,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Atari 800 computers
 	select BR2_PACKAGE_LIBRETRO_ATARI800    # ALL
 
+    # Atari 5200 computers
+	select BR2_PACKAGE_LIBRETRO_A5200       # ALL
+
 	# Sinclair ZX Spectrum
 	select BR2_PACKAGE_LIBRETRO_FUSE        # ALL
 
@@ -916,9 +915,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	bool "batocera.linux console emulators/cores"
 
 	# Nintendo 64
-	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # mupen64 (n64) runs too slow on these platforms
+	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64) runs too slow on these platforms
 
-	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	select BR2_PACKAGE_LIBRETRO_PARALLEL_N64		if 	BR2_PACKAGE_BATOCERA_TARGET_X86_64  || \
 														BR2_PACKAGE_BATOCERA_TARGET_RK3288	|| \

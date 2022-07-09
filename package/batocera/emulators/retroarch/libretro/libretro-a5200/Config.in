@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_A5200
+        bool "libretro-a5200"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro ATARI5200 emulator core.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_A5200 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
