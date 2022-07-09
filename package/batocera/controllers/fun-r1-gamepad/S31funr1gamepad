@@ -1,0 +1,42 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+	# First we check whether this is a FUN R1 board before running the driver
+	V_BOARD=$(cat /boot/boot/batocera.board)
+
+	if [ "$V_BOARD" = "fun-r1" ]
+	then
+		# The FUN R1 includes only COIN BUTTON and another BACK one
+		# The controllers.fun-r1-gamepad.back-is-2p-coin variable determines whether the system should
+		# assign the BACK key to 2P COIN button
+		# If the variable is not set, the default behavior is BACK is BTN_BACK
+		# If the variable is set to "2", the BACK button becomes 2P COIN button
+	
+    		BACK_IS_2P_COIN="$(/usr/bin/batocera-settings-get controllers.fun-r1-gamepad.back-is-2p-coin)"
+	
+		if  [ "$BACK_IS_2P_COIN" != "2" ] || [ -z $BACK_IS_2P_COIN ]
+		then
+			echo "FUN R1: BACK button is BACK"
+			BACK_IS_2P_COIN="1"
+		else
+			echo "FUN R1: BACK button is 2P COIN"
+			BACK_IS_2P_COIN="2"
+		fi
+		
+		/usr/bin/fun_r1_gamepad $BACK_IS_2P_COIN &
+	fi
+	;;
+    stop)
+        killall fun_r1_gamepad >/dev/null 2>&1
+        ;;
+    restart|reload)
+        "$0" stop
+        "$0" start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
