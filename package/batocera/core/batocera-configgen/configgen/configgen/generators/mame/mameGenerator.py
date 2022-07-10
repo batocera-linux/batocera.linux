@@ -225,6 +225,7 @@ class MameGenerator(Generator):
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
             commandArray += [ "-lightgunprovider", "udev" ]
             commandArray += [ "-lightgun_device", "lightgun" ]
+            commandArray += [ "-adstick_device", "lightgun" ]
         else:
             commandArray += [ "-lightgunprovider", "auto" ]
             commandArray += [ "-lightgun_device", "mouse" ]

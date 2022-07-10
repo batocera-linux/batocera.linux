@@ -225,6 +225,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
             mappings_use["JOYSTICK_LEFT"] = "left"
             mappings_use["JOYSTICK_RIGHT"] = "right"
 
+        addCommonPlayerPorts(config, xml_input, nplayer)
+
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
@@ -757,3 +759,19 @@ def removeSection(config, xml_root, name):
     for i in range(0, len(xml_section)):
         old = xml_root.removeChild(xml_section[i])
         old.unlink()
+
+def addCommonPlayerPorts(config, xml_input, nplayer):
+    # adstick for guns
+    for axis in ["X", "Y"]:
+        nanalog = 1 if axis == "X" else 2
+        xml_port = config.createElement("port")
+        xml_port.setAttribute("tag", ":mainpcb:ANALOG{}".format(nanalog))
+        xml_port.setAttribute("type", "P{}_AD_STICK_{}".format(nplayer, axis))
+        xml_port.setAttribute("mask", "255")
+        xml_port.setAttribute("defvalue", "128")
+        xml_newseq = config.createElement("newseq")
+        xml_newseq.setAttribute("type", "standard")
+        xml_port.appendChild(xml_newseq)
+        value = config.createTextNode("GUNCODE_{}_{}AXIS".format(nplayer, axis))
+        xml_newseq.appendChild(value)
+        xml_input.appendChild(xml_port)
