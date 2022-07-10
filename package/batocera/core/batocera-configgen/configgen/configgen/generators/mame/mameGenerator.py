@@ -249,6 +249,15 @@ class MameGenerator(Generator):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandArray += ["-ioport:peb:slot3", "speech"]
 
+            #Laser 310 Memory Expansion & Joystick
+            if system.name == "laser310":
+                commandArray += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandArray += ["-mem", laser310mem]
+
             # BBC Joystick
             if system.name == "bbc":
                 if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':

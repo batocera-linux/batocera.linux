@@ -107,6 +107,15 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
 
+            #Laser 310 Memory Expansion & joystick
+            if system.name == "laser310":
+                commandLine += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandLine += ["-mem", laser310mem]
+
             # BBC Joystick
             if system.name == "bbc":
                 if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':

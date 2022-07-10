@@ -2457,6 +2457,21 @@ crvision:
   comment_en: |
           Requires MAME BIOS file crvision.zip
 
+laser310:
+  name:       Laser 310
+  manufacturer: VTech
+  release: 1984
+  hardware: computer
+  extensions: [vz, wav, cas, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file laser310.zip
+          Using snapshot (.vz) files is recommended.
+
 socrates:
   name:       Socrates
   manufacturer: VTech
