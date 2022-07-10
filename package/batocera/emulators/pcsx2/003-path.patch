@@ -62,3 +62,12 @@ index 507348e73..71cd04d64 100644
  	}
  
  	wxDirName GetTextures()
+@@ -1092,7 +1092,7 @@ void RelocateLogfile()
+ {
+ 	g_Conf->Folders.Logs.Mkdir();
+ 
+-	std::string newlogname(StringUtil::wxStringToUTF8String(Path::CombineWx(g_Conf->Folders.Logs.ToString(), L"emuLog.txt")));
++	std::string newlogname(StringUtil::wxStringToUTF8String(Path::CombineWx(g_Conf->Folders.Logs.ToString(), L"PCSX2-emuLog.txt")));
+ 
+ 	if ((emuLog != NULL) && (emuLogName != newlogname))
+ 	{
