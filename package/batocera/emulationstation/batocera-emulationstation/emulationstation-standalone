@@ -32,6 +32,32 @@ do
     batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
     ###################
 
+    ### rotation ###
+    display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+    EXTRA_OPTS=
+    if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
+    then
+	case "${display_rotate}" in
+	    "1")
+		xrandr --output "${OUTPUT}" --rotate right
+		;;
+	    "2")
+		xrandr --output "${OUTPUT}" --rotate inverted
+		;;
+	    "3")
+		xrandr --output "${OUTPUT}" --rotate left
+		;;
+	    *)
+		# in case of reboot of es
+		xrandr --output "${OUTPUT}" --rotate normal
+	esac
+    else
+	if test -n "${display_rotate}"; then
+	    EXTRA_OPTS="--screenrotate ${display_rotate}"
+	fi
+    fi
+
     ### resolution ###
     bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     if test -z "${bootresolution}"
@@ -58,32 +84,6 @@ do
     test -z "${FRAMERATE}" && FRAMERATE=60
     which xrandr && xrandr -r "${FRAMERATE}"
     ###################
-
-    ### rotation ###
-    display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
-    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-    EXTRA_OPTS=
-    if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
-    then
-	case "${display_rotate}" in
-	    "1")
-		xrandr --output "${OUTPUT}" --rotate right
-		;;
-	    "2")
-		xrandr --output "${OUTPUT}" --rotate inverted
-		;;
-	    "3")
-		xrandr --output "${OUTPUT}" --rotate left
-		;;
-	    *)
-		# in case of reboot of es
-		xrandr --output "${OUTPUT}" --rotate normal
-	esac
-    else
-	if test -n "${display_rotate}"; then
-	    EXTRA_OPTS="--screenrotate ${display_rotate}"
-	fi
-    fi
 
     forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
     if test -n "${forcedresolution}"
