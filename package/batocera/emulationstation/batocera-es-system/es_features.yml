@@ -2458,6 +2458,44 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         laser310:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":                         none
+                          "Dick Smith Electronics VZ-200/300 cassettes": vz_cass
+                          "Dick Smith Electronics VZ-200/300 snapshots": vz_snap
+                  memslot:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEMORY SLOT
+                      description: Choose hardware for the memory expansion slot
+                      choices:
+                          "Laser 310/VZ-300 16k Memory":   laser310_16k
+                          "Laser/VZ 64k Memory (Default)": laser_64k
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "Cassette": cass
+                          "Snapshot": snap
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          macintosh:
               cfeatures:
                   softList:
@@ -7661,6 +7699,44 @@ mame:
                 pergamecfg:
                     group: ADVANCED OPTIONS
                     prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       laser310:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":                         none
+                        "Dick Smith Electronics VZ-200/300 cassettes": vz_cass
+                        "Dick Smith Electronics VZ-200/300 snapshots": vz_snap
+                memslot:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEMORY SLOT
+                    description: Choose hardware for the memory expansion slot
+                    choices:
+                        "Laser 310/VZ-300 16k Memory":   laser310_16k
+                        "Laser/VZ 64k Memory (Default)": laser_64k
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Cassette": cass
+                        "Snapshot": snap
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM CONFIG
                     description: Enable per-game custom configuration via MAME menu.
                     choices:
                         "On":  1
