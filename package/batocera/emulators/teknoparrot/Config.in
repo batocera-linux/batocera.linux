@@ -1,0 +1,8 @@
+config BR2_PACKAGE_TEKNOPARROT
+        bool "teknoparrot"
+        depends on BR2_x86_64
+        depends on BR2_PACKAGE_WINE_LUTRIS
+        help
+          TeknoParrot is a software package allowing you to run selected PC-based arcade titles.
+          
+          https://teknoparrot.com/

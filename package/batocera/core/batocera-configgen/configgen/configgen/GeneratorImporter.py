@@ -270,6 +270,10 @@ def getGenerator(emulator):
     if emulator == "raze":
         from generators.raze.razeGenerator import RazeGenerator
         return RazeGenerator()
+    
+    if emulator == 'teknoparrot':
+        from generators.teknoparrot.teknoparrotGenerator import TeknoParrotGenerator
+        return TeknoParrotGenerator()
 
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator

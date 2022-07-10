@@ -3449,3 +3449,18 @@ raze:
       CON   = PLATOONL.DEF
     
     For mod support and troubleshooting, please visit the wiki for more information.
+
+teknoparrot:
+  name: TeknoParrot
+  manufacturer: Arcade
+  release:
+  hardware: arcade
+  extensions: [xml]
+  platform: arcade
+  emulators:
+    teknoparrot:
+      teknoparrot: { requireAnyOf: [BR2_PACKAGE_TEKNOPARROT] }
+  comment_en: |
+    ---------------------------------
+    ## TEKNOPARROT IMPORTANT INFO ##
+    ---------------------------------

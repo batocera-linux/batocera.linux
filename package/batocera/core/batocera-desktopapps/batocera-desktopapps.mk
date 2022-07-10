@@ -141,6 +141,13 @@ ifeq ($(BR2_PACKAGE_XENIA),y)
   BATOCERA_DESKTOPAPPS_ICONS   += xenia.png
 endif
 
+# teknoparrot
+ifeq ($(BR2_PACKAGE_TEKNOPARROT),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-teknoparrot
+  BATOCERA_DESKTOPAPPS_APPS    += teknoparrot-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += teknoparrot.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
