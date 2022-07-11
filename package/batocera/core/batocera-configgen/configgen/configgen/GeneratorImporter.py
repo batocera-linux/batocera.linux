@@ -263,9 +263,9 @@ def getGenerator(emulator):
         from generators.gzdoom.gzdoomGenerator import GZDoomGenerator
         return GZDoomGenerator()
 
-    if emulator == "ionfury":
-        from generators.ionfury.ionfuryGenerator import IonFuryGenerator
-        return IonFuryGenerator()
+    if emulator == "eduke32":
+        from generators.eduke32.eduke32Generator import EDuke32Generator
+        return EDuke32Generator()
 
     if emulator == "raze":
         from generators.raze.razeGenerator import RazeGenerator

@@ -3,7 +3,7 @@
         {
             "trigger": ["hotkey", "start"],
             "type": "exec",
-            "target": "killall -9 ionfury"
+            "target": "killall -9 eduke32; killall -9 fury"
         },
         {
             "trigger": ["hotkey", "y"],

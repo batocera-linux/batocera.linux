@@ -4,8 +4,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/source/core/gameconfigfile.cpp b/source/core/gameconfigfile.cpp
---- a/source/core/gameconfigfile.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
-+++ b/source/core/gameconfigfile.cpp	(date 1656490394489)
+--- a/source/core/gameconfigfile.cpp	(revision 486da6922dac5380b4e83cc4c680ad90afb91ca9)
++++ b/source/core/gameconfigfile.cpp	(date 1657429659195)
 @@ -141,6 +141,7 @@
  		SetValueForKey ("Path", "/usr/local/share/games/eduke32", true);
  		SetValueForKey ("Path", "/usr/share/games/nblood", true);
@@ -28,8 +28,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/common/platform/posix/unix/i_specialpaths.cpp
---- a/source/common/platform/posix/unix/i_specialpaths.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
-+++ b/source/common/platform/posix/unix/i_specialpaths.cpp	(date 1656479487982)
+--- a/source/common/platform/posix/unix/i_specialpaths.cpp	(revision 486da6922dac5380b4e83cc4c680ad90afb91ca9)
++++ b/source/common/platform/posix/unix/i_specialpaths.cpp	(date 1657429634411)
 @@ -150,7 +150,7 @@
 
  FString M_GetAutoexecPath()
@@ -53,7 +53,7 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
  FString M_GetScreenshotsPath()
  {
 -	return NicePath("$HOME/" GAME_DIR "/screenshots/");
-+	return FString("/userdata/screenshots/raze/");
++	return FString("/userdata/screenshots/");
  }
 
  //===========================================================================
@@ -81,8 +81,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/source/core/gamecontrol.cpp b/source/core/gamecontrol.cpp
---- a/source/core/gamecontrol.cpp	(revision fd3fccdc7a9c4a9ffb1ea06852ae24491fb31915)
-+++ b/source/core/gamecontrol.cpp	(date 1656285193363)
+--- a/source/core/gamecontrol.cpp	(revision 486da6922dac5380b4e83cc4c680ad90afb91ca9)
++++ b/source/core/gamecontrol.cpp	(date 1657429634428)
 @@ -971,7 +971,7 @@
  	FString logfile = Args->TakeValue("+logfile");
 
