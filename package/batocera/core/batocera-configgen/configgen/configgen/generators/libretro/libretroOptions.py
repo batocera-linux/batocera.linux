@@ -496,7 +496,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             for key in uae_mapping:
                 coreSettings.save('puae_mapper_' + key, uae_mapping[key])
         # Show Video Options
-        coreSettings.save('puae_video_options_display ', '"enabled"')
+        coreSettings.save('puae_video_options_display', '"enabled"')
         # Amiga Model
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
@@ -609,7 +609,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        coreSettings.save('o2em_vkbd_transparency', '"25"')
         # Emulated Hardware
         if system.isOptSet('o2em_bios'):
             coreSettings.save('o2em_bios', system.config['o2em_bios'])
