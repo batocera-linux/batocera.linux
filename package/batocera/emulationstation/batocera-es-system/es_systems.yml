@@ -1067,6 +1067,16 @@ pico8:
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
 
+lowresnx:
+  name:       Lowres NX
+  manufacturer: Fantasy
+  release: 2018
+  hardware: console
+  extensions: [nx, zip, 7z]
+  emulators:
+    libretro:
+      lowresnx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LOWRESNX] }
+
 channelf:
   name:       Channel-F
   manufacturer: Fairchild
