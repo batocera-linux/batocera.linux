@@ -428,7 +428,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
     # Commodore AMIGA
-    if (system.config['core'] == 'puae'):
+    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021'):
         # Functional mapping for Amiga system
         # If you want to change them, you can add
         # some strings to batocera.conf by using
