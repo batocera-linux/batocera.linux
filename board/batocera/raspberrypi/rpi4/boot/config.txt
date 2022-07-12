@@ -122,6 +122,9 @@ disable_splash=1
 #dtoverlay=gpio-ir,gpio_pin=17
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
+# Default GPU memory split (do not change if you do not know what you are doing)
+gpu_mem=32
+
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
