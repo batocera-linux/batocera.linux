@@ -554,16 +554,16 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "256x192":   256x192
-                    "512x384":   512x384
-                    "768x576":   768x576
-                    "1024x768":  1024x768
-                    "1280x960":  1280x960
-                    "1536x1152": 1536x1152
-                    "1792x1344": 1792x1344
-                    "2048x1536": 2048x1536
-                    "2304x1728": 2304x1728
-                    "2560x1920": 2560x1920
+                    "1x (256x192)":   256x192
+                    "2x (512x384)":   512x384
+                    "3x (768x576)":   768x576
+                    "4x (1024x768)":  1024x768
+                    "5x (1280x960)":  1280x960
+                    "6x (1536x1152)": 1536x1152
+                    "7x (1792x1344)": 1792x1344
+                    "8x (2048x1536)": 2048x1536
+                    "9x (2304x1728)": 2304x1728
+                    "10x (2560x1920)": 2560x1920
             texture_scaling:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE UPSCALING (XBRZ)
@@ -860,15 +860,15 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x (native)": 1
-                    "2x":          2
-                    "3x (720p)":   3
-                    "4x":          4
-                    "5x (1080p)":  5
-                    "6x (1440p)":  6
-                    "7x":          7
-                    "8x":          8
-                    "9x":          9
+                    "1x (320x240)":   1
+                    "2x (640x480)":   2
+                    "3x (960x720)":   3
+                    "4x (1280x960)":  4
+                    "5x (1600x1200)": 5
+                    "6x (1920x1440)": 6
+                    "7x (2240x1680)": 7
+                    "8x (2560x1920)": 8
+                    "9x (2880x2160)": 9
             duckstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -947,15 +947,15 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x (native)": 1
-                    "2x":          2
-                    "3x (720p)":   3
-                    "4x":          4
-                    "5x (1080p)":  5
-                    "6x (1440p)":  6
-                    "7x":          7
-                    "8x":          8
-                    "9x":          9
+                    "1x (320x240)":   1
+                    "2x (640x480)":   2
+                    "3x (960x720)":   3
+                    "4x (1280x960)":  4
+                    "5x (1600x1200)": 5
+                    "6x (1920x1440)": 6
+                    "7x (2240x1680)": 7
+                    "8x (2560x1920)": 8
+                    "9x (2880x2160)": 9
             duckstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -1181,23 +1181,23 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "640x480":    640x480
-                    "800x600":    800x600
-                    "960x720":    960x720
-                    "1024x768":   1024x768
-                    "1280x960":   1280x960
-                    "1440x1080":  1440x1080
-                    "1600x1200":  1600x1200
-                    "1920x1440":  1920x1440
-                    "2560x1920":  2560x1920
-                    "3200x2400":  3200x2400
-                    "3840x2880":  3840x2880
-                    "4480x3360":  4480x3360
-                    "5120x3840":  5120x3840
-                    "5760x4320":  5760x4320
-                    "6400x4800":  6400x4800
-                    "7040x5280":  7040x5280
-                    "7680x5760":  7680x5760
+                    "1x (640x480)":      640x480
+                    "1.25x (800x600)":   800x600
+                    "1.5x (960x720)":    960x720
+                    "1.6x (1024x768)":   1024x768
+                    "2x (1280x960)":     1280x960
+                    "2.25x (1440x1080)": 1440x1080
+                    "2.5x (1600x1200)":  1600x1200
+                    "3x (1920x1440)":    1920x1440
+                    "4x (2560x1920)":    2560x1920
+                    "5x (3200x2400)":    3200x2400
+                    "6x (3840x2880)":    3840x2880
+                    "7x (4480x3360)":    4480x3360
+                    "8x (5120x3840)":    5120x3840
+                    "9x (5760x4320)":    5760x4320
+                    "10x (6400x4800)":   6400x4800
+                    "11x (7040x5280)":   7040x5280
+                    "12x (7680x5760)":   7680x5760
             reicast_lightgun1_crosshair:
                 group: LIGHT GUN
                 prompt:      Target color for player 1.
@@ -3005,11 +3005,11 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x(native)": 1x(native)
-                    "2x":         2x
-                    "4x":         4x
-                    "8x":         8x
-                    "16x":        16x
+                    "1x (320x240)":    1x(native)
+                    "2x (640x480)":    2x
+                    "4x (1280x960)":   4x
+                    "8x (2560x1920)":  8x
+                    "16x (5120x3840)": 16x
             beetle_psx_widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -3194,17 +3194,17 @@ libretro:
                 prompt:      4:3 RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":   320x240
-                    "640x480":   640x480
-                    "960x720":   960x720
-                    "1280x960":  1280x960
-                    "1600x1200": 1600x1200
-                    "1920x1440": 1920x1440
-                    "2240x1680": 2240x1680
-                    "2560x1920": 2560x1920
-                    "3200x2400": 3200x2400
-                    "3520x2640": 3520x2640
-                    "3840x2880": 3840x2880
+                    "1x (320x240)":   320x240
+                    "2x (640x480)":   640x480
+                    "3x (960x720)":   960x720
+                    "4x (1280x960)":  1280x960
+                    "5x (1600x1200)": 1600x1200
+                    "6x (1920x1440)": 1920x1440
+                    "7x (2240x1680)": 2240x1680
+                    "8x (2560x1920)": 2560x1920
+                    "10x (3200x2400)": 3200x2400
+                    "11x (3520x2640)": 3520x2640
+                    "12x (3840x2880)": 3840x2880
             mupen64plus-169screensize:
                 prompt:      16:9 RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D objects clearer.
@@ -3602,8 +3602,8 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":         disabled
-                    "640x480":         enabled
+                    "1x (320x240)":         disabled
+                    "2x (640x480)":         enabled
             cpu_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
                 description: Enhancement. Reduces system slowdown. Causes issues in some games.
@@ -3652,16 +3652,16 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":   320x240
-                    "640x480":   640x480
-                    "960x720":   960x720
-                    "1280x960":  1280x960
-                    "1440x1080": 1440x1080
-                    "1600x1200": 1600x1200
-                    "1920x1440": 1920x1440
-                    "2240x1680": 2240x1680
-                    "2880x2160": 2880x2160
-                    "5760x4320": 5760x4320
+                    "1x (320x240)":     320x240
+                    "2x (640x480)":     640x480
+                    "3x (960x720)":     960x720
+                    "4x (1280x960)":    1280x960
+                    "4.5x (1440x1080)": 1440x1080
+                    "5x (1600x1200)":   1600x1200
+                    "6x (1920x1440)":   1920x1440
+                    "7x (2240x1680)":   2240x1680
+                    "9x (2880x2160)":   2880x2160
+                    "18x (5760x4320)":  5760x4320
             parallel-n64-aspectratiohint:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -5225,12 +5225,12 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "original": original
-                    "2x":       2x
-                    "4x":       4x
-                    "720p":     720p
-                    "1080p":    1080p
-                    "4k":       4k
+                    "1x (320x240)":  original
+                    "2x (640x480)":  2x
+                    "4x (1280x960)": 4x
+                    "720p":          720p
+                    "1080p":         1080p
+                    "4K":            4k
             multitap_yabasanshiro:
                 prompt:      MULTITAP
                 description: Allows up to 7 or 12 controllers in supported games.
@@ -5374,7 +5374,7 @@ citra:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "Native (400x240)":      1
+                "1x (400x240)":          1
                 "2x (800x480)":          2
                 "3x (1200x720)":         3
                 "4x (1600x960)":         4
@@ -5886,22 +5886,22 @@ duckstation:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x(native)":                    1
-                "2x":                            2
-                "3x/720p":                       3
-                "4x":                            4
-                "5x/1080p":                      5
-                "6x/1440p":                      6
-                "7x":                            7
-                "8x":                            8
-                "9x/4K":                         9
-                "10x":                           10
-                "11x":                           11
-                "12x":                           12
-                "13x":                           13
-                "14x":                           14
-                "15x":                           15
-                "16x":                           16
+                "1x native (320x240)":                       1
+                "2x (640x480)":                              2
+                "3x 720p (960x720)":                         3
+                "4x (1280x960)":                             4
+                "5x 1080p (1600x1200)":                      5
+                "6x 1440p (1920x1440)":                      6
+                "7x (2240x1680)":                            7
+                "8x (2560x1920)":                            8
+                "9x 4K (2880x2160)":                         9
+                "10x (3200x2400)":                           10
+                "11x (3520x2640)":                           11
+                "12x (3840x2880)":                           12
+                "13x (4160x3120)":                           13
+                "14x (4480x3360)":                           14
+                "15x (4800x3600)":                           15
+                "16x (5120x3840)":                           16
         duckstation_antialiasing:
             group: ADVANCED OPTIONS
             prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -6028,14 +6028,14 @@ flycast:
       prompt:      RENDER RESOLUTION
       description: Choose which internal rendering resolution you want to use.
       choices:
-        "320x240 (Half)":   240
-        "640x480 (Native)": 480
-        "960x720 (x1.5)":   720
-        "1280x960 (x2)":    960
-        "1600x1200 (x2.5)": 1200
-        "1920x1440 (x3)":   1440
-        "2560x1920 (x4)":   1920
-        "2880x2160 (x4.5)": 2160
+        "0.5x (320x240)":   240
+        "1x (640x480)":     480
+        "1.5x (960x720)":   720
+        "2x (1280x960)":    960
+        "2.5x (1600x1200)": 1200
+        "3x (1920x1440)":   1440
+        "4x (2560x1920)":   1920
+        "4.5x (2880x2160)": 2160
     flycast_renderer:
       prompt:      GRAPHICS API
       description: Choose your graphics renderer.
@@ -6199,22 +6199,22 @@ melonds:
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution.
             choices:
-                "1x native (256x192) (Default)": 1
-                "2x native (512x384)":           2
-                "3x native (768x576)":           3
-                "4x native (1024x768)":          4
-                "5x native (1280x960)":          5
-                "6x native (1536x1152)":         6
-                "7x native (1792x1344)":         7
-                "8x native (2048x1536)":         8
-                "9x native (2304x1728)":         9
-                "10x native (2560x1920)":        10
-                "11x native (2816x2112)":        11
-                "12x native (3072x2304)":        12
-                "13x native (3328x2496)":        13
-                "14x native (3584x2688)":        14
-                "15x native (3840x2880)":        15
-                "16x native (4096x3072)":        16
+                "1x (256x192)":           1
+                "2x (512x384)":           2
+                "3x (768x576)":           3
+                "4x (1024x768)":          4
+                "5x (1280x960)":          5
+                "6x (1536x1152)":         6
+                "7x (1792x1344)":         7
+                "8x (2048x1536)":         8
+                "9x (2304x1728)":         9
+                "10x (2560x1920)":        10
+                "11x (2816x2112)":        11
+                "12x (3072x2304)":        12
+                "13x (3328x2496)":        13
+                "14x (3584x2688)":        14
+                "15x (3840x2880)":        15
+                "16x (4096x3072)":        16
         melonds_polygons:
             group: ADVANCED OPTIONS
             prompt: ENABLE POLYGON SPLITTING
@@ -6494,13 +6494,13 @@ pcsx2:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x (native)":   1
-                "2x (720p)":     2
-                "3x (1080p)":    3
-                "4x (1440p)":    4
-                "5x (1620p)":    5
-                "6x (2160p 4K)": 6
-                "7x (2880p)":    7
+                "1x (640x480)":      1
+                "2x (1280x960)":     2
+                "3x (1920x1440)":    3
+                "4x (2560x1920)":    4
+                "5x (3200x2400)":    5
+                "6x (3840x2880)":    6
+                "7x (4480x3360)":    7
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6625,12 +6625,12 @@ ppsspp:
                 #"Automatic (1:1)":        0
                 "1x (480x272)":           1
                 "2x (960x544)":           2
-                "3x (720p)":              3
-                "4x (1080p)":             4
+                "3x 720p (1440x816)":     3
+                "4x 1080p (1920x1088)":   4
                 "5x (2400x1360)":         5
-                "6x (1620p)":             6
+                "6x (2880x1632)":         6
                 "7x (3360x1904)":         7
-                "8x (2160p 4K)":          8
+                "8x 4K (3840x2176)":      8
                 "9x (4320x2448)":         9
                 "10x (4800x2720)":        10
         frameskip:
@@ -6849,12 +6849,12 @@ redream:
           prompt:      RENDERING RESOLUTION
           description: Choose your render resolution (Requires personal redream.key file).
           choices:
-              "640x480":            1
-              "1280x960 (Default)": 2
-              "1920x1440":          3
-              "2560x1920":          4
-              "3200x2400":          5
-              "3840x2880":          6
+              "1x (640x480)":            1
+              "2x (1280x960) (Default)": 2
+              "3x (1920x1440)":          3
+              "4x (2560x1920)":          4
+              "5x (3200x2400)":          5
+              "6x (3840x2880)":          6
       redreamRatio:
           prompt:      ASPECT RATIO
           description: Choose your preferred aspect ratio.
