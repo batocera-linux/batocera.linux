@@ -428,7 +428,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
     # Commodore AMIGA
-    if (system.config['core'] == 'puae'):
+    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021'):
         # Functional mapping for Amiga system
         # If you want to change them, you can add
         # some strings to batocera.conf by using
@@ -496,7 +496,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             for key in uae_mapping:
                 coreSettings.save('puae_mapper_' + key, uae_mapping[key])
         # Show Video Options
-        coreSettings.save('puae_video_options_display ', '"enabled"')
+        coreSettings.save('puae_video_options_display', '"enabled"')
         # Amiga Model
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
@@ -609,7 +609,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        coreSettings.save('o2em_vkbd_transparency', '"25"')
         # Emulated Hardware
         if system.isOptSet('o2em_bios'):
             coreSettings.save('o2em_bios', system.config['o2em_bios'])
