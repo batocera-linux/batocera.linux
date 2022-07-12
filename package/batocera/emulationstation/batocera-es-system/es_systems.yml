@@ -3369,7 +3369,7 @@ raze:
     The following games are officially supported, and should be placed in the designated directory with their required
     files (including subdirectories):
       * blood:          Blood (movies/*.ogv, blood.ini, *.art, *.dat, *.rff)
-      * blood:          Blood: Cryptic Passage (see further below)
+      * blood:          Blood: Cryptic Passage (see instructions further below)
       * duke:           Duke Nukem 3D (DUKE3D.GRP)
       * duke:           Duke Nukem 3D: Duke It Out in D.C. (DUKEDC.GRP)
       * duke:           Duke Nukem 3D: Duke Caribbean: Life's a Beach (VACATION.GRP)
@@ -3377,7 +3377,7 @@ raze:
       * exhumed:        Exhumed/PowerSlave (BOOK.MOV, DEMO.VCR, STUFF.DAT)
       * nam:            NAM (NAM.GRP, NAM.CON)
       * redneck:        Redneck Rampage (REDNECK.GRP)
-      * redneck:        Redneck Rampage: Suckin' Grits on Route 66 (see further below)
+      * redneck:        Redneck Rampage: Suckin' Grits on Route 66 (see instructions further below)
       * redneckrides:   Redneck Rampage Rides Again (RIDES.GRP) <-- Note: rename from REDNECK.GRP
       * shadow:         Shadow Warrior (SW.GRP)
       * shadow:         Shadow Warrior: Twin Dragon (TD.GRP)
@@ -3387,8 +3387,21 @@ raze:
 
     For some of these expansion packs, the required files (including subdirectories) need to be collected into the root
     of a .zip file and placed in the designated directory:
-      * blood:    Cryptic Passage (movies/*.ogv, *.art, *.ini, *.map) -> cryptic.zip
-      * redneck:  Suckin' Grits on Route 66 (ROUTE66/*.MAP, *.ANM, *.ART, *.CON, *.VOC) -> route66.zip
+    
+      Blood: Cryptic Passage
+        1. Collect required files: movies/*.ogv, *.art, *.ini, *.map
+        2. Zip required files into root of cryptic.zip
+        3. Place cryptic.zip in blood directory
+    
+      Redneck Rampage: Suckin' Grits on Route 66
+        1. Collect ANM files: END66.ANM, TURD66.ANM
+        2. Collect ART files: TILESA66.ART, TILESB66.ART
+        3. Collect CON files: BUBBA66.CON, DEFS66.CON, GAME66.CON, GATOR66.CON, PIG66.CON, USER66.CON
+        4. Collect MAP files: ROUTE66/*.MAP (keep the ROUTE66 subdirectory)
+        5. Collect VOC files: ASYAMB.VOC, END66.VOC, G_BITE.VOC, G_SIT.VOC, NEON.VOC, TURD66.VOC
+        6. Rename files: TILESA66.ART -> TILES024.ART; TILESB66.ART -> TILES025.ART; GAME66.CON -> GAME.CON
+        7. Zip required files into root of route66.zip
+        8. Place route66.zip in redneck directory
     
     Optionally, add music tracks with the following names to the designated directories:
       * blood:          track02.ogg or blood02.ogg, etc.
@@ -3425,7 +3438,6 @@ raze:
     For Redneck Rampage: Suckin' Grits on Route 66, create a .raze file with the following text:
       FILE  = /redneck/REDNECK.GRP
       FILE+ = /redneck/route66.zip
-      CON   = GAME66.CON
     
     For Redneck Rampage Rides Again, create a .raze file with the following text:
       FILE = /redneckrides/RIDES.GRP
