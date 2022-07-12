@@ -85,8 +85,7 @@ msgstr "使用しない"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
-msgstr ""
-"ゲーム開始時に最新ステートを読込み、ゲーム終了時にステートセーブします"
+msgstr "ゲーム開始時に最新ステートを読込み、ゲーム終了時にステートセーブします"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -339,8 +338,7 @@ msgstr "ライトガン(ガンコン)を使用"
 msgctxt "game_options"
 msgid ""
 "For emulators and controllers supporting force feedback, scale from 0 to 100%"
-msgstr ""
-"対応するエミュレーターとコントローラーで使用します (調整：0〜100％)"
+msgstr "対応するエミュレーターとコントローラーで使用します (調整：0〜100％)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1793,8 +1791,7 @@ msgstr "RGB（鮮明な画像）"
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
 msgid "Only supported games. Higher settings increase system requirements."
-msgstr ""
-"対応しているゲームのみ。設定を高くすると、システム要件が増加します"
+msgstr "対応しているゲームのみ。設定を高くすると、システム要件が増加します"
 
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
@@ -1977,7 +1974,7 @@ msgid "Hides borders on many games. Some games used the borders."
 msgstr ""
 "多くのゲームの境界線を非表示にします。一部のゲームは境界線を使用しています"
 
-#. TRANSLATION: libretro/fuse, libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/fuse, vice
 msgctxt "game_options"
 msgid "ZOOM (HIDE BORDERS)"
 msgstr "ズーム（境界線を非表示）"
@@ -2888,7 +2885,7 @@ msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 2)"
 msgstr "BBC マスター カートリッジ (スロット 2)"
 
-#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "CUSTOM CONFIG"
 msgstr "カスタム構成"
@@ -3129,6 +3126,41 @@ msgstr "Hartung Game Master カートリッジ"
 msgctxt "game_options"
 msgid "GamePark GP32 SmartMedia cards"
 msgstr "GamePark GP32 スマートメディアカード"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Dick Smith Electronics VZ-200/300 cassettes"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Dick Smith Electronics VZ-200/300 snapshots"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Choose hardware for the memory expansion slot"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "MEMORY SLOT"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Laser 310/VZ-300 16k Memory"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Laser/VZ 64k Memory (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Snapshot"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -4721,6 +4753,11 @@ msgstr "Super-high 1440p"
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games use the borders."
 msgstr "多くのゲームの境界線を非表示にします。一部のゲームは境界線を使用します"
+
+#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+msgctxt "game_options"
+msgid "ZOOM/CROP (HIDE BORDERS)"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -9144,55 +9181,55 @@ msgctxt "game_options"
 msgid "SKIP INTRO VIDEOS"
 msgstr "イントロビデオをスキップ"
 
-msgctxt "game_options"
-msgid "If the D-Pad is oriented incorrectly for your controller."
-msgstr "方向パッドが正しい方向にいかない場合に選択します"
+#~ msgctxt "game_options"
+#~ msgid "If the D-Pad is oriented incorrectly for your controller."
+#~ msgstr "方向パッドが正しい方向にいかない場合に選択します"
 
-msgctxt "game_options"
-msgid "DS3 Orientation"
-msgstr "デュアルショック3 構成"
+#~ msgctxt "game_options"
+#~ msgid "DS3 Orientation"
+#~ msgstr "デュアルショック3 構成"
 
-msgctxt "game_options"
-msgid "X360 Orientation"
-msgstr "X360 構成"
+#~ msgctxt "game_options"
+#~ msgid "X360 Orientation"
+#~ msgstr "X360 構成"
 
-msgctxt "game_options"
-msgid "Fix main 2D screen to follow action."
-msgstr "アクションに従うようにメインの2D画面を修正します"
+#~ msgctxt "game_options"
+#~ msgid "Fix main 2D screen to follow action."
+#~ msgstr "アクションに従うようにメインの2D画面を修正します"
 
-msgctxt "game_options"
-msgid "NORTH WEST"
-msgstr "左上"
+#~ msgctxt "game_options"
+#~ msgid "NORTH WEST"
+#~ msgstr "左上"
 
-msgctxt "game_options"
-msgid "NORTH EAST"
-msgstr "右上"
+#~ msgctxt "game_options"
+#~ msgid "NORTH EAST"
+#~ msgstr "右上"
 
-msgctxt "game_options"
-msgid "SOUTH EAST"
-msgstr "右下"
+#~ msgctxt "game_options"
+#~ msgid "SOUTH EAST"
+#~ msgstr "右下"
 
-msgctxt "game_options"
-msgid "SOUTH WEST"
-msgstr "左下"
+#~ msgctxt "game_options"
+#~ msgid "SOUTH WEST"
+#~ msgstr "左下"
 
-msgctxt "game_options"
-msgid "Use guns"
-msgstr "銃(ガンコン)を使用"
+#~ msgctxt "game_options"
+#~ msgid "Use guns"
+#~ msgstr "銃(ガンコン)を使用"
 
-msgctxt "game_options"
-msgid "Lightgun device must be selected on at least one port."
-msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
+#~ msgctxt "game_options"
+#~ msgid "Lightgun device must be selected on at least one port."
+#~ msgstr "ライトガン(ガンコン)は、最低1つのポートを選択する必要があります"
 
-msgctxt "game_options"
-msgid "May help to fix choppy audio on weaker CPUs."
-msgstr "弱いCPUでオーディオの修正に有効な場合があります"
+#~ msgctxt "game_options"
+#~ msgid "May help to fix choppy audio on weaker CPUs."
+#~ msgstr "弱いCPUでオーディオの修正に有効な場合があります"
 
-msgctxt "game_options"
-msgid ""
-"Enable this option if you get missing graphics or broken lighting ingame."
-msgstr "ゲーム内で映像や明るさがおかしい場合は、有効にします"
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable this option if you get missing graphics or broken lighting ingame."
+#~ msgstr "ゲーム内で映像や明るさがおかしい場合は、有効にします"
 
-msgctxt "game_options"
-msgid "Adjust Singe joystick sensitivity."
-msgstr "Singeジョイスティックの感度を調整します"
+#~ msgctxt "game_options"
+#~ msgid "Adjust Singe joystick sensitivity."
+#~ msgstr "Singeジョイスティックの感度を調整します"
