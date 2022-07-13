@@ -1,0 +1,1 @@
+SUBSYSTEM=="drm", ACTION=="add|change", RUN+="/usr/bin/batocera-resolution-post setOutput auto"
