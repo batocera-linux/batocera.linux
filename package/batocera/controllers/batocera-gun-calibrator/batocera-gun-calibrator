@@ -225,15 +225,11 @@ try:
                                 val = int((event.value - pCenter[0] - absVals[0][0] - (absVals[0][1]-absVals[0][0]-pInputWindow[0])//2) * outputSize[0] / pInputWindow[0])
                                 if val >= 0 and val <= outputSize[0]: # protect in case
                                     target.write(ecodes.EV_ABS, ecodes.ABS_X, val)
-                                else:
-                                    target.write(ecodes.EV_ABS, ecodes.ABS_X, absVals[0][0]) # move to the border, used for mame in reload
                                 needSync = True
                             elif event.type == ecodes.EV_ABS and event.code == ecodes.ABS_Y:
                                 val = int((event.value - pCenter[1] - absVals[1][0] - (absVals[1][1]-absVals[1][0]-pInputWindow[1])//2) * outputSize[1] / pInputWindow[1])
                                 if val >= 0 and val <= outputSize[1]:
                                     target.write(ecodes.EV_ABS, ecodes.ABS_Y, val)
-                                else:
-                                    target.write(ecodes.EV_ABS, ecodes.ABS_Y, absVals[1][0]) # move to the border, used for mame in reload
                                 needSync = True
                             elif event.code == ecodes.EV_SYN:
                                 if needSync:
