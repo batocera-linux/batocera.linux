@@ -2,6 +2,14 @@
 
 ACTION=$1
 PARAM=$2
+INTERNALCARD=$(cat /boot/boot/batocera.board)
+
+if test "${INTERNALCARD}" = "p5000"
+then
+	CONNECTORNAME="DSI" # For PS5000
+else
+	CONNECTORNAME="DPI" # For Powkiddy A12/A13, & PS7000
+fi
 
 set_mode() {
     MODE=$1
@@ -26,7 +34,7 @@ then
                 curl http://localhost:1234/quit?confirm=switchscreen
             fi
             # force 0 which is supposed to be the internal device
-            echo off > /sys/class/drm/card0-DSI-1/status
+            echo off > /sys/class/drm/card0-${CONNECTORNAME}-1/status
             echo on > /sys/class/drm/card0-HDMI-A-1/status
             set_mode "1 - HDMI-A"
             # Force audio to HDMI
@@ -40,8 +48,8 @@ then
                         curl http://localhost:1234/quit # No confirmation when unplugging HDMI 
                 fi
                 echo off > /sys/class/drm/card0-HDMI-A-1/status
-                echo on > /sys/class/drm/card0-DSI-1/status
-                set_mode "0 - DSI"
+                echo on > /sys/class/drm/card0-${CONNECTORNAME}-1/status
+                set_mode "0 - ${CONNECTORNAME}"
                 # Force audio to internal
                 batocera-audio set alsa_output.platform-sound.unknown
             fi
