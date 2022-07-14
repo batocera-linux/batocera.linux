@@ -1529,16 +1529,6 @@ msgctxt "game_options"
 msgid "USE SOFTWARE RENDERING"
 msgstr "GEBRUIK SOFTWARE RENDERING"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, pcsx2
-msgctxt "game_options"
-msgid "1x (native)"
-msgstr "1x (native)"
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, ppsspp
-msgctxt "game_options"
-msgid "3x (720p)"
-msgstr "3x (720p)"
-
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA/SSAA)"
@@ -1843,6 +1833,31 @@ msgstr "Kan flikkerend scherm voorkomen. Significant prestatie verlies."
 msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "SYNCHROON RENDEREN"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "1.25x (800x600)"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, flycast
+msgctxt "game_options"
+msgid "1.5x (960x720)"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "1.6x (1024x768)"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "2.25x (1440x1080)"
+msgstr ""
+
+#. TRANSLATION: libretro/flycast, flycast
+msgctxt "game_options"
+msgid "2.5x (1600x1200)"
+msgstr ""
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
@@ -3492,11 +3507,6 @@ msgctxt "game_options"
 msgid "100%(native)"
 msgstr "100%(native)"
 
-#. TRANSLATION: libretro/mednafen_psx, duckstation
-msgctxt "game_options"
-msgid "1x(native)"
-msgstr "1x(native)"
-
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Small performance increase (may drop frames)."
@@ -4272,6 +4282,11 @@ msgctxt "game_options"
 msgid "Per Game"
 msgstr ""
 
+#. TRANSLATION: libretro/parallel_n64
+msgctxt "game_options"
+msgid "4.5x (1440x1080)"
+msgstr ""
+
 #. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3, ...
 msgctxt "game_options"
 msgid "Automatic"
@@ -4297,7 +4312,7 @@ msgctxt "game_options"
 msgid "fullspeed"
 msgstr "volledige snelheid"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/puae, libretro/puae2021, libretro/vb, libretro/yabasanshiro
+#. TRANSLATION: libretro/parallel_n64, libretro/puae, libretro/puae2021, libretro/vb
 msgctxt "game_options"
 msgid "original"
 msgstr "origineel"
@@ -5910,8 +5925,8 @@ msgstr "720p"
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
-msgid "4k"
-msgstr "4k"
+msgid "4K"
+msgstr ""
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
@@ -6150,11 +6165,6 @@ msgstr "hybride top ratio 4"
 msgctxt "game_options"
 msgid "hybrid bottom ratio 4"
 msgstr "hybride bodem ratio 4"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Native (400x240)"
-msgstr "Native (400x240)"
 
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
@@ -6731,23 +6741,13 @@ msgstr "Het overslaan kan sommige spoellen laten hangen."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "3x/720p"
-msgstr "3x/720p"
+msgid "1x native (320x240)"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "5x/1080p"
-msgstr "5x/1080p"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "6x/1440p"
-msgstr "6x/1440p"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "9x/4K"
-msgstr "9x/4K"
+msgid "9x 4K (2880x2160)"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7006,42 +7006,12 @@ msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "320x240 (Half)"
+msgid "0.5x (320x240)"
 msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "640x480 (Native)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "960x720 (x1.5)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1280x960 (x2)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1600x1200 (x2.5)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1920x1440 (x3)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "2560x1920 (x4)"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "2880x2160 (x4.5)"
+msgid "4.5x (2880x2160)"
 msgstr ""
 
 #. TRANSLATION: flycast
@@ -7167,86 +7137,6 @@ msgstr ""
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "1x native (256x192) (Default)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "2x native (512x384)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "3x native (768x576)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "4x native (1024x768)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "5x native (1280x960)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "6x native (1536x1152)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "7x native (1792x1344)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "8x native (2048x1536)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "9x native (2304x1728)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "10x native (2560x1920)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "11x native (2816x2112)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "12x native (3072x2304)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "13x native (3328x2496)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "14x native (3584x2688)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "15x native (3840x2880)"
-msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "16x native (4096x3072)"
 msgstr ""
 
 #. TRANSLATION: melonds
@@ -7683,16 +7573,6 @@ msgstr "Overslaan (veiliger)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "2x (720p)"
-msgstr "2x (720p)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "6x (2160p 4K)"
-msgstr "6x (2160p 4K)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
 msgid "Skip drawing screen effects. Cumulative."
 msgstr "Sla opbouwen van scherm effecten over. Cumulatief."
 
@@ -7921,8 +7801,8 @@ msgstr "Buffer effecten overslaan"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "8x (2160p 4K)"
-msgstr "8x (2160p 4K)"
+msgid "8x 4K (3840x2176)"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8286,7 +8166,7 @@ msgstr ""
 
 #. TRANSLATION: redream
 msgctxt "game_options"
-msgid "1280x960 (Default)"
+msgid "2x (1280x960) (Default)"
 msgstr ""
 
 #. TRANSLATION: redream
@@ -9185,6 +9065,54 @@ msgstr ""
 msgctxt "game_options"
 msgid "SKIP INTRO VIDEOS"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "1x (native)"
+#~ msgstr "1x (native)"
+
+#~ msgctxt "game_options"
+#~ msgid "3x (720p)"
+#~ msgstr "3x (720p)"
+
+#~ msgctxt "game_options"
+#~ msgid "1x(native)"
+#~ msgstr "1x(native)"
+
+#~ msgctxt "game_options"
+#~ msgid "4k"
+#~ msgstr "4k"
+
+#~ msgctxt "game_options"
+#~ msgid "Native (400x240)"
+#~ msgstr "Native (400x240)"
+
+#~ msgctxt "game_options"
+#~ msgid "3x/720p"
+#~ msgstr "3x/720p"
+
+#~ msgctxt "game_options"
+#~ msgid "5x/1080p"
+#~ msgstr "5x/1080p"
+
+#~ msgctxt "game_options"
+#~ msgid "6x/1440p"
+#~ msgstr "6x/1440p"
+
+#~ msgctxt "game_options"
+#~ msgid "9x/4K"
+#~ msgstr "9x/4K"
+
+#~ msgctxt "game_options"
+#~ msgid "2x (720p)"
+#~ msgstr "2x (720p)"
+
+#~ msgctxt "game_options"
+#~ msgid "6x (2160p 4K)"
+#~ msgstr "6x (2160p 4K)"
+
+#~ msgctxt "game_options"
+#~ msgid "8x (2160p 4K)"
+#~ msgstr "8x (2160p 4K)"
 
 #~ msgctxt "game_options"
 #~ msgid "If the D-Pad is oriented incorrectly for your controller."
