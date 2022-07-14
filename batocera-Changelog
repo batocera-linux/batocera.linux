@@ -66,7 +66,7 @@
         * change: reduced game launch time
         * change: disable cec in es (causing issues in some circonstances)
         * change: dolphin is back on s922x with libretro-dolphin
-        * change: RPi3 now runs under Xorg window server
+        * change: RPIZERO2/RPI2/RPI3 now allows F1 menu access (xorg)
         * change: od-commander south and east buttons swapped to match ES
         * es: add frameskip options for Drastic
         * es: wii/gamecube added json as acceptable file extension
@@ -82,6 +82,12 @@
         * fix: bluetooth LE required for modern Xbox controllers
         * fix: mupen64plus-next with s905gen3 devices
         * fix: btop UTF-8 error
+        * rpiZero2: Moved to mesa3d driver
+        * rpiZero2: Added Kodi Entertainment Center
+        * rpiZero2: Added flycast emulators
+        * rpiZero2: Added libretro-flycast
+        * rpiZero2: Added mupen64plus-video-glide64mk2
+        * rpiZero2: Added libretro-mupen64plus-next
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
