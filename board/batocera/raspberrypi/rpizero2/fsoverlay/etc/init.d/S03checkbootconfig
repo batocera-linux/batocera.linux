@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# only at boot
+test "$1" != "start" && exit 0
+
+configFile="/boot/config.txt"
+
+# check for an appropriate vc4 overlay line
+grep -qE '^dtoverlay=vc4-fkms-v3d,cma-[0-9]*'  "${configFile}" && exit 0
+grep -qE '^dtoverlay=vc4-kms-v3d,cma-[0-9]*'   "${configFile}" && exit 0
+
+# update the file with preferred 'full' kms if not present
+mount -o remount,rw /boot || exit 1
+sed -i '/^[ ]*start_file=*.*$/d'            "${configFile}" || exit 0
+sed -i '/^[ ]*fixup_file=*.*$/d'            "${configFile}" || exit 0
+sed -i '/^[ ]*gpu_mem[ ]*=*.*$/d'           "${configFile}" || exit 0
+sed -i '/^[ ]*dtoverlay[ ]*=[ ]*vc4.*$/d'	"${configFile}" || exit 0
+
+(echo "
+# Firmware configurations
+start_file=start.elf
+fixup_file=fixup.dat
+
+# Default GPU memory split
+gpu_mem=32
+
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-fkms-v3d,cma-256") >> "${configFile}" || exit 0
+mount -o remount,ro /boot || exit 1
+shutdown -r now
+
+exit 0

@@ -32,33 +32,6 @@ do
     batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
     ###################
 
-    ### resolution ###
-    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
-    if test -z "${bootresolution}"
-    then
-	batocera-resolution minTomaxResolution-secure
-    else
-	batocera-resolution setMode "${bootresolution}"
-    fi
-    ###################
-
-    ### dpi override for nvidia gpus ###
-    settings_output="$(batocera-settings-get global.dpi)"
-    [ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
-    ###################
-
-    ### keyboard (specific to xorg) ###
-    # not always true (en_US for us), but it's really better than always english
-    map_name=$(echo $settings_lang | cut -c 1-2)
-    which setxkbmap && setxkbmap "${map_name}"
-    ###################
-
-    # try to force 60hz (specific to xorg)
-    FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
-    test -z "${FRAMERATE}" && FRAMERATE=60
-    which xrandr && xrandr -r "${FRAMERATE}"
-    ###################
-
     ### rotation ###
     display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
     OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
@@ -90,6 +63,33 @@ do
 	    EXTRA_OPTS="--screenrotate ${display_rotate}"
 	fi
     fi
+ 
+    ### resolution ###
+    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
+    if test -z "${bootresolution}"
+    then
+	batocera-resolution minTomaxResolution-secure
+    else
+	batocera-resolution setMode "${bootresolution}"
+    fi
+    ###################
+
+    ### dpi override for nvidia gpus ###
+    settings_output="$(batocera-settings-get global.dpi)"
+    [ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
+    ###################
+
+    ### keyboard (specific to xorg) ###
+    # not always true (en_US for us), but it's really better than always english
+    map_name=$(echo $settings_lang | cut -c 1-2)
+    which setxkbmap && setxkbmap "${map_name}"
+    ###################
+
+    # try to force 60hz (specific to xorg)
+    FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
+    test -z "${FRAMERATE}" && FRAMERATE=60
+    which xrandr && xrandr -r "${FRAMERATE}"
+    ###################
 
     forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
     if test -n "${forcedresolution}"

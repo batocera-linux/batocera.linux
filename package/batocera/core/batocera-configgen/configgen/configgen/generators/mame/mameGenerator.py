@@ -19,6 +19,7 @@ from PIL import Image, ImageOps
 from . import mameControllers
 from pathlib import Path
 import csv
+import controllersConfig
 
 eslog = get_logger(__name__)
 
@@ -220,6 +221,15 @@ class MameGenerator(Generator):
         if len(pluginsToLoad) > 0:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
 
+        # guns
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            commandArray += [ "-lightgunprovider", "udev" ]
+            commandArray += [ "-lightgun_device", "lightgun" ]
+            commandArray += [ "-adstick_device", "lightgun" ]
+        else:
+            commandArray += [ "-lightgunprovider", "auto" ]
+            commandArray += [ "-lightgun_device", "mouse" ]
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messSysName[messMode] == "" or messMode == -1:
@@ -239,6 +249,15 @@ class MameGenerator(Generator):
                     commandArray += ["-ioport:peb:slot2", "32kmem"]
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandArray += ["-ioport:peb:slot3", "speech"]
+
+            #Laser 310 Memory Expansion & Joystick
+            if system.name == "laser310":
+                commandArray += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandArray += ["-mem", laser310mem]
 
             # BBC Joystick
             if system.name == "bbc":
@@ -401,11 +420,11 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode])
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsNeedBorders(guns))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, "")
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsNeedBorders(guns))
         except:
-            MameGenerator.writeBezelConfig(None, system, rom, "")
+            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsNeedBorders(guns))
 
         buttonLayout = getMameControlScheme(system, romBasename)
 
@@ -451,7 +470,7 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom, messSys):
+    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsNeedBorders):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         if messSys == "":
@@ -462,19 +481,32 @@ class MameGenerator(Generator):
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
 
-        if bezelSet is None:
+        if bezelSet is None and not gunsNeedBorders:
             return
 
         # let's generate the zip file
         os.makedirs(tmpZipDir)
 
         # bezels infos
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
+        if bezelSet is None:
+            if gunsNeedBorders:
+                bz_infos = None
+            else:
+                return
+        else:
+            bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
+            if bz_infos is None:
+                if not gunsNeedBorders:
+                    return
+
+        # create an empty bezel
         if bz_infos is None:
-            return
+            overlay_png_file = "/tmp/bezel_transmame_black.png"
+            bezelsUtil.createTransparentBezel(overlay_png_file, gameResolution["width"], gameResolution["height"])
+            bz_infos = { "png": overlay_png_file }
 
         # copy the png inside
-        if os.path.exists(bz_infos["mamezip"]):
+        if "mamezip" in bz_infos and os.path.exists(bz_infos["mamezip"]):
             if messSys == "":
                 artFile = "/var/run/mame_artwork/" + romBase + ".zip"
             else:
@@ -485,15 +517,16 @@ class MameGenerator(Generator):
                 else:
                     os.remove(artFile)
             os.symlink(bz_infos["mamezip"], artFile)
+            # hum, not nice if guns need borders
             return
-        elif os.path.exists(bz_infos["layout"]):
+        elif "layout" in bz_infos and os.path.exists(bz_infos["layout"]):
             os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
             pngFile = os.path.split(bz_infos["png"])[1]
             os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)
         else:
             pngFile = "default.png"
             os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
-            if os.path.exists(bz_infos["info"]):
+            if "info" in bz_infos and os.path.exists(bz_infos["info"]):
                 bzInfoFile = open(bz_infos["info"], "r")
                 bzInfoText = bzInfoFile.readlines()
                 bz_alpha = 1.0 # Just in case it's not set in the info file
@@ -590,6 +623,16 @@ class MameGenerator(Generator):
             imgnew.paste(back, (0,0,img_width,img_height))
             imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
+            try:
+                os.remove(tmpZipDir + "/" + pngFile)
+            except:
+                pass
+            os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
+
+        # borders for guns
+        if gunsNeedBorders:
+            output_png_file = "/tmp/bezel_gunborders.png"
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file)
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:

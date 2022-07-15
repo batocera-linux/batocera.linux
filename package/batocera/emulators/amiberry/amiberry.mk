@@ -3,8 +3,8 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Release on May 22, 2022
-AMIBERRY_VERSION = v5.2
+# Version.: Release on Jul 01, 2022
+AMIBERRY_VERSION = v5.3
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
@@ -15,12 +15,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi4-64-sdl2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
-    ifeq ($(BR2_arm),y)
-        AMIBERRY_BATOCERA_SYSTEM=rpi3-sdl2
-    else
-        AMIBERRY_BATOCERA_SYSTEM=rpi3-64-sdl2
-    endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
+    AMIBERRY_BATOCERA_SYSTEM=rpi3-sdl2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+    AMIBERRY_BATOCERA_SYSTEM=rpi3-64-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi2-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)

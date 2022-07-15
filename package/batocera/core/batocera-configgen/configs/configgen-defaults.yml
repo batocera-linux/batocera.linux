@@ -67,7 +67,7 @@ atari2600:
   core:     stella
 atari5200:
   emulator: libretro
-  core:     atari800
+  core:     a5200
 atari7800:
   emulator: libretro
   core:     prosystem
@@ -154,6 +154,9 @@ easyrpg:
 ecwolf:
   emulator: ecwolf
   core:     ecwolf
+eduke32:
+  emulator: eduke32
+  core:     eduke32
 electron:
   emulator: libretro
   core:     mame
@@ -181,6 +184,9 @@ fm7:
 fmtowns:
   emulator: tsugaru
   core:     tsugaru
+fury:
+  emulator: eduke32
+  core:     fury
 gaelco:
   emulator: demul
   core:     demul
@@ -240,9 +246,6 @@ hikaru:
 intellivision:
   emulator: libretro
   core:     freeintv
-ionfury:
-  emulator: ionfury
-  core:     ionfury
 jaguar:
   emulator: libretro
   core:     virtualjaguar
@@ -250,11 +253,17 @@ kodi:
   emulator: kodi
   options:
     videomode: default
+laser310:
+  emulator: libretro
+  core:     mame
 lcdgames:
   emulator: libretro
   core:     gw
   options:
     forceNoBezel: true
+lowresnx:
+  emulator: libretro
+  core:     lowresnx
 lutro:
   emulator: libretro
   core:     lutro

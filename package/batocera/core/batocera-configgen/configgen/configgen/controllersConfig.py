@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as ET
 import batoceraFiles
+import os
 
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -267,3 +268,36 @@ def getGuns():
     if len(guns) == 0:
         eslog.info("no gun found")
     return guns
+
+def gunNameFromPath(path):
+    redname = os.path.splitext(os.path.basename(path))[0].lower()
+    inpar   = False
+    inblock = False
+    ret = ""
+    for c in redname:
+        if not inpar and not inblock and ( (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9') ):
+            ret += c
+        elif c == '(':
+            inpar = True
+        elif c == ')':
+            inpar = False
+        elif c == '[':
+            inblock = True
+        elif c == ']':
+            inblock = True
+    return ret
+
+def getGameGunsMetaData(system, rom):
+    # load the database
+    tree = ET.parse(batoceraFiles.esGunsMetadata)
+    root = tree.getroot()
+    game = gunNameFromPath(rom)
+    res = {}
+    for nodesystem in root.findall(".//system"):
+        if nodesystem.get("name") == system:
+            for nodegame in nodesystem:
+                if nodegame.text in game:
+                    for attribute in nodegame.attrib:
+                        res[attribute] = nodegame.get(attribute)
+                    return res
+    return res

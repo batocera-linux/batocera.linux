@@ -171,7 +171,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     retroarchConfig['input_libretro_device_p2'] = '1'
 
     # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
-    if system.config['core'] == 'puae' or system.config['core'] == 'vice_x64':
+    if system.config['core'] == 'puae' or system.config['core'] == 'puae2021' or system.config['core'] == 'vice_x64':
         retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
@@ -189,7 +189,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
     ## AMIGA OCS-ECS/AGA/CD32
-    if system.config['core'] == 'puae':
+    if system.config['core'] == 'puae' or system.config['core'] == 'puae2021':
         if system.name != 'amigacd32':
             if system.isOptSet('controller1_puae'):
                 retroarchConfig['input_libretro_device_p1'] = system.config['controller1_puae']
@@ -665,13 +665,20 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             clearGunInputsForPlayer(2, retroarchConfig)
 
     gun_mapping = {
-        "bsnes"         : { "default" : { "device": 260,          "p2": 0 } },
+        "bsnes"         : { "default" : { "device": 260,          "p2": 0,
+                                          "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ] } },
         "mesen-s"       : { "default" : { "device": 262,          "p2": 0 } },
-        "snes9x"        : { "default" : { "device": 260,          "p2": 0 } },
-        "snes9x_next"   : { "default" : { "device": 260,          "p2": 0 } },
+        "snes9x"        : { "default" : { "device": 260,          "p2": 0, "p3": 1, "device_p3": 772, # different device for the 2nd gun...
+                                          "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ] } },
+        "snes9x_next"   : { "default" : { "device": 260,          "p2": 0,
+                                          "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ]} },
         "nestopia"      : { "default" : { "device": 262,          "p2": 0 } },
         "fceumm"        : { "default" : { "device": 258,          "p2": 0 } },
-        "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0 }, "mastersystem" : { "device": 260, "p1": 0, "p2": 1 }, "segacd" : { "device": 516, "p2": 0 } },
+        "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0,
+                                            "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ] },
+                            "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
+                            "segacd" : { "device": 516, "p2": 0,
+                                         "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ]} },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame0139"      : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
@@ -687,13 +694,25 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     # apply mapping
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         if system.config['core'] in gun_mapping:
+            # conf from general mapping
             if system.name in gun_mapping[system.config['core']]:
                 ragunconf = gun_mapping[system.config['core']][system.name]
             else:
                 ragunconf = gun_mapping[system.config['core']]["default"]
-            for nplayer in range(1, 2+1):
+
+            # overwrite configuration by gungames.xml
+            if "gameDependant" in ragunconf:
+                gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+                for gd in ragunconf["gameDependant"]:
+                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"]:
+                        ragunconf[gd["mapkey"]] = gd["mapvalue"]
+
+            for nplayer in range(1, 3+1):
                 if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
-                    retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                    if "device_p"+str(nplayer) in ragunconf:
+                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
+                    else:
+                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
                     configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
 
     # Bezel option

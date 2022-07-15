@@ -25,6 +25,10 @@ class LibretroGenerator(Generator):
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
+        # Fix for the removed MESS/MAMEVirtual cores
+        if system.config['core'] in [ 'mess', 'mamevirtual' ]:
+            system.config['core'] = 'mame'
+
         # Get the graphics backend first
         gfxBackend = getGFXBackend(system)
 

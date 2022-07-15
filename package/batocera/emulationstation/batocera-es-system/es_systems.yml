@@ -340,7 +340,7 @@ nds:
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
     drastic:
-      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC] }
+      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
 
 fds:
   name:       Family Computer Disk System
@@ -676,9 +676,6 @@ dos:
 
     To quit a game, press CTRL + F9.
 
-    Games files are available on myabandonware:
-    http://www.myabandonware.com/browse/platform/dos/
-
     For more info: https://wiki.batocera.org/systems:dos
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
@@ -695,9 +692,6 @@ dos:
     Avec pure-dosbox vous pouvez aussi utiliser des fichiers zip.
 
     Pour quitter un jeu, appuyer sur CTRL + F9.
-
-    Les jeux DOS sont disponibles sur myabandonware:
-    http://www.myabandonware.com/browse/platform/dos/
 
     La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/systems:dos
 
@@ -915,6 +909,7 @@ atari5200:
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+      a5200:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_A5200]    }
 
 atari7800:
   name:       Atari 7800
@@ -1065,6 +1060,16 @@ pico8:
     For more info: https://wiki.batocera.org/systems:pico-8
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
+
+lowresnx:
+  name:       Lowres NX
+  manufacturer: Fantasy
+  release: 2018
+  hardware: console
+  extensions: [nx, zip, 7z]
+  emulators:
+    libretro:
+      lowresnx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LOWRESNX] }
 
 channelf:
   name:       Channel-F
@@ -2456,6 +2461,21 @@ crvision:
   comment_en: |
           Requires MAME BIOS file crvision.zip
 
+laser310:
+  name:       Laser 310
+  manufacturer: VTech
+  release: 1984
+  hardware: computer
+  extensions: [vz, wav, cas, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file laser310.zip
+          Using snapshot (.vz) files is recommended.
+
 socrates:
   name:       Socrates
   manufacturer: VTech
@@ -2928,7 +2948,7 @@ xrick:
     Put the data.zip in this directory.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
-    
+
 macintosh:
   name:       Macintosh
   manufacturer: Apple
@@ -2983,7 +3003,7 @@ naomi2:
     --------------------------------
     ## DEMUL - CURRENTLY DISABLED ##
     --------------------------------
-    
+
     An alternative is to use Demul with Wine.
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
@@ -3016,7 +3036,7 @@ naomi2:
 
     Controller 1 = 0x100 & 0x200 for the buttons & the 2x analog sticks.
     Controller 2 = 0x101 & 0x201 etc.
-    
+
     Device input hex codes are listed in the appropriate linux kernel input.h depending on the controller type.
     i.e. A gamepad's 'start' button is 0x13b
     Therefore controller 1's start button is 0100013b in hex or 16777531 in decimal.
@@ -3263,18 +3283,66 @@ gzdoom:
 
     Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
 
-ionfury:
-  name: Ion Fury
+eduke32:
+  name: EDuke32
   manufacturer: Ports
   release:
+  hardware: port
+  extensions: [ eduke32 ]
+  group: ports
+  emulators:
+    eduke32:
+      eduke32: { requireAnyOf: [ BR2_PACKAGE_EDUKE32 ] }
+  comment_en: |
+    EDuke32 is a Build Engine source port for playing games like Duke Nukem 3D.
+    
+    The following games are officially supported, and should be placed in the designated directory with their required
+    files:
+      * duke:   Duke Nukem 3D (DUKE3D.GRP)
+      * duke:   Duke Nukem 3D: Duke It Out in D.C. (DUKEDC.GRP)
+      * duke:   Duke Nukem 3D: Duke Caribbean: Life's a Beach (VACATION.GRP)
+      * duke:   Duke Nukem 3D: Duke: Nuclear Winter (NWINTER.GRP)
+      * nam:    NAM (NAM.GRP, NAM.CON)
+      * ww2gi:  World War II GI (WW2GI.GRP)
+      * ww2gi:  World War II GI: Platoon Leader (PLATOONL.DAT, PLATOONL.DEF)
+    
+    Note: If you want to play Ion Fury, check out the fury roms directory as it uses a slightly different binary.
+    
+    Each game needs an .eduke32 file. The purpose of this file is to tell EDuke32 how to launch the game. This is simple
+    for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
+    the scraper has an easier time getting a match e.g. Duke_Nukem_3D.eduke32.
+    
+    For each Duke Nukem 3D game, create an .eduke32 file with the following text:
+      FILE  = /duke/DUKE3D.GRP
+      FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For Nam, create an .eduke32 file with the following text:
+      FILE = /nam/NAM.GRP
+      CON  = /nam/NAM.CON
+    
+    For World War II GI, create an .eduke32 file with the following text:
+      FILE = /ww2gi/WW2GI.GRP
+    
+    For the World War II GI: Platoon Leader expansion, create an .eduke32 file with the following text:
+      FILE  = /ww2gi/WW2GI.GRP
+      FILE+ = /ww2gi/PLATOONL.DAT
+      CON   = /ww2gi/PLATOONL.DEF
+    
+    For mod support and troubleshooting, please visit the wiki for more information.
+
+fury:
+  name: Ion Fury
+  manufacturer: Ports
+  release: 2019
   hardware: port
   extensions: [grp]
   group: ports
   emulators:
-    ionfury:
-      ionfury: { requireAnyOf: [BR2_PACKAGE_IONFURY] }
+    eduke32:
+      fury: { requireAnyOf: [BR2_PACKAGE_EDUKE32] }
   comment_en: |
     Ion Fury is a new Build Engine game from the creators of the EDuke32 source port.
+    
     Place the following files in this directory:
       * fury.grp
       * fury.grpinfo
@@ -3284,74 +3352,100 @@ raze:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [raze]
+  extensions: [ raze ]
   group: ports
   emulators:
     raze:
-      raze: { requireAnyOf: [BR2_PACKAGE_RAZE] }
+      raze: { requireAnyOf: [ BR2_PACKAGE_RAZE ] }
   comment_en: |
     Raze is a source port, powered by GZDoom tech, for playing classic Build Engine games like Duke Nukem 3D.
 
-    Each game must be organized in the raze directory properly and have a .raze file created for it.
+    The following games are officially supported, and should be placed in the designated directory with their required
+    files (including subdirectories):
+      * blood:          Blood (movies/*.ogv, blood.ini, *.art, *.dat, *.rff)
+      * blood:          Blood: Cryptic Passage (see instructions further below)
+      * duke:           Duke Nukem 3D (DUKE3D.GRP)
+      * duke:           Duke Nukem 3D: Duke It Out in D.C. (DUKEDC.GRP)
+      * duke:           Duke Nukem 3D: Duke Caribbean: Life's a Beach (VACATION.GRP)
+      * duke:           Duke Nukem 3D: Duke: Nuclear Winter (NWINTER.GRP)
+      * exhumed:        Exhumed/PowerSlave (BOOK.MOV, DEMO.VCR, STUFF.DAT)
+      * nam:            NAM (NAM.GRP, NAM.CON)
+      * redneck:        Redneck Rampage (REDNECK.GRP)
+      * redneck:        Redneck Rampage: Suckin' Grits on Route 66 (see instructions further below)
+      * redneckrides:   Redneck Rampage Rides Again (RIDES.GRP) <-- Note: rename from REDNECK.GRP
+      * shadow:         Shadow Warrior (SW.GRP)
+      * shadow:         Shadow Warrior: Twin Dragon (TD.GRP)
+      * shadow:         Shadow Warrior: Wanton Destruction (WD.GRP)
+      * ww2gi:          World War II GI (WW2GI.GRP)
+      * ww2gi:          World War II GI: Platoon Leader (PLATOONL.DAT, PLATOONL.DEF)
 
-    The Build Engine uses a file override system similar to Doom and WAD files. Each game requires different files and
-    some are optional for things like movies and music. Batocera uses text files with the .raze extension that contain a
-    list of paths to files--one path per line. This tells Raze how to load a game. For example, there is a single line
-    inside DukeNukem3D.raze:
-        DUKE3D.GRP
-    This line provides the relative path to the .grp file Raze needs to load the game. For another example, there
-    are two lines inside BloodCrypticPassage.raze:
-        blood/BLOOD.RFF
-        cryptic.zip
-    The first line is the Blood launcher file. The second line is the relative path to the zip file containing the
-    Cryptic Passage expansion. In this way, Raze loads the Blood game first and then loads the expansion on top of it.
-    So base games are listed first and then expansions. The base game is normally a .grp file unless denoted as a
-    special launcher file (see below). You can also load mods like HRP for Duke Nukem 3D, Death Wish for Blood, etc.
-
-    You will want to structure the raze directory something like the following depending on which games you are
-    installing. You just do not want files conflicting with each other. After that, create the .raze file for each game,
-    placing one relative path on each line.
-
-    See the wiki for more information.
-
-    /userdata/roms/raze
-    |__ *.raze
-    |__ /blood (Blood)
-       |__ /movies/*.ogv
-       |__ blood.ini, *.art, *.dat, *.rff (blood.rff is launcher)
-       |__ *.ogg (optional; named blood02.ogg, etc. or track02.ogg, etc.)
-    |__ cryptic.zip (Blood: Cryptic Passage expansion)
-       |__ /movies/*.ogv
-       |__ *.art, *.ini, *.map
-    |__ ps (PowerSlave/Exhumed)
-       |__ book.mov, demo.vcr, stuff.dat (launcher)
-       |__ *.ogg (optional; named exhumed02.ogg, etc. or track02.ogg, etc.)
-    |__ rr
-       |__ redneck.grp (Redneck Rampage)
-       |__ route66.zip (Redneck Rampage: Suckin' Grits on Route 66 Expansion)
-          |__ /ROUTE66/*.map
-          |__ *.anm, *.art, *.con, *.voc
-       |__ *.ogg (optional; named redneck02.ogg, etc. or track02.ogg, etc.)
-    |__ rides.grp (Redneck Rampage Rides Again) (Note: rename from redneck.grp)
-    |__ sw
-       |__ sw.grp (Shadow Warrior)
-       |__ td.grp (Shadow Warrior: Twin Dragon Expansion)
-       |__ wd.grp (Shadow Warrior: Wanton Destruction)
-       |__ *.ogg (optional; named shadow02.ogg, etc. or track02.ogg, etc.)
-    |__ duke3d.grp (Duke Nukem 3D)
-    |__ dukedc.grp (Duke Nukem 3D: Duke It Out In D.C Expansion)
-    |__ nwinter.grp (Duke Nukem 3D: Duke Caribbean: Life's a Beach Expansion)
-    |__ vacation.grp (Duke Nukem 3D: Nuclear Winter Expansion)
-    |__ worldtour.zip (Duke Nukem 3D: Twentieth Anniversary World Tour Expansion)
-       |__ /def/*
-       |__ /maps/*
-       |__ /music/*
-       |__ /sound/*
-       |__ /textures/*
-       |__ *.art, *.con, *.dmo
-    |__ nam.grp (NAM/Naplam)
-    |__ nam.con
-    |__ ww2gi.con
-    |__ ww2gi.grp (WWII GI/World War II GI)
-    |__ platoonl.dat
-    |__ platoonl.def (World War II GI: Platoon Leader Expansion) (launcher)
+    For some of these expansion packs, the required files (including subdirectories) need to be collected into the root
+    of a .zip file and placed in the designated directory:
+    
+      Blood: Cryptic Passage
+        1. Collect required files: movies/*.ogv, *.art, *.ini, *.map
+        2. Zip required files into root of cryptic.zip
+        3. Place cryptic.zip in blood directory
+    
+      Redneck Rampage: Suckin' Grits on Route 66
+        1. Collect ANM files: END66.ANM, TURD66.ANM
+        2. Collect ART files: TILESA66.ART, TILESB66.ART
+        3. Collect CON files: BUBBA66.CON, DEFS66.CON, GAME66.CON, GATOR66.CON, PIG66.CON, USER66.CON
+        4. Collect MAP files: ROUTE66/*.MAP (keep the ROUTE66 subdirectory)
+        5. Collect VOC files: ASYAMB.VOC, END66.VOC, G_BITE.VOC, G_SIT.VOC, NEON.VOC, TURD66.VOC
+        6. Rename files: TILESA66.ART -> TILES024.ART; TILESB66.ART -> TILES025.ART; GAME66.CON -> GAME.CON
+        7. Zip required files into root of route66.zip
+        8. Place route66.zip in redneck directory
+    
+    Optionally, add music tracks with the following names to the designated directories:
+      * blood:          track02.ogg or blood02.ogg, etc.
+      * exhumed:        track02.ogg or exhumed02.ogg, etc.
+      * redneck:        track02.ogg or redneck02.ogg, etc.
+      * redneckrides:   track02.ogg or redneckrides02.ogg, etc.
+      * shadow:         track02.ogg or shadow02.ogg, etc.
+    
+    Each game needs a .raze file. The purpose of this file is to tell Raze how to launch the game. This is simple
+    for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
+    the scraper has an easier time getting a match e.g. Duke_Nukem_3D.raze.
+    
+    For Blood, create a .raze file with the following text:
+      FILE = /blood/BLOOD.RFF
+    
+    For Blood: Cryptic Passage, create a .raze file with the following text:
+      FILE  = /blood/BLOOD.RFF
+      FILE+ = /blood/cryptic.zip
+    
+    For each Duke Nukem 3D game, create a .raze file with the following text:
+      FILE  = /duke/DUKE3D.GRP
+      FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For Exhumed/PowerSlave, create a .raze file with the following text:
+      FILE = /exhumed/STUFF.DAT
+    
+    For Nam, create an .raze file with the following text:
+      FILE = /nam/NAM.GRP
+      CON  = /nam/NAM.CON
+    
+    For Redneck Rampage, create a .raze file with the following text:
+      FILE = /redneck/REDNECK.GRP
+    
+    For Redneck Rampage: Suckin' Grits on Route 66, create a .raze file with the following text:
+      FILE  = /redneck/REDNECK.GRP
+      FILE+ = /redneck/route66.zip
+    
+    For Redneck Rampage Rides Again, create a .raze file with the following text:
+      FILE = /redneckrides/RIDES.GRP
+    
+    For each Shadow Warrior game, create a .raze file with the following text:
+      FILE  = /shadow/SW.GRP
+      FILE+ = /shadow/TD.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For World War II GI, create an .raze file with the following text:
+      FILE = /ww2gi/WW2GI.GRP
+    
+    For the World War II GI: Platoon Leader expansion, create an .raze file with the following text:
+      FILE  = /ww2gi/WW2GI.GRP
+      FILE+ = /ww2gi/PLATOONL.DAT
+      CON   = PLATOONL.DEF
+    
+    For mod support and troubleshooting, please visit the wiki for more information.

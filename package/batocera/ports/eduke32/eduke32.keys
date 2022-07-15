@@ -1,0 +1,27 @@
+{
+    "actions_player1": [
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "exec",
+            "target": "killall -9 eduke32; killall -9 fury"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": "KEY_F6",
+            "description": "quicksave"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "quickload"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_F12",
+            "description": "screenshot"
+        }
+    ]
+}
