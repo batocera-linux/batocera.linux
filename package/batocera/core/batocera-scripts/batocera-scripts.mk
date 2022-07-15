@@ -73,6 +73,14 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RG552),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_RG552
 endif
 
+define BATOCERA_SCRIPTS_INSTALL_RK3128
+        install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-resolution-post-rk3128 $(TARGET_DIR)/usr/bin/batocera-resolution-post
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
+  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_RK3128
+endif
+
 define BATOCERA_SCRIPTS_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/x86/fsoverlay/etc/X11/xorg.conf.d/20-amdgpu.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/20-amdgpu.conf
