@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# joycond is a service that pairs Nintendo Switch joy-cons together into a virtual controller
+
+#########
+# USAGE #
+#########
+
+# Pro Controller #
+# ============== #
+
+# When a joy-con or pro controller is connected via bluetooth or USB, the player LEDs should start blinking periodically.
+# This signals that the controller is in pairing mode.
+# For the pro controller, pressing both triggers will "pair" it.
+
+# Joycons #
+# ======= #
+
+# With the joy-cons, to use a single contoller alone, hold ZL and L at the same time (ZR and R for the right joy-con).
+# Alternatively, hold both S triggers at once (when held horizontally).
+
+# To combine two joy-cons into a virtual input device, press a *single* trigger on both of them at the same time.
+# A new uinput device will be created called "Nintendo Switch Combined Joy-Cons".
+# Rumble support is now functional for the combined joy-con uinput device.
+
+if test "$1" = "start"
+then
+    # joycond: force daemon to start if not already started
+    if [$(pgrep joycond) == ""]; then
+        # ensure module ledtrig-timer is loaded
+        modprobe ledtrig-timer
+        nohup /usr/bin/joycond &
+    fi
+fi
