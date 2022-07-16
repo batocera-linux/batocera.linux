@@ -1359,6 +1359,7 @@ config BR2_PACKAGE_BATOCERA_SDL2
 	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_SDL2_OPENGLES
 	select BR2_PACKAGE_SDL2_OPENGL      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
+	select BR2_PACKAGE_SDL2_X11         if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
 	select BR2_PACKAGE_SDL2_KMSDRM      if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_FLAC      # flac
 	select BR2_PACKAGE_LIBMAD    # mp3
@@ -1379,6 +1380,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_XDRIVER_XF86_INPUT_EVDEV
 	select BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
 	select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
+	select BR2_PACKAGE_XDRIVER_XF86_INPUT_SYNAPTICS
 
 	# GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
 	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -1404,6 +1406,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_XTERM                        # terminal
 	select BR2_PACKAGE_OPENBOX                      # window manager
 	select BR2_PACKAGE_UNCLUTTER                    # hide mouse
+	select BR2_PACKAGE_TOUCHEGG                     # touchscreen extended gestures
 
 	# vendor neutral GL dispatch library
 	# already set by nvidia for x86_64, but required on x86 for pcsx2
