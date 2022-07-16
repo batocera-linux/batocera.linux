@@ -5,22 +5,21 @@
 # USAGE #
 #########
 
-# Pro Controller #
-# ============== #
-
-# When a joy-con or pro controller is connected via bluetooth or USB, the player LEDs should start blinking periodically.
-# This signals that the controller is in pairing mode.
-# For the pro controller, pressing both triggers will "pair" it.
-
 # Joycons #
 # ======= #
 
-# With the joy-cons, to use a single contoller alone, hold ZL and L at the same time (ZR and R for the right joy-con).
+# With the joy-cons, to use a single contoller alone:
+# Once paired via bluetooth you will have the four indicator lights flashing.
+# Hold ZL and L at the same time (ZR and R for the right joy-con).
 # Alternatively, hold both S triggers at once (when held horizontally).
 
-# To combine two joy-cons into a virtual input device, press a *single* trigger on both of them at the same time.
-# A new uinput device will be created called "Nintendo Switch Combined Joy-Cons".
-# Rumble support is now functional for the combined joy-con uinput device.
+# To combine two joy-cons into a virtual input device:
+# Ensure both joycons are on & all four indicator lights are flashing on both joycons. 
+# Press a *single* trigger (L2 & R2 or ZL & ZR) on both of them at the same time.
+# A new input device will be created called "Nintendo Switch Combined Joy-Cons".
+
+# Note: When using a virtual combined controller, Batocera will see three controllers (Left, Right & Virtual)
+#       You may need to manually assign the controller number in EmulationStation for emulator compatibility.
 
 if test "$1" = "start"
 then
