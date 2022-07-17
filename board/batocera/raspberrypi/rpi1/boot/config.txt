@@ -81,7 +81,8 @@ initramfs boot/initrd.gz
 #dtoverlay=gpio-ir,gpio_pin=17
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
-# Additional overlays and parameters are documented /boot/overlays/README
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
