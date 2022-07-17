@@ -629,6 +629,8 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     # rumble (to reduce force feedback on devices like RG552)
     if system.isOptSet('rumble_gain'):
         retroarchConfig['input_rumble_gain'] = systemConfig.get('rumble_gain', "")
+    else:
+        retroarchConfig['input_rumble_gain'] = ""
 
     # On-Screen Display
     retroarchConfig['width']  = gameResolution["width"]  # default value
