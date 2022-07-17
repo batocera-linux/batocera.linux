@@ -258,8 +258,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # wiimotes
 	select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
 	select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
-	select BR2_PACKAGE_HID_NX                               if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_PS4 # updated nintendo switch controller driver
-	select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_PS4 # nintendo switch joycon daemon (requires hid-nx)
+	select BR2_PACKAGE_HID_NX                               # updated nintendo switch controller driver
+	select BR2_PACKAGE_JOYCOND                              # nintendo switch joycon daemon (requires hid-nx)
 
 	# RaspberryPi Firmwares bluetooth and wifi
 	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI           if BR2_PACKAGE_BATOCERA_RPI_ANY

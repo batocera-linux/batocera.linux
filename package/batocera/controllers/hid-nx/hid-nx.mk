@@ -3,7 +3,7 @@
 # hid-nx
 #
 ################################################################################
-HID_NX_VERSION = 20e330a33aba1f1fc00287278ad31ca98ede383a
+HID_NX_VERSION = 7c94f13ac8ecc3f74875dbd00ceb5cc5400824e7
 HID_NX_SITE = $(call github,emilyst,hid-nx-dkms,$(HID_NX_VERSION))
 HID_NX_DEPENDENCIES = host-libcurl host-cabextract libusb
 
