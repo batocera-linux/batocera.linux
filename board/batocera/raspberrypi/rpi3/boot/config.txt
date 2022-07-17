@@ -122,6 +122,9 @@ disable_splash=1
 #dtoverlay=gpio-ir,gpio_pin=17
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
 # Default GPU memory split (do not change if you do not know what you are doing)
 gpu_mem=32
 
