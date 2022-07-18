@@ -869,6 +869,11 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
             else:
                 bezelNeedAdaptation = True
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
+        if defined('ratio', system.config):
+            if system.config['ratio'] in ratioIndexes:
+                retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
+                retroarchConfig['video_aspect_ratio_auto'] = 'false'
+
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
         if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
@@ -889,6 +894,11 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
             bezelNeedAdaptation = False
         if not shaderBezel:
             retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
+            if defined('ratio', system.config):
+                if system.config['ratio'] in ratioIndexes:
+                    retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
+                    retroarchConfig['video_aspect_ratio_auto'] = 'false'
+
 
     if not shaderBezel:
         retroarchConfig['input_overlay_enable']       = "true"
