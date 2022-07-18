@@ -5,7 +5,12 @@
 
 do_start ()
 {
-    image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
+    if [[ $(batocera-resolution getDisplayMode) == "xorg" ]]; then
+        image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size)".png"
+    else
+        image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
+    fi
+
     if ! [ -f "$image" ]; then
         image="/usr/share/batocera/splash/boot-logo.png"
         [ -f "$image" ] || exit 1

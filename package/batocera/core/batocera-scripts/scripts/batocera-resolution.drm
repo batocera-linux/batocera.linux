@@ -16,6 +16,7 @@ f_usage() {
     echo "${0} setOutput <output>" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} getDisplayMode" >&2
 }
 
 if test -z "${ACTION}"
@@ -158,6 +159,9 @@ case "${ACTION}" in
     "minTomaxResolution" | "minTomaxResolution-secure")
 	f_checkVals
 	f_minTomaxResolution "$1"
+        ;;
+    "getDisplayMode")
+        echo "drm"
         ;;
     *)
         f_usage
