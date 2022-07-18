@@ -17,14 +17,9 @@ sed -i '/^[ ]*gpu_mem[ ]*=*.*$/d'           "${configFile}" || exit 0
 sed -i '/^[ ]*dtoverlay[ ]*=[ ]*vc4.*$/d'	"${configFile}" || exit 0
 
 (echo "
-# Firmware configurations
 start_file=start.elf
 fixup_file=fixup.dat
-
-# Default GPU memory split
 gpu_mem=32
-
-# Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d,cma-512") >> "${configFile}" || exit 0
 mount -o remount,ro /boot || exit 1
 shutdown -r now
