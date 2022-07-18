@@ -65,6 +65,10 @@ do_videostart ()
     fi
 
     mpv_video=
+    # Dumb fix for win600 screen rotation
+    if [[ ($(batocera-settings-get display.rotate) == "" ) && ($(batocera-info | grep "Cpu model:") == "Cpu model: AMD Athlon Silver 3050e with Radeon Graphics") && ($(cat /sys/class/graphics/fb0/virtual_size) == "720,1280") ]]; then
+        batocera-settings-set display.rotate 1
+    fi
     video_rotation=$(batocera-settings-get display.rotate)
     if [[ $? -eq 0 ]]; then
         video_rotation=$(do_angels_conversion $video_rotation)
