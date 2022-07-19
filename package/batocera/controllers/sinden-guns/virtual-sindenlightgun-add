@@ -47,17 +47,20 @@ then
     if test -n "${ACMDEV}"
     then
     	mkdir -p "/var/run/sinden" || cleanAndExit 1
+
+	CONFIGFILE="/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe.config"
+
 	if ! test -e "/var/run/sinden/p${USBPATHHASH}"
 	then
     	    cp -pr /usr/share/sinden "/var/run/sinden/p${USBPATHHASH}" || cleanAndExit 1
 	    # mono-service seems to be needed (otherwise, udev won't release, and at batocera statup, it takes long)
 	    # but mono-service seems to want a distinguish exe name
 	    mv "/var/run/sinden/p${USBPATHHASH}/LightgunMono.exe" "/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe" || cleanAndExit 1
-	    mv "/var/run/sinden/p${USBPATHHASH}/LightgunMono.exe.config" "/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe.config" || cleanAndExit 1
+	    mv "/var/run/sinden/p${USBPATHHASH}/LightgunMono.exe.config" "${CONFIGFILE}" || cleanAndExit 1
 	fi
 
 	# parameters
-	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe.config" || cleanAndExit 1
+	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || cleanAndExit 1
 	(cd "/var/run/sinden/p${USBPATHHASH}" && PATH=/bin:/sbin:/usr/bin:/usr/sbin mono-service "./LightgunMono-${USBPATHHASH}.exe" &)
     fi
     
