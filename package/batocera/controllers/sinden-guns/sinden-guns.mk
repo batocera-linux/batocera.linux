@@ -3,17 +3,15 @@
 # sinden-guns
 #
 ################################################################################
+
 SINDEN_GUNS_VERSION = 1.07
 SINDEN_GUNS_SOURCE=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION).zip
 SINDEN_GUNS_SITE=https://www.sindenlightgun.com/software
 
-ifeq ($(BR2_x86_64),y)
-  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/X86/64bit/Lightgun/Player1
-else ifeq ($(BR2_aarch64)$(BR2_arm),y)
-  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/Pi-Arm/Lightgun/Player1
-else
-  SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=invalid_directory
-endif
+SINDEN_GUNS_DEPENDENCIES = sinden-guns-libs
+
+# always take the x86 binary, while this is the only one working, bundles required for others
+SINDEN_GUNS_ARCHIVE_DIR_PLAYER1=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION)/SindenLightgunLinuxSoftwareV$(SINDEN_GUNS_VERSION)/X86/64bit/Lightgun/Player1
 
 define SINDEN_GUNS_EXTRACT_CMDS
 	mkdir -p $(@D) && cd $(@D) && unzip -x $(DL_DIR)/$(SINDEN_GUNS_DL_SUBDIR)/$(SINDEN_GUNS_SOURCE)
@@ -29,8 +27,8 @@ define SINDEN_GUNS_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.Math.dll       $(TARGET_DIR)/usr/share/sinden/AForge.Math.dll
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.dll            $(TARGET_DIR)/usr/share/sinden/AForge.dll
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.Imaging.dll    $(TARGET_DIR)/usr/share/sinden/AForge.Imaging.dll
-	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/libSdlInterface.so    $(TARGET_DIR)/usr/share/sinden/libSdlInterface.so
-	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/libCameraInterface.so $(TARGET_DIR)/usr/share/sinden/libCameraInterface.so
+	#$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/libSdlInterface.so    $(TARGET_DIR)/usr/share/sinden/libSdlInterface.so
+	#$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/libCameraInterface.so $(TARGET_DIR)/usr/share/sinden/libCameraInterface.so
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/License.txt           $(TARGET_DIR)/usr/share/sinden/License.txt
 endef
 

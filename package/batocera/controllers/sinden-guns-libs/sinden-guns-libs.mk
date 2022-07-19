@@ -1,0 +1,22 @@
+################################################################################
+#
+# sinden-guns-libs
+#
+################################################################################
+
+SINDEN_GUNS_LIBS_VERSION = e49ca483ed6bbb2b0916459c338ffa70389410a7
+SINDEN_GUNS_LIBS_SITE = $(call github,batocera-linux,batocera-sinden-bundles,$(SINDEN_GUNS_LIBS_VERSION))
+
+ifeq ($(BR2_x86_64),y)
+  SINDEN_GUNS_LIBS_ARCH_DIR=x86_64
+else ifeq ($(BR2_aarch64),y)
+  SINDEN_GUNS_LIBS_ARCH_DIR=aarch64
+else
+  SINDEN_GUNS_LIBS_ARCH_DIR=undefined
+endif
+
+define SINDEN_GUNS_LIBS_INSTALL_TARGET_CMDS
+	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_LIBS_ARCH_DIR)/libCameraInterface.so $(TARGET_DIR)/usr/share/sinden/libCameraInterface.so
+endef
+
+$(eval $(generic-package))
