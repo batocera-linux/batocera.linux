@@ -19,5 +19,6 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp "${BINARIES_DIR}/bzImage"         "${BATOCERA_BINARIES_DIR}/boot/"           || exit 1
 cp "${BINARIES_DIR}/initrd.gz"       "${BATOCERA_BINARIES_DIR}/boot/"                || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/batocera.update" || exit 1
+cp "${BOARD_DIR}/boot/bootargs.txt"          "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 
 exit 0
