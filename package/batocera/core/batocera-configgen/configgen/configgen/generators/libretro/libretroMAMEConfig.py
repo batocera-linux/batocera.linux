@@ -1050,8 +1050,16 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
                     dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1DOWN'
                 if pad.inputs[direction].value == "8":
                     dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
+            # If no specific input defined (controller w/no d-pad), use generic d-pad inputs for Retropad
             else:
-                dpadInputs[direction] = ''
+                if direction == 'up':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1UP'
+                elif direction == 'down':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1DOWN'
+                elif direction == 'left':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
+                elif direction == 'right':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1RIGHT'
         buttonDirections = {}
         for direction in ['a', 'b', 'x', 'y']:
             if pad.inputs[direction].type == 'button':
