@@ -229,6 +229,8 @@ class MameGenerator(Generator):
         else:
             commandArray += [ "-lightgunprovider", "auto" ]
             commandArray += [ "-lightgun_device", "mouse" ]
+        if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
+            commandArray += [ "-offscreen_reload" ]
 
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
