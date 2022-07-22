@@ -9,7 +9,7 @@ shared:
       preset: videomodes
     ratio:
       prompt: GAME ASPECT RATIO
-      description: Force the game to render in this aspect ratio. Not all systems support all ratios.
+      description: Force the game to render in this aspect ratio. Decorations override this setting.
       choices:
         "4/3":           "4/3"
         "16/9":          "16/9"
@@ -54,12 +54,14 @@ shared:
       preset: shaderset
     smooth:
       prompt: SMOOTH GAMES (BILINEAR FILTERING)
+      description: Disabled if using a shader set or the output display matches the game's resolution.
       submenu: GAME RENDERING & SHADERS
       choices:
         "On":  1
         "Off": 0
     integerscale:
-      prompt:      INTEGER SCALING (PIXEL PERFECT)
+      prompt:  INTEGER SCALING (PIXEL PERFECT)
+      description: Only increase the image size in integer multiples.
       submenu: GAME RENDERING & SHADERS
       choices:
         "On": 1
@@ -125,6 +127,7 @@ shared:
       preset: switch
     ai_target_lang:
       prompt: TARGET LANGUAGE
+      description: The language to translate into.
       submenu: AI GAME TRANSLATION
       choices:
         "ENGLISH":   "En"
@@ -150,6 +153,7 @@ shared:
         "简体中文":  "Zh"
     ai_service_url:
       prompt: AI TRANSLATION SERVICE URL
+      description: If nothing is specified, will use ZTranslate by default.
       submenu: AI GAME TRANSLATION
       preset: input
     ai_service_pause:
@@ -204,8 +208,8 @@ shared:
         "On":  1
         "Off": 0
     rumble_gain:
-      prompt:      RUMBLE GAIN
-      description: For emulators and controllers supporting force feedback, scale from 0 to 100%
+      prompt:      RUMBLE LEVEL
+      description: For emulators and controllers supporting force feedback.
       choices:
         "disabled": 0
         "20%": 20
@@ -8751,7 +8755,7 @@ soniccd:
                 "Regular Bilnear":      3
         hqmode:
             group: ADVANCED OPTIONS
-            prompt:      HQ Mode
+            prompt:      HQ MODE
             description: Enable high quality effects for special stages.
             choices:
                 "Off":    0
@@ -8933,10 +8937,9 @@ eduke32:
   cfeatures:
     nologo:
       prompt: SKIP INTRO VIDEOS
-      description: Skip introduction animations and logos; default is show
       choices:
         "Skip": 1
-        "Show": 0
+        "Show (Default)": 0
 
 fury:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -8944,10 +8947,9 @@ fury:
   cfeatures:
     nologo:
       prompt: SKIP INTRO VIDEOS
-      description: Skip introduction animations and logos; default is show
       choices:
         "Skip": 1
-        "Show": 0
+        "Show (Default)": 0
 
 raze:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -8955,7 +8957,6 @@ raze:
   cfeatures:
     nologo:
       prompt: SKIP INTRO VIDEOS
-      description: Skip introduction animations and logos; default is show
       choices:
         "Skip": 1
-        "Show": 0
+        "Show (Default)": 0
