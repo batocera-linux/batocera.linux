@@ -49,12 +49,12 @@ case $1 in
         [ -z "$splash_setting" ] && splash_setting=auto
         [ "$splash_setting" = "auto" -a "$(echo $ARCH | cut -c 1-3)" = "rpi" ] && splash_setting=$ARCH
         case "$splash_setting" in
-            rpi1)
+            rpi1|rpizero2)
                 # Standard BATOCERA setting, for Pi platform with OMX Player
                 #
                 splash_default_rpi &
             ;;
-            auto|rpizero2|rpi2|rpi3|rpi4)
+            auto|rpi2|rpi3|rpi4)
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay
