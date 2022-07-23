@@ -1937,6 +1937,17 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
+        # Fresh config file
+        keropi_config = '/userdata/bios/keropi/config'
+        keropi_sram = '/userdata/bios/keropi/sram.dat'
+        for f in [ keropi_config, keropi_sram ]:
+            if os.path.exists(f):
+                os.remove(f)
+        fd = open(keropi_config, "w")
+        fd.write("[WinX68k]\n")
+        fd.write("StartDir=/userdata/roms/x68000\n")
+        fd.close()
+
         # To auto launch HDD games
         coreSettings.save('px68k_disk_path', '"disabled"')
         # CPU Speed (Overclock)
