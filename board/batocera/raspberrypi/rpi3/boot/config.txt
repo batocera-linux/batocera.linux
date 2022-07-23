@@ -2,6 +2,9 @@
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
+# Load the 64-bit kernel
+arm_64bit=1
+
 # Firmware configurations
 start_file=start.elf
 fixup_file=fixup.dat
