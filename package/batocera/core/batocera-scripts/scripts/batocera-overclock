@@ -14,6 +14,9 @@ then
     if grep -q "^Raspberry Pi 3 Model [A-Z] Plus" "/proc/device-tree/model"
     then
 	ARCH="rpi3+"
+    elif grep -q "^Raspberry Pi Zero 2" "/proc/device-tree/model"
+    then
+    ARCH="rpizero2"
     fi
 fi
 
