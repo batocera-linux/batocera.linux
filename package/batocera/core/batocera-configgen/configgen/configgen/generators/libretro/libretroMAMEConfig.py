@@ -290,6 +290,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 else:
                     commandLine += [ '-flop2', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
 
+    # Lightgun reload option
+    if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
+        commandArray += [ "-offscreen_reload" ]
+
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
     if system.config['core'] != 'same_cdi':

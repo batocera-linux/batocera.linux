@@ -1842,6 +1842,13 @@ libretro:
                 choices:
                     "On":  1
                     "Off": 0
+            offscreenreload:
+                group: LIGHT GUN
+                prompt:      OFF SCREEN RELOAD
+                description: Set gun button 2 to reload for games that require shooting off screen
+                choices:
+                    "On":            1
+                    "Off (Default)": 0
       systems:
          adam:
               cfeatures:
@@ -7348,6 +7355,13 @@ mame:
             choices:
                 "Enabled":            1
                 "Disabled (Default)": 0
+        offscreenreload:
+            group: LIGHT GUN
+            prompt:      OFF SCREEN RELOAD
+            description: Set gun button 2 to reload for games that require shooting off screen
+            choices:
+                "On":            1
+                "Off (Default)": 0
   systems:
        adam:
             cfeatures:
