@@ -2,6 +2,10 @@
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
+# Kernel
+kernel=boot/linux
+initramfs boot/initrd.gz
+
 # Firmware configurations
 start_file=start.elf
 fixup_file=fixup.dat
@@ -64,9 +68,6 @@ disable_splash=1
 gpu_mem_256=128
 gpu_mem_512=160
 gpu_mem_1024=384
-
-kernel=boot/linux
-initramfs boot/initrd.gz
 
 # enable UART (required for for retroflag)
 # affect rpi performances
