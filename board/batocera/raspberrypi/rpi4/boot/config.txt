@@ -5,6 +5,10 @@
 # Load the 64-bit kernel
 arm_64bit=1
 
+# Kernel
+kernel=boot/linux
+initramfs boot/initrd.gz
+
 # Firmware configurations
 start_file=start4.elf
 fixup_file=fixup4.dat
