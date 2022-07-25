@@ -34,13 +34,14 @@ do
 
     ### rotation ###
     display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
-    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-    TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
-    TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
     EXTRA_OPTS=
     if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
     then
-	case "${display_rotate}" in
+        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
+        TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
+
+    case "${display_rotate}" in
 	    "1")
 		xrandr --output "${OUTPUT}" --rotate right
 		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
@@ -63,7 +64,7 @@ do
 	    EXTRA_OPTS="--screenrotate ${display_rotate}"
 	fi
     fi
- 
+
     ### resolution ###
     bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     if test -z "${bootresolution}"
