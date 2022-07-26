@@ -153,11 +153,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -174,10 +175,14 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('vice_joyport', '"2"')
         # Select Controller Type
-        if system.isOptSet('vice_joyport_type'):
-            coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('vice_joyport_type', '"14"')
         else:
-            coreSettings.save('vice_joyport_type', '"1"')
+            if system.isOptSet('vice_joyport_type'):
+                coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+            else:
+                coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])
@@ -213,11 +218,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -271,11 +277,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_plus4_external_palette'):
             coreSettings.save('vice_plus4_external_palette', system.config['vice_plus4_external_palette'])
@@ -329,11 +336,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_vic20_external_palette'):
             coreSettings.save('vice_vic20_external_palette', system.config['vice_vic20_external_palette'])
@@ -387,11 +395,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_pet_external_palette'):
             coreSettings.save('vice_pet_external_palette', system.config['vice_pet_external_palette'])
@@ -419,7 +428,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
     # Commodore AMIGA
-    if (system.config['core'] == 'puae'):
+    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021'):
         # Functional mapping for Amiga system
         # If you want to change them, you can add
         # some strings to batocera.conf by using
@@ -431,7 +440,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 'statusbar': "RETROK_F11",
                 'vkbd': "---",
                 'reset': "---",
-                'zoom_mode_toggle': "RETROK_F12",
+                'crop_toggle': "RETROK_F12",
+                'zoom_mode_toggle': "---",
                 'a': "---",
                 'b': "---",
                 'x': "RETROK_LALT",
@@ -461,7 +471,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 'statusbar': "RETROK_F11",
                 'vkbd': "---",
                 'reset': "---",
-                'zoom_mode_toggle': "RETROK_F12",
+                'crop_toggle': "RETROK_F12",
+                'zoom_mode_toggle': "---",
                 'a': "---",
                 'b': "---",
                 'x': "---",
@@ -485,7 +496,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             for key in uae_mapping:
                 coreSettings.save('puae_mapper_' + key, uae_mapping[key])
         # Show Video Options
-        coreSettings.save('puae_video_options_display ', '"enabled"')
+        coreSettings.save('puae_video_options_display', '"enabled"')
         # Amiga Model
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
@@ -532,9 +543,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('puae_video_resolution', '"hires"')
         # Zoom Mode
         if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
-            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+            coreSettings.save('puae_crop', system.config['zoom_mode'])
         else:
-            coreSettings.save('puae_zoom_mode', '"auto"')
+            coreSettings.save('puae_crop', '"auto"')
+        coreSettings.save('puae_zoom_mode', '"deprecated"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -597,7 +609,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        coreSettings.save('o2em_vkbd_transparency', '"25"')
         # Emulated Hardware
         if system.isOptSet('o2em_bios'):
             coreSettings.save('o2em_bios', system.config['o2em_bios'])
@@ -1641,6 +1653,29 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('opera_nvram_storage', '"per game"')
 
+    # Rick Dangerous
+    if (system.config['core'] == 'xrick'):
+        # Crop Borders
+        if system.isOptSet('xrick_crop_borders') and system.getOptBoolean('xrick_crop_borders') == False:
+            coreSettings.save('xrick_crop_borders', '"disabled"')
+        else:
+            coreSettings.save('xrick_crop_borders', '"enabled"')
+        # Cheat 1 (Trainer Mode)
+        if system.isOptSet('xrick_cheat1') and system.getOptBoolean('xrick_cheat1'):
+            coreSettings.save('xrick_cheat1', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat1', '"disabled"')
+        # Cheat 2 (Invulnerablilty Mode)
+        if system.isOptSet('xrick_cheat2') and system.getOptBoolean('xrick_cheat2'):
+            coreSettings.save('xrick_cheat2', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat2', '"disabled"')
+        # Cheat 3 (Expose Mode)
+        if system.isOptSet('xrick_cheat3') and system.getOptBoolean('xrick_cheat3'):
+            coreSettings.save('xrick_cheat3', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat3', '"disabled"')
+
     # ScummVM CORE Options
     if (system.config['core'] == 'scummvm'):
         # Analog Deadzone
@@ -1902,6 +1937,17 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
+        # Fresh config file
+        keropi_config = '/userdata/bios/keropi/config'
+        keropi_sram = '/userdata/bios/keropi/sram.dat'
+        for f in [ keropi_config, keropi_sram ]:
+            if os.path.exists(f):
+                os.remove(f)
+        fd = open(keropi_config, "w")
+        fd.write("[WinX68k]\n")
+        fd.write("StartDir=/userdata/roms/x68000\n")
+        fd.close()
+
         # To auto launch HDD games
         coreSettings.save('px68k_disk_path', '"disabled"')
         # CPU Speed (Overclock)

@@ -340,7 +340,7 @@ nds:
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
     drastic:
-      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC] }
+      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
 
 fds:
   name:       Family Computer Disk System
@@ -375,7 +375,7 @@ lcdgames:
   emulators:
     libretro:
       gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
 
@@ -389,7 +389,7 @@ gameandwatch:
   emulators:
     libretro:
       gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
 
@@ -472,7 +472,7 @@ segacd:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [m3u] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 sega32x:
   name:       32x
@@ -676,9 +676,6 @@ dos:
 
     To quit a game, press CTRL + F9.
 
-    Games files are available on myabandonware:
-    http://www.myabandonware.com/browse/platform/dos/
-
     For more info: https://wiki.batocera.org/systems:dos
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
@@ -695,9 +692,6 @@ dos:
     Avec pure-dosbox vous pouvez aussi utiliser des fichiers zip.
 
     Pour quitter un jeu, appuyer sur CTRL + F9.
-
-    Les jeux DOS sont disponibles sur myabandonware:
-    http://www.myabandonware.com/browse/platform/dos/
 
     La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/systems:dos
 
@@ -888,7 +882,7 @@ xegs:
   group:      atari8bit
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -915,6 +909,7 @@ atari5200:
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+      a5200:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_A5200]    }
 
 atari7800:
   name:       Atari 7800
@@ -1065,6 +1060,16 @@ pico8:
     For more info: https://wiki.batocera.org/systems:pico-8
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
+
+lowresnx:
+  name:       Lowres NX
+  manufacturer: Fantasy
+  release: 2018
+  hardware: console
+  extensions: [nx, zip, 7z]
+  emulators:
+    libretro:
+      lowresnx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LOWRESNX] }
 
 channelf:
   name:       Channel-F
@@ -1542,7 +1547,7 @@ apple2:
   extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
@@ -1578,7 +1583,7 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
   platform:   gc
   theme:      gc
   emulators:
@@ -1614,7 +1619,7 @@ wii:
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u]
+  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
@@ -1847,7 +1852,7 @@ fmtowns:
   platform:   fmtowns
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [xdf, m3u] }
     tsugaru:
@@ -1958,7 +1963,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wup, wud, wux, rpx, squashfs]
+  extensions: [wua, wup, wud, wux, rpx, squashfs]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -2344,7 +2349,7 @@ apple2gs:
   extensions: [2mg, do, nib, po, dsk, mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
@@ -2382,7 +2387,7 @@ advision:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2396,7 +2401,7 @@ plugnplay:
   extensions: [zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2408,7 +2413,7 @@ megaduck:
   extensions:  [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
       sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK], incompatible_extensions: [zip, 7z] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
@@ -2423,7 +2428,7 @@ pv1000:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2435,7 +2440,7 @@ gamate:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2450,11 +2455,26 @@ crvision:
   extensions: [bin, rom, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file crvision.zip
+
+laser310:
+  name:       Laser 310
+  manufacturer: VTech
+  release: 1984
+  hardware: computer
+  extensions: [vz, wav, cas, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file laser310.zip
+          Using snapshot (.vz) files is recommended.
 
 socrates:
   name:       Socrates
@@ -2464,7 +2484,7 @@ socrates:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2479,7 +2499,7 @@ vsmile:
   extensions: [u1, u3, bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2493,7 +2513,7 @@ supracan:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2507,7 +2527,7 @@ gamecom:
   extensions: [bin, tgc, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2521,7 +2541,7 @@ gamepock:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2535,7 +2555,7 @@ fm7:
   extensions: [wav, t77, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2549,7 +2569,7 @@ archimedes:
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2565,7 +2585,7 @@ atom:
   extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2581,7 +2601,7 @@ electron:
   extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2597,7 +2617,7 @@ apfm1000:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2612,7 +2632,7 @@ bbc:
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2627,7 +2647,7 @@ camplynx:
   extensions: [wav, tap, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2642,7 +2662,7 @@ adam:
   extensions: [wav, ddp, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, rom, col, bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2657,7 +2677,7 @@ arcadia:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2669,7 +2689,7 @@ gmaster:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2684,7 +2704,7 @@ astrocde:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2698,7 +2718,7 @@ ti99:
   extensions: [rpk, wav, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2713,7 +2733,7 @@ tutor:
   extensions: [bin, wav, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2728,7 +2748,7 @@ coco:
   extensions: [wav, cas, ccc, rom, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2742,7 +2762,7 @@ vc4000:
   extensions: [bin, rom, pgm, tvc, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2754,7 +2774,7 @@ vgmplay:
   extensions: [vgm, vgz, zip, 7z]
   emulators:
     libretro:
-      mamevirtual: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2879,7 +2899,7 @@ samcoupe:
   manufacturer: Miles Gordon Technology
   release: 1989
   hardware: computer
-  extensions: [cpm, dsk, sad, mgt, sdf, td0, sbt]
+  extensions: [cpm, dsk, sad, mgt, sdf, td0, sbt, zip]
   emulators:
     samcoupe:
       samcoupe:  { requireAnyOf: [BR2_PACKAGE_SIMCOUPE] }
@@ -2928,7 +2948,7 @@ xrick:
     Put the data.zip in this directory.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
-    
+
 macintosh:
   name:       Macintosh
   manufacturer: Apple
@@ -2938,7 +2958,7 @@ macintosh:
   emulators:
     libretro:
       minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC], incompatible_extensions: [7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi] }
-      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -2983,7 +3003,7 @@ naomi2:
     --------------------------------
     ## DEMUL - CURRENTLY DISABLED ##
     --------------------------------
-    
+
     An alternative is to use Demul with Wine.
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
@@ -3016,7 +3036,7 @@ naomi2:
 
     Controller 1 = 0x100 & 0x200 for the buttons & the 2x analog sticks.
     Controller 2 = 0x101 & 0x201 etc.
-    
+
     Device input hex codes are listed in the appropriate linux kernel input.h depending on the controller type.
     i.e. A gamepad's 'start' button is 0x13b
     Therefore controller 1's start button is 0100013b in hex or 16777531 in decimal.
@@ -3190,7 +3210,7 @@ pdp1:
   extensions: [zip, 7z, tap, rim, drm]
   emulators:
     libretro:
-      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -3240,7 +3260,7 @@ gp32:
   extensions: [smc, zip, 7z]
   emulators:
     libretro:
-      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -3262,3 +3282,170 @@ gzdoom:
     i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
     Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
+
+eduke32:
+  name: EDuke32
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [ eduke32 ]
+  group: ports
+  emulators:
+    eduke32:
+      eduke32: { requireAnyOf: [ BR2_PACKAGE_EDUKE32 ] }
+  comment_en: |
+    EDuke32 is a Build Engine source port for playing games like Duke Nukem 3D.
+    
+    The following games are officially supported, and should be placed in the designated directory with their required
+    files:
+      * duke:   Duke Nukem 3D (DUKE3D.GRP)
+      * duke:   Duke Nukem 3D: Duke It Out in D.C. (DUKEDC.GRP)
+      * duke:   Duke Nukem 3D: Duke Caribbean: Life's a Beach (VACATION.GRP)
+      * duke:   Duke Nukem 3D: Duke: Nuclear Winter (NWINTER.GRP)
+      * nam:    NAM (NAM.GRP, NAM.CON)
+      * ww2gi:  World War II GI (WW2GI.GRP)
+      * ww2gi:  World War II GI: Platoon Leader (PLATOONL.DAT, PLATOONL.DEF)
+    
+    Note: If you want to play Ion Fury, check out the fury roms directory as it uses a slightly different binary.
+    
+    Each game needs an .eduke32 file. The purpose of this file is to tell EDuke32 how to launch the game. This is simple
+    for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
+    the scraper has an easier time getting a match e.g. Duke_Nukem_3D.eduke32.
+    
+    For each Duke Nukem 3D game, create an .eduke32 file with the following text:
+      FILE  = /duke/DUKE3D.GRP
+      FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For Nam, create an .eduke32 file with the following text:
+      FILE = /nam/NAM.GRP
+      CON  = /nam/NAM.CON
+    
+    For World War II GI, create an .eduke32 file with the following text:
+      FILE = /ww2gi/WW2GI.GRP
+    
+    For the World War II GI: Platoon Leader expansion, create an .eduke32 file with the following text:
+      FILE  = /ww2gi/WW2GI.GRP
+      FILE+ = /ww2gi/PLATOONL.DAT
+      CON   = /ww2gi/PLATOONL.DEF
+    
+    For mod support and troubleshooting, please visit the wiki for more information.
+
+fury:
+  name: Ion Fury
+  manufacturer: Ports
+  release: 2019
+  hardware: port
+  extensions: [grp]
+  group: ports
+  emulators:
+    eduke32:
+      fury: { requireAnyOf: [BR2_PACKAGE_EDUKE32] }
+  comment_en: |
+    Ion Fury is a new Build Engine game from the creators of the EDuke32 source port.
+    
+    Place the following files in this directory:
+      * fury.grp
+      * fury.grpinfo
+
+raze:
+  name: Raze
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [ raze ]
+  group: ports
+  emulators:
+    raze:
+      raze: { requireAnyOf: [ BR2_PACKAGE_RAZE ] }
+  comment_en: |
+    Raze is a source port, powered by GZDoom tech, for playing classic Build Engine games like Duke Nukem 3D.
+
+    The following games are officially supported, and should be placed in the designated directory with their required
+    files (including subdirectories):
+      * blood:          Blood (movies/*.ogv, blood.ini, *.art, *.dat, *.rff)
+      * blood:          Blood: Cryptic Passage (see instructions further below)
+      * duke:           Duke Nukem 3D (DUKE3D.GRP)
+      * duke:           Duke Nukem 3D: Duke It Out in D.C. (DUKEDC.GRP)
+      * duke:           Duke Nukem 3D: Duke Caribbean: Life's a Beach (VACATION.GRP)
+      * duke:           Duke Nukem 3D: Duke: Nuclear Winter (NWINTER.GRP)
+      * exhumed:        Exhumed/PowerSlave (BOOK.MOV, DEMO.VCR, STUFF.DAT)
+      * nam:            NAM (NAM.GRP, NAM.CON)
+      * redneck:        Redneck Rampage (REDNECK.GRP)
+      * redneck:        Redneck Rampage: Suckin' Grits on Route 66 (see instructions further below)
+      * redneckrides:   Redneck Rampage Rides Again (RIDES.GRP) <-- Note: rename from REDNECK.GRP
+      * shadow:         Shadow Warrior (SW.GRP)
+      * shadow:         Shadow Warrior: Twin Dragon (TD.GRP)
+      * shadow:         Shadow Warrior: Wanton Destruction (WD.GRP)
+      * ww2gi:          World War II GI (WW2GI.GRP)
+      * ww2gi:          World War II GI: Platoon Leader (PLATOONL.DAT, PLATOONL.DEF)
+
+    For some of these expansion packs, the required files (including subdirectories) need to be collected into the root
+    of a .zip file and placed in the designated directory:
+    
+      Blood: Cryptic Passage
+        1. Collect required files: movies/*.ogv, *.art, *.ini, *.map
+        2. Zip required files into root of cryptic.zip
+        3. Place cryptic.zip in blood directory
+    
+      Redneck Rampage: Suckin' Grits on Route 66
+        1. Collect ANM files: END66.ANM, TURD66.ANM
+        2. Collect ART files: TILESA66.ART, TILESB66.ART
+        3. Collect CON files: BUBBA66.CON, DEFS66.CON, GAME66.CON, GATOR66.CON, PIG66.CON, USER66.CON
+        4. Collect MAP files: ROUTE66/*.MAP (keep the ROUTE66 subdirectory)
+        5. Collect VOC files: ASYAMB.VOC, END66.VOC, G_BITE.VOC, G_SIT.VOC, NEON.VOC, TURD66.VOC
+        6. Rename files: TILESA66.ART -> TILES024.ART; TILESB66.ART -> TILES025.ART; GAME66.CON -> GAME.CON
+        7. Zip required files into root of route66.zip
+        8. Place route66.zip in redneck directory
+    
+    Optionally, add music tracks with the following names to the designated directories:
+      * blood:          track02.ogg or blood02.ogg, etc.
+      * exhumed:        track02.ogg or exhumed02.ogg, etc.
+      * redneck:        track02.ogg or redneck02.ogg, etc.
+      * redneckrides:   track02.ogg or redneckrides02.ogg, etc.
+      * shadow:         track02.ogg or shadow02.ogg, etc.
+    
+    Each game needs a .raze file. The purpose of this file is to tell Raze how to launch the game. This is simple
+    for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
+    the scraper has an easier time getting a match e.g. Duke_Nukem_3D.raze.
+    
+    For Blood, create a .raze file with the following text:
+      FILE = /blood/BLOOD.RFF
+    
+    For Blood: Cryptic Passage, create a .raze file with the following text:
+      FILE  = /blood/BLOOD.RFF
+      FILE+ = /blood/cryptic.zip
+    
+    For each Duke Nukem 3D game, create a .raze file with the following text:
+      FILE  = /duke/DUKE3D.GRP
+      FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For Exhumed/PowerSlave, create a .raze file with the following text:
+      FILE = /exhumed/STUFF.DAT
+    
+    For Nam, create an .raze file with the following text:
+      FILE = /nam/NAM.GRP
+      CON  = /nam/NAM.CON
+    
+    For Redneck Rampage, create a .raze file with the following text:
+      FILE = /redneck/REDNECK.GRP
+    
+    For Redneck Rampage: Suckin' Grits on Route 66, create a .raze file with the following text:
+      FILE  = /redneck/REDNECK.GRP
+      FILE+ = /redneck/route66.zip
+    
+    For Redneck Rampage Rides Again, create a .raze file with the following text:
+      FILE = /redneckrides/RIDES.GRP
+    
+    For each Shadow Warrior game, create a .raze file with the following text:
+      FILE  = /shadow/SW.GRP
+      FILE+ = /shadow/TD.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
+    
+    For World War II GI, create an .raze file with the following text:
+      FILE = /ww2gi/WW2GI.GRP
+    
+    For the World War II GI: Platoon Leader expansion, create an .raze file with the following text:
+      FILE  = /ww2gi/WW2GI.GRP
+      FILE+ = /ww2gi/PLATOONL.DAT
+      CON   = PLATOONL.DEF
+    
+    For mod support and troubleshooting, please visit the wiki for more information.

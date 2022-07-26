@@ -52,7 +52,6 @@ findDeps() {
 }
 
 findLibDir() {
-    # "${G_TARGETDIR}/usr/lib/pulseaudio"
     for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/lib/wine" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
@@ -89,10 +88,6 @@ if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
 then
     exit 1
 fi
-#if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
-#then
-#    exit 1
-#fi
 if ! mkdir -p "${TMPOUT}/usr/share/wine"
 then
     exit 1
@@ -107,19 +102,14 @@ then
 fi
 
 # libs32
-# "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
-#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
 cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
-#ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
-#"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/bin/wineserver" \
 "${G_TARGETDIR}/usr/lib/wine/"*.so \
@@ -159,7 +149,7 @@ echo "ld..."
 mkdir -p "${TMPOUT}/lib"                                      || exit 1
 ENDINGNAME=$(echo "${G_TARGETDIR}/lib/ld-linux"* | sed -e s+'^.*/\([^/]*\)$'+'\1'+)
 echo  "   ${ENDINGNAME}"
-(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so "${ENDINGNAME}") || exit 1
+(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so.* "${ENDINGNAME}") || exit 1
 
 if echo "${TARGET_IMAGE}" | grep -qE "^/"
 then

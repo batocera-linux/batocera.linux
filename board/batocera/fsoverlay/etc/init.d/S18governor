@@ -7,11 +7,18 @@ fi
 
 # This function is used by /board/batocera/rockchip/rk3326/fsoverlay/usr/share/batocera/configgen/scripts
 # It should be reworked to simply be included here instead of relying on an fsoverlay.
-save_current_governor() {
-  if current_governor="$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor)"
-  then
-    /usr/bin/batocera-settings-set system.cpu.governor "$current_governor"
-  fi
+save_governor() {
+  for policy in $(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors)
+  do
+    if [ "$policy" = "schedutil" ]
+    then
+      /usr/bin/batocera-settings-set system.cpu.governor "schedutil"
+      exit 0
+    elif [ "$policy" = "performance" ]
+    then
+      /usr/bin/batocera-settings-set system.cpu.governor "performance"
+    fi
+  done
 }
 
 case "$1" in
@@ -20,14 +27,14 @@ case "$1" in
     # check if governor is set
     if ! governor="$(/usr/bin/batocera-settings-get system.cpu.governor)"
     then
-      #save_current_governor
+      #save_governor
       exit 0
     fi
 
     # try to apply governor
     if ! echo $governor > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor 2>/dev/null
     then
-      #save_current_governor
+      #save_governor
       exit 0
     fi
 

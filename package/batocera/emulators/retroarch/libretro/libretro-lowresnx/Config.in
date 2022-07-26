@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBRETRO_LOWRESNX
+    bool "libretro-lowresnx"
+	depends on BR2_PACKAGE_RETROARCH
+      help
+        lowresnx fantasy console for retroarch
+
+	  http://www.libretro.com
+

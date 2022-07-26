@@ -13,6 +13,7 @@ PACKAGES_RETROARCH="retroarch
 
 PACKAGES_LIBRETRO="	libretro-81
 					libretro-atari800
+                    libretro-a5200
 					libretro-beetle-lynx
 					libretro-beetle-ngp
 					libretro-beetle-pce
@@ -30,6 +31,7 @@ PACKAGES_LIBRETRO="	libretro-81
 					libretro-cheats
 					libretro-citra
 					libretro-desmume
+					libretro-dolphin
 					libretro-dosbox-pure
 					libretro-easyrpg
 					libretro-fbneo
@@ -116,6 +118,7 @@ PACKAGES_EMULATORS="amiberry
 					dosbox-x
 					duckstation
 					easyrpg-player
+					eduke32
 					liblcf
 					flycast
 					fsuae
@@ -129,6 +132,7 @@ PACKAGES_EMULATORS="amiberry
 					pcsx2-avx2
 					ppsspp
 					python-pygame2
+					raze
 					rpcs3
 					ruffle
 					scummvm

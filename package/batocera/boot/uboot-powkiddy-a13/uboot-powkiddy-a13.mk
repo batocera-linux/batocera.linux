@@ -30,7 +30,7 @@ endef
 
 define UBOOT_POWKIDDY_A13_INSTALL_TARGET_CMDS
 	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader.img
-	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot.img
+	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot-powkiddy-a13.img
 	cp $(@D)/trust.img     $(BINARIES_DIR)/trust.img
 endef
 

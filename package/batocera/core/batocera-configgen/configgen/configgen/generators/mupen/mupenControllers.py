@@ -87,7 +87,7 @@ def defineControllerKeys(controller, systemconfig):
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]
                 if input.name in mupenmapping and mupenmapping[input.name] != "":
-                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name])
+                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name], controller.inputs)
                         # Handle multiple inputs for a single N64 Pad input
                         if value != "":
                             if mupenmapping[input.name] not in config :
@@ -96,11 +96,28 @@ def defineControllerKeys(controller, systemconfig):
                                 config[mupenmapping[input.name]] += " " + value
         return config
 
-
-def setControllerLine(mupenmapping, input, mupenSettingName):
+def setControllerLine(mupenmapping, input, mupenSettingName, allinputs):
         value = ''
         inputType = input.type
         if inputType == 'button':
+            if mupenSettingName in ["X Axis", "Y Axis"]: # special case for these 2 axis...
+                # hum, a button is mapped on an axis, find the reverse button
+                if input.name == "up":
+                    if "down" in allinputs:
+                        reverseInput = allinputs["down"]
+                        value = f"button({input.id}, {reverseInput.id})"
+                    else:
+                        value = f"button({input.id})"
+                elif input.name == "left":
+                    if "right" in allinputs:
+                        reverseInput = allinputs["right"]
+                        value = f"button({input.id}, {reverseInput.id})"
+                    else:
+                        value = f"button({input.id})"
+                else:
+                    return "" # skip down and right
+            else:
+                # normal button
                 value = f"button({input.id})"
         elif inputType == 'hat':
                 if mupenSettingName in ["X Axis", "Y Axis"]: # special case for these 2 axis...

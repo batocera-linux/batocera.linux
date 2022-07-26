@@ -3,8 +3,8 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on May 16, 2022
-FLYCAST_VERSION = 221060cc707c66326efca7df9af229f6ac24d1ea
+# Version: Commits on Jul 9, 2022
+FLYCAST_VERSION = c77c3ab015ae0b7bf6e411aa15c52bd3a71e99ef
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
@@ -13,14 +13,8 @@ FLYCAST_DEPENDENCIES = sdl2 libpng libzip libao pulseaudio-utils
 
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 
-# determine the best OpenGL version to use
-ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-  # Batocera - RPi4 prefer GLES
-  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
     FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON
-  else
-    FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF
-  endif
 else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
     FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF
 else ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)

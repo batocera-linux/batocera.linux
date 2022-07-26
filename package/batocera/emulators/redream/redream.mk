@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-1044-g1e79940
+REDREAM_VERSION = 1.5.0-1045-g9f00768
 REDREAM_SITE = https://redream.io/download
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)

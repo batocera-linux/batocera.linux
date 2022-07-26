@@ -175,7 +175,7 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_32,$(TARGET_DIR))
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
-			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so
+			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so
 	$(INSTALL) -D -m 0644 $(@D)/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/drivers/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
@@ -199,17 +199,18 @@ KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
 
 # move to avoid the production driver
 define BATOCERA_NVIDIA390_LEGACY_DRIVER_RENAME_KERNEL_MODULES
+    mkdir -p $(TARGET_DIR)/usr/share/nvidia
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
     # rename the kernel modules to avoid conflict
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia390-legacy.ko
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia390-modeset-legacy.ko
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia390-drm-legacy.ko	
-	mv $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
-	    $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia390-uvm-legacy.ko
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-legacy.ko
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-modeset-legacy.ko
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-drm-legacy.ko	
+	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-uvm-legacy.ko
 	# set the driver version file
-	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	echo $(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/legacy390.version
 endef
 

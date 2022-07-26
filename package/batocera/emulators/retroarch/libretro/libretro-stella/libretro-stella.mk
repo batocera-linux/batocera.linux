@@ -3,8 +3,8 @@
 # libretro-stella
 #
 ################################################################################
-# Version: Commits on Mar 23, 2022
-LIBRETRO_STELLA_VERSION = f4401bea92705f9c7fc63592da45afe57f4e4dcd
+# Version: Commits on Jul 15, 2022
+LIBRETRO_STELLA_VERSION = ba51197927ca0a3b86578808247ca5c786ffe196
 LIBRETRO_STELLA_SITE = $(call github,stella-emu,stella,$(LIBRETRO_STELLA_VERSION))
 LIBRETRO_STELLA_LICENSE = GPLv2
 
@@ -16,12 +16,11 @@ LIBRETRO_STELLA_PLATFORM = rpi1
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 LIBRETRO_STELLA_PLATFORM = rpi2
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
-    ifeq ($(BR2_arm),y)
-        LIBRETRO_STELLA_PLATFORM = rpi3
-    else
-        LIBRETRO_STELLA_PLATFORM = rpi3_64
-    endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
+LIBRETRO_STELLA_PLATFORM = rpi3
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+LIBRETRO_STELLA_PLATFORM = rpi3_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_STELLA_PLATFORM = rpi4

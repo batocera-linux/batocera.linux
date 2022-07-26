@@ -1,0 +1,7 @@
+config BR2_PACKAGE_SINDEN_GUNS_LIBS
+	bool "sinden-guns"
+	select BR2_PACKAGE_LIBV4L
+	select BR2_PACKAGE_LIBV4L_UTILS
+
+	help
+	  sinden guns support libs

@@ -252,7 +252,7 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
         ## [CONTROLLERS]
-        configurePads(settings, playersControllers, system)
+        configurePads(settings, playersControllers, system, guns)
 
         ## [HOTKEYS]
         if not settings.has_section("Hotkeys"):
@@ -305,7 +305,7 @@ def getGfxRatioFromConfig(config, gameResolution):
 
     return "4:3"
 
-def configurePads(settings, playersControllers, system):
+def configurePads(settings, playersControllers, system, guns):
     mappings = {
         "ButtonUp":       "up",
         "ButtonDown":     "down",
@@ -348,6 +348,11 @@ def configurePads(settings, playersControllers, system):
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
             ctrlType = system.config["duckstation_" + controller]
+
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if nplayer == 1 and len(guns) >= 1:
+                settings.set(controller, "Type", "NamcoGunCon")
+                ctrlType = "NamcoGunCon"
 
         # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};

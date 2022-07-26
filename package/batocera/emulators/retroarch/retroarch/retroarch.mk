@@ -77,9 +77,9 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
     RETROARCH_CONF_OPTS += --enable-opengles3 --enable-opengles --enable-opengles3_1
 	RETROARCH_DEPENDENCIES += libgles
-endif 
+endif
 # don't enable --enable-opengles3_2, breaks lr-swanstation
-    
+
 ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
     RETROARCH_CONF_OPTS += --enable-opengles
     RETROARCH_DEPENDENCIES += libgles
@@ -120,7 +120,7 @@ ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+  ifneq ($(BR2_PACKAGE_BATOCERA_SBC_XORG),y)
     RETROARCH_CONF_OPTS += --enable-opengl --disable-opengles --disable-opengles3
     RETROARCH_DEPENDENCIES += libgl
   endif

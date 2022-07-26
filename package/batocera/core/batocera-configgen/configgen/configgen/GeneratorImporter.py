@@ -263,6 +263,14 @@ def getGenerator(emulator):
         from generators.gzdoom.gzdoomGenerator import GZDoomGenerator
         return GZDoomGenerator()
 
+    if emulator == "eduke32":
+        from generators.eduke32.eduke32Generator import EDuke32Generator
+        return EDuke32Generator()
+
+    if emulator == "raze":
+        from generators.raze.razeGenerator import RazeGenerator
+        return RazeGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),

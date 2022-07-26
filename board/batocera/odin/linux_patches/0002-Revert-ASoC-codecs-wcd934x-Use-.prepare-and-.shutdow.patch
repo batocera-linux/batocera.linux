@@ -1,0 +1,84 @@
+From 0be2decaeae9785a13109b03495d50fcaa5a2e63 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Wed, 29 Jun 2022 07:44:31 +0700
+Subject: [PATCH 2/5] Revert "ASoC: codecs: wcd934x: Use .prepare and .shutdown
+ instead of .trigger"
+
+This reverts commit 6b8fe9663ebf682c68fa9548f699672b4c88f89e.
+---
+ sound/soc/codecs/wcd934x.c | 41 +++++++++++++++++++-------------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
+
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index f990acd2f117..6298ebe96e94 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -1891,7 +1891,7 @@ static int wcd934x_hw_free(struct snd_pcm_substream *substream,
+ 	return 0;
+ }
+ 
+-static int wcd934x_prepare(struct snd_pcm_substream *substream,
++static int wcd934x_trigger(struct snd_pcm_substream *substream, int cmd,
+ 			   struct snd_soc_dai *dai)
+ {
+ 	struct wcd_slim_codec_dai_data *dai_data;
+@@ -1901,26 +1901,26 @@ static int wcd934x_prepare(struct snd_pcm_substream *substream,
+ 	wcd = snd_soc_component_get_drvdata(dai->component);
+ 
+ 	dai_data = &wcd->dai[dai->id];
+-	cfg = &dai_data->sconfig;
+-	
+-	slim_stream_prepare(dai_data->sruntime, cfg);
+-	slim_stream_enable(dai_data->sruntime);
+ 
+-	return 0;
+-}
+-
+-static void wcd934x_shutdown(struct snd_pcm_substream *substream,
+-			   struct snd_soc_dai *dai)
+-{
+-	struct wcd_slim_codec_dai_data *dai_data;
+-	struct wcd934x_codec *wcd;
+-
+-	wcd = snd_soc_component_get_drvdata(dai->component);
+-
+-	dai_data = &wcd->dai[dai->id];
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_START:
++	case SNDRV_PCM_TRIGGER_RESUME:
++	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
++		cfg = &dai_data->sconfig;
++		slim_stream_prepare(dai_data->sruntime, cfg);
++		slim_stream_enable(dai_data->sruntime);
++		break;
++	case SNDRV_PCM_TRIGGER_STOP:
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
++		slim_stream_unprepare(dai_data->sruntime);
++		slim_stream_disable(dai_data->sruntime);
++		break;
++	default:
++		break;
++	}
+ 
+-	slim_stream_unprepare(dai_data->sruntime);
+-	slim_stream_disable(dai_data->sruntime);
++	return 0;
+ }
+ 
+ static int wcd934x_set_channel_map(struct snd_soc_dai *dai,
+@@ -2008,10 +2008,9 @@ static int wcd934x_get_channel_map(struct snd_soc_dai *dai,
+ }
+ 
+ static const struct snd_soc_dai_ops wcd934x_dai_ops = {
+-	.prepare = wcd934x_prepare,
+-	.shutdown = wcd934x_shutdown,
+ 	.hw_params = wcd934x_hw_params,
+ 	.hw_free = wcd934x_hw_free,
++	.trigger = wcd934x_trigger,
+ 	.set_channel_map = wcd934x_set_channel_map,
+ 	.get_channel_map = wcd934x_get_channel_map,
+ };
+-- 
+2.34.1
+

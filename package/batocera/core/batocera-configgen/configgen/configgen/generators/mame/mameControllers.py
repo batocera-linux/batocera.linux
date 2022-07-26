@@ -64,6 +64,17 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         #"BUTTON15": ""
     }
 
+    gunmappings = {
+        "BUTTON1": "BUTTON1",
+        "BUTTON2": "BUTTON2",
+        "START"  : "BUTTON3",
+        "COIN"   : "BUTTON4",
+        "BUTTON3": "BUTTON5",
+        "BUTTON4": "BUTTON6",
+        "BUTTON5": "BUTTON7",
+        "BUTTON6": "BUTTON8"
+    }
+
     # Buttons that change based on game/setting
     if altButtons == "sfsnes": # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
         mappings.update({"BUTTON1": "y"})
@@ -196,7 +207,6 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         else:
             overwriteSystem = True
 
-
         xml_mameconfig_alt = getRoot(config_alt, "mameconfig")
         xml_system_alt = getSection(config_alt, xml_mameconfig_alt, "system")
         xml_system_alt.setAttribute("name", sysName)
@@ -215,16 +225,18 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
             mappings_use["JOYSTICK_LEFT"] = "left"
             mappings_use["JOYSTICK_RIGHT"] = "right"
 
+        addCommonPlayerPorts(config, xml_input, nplayer)
+
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", ""))
+                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings))
                 else:
-                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons))
+                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings))
             else:
                 rmapping = reverseMapping(mappings_use[mapping])
                 if rmapping in pad.inputs:
-                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons))
+                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings))
 
             #UI Mappings
             if nplayer == 1:
@@ -558,16 +570,36 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons):
+def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(input2definition(pad, key, input, padindex + 1, reversed, altButtons))
+    keyval = input2definition(pad, key, input, padindex + 1, reversed, altButtons)
+    if mapping in gunmappings:
+        keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+    value = config.createTextNode(keyval)
     xml_newseq.appendChild(value)
     print(f"MAME Debug: {mapping}: {key}, {input.id}")
+    return xml_port
+
+def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings):
+    # Special button input (ie mouse button to gamepad)
+    xml_port = config.createElement("port")
+    xml_port.setAttribute("tag", tag)
+    xml_port.setAttribute("type", mapping+str(nplayer))
+    xml_port.setAttribute("mask", mask)
+    xml_port.setAttribute("defvalue", default)
+    xml_newseq = config.createElement("newseq")
+    xml_newseq.setAttribute("type", "standard")
+    xml_port.appendChild(xml_newseq)
+    keyval = input2definition(pad, key, input, padindex + 1, reversed, 0)
+    if mapping in gunmappings:
+        keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+    value = config.createTextNode(keyval)
+    xml_newseq.appendChild(value)
     return xml_port
 
 def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default):
@@ -727,3 +759,19 @@ def removeSection(config, xml_root, name):
     for i in range(0, len(xml_section)):
         old = xml_root.removeChild(xml_section[i])
         old.unlink()
+
+def addCommonPlayerPorts(config, xml_input, nplayer):
+    # adstick for guns
+    for axis in ["X", "Y"]:
+        nanalog = 1 if axis == "X" else 2
+        xml_port = config.createElement("port")
+        xml_port.setAttribute("tag", ":mainpcb:ANALOG{}".format(nanalog))
+        xml_port.setAttribute("type", "P{}_AD_STICK_{}".format(nplayer, axis))
+        xml_port.setAttribute("mask", "255")
+        xml_port.setAttribute("defvalue", "128")
+        xml_newseq = config.createElement("newseq")
+        xml_newseq.setAttribute("type", "standard")
+        xml_port.appendChild(xml_newseq)
+        value = config.createTextNode("GUNCODE_{}_{}AXIS".format(nplayer, axis))
+        xml_newseq.appendChild(value)
+        xml_input.appendChild(xml_port)

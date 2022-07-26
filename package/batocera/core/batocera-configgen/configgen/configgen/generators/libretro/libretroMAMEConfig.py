@@ -27,8 +27,9 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         corePath = system.config['core']
 
-    if system.config['core'] == 'mame':
-        # Set up command line for MAME
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay' ]:
+        # Set up command line for basic systems
+        # ie. no media, softlists, etc.
         if system.getOptBoolean("customcfg"):
             cfgPath = "/userdata/system/configs/{}/custom/".format(corePath)
         else:
@@ -105,6 +106,15 @@ def generateMAMEConfigs(playersControllers, system, rom):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
+
+            #Laser 310 Memory Expansion & joystick
+            if system.name == "laser310":
+                commandLine += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandLine += ["-mem", laser310mem]
 
             # BBC Joystick
             if system.name == "bbc":
@@ -279,6 +289,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
                     commandLine += [ '-flop1', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
                 else:
                     commandLine += [ '-flop2', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
+
+    # Lightgun reload option
+    if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
+        commandArray += [ "-offscreen_reload" ]
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -1040,8 +1054,16 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
                     dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1DOWN'
                 if pad.inputs[direction].value == "8":
                     dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
+            # If no specific input defined (controller w/no d-pad), use generic d-pad inputs for Retropad
             else:
-                dpadInputs[direction] = ''
+                if direction == 'up':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1UP'
+                elif direction == 'down':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1DOWN'
+                elif direction == 'left':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
+                elif direction == 'right':
+                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1RIGHT'
         buttonDirections = {}
         for direction in ['a', 'b', 'x', 'y']:
             if pad.inputs[direction].type == 'button':

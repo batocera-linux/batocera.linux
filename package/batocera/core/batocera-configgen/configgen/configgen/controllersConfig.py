@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as ET
 import batoceraFiles
+import os
 
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -215,8 +216,18 @@ def generateSdlGameControllerPadsOrderConfig(controllers):
     return res
 
 def gunsNeedCrosses(guns):
+    # no gun, enable the cross for joysticks, mouses...
+    if len(guns) == 0:
+        return True
+
     for gun in guns:
         if guns[gun]["need_cross"]:
+            return True
+    return False
+
+def gunsNeedBorders(guns):
+    for gun in guns:
+        if guns[gun]["need_borders"]:
             return True
     return False
 
@@ -247,8 +258,9 @@ def getGuns():
             nmouse = nmouse + 1
             continue
         # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE (TOUCHPAD are listed after mouses)
-        need_cross = "ID_INPUT_GUN_NEED_CROSS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"] == '1'
-        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross}
+        need_cross   = "ID_INPUT_GUN_NEED_CROSS"   in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"]   == '1'
+        need_borders = "ID_INPUT_GUN_NEED_BORDERS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_BORDERS"] == '1'
+        guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross, "need_borders": need_borders}
         eslog.info("found gun {} at {} with id_mouse={}".format(ngun, mouses[eventid].device_node, nmouse))
         nmouse = nmouse + 1
         ngun = ngun + 1
@@ -256,3 +268,36 @@ def getGuns():
     if len(guns) == 0:
         eslog.info("no gun found")
     return guns
+
+def gunNameFromPath(path):
+    redname = os.path.splitext(os.path.basename(path))[0].lower()
+    inpar   = False
+    inblock = False
+    ret = ""
+    for c in redname:
+        if not inpar and not inblock and ( (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9') ):
+            ret += c
+        elif c == '(':
+            inpar = True
+        elif c == ')':
+            inpar = False
+        elif c == '[':
+            inblock = True
+        elif c == ']':
+            inblock = True
+    return ret
+
+def getGameGunsMetaData(system, rom):
+    # load the database
+    tree = ET.parse(batoceraFiles.esGunsMetadata)
+    root = tree.getroot()
+    game = gunNameFromPath(rom)
+    res = {}
+    for nodesystem in root.findall(".//system"):
+        if nodesystem.get("name") == system:
+            for nodegame in nodesystem:
+                if nodegame.text in game:
+                    for attribute in nodegame.attrib:
+                        res[attribute] = nodegame.get(attribute)
+                    return res
+    return res

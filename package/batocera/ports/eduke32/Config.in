@@ -1,0 +1,11 @@
+config BR2_PACKAGE_EDUKE32
+    bool "eduke32"
+    depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_FLAC
+    select BR2_PACKAGE_LIBVPX
+
+    help
+      EDuke32 is a Build Engine source port for playing games like Duke Nukem 3D and Ion Fury
+
+      https://www.eduke32.com/
