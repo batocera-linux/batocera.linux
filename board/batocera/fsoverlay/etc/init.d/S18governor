@@ -49,7 +49,7 @@ case "$1" in
 
     ;;
   save)
-    save_current_governor
+    save_governor
     ;;
   list)
     cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors
