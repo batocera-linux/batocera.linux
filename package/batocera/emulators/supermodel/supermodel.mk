@@ -3,10 +3,9 @@
 # supermodel
 #
 ################################################################################
-
-SUPERMODEL_VERSION = r882
-SUPERMODEL_SITE = https://svn.code.sf.net/p/model3emu/code/trunk
-SUPERMODEL_SITE_METHOD=svn
+# Version: Commits on Jul 18, 2022
+SUPERMODEL_VERSION = d60feab2ca7739b59de602e55729bf7ef958ab58
+SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libglew libzip sdl2_net
 SUPERMODEL_LICENSE = GPLv3
 
@@ -16,7 +15,7 @@ define SUPERMODEL_BUILD_CMDS
 	$(SED) "s|CXX = g++|CXX = $(TARGET_CXX)|g" $(@D)/Makefile
 	$(SED) "s|LD = gcc|LD = $(TARGET_CC)|g" $(@D)/Makefile
 	$(SED) "s|sdl2-config|$(STAGING_DIR)/usr/bin/sdl2-config|g" $(@D)/Makefile
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile NET_BOARD=1 VERBOSE=1
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile NET_BOARD=1 VERBOSE=1 ARCH=$(BR2_TARGET_OPTIMIZATION)
 endef
 
 define SUPERMODEL_INSTALL_TARGET_CMDS

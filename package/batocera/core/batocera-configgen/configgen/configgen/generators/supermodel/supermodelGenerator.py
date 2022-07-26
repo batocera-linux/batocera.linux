@@ -12,13 +12,13 @@ from shutil import copyfile
 class SupermodelGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        commandArray = ["supermodel", "-fullscreen"]
+        commandArray = ["supermodel", "-fullscreen", "-channels=2"]
         
         # legacy3d
-        if system.isOptSet("engine3D") and system.config["engine3D"] == "legacy3d":
-            commandArray.append("-legacy3d")
-        else:
+        if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
             commandArray.append("-new3d")
+        else:
+             commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
         
         # widescreen
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
