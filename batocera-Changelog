@@ -55,14 +55,14 @@
         * bump: Duckstation emulators to Jul 08 builds
         * bump: ScummVM emulators to Jul 09 builds
         * bump: Mupen64Plus emulators
-          * mupen64plus-core to Jun 24 builds
-          * mupen64plus-audio-sdl to Apr 12 builds
-          * mupen64plus-gliden64-plugin to Jun 12 builds
-          * mupen64plus-input-sdl to May 14 builds
-          * mupen64plus-rsp-hle to Apr 24 builds
-          * mupen64plus-ui-console to Apr 12 builds
-          * mupen64plus-video-glide64mk2 to Apr 12 builds
-          * mupen64plus-video-rice to Apr 12 builds
+        * bump: mupen64plus-core to Jun 24 builds
+        * bump: mupen64plus-audio-sdl to Apr 12 builds
+        * bump: mupen64plus-gliden64-plugin to Jun 12 builds
+        * bump: mupen64plus-input-sdl to May 14 builds
+        * bump: mupen64plus-rsp-hle to Apr 24 builds
+        * bump: mupen64plus-ui-console to Apr 12 builds
+        * bump: mupen64plus-video-glide64mk2 to Apr 12 builds
+        * bump: mupen64plus-video-rice to Apr 12 builds
         * bump: libretro-genesisplusgx to Jun 18 builds
         * bump: libretro-neocd to May 15 builds
         * bump: libretro-pcsx to Jul 15 builds
@@ -82,8 +82,10 @@
         * change: disable cec in es (causing issues in some circonstances)
         * change: dolphin is back on s922x with libretro-dolphin
         * change: od-commander south and east buttons swapped to match ES
+        * change: update commentary in batocera.conf and batocera-boot.conf files
         * es: add frameskip options for Drastic
         * es: wii/gamecube added json as acceptable file extension
+        * es: change strings to refer to the spelling of savestates consistently
         * fix: optimize game startup
         * fix: lr-swanstation not working on some SBC's with OpenGLES
         * fix: segacd now scrapes successfully again
@@ -97,6 +99,7 @@
         * fix: mupen64plus-next with s905gen3 devices
         * fix: btop UTF-8 error
         * fix: X68000 load HDF games and random crashes
+        * fix: boot logo rotation on 720x1280 devices such as win600
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
