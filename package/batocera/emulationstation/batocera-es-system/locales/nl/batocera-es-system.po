@@ -26,8 +26,8 @@ msgstr "VIDEO MODUS"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid ""
-"Force the game to render in this aspect ratio. Decorations override this "
-"setting."
+"Force the game to render in this aspect ratio. Not all systems support all "
+"ratios."
 msgstr ""
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
@@ -102,7 +102,19 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid ""
+"Disabled if using a shader set or the output display matches the game's "
+"resolution."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Only increase the image size in integer multiples."
 msgstr ""
 
 #. TRANSLATION: shared
@@ -239,7 +251,17 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "The language to translate into."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "TARGET LANGUAGE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "If nothing is specified, will use ZTranslate by default."
 msgstr ""
 
 #. TRANSLATION: shared
@@ -329,13 +351,12 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid ""
-"For emulators and controllers supporting force feedback, scale from 0 to 100%"
+msgid "For emulators and controllers supporting force feedback."
 msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "RUMBLE GAIN"
+msgid "RUMBLE LEVEL"
 msgstr ""
 
 #. TRANSLATION: libretro/81
@@ -2492,6 +2513,21 @@ msgctxt "game_options"
 msgid "CROP ARTWORK"
 msgstr ""
 
+#. TRANSLATION: libretro/mame, mame
+msgctxt "game_options"
+msgid "Set gun button 2 to reload for games that require shooting off screen"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame
+msgctxt "game_options"
+msgid "OFF SCREEN RELOAD"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, ...
+msgctxt "game_options"
+msgid "Off (Default)"
+msgstr "Uit (Standaard)"
+
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -3073,11 +3109,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "ADD USER DISK"
 msgstr ""
-
-#. TRANSLATION: libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, libretro/xrick, ...
-msgctxt "game_options"
-msgid "Off (Default)"
-msgstr "Uit (Standaard)"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -8899,7 +8930,7 @@ msgctxt "game_options"
 msgid "Enable high quality effects for special stages."
 msgstr "Hoge kwaliteit effecten voor speciale levels inschakelen."
 
-#. TRANSLATION: sonic2013
+#. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "HQ MODE"
 msgstr "HQ MODUS"
@@ -8923,11 +8954,6 @@ msgstr "Toegang tot modden en andere geavanceerde opties."
 msgctxt "game_options"
 msgid "DEV MENU"
 msgstr "DEV MENU"
-
-#. TRANSLATION: soniccd
-msgctxt "game_options"
-msgid "HQ Mode"
-msgstr "HQ Modus"
 
 #. TRANSLATION: soniccd
 msgctxt "game_options"
@@ -9058,13 +9084,17 @@ msgstr "RAW INPUT INSCHAKELEN"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
-msgid "Skip introduction animations and logos; default is show"
+msgid "SKIP INTRO VIDEOS"
 msgstr ""
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
-msgid "SKIP INTRO VIDEOS"
+msgid "Show (Default)"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "HQ Mode"
+#~ msgstr "HQ Modus"
 
 #~ msgctxt "game_options"
 #~ msgid "1x (native)"

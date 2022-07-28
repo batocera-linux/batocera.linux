@@ -26,10 +26,9 @@ msgstr "ゲーム画面モード"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid ""
-"Force the game to render in this aspect ratio. Decorations override this "
-"setting."
+"Force the game to render in this aspect ratio. Not all systems support all "
+"ratios."
 msgstr ""
-"ゲームを指定アスペクト比で表示します。ベゼル装飾はこの設定を上書きします"
 
 #. TRANSLATION: shared, dolphin, mupen64plus, demul
 msgctxt "game_options"
@@ -104,8 +103,20 @@ msgstr "シェーダー設定"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid ""
+"Disabled if using a shader set or the output display matches the game's "
+"resolution."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
 msgstr "スムーズゲーム（バイリニアフィルタリング）"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Only increase the image size in integer multiples."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -243,8 +254,18 @@ msgstr "AIゲーム翻訳サービスを有効"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "The language to translate into."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "TARGET LANGUAGE"
 msgstr "対象言語"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "If nothing is specified, will use ZTranslate by default."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -336,14 +357,13 @@ msgstr "ライトガン(ガンコン)を使用"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid ""
-"For emulators and controllers supporting force feedback, scale from 0 to 100%"
-msgstr "対応するエミュレーターとコントローラーで使用します (調整：0〜100％)"
+msgid "For emulators and controllers supporting force feedback."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "RUMBLE GAIN"
-msgstr "振動機能 調整"
+msgid "RUMBLE LEVEL"
+msgstr ""
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -2490,6 +2510,21 @@ msgctxt "game_options"
 msgid "CROP ARTWORK"
 msgstr "アートワークを加工表示"
 
+#. TRANSLATION: libretro/mame, mame
+msgctxt "game_options"
+msgid "Set gun button 2 to reload for games that require shooting off screen"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame
+msgctxt "game_options"
+msgid "OFF SCREEN RELOAD"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, ...
+msgctxt "game_options"
+msgid "Off (Default)"
+msgstr "使用しない (標準)"
+
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -3071,11 +3106,6 @@ msgstr "FDをドライブに挿入します。FDがない場合はブランク�
 msgctxt "game_options"
 msgid "ADD USER DISK"
 msgstr "ユーザーディスク(FD)を追加"
-
-#. TRANSLATION: libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, libretro/xrick, ...
-msgctxt "game_options"
-msgid "Off (Default)"
-msgstr "使用しない (標準)"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -8898,7 +8928,7 @@ msgctxt "game_options"
 msgid "Enable high quality effects for special stages."
 msgstr "特別ステージで高品質エフェクトを有効にします"
 
-#. TRANSLATION: sonic2013
+#. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "HQ MODE"
 msgstr "HQ モード"
@@ -8922,11 +8952,6 @@ msgstr "モッディングやその他の高度な設定をします"
 msgctxt "game_options"
 msgid "DEV MENU"
 msgstr "開発メニュー"
-
-#. TRANSLATION: soniccd
-msgctxt "game_options"
-msgid "HQ Mode"
-msgstr "HQ モード"
 
 #. TRANSLATION: soniccd
 msgctxt "game_options"
@@ -9053,13 +9078,38 @@ msgstr "RAW入力を有効"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
-msgid "Skip introduction animations and logos; default is show"
-msgstr "イントロビデオとロゴをスキップします。通常は「表示」"
+msgid "SKIP INTRO VIDEOS"
+msgstr "イントロビデオをスキップ"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
-msgid "SKIP INTRO VIDEOS"
-msgstr "イントロビデオをスキップ"
+msgid "Show (Default)"
+msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Force the game to render in this aspect ratio. Decorations override this "
+#~ "setting."
+#~ msgstr ""
+#~ "ゲームを指定アスペクト比で表示します。ベゼル装飾はこの設定を上書きします"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For emulators and controllers supporting force feedback, scale from 0 to "
+#~ "100%"
+#~ msgstr "対応するエミュレーターとコントローラーで使用します (調整：0〜100％)"
+
+#~ msgctxt "game_options"
+#~ msgid "RUMBLE GAIN"
+#~ msgstr "振動機能 調整"
+
+#~ msgctxt "game_options"
+#~ msgid "HQ Mode"
+#~ msgstr "HQ モード"
+
+#~ msgctxt "game_options"
+#~ msgid "Skip introduction animations and logos; default is show"
+#~ msgstr "イントロビデオとロゴをスキップします。通常は「表示」"
 
 #~ msgctxt "game_options"
 #~ msgid "1x (native)"
