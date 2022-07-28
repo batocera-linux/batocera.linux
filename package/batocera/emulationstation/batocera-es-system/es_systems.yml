@@ -2045,7 +2045,7 @@ library:
   force:      True
 
 model3:
-  name:       Model 3
+  name: Model 3
   manufacturer: Sega
   release: 1996
   hardware: arcade
@@ -2053,17 +2053,19 @@ model3:
   platform: model3, arcade
   emulators:
     supermodel:
-      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL, BR2_PACKAGE_SUPERMODEL_RPI4] }
+      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
     Put your model3 roms in this directory.
 
-    Rom files must have a ".zip" extension from romset mame 0.220.
+    Rom files must have a ".zip" extension from the latest MAME ROM set (currently 0.245).
 
-    This allows the Supermodel emulator to use compressed roms.
     Files inside the .zip must match the board rom & CRC info expected of the emulator or they will not work.
     Each .zip file must contain only one compressed rom and be named correctly for compatibility.
+    Specific rom details can be found in the emulators games.xml file.
+
+    Note: The Raspberry Pi4 is limited to 720x576 or 720x480 with decorations & hud disabled.
 
     Game Compatibility:
     -------------------
