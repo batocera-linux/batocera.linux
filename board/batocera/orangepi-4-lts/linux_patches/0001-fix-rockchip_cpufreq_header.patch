@@ -1,0 +1,14 @@
+diff --git a/drivers/cpufreq/rockchip-cpufreq.h b/drivers/cpufreq/rockchip-cpufreq.h
+index b8ecce6c67..cb3956634c 100644
+--- a/drivers/cpufreq/rockchip-cpufreq.h
++++ b/drivers/cpufreq/rockchip-cpufreq.h
+@@ -14,8 +14,7 @@ static inline int rockchip_cpufreq_adjust_power_scale(struct device *dev)
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static inline int rockchip_cpufreq_opp_set_rate(struct device *dev,
+-						unsigned long target_freq);
++static inline int rockchip_cpufreq_opp_set_rate(struct device *dev, unsigned long target_freq)
+ {
+ 	return -EOPNOTSUPP;
+ }
