@@ -19,7 +19,6 @@ sed -i '/^[ ]*dtoverlay[ ]*=[ ]*vc4.*$/d'	"${configFile}" || exit 0
 (echo "
 start_file=start.elf
 fixup_file=fixup.dat
-gpu_mem=32
 dtoverlay=vc4-kms-v3d,cma-512") >> "${configFile}" || exit 0
 mount -o remount,ro /boot || exit 1
 shutdown -r now

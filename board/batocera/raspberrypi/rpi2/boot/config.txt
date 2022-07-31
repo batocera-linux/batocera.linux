@@ -129,14 +129,20 @@ disable_splash=1
 # Automatically load overlays for detected DSI displays
 display_auto_detect=1
 
-# Default GPU memory split (do not change if you do not know what you are doing)
-gpu_mem=32
-
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
+[pi2]
 # Enable DRM VC4 V3D driver
 dtoverlay=vc4-kms-v3d,cma-512
+
+[pi3]
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d,cma-512
+
+[pi02]
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d,cma-256
 
 [DPI]
 # Put any DPI required display code here
