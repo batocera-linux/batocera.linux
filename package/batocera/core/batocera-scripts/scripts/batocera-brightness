@@ -1,7 +1,7 @@
 #!/bin/sh
 
 D=$(find /sys/class/backlight/* 2>/dev/null | grep backlight | head -n1)
-CYCLESTEP=20 # % additional brightbess at each step
+CYCLESTEP=20 # % additional brightness at each step
 
 if test ! -e "${D}"/brightness
 then
@@ -20,6 +20,7 @@ setValue() {
     test "${NEWVAL}" -gt "${XMAX}" && NEWVAL="${XMAX}"
     
     echo "${NEWVAL}" > "${B}"
+    batocera-settings-set display.brightness "${NEWVAL}"
 }
 
 cycle() {
@@ -31,6 +32,7 @@ cycle() {
     echo "Brightness cycling to ${NEWVAL}%"
     NEWVAL=$(expr "${NEWVAL}" "*" "${XMAX}" / 100)
     setValue "${NEWVAL}" "${XMAX}"
+    batocera-settings-set display.brightness "${NEWVAL}"
     exit 0
 }
 
