@@ -1,6 +1,6 @@
 #!/bin/sh
 
-
+#
 # Start all init scripts in /etc/init.d
 # executing them in numerical order.
 #
@@ -9,6 +9,7 @@ for i in /etc/init.d/S??* ;do
      # Ignore dangling symlinks (if any).
     [ ! -f "$i" ] && continue
 
+	mkdir -p /var/run/
     echo $(date +%Y-%m-%d_%H:%I:%S)": ${i} - starting" >> /var/run/boot.log
 
      case "$i" in
@@ -28,4 +29,3 @@ for i in /etc/init.d/S??* ;do
 
      echo $(date +%Y-%m-%d_%H:%I:%S)": ${i} - started" >> /var/run/boot.log
 done
-
