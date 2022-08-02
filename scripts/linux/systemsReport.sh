@@ -21,6 +21,22 @@ do
     TMP_CONFIG="${TMP_DIR}/configs_tmp/${ARCH}"
     TMP_CONFIGS="${TMP_DIR}/configs"
     mkdir -p "${TMP_CONFIG}" "${TMP_CONFIGS}" || exit 1
+
+    # generate the defconfig
+    DEFCONFIG_FILE="${BR2_EXTERNAL_BATOCERA_PATH}/configs/batocera-${ARCH}_defconfig"
+    BOARD_FILE="${BR2_EXTERNAL_BATOCERA_PATH}/configs/batocera-${ARCH}.board"
+    > ${DEFCONFIG_FILE}_tmpl0 # level 0
+    > ${DEFCONFIG_FILE}_tmpl1 # level 1 (includes of includes)
+    grep -E 'include ' "${BOARD_FILE}" | while read INC X; do (echo "# from file ${X}"; cat "${BR2_EXTERNAL_BATOCERA_PATH}/configs/${X}"; echo) >> ${DEFCONFIG_FILE}_tmpl0; done
+    grep -E 'include ' ${DEFCONFIG_FILE}_tmpl0 | while read INC X; do (echo "# from file ${X}"; cat "${BR2_EXTERNAL_BATOCERA_PATH}/configs/${X}"; echo) >> ${DEFCONFIG_FILE}_tmpl1; done
+    > ${DEFCONFIG_FILE}
+    grep -vE '^include ' ${DEFCONFIG_FILE}_tmpl1 >> ${DEFCONFIG_FILE} || test $? -eq 1 # grep status is 1 if nothing is found
+    grep -vE '^include ' ${DEFCONFIG_FILE}_tmpl0 >> ${DEFCONFIG_FILE} || test $? -eq 1 # grep status is 1 if nothing is found
+    rm -f ${DEFCONFIG_FILE}_tmpl1
+    rm -f ${DEFCONFIG_FILE}_tmpl0
+    echo "### from board file ###" >> ${DEFCONFIG_FILE}
+    grep -vE '^include ' "${BOARD_FILE}" >> ${DEFCONFIG_FILE}
+
     (make O="${TMP_CONFIG}" -C ${BR_DIR} BR2_EXTERNAL="${BR2_EXTERNAL_BATOCERA_PATH}" "batocera-${ARCH}_defconfig" > /dev/null) || exit 1
     cp "${TMP_CONFIG}/.config" "${TMP_CONFIGS}/config_${ARCH}" || exit 1
 done
