@@ -85,8 +85,15 @@ dl-dir:
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot clean
 
 %-config: batocera-docker-image output-dir-%
+	@> $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl0 # level 0
+	@> $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl1 # level 1 (includes of includes)
+	@grep -E 'include ' $(PROJECT_DIR)/configs/batocera-$*.board | while read INC X; do (echo "# from file $${X}"; cat $(PROJECT_DIR)/configs/"$${X}"; echo) >> $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl0; done
+	@grep -E 'include ' $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl0 | while read INC X; do (echo "# from file $${X}"; cat $(PROJECT_DIR)/configs/"$${X}"; echo) >> $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl1; done
 	@> $(PROJECT_DIR)/configs/batocera-$*_defconfig
-	@grep -E 'include ' $(PROJECT_DIR)/configs/batocera-$*.board | while read INC X; do (echo "# from file $${X}"; cat $(PROJECT_DIR)/configs/"$${X}"; echo) >> $(PROJECT_DIR)/configs/batocera-$*_defconfig; done
+	@grep -vE '^include ' $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl1 >> $(PROJECT_DIR)/configs/batocera-$*_defconfig || test $$? -eq 1 # grep status is 1 if nothing is found
+	@grep -vE '^include ' $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl0 >> $(PROJECT_DIR)/configs/batocera-$*_defconfig || test $$? -eq 1 # grep status is 1 if nothing is found
+	@rm -f $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl1
+	@rm -f $(PROJECT_DIR)/configs/batocera-$*_defconfig_tmpl0
 	@echo "### from board file ###" >> $(PROJECT_DIR)/configs/batocera-$*_defconfig
 	@grep -vE '^include ' $(PROJECT_DIR)/configs/batocera-$*.board >> $(PROJECT_DIR)/configs/batocera-$*_defconfig
 	@for opt in $(EXTRA_OPTS); do \
