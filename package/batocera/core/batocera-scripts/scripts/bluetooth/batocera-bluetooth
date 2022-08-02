@@ -5,6 +5,10 @@ ACTION=$1
 do_help() {
     echo "${1} list" >&2
     echo "${1} trust" >&2
+    echo "${1} trust-pad" >&2
+    echo "${1} trust-audio" >&2
+    echo "${1} starttrust" >&2
+    echo "${1} stoptrust" >&2
     echo "${1} remove <device address>" >&2
     echo "${1} save" >&2
     echo "${1} restore" >&2
