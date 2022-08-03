@@ -57,9 +57,11 @@ else
 endif
 
 define BATOCERA_SHADERS_INSTALL_TARGET_CMDS
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/bezel/Mega_Bezel/Presets
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/presets-batocera/* $(TARGET_DIR)/usr/share/batocera/shaders/bezel/Mega_Bezel/Presets
 
 	# general
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs
 	cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults.yml           $(TARGET_DIR)/usr/share/batocera/shaders/configs/
 	if test -e $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml; then \
 		cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml; \
