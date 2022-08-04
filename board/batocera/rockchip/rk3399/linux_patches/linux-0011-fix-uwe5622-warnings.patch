@@ -4,7 +4,6 @@ Date: Sun, 12 Jun 2022 14:33:59 +0000
 Subject: [PATCH] uwe5622: various warning and firmware path fixes
 
 ---
- drivers/net/wireless/uwe5622/Makefile         |  2 +-
  .../uwe5622/unisocwcn/platform/rdc_debug.c    |  4 +-
  .../uwe5622/unisocwcn/platform/wcn_boot.c     |  2 -
  .../unisocwcn/platform/wcn_parn_parser.c      |  2 +-
@@ -12,17 +11,6 @@ Subject: [PATCH] uwe5622: various warning and firmware path fixes
  .../wireless/uwe5622/unisocwifi/cfg80211.c    |  4 --
  6 files changed, 17 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/wireless/uwe5622/Makefile b/drivers/net/wireless/uwe5622/Makefile
-index 71c863c1017..d2210439f3c 100644
---- a/drivers/net/wireless/uwe5622/Makefile
-+++ b/drivers/net/wireless/uwe5622/Makefile
-@@ -6,5 +6,5 @@ UNISOCWCN_DIR := $(shell cd $(src)/unisocwcn/ && /bin/pwd)
- UNISOC_BSP_INCLUDE := $(UNISOCWCN_DIR)/include
- export UNISOC_BSP_INCLUDE
- 
--UNISOC_FW_PATH_CONFIG := "/lib/firmware/"
-+UNISOC_FW_PATH_CONFIG := "/lib/firmware/uwe5622/"
- export UNISOC_FW_PATH_CONFIG
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c
 index 86fa3b103ad..1343cb98362 100755
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c

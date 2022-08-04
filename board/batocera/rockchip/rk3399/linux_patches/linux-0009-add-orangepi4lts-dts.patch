@@ -377,7 +377,7 @@ index 0000000000..ffcd366884
 +		wl-wake-host-gpio = <&gpio0 3 GPIO_ACTIVE_HIGH>;
 +		bt-wake-host-gpio = <&gpio0 4 GPIO_ACTIVE_HIGH>;
 +		sdio-ext-int-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
-+		unisoc,btwf-file-name = "/lib/firmware/uwe5622/wcnmodem-38222.bin";
++		unisoc,btwf-file-name = "/lib/firmware/wcnmodem.bin";
 +		data-irq;
 +		blksz-512;
 +		keep-power-on;
