@@ -60,7 +60,11 @@ then
 	fi
 
 	# parameters
+	RECOIL_ENABLED_RAW=$(batocera-settings-get controllers.guns.recoil)
+	RECOIL_ENABLED=0
+	test "${RECOIL_ENABLED_RAW}" = 1 && RECOIL_ENABLED=1
 	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || cleanAndExit 1
+	sed -i -e s+'\(key="EnableRecoil"[ ]*value="\)[^"]*"'+'\1'${RECOIL_ENABLED}'"'+ "${CONFIGFILE}" # no exit for that
 	(cd "/var/run/sinden/p${USBPATHHASH}" && PATH=/bin:/sbin:/usr/bin:/usr/sbin mono-service "./LightgunMono-${USBPATHHASH}.exe" &)
     fi
     
