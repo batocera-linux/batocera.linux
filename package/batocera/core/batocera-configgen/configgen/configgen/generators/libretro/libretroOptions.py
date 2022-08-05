@@ -1036,6 +1036,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-cpucore', '"' + system.config['mupen64plus-cpuCore'] + '"')
         else:
             coreSettings.save('mupen64plus-cpucore', '"dynamic_recompiler"')
+        # Framerate
+        if system.isOptSet('mupen64plus-Framerate'):
+            coreSettings.save('mupen64plus-Framerate', system.config['mupen64plus-Framerate'])
+        else:
+            coreSettings.save('mupen64plus-Framerate', '"Original"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')

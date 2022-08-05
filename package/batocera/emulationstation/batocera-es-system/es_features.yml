@@ -3330,6 +3330,13 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            mupen64plus-Framerate:
+                group: ADVANCED OPTIONS
+                prompt: FRAME RATE
+                description: Full speed can break some games.
+                choices:
+                    "Original":   Original
+                    "Full speed": Fullspeed
     neocd:
       shared: [rewind, autosave]
       cfeatures:
@@ -3690,11 +3697,11 @@ libretro:
                     "Nearest":     nearest
             parallel-n64-framerate:
                 group: ADVANCED OPTIONS
-                prompt:      FRAMERATE
-                description: Fullspeed can break some games.
+                prompt:      FRAME RATE
+                description: Full speed can break some games.
                 choices:
-                    "fullspeed":   fullspeed
-                    "original":    original
+                    "Original":   original
+                    "Full speed": fullspeed
             parallel-n64-pak1:
                 prompt:      CONTROLLER PAK 1
                 description: Emulate a pak in the controller expansion port.
@@ -4745,7 +4752,7 @@ libretro:
                     "1280x720":   1280x720
                     "1920x1080":  1920x1080
             tyrquake_framerate:
-                prompt:      FRAMERATE LIMIT
+                prompt:      FRAME RATE LIMIT
                 choices:
                     "Automatic":  automatic
                     "10fps":      10fps
@@ -6455,7 +6462,7 @@ melonds:
   cfeatures:
         melonds_framerate:
             group: ADVANCED OPTIONS
-            prompt: LIMIT FRAMERATE
+            prompt: LIMIT FRAME RATE
             description: Choose whether or not to limit the framerate.
             choices:
                 "No Limitation":      0
@@ -6569,7 +6576,7 @@ moonlight:
                 "1080p (1920x1080)":     1
                 "4K (3840x2160)":        2
         moonlight_framerate:
-            prompt:      VIDEO STREAM FRAMERATE
+            prompt:      VIDEO STREAM FRAME RATE
             choices:
                 "30FPS":                    0
                 "60FPS":                    1
