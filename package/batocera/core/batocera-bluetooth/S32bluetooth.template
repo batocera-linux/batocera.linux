@@ -29,6 +29,8 @@ case "$1" in
                     # and requires a custom hciattach_opi binary
                     if test "${BOARD}" = "orangepi4-lts"
                     then
+                        modprobe sprdbt_tty
+                        modprobe sprdwl_ng                        
                         /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
                     else
                         /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
@@ -45,6 +47,12 @@ case "$1" in
                 piscan)
                     /usr/bin/hciconfig hci0 up piscan # specific rpi
                     sleep 2 # without the sleep, on rpi4, the agent fails on startup complaining the device is not here
+                ;;
+                sprd)
+                    modprobe sprdbt_tty
+                    modprobe sprdwl_ng
+                    /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
+                    sleep 2
                 ;;
             esac
         done
