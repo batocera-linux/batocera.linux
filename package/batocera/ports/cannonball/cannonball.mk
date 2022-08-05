@@ -30,7 +30,7 @@ CANNONBALL_RPI = -march=armv8-a+crc -mcpu=cortex-a72
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 CANNONBALL_TARGET = sdl2gl
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 CANNONBALL_TARGET = sdl2gl
 endif
 

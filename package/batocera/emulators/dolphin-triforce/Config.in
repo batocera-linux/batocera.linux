@@ -1,7 +1,7 @@
 config BR2_PACKAGE_DOLPHIN_TRIFORCE
 	bool "dolphin-triforce"
 	depends on BR2_x86_64
-	select BR2_PACKAGE_XORG7 		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_XORG7 		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	help
 	  Gamecube/Wii emulator
 
