@@ -422,11 +422,11 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsNeedBorders(guns))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsNeedBorders(guns))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
         except:
-            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsNeedBorders(guns))
+            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
 
         buttonLayout = getMameControlScheme(system, romBasename)
 
@@ -472,7 +472,7 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsNeedBorders):
+    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsBordersSize):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         if messSys == "":
@@ -483,7 +483,7 @@ class MameGenerator(Generator):
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
 
-        if bezelSet is None and not gunsNeedBorders:
+        if bezelSet is None and gunsBordersSize is None:
             return
 
         # let's generate the zip file
@@ -491,14 +491,14 @@ class MameGenerator(Generator):
 
         # bezels infos
         if bezelSet is None:
-            if gunsNeedBorders:
+            if gunsBordersSize is not None:
                 bz_infos = None
             else:
                 return
         else:
             bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
             if bz_infos is None:
-                if not gunsNeedBorders:
+                if gunsBordersSize is None:
                     return
 
         # create an empty bezel
@@ -632,9 +632,10 @@ class MameGenerator(Generator):
             os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
 
         # borders for guns
-        if gunsNeedBorders:
+        if gunsBordersSize is not None:
             output_png_file = "/tmp/bezel_gunborders.png"
-            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file)
+            innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, innerSize, outerSize)
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:

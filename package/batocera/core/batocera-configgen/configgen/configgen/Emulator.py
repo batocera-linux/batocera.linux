@@ -24,6 +24,7 @@ class Emulator():
         # load configuration from batocera.conf
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
+        controllersSettings = recalSettings.loadAll('controllers', True)
         systemSettings = recalSettings.loadAll(self.name)
         folderSettings = recalSettings.loadAll(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
         gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]")
@@ -34,6 +35,7 @@ class Emulator():
             self.config["display." + opt] = displaySettings[opt]
 
         # update config
+        Emulator.updateConfiguration(self.config, controllersSettings)
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
         Emulator.updateConfiguration(self.config, folderSettings)
