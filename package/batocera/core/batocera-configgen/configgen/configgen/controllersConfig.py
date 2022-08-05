@@ -225,11 +225,17 @@ def gunsNeedCrosses(guns):
             return True
     return False
 
-def gunsNeedBorders(guns):
+# returns None is no border is wanted
+def gunsBordersSizeName(guns, config):
+    bordersSize = "big"
+    if "controllers.guns.borderssize" in config and config["controllers.guns.borderssize"]:
+        bordersSize = config["controllers.guns.borderssize"]
+    if "controllers.guns.forceborders" in config and config["controllers.guns.forceborders"]:
+        return bordersSize
     for gun in guns:
         if guns[gun]["need_borders"]:
-            return True
-    return False
+            return bordersSize
+    return None
 
 def getGuns():
     import pyudev

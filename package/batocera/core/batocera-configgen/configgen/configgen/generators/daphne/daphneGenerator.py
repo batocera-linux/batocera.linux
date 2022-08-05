@@ -55,9 +55,15 @@ class DaphneGenerator(Generator):
             # Blend Sprites (Singe)
             if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
                 commandArray.append("-blend_sprites")
-            
-            if controllersConfig.gunsNeedBorders(guns):
-                commandArray.extend(["-sinden", "2", "w"])
+
+            bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
+            if bordersSize is not None:
+                if bordersSize == "thin":
+                    commandArray.extend(["-sinden", "1", "w"])
+                elif bordersSize == "medium":
+                    commandArray.extend(["-sinden", "2", "w"])
+                else:
+                    commandArray.extend(["-sinden", "3", "w"])
             else:
                 commandArray.extend(["-manymouse"]) # sinden implies manymouse
                 

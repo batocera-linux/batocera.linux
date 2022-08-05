@@ -233,7 +233,16 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretc
       imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")
 
-def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, innerBorderColor = "#ffffff", outerBorderSizePer = 3, outerBorderColor = "#000000"):
+def gunBordersSize(bordersSize):
+    if bordersSize == "thin":
+        return 1, 0
+    if bordersSize == "medium":
+        return 1, 1
+    if bordersSize == "big":
+        return 2, 3
+    return 0, 0
+
+def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSizePer = 3, innerBorderColor = "#ffffff", outerBorderColor = "#000000"):
     # good default border that works in most circumstances is:
     # 
     # 2% of the screen width in white.  Surrounded by 3% screen width of

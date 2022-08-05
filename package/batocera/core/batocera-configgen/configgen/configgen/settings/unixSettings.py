@@ -65,12 +65,15 @@ class UnixSettings():
     def protectString(str):
         return re.sub(r'[^A-Za-z0-9-\.]+', '_', str)
 
-    def loadAll(self, name):
+    def loadAll(self, name, includeName = False):
         eslog.debug(f"Looking for {name}.* in {self.settingsFile}")
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
             m = re.match(r"^" + UnixSettings.protectString(name) + r"\.(.+)", UnixSettings.protectString(key))
             if m:
-                res[m.group(1)] = value;
+                if includeName:
+                    res[name + "." + m.group(1)] = value;
+                else:
+                    res[m.group(1)] = value;
 
         return res

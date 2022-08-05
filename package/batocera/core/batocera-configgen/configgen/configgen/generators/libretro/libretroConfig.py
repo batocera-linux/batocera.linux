@@ -732,10 +732,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
 
     # Bezel option
     try:
-        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
+        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config))
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsNeedBorders(guns))
+        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config))
         eslog.error(f"Error with bezel {bezel}: {e}")
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -806,7 +806,7 @@ def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsNeedBorder):
+def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsBordersSize):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -823,7 +823,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         bezel = None
 
     # create a fake bezel if guns need it
-    if bezel is None and gunsNeedBorder:
+    if bezel is None and gunsBordersSize is not None:
         eslog.debug("guns need border")
         gunBezelFile     = "/tmp/bezel_gun_black.png"
         gunBezelInfoFile = "/tmp/bezel_gun_black.info"
@@ -1017,10 +1017,11 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
 
-    if gunsNeedBorder:
+    if gunsBordersSize is not None:
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
+        innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize)
         overlay_png_file = output_png_file
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")

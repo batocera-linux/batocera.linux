@@ -244,7 +244,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             cmd = generator.generate(system, rom, playersControllers, guns, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
-                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsNeedBorders(guns))
+                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))
                 if (system.isOptSet('hud') and system.config["hud"] != "" and system.config["hud"] != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
@@ -284,12 +284,12 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     # exit
     return exitCode
 
-def getHudBezel(system, generator, rom, gameResolution, addBorders):
+def getHudBezel(system, generator, rom, gameResolution, bordersSize):
     if generator.supportsInternalBezels():
         eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
         return None
     # no good reason for a bezel
-    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0") and not addBorders:
+    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0") and bordersSize is None:
         return None
     # no bezel, generate a transparent one for the tatoo/gun borders ... and so on
     if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none"):
@@ -406,10 +406,12 @@ def getHudBezel(system, generator, rom, gameResolution, addBorders):
         overlay_png_file = output_png_file
 
     # borders
-    if addBorders:
+    if bordersSize is not None:
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file)
+
+        innerSize, outerSize = bezelsUtil.gunBordersSize(bordersSize)
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize)
         overlay_png_file = output_png_file
 
     eslog.debug(f"applying bezel {overlay_png_file}")
