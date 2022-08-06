@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c08ffc1..0b911f0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -288,7 +288,6 @@ else()
+         )
+     else()
+         LIST(APPEND COMMON_LIBRARIES
+-            EGL
+             ${OPENGLES_LIBRARIES}
+         )
+     endif()
