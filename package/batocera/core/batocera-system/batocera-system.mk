@@ -97,12 +97,18 @@ else
 	BATOCERA_SYSTEM_BATOCERA_CONF=unknown
 endif
 
+ifneq (,$(findstring dev,$(BATOCERA_SYSTEM_VERSION)))
+    BATOCERA_SYSTEM_COMMIT = "-$(shell cd $(BR2_EXTERNAL_BATOCERA_PATH) && git rev-parse --short HEAD)"
+else
+    BATOCERA_SYSTEM_COMMIT =
+endif
+
 define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# version/arch
 	mkdir -p $(TARGET_DIR)/usr/share/batocera
 	echo -n "$(BATOCERA_SYSTEM_ARCH)" > $(TARGET_DIR)/usr/share/batocera/batocera.arch
-	echo $(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE_TIME) > $(TARGET_DIR)/usr/share/batocera/batocera.version
+	echo $(BATOCERA_SYSTEM_VERSION)$(BATOCERA_SYSTEM_COMMIT) $(BATOCERA_SYSTEM_DATE_TIME) > $(TARGET_DIR)/usr/share/batocera/batocera.version
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
