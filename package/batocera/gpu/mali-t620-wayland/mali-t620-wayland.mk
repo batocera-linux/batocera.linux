@@ -9,7 +9,7 @@ MALI_T620_WAYLAND_SITE = $(call github,LibreELEC,libmali,$(MALI_T620_WAYLAND_VER
 
 MALI_T620_WAYLAND_INSTALL_STAGING = YES
 MALI_T620_WAYLAND_PROVIDES = libegl libgles libmali
-MALI_T620_WAYLAND_DEPENDENCIES = wayland
+MALI_T620_WAYLAND_DEPENDENCIES = libdrm wayland
 
 define MALI_T620_WAYLAND_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/lib/pkgconfig
@@ -44,7 +44,7 @@ endef
 
 define MALI_T620_WAYLAND_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib
-	
+
 	cp $(@D)/lib/arm-linux-gnueabihf/libmali-midgard-t620-r12p0-wayland-gbm.so \
 		$(TARGET_DIR)/usr/lib/libmali.so
 
