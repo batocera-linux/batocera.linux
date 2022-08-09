@@ -560,7 +560,6 @@ psx:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
       swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION] }
-      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
     duckstation:
       duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
@@ -3297,7 +3296,7 @@ eduke32:
       eduke32: { requireAnyOf: [ BR2_PACKAGE_EDUKE32 ] }
   comment_en: |
     EDuke32 is a Build Engine source port for playing games like Duke Nukem 3D.
-    
+
     The following games are officially supported, and should be placed in the designated directory with their required
     files:
       * duke:   Duke Nukem 3D (DUKE3D.GRP)
@@ -3307,29 +3306,29 @@ eduke32:
       * nam:    NAM (NAM.GRP, NAM.CON)
       * ww2gi:  World War II GI (WW2GI.GRP)
       * ww2gi:  World War II GI: Platoon Leader (PLATOONL.DAT, PLATOONL.DEF)
-    
+
     Note: If you want to play Ion Fury, check out the fury roms directory as it uses a slightly different binary.
-    
+
     Each game needs an .eduke32 file. The purpose of this file is to tell EDuke32 how to launch the game. This is simple
     for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
     the scraper has an easier time getting a match e.g. Duke_Nukem_3D.eduke32.
-    
+
     For each Duke Nukem 3D game, create an .eduke32 file with the following text:
       FILE  = /duke/DUKE3D.GRP
       FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
-    
+
     For Nam, create an .eduke32 file with the following text:
       FILE = /nam/NAM.GRP
       CON  = /nam/NAM.CON
-    
+
     For World War II GI, create an .eduke32 file with the following text:
       FILE = /ww2gi/WW2GI.GRP
-    
+
     For the World War II GI: Platoon Leader expansion, create an .eduke32 file with the following text:
       FILE  = /ww2gi/WW2GI.GRP
       FILE+ = /ww2gi/PLATOONL.DAT
       CON   = /ww2gi/PLATOONL.DEF
-    
+
     For mod support and troubleshooting, please visit the wiki for more information.
 
 fury:
@@ -3344,7 +3343,7 @@ fury:
       fury: { requireAnyOf: [BR2_PACKAGE_EDUKE32] }
   comment_en: |
     Ion Fury is a new Build Engine game from the creators of the EDuke32 source port.
-    
+
     Place the following files in this directory:
       * fury.grp
       * fury.grpinfo
@@ -3383,12 +3382,12 @@ raze:
 
     For some of these expansion packs, the required files (including subdirectories) need to be collected into the root
     of a .zip file and placed in the designated directory:
-    
+
       Blood: Cryptic Passage
         1. Collect required files: movies/*.ogv, *.art, *.ini, *.map
         2. Zip required files into root of cryptic.zip
         3. Place cryptic.zip in blood directory
-    
+
       Redneck Rampage: Suckin' Grits on Route 66
         1. Collect ANM files: END66.ANM, TURD66.ANM
         2. Collect ART files: TILESA66.ART, TILESB66.ART
@@ -3398,56 +3397,56 @@ raze:
         6. Rename files: TILESA66.ART -> TILES024.ART; TILESB66.ART -> TILES025.ART; GAME66.CON -> GAME.CON
         7. Zip required files into root of route66.zip
         8. Place route66.zip in redneck directory
-    
+
     Optionally, add music tracks with the following names to the designated directories:
       * blood:          track02.ogg or blood02.ogg, etc.
       * exhumed:        track02.ogg or exhumed02.ogg, etc.
       * redneck:        track02.ogg or redneck02.ogg, etc.
       * redneckrides:   track02.ogg or redneckrides02.ogg, etc.
       * shadow:         track02.ogg or shadow02.ogg, etc.
-    
+
     Each game needs a .raze file. The purpose of this file is to tell Raze how to launch the game. This is simple
     for most cases but can be more complicated if you are installing mods. It is recommended to underscore the name so
     the scraper has an easier time getting a match e.g. Duke_Nukem_3D.raze.
-    
+
     For Blood, create a .raze file with the following text:
       FILE = /blood/BLOOD.RFF
-    
+
     For Blood: Cryptic Passage, create a .raze file with the following text:
       FILE  = /blood/BLOOD.RFF
       FILE+ = /blood/cryptic.zip
-    
+
     For each Duke Nukem 3D game, create a .raze file with the following text:
       FILE  = /duke/DUKE3D.GRP
       FILE+ = /duke/DUKEDC.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
-    
+
     For Exhumed/PowerSlave, create a .raze file with the following text:
       FILE = /exhumed/STUFF.DAT
-    
+
     For Nam, create an .raze file with the following text:
       FILE = /nam/NAM.GRP
       CON  = /nam/NAM.CON
-    
+
     For Redneck Rampage, create a .raze file with the following text:
       FILE = /redneck/REDNECK.GRP
-    
+
     For Redneck Rampage: Suckin' Grits on Route 66, create a .raze file with the following text:
       FILE  = /redneck/REDNECK.GRP
       FILE+ = /redneck/route66.zip
-    
+
     For Redneck Rampage Rides Again, create a .raze file with the following text:
       FILE = /redneckrides/RIDES.GRP
-    
+
     For each Shadow Warrior game, create a .raze file with the following text:
       FILE  = /shadow/SW.GRP
       FILE+ = /shadow/TD.GRP  <-- Note: Omit this line for the base game, update filename for each expansion
-    
+
     For World War II GI, create an .raze file with the following text:
       FILE = /ww2gi/WW2GI.GRP
-    
+
     For the World War II GI: Platoon Leader expansion, create an .raze file with the following text:
       FILE  = /ww2gi/WW2GI.GRP
       FILE+ = /ww2gi/PLATOONL.DAT
       CON   = PLATOONL.DEF
-    
+
     For mod support and troubleshooting, please visit the wiki for more information.
