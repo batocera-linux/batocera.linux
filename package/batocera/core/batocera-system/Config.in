@@ -974,12 +974,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
-	select BR2_PACKAGE_LIBRETRO_DUCKSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
-	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
-
 	select BR2_PACKAGE_LIBRETRO_PCSX                # All
 
     select BR2_PACKAGE_LIBRETRO_BEETLE_PSX          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
