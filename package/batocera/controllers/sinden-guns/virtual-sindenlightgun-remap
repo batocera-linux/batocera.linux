@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# kill any existing virtul-sindenlightgun
+ls /var/run/virtual-sindenlightgun-devices*.pid 2>/dev/null |
+    while read VWMB
+    do
+	PID=$(cat "${VWMB}")
+	echo "killing virtual sindenlightgun with pid ${PID}"
+	kill -15 "${PID}"
+    done
+
+# remove exiting flags
+rm -rf /var/run/virtual-sindenlightgun-devices* || exit 1
+
+# kill the software
+pgrep -f LightgunMono | xargs kill -15
+
+# rerun events
+for EVT in /dev/input/event*
+do
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Unknown SindenLightgun Keyboard"$'
+    then
+	echo "remapping ${EVT}"
+	udevadm trigger --action remove "${EVT}"
+	udevadm trigger --action add "${EVT}"
+    fi
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Unknown SindenLightgun Mouse"$'
+    then
+	echo "remapping ${EVT}"
+	udevadm trigger --action remove "${EVT}"
+	udevadm trigger --action add "${EVT}"
+    fi
+done
+
+exit 0
