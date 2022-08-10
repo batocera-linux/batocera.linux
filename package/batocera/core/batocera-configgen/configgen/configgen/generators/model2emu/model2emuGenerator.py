@@ -15,6 +15,30 @@ eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
+    def supportsInternalBezels(self):
+        return True
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 4/3
+
+    def addBezels(self):
+        #gungames = [ "bel", "gunblade", "hotd", "rchase2", "vcop", "vcop2"]
+        if os.path.exists("/userdata/saves/model2/model2emu/scripts/batocera_bezels.lua"):
+            os.remove("/userdata/saves/model2/model2emu/scripts/batocera_bezels.lua")
+        if not os.path.exists("/userdata/saves/model2/model2emu/scripts"):
+            os.makedirs("/userdata/saves/model2/model2emu/scripts")
+        with open("/userdata/saves/model2/model2emu/scripts/batocera_bezels.lua", "w") as f:
+            f.write("""
+function batocera_bezels_Init()
+  bezel = Video_CreateSurfaceFromFile(\"/usr/share/batocera/datainit/decorations/consoles/systems/snes.png\");
+end
+
+function batocera_bezels_PostDraw()
+  Video_DrawSurface(bezel,0,0);
+end
+"""
+            )
+
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/model2"
         emupath = wineprefix + "/model2emu"
@@ -183,7 +207,9 @@ class Model2EmuGenerator(Generator):
         
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
-        
+
+        self.addBezels()
+
         # now run the emulator
         commandArray = ["/usr/wine/lutris/bin/wine", "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
