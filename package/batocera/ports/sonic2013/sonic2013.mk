@@ -21,7 +21,7 @@ endef
 
 define SONIC2013_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/sonic2013
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic2013/sonicretro.sonic2013.keys $(TARGET_DIR)/usr/share/evmapy
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic2013/sonicretro.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 SONIC2013_POST_INSTALL_TARGET_HOOKS += SONIC2013_POST_PROCESS
