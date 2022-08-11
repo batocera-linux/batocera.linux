@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBRETRO_ARDUOUS
+    bool "libretro-arduous"
+    depends on BR2_PACKAGE_RETROARCH
+      help
+        A libretro Arduboy core
+
+        http://www.libretro.com
