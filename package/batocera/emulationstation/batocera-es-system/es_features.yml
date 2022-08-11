@@ -5,7 +5,7 @@ shared:
   cfeatures:
     videomode:
       prompt: VIDEO MODE
-      description: Force the emulator to run at this resolution.
+      description: Set the display's resolution. Does not affect the rendering resolution.
       preset: videomodes
     ratio:
       prompt: GAME ASPECT RATIO
@@ -2705,7 +2705,7 @@ libretro:
                       description: Speech module installed
                       choices:
                           "Enabled (Default)": 1
-                          "Disabled":          0    
+                          "Disabled":          0
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
@@ -6119,7 +6119,7 @@ duckstation:
             description: Choose whether to show on the display, configuration messages.
             choices:
                 "Disabled (Default)": "false"
-                "Enabled":            "true"            
+                "Enabled":            "true"
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -6406,7 +6406,7 @@ flycast:
           description: Enable the Dreamcast DSP. Only recommended for fast systems.
           choices:
             "Disbaled (Default)": "no"
-            "Enabled"           : "yes"      
+            "Enabled"           : "yes"
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6463,13 +6463,12 @@ melonds:
         melonds_framerate:
             group: ADVANCED OPTIONS
             prompt: LIMIT FRAME RATE
-            description: Choose whether or not to limit the framerate.
             choices:
-                "No Limitation":      0
-                "Standard (Default)": 1
+                "No Limit":          0
+                "As game specifies": 1
         melonds_resolution:
             prompt: RENDERING RESOLUTION
-            description: Enhancement. Increase the rendering resolution.
+            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
                 "1x (256x192)":           1
                 "2x (512x384)":           2
@@ -6490,74 +6489,70 @@ melonds:
         melonds_polygons:
             group: ADVANCED OPTIONS
             prompt: ENABLE POLYGON SPLITTING
-            description: Enables improved polygon splitting.
+            description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off (Default)": 0
+                "Off":           0
                 "On":            1
         melonds_rotation:
             prompt: SCREEN ROTATION
-            description: Rotate the screen with the emulator.
+            description: Rotates the screens, to simulate holding the DS sideways.
             choices:
-                "0 degrees (Default)": 0
+                "0 degrees":           0
                 "90 degrees":          1
                 "180 degrees":         2
                 "270 degrees":         3
         melonds_screenswap:
             prompt: SCREEN SWAP
-            description: Swap the Nintendo DS Displays.
+            description: Swap the position of the dual displays.
             choices:
-                "Off (Default)": 0
+                "Off":           0
                 "On":            1
         melonds_screensize:
             prompt: SCREEN SIZE
-            description: Choose the screen size.
+            description: Sets the window size to an integer size.
             choices:
-                "1x (Default)": 0
+                "1x":           0
                 "2x":           1
                 "3x":           2
                 "4x":           3
         melonds_layout:
             prompt: SCREEN LAYOUT
-            description: Choose the preferred screen layout.
+            description: Adjusts the positions of the screens.
             choices:
-                "Natural (Default)": 0
-                "Vertical":          1
-                "Horizontal":        2
-                "Hybrid":            3
+                "Relative to rotation":      0
+                "Always enforce vertical":   1
+                "Always enforce horizontal": 2
+                "Hybrid":                    3
         melonds_screensizing:
             prompt: SCREEN SIZING
-            description: Choose the NDS screen sizings.
+            description: How the window space is distributed between the screens.
             choices:
-                "Even (Default)":   0
+                "Even":             0
                 "Emphasize top":    1
-                "Emphasize botton": 2
-                "Auto":             3
+                "Emphasize bottom": 2
+                "Automatic":        3
                 "Top only":         4
                 "Bottom only":      5
         melonds_scaling:
             prompt: INTEGER SCALING
-            description: Force integer scaling for pixels on larger displays.
             choices:
-                "Off (Default)":   0
+                "Off":             0
                 "On":              1
         melonds_cheats:
             prompt: ENABLE CHEATS
-            description: Enable cheats for MelonDS.
             choices:
-                "Off (Default)":   0
-                "On":              1    
+                "Off":             0
+                "On":              1
         melonds_osd:
             prompt: ENABLE OSD
-            description: Enable the on screen display.
             choices:
                 "Off":          0
-                "On (Default)": 1
+                "On":           1
         melonds_console:
             prompt: CONSOLE TYPE
-            description: Choose console type.
             choices:
-                "DS (default)":        0
-                "DSi (Experiemental)": 1
+                "DS":                  0
+                "DSi (experiemental)": 1
 
 moonlight:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6643,7 +6638,7 @@ mupen64plus:
             prompt:      AUDIO BUFFER (SAMPLES)
             description: Lower values reduce audio latency and improve performance, but can cause audio issues.
             choices:
-                "Very High":     Very High 
+                "Very High":     Very High
                 "High":          High
                 "Medium":        Medium
                 "Low":           Low
@@ -8228,7 +8223,7 @@ mame:
                     description: Speech module installed
                     choices:
                         "Enabled (Default)": 1
-                        "Disabled":          0    
+                        "Disabled":          0
                 altromtype:
                     group: ADVANCED OPTIONS
                     prompt:      MEDIA TYPE
@@ -8387,7 +8382,7 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
-       mame: 
+       mame:
             features: [netplay, padtokeyboard]
             cfeatures:
                 altlayout:
@@ -8416,7 +8411,7 @@ mame:
                     choices:
                         "Enabled":            1
                         "Disabled (Default)": 0
-       neogeo: 
+       neogeo:
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS
