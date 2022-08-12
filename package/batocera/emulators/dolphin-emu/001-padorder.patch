@@ -1,8 +1,8 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index f4b83f2..63cb11a 100644
+index 6df37b4..64ade4a 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -391,6 +391,65 @@ void Init()
+@@ -392,6 +392,65 @@ void Init()
    StartHotplugThread();
  }
  
@@ -68,17 +68,18 @@ index f4b83f2..63cb11a 100644
  // Only call this when ControllerInterface::m_devices_population_mutex is locked
  void PopulateDevices()
  {
-@@ -403,6 +462,9 @@ void PopulateDevices()
+@@ -404,6 +463,10 @@ void PopulateDevices()
    // We use udev to iterate over all /dev/input/event* devices.
    // Note: the Linux kernel is currently limited to just 32 event devices. If
    // this ever changes, hopefully udev will take care of this.
 +  unsigned sorted_count = 0;
 +  struct joypad_udev_entry sorted[64];
++  const char* devnode;
 +  int i;
  
    udev* const udev = udev_new();
-   ASSERT_MSG(PAD, udev != nullptr, "Couldn't initialize libudev.");
-@@ -421,11 +483,24 @@ void PopulateDevices()
+   ASSERT_MSG(CONTROLLERINTERFACE, udev != nullptr, "Couldn't initialize libudev.");
+@@ -422,11 +485,25 @@ void PopulateDevices()
  
      udev_device* dev = udev_device_new_from_syspath(udev, path);
  
@@ -86,7 +87,8 @@ index f4b83f2..63cb11a 100644
 -      AddDeviceNode(devnode);
 -
 -    udev_device_unref(dev);
-+    if (const char* devnode = udev_device_get_devnode(dev)) {
++    devnode = udev_device_get_devnode(dev);
++    if (devnode != NULL && sorted_count < 64) {
 +      sorted[sorted_count].devnode = devnode;
 +      sorted[sorted_count].dev     = dev;
 +      sorted_count++;
