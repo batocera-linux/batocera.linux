@@ -703,7 +703,8 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "swanstation"   : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "beetle-saturn" : { "default" : { "device": 260,          "p2": 0 } },
         "opera"         : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
-        "stella"        : { "default" : { "device":   4, "p1": 0, "p2": 1 } }
+        "stella"        : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
+        "vice_x64"      : { "default" : { "gameDependant": [ { "key": "gun", "value": "stack_light_rifle", "mapcorekey": "vice_joyport_type", "mapcorevalue": "15" } ] } }
     }
 
     # apply mapping
@@ -714,13 +715,16 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                 ragunconf = gun_mapping[system.config['core']][system.name]
             else:
                 ragunconf = gun_mapping[system.config['core']]["default"]
+            raguncoreconf = {}
 
             # overwrite configuration by gungames.xml
             if "gameDependant" in ragunconf:
                 gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
                 for gd in ragunconf["gameDependant"]:
-                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"]:
+                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
+                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
+                        raguncoreconf[gd["mapcorekey"]] = gd["mapcorevalue"]
 
             for nplayer in range(1, 3+1):
                 if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
@@ -729,6 +733,13 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                     else:
                         retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
                     configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
+
+            # override core settings
+            for key in raguncoreconf:
+                coreSettings.save(key, '"' + raguncoreconf[key] + '"')
+
+    # write coreSettings a bit late while guns configs can modify it
+    coreSettings.write()
 
     # Bezel option
     try:
