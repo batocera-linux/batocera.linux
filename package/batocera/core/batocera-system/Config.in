@@ -1329,10 +1329,8 @@ config BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
     select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_LLVM                        if BR2_PACKAGE_BATOCERA_SBC_XORG # llvmpipe for OpenGL
     select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG # glxinfo etc
-    select BR2_PACKAGE_XDRIVER_XF86_VIDEO_FBDEV           if BR2_PACKAGE_BATOCERA_SBC_XORG # frambuffer
-
+    
 config BR2_PACKAGE_BATOCERA_LIMA_MESA3D
 	bool "batocera.linux driver mesa LIMA"
 
@@ -1360,10 +1358,8 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
     select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_LLVM                        if BR2_PACKAGE_BATOCERA_SBC_XORG # llvmpipe for OpenGL
     select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG # glxinfo etc
-    select BR2_PACKAGE_XDRIVER_XF86_VIDEO_FBDEV           if BR2_PACKAGE_BATOCERA_SBC_XORG # frambuffer
-
+    
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	bool "batocera.linux Firmwares packages selection"
 
