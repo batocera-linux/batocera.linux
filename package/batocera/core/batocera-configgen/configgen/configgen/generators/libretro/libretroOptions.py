@@ -2312,8 +2312,6 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if user_config[:14] == "retroarchcore.":
             coreSettings.save(user_config[14:], system.config[user_config])
 
-    coreSettings.write()
-
 def generateHatariConf(hatariConf):
     hatariConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
