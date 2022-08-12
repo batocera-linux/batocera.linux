@@ -6069,8 +6069,7 @@ dolphin_triforce:
                 "On":  1
         disable_osd_messages:
             group: ADVANCED OPTIONS
-            prompt:      DISABLE OSD MESSAGES
-            description: Disable status messages displayed by the emulator.
+            prompt:      DISABLE ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off": 0
                 "On":  1
@@ -6115,11 +6114,10 @@ duckstation:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
         duckstation_osd:
-            prompt:      SHOW OSD MESSAGES
-            description: Choose whether to show on the display, configuration messages.
+            prompt:      SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
-                "Disabled (Default)": "false"
-                "Enabled":            "true"
+                "Off": "false"
+                "On":  "true"
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -6519,7 +6517,7 @@ melonds:
             prompt: SCREEN LAYOUT
             description: Adjusts the positions of the screens.
             choices:
-                "Relative to rotation":      0
+                "Original screen positions": 0
                 "Always enforce vertical":   1
                 "Always enforce horizontal": 2
                 "Hybrid":                    3
@@ -6544,7 +6542,7 @@ melonds:
                 "Off":             0
                 "On":              1
         melonds_osd:
-            prompt: ENABLE OSD
+            prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off":          0
                 "On":           1
