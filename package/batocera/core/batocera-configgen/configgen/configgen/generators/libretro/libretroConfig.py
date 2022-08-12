@@ -701,7 +701,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "mednafen_psx"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "pcsx_rearmed"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "swanstation"   : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
-        "beetle-saturn" : { "default" : { "device": 260,          "p2": 0 } },
+        "beetle-saturn" : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "opera"         : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "stella"        : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "vice_x64"      : { "default" : { "gameDependant": [ { "key": "gun", "value": "stack_light_rifle", "mapcorekey": "vice_joyport_type", "mapcorevalue": "15" } ] } }
