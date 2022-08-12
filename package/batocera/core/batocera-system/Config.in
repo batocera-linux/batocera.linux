@@ -421,18 +421,18 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/orangepi4-lts" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "rockchip/rg552"                                                                  if BR2_PACKAGE_BATOCERA_TARGET_RG552
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"      if BR2_PACKAGE_BATOCERA_TARGET_RK3128
-	default "tritium-h5"                                                                      if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
-	default "orangepi-zero2"                                                                  if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-	default "orangepi-pc"                                                                     if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-	default "cha"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_CHA
-	default "s812"                                                                            if BR2_PACKAGE_BATOCERA_TARGET_S812
-	default "odroidxu4"                                                                       if BR2_PACKAGE_BATOCERA_TARGET_XU4
+	default "allwinner/h5/tritium-h5"                                                         if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+	default "allwinner/h616/orangepi-zero2"                                                   if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+	default "allwinner/h3/orangepi-pc"                                                        if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+	default "allwinner/h3/cha"                                                                if BR2_PACKAGE_BATOCERA_TARGET_CHA
+	default "amlogic/s812"                                                                    if BR2_PACKAGE_BATOCERA_TARGET_S812
+	default "samsung/exynos5422/odroidxu4"                                                    if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86_64"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default "ps4"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_PS4
 	default "znver2"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
-	default "odin"                                                                            if BR2_PACKAGE_BATOCERA_TARGET_ODIN
-	default "allwinner/orangepi-3-lts"                                                        if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+	default "qualcomm/sd845/odin"                                                             if BR2_PACKAGE_BATOCERA_TARGET_ODIN
+	default "allwinner/h6/orangepi-3-lts"                                                     if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 choice
 	prompt "batocera.linux target"
