@@ -1527,6 +1527,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"0"'
             coreSettings.save('snes9x_superscope_crosshair', status)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('snes9x_superscope_reverse_buttons', '"disabled"')
+
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
         if system.isOptSet('2010_reduce_sprite_flicker'):
@@ -1553,6 +1556,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_2010_superscope_crosshair', status)
 
     # TODO: Add CORE options for BSnes and PocketSNES
+    if (system.config['core'] == 'bsnes'):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('bsnes_touchscreen_lightgun_superscope_reverse', '"OFF"')
 
     # Nintendo SNES/GB/GBC/SGB
     if (system.config['core'] == 'mesen-s'):
