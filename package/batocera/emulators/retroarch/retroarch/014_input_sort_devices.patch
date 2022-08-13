@@ -88,7 +88,7 @@ index 489e00f..334a844 100644
 +       struct udev_device  *dev = udev_device_new_from_syspath(udev->udev, name);
 +       const char      *devnode = udev_device_get_devnode(dev);
 +
-+       if (devnode != NULL && sorted < 64) {
++       if (devnode != NULL && sorted_count < 64) {
 +	 sorted[sorted_count].devnode = devnode;
 +	 sorted[sorted_count].item = item;
 +	 sorted_count++;
