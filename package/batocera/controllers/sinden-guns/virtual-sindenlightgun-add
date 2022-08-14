@@ -37,7 +37,7 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:key2 btn:2 --output name="Sinden lightgun" >/dev/null 2>"/var/log/virtual-sindenlightgun-devices.${USBPATHHASH}.log" &
+    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --output name="Sinden lightgun" >/dev/null 2>"/var/log/virtual-sindenlightgun-devices.${USBPATHHASH}.log" &
     echo $! > "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.pid"
 
     # ttyACM
@@ -60,11 +60,53 @@ then
 	fi
 
 	# parameters
-	RECOIL_ENABLED_RAW=$(batocera-settings-get controllers.guns.recoil)
-	RECOIL_ENABLED=0
-	test "${RECOIL_ENABLED_RAW}" = 1 && RECOIL_ENABLED=1
-	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || cleanAndExit 1
+	RECOIL_MODE=$(batocera-settings-get controllers.guns.recoil)
+	case "${RECOIL_MODE}" in
+	    "machinegun")
+		RECOIL_ENABLED=1
+		RECOIL_NORMALORREPEAT=1
+		RECOIL_STRENGTH=100
+		RECOIL_STARTDELAY=1
+		RECOIL_PULSEDELAY=10
+	    ;;
+	    "machinegun-quiet")
+		RECOIL_ENABLED=1
+		RECOIL_NORMALORREPEAT=1
+		RECOIL_STRENGTH=40
+		RECOIL_STARTDELAY=1
+		RECOIL_PULSEDELAY=10
+	    ;;
+	    "gun")
+		RECOIL_ENABLED=1
+		RECOIL_NORMALORREPEAT=1
+		RECOIL_STRENGTH=100
+		RECOIL_STARTDELAY=150
+		RECOIL_PULSEDELAY=10
+	    ;;
+	    "gun-quiet")
+		RECOIL_ENABLED=1
+		RECOIL_NORMALORREPEAT=1
+		RECOIL_STRENGTH=40
+		RECOIL_STARTDELAY=150
+		RECOIL_PULSEDELAY=10
+	    ;;
+	    *)
+		RECOIL_ENABLED=0
+		RECOIL_NORMALORREPEAT=1
+		RECOIL_STRENGTH=100
+		RECOIL_STARTDELAY=150
+		RECOIL_PULSEDELAY=10
+	    ;;
+	esac
+
+	# recoil
 	sed -i -e s+'\(key="EnableRecoil"[ ]*value="\)[^"]*"'+'\1'${RECOIL_ENABLED}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="TriggerRecoilNormalOrRepeat"[ ]*value="\)[^"]*"'+'\1'${RECOIL_NORMALORREPEAT}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="AutoRecoilStrength"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STRENGTH}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="AutoRecoilStartDelay"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STARTDELAY}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="AutoRecoilDelayBetweenPulses"[ ]*value="\)[^"]*"'+'\1'${RECOIL_PULSEDELAY}'"'+ "${CONFIGFILE}" # no exit for that
+
+	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || cleanAndExit 1
 	rm -f "/var/run/sinden/p${USBPATHHASH}/lockfile"
 	(cd "/var/run/sinden/p${USBPATHHASH}" && PATH=/bin:/sbin:/usr/bin:/usr/sbin mono-service -l:"/var/run/sinden/p${USBPATHHASH}/lockfile" "./LightgunMono-${USBPATHHASH}.exe" &)
     fi
