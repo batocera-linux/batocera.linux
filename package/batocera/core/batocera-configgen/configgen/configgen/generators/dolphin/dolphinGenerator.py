@@ -114,6 +114,9 @@ class DolphinGenerator(Generator):
 
         # Gamecube pads forced as standard pad
         dolphinSettings.set("Core", "SIDevice0", "6")
+        dolphinSettings.set("Core", "SIDevice1", "6")
+        dolphinSettings.set("Core", "SIDevice2", "6")
+        dolphinSettings.set("Core", "SIDevice3", "6")
 
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
