@@ -19,7 +19,7 @@ sys.path.append(
 def defined(key, dict):
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
-def writeLibretroCommonRemap(self, retroconfig, system, playersControllers, guns, rom):
+def writeLibretroCommonRemap(self, retroremapconfig, system, playersControllers, guns, rom):
 
     # Define the libretro device type corresponding to the libretro CORE (when needed)
     coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'};
@@ -264,9 +264,9 @@ def writeLibretroCommonRemap(self, retroconfig, system, playersControllers, guns
     # clear
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         if len(guns) >= 1:
-            clearGunInputsForPlayer(1, retroarchConfig)
+            clearGunInputsForPlayer(1, commonRemap)
         if len(guns) >= 2:
-            clearGunInputsForPlayer(2, retroarchConfig)
+            clearGunInputsForPlayer(2, commonRemap)
 
     gun_mapping = {
         "bsnes"         : { "default" : { "device": 260,          "p2": 0,
@@ -320,14 +320,16 @@ def writeLibretroCommonRemap(self, retroconfig, system, playersControllers, guns
             for nplayer in range(1, 3+1):
                 if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
                     if "device_p"+str(nplayer) in ragunconf:
-                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
+                        commonRemap['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
                     else:
-                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
+                        commonRemap['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, commonRemap)
 
             # override core settings
             for key in raguncoreconf:
                 coreSettings.save(key, '"' + raguncoreconf[key] + '"')
 
     for setting in commonRemap:
-        retroconfig.save(setting, commonRemap[setting])
+        retroremapconfig.save(setting, commonRemap[setting])
+
+    retroremapconfig.write()
