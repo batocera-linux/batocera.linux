@@ -5,6 +5,7 @@ import batoceraFiles
 from . import libretroConfig
 from . import libretroRetroarchCustom
 from . import libretroControllers
+from . import libretroRemap
 import shutil
 from generators.Generator import Generator
 import os
@@ -68,8 +69,12 @@ class LibretroGenerator(Generator):
             # Create retroarchcustom.cfg if does not exists
             if not os.path.isfile(batoceraFiles.retroarchCustom):
                 libretroRetroarchCustom.generateRetroarchCustom()
+            # Create common.rmp if it does not already exist
+            if not os.path.isfile(batoceraFiles.retroarchCommonRemapFile):
+                libretroRetroarchCustom.generateRetroarchCommonRemap()
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
+            retrocommonremap = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
 
             if system.isOptSet('lightgun_map'):
                 lightgun = system.getOptBoolean('lightgun_map')
@@ -80,7 +85,7 @@ class LibretroGenerator(Generator):
                 else:
                     lightgun = True
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers, lightgun)
-            # force pathes
+            # force paths
             libretroRetroarchCustom.generateRetroarchCustomPathes(retroconfig)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
@@ -92,13 +97,8 @@ class LibretroGenerator(Generator):
                 bezel = None
 
             libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend)
+            libretroRemap.writeLibretroCommonRemap(self, retrocommonremap, system, playersControllers, guns, rom)
             retroconfig.write()
-
-            # duplicate config to mapping files while ra now split in 2 parts
-            remapconfigDir = batoceraFiles.retroarchRoot + "/config/remaps/common"
-            if not os.path.exists(remapconfigDir):
-                os.makedirs(remapconfigDir)
-            shutil.copyfile(batoceraFiles.retroarchCustom, remapconfigDir + "/common.rmp")
 
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
@@ -281,7 +281,7 @@ class LibretroGenerator(Generator):
 
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
-        
+
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
@@ -293,7 +293,7 @@ class LibretroGenerator(Generator):
 
         if dontAppendROM == False:
             commandArray.append(rom)
-            
+
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 
 def getGFXBackend(system):

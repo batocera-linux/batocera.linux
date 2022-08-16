@@ -45,17 +45,17 @@ def generateRetroarchCustom():
     retroarchSettings.save('video_aspect_ratio_auto',           '"true"')
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
-    
+
     # Audio
     retroarchSettings.save('audio_volume',                       '"2.0"')
-    
+
     # Settings
     retroarchSettings.save('global_core_options',               '"true"')
     retroarchSettings.save('config_save_on_exit',               '"false"')
     retroarchSettings.save('savestate_auto_save',               '"false"')
     retroarchSettings.save('savestate_auto_load',               '"false"')
     retroarchSettings.save('menu_swap_ok_cancel_buttons',       '"true"')
-    
+
     # Accentuation
     retroarchSettings.save('rgui_extended_ascii',               '"true"')
 
@@ -78,6 +78,19 @@ def generateRetroarchCustom():
     retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
 
     retroarchSettings.write()
+
+def generateRetroarchCommonRemap():
+    # common.rmp
+    if not os.path.exists(os.path.dirname(batoceraFiles.retroarchCommonRemapFile)):
+        os.makedirs(os.path.dirname(batoceraFiles.retroarchCommonRemapFile))
+
+    try:
+        retroarchRemapSettings = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
+    except UnicodeError:
+        os.remove(batoceraFiles.retroarchCommonRemapFile)
+        retroarchRemapSettings = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
+
+    retroarchRemapSettings.write()
 
 def generateRetroarchCustomPathes(retroarchSettings):
     # Path Retroarch
