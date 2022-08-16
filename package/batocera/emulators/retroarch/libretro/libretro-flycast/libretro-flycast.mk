@@ -3,8 +3,8 @@
 # libretro-flycast
 #
 ################################################################################
-# Version: Commits on Jul 9, 2022
-LIBRETRO_FLYCAST_VERSION = c77c3ab015ae0b7bf6e411aa15c52bd3a71e99ef
+# Version: Commits on Apr 09, 2022
+LIBRETRO_FLYCAST_VERSION = v1.3
 LIBRETRO_FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 LIBRETRO_FLYCAST_SITE_METHOD=git
 LIBRETRO_FLYCAST_GIT_SUBMODULES=YES
@@ -41,6 +41,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RG552),y)
     LIBRETRO_FLYCAST_CONF_OPTS += -DRG552=ON
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+    LIBRETRO_FLYCAST_CONF_OPTS += -DRPI2=ON
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+    LIBRETRO_FLYCAST_CONF_OPTS += -DRPI3=ON
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
     LIBRETRO_FLYCAST_CONF_OPTS += -DRPI4=ON
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
