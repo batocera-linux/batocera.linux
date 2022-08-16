@@ -94,12 +94,6 @@ class LibretroGenerator(Generator):
             libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend)
             retroconfig.write()
 
-            # duplicate config to mapping files while ra now split in 2 parts
-            remapconfigDir = batoceraFiles.retroarchRoot + "/config/remaps/common"
-            if not os.path.exists(remapconfigDir):
-                os.makedirs(remapconfigDir)
-            shutil.copyfile(batoceraFiles.retroarchCustom, remapconfigDir + "/common.rmp")
-
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
 
@@ -281,7 +275,7 @@ class LibretroGenerator(Generator):
 
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
-        
+
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
@@ -293,7 +287,7 @@ class LibretroGenerator(Generator):
 
         if dontAppendROM == False:
             commandArray.append(rom)
-            
+
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 
 def getGFXBackend(system):

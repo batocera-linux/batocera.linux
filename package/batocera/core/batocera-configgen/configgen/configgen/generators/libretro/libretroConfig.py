@@ -100,6 +100,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom)
 
     retroarchConfig = dict()
+    retroarchCommonRemap = dict()
     systemConfig = system.config
     renderConfig = system.renderconfig
 
@@ -178,13 +179,13 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     retroarchConfig['input_driver'] = 'udev'                    # driver for mouse/keyboard. udev required for guns.
     retroarchConfig['input_max_users'] = "16"                   # Allow up to 16 players
 
-    retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
-    retroarchConfig['input_libretro_device_p2'] = '1'
+    retroarchCommonRemap['input_libretro_device_p1'] = '1'           # Default devices choices
+    retroarchCommonRemap['input_libretro_device_p2'] = '1'
 
     # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
     if system.config['core'] == 'puae' or system.config['core'] == 'puae2021' or system.config['core'] == 'vice_x64':
-        retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-        retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+        retroarchCommonRemap['input_player1_analog_dpad_mode'] = '3'
+        retroarchCommonRemap['input_player2_analog_dpad_mode'] = '3'
 
     # force notification messages, but not the "remap" one
     retroarchConfig['video_font_enable'] = '"true"'
@@ -195,165 +196,165 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
 
     ## Specific choices
     if(system.config['core'] in coreToP1Device):
-        retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
+        retroarchCommonRemap['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
     if(system.config['core'] in coreToP2Device):
-        retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
+        retroarchCommonRemap['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
     ## AMIGA OCS-ECS/AGA/CD32
     if system.config['core'] == 'puae' or system.config['core'] == 'puae2021':
         if system.name != 'amigacd32':
             if system.isOptSet('controller1_puae'):
-                retroarchConfig['input_libretro_device_p1'] = system.config['controller1_puae']
+                retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_puae']
             else:
-                retroarchConfig['input_libretro_device_p1'] = '1'
+                retroarchCommonRemap['input_libretro_device_p1'] = '1'
             if system.isOptSet('controller2_puae'):
-                retroarchConfig['input_libretro_device_p2'] = system.config['controller2_puae']
+                retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_puae']
             else:
-                retroarchConfig['input_libretro_device_p2'] = '1'
+                retroarchCommonRemap['input_libretro_device_p2'] = '1'
         else:
-            retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
+            retroarchCommonRemap['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
-            retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
-            retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+            retroarchCommonRemap['input_libretro_device_p1'] = systemToP1Device[system.name]
+            retroarchCommonRemap['input_libretro_device_p2'] = systemToP2Device[system.name]
 
     ## SNES9x and SNES9x_next (2010) controller
     if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
         if system.isOptSet('controller1_snes9x'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_snes9x']
         elif system.isOptSet('controller1_snes9x_next'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x_next']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_snes9x_next']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
         # Player 2
         if system.isOptSet('controller2_snes9x'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_snes9x']
         elif system.isOptSet('controller2_snes9x_next'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x_next']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_snes9x_next']
         elif len(controllers) > 2:                              # More than 2 controller connected
-            retroarchConfig['input_libretro_device_p2'] = '257'
+            retroarchCommonRemap['input_libretro_device_p2'] = '257'
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchCommonRemap['input_libretro_device_p2'] = '1'
         # Player 3
         if system.isOptSet('Controller3_snes9x'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['Controller3_snes9x']
+            retroarchCommonRemap['input_libretro_device_p3'] = system.config['Controller3_snes9x']
         else:
-            retroarchConfig['input_libretro_device_p3'] = '1'
+            retroarchCommonRemap['input_libretro_device_p3'] = '1'
 
     ## NES controller
     if system.config['core'] == 'fceumm':
         if system.isOptSet('controller1_nes'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_nes']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_nes']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
         if system.isOptSet('controller2_nes'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_nes']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_nes']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchCommonRemap['input_libretro_device_p2'] = '1'
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
         if system.isOptSet('beetle_psx_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
             if system.config['beetle_psx_Controller1'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '1'
         if system.isOptSet('beetle_psx_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
             if system.config['beetle_psx_Controller2'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '1'
     if (system.config['core'] == 'pcsx_rearmed'):               # PCSX Rearmed
         if system.isOptSet('controller1_pcsx'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_pcsx']
             if system.config['controller1_pcsx'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '1'
         if system.isOptSet('controller2_pcsx'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_pcsx']
             if system.config['controller2_pcsx'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '1'
 
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
         if system.isOptSet('controller1_dc'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_dc']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
         if system.isOptSet('controller2_dc'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dc']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_dc']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchCommonRemap['input_libretro_device_p2'] = '1'
         if system.isOptSet('controller3_dc'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_dc']
+            retroarchCommonRemap['input_libretro_device_p3'] = system.config['controller3_dc']
         else:
-            retroarchConfig['input_libretro_device_p3'] = '1'
+            retroarchCommonRemap['input_libretro_device_p3'] = '1'
         if system.isOptSet('controller4_dc'):
-            retroarchConfig['input_libretro_device_p4'] = system.config['controller4_dc']
+            retroarchCommonRemap['input_libretro_device_p4'] = system.config['controller4_dc']
         else:
-            retroarchConfig['input_libretro_device_p4'] = '1'
+            retroarchCommonRemap['input_libretro_device_p4'] = '1'
 
     ## Sega Megadrive controller
     if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':
         if system.isOptSet('controller1_md'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_md']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_md']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '513' # 6 button
+            retroarchCommonRemap['input_libretro_device_p1'] = '513' # 6 button
         if system.isOptSet('controller2_md'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_md']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_md']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '513' # 6 button
+            retroarchCommonRemap['input_libretro_device_p2'] = '513' # 6 button
 
     ## Sega Mastersystem controller
     if system.config['core'] == 'genesisplusgx' and system.name == 'mastersystem':
         if system.isOptSet('controller1_ms'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_ms']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_ms']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '769'
+            retroarchCommonRemap['input_libretro_device_p1'] = '769'
         if system.isOptSet('controller2_ms'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_ms']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_ms']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '769'
+            retroarchCommonRemap['input_libretro_device_p2'] = '769'
 
     ## Sega Saturn controller
     if system.config['core'] == 'yabasanshiro' and system.name == 'saturn':
         if system.isOptSet('controller1_saturn'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_saturn']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_saturn']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1' # Saturn pad
+            retroarchCommonRemap['input_libretro_device_p1'] = '1' # Saturn pad
         if system.isOptSet('controller2_saturn'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_saturn']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_saturn']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1' # Saturn pad
+            retroarchCommonRemap['input_libretro_device_p2'] = '1' # Saturn pad
 
     ## NEC PCEngine controller
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
         if system.isOptSet('controller1_pce'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pce']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_pce']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
 
     ## MS-DOS controller
     if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
         if system.isOptSet('controller1_dosbox_pure'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
             if system.config['controller1_dosbox_pure'] != '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '3'
         if system.isOptSet('controller2_dosbox_pure'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
             if system.config['controller2_dosbox_pure'] != '3':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '3'
 
     ## PS1 Swanstation and Duckstation
     if (system.config['core'] == 'swanstation'):               # Swanstation
@@ -369,17 +370,17 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
     if (system.config['core'] == 'duckstation'):               # Duckstation
         if system.isOptSet('duckstation_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['duckstation_Controller1']
             if system.config['duckstation_Controller1'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '3'
         if system.isOptSet('duckstation_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['duckstation_Controller2']
             if system.config['duckstation_Controller2'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+                retroarchCommonRemap['input_player2_analog_dpad_mode'] = '3'
 
     ## Wonder Swan & Wonder Swan Color
     if (system.config['core'] == "mednafen_wswan"):             # Beetle Wonderswan
@@ -399,39 +400,39 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     ## Quake
     if (system.config['core'] == 'tyrquake'):
         if system.isOptSet('tyrquake_controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['tyrquake_controller1']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['tyrquake_controller1']
             if system.config['tyrquake_controller1'] == '773' or system.config['tyrquake_controller1'] == '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '1'
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
 
     ## DOOM
     if (system.config['core'] == 'prboom'):
         if system.isOptSet('prboom_controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['prboom_controller1']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['prboom_controller1']
             if system.config['prboom_controller1'] != '1' or system.config['prboom_controller1'] == '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+                retroarchCommonRemap['input_player1_analog_dpad_mode'] = '1'
         else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchCommonRemap['input_libretro_device_p1'] = '1'
 
     ## ZX Spectrum
     if (system.config['core'] == 'fuse'):
         if system.isOptSet('controller1_zxspec'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_zxspec']
+            retroarchCommonRemap['input_libretro_device_p1'] = system.config['controller1_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p1'] = '769'                               #Sinclair 1 controller - most used on games
+            retroarchCommonRemap['input_libretro_device_p1'] = '769'                               #Sinclair 1 controller - most used on games
         if system.isOptSet('controller2_zxspec'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_zxspec']
+            retroarchCommonRemap['input_libretro_device_p2'] = system.config['controller2_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller
+            retroarchCommonRemap['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller
         if system.isOptSet('controller3_zxspec'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
+            retroarchCommonRemap['input_libretro_device_p3'] = system.config['controller3_zxspec']
         else:
-            retroarchConfig['input_libretro_device_p3'] = '259'
+            retroarchCommonRemap['input_libretro_device_p3'] = '259'
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
@@ -731,10 +732,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             for nplayer in range(1, 3+1):
                 if "p"+str(nplayer) in ragunconf and len(guns)-1 >= ragunconf["p"+str(nplayer)]:
                     if "device_p"+str(nplayer) in ragunconf:
-                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
+                        retroarchCommonRemap['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
                     else:
-                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
+                        retroarchCommonRemap['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchCommonRemap)
 
             # override core settings
             for key in raguncoreconf:
@@ -742,6 +743,24 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
 
     # write coreSettings a bit late while guns configs can modify it
     coreSettings.write()
+
+    ## write common remap file
+    if not os.path.exists(os.path.dirname(batoceraFiles.retroarchCommonRemapFile)):
+        os.makedirs(os.path.dirname(batoceraFiles.retroarchCommonRemapFile))
+    try:
+        retroarchRemapSettings = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
+    except UnicodeError:
+        os.remove(batoceraFiles.retroarchCommonRemapFile)
+        retroarchRemapSettings = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
+
+    #retroarchRemapSettings.write()
+
+    retroarchRemapSettings = UnixSettings(batoceraFiles.retroarchCommonRemapFile, separator=' ')
+
+    for setting in retroarchCommonRemap:
+        retroarchRemapSettings.save(setting, retroarchCommonRemap[setting])
+
+    retroarchRemapSettings.write()
 
     # Bezel option
     try:

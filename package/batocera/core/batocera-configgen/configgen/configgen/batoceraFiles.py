@@ -48,6 +48,7 @@ retroarchRoot = CONF + '/retroarch'
 retroarchRootInit = CONF_INIT + '/retroarch'
 retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
+retroarchCommonRemapFile = retroarchRoot + "/config/remaps/common/common.rmp"
 
 retroarchCores = "/usr/lib/libretro/"
 screenshotsDir = "/userdata/screenshots/"
