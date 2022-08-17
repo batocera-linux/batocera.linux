@@ -16,7 +16,7 @@ define TOUCHEGG_INSTALL_TARGET_CMDS
 	 cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/touchegg/touchegg.conf \
 	  $(TARGET_DIR)/usr/share/touchegg/
 	 mkdir -p $(TARGET_DIR)/etc/xdg
-	 ln -sf $(TARGET_DIR)/usr/share/touchegg $(TARGET_DIR)/etc/xdg/
+	 ln -sf /usr/share/touchegg $(TARGET_DIR)/etc/xdg/
 endef
 
 $(eval $(cmake-package))
