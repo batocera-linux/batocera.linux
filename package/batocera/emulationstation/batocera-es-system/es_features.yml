@@ -2705,7 +2705,7 @@ libretro:
                       description: Speech module installed
                       choices:
                           "Enabled (Default)": 1
-                          "Disabled":          0    
+                          "Disabled":          0
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
@@ -6119,7 +6119,7 @@ duckstation:
             description: Choose whether to show on the display, configuration messages.
             choices:
                 "Disabled (Default)": "false"
-                "Enabled":            "true"            
+                "Enabled":            "true"
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -6406,7 +6406,7 @@ flycast:
           description: Enable the Dreamcast DSP. Only recommended for fast systems.
           choices:
             "Disbaled (Default)": "no"
-            "Enabled"           : "yes"      
+            "Enabled"           : "yes"
 
 fpinball:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6545,7 +6545,7 @@ melonds:
             description: Enable cheats for MelonDS.
             choices:
                 "Off (Default)":   0
-                "On":              1    
+                "On":              1
         melonds_osd:
             prompt: ENABLE OSD
             description: Enable the on screen display.
@@ -6643,7 +6643,7 @@ mupen64plus:
             prompt:      AUDIO BUFFER (SAMPLES)
             description: Lower values reduce audio latency and improve performance, but can cause audio issues.
             choices:
-                "Very High":     Very High 
+                "Very High":     Very High
                 "High":          High
                 "Medium":        Medium
                 "Low":           Low
@@ -8228,7 +8228,7 @@ mame:
                     description: Speech module installed
                     choices:
                         "Enabled (Default)": 1
-                        "Disabled":          0    
+                        "Disabled":          0
                 altromtype:
                     group: ADVANCED OPTIONS
                     prompt:      MEDIA TYPE
@@ -8387,7 +8387,7 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
-       mame: 
+       mame:
             features: [netplay, padtokeyboard]
             cfeatures:
                 altlayout:
@@ -8416,7 +8416,7 @@ mame:
                     choices:
                         "Enabled":            1
                         "Disabled (Default)": 0
-       neogeo: 
+       neogeo:
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS
@@ -8673,7 +8673,8 @@ xemu:
                 "Original resolution": center
                 "Scale to best fit":   scale
                 "Stretch to full":     stretch
-                "Stretch to 16:9":     scale_ws169
+                "Stretch to 16:9":     scale_16_9
+                "Stretch to 4:3":      scale_4_3
         render:
             prompt:       RENDERING RESOLUTION
             choices:
@@ -8685,12 +8686,20 @@ xemu:
                 "6x (3840x2880)":   6
                 "7x (4480x3360)":   7
                 "8x (5120x3840)":   8
+                "9x (5760x4320)":   9
+                "10x (6400x4800)":  10
         xemu_bootanim:
             prompt:      SHOW BIOS BOOTLOGO
             description: Enhancement.
             choices:
                 "Show":        "false"
                 "Skip":        "true"
+        use_dsp:
+            prompt:      USE DSP AUDIO
+            description: Improve audio accuracy (experimental).
+            choices:
+                "Enabled":      "true"
+                "Disabled":     "false"
 
 lexaloffle:
   features: [padtokeyboard]

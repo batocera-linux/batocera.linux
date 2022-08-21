@@ -142,7 +142,7 @@ rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
 
-xemuConfig = CONF + '/xemu/xemu.ini'
+xemuConfig = CONF + '/xemu/xemu.toml'
 
 sdlpopConfigDir = CONF + '/sdlpop'
 sdlpopSrcCfg = sdlpopConfigDir + '/SDLPoP.cfg'
