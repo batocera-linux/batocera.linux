@@ -1,22 +1,8 @@
-From d87487ea66770754854c444684a381c3e74824c7 Mon Sep 17 00:00:00 2001
-From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Wed, 6 Jul 2022 19:39:28 +0000
-Subject: [PATCH] lightgun udev driver
-
-Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
----
- scripts/src/main.lua                  |   1 +
- scripts/src/osd/modules.lua           |   1 +
- src/osd/modules/input/input_udev.cpp  | 364 ++++++++++++++++++++++++++
- src/osd/modules/lib/osdobj_common.cpp |   1 +
- 4 files changed, 367 insertions(+)
- create mode 100644 src/osd/modules/input/input_udev.cpp
-
 diff --git a/scripts/src/main.lua b/scripts/src/main.lua
-index 2da2a2a..6681eb5 100644
+index 94ee2b3..d5f0150 100644
 --- a/scripts/src/main.lua
 +++ b/scripts/src/main.lua
-@@ -164,6 +164,7 @@ end
+@@ -162,6 +162,7 @@ end
  	links {
  		ext_lib("zlib"),
  		ext_lib("flac"),
@@ -25,10 +11,10 @@ index 2da2a2a..6681eb5 100644
  	}
  if (STANDALONE~=true) then
 diff --git a/scripts/src/osd/modules.lua b/scripts/src/osd/modules.lua
-index 034f6b2..2c0d051 100644
+index 5ede2a8..ec34889 100644
 --- a/scripts/src/osd/modules.lua
 +++ b/scripts/src/osd/modules.lua
-@@ -99,6 +99,7 @@ function osdmodulesbuild()
+@@ -103,6 +103,7 @@ function osdmodulesbuild()
  		MAME_DIR .. "src/osd/modules/input/input_sdlcommon.cpp",
  		MAME_DIR .. "src/osd/modules/input/input_sdlcommon.h",
  		MAME_DIR .. "src/osd/modules/input/input_x11.cpp",
@@ -38,10 +24,10 @@ index 034f6b2..2c0d051 100644
  		MAME_DIR .. "src/osd/modules/input/input_xinput.cpp",
 diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
 new file mode 100644
-index 0000000..cc0b8e8
+index 0000000..24d5504
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,364 @@
+@@ -0,0 +1,397 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
@@ -50,6 +36,7 @@ index 0000000..cc0b8e8
 +
 +// MAMEOS headers
 +#include "input_common.h"
++#include "render.h"
 +
 +#include <libudev.h>
 +#include <fcntl.h>
@@ -147,6 +134,7 @@ index 0000000..cc0b8e8
 +public:
 +  lightgun_state lightgun;
 +  int minx, maxx, miny, maxy;
++  int borderX, borderY;
 +
 +  udev_lightgun_device(running_machine &machine, std::string &&name, std::string &&id, input_module &module) :
 +    udev_input_device(machine, std::move(name), std::move(id), DEVICE_CLASS_LIGHTGUN, module), lightgun({0}) {
@@ -154,6 +142,8 @@ index 0000000..cc0b8e8
 +    maxx = 0;
 +    miny = 0;
 +    maxy = 0;
++    borderX = -1;
++    borderY = -1;
 +  }
 +
 +  void process_event(struct input_event &event) override {
@@ -219,7 +209,17 @@ index 0000000..cc0b8e8
 +    case EV_ABS:
 +      switch (event.code) {
 +      case ABS_X:
-+	lightgun.lX = normalize_absolute_axis(event.value, minx, maxx);
++	// compute the border if not already done
++	if(borderX == -1 || borderY == -1) computeBorders(borderX, borderY);
++
++	if(event.value >= minx+borderX && event.value <= maxx-borderX) {
++	  // in game
++	  lightgun.lX = normalize_absolute_axis(event.value, minx+borderX, maxx-borderX);
++	} else {
++	  // in borders
++	  if(event.value < minx+borderX) lightgun.lX = normalize_absolute_axis(minx+borderX, minx+borderX, maxx-borderX);
++	  if(event.value > maxx-borderX) lightgun.lX = normalize_absolute_axis(maxx-borderX, minx+borderX, maxx-borderX);
++	}
 +	break;
 +      case ABS_Y:
 +	lightgun.lY = normalize_absolute_axis(event.value, miny, maxy);
@@ -231,6 +231,25 @@ index 0000000..cc0b8e8
 +
 +  void reset() override {
 +    memset(&lightgun, 0, sizeof(lightgun));
++  }
++
++  void computeBorders(int& borderX, int& borderY) {
++    int w, h, neww;
++    double game_ratio = 4.0/3.0; // assume 4/3 for the game itself (because i don't manage to find the information in mame structures)
++    render_target* target = machine().render().first_target();
++
++    w = target->width();
++    h = target->height();
++
++    neww = h * game_ratio;
++    if(neww < w) { // w borders
++      borderY = 0;
++      borderX = (maxx-minx)*((w - neww)/2)/w;
++    } else {
++      // h borders - not handled case
++      borderX = 0;
++      borderY = 0;
++    }
 +  }
 +};
 +
@@ -407,7 +426,7 @@ index 0000000..cc0b8e8
 +
 +MODULE_DEFINITION(LIGHTGUN_UDEV, udev_lightgun_module)
 diff --git a/src/osd/modules/lib/osdobj_common.cpp b/src/osd/modules/lib/osdobj_common.cpp
-index b9f7d9a..4304048 100644
+index 2546abd..0ecfbac 100644
 --- a/src/osd/modules/lib/osdobj_common.cpp
 +++ b/src/osd/modules/lib/osdobj_common.cpp
 @@ -305,6 +305,7 @@ void osd_common_t::register_options()
@@ -418,6 +437,3 @@ index b9f7d9a..4304048 100644
  	REGISTER_MODULE(m_mod_man, LIGHTGUNINPUT_RAWINPUT);
  	REGISTER_MODULE(m_mod_man, LIGHTGUNINPUT_WIN32);
  	REGISTER_MODULE(m_mod_man, LIGHTGUN_NONE);
--- 
-2.34.1
-
