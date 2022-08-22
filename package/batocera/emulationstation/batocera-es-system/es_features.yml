@@ -6864,6 +6864,13 @@ pcsx2:
                 "VU I bit hack - Scarface The World is Yours":       ScarfaceIbit
                 "VU I bit hack - Crash Tag Team Racing":             CrashTagTeamRacingIbit
                 "VU0 Kickstart to avoid sync problems with VU1":     VU0KickstartHack
+        ManualHWHacks:
+            group: ADVANCED OPTIONS
+            prompt:      MANUAL HW HACKS
+            description: Enable or disable hardware hacks. Use pcsx2-config via F1 to granularly adjust if enabled.
+            choices:
+                "Disable":          0
+                "Enable (default)": 1
         multitap:
             prompt:      MULTITAP
             description: Allows up to 5 or 8 controllers in supported games.

@@ -238,7 +238,11 @@ def configureGFX(config_directory, system):
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
     pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     pcsx2GFXSettings.save("osd_indicator_enabled", 1)
-    pcsx2GFXSettings.save("UserHacks", 1)
+    
+    if system.isOptSet('ManualHWHacks'):
+        pcsx2GFXSettings.save("UserHacks", system.config["ManualHWHacks"])
+    else:
+        pcsx2GFXSettings.save("UserHacks", 1)
 
     # Internal resolution
     if system.isOptSet('internal_resolution'):
