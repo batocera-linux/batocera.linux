@@ -33,7 +33,7 @@ class FlycastGenerator(Generator):
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
-            if system == "dreamcast":
+            if (system.name == "dreamcast"):
                 flycastControllers.generateControllerConfig(controller, "dreamcast")
             else:
                 # Write the Arcade variant (Atomiswave & Naomi/2)
