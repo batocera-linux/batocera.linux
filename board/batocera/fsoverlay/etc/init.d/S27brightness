@@ -1,10 +1,18 @@
 #!/bin/sh
 
+batocera-brightness || exit 0
+
 case $1 in
     start)
         if ( batocera-settings-get display.brightness ); then
             batocera-brightness $(batocera-settings-get display.brightness)
         fi
+        ;;
+    stop)
+        if [ "$(batocera-settings-get display.brightness)" != "$(batocera-brightness)" ]; then
+            batocera-settings-set display.brightness $(batocera-brightness)
+        fi
+        ;;
 esac
 
 exit 0
