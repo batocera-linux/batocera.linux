@@ -37,7 +37,7 @@ class CemuGenerator(Generator):
 
         game_dir = cemuConfig + "/gameProfiles"
         resources_dir = cemuConfig + "/resources"
-        cemu_exe = cemuConfig + "/Cemu.exe"
+        cemu_exec = cemuConfig + "/Cemu"
         cemu_hook = cemuConfig + "/cemuhook.ini"
         keystone_dll = cemuConfig + "/keystone.dll"
         cemuhook_dll = cemuConfig + "/cemuhook.dll"
@@ -66,8 +66,8 @@ class CemuGenerator(Generator):
         CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
         # Copy the file from where cemu reads it
         shutil.copyfile(batoceraFiles.BIOS + "/cemu/keys.txt", cemuConfig + "/keys.txt")
-        if not os.path.exists(cemu_exe) or not filecmp.cmp(cemuDatadir + "/Cemu.exe", cemu_exe):
-            shutil.copyfile(cemuDatadir + "/Cemu.exe", cemu_exe)
+        if not os.path.exists(cemu_exec) or not filecmp.cmp(cemuDatadir + "/Cemu", cemu_exec):
+            shutil.copyfile(cemuDatadir + "/Cemu", cemu_exec)
         # Copy cemuhook for secure upgrade
         if not os.path.exists(cemu_hook) or not filecmp.cmp(cemuDatadir + "/cemuhook.ini", cemu_hook):
             shutil.copyfile(cemuDatadir + "/cemuhook.ini", cemu_hook)
@@ -79,20 +79,18 @@ class CemuGenerator(Generator):
         cemuControllers.generateControllerConfig(system, playersControllers)
 
         if rom == "config":
-            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe"]
+            commandArray = ["/userdata/system/configs/cemu/Cemu"]
         else:
-            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rpxrom, "-f"]
+            commandArray = ["/userdata/system/configs/cemu/Cemu", "-g", "z:" + rpxrom, "-f"]
             if system.isOptSet('hud') and system.config["hud"] != "":
                commandArray.insert(0, "mangohud")
 
         return Command.Command(
             array=commandArray,
             env={
-                "WINEPREFIX": batoceraFiles.SAVES + "/cemu",
                 "vblank_mode": "0",
                 "mesa_glthread": "true",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-                "WINEDLLOVERRIDES": "mscoree=;mshtml=;cemuhook.dll=n,b",
                 "__GL_THREADED_OPTIMIZATIONS": "1"
             })
 
