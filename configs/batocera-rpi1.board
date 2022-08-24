@@ -34,7 +34,7 @@ BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="Image"
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="bcm2708-rpi-b bcm2708-rpi-b-plus bcm2708-rpi-cm bcm2708-rpi-zero-w"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="bcm2708-rpi-b bcm2708-rpi-b-plus bcm2708-rpi-cm bcm2708-rpi-zero bcm2708-rpi-zero-w"
 
 # # rpi firmware
 BR2_PACKAGE_RPI_FIRMWARE=y
