@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_TOOLS_VERSION = v1.3.215
+VULKAN_TOOLS_VERSION = v1.3.230
 VULKAN_TOOLS_SITE =  $(call github,KhronosGroup,Vulkan-Tools,$(VULKAN_TOOLS_VERSION))
 VULKAN_TOOLS_DEPENDENCIES = vulkan-headers vulkan-loader host-python3 host-glslang
 VULKAN_TOOLS_INSTALL_STAGING = YES

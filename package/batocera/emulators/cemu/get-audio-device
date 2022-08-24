@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .*"+"\1"+ | sed 1q | tr -d '\n'
+
