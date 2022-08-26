@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SINDEN_GUNS_VERSION = 1.07
+SINDEN_GUNS_VERSION = 1.08
 SINDEN_GUNS_SOURCE=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION).zip
 SINDEN_GUNS_SITE=https://www.sindenlightgun.com/software
 

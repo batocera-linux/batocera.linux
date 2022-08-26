@@ -6116,8 +6116,8 @@ duckstation:
         duckstation_osd:
             prompt:      SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
-                "Off": "false"
-                "On":  "true"
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -6539,7 +6539,7 @@ melonds:
         melonds_cheats:
             prompt: ENABLE CHEATS
             choices:
-                "Off":             0
+                "Off (Default)":   0
                 "On":              1
         melonds_osd:
             prompt: SHOW ON-SCREEN DISPLAY MESSAGES
@@ -6857,6 +6857,13 @@ pcsx2:
                 "VU I bit hack - Scarface The World is Yours":       ScarfaceIbit
                 "VU I bit hack - Crash Tag Team Racing":             CrashTagTeamRacingIbit
                 "VU0 Kickstart to avoid sync problems with VU1":     VU0KickstartHack
+        ManualHWHacks:
+            group: ADVANCED OPTIONS
+            prompt:      AUTOMATIC GRAPHICS HARDWARE HACKS
+            description: Automatically use hardware hacks as appropriate. Refer to pcsx2-config for individual hacks.
+            choices:
+                "Off (default)": 1
+                "On":            0
         multitap:
             prompt:      MULTITAP
             description: Allows up to 5 or 8 controllers in supported games.

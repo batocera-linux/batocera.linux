@@ -3257,7 +3257,7 @@ gp32:
   name:       GP32
   manufacturer: GamePark
   release: 2001
-  hardware: handheld
+  hardware: portable
   extensions: [smc, zip, 7z]
   emulators:
     libretro:
@@ -3266,6 +3266,16 @@ gp32:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gp32.zip
+
+arduboy:
+  name:       Arduboy
+  manufacturer: Kevin Bates
+  release: 2015
+  hardware: portable
+  extensions: [hex, zip, 7z]
+  emulators:
+    libretro:
+      arduous: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ARDUOUS] }
 
 gzdoom:
   name:         GZDoom

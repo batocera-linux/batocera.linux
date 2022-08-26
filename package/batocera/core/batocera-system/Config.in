@@ -421,18 +421,18 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/orangepi4-lts" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "rockchip/rg552"                                                                  if BR2_PACKAGE_BATOCERA_TARGET_RG552
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"      if BR2_PACKAGE_BATOCERA_TARGET_RK3128
-	default "tritium-h5"                                                                      if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
-	default "orangepi-zero2"                                                                  if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-	default "orangepi-pc"                                                                     if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-	default "cha"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_CHA
-	default "s812"                                                                            if BR2_PACKAGE_BATOCERA_TARGET_S812
-	default "odroidxu4"                                                                       if BR2_PACKAGE_BATOCERA_TARGET_XU4
+	default "allwinner/h5/tritium-h5"                                                         if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+	default "allwinner/h616/orangepi-zero2"                                                   if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+	default "allwinner/h3/orangepi-pc"                                                        if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+	default "allwinner/h3/cha"                                                                if BR2_PACKAGE_BATOCERA_TARGET_CHA
+	default "amlogic/s812"                                                                    if BR2_PACKAGE_BATOCERA_TARGET_S812
+	default "samsung/exynos5422/odroidxu4"                                                    if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86_64"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default "ps4"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_PS4
 	default "znver2"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
-	default "odin"                                                                            if BR2_PACKAGE_BATOCERA_TARGET_ODIN
-	default "allwinner/orangepi-3-lts"                                                        if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+	default "qualcomm/sd845/odin"                                                             if BR2_PACKAGE_BATOCERA_TARGET_ODIN
+	default "allwinner/h6/orangepi-3-lts"                                                     if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 choice
 	prompt "batocera.linux target"
@@ -780,6 +780,9 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	# SAM Coupe
 	select BR2_PACKAGE_SIMCOUPE	                if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
+	# Arduboy
+	select BR2_PACKAGE_LIBRETRO_ARDUOUS          # ALL
+
 	help
 		Handheld cores/emulators
 
@@ -951,7 +954,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Nintendo 64
 	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2# mupen64 (n64) runs too slow on these platforms
 
-	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
 
 	select BR2_PACKAGE_LIBRETRO_PARALLEL_N64		if 	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
 														BR2_PACKAGE_BATOCERA_TARGET_RK3288	|| \
@@ -1326,10 +1329,8 @@ config BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
     select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_LLVM                        if BR2_PACKAGE_BATOCERA_SBC_XORG # llvmpipe for OpenGL
     select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG # glxinfo etc
-    select BR2_PACKAGE_XDRIVER_XF86_VIDEO_FBDEV           if BR2_PACKAGE_BATOCERA_SBC_XORG # frambuffer
-
+    
 config BR2_PACKAGE_BATOCERA_LIMA_MESA3D
 	bool "batocera.linux driver mesa LIMA"
 
@@ -1357,10 +1358,8 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
     select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_LLVM                        if BR2_PACKAGE_BATOCERA_SBC_XORG # llvmpipe for OpenGL
     select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG # glxinfo etc
-    select BR2_PACKAGE_XDRIVER_XF86_VIDEO_FBDEV           if BR2_PACKAGE_BATOCERA_SBC_XORG # frambuffer
-
+    
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	bool "batocera.linux Firmwares packages selection"
 

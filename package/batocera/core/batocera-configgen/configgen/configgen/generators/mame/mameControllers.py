@@ -688,11 +688,13 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
             else:
                 dpadInputs[direction] = ''
         buttonDirections = {}
-        for direction in ['a', 'b', 'x', 'y']:
-            if pad.inputs[direction].type == 'button':
-                buttonDirections[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
-            else:
-                buttonDirections[direction] = ''
+        # workarounds for issue #6892
+        for direction in pad.inputs:
+            if(direction == 'a' or direction == 'b' or direction == 'x' or direction == 'y'):
+                if pad.inputs[direction].type == 'button':
+                    buttonDirections[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
+                else:
+                    buttonDirections[direction] = ''
         if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
                 return f"JOYCODE_{joycode}_YAXIS_UP_SWITCH JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH OR {dpadInputs['up']} {dpadInputs['right']}"
@@ -711,18 +713,28 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
                 return f"JOYCODE_{joycode}_XAXIS_LEFT_SWITCH OR {dpadInputs['left']}"
             if key == "joystick1right" or key == "right":
                 return f"JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH OR {dpadInputs['right']}"
-        if key == "joystick2up":
-            return f"JOYCODE_{joycode}_RYAXIS_NEG_SWITCH OR {buttonDirections['x']}"
-        if key == "joystick2down":
-            return f"JOYCODE_{joycode}_RYAXIS_POS_SWITCH OR {buttonDirections['b']}"
-        if key == "joystick2left":
-            return f"JOYCODE_{joycode}_RXAXIS_NEG_SWITCH OR {buttonDirections['y']}"
-        if key == "joystick2right":
-            return f"JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {buttonDirections['a']}"
-        if int(input.id) == 2: # XInput L2
-            return f"JOYCODE_{joycode}_ZAXIS_POS_SWITCH"
-        if int(input.id) == 5: # XInput R2
-            return f"JOYCODE_{joycode}_RZAXIS_POS_SWITCH"
+        # additional workarounds for issue #6892
+        for direction in pad.inputs:
+            if(key == "joystick2up" and direction == "x"):
+                return f"JOYCODE_{joycode}_RYAXIS_NEG_SWITCH OR {buttonDirections['x']}"
+            elif key == "joystick2up":
+                return f"JOYCODE_{joycode}_RYAXIS_NEG_SWITCH"
+            if(key == "joystick2down" and direction == "b"):
+                return f"JOYCODE_{joycode}_RYAXIS_POS_SWITCH OR {buttonDirections['b']}"
+            if key == "joystick2down":
+                return f"JOYCODE_{joycode}_RYAXIS_POS_SWITCH"
+            if(key == "joystick2left" and direction == "y"):
+                return f"JOYCODE_{joycode}_RXAXIS_NEG_SWITCH OR {buttonDirections['y']}"
+            if key == "joystick2left":
+                return f"JOYCODE_{joycode}_RXAXIS_NEG_SWITCH"
+            if(key == "joystick2right" and direction == "a"):
+                return f"JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {buttonDirections['a']}"
+            if key == "joystick2right":
+                return f"JOYCODE_{joycode}_RXAXIS_POS_SWITCH"
+            if int(input.id) == 2: # XInput L2
+                return f"JOYCODE_{joycode}_ZAXIS_POS_SWITCH"
+            if int(input.id) == 5: # XInput R2
+                return f"JOYCODE_{joycode}_RZAXIS_POS_SWITCH"
     return "unknown"
 
 def hasStick(pad):

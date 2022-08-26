@@ -3,8 +3,8 @@
 # SwitchRes
 #
 ################################################################################
-# Version: Commits from Jan 11th, 2022
-SWITCHRES_VERSION = f3144602949ccb93ac2705aa9a89c18bd26fe8cc
+# Version: Commits from Aug 8th, 2022
+SWITCHRES_VERSION = 581bc6fedab64721b79cc79082477fc590e9eb58
 SWITCHRES_SITE = $(call github,antonioginer,switchres,$(SWITCHRES_VERSION))
 
 SWITCHRES_DEPENDENCIES = libdrm xserver_xorg-server
@@ -37,6 +37,10 @@ define SWITCHRES_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/libswitchres.so $(TARGET_DIR)/usr/lib/libswitchres.so
 	$(INSTALL) -D -m 0755 $(@D)/switchres $(TARGET_DIR)/usr/bin/switchres
 	$(INSTALL) -D -m 0755 $(@D)/grid $(TARGET_DIR)/usr/bin/grid
+
+	$(INSTALL) -D -m 0644 $(@D)/switchres.ini $(TARGET_DIR)/etc/switchres.ini
+	(echo "#!/usr/bin/env python"; echo; cat $(@D)/geometry.py) > $(TARGET_DIR)/usr/bin/geometry
+	chmod 755 $(TARGET_DIR)/usr/bin/geometry
 endef
 
 $(eval $(generic-package))
