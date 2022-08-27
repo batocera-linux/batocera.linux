@@ -6286,6 +6286,13 @@ duckstation:
             choices:
                 "Disabled":          "false"
                 "Enabled (Default)": "true"
+        duckstation_boot_without_sbi:
+            group: ADVANCED OPTIONS
+            prompt:      ALLOW BOOTING WITHOUT SBI FILE
+            description: Allows loading protected games without subchannel information.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"            
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

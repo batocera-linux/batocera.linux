@@ -279,7 +279,15 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowSpeed",      "false")
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
-
+        
+        ## [CDROM]
+        if not settings.has_section("CDROM"):
+            settings.add_section("CDROM")
+        if system.isOptSet("duckstation_boot_without_sbi"):
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", system.config["duckstation_boot_without_sbi"])
+        else:
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
+        
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
