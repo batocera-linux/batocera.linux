@@ -74,7 +74,10 @@ def getGLVersion():
         glxVerCmd = 'glxinfo | grep "OpenGL version"'
         glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)
         glVerString = glVerOutput.split()
-        glVersion = float(glVerString[3])
+        glVerTemp = glVerString[3].split(".")
+        if len(glVerTemp) > 2:
+            del glVerTemp[2:]
+        glVersion = float('.'.join(glVerTemp))
         return glVersion
     except:
         return 0
