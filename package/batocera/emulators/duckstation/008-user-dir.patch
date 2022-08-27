@@ -1,0 +1,19 @@
+diff --git a/src/core/host_interface.cpp b/src/core/host_interface.cpp
+index 88a1aa734a..efa0559e1c 100644
+--- a/src/core/host_interface.cpp
++++ b/src/core/host_interface.cpp
+@@ -932,11 +932,12 @@ std::string HostInterface::GetUserDirectoryRelativePath(const char* format, ...)
+   
+   if (m_user_directory.empty())
+   {
+-    return formatted_path;
++    return StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/system/configs/duckstation",
++                                           formatted_path.c_str());
+   }
+   else
+   {
+-    return StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", m_user_directory.c_str(),
++    return StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/system/configs/duckstation",
+                                            formatted_path.c_str());
+   }
+ }
