@@ -36,17 +36,3 @@ mkdir -p /var/log
 
 # flatpak and probably more
 mkdir -p /var/tmp
-
-# detect the appropriate Nvidia driver
-if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
-then
-    batocera-nvidia production
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy[ ]*$" /boot/batocera-boot.conf
-then
-    batocera-nvidia legacy
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf
-then
-    batocera-nvidia legacy390
-else
-    batocera-nvidia auto
-fi
