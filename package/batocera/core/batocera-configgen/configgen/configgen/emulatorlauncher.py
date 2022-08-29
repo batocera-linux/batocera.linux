@@ -245,7 +245,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))
-                if (system.isOptSet('hud') and system.config["hud"] != "" and system.config["hud"] != "none") or hud_bezel is not None:
+                if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") and hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
                     hudconfig = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, rom, gameinfos, hud_bezel)
