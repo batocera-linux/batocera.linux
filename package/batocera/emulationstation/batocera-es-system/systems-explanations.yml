@@ -87,17 +87,17 @@ default:
     libretro:
       genesisplusgx: *genesisplusgx_and_picodrive
       picodrive:     *genesisplusgx_and_picodrive
-rpi1:
+bcm2835:
   snes:
     libretro:
       pocketsnes:
         explanation: |
-          pocketsnes is the best emulator for rpi1. However it is not perfect. Some games, like Mario Kart, have glitches.
+          pocketsnes is the best emulator for bcm2835. However it is not perfect. Some games, like Mario Kart, have glitches.
   gba:
     libretro:
       gpsp:
         explanation: |
-          libretro/gpsp is the only option for gba on rpi1
+          libretro/gpsp is the only option for gba on bcm2835
 rpi2:
   n64:
     mupen64plus:
