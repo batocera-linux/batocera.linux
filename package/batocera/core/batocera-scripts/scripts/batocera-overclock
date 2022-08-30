@@ -9,7 +9,7 @@ ARCH="$(cat /usr/share/batocera/batocera.arch)"
 GRPICONFFILE="/boot/config.txt"
 GODROIDCONFFILE="/boot/batocera-boot.conf"
 
-if test "${ARCH}" = "rpi2" || test "${ARCH}" = "rpi3"
+if test "${ARCH}" = "bcm2836" || test "${ARCH}" = "rpi3"
 then
     if grep -q "^Raspberry Pi 3 Model [A-Z] Plus" "/proc/device-tree/model"
     then
@@ -19,7 +19,7 @@ then
 	ARCH="rpi3"
     elif grep -q "^Raspberry Pi 2" "/proc/device-tree/model"
     then
-	ARCH="rpi2"
+	ARCH="bcm2836"
     elif grep -q "^Raspberry Pi Zero 2" "/proc/device-tree/model"
     then
     ARCH="rpizero2"
@@ -42,7 +42,7 @@ doList() {
 	    echo "turbo TURBO (1000Mhz)"
 	    echo "extreme EXTREME (1100Mhz)"
 	;;
-	"rpi2")
+	"bcm2836")
 	    echo "none NONE (900Mhz)"
 	    echo "high HIGH (1050Mhz)"
 	;;
@@ -217,7 +217,7 @@ setValue() {
 		    ;;
 	    esac
 	    ;;
-	"rpi2")
+	"bcm2836")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpiNone

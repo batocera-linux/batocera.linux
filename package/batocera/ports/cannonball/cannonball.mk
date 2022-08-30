@@ -15,7 +15,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -mcpu=arm1176jzf-s -mfloat-abi=hard
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 

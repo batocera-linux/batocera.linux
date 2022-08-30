@@ -54,7 +54,7 @@ case $1 in
                 #
                 splash_default_rpi &
             ;;
-            auto|rpi2|rpi3|rpi4)
+            auto|bcm2836|rpi3|rpi4)
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay
