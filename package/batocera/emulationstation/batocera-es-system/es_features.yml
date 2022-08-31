@@ -6292,7 +6292,7 @@ duckstation:
             description: Allows loading protected games without subchannel information.
             choices:
                 "Disabled (Default)": "false"
-                "Enabled":            "true"            
+                "Enabled":            "true"
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6749,6 +6749,13 @@ openbor:
 pcsx2:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        ratio:
+            prompt:      GAME ASPECT RATIO
+            description: Force the game to render in this aspect ratio. Not all systems support all ratios.
+            choices:
+                "4:3":     4/3
+                "16:9":    16/9
+                "Full":    full
         gfxbackend:
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
@@ -6756,13 +6763,6 @@ pcsx2:
                 "OpenGL":      12
                 "Software":    13
                 "Vulkan":      14
-        pcsx2_tv_mode:
-            prompt:      TV MODE
-            description: PS2's internal ratio setting. Some games only support 4/3.
-            choices:
-                "4:3":     4/3
-                "16:9":    16/9
-                "Stretch": Stretch
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
