@@ -55,11 +55,11 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     iniConfig.set("general", "show_welcome", "false")
 
     # Fill system section
-    iniConfig.set("sys.files", "flashrom_path", "'/userdata/bios/Complex_4627.bin'")
-    iniConfig.set("sys.files", "bootrom_path", "'/userdata/bios/mcpx_1.0.bin'")
-    iniConfig.set("sys.files", "hdd_path", "'/userdata/saves/xbox/xbox_hdd.qcow2'")
-    iniConfig.set("sys.files", "eeprom_path", "'/userdata/saves/xbox/xemu_eeprom.bin'")
-    iniConfig.set("sys.files", "dvd_path", "'" + rom + "'")
+    iniConfig.set("sys.files", "flashrom_path", '"/userdata/bios/Complex_4627.bin"')
+    iniConfig.set("sys.files", "bootrom_path", '"/userdata/bios/mcpx_1.0.bin"')
+    iniConfig.set("sys.files", "hdd_path", '"/userdata/saves/xbox/xbox_hdd.qcow2"')
+    iniConfig.set("sys.files", "eeprom_path", '"/userdata/saves/xbox/xemu_eeprom.bin"')
+    iniConfig.set("sys.files", "dvd_path", '"' + rom + '"')
 
     # Audio quality
     if system.isOptSet("use_dsp"):
@@ -75,9 +75,9 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
 
     # Aspect ratio
     if system.isOptSet("scaling"):
-        iniConfig.set("display.ui", "fit", "'" + system.config["scaling"] + "'")
+        iniConfig.set("display.ui", "fit", '"' + system.config["scaling"] + '"')
     else:
-        iniConfig.set("display.ui", "fit", "'scale'") #4:3
+        iniConfig.set("display.ui", "fit", '"scale"') #4:3
 
     # Fill input section
     # first, clear
@@ -86,7 +86,7 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer <= 4:
-            iniConfig.set("input", f"controller_{nplayer}_guid", "'" + pad.guid + "'")
+            iniConfig.set("input", f"controller_{nplayer}_guid", '"' + pad.guid + '"')
         nplayer = nplayer + 1
 
     # Determine the current default network connection
