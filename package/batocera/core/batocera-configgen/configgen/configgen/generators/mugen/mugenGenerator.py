@@ -40,6 +40,10 @@ class MugenGenerator(Generator):
         settings.set("Config", "GameHeight", str(gameResolution["height"]))
         settings.set("Config", "Language", "en")
 
+        if not settings.has_section("Music"):
+            settings.add_section("Music")
+        settings.set("Music", "plugin", "mpg123")
+
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
