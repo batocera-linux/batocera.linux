@@ -281,7 +281,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RETROGAME            if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
 	select BR2_PACKAGE_DESKPIPRO_CASE       if BR2_PACKAGE_BATOCERA_TARGET_RPI4 # deskpi pro case rpi4 only
 	select BR2_PACKAGE_PIBOY                if BR2_PACKAGE_BATOCERA_TARGET_BCM2836  || \
-                                               BR2_PACKAGE_BATOCERA_TARGET_RPI3     || \
+                                               BR2_PACKAGE_BATOCERA_TARGET_BCM2837  || \
                                                BR2_PACKAGE_BATOCERA_TARGET_RPI4 # piboy rpi3/rpi4
 	select BR2_PACKAGE_PICADE               if BR2_PACKAGE_BATOCERA_RPI_ANY # picade arcade case
 
@@ -414,7 +414,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "amlogic/s912"                                                                    if BR2_PACKAGE_BATOCERA_TARGET_S912
 	default "broadcom/bcm2835"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	default "broadcom/bcm2836"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
-	default "raspberrypi/rpi3"                                                                if BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	default "broadcom/bcm2837"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 	default "raspberrypi/rpi4"                                                                if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "raspberrypi/rpizero2"                                                            if BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 	default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_RK3326
@@ -450,8 +450,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 config BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	bool "bcm2836"
 
-config BR2_PACKAGE_BATOCERA_TARGET_RPI3
-	bool "rpi3"
+config BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+	bool "bcm2837"
 
 config BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	bool "rpi4"
@@ -701,7 +701,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2836     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI3        || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_BCM2837     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S812
@@ -795,7 +795,7 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3399		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3128		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
@@ -991,7 +991,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
@@ -1034,7 +1034,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_OPERA               if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905   	&& \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905GEN3   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
@@ -1050,7 +1050,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX         if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2837        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \

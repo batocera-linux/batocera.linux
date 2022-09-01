@@ -9,7 +9,7 @@ ARCH="$(cat /usr/share/batocera/batocera.arch)"
 GRPICONFFILE="/boot/config.txt"
 GODROIDCONFFILE="/boot/batocera-boot.conf"
 
-if test "${ARCH}" = "bcm2836" || test "${ARCH}" = "rpi3"
+if test "${ARCH}" = "bcm2836" || test "${ARCH}" = "bcm2837"
 then
     if grep -q "^Raspberry Pi 3 Model [A-Z] Plus" "/proc/device-tree/model"
     then
