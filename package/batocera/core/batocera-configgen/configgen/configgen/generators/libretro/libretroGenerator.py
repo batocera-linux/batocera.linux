@@ -217,9 +217,12 @@ class LibretroGenerator(Generator):
             if (romExtension == '.dos' or romExtension == '.pc'):
                 if os.path.exists(os.path.join(rom, romDOSName + ".bat")):
                     exe = os.path.join(rom, romDOSName + ".bat")
-                else:
+                elif os.path.exists(os.path.join(rom, "dosbox.bat")):
                     exe = os.path.join(rom, "dosbox.bat")
+                else:
+                    exe = '/userdata/roms/dos' # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
+                dontAppendROM = True
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         # Pico-8 multi-carts (might work only with official Lexaloffe engine right now)
