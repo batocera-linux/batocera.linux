@@ -23,7 +23,7 @@ msgctxt "game_options"
 msgid "VIDEO MODE"
 msgstr "ゲーム画面モード"
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, pcsx2
 msgctxt "game_options"
 msgid ""
 "Force the game to render in this aspect ratio. Not all systems support all "
@@ -32,12 +32,12 @@ msgstr ""
 "ゲームのレンダリングをこのアスペクト比で強制しますが、すべての比率をサポート"
 "しているわけではありません"
 
-#. TRANSLATION: shared, dolphin, mupen64plus, demul
+#. TRANSLATION: shared, dolphin, mupen64plus, pcsx2, demul
 msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
 msgstr "ゲーム画面比率"
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, pcsx2
 msgctxt "game_options"
 msgid "Full"
 msgstr "フルモード"
@@ -6259,7 +6259,7 @@ msgctxt "game_options"
 msgid "Not all games support Stretch, depending on the video files."
 msgstr "引き伸ばしは、すべてのゲームに対応しているわけではありません"
 
-#. TRANSLATION: daphne, openbor, pcsx2, redream, demul
+#. TRANSLATION: daphne, openbor, redream, demul
 msgctxt "game_options"
 msgid "Stretch"
 msgstr "引き伸ばし"
@@ -7580,16 +7580,6 @@ msgstr "ソフトウェア"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "PS2's internal ratio setting. Some games only support 4/3."
-msgstr "PS2のアスペクト比設定。一部のゲームは4/3のみ使用します"
-
-#. TRANSLATION: pcsx2, rpcs3
-msgctxt "game_options"
-msgid "TV MODE"
-msgstr "TV モード"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
 msgid "Some games have issues when the animation is shown, others require it."
 msgstr "アニメ表示で問題が出る場合とアニメ表示が必須の場合があります"
 
@@ -7939,6 +7929,11 @@ msgstr "ディスプレイ表示エリアを合わせる"
 msgctxt "game_options"
 msgid "PS3's internal ratio setting. Some games only support 16/9."
 msgstr "PS3のアスペクト比設定。一部のゲームは16/9のみ使用します"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TV MODE"
+msgstr "TV モード"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9104,6 +9099,10 @@ msgstr "イントロビデオをスキップ"
 msgctxt "game_options"
 msgid "Show (Default)"
 msgstr "表示 (通常)"
+
+#~ msgctxt "game_options"
+#~ msgid "PS2's internal ratio setting. Some games only support 4/3."
+#~ msgstr "PS2のアスペクト比設定。一部のゲームは4/3のみ使用します"
 
 #~ msgctxt "game_options"
 #~ msgid "Fullspeed can break some games."
