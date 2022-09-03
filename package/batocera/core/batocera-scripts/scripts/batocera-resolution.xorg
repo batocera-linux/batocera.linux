@@ -95,6 +95,9 @@ case "${ACTION}" in
     "listOutputs")
 	xrandr --listConnectedOutputs | sed -e s+"*$"++
 	;;
+    "currentOutput")
+	xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+"*$"++
+	;;
     "setOutput")
 	MODE=$1
 	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE}$"

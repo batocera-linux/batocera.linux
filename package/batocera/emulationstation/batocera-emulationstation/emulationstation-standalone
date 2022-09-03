@@ -33,7 +33,19 @@ do
     ###################
 
     ### rotation ###
-    display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+    display_rotate=
+    # try to find a rotation for the custom output
+    effective_output=$(batocera-resolution currentOutput)
+    if test -n "${effective_output}"
+    then
+	display_rotate=$(/usr/bin/batocera-settings-get "display.rotate.${effective_output}")
+    fi
+    if test -z "${display_rotate}"
+    then
+	display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+    fi
+    ###
+
     EXTRA_OPTS=
     if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
     then
