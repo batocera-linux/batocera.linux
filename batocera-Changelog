@@ -3,7 +3,7 @@
         * add: support for aimtrak lightgun out of the box
         * add: support for ae lightgun out of the box
         * add: add virtual dolphinbar (dolphinbar is no longer needed, only a simple wiibar)
-        * add: wiimote calibration (the wiimote is now precise and can be used as a gun without drawing the target on screen ; keep home button during 3s to calibrate)
+        * add: wiimote calibration (the wiimote is now precise and can be used as a gun without drawing the target on screen ; press home button for 3s to calibrate)
         * add: sinden gun support. Borders are automatically added to bezels.
         * add: guncon support (as any other gun to any system supporting guns)
         * add: mame standalone udev gun driver.
@@ -33,7 +33,7 @@
         * add: xemu netplay support now enabled and auto-configured by default
         * add: Adding libretro-a5200 for Atari 5200
         * add: libretro-lowresnx for the Lowres NX fantasy console
-        * add: libretro-arduous for Arduboy (open source Aruduino-based handheld) emulation
+        * add: libretro-arduous for Arduboy (open source Arduino-based handheld) emulation
         * add: expanded Nintendo controller support
         * add: joycond support - joycons can now be paired as one 'virtual' controller
         * add: libretro-bsnes as a SNES emulator option to the RPi4 & S922x devices
@@ -41,24 +41,23 @@
         * add: Rock960 Developer board support "https://www.96boards.org/product/rock960/"
         * add: Orange Pi4-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-4-LTS.html"
         * add: Orange Pi3-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html"
-        * bump: x86_64 linux kernel to 5.18.19
-        * bump: Nvidia linux driver to 515.48.07
-        * bump: btop to 1.2.7
-        * bump: Mame to 245
+        * bump: x86_64 linux kernel to v5.18.19
+        * bump: Nvidia linux driver to v515.48.07
+        * bump: btop to v1.2.7
+        * bump: Mame to v245
         * bump: RPCS3 to 0.0.23-13976
         * bump: Ruffle
         * bump: lightspark
         * bump: pcsx2 to v1.7.2866 (note: memory cards now saved to /userdata/saves/ps2)
         * bump: amiberry to v5.3
-        * bump: PPSSPP emulators to v1.13.1
-        * bump: Proton to 7.0-2
-        * bump: DXVK to 1.10.2
-        * bump: mesa to 22.1.4
-        * bump: Redream to 1.5.0-1045-g9f00768
-        * bump: Flycast emulators to Jul 09 builds
-        * bump: Libretro-flycast emulators to Jul 09 builds
-        * bump: Cemu to 1.27.1
-        * bump: RPCS3 to 0.0.22-13825
+        * bump: PPSSPP to v1.13.1
+        * bump: Proton to v7.0-2
+        * bump: DXVK to v1.10.2
+        * bump: mesa to v22.1.7
+        * bump: Redream to v1.5.0-1045-g9f00768
+        * bump: Flycast & libretro-flycast emulators to Jul 09 builds
+        * bump: Cemu to v1.27.1
+        * bump: RPCS3 to v0.0.22-13825
         * bump: Duckstation emulators to Jul 08 builds
         * bump: ScummVM emulators to Jul 09 builds
         * bump: Mupen64Plus emulators
