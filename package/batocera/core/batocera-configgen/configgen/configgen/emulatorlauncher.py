@@ -245,7 +245,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))
-                if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") and hud_bezel is not None:
+                if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
                     hudconfig = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, rom, gameinfos, hud_bezel)
@@ -459,7 +459,7 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
     if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
-    if not system.isOptSet('hud'):
+    if not system.isOptSet('hud') or system.config['hud'] == "none":
         return configstr + "background_alpha=0\n" # hide the background
 
     mode = system.config["hud"]
