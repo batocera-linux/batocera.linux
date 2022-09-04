@@ -459,7 +459,7 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
     if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
-    if not system.isOptSet('hud') or system['hud'] == "none":
+    if not system.isOptSet('hud') or system.config['hud'] == "none":
         return configstr + "background_alpha=0\n" # hide the background
 
     mode = system.config["hud"]
