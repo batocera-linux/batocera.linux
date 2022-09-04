@@ -117,6 +117,7 @@ def fast_image_size(image_file):
 
 def resizeImage(input_png, output_png, screen_width, screen_height, bezel_stretch=False):
     imgin = Image.open(input_png)
+    fillcolor = 'black'
     eslog.debug(f"Resizing bezel: image mode {imgin.mode}")
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
