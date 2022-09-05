@@ -65,8 +65,12 @@ class DaphneGenerator(Generator):
                 else:
                     commandArray.extend(["-sinden", "3", "w"])
             else:
-                commandArray.extend(["-manymouse"]) # sinden implies manymouse
-                
+                if len(guns) > 0: # enable manymouse for guns
+                    commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                else:
+                    if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
+                        commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
+
             # Oversize Overlay (Singe) for HD lightgun games
             if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
                 commandArray.append("-oversize_overlay")
