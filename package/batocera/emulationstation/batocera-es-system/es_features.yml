@@ -1358,6 +1358,24 @@ libretro:
       features: [padtokeyboard]
       shared: [autosave]
       cfeatures:
+            fuse_machine:
+                prompt:      MODEL
+                choices:
+                    "Spectrum 48K":        Spectrum 48K
+                    "Spectrum 48K (NTSC)": Spectrum 48K (NTSC)
+                    "Spectrum 128K":       Spectrum 128K
+                    "Spectrum +2":         Spectrum +2
+                    "Spectrum +2A":        Spectrum +2A
+                    "Spectrum +3":         Spectrum +3
+                    "Spectrum +3e":        Spectrum +3e
+                    "Spectrum SE":         Spectrum SE
+                    "Timex TC2048":        Timex TC2048
+                    "Timex TS2068":        Timex TS2068
+                    "Spectrum 16K":        Spectrum 16K
+                    "Pentagon 128K":       Pentagon 128K
+                    "Pentagon 512K":       Pentagon 512K
+                    "Pentagon 1024":       Pentagon 1024
+                    "Scorpion 256K":       Scorpion 256K
             fuse_hide_border:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.

@@ -2009,8 +2009,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Sinclair ZX Spectrum
     if (system.config['core'] == 'fuse'):
-        # The most common configuration same as ZX Spectrum+
-        coreSettings.save('fuse_machine',   '"Spectrum 128K"')
+        if system.isOptSet('fuse_machine'):
+            coreSettings.save('fuse_machine', system.config['fuse_machine'])
+        else:
+            # The most common configuration same as ZX Spectrum+
+            coreSettings.save('fuse_machine',   '"Spectrum 128K"')
         # Zoom, Hide Video Border
         if system.isOptSet('fuse_hide_border'):
             coreSettings.save('fuse_hide_border', system.config['fuse_hide_border'])
