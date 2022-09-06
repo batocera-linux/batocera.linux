@@ -242,7 +242,7 @@ def configureGFX(config_directory, system):
     if system.isOptSet('ManualHWHacks'):
         pcsx2GFXSettings.save("UserHacks", system.config["ManualHWHacks"])
     else:
-        pcsx2GFXSettings.save("UserHacks", 1)
+        pcsx2GFXSettings.save("UserHacks", 0)
 
     # Internal resolution
     if system.isOptSet('internal_resolution'):
