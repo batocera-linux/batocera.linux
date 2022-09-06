@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v35beta(2022/08/05)\n"
+"Project-Id-Version: batocera-es v35beta(2022/09/06)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-08-05 19:31+0900\n"
+"PO-Revision-Date: 2022-09-06 13:25+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -28,9 +28,7 @@ msgctxt "game_options"
 msgid ""
 "Force the game to render in this aspect ratio. Not all systems support all "
 "ratios."
-msgstr ""
-"ゲームのレンダリングをこのアスペクト比で強制しますが、すべての比率をサポート"
-"しているわけではありません"
+msgstr "ゲームの表示アスペクト比を指定します。未対応の比率もあります"
 
 #. TRANSLATION: shared, dolphin, mupen64plus, pcsx2, demul
 msgctxt "game_options"
@@ -120,7 +118,7 @@ msgstr "スムーズゲーム（バイリニアフィルタリング）"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Only increase the image size in integer multiples."
-msgstr "画像サイズは、整数倍でのみ増やしてください"
+msgstr "画像サイズは、整数倍でのみ増やします"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -703,7 +701,7 @@ msgstr "Dendy(ファミコン互換)"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Rotate the screen, useful for certain vertical gameplay homebrews."
-msgstr "画面を回転させます。特定の垂直ゲームプレイ環境構築に役立ちます"
+msgstr "画面を回転します。特定の垂直ゲームプレイ環境構築に役立ちます"
 
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
 msgctxt "game_options"
@@ -2453,12 +2451,12 @@ msgstr "回転式ジョイスティック（Q * Bert）"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Emable or disable high score saving"
-msgstr "ハイスコ​​アの保存を有効または無効にします"
+msgstr "HIGH SCORE の保存を有効または無効にします"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
-msgstr "ハイスコ​​ア プラグイン"
+msgstr "HIGH SCORE プラグイン"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, mame/uzem, ...
 msgctxt "game_options"
@@ -5186,7 +5184,7 @@ msgstr "2.0 (480p)"
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
 msgid "Improve speed, at a minor cost of accuracy."
-msgstr "わずかな精度のコストで、速度を向上させます"
+msgstr "精度を少し下げて、速度を向上させます"
 
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
@@ -6504,7 +6502,7 @@ msgstr "使用しない (標準)"
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "Increase emulator performance, at the cost of accuracy/stability."
-msgstr "精度/安定性を犠牲にして、エミュレータの動作を向上します"
+msgstr "精度/安定性を下げて、エミュレータの動作を向上させます"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -6875,12 +6873,12 @@ msgstr "PGXP 修正を有効"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Allows loading protected games without subchannel information."
-msgstr ""
+msgstr "サブチャンネル情報なしで保護されたゲームを起動可能にします"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "ALLOW BOOTING WITHOUT SBI FILE"
-msgstr ""
+msgstr "sbi ファイルなしで起動する"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7801,11 +7799,13 @@ msgid ""
 "Automatically use hardware hacks as appropriate. Refer to pcsx2-config for "
 "individual hacks."
 msgstr ""
+"必要に応じてハードウェア ハックを自動的に使用します(個々のハックについては "
+"pcsx2-config を参照)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
-msgstr ""
+msgstr "自動グラフィック ハードウェア ハック"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
