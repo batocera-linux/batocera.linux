@@ -60,7 +60,7 @@ doList() {
 	    echo "turbo TURBO (1450Mhz)"
 	    echo "extreme EXTREME (1500Mhz)"
 	    ;;
-	"rpi4")
+	"bcm2711")
 	    echo "none NONE (B0 - 1500Mhz or C0 - 1800MHz)"
 	    echo "high HIGH (B0 HEATSINK - 1700Mhz)"
 	    echo "turbo TURBO (B0 HEATSINK - 1800Mhz)"
@@ -261,7 +261,7 @@ setValue() {
 		    ;;
 	    esac
 	    ;;
-	"rpi4")
+	"bcm2711")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpi4None

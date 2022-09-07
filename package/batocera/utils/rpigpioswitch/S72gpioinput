@@ -36,7 +36,7 @@ case "$1" in
     ba_gpio_configure
 
     # Required to initialize GPIO pins on RPi4
-    if [ "$arch" = "rpi4" ] && [ $gpio_enabled -eq 1 ]
+    if [ "$arch" = "bcm2711" ] && [ $gpio_enabled -eq 1 ]
     then
     /usr/bin/python - <<-_EOF_
 		import RPi.GPIO as GPIO
