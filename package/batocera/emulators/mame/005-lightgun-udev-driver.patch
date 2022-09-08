@@ -1,3 +1,17 @@
+From b855601daf932018e03506922a9c0a96593eabec Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Thu, 8 Sep 2022 06:02:34 +0000
+Subject: [PATCH] mame lightgun udev driver
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ scripts/src/main.lua                  |   1 +
+ scripts/src/osd/modules.lua           |   1 +
+ src/osd/modules/input/input_udev.cpp  | 405 ++++++++++++++++++++++++++
+ src/osd/modules/lib/osdobj_common.cpp |   1 +
+ 4 files changed, 408 insertions(+)
+ create mode 100644 src/osd/modules/input/input_udev.cpp
+
 diff --git a/scripts/src/main.lua b/scripts/src/main.lua
 index 94ee2b3..d5f0150 100644
 --- a/scripts/src/main.lua
@@ -24,10 +38,10 @@ index 5ede2a8..ec34889 100644
  		MAME_DIR .. "src/osd/modules/input/input_xinput.cpp",
 diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
 new file mode 100644
-index 0000000..24d5504
+index 0000000..c1926a2
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,397 @@
+@@ -0,0 +1,405 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
@@ -212,13 +226,15 @@ index 0000000..24d5504
 +	// compute the border if not already done
 +	if(borderX == -1 || borderY == -1) computeBorders(borderX, borderY);
 +
-+	if(event.value >= minx+borderX && event.value <= maxx-borderX) {
-+	  // in game
-+	  lightgun.lX = normalize_absolute_axis(event.value, minx+borderX, maxx-borderX);
-+	} else {
-+	  // in borders
-+	  if(event.value < minx+borderX) lightgun.lX = normalize_absolute_axis(minx+borderX, minx+borderX, maxx-borderX);
-+	  if(event.value > maxx-borderX) lightgun.lX = normalize_absolute_axis(maxx-borderX, minx+borderX, maxx-borderX);
++	if(borderX != -1 && borderY != -1) {
++	  if(event.value >= minx+borderX && event.value <= maxx-borderX) {
++	    // in game
++	    lightgun.lX = normalize_absolute_axis(event.value, minx+borderX, maxx-borderX);
++	  } else {
++	    // in borders
++	    if(event.value < minx+borderX) lightgun.lX = normalize_absolute_axis(minx+borderX, minx+borderX, maxx-borderX);
++	    if(event.value > maxx-borderX) lightgun.lX = normalize_absolute_axis(maxx-borderX, minx+borderX, maxx-borderX);
++	  }
 +	}
 +	break;
 +      case ABS_Y:
@@ -238,6 +254,10 @@ index 0000000..24d5504
 +    double game_ratio = 4.0/3.0; // assume 4/3 for the game itself (because i don't manage to find the information in mame structures)
 +    render_target* target = machine().render().first_target();
 +
++    if(machine().paused()) {
++      return;
++    }
++
 +    w = target->width();
 +    h = target->height();
 +
@@ -250,6 +270,8 @@ index 0000000..24d5504
 +      borderX = 0;
 +      borderY = 0;
 +    }
++
++    osd_printf_verbose("Lightgun: borders size : %ix%i (resolution=%ix%i)\n", borderX, borderY, w, h);
 +  }
 +};
 +
@@ -437,3 +459,6 @@ index 2546abd..0ecfbac 100644
  	REGISTER_MODULE(m_mod_man, LIGHTGUNINPUT_RAWINPUT);
  	REGISTER_MODULE(m_mod_man, LIGHTGUNINPUT_WIN32);
  	REGISTER_MODULE(m_mod_man, LIGHTGUN_NONE);
+-- 
+2.34.1
+
