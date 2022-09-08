@@ -100,6 +100,9 @@ class MameGenerator(Generator):
         commandArray += [ "-cheat" ]
         commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path containing the cheat.7z file
 
+        # logs
+        commandArray += [ "-verbose" ]
+
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
         commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
 
