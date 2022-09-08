@@ -93,10 +93,13 @@
         * change: dolphin is back on s922x with libretro-dolphin
         * change: od-commander south and east buttons swapped to match ES
         * change: update commentary in batocera.conf and batocera-boot.conf files
+        * change: pcsx2 setting "hwhacks" now can be switched in ES and defaults to "on"
         * es: add frameskip options for Drastic
         * es: wii/gamecube added json as acceptable file extension
         * es: change strings to refer to the spelling of savestates consistently
         * es: fix brightness slider not appearing on certain devices in system settings
+        * es: add zxspectrum model selection to fuse emulator
+        * es: pcsx2 now respects the globally set game aspect ratio setting
         * fix: optimize game startup
         * fix: lr-swanstation not working on some SBC's with OpenGLES
         * fix: segacd now scrapes successfully again
@@ -112,6 +115,7 @@
         * fix: X68000 load HDF games and random crashes
         * fix: MUGEN sound (x86_64) - please reinstall your MUGEN games to get sound fixed
         * fix: boot logo rotation on 720x1280 devices such as win600
+        * fix: multiplayer for dolphin now detects all four connected controllers
 
 2022/05/24 - batocera.linux 34 - blue morpho
         * add: board Anbernic RG552
