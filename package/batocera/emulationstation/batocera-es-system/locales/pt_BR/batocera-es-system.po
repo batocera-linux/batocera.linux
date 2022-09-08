@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-08-10 16:45-0300\n"
+"PO-Revision-Date: 2022-09-07 10:25-0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -177,7 +177,7 @@ msgstr "Desempenho"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "HEADS UP DISPLAY CORNER"
-msgstr "CANTO DA TELA DO MONITOR DE ALERTA "
+msgstr "CANTO DA TELA DO MONITOR DE ALERTA"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
@@ -2041,86 +2041,6 @@ msgstr "Útil para certos jogos de arcade."
 msgctxt "game_options"
 msgid "SCREEN ORIENTATION"
 msgstr "ORIENTAÇÃO DA TELA"
-
-#. TRANSLATION: libretro/fuse, hatari
-msgctxt "game_options"
-msgid "MODEL"
-msgstr "MODELO"
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum 48K"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum 48K (NTSC)"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum 128K"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum +2"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum +2A"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum +3"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum +3e"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum SE"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Timex TC2048"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Timex TS2068"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Spectrum 16K"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Pentagon 128K"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Pentagon 512K"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Pentagon 1024"
-msgstr ""
-
-#. TRANSLATION: libretro/fuse
-msgctxt "game_options"
-msgid "Scorpion 256K"
-msgstr ""
 
 #. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -4043,7 +3963,7 @@ msgstr "CONTROLLER PAK 4"
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "Full speed can break some games."
-msgstr " velocidade máxima pode quebrar alguns jogos."
+msgstr "Velocidade máxima pode quebrar alguns jogos."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -6477,11 +6397,12 @@ msgstr "INDICADORES DE TAMANHO SUPERIOR (SINGE)"
 msgctxt "game_options"
 msgid "This option is required for some gun games when playing with the mouse"
 msgstr ""
+"Esta opção é necessária para alguns jogos de pistola ao jogar com o mouse"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "ABSOLUTE MOUSE INPUT"
-msgstr ""
+msgstr "ENTRADA ABSOLUTA DO MOUSE"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6510,7 +6431,7 @@ msgstr "SENSIBIBILIDADE DO ANALÓGICO PARA O CURSOR"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Hide crosshairs in supported games e.g. ActionMax."
-msgstr "Ocultar mira em jogos suportados, p. ex. ActionMax"
+msgstr "Ocultar mira em jogos suportados, p. ex. ActionMax."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6666,7 +6587,7 @@ msgctxt "game_options"
 msgid "PRE-CACHE SHADERS"
 msgstr "MEMÓRIA PRÉ-CACHE DE SOMBREAMENTO"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, pcsx2
 msgctxt "game_options"
 msgid "Off (default)"
 msgstr "Desligado (padrão)"
@@ -7050,12 +6971,12 @@ msgstr "ATIVAR CORREÇÕES PGXP"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Allows loading protected games without subchannel information."
-msgstr ""
+msgstr "Permite carregar jogos protegidos sem informações de subcanal."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "ALLOW BOOTING WITHOUT SBI FILE"
-msgstr ""
+msgstr "PERMITIR INICIALIZAÇÃO SEM ARQUIVO SBI"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7255,6 +7176,11 @@ msgid "Higher values make textures viewed at oblique angles look sharper."
 msgstr ""
 "Valores mais altos fazem com que as texturas visualizadas em ângulos "
 "oblíquos pareçam ser mais nítidas."
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "MODEL"
+msgstr "MODELO"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7990,16 +7916,13 @@ msgid ""
 "Automatically use hardware hacks as appropriate. Refer to pcsx2-config for "
 "individual hacks."
 msgstr ""
+"Usa truques de hardware automaticamente conforme for apropriado. Consulte o "
+"arquivo pcsx2-config para truqyes individuais."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "On (default)"
-msgstr ""
+msgstr "TRUQUES AUTOMÁTICOS DE HARDWARE GRÁFICO"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9037,7 +8960,9 @@ msgctxt "game_options"
 msgid ""
 "When frameskip type is on automatic or manual, skip up to this many frames "
 "consecutively."
-msgstr "VALOR DO SALTO DE QUADROS"
+msgstr ""
+"Quando o tipo de salto de queadro de quadro estiver em automático ou manual, "
+"pule até esse número de quadros consecutivamente."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
