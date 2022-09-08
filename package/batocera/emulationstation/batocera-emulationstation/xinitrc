@@ -14,15 +14,6 @@ ulimit -S -c unlimited emulationstation
 # dbus launch is required for the gio/gvfs/trash:///...
 eval `dbus-launch --sh-syntax --exit-with-session`
 
-### intel-iris-driver ###
-irisdriver="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" intel-i965-driver)"
-if test ! -z "${irisdriver}" -a "${irisdriver}" = true; then
-    # Force use i965 driver through global environment variable
-    export MESA_LOADER_DRIVER_OVERRIDE=i965
-fi
-###################
-
-
 ### nvidia ###
 nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
 if test "${nvidia_prime}" = "true"
