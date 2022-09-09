@@ -387,7 +387,9 @@ getWine_var() {
 
     if test -e "${WINEPOINT}/autorun.cmd"
     then
-	VAL=$(grep "^${WINEVAR}=" "${WINEPOINT}/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1)
+        cp "${WINEPOINT}/autorun.cmd" /var/run/autorun.cmd
+        dos2unix -u /var/run/autorun.cmd
+	    VAL=$(grep "^${WINEVAR}=" "/var/run/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1)
 	if test -n "${VAL}"
 	then
 	    echo "${VAL}"
