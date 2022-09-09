@@ -3,15 +3,17 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Jun 8, 2022
-PCSX2_VERSION = v1.7.2916
+#Version: Commits on Sep 9, 2022
+PCSX2_VERSION = v1.7.3292
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 PCSX2_LICENSE = GPLv3
 PCSX2_LICENSE_FILE = COPYING.GPLv3
-PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate fmt
+PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets
+PCSX2_DEPENDENCIES += libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3
+PCSX2_DEPENDENCIES += libsamplerate fmt
 
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_CONF_OPTS += -DXDG_STD=TRUE
