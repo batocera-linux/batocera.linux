@@ -9,38 +9,16 @@ SYNCTHING_SITE = $(call github,syncthing,syncthing,$(SYNCTHING_VERSION))
 SYNCTHING_LICENSE = MPLv2
 SYNCTHING_LICENSE_FILES = LICENSE
 
-ifeq ($(BR2_arm),y)
-GOARCH= arm
-endif
-ifeq ($(BR2_aarch64),y)
-GOARCH=arm64
-endif
-ifeq ($(BR2_x86_64),y)
-GOARCH=amd64
-endif
-
 # GOFLAGS="-modcacherw" used to fix directory permissions to make sure cleanbuild works.
 # For details see: https://github.com/golang/go/issues/27161 https://github.com/golang/go/issues/27455
 
 SYNCTHING_TARGET_ENV = \
-	PATH=$(BR_PATH) \
-	GOROOT="$(HOST_GO_ROOT)" \
-	GOPATH="$(HOST_GO_GOPATH)" \
-	CGO_ENABLED=1 \
-	GOCACHE="$(HOST_GO_TARGET_CACHE)" \
+    $(HOST_GO_TARGET_ENV) \
 	GOMODCACHE="$(@D)" \
 	GOFLAGS="-modcacherw" \
-	CC="$(TARGET_CC)" \
-	CXX="$(TARGET_CXX)" \
-	CGO_CFLAGS="$(TARGET_CFLAGS)" \
-	CGO_CXXFLAGS="$(TARGET_CXXFLAGS)" \
-	CGO_LDFLAGS="$(TARGET_LDFLAGS)" \
-	GOTOOLDIR="$(HOST_GO_TOOLDIR)"
-	CC_FOR_TARGET="$(TARGET_CC)" \
-	CXX_FOR_TARGET="$(TARGET_CXX)"
 
 define SYNCTHING_BUILD_CMDS
-	cd $(@D) && $(SYNCTHING_TARGET_ENV) $(GO_BIN) run build.go -goos linux -goarch $(GOARCH) build
+	cd $(@D) && $(SYNCTHING_TARGET_ENV) $(GO_BIN) run build.go build
 endef
 
 define SYNCTHING_INSTALL_TARGET_CMDS
