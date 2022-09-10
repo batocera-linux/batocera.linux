@@ -8714,7 +8714,8 @@ xemu:
                 "Original resolution": center
                 "Scale to best fit":   scale
                 "Stretch to full":     stretch
-                "Stretch to 16:9":     scale_ws169
+                "Stretch to 16:9":     scale_16_9
+                "Stretch to 4:3":      scale_4_3
         render:
             prompt:       RENDERING RESOLUTION
             choices:
@@ -8726,12 +8727,20 @@ xemu:
                 "6x (3840x2880)":   6
                 "7x (4480x3360)":   7
                 "8x (5120x3840)":   8
+                "9x (5760x4320)":   9
+                "10x (6400x4800)":  10
         xemu_bootanim:
             prompt:      SHOW BIOS BOOTLOGO
             description: Enhancement.
             choices:
                 "Show":        "false"
                 "Skip":        "true"
+        use_dsp:
+            prompt:      USE DSP AUDIO
+            description: Improve audio accuracy (experimental).
+            choices:
+                "Enabled":      "true"
+                "Disabled":     "false"
 
 lexaloffle:
   features: [padtokeyboard]
