@@ -6,7 +6,7 @@
 
 DOSBOX_STAGING_VERSION = v0.78.1
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
-DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net fluidsynth zlib libpng libogg libvorbis opus opusfile
+DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net fluidsynth zlib libpng libogg libvorbis opus opusfile slirp
 DOSBOX_STAGING_LICENSE = GPLv2
 
 DOSBOX_STAGING_CPPFLAGS = -DNDEBUG
