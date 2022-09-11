@@ -21,7 +21,7 @@ def shutdownBatocera(channel):
     
 def exitAllBatoceraEmulator(channel):
     print ('exitAllBatoceraEmulator')
-    os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus linapple x64 scummvm dosbox vice amiberry fsuae dolphin-emu')
+    os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus x64 scummvm dosbox vice amiberry fsuae dolphin-emu')
     #os.system('batocera-es-swissknife --emukill')
 
 def blinkLED():
