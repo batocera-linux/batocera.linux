@@ -1,10 +1,10 @@
 ################################################################################
 #
-# Vice Emulation
+# vice
 #
 ################################################################################
-# Version.: Dec 24, 2021
-VICE_VERSION = 3.6
+
+VICE_VERSION = 3.6.1
 VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
 VICE_SITE = https://sourceforge.net/projects/vice-emu/files/releases
 VICE_LICENSE = GPLv2
