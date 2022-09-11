@@ -124,7 +124,6 @@ PACKAGES_EMULATORS="amiberry
 					fsuae
 					hatari
 					lightspark
-					linapple
 					mame
 					melonds
 					moonlight-embedded
