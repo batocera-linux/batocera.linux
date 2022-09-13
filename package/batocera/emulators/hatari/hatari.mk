@@ -1,10 +1,10 @@
 ################################################################################
 #
-# HATARI
+# hatari
 #
 ################################################################################
-# Version.: Release on Sep 17, 2020
-HATARI_VERSION = v2.3.1
+# Version.: Release on Sep 03, 2022
+HATARI_VERSION = v2.4.1
 HATARI_SOURCE = hatari-$(HATARI_VERSION).tar.gz
 HATARI_SITE = https://git.tuxfamily.org/hatari/hatari.git/snapshot
 HATARI_LICENSE = GPLv3

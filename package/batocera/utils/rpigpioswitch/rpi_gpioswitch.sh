@@ -218,7 +218,7 @@ function onoffshim_config()
 function powerhat_start()
 {
     #Check if dtooverlay is setted in /boot/config.txt
-    #This is needed to do proper restarts/shutdowns  
+    #This is needed to do proper restarts/shutdowns
     # (GPIO18 default)
     if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
         mount -o remount,rw /boot
@@ -243,7 +243,7 @@ function powerhat_stop()
 function powerhat_config()
 {
     #Check if dtooverlay is setted in /boot/config.txt
-    #This is needed to do proper restarts/shutdowns  
+    #This is needed to do proper restarts/shutdowns
     # (GPIO18 default)
     if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
         mount -o remount,rw /boot
@@ -364,7 +364,7 @@ function retroflag_start()
 {
     #Check if dtooverlay is setted in /boot/config -- Do this arch related!
     case $(cat /usr/share/batocera/batocera.arch) in
-        rpi4)
+        bcm2711)
             if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
                 mount -o remount, rw /boot
                 echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
@@ -393,7 +393,7 @@ function retroflag_config()
 {
     #Check if dtooverlay is setted in /boot/config -- Do this arch related!
     case $(cat /usr/share/batocera/batocera.arch) in
-        rpi4)
+        bcm2711)
             if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
                 mount -o remount, rw /boot
                 echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"

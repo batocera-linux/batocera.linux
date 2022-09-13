@@ -11,10 +11,6 @@ def getGenerator(emulator):
         from generators.kodi.kodiGenerator import KodiGenerator
         return KodiGenerator()
 
-    if emulator == 'linapple':
-        from generators.linapple.linappleGenerator import LinappleGenerator
-        return LinappleGenerator()
-
     if emulator == 'libretro':
         from generators.libretro.libretroGenerator import LibretroGenerator
         return LibretroGenerator()

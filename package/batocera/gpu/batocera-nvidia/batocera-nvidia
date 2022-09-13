@@ -13,7 +13,7 @@ then
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
     if [ "$NVIDIA_DEV" ]
     then
-	echo "Detected a NVIDIA GPU" >> $LOG
+	echo "Detected a NVIDIA GPU" > $LOG
 	for d in $NVIDIA_DEV ; do
 	    lspci -nn -s $d | sed -e s+"^"+"*** "+
 	done
@@ -62,7 +62,7 @@ then
 	    fi
 	done
     else
-        echo "No NVIDIA GPU detected" >> $LOG
+        echo "No NVIDIA GPU detected" > $LOG
         echo "Failing back to OpenSource Mesa Nouveau driver"
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf

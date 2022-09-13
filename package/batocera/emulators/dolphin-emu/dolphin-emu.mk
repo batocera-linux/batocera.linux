@@ -4,11 +4,14 @@
 #
 ################################################################################
 
-# version - 5.0-16377 - Commits on May 4, 2022
-DOLPHIN_EMU_VERSION = d0ed09ab6fe8e19a64e8f1bb2867f9c439616d4c
-DOLPHIN_EMU_SITE = $(call github,dolphin-emu,dolphin,$(DOLPHIN_EMU_VERSION))
+# Version: 5.0-17316 - Commits on Sep 10, 2022
+DOLPHIN_EMU_VERSION = 2bbae05849f0d509c8dc80154c2a651f3c496776
+DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
+DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl bluez5_utils hidapi xz host-xz
+
+DOLPHIN_EMU_GIT_SUBMODULES = YES
 DOLPHIN_EMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DOLPHIN_EMU_CONF_OPTS  = -DTHREADS_PTHREAD_ARG=OFF
