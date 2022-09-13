@@ -6,6 +6,19 @@
 MODE=$1
 LOG="/userdata/system/logs/batocera.log"
 LISTDIR=/usr/share/nvidia
+# Grab log level using a simple awk command to strip the words.
+LOGLEVEL=$(grep "<string name=\"LogLevel\" value=" /userdata/system/configs/emulationstation/es_settings.cfg | awk '{ print $3 }')
+# Make an array which contains the possible values. Not used for now, but may be handy in the future.
+#declare -a LOGLEVELS=(value="default" value="disabled" value="warning" value="error" value="debug")
+# Recall these values for example with ${LOGLEVELS[2]}
+# Loop with 'for i in "${LOGLEVELS[@]}"'. May be good to make this its own function at this point.
+
+if [ $LOGLEVEL == "value=\"debug\"" ]
+then
+    LOGGING=true
+else
+    LOGGING=false
+fi
 
 if test "${MODE}" = "auto"
 then
@@ -13,56 +26,74 @@ then
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
     if [ "$NVIDIA_DEV" ]
     then
-	echo "Detected a NVIDIA GPU" > $LOG
+    if [ $LOGGING == true ]; then
+        echo "Detected a NVIDIA GPU" > $LOG
+    fi
 	for d in $NVIDIA_DEV ; do
 	    lspci -nn -s $d | sed -e s+"^"+"*** "+
 	done
 	for d in $NVIDIA_DEV ; do
 	    PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }')
         CARDNAME=$(lspci -s "$d" | cut -d "[" -f2 | cut -d "]" -f1;)
-        echo "Checking card: $CARDNAME" >> $LOG
+        if [ $LOGGING == true ]; then
+            echo "Checking card: $CARDNAME" >> $LOG
+        fi
         if grep -q -i $PCIDEVID $LISTDIR/production.list 2>/dev/null
         then
             # check card name
-            echo "Detected PCI device ID in production list" >> $LOG
+            if [ $LOGGING == true ]; then
+                echo "Detected PCI device ID in production list" >> $LOG
+            fi
             if grep -q -i $CARDNAME $LISTDIR/production.list 2>/dev/null
             then
-                echo "Detected card name in production list" >> $LOG
+                if [ $LOGGING == true ]; then
+                    echo "Detected card name in production list" >> $LOG
+                fi
                 MODE=production
                 break
-            else
+            elif [ $LOGGING == true ]; then
                 echo "Card name not detected in production list" >> $LOG
             fi
         fi
         if grep -q -i $PCIDEVID $LISTDIR/legacy.list 2>/dev/null
         then
             # check card name
-            echo "Detected PCI device ID in legacy list" >> $LOG
+            if [ $LOGGING == true ]; then
+                echo "Detected PCI device ID in legacy list" >> $LOG
+            fi
             if grep -q -i $CARDNAME $LISTDIR/legacy.list 2>/dev/null
 		    then
-                echo "Detected card name in legacy list" >> $LOG
+                if [ $LOGGING == true ]; then
+                    echo "Detected card name in legacy list" >> $LOG
+                fi
 		        MODE=legacy
                 break
-            else
+            elif [ $LOGGING == true ]; then
                 echo "Card name not detected in legacy list" >> $LOG
             fi
         fi
 	    if grep -q -i $PCIDEVID $LISTDIR/legacy390.list 2>/dev/null
 	    then
             # check card name
-            echo "Detected PCI device ID in legacy390 list" >> $LOG
+            if [ $LOGGING == true ]; then
+                echo "Detected PCI device ID in legacy390 list" >> $LOG
+            fi
             if grep -q -i $CARDNAME $LISTDIR/legacy.list 2>/dev/null
             then
-                echo "Detected card name in legacy390 list" >> $LOG
+                if [ $LOGGING == true ]; then
+                    echo "Detected card name in legacy390 list" >> $LOG
+                fi
                 MODE=legacy390
                 break
-            else
+            elif [ $LOGGING == true ]; then
                 echo "Card name not detected in legacy390 list" >> $LOG
             fi
 	    fi
 	done
     else
-        echo "No NVIDIA GPU detected" > $LOG
+        if [ $LOGGING == true ]; then
+            echo "No NVIDIA GPU detected" > $LOG
+        fi
         echo "Failing back to OpenSource Mesa Nouveau driver"
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
@@ -82,7 +113,9 @@ mkdir -p /var/run/nvidia/modprobe || exit 1
 
 if test "${MODE}" = "production"
 then
-    echo "Using NVIDIA Production driver - ${BATOCERA_NVIDIA_DRIVER_VERSION}" >> $LOG
+    if [ $LOGGING == true ]; then
+        echo "Using NVIDIA Production driver - ${BATOCERA_NVIDIA_DRIVER_VERSION}" >> $LOG
+    fi
     echo
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
     echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
@@ -133,7 +166,7 @@ then
     # libnvidia-glvkspirv.so
     ln -sf /usr/lib/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
-    
+
     # [symbolic link 32-bit library files]
     mkdir -p /var/run/nvidia/lib32
     # libGLX_nvidia.so
@@ -181,17 +214,17 @@ then
     # libnvidia-glvkspirv.so
     ln -sf /lib32/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
-    
+
     # sym link Xorg libraries too
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so
     ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so.1
     ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
-    
+
     # link Xorg driver
     ln -sf /usr/lib/xorg/modules/drivers/nvidia_production_drv.so /var/run/nvidia/lib/nvidia_drv.so
     ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-    
+
     # link GL config files
     mkdir -p /var/run/nvidia/configs
     ln -sf /usr/share/vulkan/implicit_layer.d/nvidia_production_layers.json /var/run/nvidia/configs/nvidia_layers.json
@@ -200,13 +233,13 @@ then
     ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
     ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-production-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
     ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
-    
+
     # link Vulkan icd files
     ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
     ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
     ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
-    
+
     # finally link kernel modules & run them
     mkdir -p /var/run/nvidia/modules
     ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
@@ -225,7 +258,9 @@ then
     then
 	    BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION
     fi
-    echo "Using NVIDIA Legacy driver version - ${BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION}" >> $LOG
+    if [ $LOGGING == true ]; then
+        echo "Using NVIDIA Legacy driver version - ${BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION}" >> $LOG
+    fi
     echo
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
     echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
@@ -276,7 +311,7 @@ then
     # libnvidia-glvkspirv.so
     ln -sf /usr/lib/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
-    
+
     # [symbolic link 32-bit library files]
     mkdir -p /var/run/nvidia/lib32
     # libGLX_nvidia.so
@@ -324,13 +359,13 @@ then
     # libnvidia-glvkspirv.so
     ln -sf /lib32/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
-    
+
     # sym link Xorg libraries too
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so
     ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so.1
     ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
-   
+
     # 390 version
     if [[ "${MODE}" == *"390"* ]]
     then
@@ -341,7 +376,7 @@ then
         ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
 	    ln -sf /usr/lib/xorg/modules/extensions/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION /var/run/nvidia/xorg/libglx.so
         ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/xorg/modules/extensions/libglx.so
-	    
+
         # link GL config files
 	    mkdir -p /var/run/nvidia/configs
 	    ln -sf /usr/share/vulkan/implicit_layer.d/nvidia390_legacy_layers.json /var/run/nvidia/configs/nvidia_layers.json
@@ -356,7 +391,7 @@ then
         ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
 	    ln -sf /usr/share/vulkan/icd.d/nvidia390_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	    ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
-	    
+
         # finally copy kernel modules & run them
 	    mkdir -p /var/run/nvidia/modules
 	    ln -sf /usr/share/nvidia/modules/nvidia390-legacy.ko /var/run/nvidia/modules/nvidia.ko
@@ -373,7 +408,7 @@ then
         # link Xorg driver
         ln -sf /usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
         ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-        
+
         # link GL config files
         mkdir -p /var/run/nvidia/configs
         ln -sf /usr/share/vulkan/implicit_layer.d/nvidia_legacy_layers.json /var/run/nvidia/configs/nvidia_layers.json
@@ -382,13 +417,13 @@ then
         ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
         ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
         ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
-        
+
         # link Vulkan icd files
         ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
         ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
         ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
         ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
-        
+
         # finally link the kernel modules & run them
         mkdir -p /var/run/nvidia/modules
         ln -sf /usr/share/nvidia/modules/nvidia-legacy.ko /var/run/nvidia/modules/nvidia.ko
