@@ -1,0 +1,35 @@
+From b5e572d63d46f538f1e727492ab07d88e57a1a75 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 20 Apr 2019 01:46:18 +0200
+Subject: [PATCH 027/122] dt-bindings: arm: add the Meson8m2 Tronsmart MXIII
+
+The MXIII doesn't contain an actual Tronsmart label on the case.
+However, the PCB is almost identical (button setup, PMU, USB
+connections, ...). The main differences between the MXIII and MXIII-Plus
+are:
+- Ampak AP6330 on the MXIII-Plus, Ampak AP6181 on the MXIII
+- Realtek RTL8211F on the MXIII-Plus, IC Plus IP101A/G on the MXIII
+- Netxeon markings on the PCB on the MXIII-Plus, nothing on the MXII
+- Tronsmart writing on the top of the case of the MXIII-Plus, "MXIII"
+  writing (but no Tronsmart) on the MXIII
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 2a88b24384d0..a5b6fe0cd963 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -40,6 +40,7 @@ properties:
+       - description: Boards with the Amlogic Meson8m2 SoC
+         items:
+           - enum:
++              - tronsmart,mxiii
+               - tronsmart,mxiii-plus
+               - wetek,core
+           - const: amlogic,meson8m2
+-- 
+2.25.1
+

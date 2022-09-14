@@ -1,0 +1,52 @@
+From 4ef2d504bf45e8f3abf5cf021cc4320dfae45ce4 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 25 Apr 2020 22:14:27 +0200
+Subject: [PATCH 058/122] drm/meson: Enable support for Meson8/Meson8b/Meson8m2
+
+Add a compatible string for each of the three SoCs now that all hardware
+specific quirks are added to the driver.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/gpu/drm/meson/meson_drv.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 9eca0b3d0c6b..f38edc37da34 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -632,6 +632,18 @@ static int meson_drv_probe(struct platform_device *pdev)
+ 	return 0;
+ };
+ 
++static struct meson_drm_match_data meson_drm_m8_data = {
++	.compat = VPU_COMPATIBLE_M8,
++};
++
++static struct meson_drm_match_data meson_drm_m8b_data = {
++	.compat = VPU_COMPATIBLE_M8B,
++};
++
++static struct meson_drm_match_data meson_drm_m8m2_data = {
++	.compat = VPU_COMPATIBLE_M8M2,
++};
++
+ static struct meson_drm_match_data meson_drm_gxbb_data = {
+ 	.compat = VPU_COMPATIBLE_GXBB,
+ };
+@@ -651,6 +663,12 @@ static struct meson_drm_match_data meson_drm_g12a_data = {
+ };
+ 
+ static const struct of_device_id dt_match[] = {
++	{ .compatible = "amlogic,meson8-vpu",
++	  .data       = (void *)&meson_drm_m8_data },
++	{ .compatible = "amlogic,meson8b-vpu",
++	  .data       = (void *)&meson_drm_m8b_data },
++	{ .compatible = "amlogic,meson8m2-vpu",
++	  .data       = (void *)&meson_drm_m8m2_data },
+ 	{ .compatible = "amlogic,meson-gxbb-vpu",
+ 	  .data       = (void *)&meson_drm_gxbb_data },
+ 	{ .compatible = "amlogic,meson-gxl-vpu",
+-- 
+2.25.1
+

@@ -1,0 +1,539 @@
+From ca43cd841edcc0e1c025f1646fe15a93c1fd96bb Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 25 Jan 2021 00:06:33 +0100
+Subject: [PATCH 022/122] ARM: dts: meson8m2: Add support for the WeTek Core -
+ DO NOT USE
+
+The WeTek Core is based on the Amlogic Meson8m2 (S812) SoC with the
+following specifications:
+- 2GB DDR3 RAM
+- 8GB NAND flash
+- Gbit/s Ethernet using an RTL8211F PHY
+- AMPAK AP6330 802.11b/g/n + BT 4.0 SDIO wireless module
+- 1 power button on the top of the case
+- 1 reset button on the underside of the case
+- HDMI 1.4
+- Composite video output + 2-channel audio output using a 3.5mm jack
+- Optical S/PDIF output
+- 4x USB ports (two external, two internal) connected to the SoC through
+a GL850G USB hub
+- remote receiver connected via USB on one of the internal USB ports
+- IR receiver
+- micro SD card slot
+- UART pins (2.54mm headers need to be soldered) on the PCB
+
+Add a .dts for this board with all functionality supported by mainline
+Linux.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/Makefile                |   3 +-
+ arch/arm/boot/dts/meson8m2-wetek-core.dts | 482 ++++++++++++++++++++++
+ 2 files changed, 484 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/meson8m2-wetek-core.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 7e0934180724..5eb1ed204ffa 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -364,7 +364,8 @@ dtb-$(CONFIG_MACH_MESON8) += \
+ 	meson8b-ec100.dtb \
+ 	meson8b-mxq.dtb \
+ 	meson8b-odroidc1.dtb \
+-	meson8m2-mxiii-plus.dtb
++	meson8m2-mxiii-plus.dtb \
++	meson8m2-wetek-core.dtb
+ dtb-$(CONFIG_ARCH_MMP) += \
+ 	pxa168-aspenite.dtb \
+ 	pxa910-dkb.dtb \
+diff --git a/arch/arm/boot/dts/meson8m2-wetek-core.dts b/arch/arm/boot/dts/meson8m2-wetek-core.dts
+new file mode 100644
+index 000000000000..e02001495538
+--- /dev/null
++++ b/arch/arm/boot/dts/meson8m2-wetek-core.dts
+@@ -0,0 +1,482 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2021 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
++ */
++
++/dts-v1/;
++
++#include "meson8m2.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "WeTek Core";
++	compatible = "wetek,core", "amlogic,meson8m2";
++
++	aliases {
++		ethernet0 = &ethmac;
++		serial0 = &uart_AO;
++		mmc0 = &sdhc;
++		mmc1 = &sd_card_slot;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		reg = <0x40000000 0x80000000>;
++	};
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1710000>;
++
++		button-function {
++			label = "update";
++			linux,code = <KEY_VENDOR>;
++			press-threshold-microvolt = <10000>;
++		};
++	};
++
++	ao_5v: regulator-ao-5v {
++		/* SY8120BABC */
++		compatible = "regulator-fixed";
++		regulator-name = "AO_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&dc_12v>;
++	};
++
++	dc_12v: regulator-dc-12v {
++		compatible = "regulator-fixed";
++		regulator-name = "DC_12V";
++		regulator-min-microvolt = <12000000>;
++		regulator-max-microvolt = <12000000>;
++	};
++
++	firmware {
++		trustzone-firmware {
++			compatible = "amlogic,meson8m2-trustzone-firmware",
++				     "amlogic,meson-mx-trustzone-firmware";
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <100>;
++
++		button-power {
++			label = "power";
++			linux,code = <KEY_POWER>;
++			gpios = <&gpio_ao GPIOAO_4 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++	reserved-memory {
++		trustzone-firmware@6100000 {
++			reg = <0x6100000 0x3000000>;
++			no-map;
++		};
++
++		video-stream-buf-config@aa00000 {
++			reg = <0xaa00000 0x2000000>;
++			no-map;
++		};
++
++		video-frame-buf-config@ca00000 {
++			reg = <0xca00000 0x10000000>;
++			no-map;
++		};
++	};
++
++	rtc_xin: rtc-xin-clk {
++		compatible = "fixed-clock";
++		clock-frequency = <32768>;
++		clock-output-names = "RTC_XIN";
++		#clock-cells = <0>;
++	};
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++
++		reset-gpios = <&gpio GPIOX_11 GPIO_ACTIVE_LOW>;
++
++		clocks = <&rtc_xin>;
++		clock-names = "ext_clock";
++	};
++
++	vcc_1v8: regulator-vcc-1v8 {
++		/* Will Semiconductor WL2803E18-5 */
++		compatible = "regulator-fixed";
++		regulator-name = "VCC_1V8";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++
++		vin-supply = <&vcc_3v3>;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vcc_3v3: regulator-vcc-3v3 {
++		/* transistor controlled by 3V3_5V_EN */
++		compatible = "regulator-fixed";
++		regulator-name = "VCC3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++
++		vin-supply = <&vddio_ao_3v3>;
++
++		gpios = <&gpio GPIOAO_2 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vcc_5v: regulator-vcc-5v {
++		/* transistor controlled by 3V3_5V_EN */
++		compatible = "regulator-fixed";
++		regulator-name = "VCC5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++
++		vin-supply = <&ao_5v>;
++
++		gpios = <&gpio GPIOAO_2 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vcck: regulator-vcck {
++		/* Silergy SY8120BABC */
++		compatible = "pwm-regulator";
++
++		regulator-name = "VCCK";
++		regulator-min-microvolt = <860000>;
++		regulator-max-microvolt = <1140000>;
++
++		pwm-supply = <&dc_12v>;
++
++		pwms = <&pwm_cd 0 1148 0>;
++		pwm-dutycycle-range = <100 0>;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vdd_ee: regulator-vdd-ee {
++		/* Silergy SY8113BADC */
++		compatible = "pwm-regulator";
++
++		regulator-name = "VDD_EE";
++		regulator-min-microvolt = <860000>;
++		regulator-max-microvolt = <1140000>;
++
++		pwm-supply = <&dc_12v>;
++
++		pwms = <&pwm_cd 1 12218 0>;
++		pwm-dutycycle-range = <91 0>;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vddio_ao_3v3: regulator-vddio-ao-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDDIO_AO_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++
++		vin-supply = <&dc_12v>;
++
++		gpios = <&gpio GPIOAO_2 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vddio_ao_1v8: regulator-vddio-ao-1v8 {
++		/* Will Semiconductor WL2803E18-5 */
++		compatible = "regulator-fixed";
++		regulator-name = "VDDIO_AO_1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		vin-supply = <&ao_5v>;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++};
++
++&cpu0 {
++	cpu-supply = <&vcck>;
++};
++
++/*
++ * The VCCK regulator is limited in range and requires higher voltages
++ * on lower frequencies (<= 720MHz) as well as lower voltages on 1992MHz.
++ */
++&cpu_opp_table {
++	opp-96000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-192000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-312000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-408000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-504000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-600000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-720000000 {
++		opp-microvolt = <860000>;
++	};
++	opp-816000000 {
++		opp-microvolt = <880000>;
++	};
++	opp-1008000000 {
++		opp-microvolt = <930000>;
++	};
++	opp-1200000000 {
++		opp-microvolt = <980000>;
++	};
++	opp-1416000000 {
++		opp-microvolt = <1030000>;
++	};
++	opp-1608000000 {
++		opp-microvolt = <1100000>;
++	};
++	opp-1800000000 {
++		opp-microvolt = <1130000>;
++	};
++	opp-1992000000 {
++		opp-microvolt = <1140000>;
++	};
++};
++
++/*
++ * The VDDEE regulator is limited in range and u-boot configures it
++ * to ~1.135V (instead of 1.15V as used on boards with a Ricoh PMU).
++ */
++&gpu_opp_table {
++	opp-182142857 {
++		opp-microvolt = <1135000>;
++	};
++	opp-318750000 {
++		opp-microvolt = <1135000>;
++	};
++	opp-425000000 {
++		opp-microvolt = <1135000>;
++	};
++	opp-510000000 {
++		opp-microvolt = <1135000>;
++	};
++	opp-637500000 {
++		opp-microvolt = <1135000>;
++	};
++};
++
++&ethmac {
++//	status = "okay"; // FIXME: this seems to hang the board during boot?
++
++	pinctrl-0 = <&eth_rgmii_pins>;
++	pinctrl-names = "default";
++
++	phy-handle = <&eth_phy1>;
++	phy-mode = "rgmii-id";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		eth_phy1: ethernet-phy@1 {
++			/* Realtek RTL8211F (0x001cc916) */
++			reg = <1>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <80000>;
++			reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
++
++			interrupt-parent = <&gpio_intc>;
++			/* GPIODV_29 */
++			interrupts = <94 IRQ_TYPE_LEVEL_LOW>;
++		};
++	};
++};
++
++&gpio {
++	gpio-line-names = /* Bank GPIOX */
++			  "WIFI_SD_D0", "WIFI_SD_D1", "WIFI_SD_D2",
++			  "WIFI_SD_D3", "BTPCM_DOUT", "BTPCM_DIN",
++			  "BTPCM_SYNC", "BTPCM_CLK", "WIFI_SD_CLK",
++			  "WIFI_SD_CMD", "WIFI_32K", "WIFI_PWREN",
++			  "UART_A_TX", "UART_A_RX", "UART_A_CTS_N",
++			  "UART_A_RTS_N", "ISO7816_EN/DET", "ISO7816_RST",
++			  "ISO7816_CLK", "ISO7816_DATA", "BT_EN",
++			  "WIFI_WAKE_HOST",
++			  /* Bank GPIOY */
++			  "TSIN_A_VAL", "TSIN_A_SYNC", "", "SPDIF",
++			  "PDN", "TSIN_RST", "ANT1_CTRL", "",
++			  "TSIN_A_CLK", "TSIN_A_D0", "TSIN_A_D1",
++			  "TSIN_A_D2", "TSIN_A_D3", "TSIN_A_D4",
++			  "TSIN_A_D5", "TSIN_A_D6", "TSIN_A_D7",
++			  /* Bank GPIODV */
++			  "", "", "", "", "", "", "", "", "",
++			  "VCCK_PWM_C", "", "", "", "", "", "", "",
++			  "", "", "", "", "", "", "", "", "", "", "",
++			  "VDDEE_PWM_D", "RGMII_IRQ#",
++			  /* Bank GPIOH */
++			  "HDMI_HPD", "HDMI_SDA", "HDMI_SCL", "HUB_REST",
++			  "", "ANT_OVERLOAD", "", "I2C_SDA", "I2C_SCL",
++			  "",
++			  /* Bank GPIOZ */
++			  "RGMII_TXD3", "RGMII_TXD2", "RGMII_RXD3",
++			  "RGMII_RXD2", "RGMII_TXCLK", "RGMII_TXEN",
++			  "RGMII_TXD1", "RGMII_TXD0", "RGMII_RXCLK",
++			  "RGM RGMII_RXDV", "RGMII_RXD1", "RGMII_RXD0",
++			  "RGMII_MDIO", "RGMII_MDC", "RGMII_RST#",
++			  /* Bank CARD */
++			  "SD_D1_B", "SD_D0_B", "SD_CLK_B", "SD_CMD_B",
++			  "SD_D3_B", "SD_D2_B", "CARD_EN_DET",
++			  /* Bank BOOT */
++			  "NAND_D0", "NAND_D1", "NAND_D2", "NAND_D3",
++			  "NAND_D4", "NAND_D5", "NAND_D6", "NAND_D7",
++			  "NAND_CS1", "INAND_RST", "NAND_NR/B",
++			  "NAND_ALE", "SPI_O", "NAND_NWE", "NAND_NRE",
++			  "NAND_DQS", "INAND_CMD", "INAND_CLK",
++			  "SPI_CS";
++
++	/*
++	 * WARNING: The USB Hub on the WeTek core needs a reset signal
++	 * to be turned high in order to be detected by the USB Controller.
++	 * This signal should be handled by a USB specific power sequence
++	 * in order to reset the Hub when USB bus is powered down.
++	 */
++	usb-hub {
++		gpio-hog;
++		gpios = <GPIOH_3 GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "usb-hub-reset";
++	};
++};
++
++&gpio_ao {
++	gpio-line-names = "LINUX_TX", "LINUX_RX", "3V3_5V_EN",
++			  "PWR_KEY", "VCCK_CON", "VDEE_PWM_D",
++			  "RGMII_RST#", "IR", "", "FRONT_CS",
++			  "I2C_SDA_AO", "I2C_SCK_AO", "HDMI_CEC",
++			  "IR_BLASTER", "MUTE", "";
++};
++
++&ir_receiver {
++	status = "okay";
++	pinctrl-0 = <&ir_recv_pins>;
++	pinctrl-names = "default";
++};
++
++&mali {
++	mali-supply = <&vdd_ee>;
++};
++
++&pwm_cd {
++	status = "okay";
++	pinctrl-0 = <&pwm_c_dv9_pins>, <&pwm_d_pins>;
++	pinctrl-names = "default";
++	clocks = <&xtal>, <&xtal>;
++	clock-names = "clkin0", "clkin1";
++};
++
++&saradc {
++	status = "okay";
++	vref-supply = <&vddio_ao_1v8>;
++};
++
++&sdhc {
++	status = "disabled"; // TODO: until pinctrl is updated...
++
++	// TODO: pinctrl-0 = <&sdxc_a_pins>;
++	pinctrl-names = "default";
++
++	bus-width = <4>;
++	cap-sd-highspeed;
++	max-frequency = <50000000>;
++
++	non-removable;
++	disable-wp;
++
++	vmmc-supply = <&vcc_3v3>;
++	vqmmc-supply = <&vddio_ao_3v3>;
++};
++
++&sdio {
++	status = "okay";
++
++	pinctrl-0 = <&sd_b_pins>;
++	pinctrl-names = "default";
++
++	/* SD card */
++	sd_card_slot: slot@1 {
++		compatible = "mmc-slot";
++		reg = <1>;
++		status = "okay";
++
++		bus-width = <4>;
++		no-sdio;
++		cap-mmc-highspeed;
++		cap-sd-highspeed;
++		disable-wp;
++
++		cd-gpios = <&gpio CARD_6 GPIO_ACTIVE_LOW>;
++
++		vmmc-supply = <&vcc_3v3>;
++	};
++};
++
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a1_pins>, <&uart_a1_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		shutdown-gpios = <&gpio GPIOX_20 GPIO_ACTIVE_HIGH>;
++		max-speed = <2000000>;
++		clocks = <&rtc_xin>;
++		clock-names = "lpo";
++	};
++};
++
++&uart_AO {
++	status = "okay";
++	pinctrl-0 = <&uart_ao_a_pins>;
++	pinctrl-names = "default";
++};
++
++&usb1 {
++	status = "okay";
++};
++
++&usb1_phy {
++	status = "okay";
++};
+-- 
+2.25.1
+

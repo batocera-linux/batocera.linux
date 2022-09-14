@@ -1,0 +1,56 @@
+From a076855c9ccf391e1e4c2d5258d79827b344b933 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 14 Jul 2021 00:26:55 +0200
+Subject: [PATCH 096/122] rtw88: Use rtw_iterate_vifs where the iterator reads
+ or writes registers
+
+Upcoming SDIO support may sleep in the read/write handlers. Switch
+all users of rtw_iterate_vifs_atomic() which are either reading or
+writing a register to rtw_iterate_vifs().
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 6 +++---
+ drivers/net/wireless/realtek/rtw88/ps.c   | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 6bb55e663fc3..ea8466d86972 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -229,8 +229,8 @@ static void rtw_watch_dog_work(struct work_struct *work)
+ 	rtw_phy_dynamic_mechanism(rtwdev);
+ 
+ 	data.rtwdev = rtwdev;
+-	/* use atomic version to avoid taking local->iflist_mtx mutex */
+-	rtw_iterate_vifs_atomic(rtwdev, rtw_vif_watch_dog_iter, &data);
++
++	rtw_iterate_vifs(rtwdev, rtw_vif_watch_dog_iter, &data);
+ 
+ 	/* fw supports only one station associated to enter lps, if there are
+ 	 * more than two stations associated to the AP, then we can not enter
+@@ -578,7 +578,7 @@ static void __fw_recovery_work(struct rtw_dev *rtwdev)
+ 	rtw_iterate_keys_rcu(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
+ 	rcu_read_unlock();
+ 	rtw_iterate_stas_atomic(rtwdev, rtw_reset_sta_iter, rtwdev);
+-	rtw_iterate_vifs_atomic(rtwdev, rtw_reset_vif_iter, rtwdev);
++	rtw_iterate_vifs(rtwdev, rtw_reset_vif_iter, rtwdev);
+ 	rtw_enter_ips(rtwdev);
+ }
+ 
+diff --git a/drivers/net/wireless/realtek/rtw88/ps.c b/drivers/net/wireless/realtek/rtw88/ps.c
+index 3f0ac33156d6..95f9060b083f 100644
+--- a/drivers/net/wireless/realtek/rtw88/ps.c
++++ b/drivers/net/wireless/realtek/rtw88/ps.c
+@@ -58,7 +58,7 @@ int rtw_leave_ips(struct rtw_dev *rtwdev)
+ 		return ret;
+ 	}
+ 
+-	rtw_iterate_vifs_atomic(rtwdev, rtw_restore_port_cfg_iter, rtwdev);
++	rtw_iterate_vifs(rtwdev, rtw_restore_port_cfg_iter, rtwdev);
+ 
+ 	rtw_coex_ips_notify(rtwdev, COEX_IPS_LEAVE);
+ 
+-- 
+2.25.1
+

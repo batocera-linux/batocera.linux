@@ -1,0 +1,34 @@
+From 8a8e20589125a548ac9985d7017ff0efd1d4f0b5 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 11 Jul 2021 03:26:55 +0200
+Subject: [PATCH 108/122] dt-bindings: arm: amlogic: Add the Tronsmart S82
+
+Tronsmart S82 is a smart TV box with the following specifications:
+- Amlogic S802 SoC
+- 2GB DDR3
+- 8GB or 16GB eMMC flash
+- micro SD card slot
+- built-in SDIO WiFi
+- Bluetooth 4.0 on the same module as WiFi
+- 10/100Mbit/s Ethernet
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index a5b6fe0cd963..45555acc9431 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -35,6 +35,7 @@ properties:
+         items:
+           - enum:
+               - minix,neo-x8
++              - tronsmart,s82
+           - const: amlogic,meson8
+ 
+       - description: Boards with the Amlogic Meson8m2 SoC
+-- 
+2.25.1
+
