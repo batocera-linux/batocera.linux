@@ -132,6 +132,13 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+    RETROARCH_CONF_OPTS += --enable-wayland
+    RETROARCH_DEPENDENCIES += wayland
+else
+    RETROARCH_CONF_OPTS += --disable-wayland
+endif
+
 ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
 	RETROARCH_CONF_OPTS += --enable-vulkan
 	RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader
