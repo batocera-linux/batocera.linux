@@ -1,0 +1,88 @@
+From 7fb61ce33aa16215ec910dcb21ae6ea6843b0c7e Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 25 Apr 2020 21:53:21 +0200
+Subject: [PATCH 048/122] drm/meson: The old 32-bit SoCs don't have the OSD
+ alpha replace bits
+
+The VIU_OSD1_CTRL_STAT2 and VIU_OSD2_CTRL_STAT2 registers on
+Meson8/Meson8b/Meson8m2 don't have the following bits:
+- replaced_alpha_en in bit [14]
+- replaced_alpha in bits [13:6]
+
+Add checks to the driver to skip setting those for these older SoCs.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/gpu/drm/meson/meson_plane.c | 26 +++++++++++++++-----------
+ drivers/gpu/drm/meson/meson_viu.c   | 18 +++++++++++-------
+ 2 files changed, 26 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_plane.c b/drivers/gpu/drm/meson/meson_plane.c
+index 8640a8a8a469..9f8e9ebbe900 100644
+--- a/drivers/gpu/drm/meson/meson_plane.c
++++ b/drivers/gpu/drm/meson/meson_plane.c
+@@ -231,17 +231,21 @@ static void meson_plane_atomic_update(struct drm_plane *plane,
+ 		}
+ 	}
+ 
+-	switch (fb->format->format) {
+-	case DRM_FORMAT_XRGB8888:
+-	case DRM_FORMAT_XBGR8888:
+-		/* For XRGB, replace the pixel's alpha by 0xFF */
+-		priv->viu.osd1_ctrl_stat2 |= OSD_REPLACE_EN;
+-		break;
+-	case DRM_FORMAT_ARGB8888:
+-	case DRM_FORMAT_ABGR8888:
+-		/* For ARGB, use the pixel's alpha */
+-		priv->viu.osd1_ctrl_stat2 &= ~OSD_REPLACE_EN;
+-		break;
++	if (!meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8) &&
++	    !meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8B) &&
++	    !meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8M2)) {
++		switch (fb->format->format) {
++		case DRM_FORMAT_XRGB8888:
++		case DRM_FORMAT_XBGR8888:
++			/* For XRGB, replace the pixel's alpha by 0xFF */
++			priv->viu.osd1_ctrl_stat2 |= OSD_REPLACE_EN;
++			break;
++		case DRM_FORMAT_ARGB8888:
++		case DRM_FORMAT_ABGR8888:
++			/* For ARGB, use the pixel's alpha */
++			priv->viu.osd1_ctrl_stat2 &= ~OSD_REPLACE_EN;
++			break;
++		}
+ 	}
+ 
+ 	/* Default scaler parameters */
+diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
+index 259f3e6bec90..3ece5395f2ce 100644
+--- a/drivers/gpu/drm/meson/meson_viu.c
++++ b/drivers/gpu/drm/meson/meson_viu.c
+@@ -449,13 +449,17 @@ void meson_viu_init(struct meson_drm *priv)
+ 	writel_relaxed(reg, priv->io_base + _REG(VIU_OSD1_FIFO_CTRL_STAT));
+ 	writel_relaxed(reg, priv->io_base + _REG(VIU_OSD2_FIFO_CTRL_STAT));
+ 
+-	/* Set OSD alpha replace value */
+-	writel_bits_relaxed(0xff << OSD_REPLACE_SHIFT,
+-			    0xff << OSD_REPLACE_SHIFT,
+-			    priv->io_base + _REG(VIU_OSD1_CTRL_STAT2));
+-	writel_bits_relaxed(0xff << OSD_REPLACE_SHIFT,
+-			    0xff << OSD_REPLACE_SHIFT,
+-			    priv->io_base + _REG(VIU_OSD2_CTRL_STAT2));
++	if (!meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8) &&
++	    !meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8B) &&
++	    !meson_vpu_is_compatible(priv, VPU_COMPATIBLE_M8M2)) {
++		/* Set OSD alpha replace value */
++		writel_bits_relaxed(0xff << OSD_REPLACE_SHIFT,
++				    0xff << OSD_REPLACE_SHIFT,
++				    priv->io_base + _REG(VIU_OSD1_CTRL_STAT2));
++		writel_bits_relaxed(0xff << OSD_REPLACE_SHIFT,
++				    0xff << OSD_REPLACE_SHIFT,
++				    priv->io_base + _REG(VIU_OSD2_CTRL_STAT2));
++	}
+ 
+ 	/* Disable VD1 AFBC */
+ 	/* di_mif0_en=0 mif0_to_vpp_en=0 di_mad_en=0 and afbc vd1 set=0*/
+-- 
+2.25.1
+

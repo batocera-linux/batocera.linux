@@ -1,0 +1,36 @@
+From 89bf6841d70cbd27e1ad41a1b3bd03c0e0ee4f29 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 5 May 2019 11:44:40 +0200
+Subject: [PATCH 069/122] ARM: dts: meson8m2: m8s: enable the AO CEC controller
+ - WiP
+
+WiP
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8m2-m8s.dts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/arch/arm/boot/dts/meson8m2-m8s.dts b/arch/arm/boot/dts/meson8m2-m8s.dts
+index 6065a19acc96..8f294de22e6a 100644
+--- a/arch/arm/boot/dts/meson8m2-m8s.dts
++++ b/arch/arm/boot/dts/meson8m2-m8s.dts
+@@ -186,6 +186,15 @@ &aiu {
+ 	status = "okay";
+ };
+ 
++&cec_AO {
++	// TODO: is this correct?
++	clocks = <&xtal_32k_out>;
++	clock-names = "core";
++
++	pinctrl-0 = <&hdmi_cec_ao_pins>;
++	pinctrl-names = "default";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vcck>;
+ };
+-- 
+2.25.1
+

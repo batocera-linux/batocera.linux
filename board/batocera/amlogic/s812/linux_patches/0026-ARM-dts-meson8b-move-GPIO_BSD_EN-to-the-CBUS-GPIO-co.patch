@@ -1,0 +1,90 @@
+From c77260f05b99c6a0553cfc958be280c695568bc8 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Tue, 22 Dec 2020 14:26:43 +0100
+Subject: [PATCH 026/122] ARM: dts: meson8b: move GPIO_BSD_EN to the CBUS GPIO
+ controller
+
+The GPIO_BSD_EN pin is configured through the CBUS GPIO controller. Move
+it from the AOBUS GPIO controller to the CBUS GPIO controller and update
+the gpio-ranges and gpio-line-names accordingly.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8b-ec100.dts    | 6 ++++--
+ arch/arm/boot/dts/meson8b-odroidc1.dts | 6 ++++--
+ arch/arm/boot/dts/meson8b.dtsi         | 4 ++--
+ 3 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/meson8b-ec100.dts b/arch/arm/boot/dts/meson8b-ec100.dts
+index 77d4beeb8010..d54ea42c6eb2 100644
+--- a/arch/arm/boot/dts/meson8b-ec100.dts
++++ b/arch/arm/boot/dts/meson8b-ec100.dts
+@@ -394,7 +394,7 @@ &gpio_ao {
+ 			  "I2S_IN", "SLP_S1_N",
+ 			  "TCK", "TMS", "TDI", "TDO",
+ 			  "HDMI_CEC", "5640_IRQ",
+-			  "MUTE", "S805_TEST#";
++			  "S805_TEST#";
+ };
+ 
+ &gpio {
+@@ -434,7 +434,9 @@ &gpio {
+ 			  "RMII_RXD1", "RMII_RXD0", "RMII_CRS_DV",
+ 			  "RMII_50M_IN", "GPIODIF_4", "GPIODIF_5",
+ 			  "RMII_TXEN", "CPUETH_25MOUT", "RMII_MDC",
+-			  "RMII_MDIO";
++			  "RMII_MDIO",
++			  /* BSD_EN */
++			  "MUTE";
+ };
+ 
+ &pwm_cd {
+diff --git a/arch/arm/boot/dts/meson8b-odroidc1.dts b/arch/arm/boot/dts/meson8b-odroidc1.dts
+index 04356bc639fa..04cce5599809 100644
+--- a/arch/arm/boot/dts/meson8b-odroidc1.dts
++++ b/arch/arm/boot/dts/meson8b-odroidc1.dts
+@@ -270,7 +270,9 @@ &gpio {
+ 			  "ETH_RXD1", "ETH_RXD0", "ETH_RX_DV",
+ 			  "RGMII_RX_CLK", "ETH_RXD3", "ETH_RXD2",
+ 			  "ETH_TXEN", "ETH_PHY_REF_CLK_25MOUT",
+-			  "ETH_MDC", "ETH_MDIO";
++			  "ETH_MDC", "ETH_MDIO",
++			  /* BSD_EN */
++			  "";
+ };
+ 
+ &gpio_ao {
+@@ -280,7 +282,7 @@ &gpio_ao {
+ 			  "IR_IN", "J7 Header Pin 4",
+ 			  "J7 Header Pin 6", "J7 Header Pin 5",
+ 			  "J7 Header Pin 7", "HDMI_CEC",
+-			  "SYS_LED", "", "";
++			  "SYS_LED", "";
+ 
+ 	/*
+ 	 * WARNING: The USB Hub on the Odroid-C1/C1+ needs a reset signal
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index a57affd632a8..b040ab603334 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -322,7 +322,7 @@ gpio_ao: ao-bank@14 {
+ 			reg-names = "mux", "pull", "gpio";
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&pinctrl_aobus 0 0 16>;
++			gpio-ranges = <&pinctrl_aobus 0 0 15>;
+ 		};
+ 
+ 		i2s_am_clk_pins: i2s-am-clk-out {
+@@ -430,7 +430,7 @@ gpio: banks@80b0 {
+ 			reg-names = "mux", "pull", "pull-enable", "gpio";
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&pinctrl_cbus 0 0 83>;
++			gpio-ranges = <&pinctrl_cbus 0 0 84>;
+ 		};
+ 
+ 		eth_rgmii_pins: eth-rgmii {
+-- 
+2.25.1
+

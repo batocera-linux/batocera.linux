@@ -1,0 +1,172 @@
+From b4291bc78c2e4c60dfb87e09e005b4c334d639a2 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 25 Apr 2020 22:06:53 +0200
+Subject: [PATCH 045/122] drm/meson: Add support for using a PHY for the CVBS
+ DAC
+
+Currently the VPU driver hardcodes the initialization, power-on and
+power-off sequences for the CVBS DAC. The registers for the CVBS DAC are
+in the HHI register area. Also the CVBS DAC is a PHY so it can be
+modelled as such. Add support for using a PHY as CVBS DAC to de-couple
+the VPU driver from the HHI registers (at least for this part of the
+implementation).
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/gpu/drm/meson/meson_drv.c          |  6 ++
+ drivers/gpu/drm/meson/meson_drv.h          |  4 ++
+ drivers/gpu/drm/meson/meson_encoder_cvbs.c | 66 ++++++++++++++++------
+ 3 files changed, 60 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 80f1d439841a..a6ebcfd2d8ac 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -12,6 +12,7 @@
+ #include <linux/module.h>
+ #include <linux/of_graph.h>
+ #include <linux/sys_soc.h>
++#include <linux/phy/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/soc/amlogic/meson-canvas.h>
+ 
+@@ -263,6 +264,11 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 		goto free_drm;
+ 	}
+ 
++	priv->cvbs_dac = devm_phy_optional_get(dev, "cvbs-dac");
++	if (IS_ERR(priv->cvbs_dac))
++		return dev_err_probe(dev, PTR_ERR(priv->cvbs_dac),
++				     "Failed to get the 'cvbs-dac' PHY\n");
++
+ 	priv->vsync_irq = platform_get_irq(pdev, 0);
+ 
+ 	ret = drm_vblank_init(drm, 1);
+diff --git a/drivers/gpu/drm/meson/meson_drv.h b/drivers/gpu/drm/meson/meson_drv.h
+index 177dac3ca3be..7f897517d78d 100644
+--- a/drivers/gpu/drm/meson/meson_drv.h
++++ b/drivers/gpu/drm/meson/meson_drv.h
+@@ -17,6 +17,7 @@ struct drm_device;
+ struct drm_plane;
+ struct meson_drm;
+ struct meson_afbcd_ops;
++struct phy;
+ 
+ enum vpu_compatible {
+ 	VPU_COMPATIBLE_GXBB = 0,
+@@ -54,6 +55,9 @@ struct meson_drm {
+ 
+ 	const struct meson_drm_soc_limits *limits;
+ 
++	struct phy *cvbs_dac;
++	bool cvbs_dac_enabled;
++
+ 	/* Components Data */
+ 	struct {
+ 		bool osd1_enabled;
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.c b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+index fd8db97ba8ba..6cfbf47dbbc1 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.c
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+@@ -11,6 +11,7 @@
+ 
+ #include <linux/export.h>
+ #include <linux/of_graph.h>
++#include <linux/phy/phy.h>
+ 
+ #include <drm/drm_atomic_helper.h>
+ #include <drm/drm_bridge.h>
+@@ -87,11 +88,28 @@ static int meson_encoder_cvbs_attach(struct drm_bridge *bridge,
+ {
+ 	struct meson_encoder_cvbs *meson_encoder_cvbs =
+ 					bridge_to_meson_encoder_cvbs(bridge);
++	int ret;
++
++	ret = phy_init(meson_encoder_cvbs->priv->cvbs_dac);
++	if (ret)
++		return ret;
+ 
+ 	return drm_bridge_attach(bridge->encoder, meson_encoder_cvbs->next_bridge,
+ 				 &meson_encoder_cvbs->bridge, flags);
+ }
+ 
++static void meson_encoder_cvbs_detach(struct drm_bridge *bridge)
++{
++	struct meson_encoder_cvbs *meson_encoder_cvbs =
++					bridge_to_meson_encoder_cvbs(bridge);
++	int ret;
++
++	ret = phy_exit(meson_encoder_cvbs->priv->cvbs_dac);
++	if (ret)
++		dev_err(meson_encoder_cvbs->priv->dev,
++			"Failed to exit the CVBS DAC\n");
++}
++
+ static int meson_encoder_cvbs_get_modes(struct drm_bridge *bridge,
+ 					struct drm_connector *connector)
+ {
+@@ -176,16 +194,23 @@ static void meson_encoder_cvbs_atomic_enable(struct drm_bridge *bridge,
+ 	writel_bits_relaxed(VENC_VDAC_SEL_ATV_DMD, 0,
+ 			    priv->io_base + _REG(VENC_VDAC_DACSEL0));
+ 
+-	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXBB)) {
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL0, 1);
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL1, 0);
+-	} else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXM) ||
+-		 meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXL)) {
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL0, 0xf0001);
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL1, 0);
+-	} else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL0_G12A, 0x906001);
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL1_G12A, 0);
++	if (!priv->cvbs_dac) {
++		if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXBB))
++			regmap_write(priv->hhi, HHI_VDAC_CNTL0, 1);
++		else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXM) ||
++			 meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXL))
++			regmap_write(priv->hhi, HHI_VDAC_CNTL0, 0xf0001);
++		else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
++			regmap_write(priv->hhi, HHI_VDAC_CNTL0_G12A, 0x906001);
++
++		regmap_write(priv->hhi, HHI_VDAC_CNTL1, 0x0);
++	} else if (!priv->cvbs_dac_enabled) {
++		int ret = phy_power_on(priv->cvbs_dac);
++		if (ret)
++			dev_err(priv->dev,
++				"Failed to power on the CVBS DAC\n");
++
++		priv->cvbs_dac_enabled = true;
+ 	}
+ }
+ 
+@@ -197,12 +222,21 @@ static void meson_encoder_cvbs_atomic_disable(struct drm_bridge *bridge,
+ 	struct meson_drm *priv = meson_encoder_cvbs->priv;
+ 
+ 	/* Disable CVBS VDAC */
+-	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL0_G12A, 0);
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL1_G12A, 0);
+-	} else {
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL0, 0);
+-		regmap_write(priv->hhi, HHI_VDAC_CNTL1, 8);
++	if (!priv->cvbs_dac) {
++		if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
++			regmap_write(priv->hhi, HHI_VDAC_CNTL0_G12A, 0);
++			regmap_write(priv->hhi, HHI_VDAC_CNTL1_G12A, 0);
++		} else {
++			regmap_write(priv->hhi, HHI_VDAC_CNTL0, 0);
++			regmap_write(priv->hhi, HHI_VDAC_CNTL1, 8);
++		}
++	} else if (priv->cvbs_dac_enabled) {
++		int ret = phy_power_off(priv->cvbs_dac);
++		if (ret)
++			dev_err(priv->dev,
++				"Failed to power off the CVBS DAC\n");
++
++		priv->cvbs_dac_enabled = false;
+ 	}
+ }
+ 
+-- 
+2.25.1
+
