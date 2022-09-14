@@ -10,10 +10,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index d068383aeea8..5c03fdbd45ec 100644
+index 4f5436c89e08..06c23512e1a7 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -986,7 +986,8 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
+@@ -1016,7 +1016,8 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
  	state = (status & RKVDEC_RDY_STA) ?
  		VB2_BUF_STATE_DONE : VB2_BUF_STATE_ERROR;
  
@@ -23,7 +23,7 @@ index d068383aeea8..5c03fdbd45ec 100644
  	if (cancel_delayed_work(&rkvdec->watchdog_work)) {
  		struct rkvdec_ctx *ctx;
  
-@@ -1007,7 +1008,8 @@ static void rkvdec_watchdog_func(struct work_struct *work)
+@@ -1037,7 +1038,8 @@ static void rkvdec_watchdog_func(struct work_struct *work)
  	ctx = v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
  	if (ctx) {
  		dev_err(rkvdec->dev, "Frame processing timed out!\n");
@@ -46,10 +46,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 5c03fdbd45ec..ad5e02bbd8d0 100644
+index 06c23512e1a7..630ef09ab70b 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -1105,9 +1105,9 @@ static int rkvdec_remove(struct platform_device *pdev)
+@@ -1127,9 +1127,9 @@ static int rkvdec_remove(struct platform_device *pdev)
  {
  	struct rkvdec_dev *rkvdec = platform_get_drvdata(pdev);
  
@@ -61,421 +61,6 @@ index 5c03fdbd45ec..ad5e02bbd8d0 100644
  	return 0;
  }
  
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Sat, 23 May 2020 11:23:04 +0000
-Subject: [PATCH] WIP: media: rkvdec: h264: return early when no reference
- pictures
-
-NOTE: also change from a switch statement to access reflists from a pointer array,
-should simplify once we add support for field reference list
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index c9a551dbd9bc..6ce11b736363 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -734,6 +734,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 	const struct v4l2_ctrl_h264_sps *sps = run->sps;
- 	struct rkvdec_h264_priv_tbl *priv_tbl = h264_ctx->priv_tbl.cpu;
- 	u32 max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);
-+	u8 *reflists[3] = { h264_ctx->reflists.p, h264_ctx->reflists.b0, h264_ctx->reflists.b1 };
- 
- 	u32 *hw_rps = priv_tbl->rps;
- 	u32 i, j;
-@@ -741,6 +742,9 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 
- 	memset(hw_rps, 0, sizeof(priv_tbl->rps));
- 
-+	if (!h264_ctx->reflists.num_valid)
-+		return;
-+
- 	/*
- 	 * Assign an invalid pic_num if DPB entry at that position is inactive.
- 	 * If we assign 0 in that position hardware will treat that as a real
-@@ -763,19 +767,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
- 		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
- 			u8 dpb_valid = 0;
--			u8 idx = 0;
--
--			switch (j) {
--			case 0:
--				idx = h264_ctx->reflists.p[i];
--				break;
--			case 1:
--				idx = h264_ctx->reflists.b0[i];
--				break;
--			case 2:
--				idx = h264_ctx->reflists.b1[i];
--				break;
--			}
-+			u8 idx = reflists[j][i];
- 
- 			if (idx >= ARRAY_SIZE(dec_params->dpb))
- 				continue;
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Sat, 23 May 2020 14:42:27 +0000
-Subject: [PATCH] WIP: media: rkvdec: h264: add field decoding support
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 79 ++++++++++++++++++----
- 1 file changed, 64 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 6ce11b736363..9c3f08c94800 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -737,7 +737,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 	u8 *reflists[3] = { h264_ctx->reflists.p, h264_ctx->reflists.b0, h264_ctx->reflists.b1 };
- 
- 	u32 *hw_rps = priv_tbl->rps;
--	u32 i, j;
-+	u32 i, j, k;
- 	u16 *p = (u16 *)hw_rps;
- 
- 	memset(hw_rps, 0, sizeof(priv_tbl->rps));
-@@ -764,18 +764,71 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 		p[i] = dpb[i].frame_num - max_frame_num;
- 	}
- 
--	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
--		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
--			u8 dpb_valid = 0;
--			u8 idx = reflists[j][i];
-+	if (!(dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC)) {
-+		for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
-+			for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
-+				u8 dpb_valid = 0;
-+				u8 idx = reflists[j][i];
- 
--			if (idx >= ARRAY_SIZE(dec_params->dpb))
--				continue;
--			dpb_valid = !!(dpb[idx].flags &
--				       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
-+				if (idx >= ARRAY_SIZE(dec_params->dpb))
-+					continue;
-+				dpb_valid = !!(dpb[idx].flags &
-+					       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
- 
--			set_ps_field(hw_rps, DPB_INFO(i, j),
--				     idx | dpb_valid << 4);
-+				set_ps_field(hw_rps, DPB_INFO(i, j),
-+					     idx | dpb_valid << 4);
-+			}
-+		}
-+		return;
-+	}
-+
-+	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
-+		enum v4l2_h264_field_reference a_parity =
-+			(dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
-+			? V4L2_H264_BOTTOM_FIELD_REF : V4L2_H264_TOP_FIELD_REF;
-+		enum v4l2_h264_field_reference b_parity =
-+			(dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
-+			? V4L2_H264_TOP_FIELD_REF : V4L2_H264_BOTTOM_FIELD_REF;
-+		u32 flags = V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM;
-+		i = 0;
-+
-+		for (k = 0; k < 2; k++) {
-+			u8 a = 0;
-+			u8 b = 0;
-+			u32 long_term = k ? V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM : 0;
-+
-+		while (a < h264_ctx->reflists.num_valid || b < h264_ctx->reflists.num_valid) {
-+			for (; a < h264_ctx->reflists.num_valid; a++) {
-+				u8 idx = reflists[j][a];
-+				if (idx >= ARRAY_SIZE(dec_params->dpb))
-+					continue;
-+				if ((dpb[idx].reference & a_parity) == a_parity &&
-+				    (dpb[idx].flags & flags) == long_term) {
-+					set_ps_field(hw_rps, DPB_INFO(i, j),
-+					             idx | (1 << 4));
-+					set_ps_field(hw_rps, BOTTOM_FLAG(i, j),
-+						a_parity == V4L2_H264_BOTTOM_FIELD_REF);
-+					i++;
-+					a++;
-+					break;
-+				}
-+			}
-+			for (; b < h264_ctx->reflists.num_valid; b++) {
-+				u8 idx = reflists[j][b];
-+				if (idx >= ARRAY_SIZE(dec_params->dpb))
-+					continue;
-+				if ((dpb[idx].reference & b_parity) == b_parity &&
-+				    (dpb[idx].flags & flags) == long_term) {
-+					set_ps_field(hw_rps, DPB_INFO(i, j),
-+					             idx | (1 << 4));
-+					set_ps_field(hw_rps, BOTTOM_FLAG(i, j),
-+						b_parity == V4L2_H264_BOTTOM_FIELD_REF);
-+					i++;
-+					b++;
-+					break;
-+				}
-+			}
-+		}
- 		}
- 	}
- }
-@@ -968,10 +1021,6 @@ static void config_registers(struct rkvdec_ctx *ctx,
- 				       rkvdec->regs + RKVDEC_REG_H264_BASE_REFER15);
- 	}
- 
--	/*
--	 * Since support frame mode only
--	 * top_field_order_cnt is the same as bottom_field_order_cnt
--	 */
- 	reg = RKVDEC_CUR_POC(dec_params->top_field_order_cnt);
- 	writel_relaxed(reg, rkvdec->regs + RKVDEC_REG_CUR_POC0);
- 
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Tue, 29 Oct 2019 01:26:02 +0000
-Subject: [PATCH] RFC: media: hantro: Fix H264 decoding of field encoded
- content
-
-This still need code cleanup and formatting
-
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
----
- drivers/staging/media/hantro/hantro_h264.c | 91 ++++++++++++++++------
- 1 file changed, 69 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/staging/media/hantro/hantro_h264.c
-index 0b4d2491be3b..7b56a68c176c 100644
---- a/drivers/staging/media/hantro/hantro_h264.c
-+++ b/drivers/staging/media/hantro/hantro_h264.c
-@@ -227,30 +227,67 @@ static void prepare_table(struct hantro_ctx *ctx)
- {
- 	const struct hantro_h264_dec_ctrls *ctrls = &ctx->h264_dec.ctrls;
- 	const struct v4l2_ctrl_h264_decode_params *dec_param = ctrls->decode;
-+	const struct v4l2_ctrl_h264_sps *sps = ctrls->sps;
- 	struct hantro_h264_dec_priv_tbl *tbl = ctx->h264_dec.priv.cpu;
- 	const struct v4l2_h264_dpb_entry *dpb = ctx->h264_dec.dpb;
- 	u32 dpb_longterm = 0;
- 	u32 dpb_valid = 0;
- 	int i;
- 
--	for (i = 0; i < HANTRO_H264_DPB_SIZE; ++i) {
--		tbl->poc[i * 2] = dpb[i].top_field_order_cnt;
--		tbl->poc[i * 2 + 1] = dpb[i].bottom_field_order_cnt;
-+	/*
-+	 * Set up bit maps of valid and long term DPBs.
-+	 * NOTE: The bits are reversed, i.e. MSb is DPB 0.
-+	 */
-+	if ((dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) || (sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD)) {
-+		for (i = 0; i < HANTRO_H264_DPB_SIZE * 2; ++i) {
-+			// check for correct reference use
-+			enum v4l2_h264_field_reference parity = (i & 0x1) ?
-+				V4L2_H264_BOTTOM_FIELD_REF : V4L2_H264_TOP_FIELD_REF;
-+			if (dpb[i / 2].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE &&
-+			    dpb[i / 2].reference & parity)
-+				dpb_valid |= BIT(HANTRO_H264_DPB_SIZE * 2 - 1 - i);
-+
-+			if (dpb[i / 2].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
-+				dpb_longterm |= BIT(HANTRO_H264_DPB_SIZE * 2 - 1 - i);
-+		}
- 
--		/*
--		 * Set up bit maps of valid and long term DPBs.
--		 * NOTE: The bits are reversed, i.e. MSb is DPB 0.
--		 */
--		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
--			dpb_valid |= BIT(HANTRO_H264_DPB_SIZE - 1 - i);
--		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
--			dpb_longterm |= BIT(HANTRO_H264_DPB_SIZE - 1 - i);
-+		ctx->h264_dec.dpb_valid = dpb_valid;
-+		ctx->h264_dec.dpb_longterm = dpb_longterm;
-+	} else {
-+		for (i = 0; i < HANTRO_H264_DPB_SIZE; ++i) {
-+			if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
-+				dpb_valid |= BIT(HANTRO_H264_DPB_SIZE - 1 - i);
-+
-+			if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
-+				dpb_longterm |= BIT(HANTRO_H264_DPB_SIZE - 1 - i);
-+		}
-+
-+		ctx->h264_dec.dpb_valid = dpb_valid << 16;
-+		ctx->h264_dec.dpb_longterm = dpb_longterm << 16;
- 	}
--	ctx->h264_dec.dpb_valid = dpb_valid << 16;
--	ctx->h264_dec.dpb_longterm = dpb_longterm << 16;
- 
--	tbl->poc[32] = dec_param->top_field_order_cnt;
--	tbl->poc[33] = dec_param->bottom_field_order_cnt;
-+	for (i = 0; i < HANTRO_H264_DPB_SIZE; ++i) {
-+		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE) {
-+			tbl->poc[i * 2] = dpb[i].top_field_order_cnt;
-+			tbl->poc[i * 2 + 1] = dpb[i].bottom_field_order_cnt;
-+		} else {
-+			tbl->poc[i * 2] = 0;
-+			tbl->poc[i * 2 + 1] = 0;
-+		}
-+	}
-+
-+	if ((dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) || !(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD)) {
-+		if ((dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC))
-+			tbl->poc[32] = (dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD) ?
-+					dec_param->bottom_field_order_cnt :
-+					dec_param->top_field_order_cnt;
-+		else
-+			tbl->poc[32] = min(dec_param->top_field_order_cnt, dec_param->bottom_field_order_cnt);
-+		tbl->poc[33] = 0;
-+	} else {
-+		tbl->poc[32] = dec_param->top_field_order_cnt;
-+		tbl->poc[33] = dec_param->bottom_field_order_cnt;
-+	};
- 
- 	assemble_scaling_list(ctx);
- }
-@@ -258,8 +295,7 @@ static void prepare_table(struct hantro_ctx *ctx)
- static bool dpb_entry_match(const struct v4l2_h264_dpb_entry *a,
- 			    const struct v4l2_h264_dpb_entry *b)
- {
--	return a->top_field_order_cnt == b->top_field_order_cnt &&
--	       a->bottom_field_order_cnt == b->bottom_field_order_cnt;
-+	return a->reference_ts == b->reference_ts;
- }
- 
- static void update_dpb(struct hantro_ctx *ctx)
-@@ -273,13 +309,13 @@ static void update_dpb(struct hantro_ctx *ctx)
- 
- 	/* Disable all entries by default. */
- 	for (i = 0; i < ARRAY_SIZE(ctx->h264_dec.dpb); i++)
--		ctx->h264_dec.dpb[i].flags &= ~V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
-+		ctx->h264_dec.dpb[i].flags = 0;
- 
- 	/* Try to match new DPB entries with existing ones by their POCs. */
- 	for (i = 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
- 		const struct v4l2_h264_dpb_entry *ndpb = &dec_param->dpb[i];
- 
--		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
-+		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
- 			continue;
- 
- 		/*
-@@ -290,8 +326,7 @@ static void update_dpb(struct hantro_ctx *ctx)
- 			struct v4l2_h264_dpb_entry *cdpb;
- 
- 			cdpb = &ctx->h264_dec.dpb[j];
--			if (cdpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE ||
--			    !dpb_entry_match(cdpb, ndpb))
-+			if (!dpb_entry_match(cdpb, ndpb))
- 				continue;
- 
- 			*cdpb = *ndpb;
-@@ -327,7 +362,10 @@ dma_addr_t hantro_h264_get_ref_buf(struct hantro_ctx *ctx,
- 				   unsigned int dpb_idx)
- {
- 	struct v4l2_h264_dpb_entry *dpb = ctx->h264_dec.dpb;
-+	const struct v4l2_ctrl_h264_decode_params *dec_param = ctx->h264_dec.ctrls.decode;
- 	dma_addr_t dma_addr = 0;
-+	s32 cur_poc;
-+	u32 flags;
- 
- 	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
- 		dma_addr = hantro_get_ref(ctx, dpb[dpb_idx].reference_ts);
-@@ -345,7 +383,16 @@ dma_addr_t hantro_h264_get_ref_buf(struct hantro_ctx *ctx,
- 		dma_addr = hantro_get_dec_buf_addr(ctx, buf);
- 	}
- 
--	return dma_addr;
-+	cur_poc = dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD ?
-+		  dec_param->bottom_field_order_cnt :
-+		  dec_param->top_field_order_cnt;
-+	flags = dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD ? 0x2 : 0;
-+	flags |= abs(dpb[dpb_idx].top_field_order_cnt - cur_poc) <
-+		 abs(dpb[dpb_idx].bottom_field_order_cnt - cur_poc) ?
-+		 0x1 : 0;
-+
-+	return dma_addr | flags;
-+
- }
- 
- u16 hantro_h264_get_ref_nbr(struct hantro_ctx *ctx, unsigned int dpb_idx)
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 14 Oct 2020 13:27:12 +0200
-Subject: [PATCH] media: hantro: adapt to match 5.11 H.264 uapi changes
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- drivers/staging/media/hantro/hantro_h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/staging/media/hantro/hantro_h264.c
-index 7b56a68c176c..befa69d5c855 100644
---- a/drivers/staging/media/hantro/hantro_h264.c
-+++ b/drivers/staging/media/hantro/hantro_h264.c
-@@ -241,10 +241,10 @@ static void prepare_table(struct hantro_ctx *ctx)
- 	if ((dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) || (sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD)) {
- 		for (i = 0; i < HANTRO_H264_DPB_SIZE * 2; ++i) {
- 			// check for correct reference use
--			enum v4l2_h264_field_reference parity = (i & 0x1) ?
-+			u8 parity = (i & 0x1) ?
- 				V4L2_H264_BOTTOM_FIELD_REF : V4L2_H264_TOP_FIELD_REF;
- 			if (dpb[i / 2].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE &&
--			    dpb[i / 2].reference & parity)
-+			    dpb[i / 2].fields & parity)
- 				dpb_valid |= BIT(HANTRO_H264_DPB_SIZE * 2 - 1 - i);
- 
- 			if (dpb[i / 2].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 14 Oct 2020 13:42:01 +0200
-Subject: [PATCH] media: rkvdec: adapt to match 5.11 H.264 uapi changes
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 9c3f08c94800..7238117b6cf4 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -783,10 +783,10 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 	}
- 
- 	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
--		enum v4l2_h264_field_reference a_parity =
-+		u8 a_parity =
- 			(dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
- 			? V4L2_H264_BOTTOM_FIELD_REF : V4L2_H264_TOP_FIELD_REF;
--		enum v4l2_h264_field_reference b_parity =
-+		u8 b_parity =
- 			(dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD)
- 			? V4L2_H264_TOP_FIELD_REF : V4L2_H264_BOTTOM_FIELD_REF;
- 		u32 flags = V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM;
-@@ -802,7 +802,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 				u8 idx = reflists[j][a];
- 				if (idx >= ARRAY_SIZE(dec_params->dpb))
- 					continue;
--				if ((dpb[idx].reference & a_parity) == a_parity &&
-+				if ((dpb[idx].fields & a_parity) == a_parity &&
- 				    (dpb[idx].flags & flags) == long_term) {
- 					set_ps_field(hw_rps, DPB_INFO(i, j),
- 					             idx | (1 << 4));
-@@ -817,7 +817,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 				u8 idx = reflists[j][b];
- 				if (idx >= ARRAY_SIZE(dec_params->dpb))
- 					continue;
--				if ((dpb[idx].reference & b_parity) == b_parity &&
-+				if ((dpb[idx].fields & b_parity) == b_parity &&
- 				    (dpb[idx].flags & flags) == long_term) {
- 					set_ps_field(hw_rps, DPB_INFO(i, j),
- 					             idx | (1 << 4));
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Li <ayaka@soulik.info>
@@ -493,16 +78,15 @@ Signed-off-by: Randy Li <ayaka@soulik.info>
 ---
  drivers/soc/rockchip/pm_domains.c | 23 +++++++++++++++++++++++
  include/linux/rockchip_pmu.h      | 15 +++++++++++++++
- include/soc/rockchip/pm_domains.h | 18 ++++++++++++++++++
- 3 files changed, 56 insertions(+)
+ include/soc/rockchip/pm_domains.h |  6 ++++++
+ 3 files changed, 44 insertions(+)
  create mode 100644 include/linux/rockchip_pmu.h
- create mode 100644 include/soc/rockchip/pm_domains.h
 
 diff --git a/drivers/soc/rockchip/pm_domains.c b/drivers/soc/rockchip/pm_domains.c
-index 0868b7d406fb..fddb4022c376 100644
+index 89795abac951..ffb5d62c9d52 100644
 --- a/drivers/soc/rockchip/pm_domains.c
 +++ b/drivers/soc/rockchip/pm_domains.c
-@@ -204,6 +204,29 @@ static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
+@@ -309,6 +309,29 @@ static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
  	return 0;
  }
  
@@ -554,29 +138,29 @@ index 000000000000..720b3314e71a
 +
 +#endif /* _LINUX_ROCKCHIP_PM_H */
 diff --git a/include/soc/rockchip/pm_domains.h b/include/soc/rockchip/pm_domains.h
-new file mode 100644
-index 000000000000..690db6118636
---- /dev/null
+index 7dbd941fc937..c5a59dd71754 100644
+--- a/include/soc/rockchip/pm_domains.h
 +++ b/include/soc/rockchip/pm_domains.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __SOC_ROCKCHIP_PM_DOMAINS_H
-+#define __SOC_ROCKCHIP_PM_DOMAINS_H
-+
-+#include <linux/errno.h>
-+
-+struct device;
-+
-+#ifdef CONFIG_ROCKCHIP_PM_DOMAINS
+@@ -10,6 +10,7 @@
+ 
+ int rockchip_pmu_block(void);
+ void rockchip_pmu_unblock(void);
 +int rockchip_pmu_idle_request(struct device *dev, bool idle);
-+#else
+ 
+ #else /* CONFIG_ROCKCHIP_PM_DOMAINS */
+ 
+@@ -20,6 +21,11 @@ static inline int rockchip_pmu_block(void)
+ 
+ static inline void rockchip_pmu_unblock(void) { }
+ 
 +static inline int rockchip_pmu_idle_request(struct device *dev, bool idle)
 +{
 +	return -ENOTSUPP;
 +}
-+#endif
 +
-+#endif
+ #endif /* CONFIG_ROCKCHIP_PM_DOMAINS */
+ 
+ #endif /* __SOC_ROCKCHIP_PM_DOMAINS_H__ */
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
@@ -591,10 +175,10 @@ Subject: [PATCH] WIP: media: rkvdec: implement reset controls
  4 files changed, 87 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
-index 089f11d21b25..3f4772c8d095 100644
+index 3bcfb8e12333..dd6958df1de8 100644
 --- a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
 +++ b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
-@@ -51,6 +51,18 @@ properties:
+@@ -53,6 +53,18 @@ properties:
    iommus:
      maxItems: 1
  
@@ -613,7 +197,7 @@ index 089f11d21b25..3f4772c8d095 100644
  required:
    - compatible
    - reg
-@@ -58,6 +70,8 @@ required:
+@@ -60,6 +72,8 @@ required:
    - clocks
    - clock-names
    - power-domains
@@ -622,7 +206,7 @@ index 089f11d21b25..3f4772c8d095 100644
  
  additionalProperties: false
  
-@@ -76,6 +90,11 @@ examples:
+@@ -78,6 +92,11 @@ examples:
          clock-names = "axi", "ahb", "cabac", "core";
          power-domains = <&power RK3399_PD_VDU>;
          iommus = <&vdec_mmu>;
@@ -651,7 +235,7 @@ index 15b9bee92016..3acc914888f6 100644
  #define RKVDEC_REG_SYSCTRL				0x008
  #define RKVDEC_IN_ENDIAN				BIT(0)
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index ad5e02bbd8d0..6abce36eee7f 100644
+index 630ef09ab70b..b6d5b26a93c2 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -10,12 +10,15 @@
@@ -670,7 +254,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  #include <linux/slab.h>
  #include <linux/videodev2.h>
  #include <linux/workqueue.h>
-@@ -687,6 +690,11 @@ static void rkvdec_job_finish(struct rkvdec_ctx *ctx,
+@@ -717,6 +720,11 @@ static void rkvdec_job_finish(struct rkvdec_ctx *ctx,
  
  	pm_runtime_mark_last_busy(rkvdec->dev);
  	pm_runtime_put_autosuspend(rkvdec->dev);
@@ -682,7 +266,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  	rkvdec_job_finish_no_pm(ctx, result);
  }
  
-@@ -724,6 +732,33 @@ static void rkvdec_device_run(void *priv)
+@@ -754,6 +762,33 @@ static void rkvdec_device_run(void *priv)
  
  	if (WARN_ON(!desc))
  		return;
@@ -716,7 +300,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  
  	ret = pm_runtime_resume_and_get(rkvdec->dev);
  	if (ret < 0) {
-@@ -991,6 +1026,11 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
+@@ -1021,6 +1056,11 @@ static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
  	if (cancel_delayed_work(&rkvdec->watchdog_work)) {
  		struct rkvdec_ctx *ctx;
  
@@ -728,7 +312,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  		ctx = v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
  		rkvdec_job_finish(ctx, state);
  	}
-@@ -1008,6 +1048,7 @@ static void rkvdec_watchdog_func(struct work_struct *work)
+@@ -1038,6 +1078,7 @@ static void rkvdec_watchdog_func(struct work_struct *work)
  	ctx = v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
  	if (ctx) {
  		dev_err(rkvdec->dev, "Frame processing timed out!\n");
@@ -736,7 +320,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  		writel(RKVDEC_CONFIG_DEC_CLK_GATE_E | RKVDEC_IRQ_DIS,
  		       rkvdec->regs + RKVDEC_REG_INTERRUPT);
  		writel(0, rkvdec->regs + RKVDEC_REG_SYSCTRL);
-@@ -1085,6 +1126,18 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1107,6 +1148,18 @@ static int rkvdec_probe(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -756,7 +340,7 @@ index ad5e02bbd8d0..6abce36eee7f 100644
  	pm_runtime_use_autosuspend(&pdev->dev);
  	pm_runtime_enable(&pdev->dev);
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 7b6f44ee8a1a..fa24bcb6ff42 100644
+index b9e219438bc9..f02f79c405f0 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
 +++ b/drivers/staging/media/rkvdec/rkvdec.h
 @@ -11,10 +11,11 @@
@@ -785,7 +369,7 @@ index 7b6f44ee8a1a..fa24bcb6ff42 100644
  struct rkvdec_ctx;
  
  struct rkvdec_ctrl_desc {
-@@ -90,6 +97,8 @@ struct rkvdec_dev {
+@@ -96,6 +103,8 @@ struct rkvdec_dev {
  	void __iomem *regs;
  	struct mutex vdev_lock; /* serializes ioctls */
  	struct delayed_work watchdog_work;
@@ -805,10 +389,10 @@ Subject: [PATCH] WIP: arm64: dts: add resets to vdec for RK3399
  1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 52a748053a97..2c7b263a82cd 100644
+index b0620c45820c..e797271ef6b4 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -993,7 +993,10 @@ power-domain@RK3399_PD_VCODEC {
+@@ -1062,7 +1062,10 @@ power-domain@RK3399_PD_VCODEC {
  			power-domain@RK3399_PD_VDU {
  				reg = <RK3399_PD_VDU>;
  				clocks = <&cru ACLK_VDU>,
@@ -820,7 +404,7 @@ index 52a748053a97..2c7b263a82cd 100644
  				pm_qos = <&qos_video_m1_r>,
  					 <&qos_video_m1_w>;
  				#power-domain-cells = <0>;
-@@ -1266,6 +1269,11 @@ vdec: video-codec@ff660000 {
+@@ -1345,6 +1348,11 @@ vdec: video-codec@ff660000 {
  		clock-names = "axi", "ahb", "cabac", "core";
  		iommus = <&vdec_mmu>;
  		power-domains = <&power RK3399_PD_VDU>;
@@ -844,10 +428,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 2c7b263a82cd..ec3561d147d5 100644
+index e797271ef6b4..748eb7368e6a 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1262,7 +1262,7 @@ vpu_mmu: iommu@ff650800 {
+@@ -1341,7 +1341,7 @@ vpu_mmu: iommu@ff650800 {
  
  	vdec: video-codec@ff660000 {
  		compatible = "rockchip,rk3399-vdec";
@@ -856,113 +440,6 @@ index 2c7b263a82cd..ec3561d147d5 100644
  		interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH 0>;
  		clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>,
  			 <&cru SCLK_VDU_CA>, <&cru SCLK_VDU_CORE>;
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 19 Aug 2020 21:12:54 +0200
-Subject: [PATCH] arm64: dts: rockchip: add rkvdec node for RK3328
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- .../bindings/media/rockchip,vdec.yaml         |  3 +++
- arch/arm64/boot/dts/rockchip/rk3328.dtsi      | 25 ++++++++++++++++++-
- 2 files changed, 27 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
-index 3f4772c8d095..21a78372dae6 100644
---- a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
-+++ b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
-@@ -20,6 +20,9 @@ properties:
-       - items:
-           - const: rockchip,rk3228-vdec
-           - const: rockchip,rk3399-vdec
-+      - items:
-+          - const: rockchip,rk3328-vdec
-+          - const: rockchip,rk3399-vdec
- 
-   reg:
-     maxItems: 1
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 9c10b6e3b9bc..23021373e15b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -306,6 +306,10 @@ power-domain@RK3328_PD_HEVC {
- 			};
- 			power-domain@RK3328_PD_VIDEO {
- 				reg = <RK3328_PD_VIDEO>;
-+				clocks = <&cru ACLK_RKVDEC>,
-+					 <&cru HCLK_RKVDEC>,
-+					 <&cru SCLK_VDEC_CABAC>,
-+					 <&cru SCLK_VDEC_CORE>;
- 				#power-domain-cells = <0>;
- 			};
- 			power-domain@RK3328_PD_VPU {
-@@ -660,6 +664,25 @@ vpu_mmu: iommu@ff350800 {
- 		power-domains = <&power RK3328_PD_VPU>;
- 	};
- 
-+	rkvdec: video-codec@ff360000 {
-+		compatible = "rockchip,rk3328-vdec", "rockchip,rk3399-vdec";
-+		reg = <0x0 0xff360000 0x0 0x480>;
-+		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+		assigned-clocks = <&cru ACLK_RKVDEC>, <&cru SCLK_VDEC_CABAC>,
-+				  <&cru SCLK_VDEC_CORE>;
-+		assigned-clock-rates = <400000000>, <400000000>, <300000000>;
-+		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>,
-+			 <&cru SCLK_VDEC_CABAC>, <&cru SCLK_VDEC_CORE>;
-+		clock-names = "axi", "ahb", "cabac", "core";
-+		iommus = <&rkvdec_mmu>;
-+		power-domains = <&power RK3328_PD_VIDEO>;
-+		resets = <&cru SRST_VDEC_H>, <&cru SRST_VDEC_A>,
-+			 <&cru SRST_VDEC_CORE>, <&cru SRST_VDEC_CABAC>,
-+			 <&cru SRST_VDEC_NIU_A>, <&cru SRST_VDEC_NIU_H>;
-+		reset-names = "video_h", "video_a", "video_core", "video_cabac",
-+			       "niu_a", "niu_h";
-+	};
-+
- 	rkvdec_mmu: iommu@ff360480 {
- 		compatible = "rockchip,iommu";
- 		reg = <0x0 0xff360480 0x0 0x40>, <0x0 0xff3604c0 0x0 0x40>;
-@@ -667,7 +690,7 @@ rkvdec_mmu: iommu@ff360480 {
- 		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>;
- 		clock-names = "aclk", "iface";
- 		#iommu-cells = <0>;
--		status = "disabled";
-+		power-domains = <&power RK3328_PD_VIDEO>;
- 	};
- 
- 	vop: vop@ff370000 {
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Sun, 3 May 2020 18:34:56 +0200
-Subject: [PATCH] WIP: media/rkvdec: don't overclock IP
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- drivers/staging/media/rkvdec/rkvdec.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 6abce36eee7f..fbaf0303f7c2 100644
---- a/drivers/staging/media/rkvdec/rkvdec.c
-+++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -1096,10 +1096,12 @@ static int rkvdec_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	/*
--	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
--	 * When 4k video playback.
-+	 * Don't bump ACLK to max. possible freq. (500 MHz) to improve performance,
-+	 * since it will lead to non-recoverable decoder lockups in case of decoding
-+	 * errors, instead put it to 400 MHz, which seems to have no drawbacks
-+	 * in decoding performance and doesn't result in those hangs.
- 	 */
--	clk_set_rate(rkvdec->clocks[0].clk, 500 * 1000 * 1000);
-+	clk_set_rate(rkvdec->clocks[0].clk, 400 * 1000 * 1000);
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	rkvdec->regs = devm_ioremap_resource(&pdev->dev, res);
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
@@ -977,7 +454,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-index d4f52957cc53..3d98e2251ea5 100644
+index fc96501f3bc8..f31550c21172 100644
 --- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
 +++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
 @@ -15,7 +15,8 @@
@@ -990,7 +467,7 @@ index d4f52957cc53..3d98e2251ea5 100644
  
  /*
   * Supported formats.
-@@ -272,13 +273,20 @@ static int rk3066_vpu_hw_init(struct hantro_dev *vpu)
+@@ -273,13 +274,20 @@ static int rk3066_vpu_hw_init(struct hantro_dev *vpu)
  	return 0;
  }
  
@@ -1012,7 +489,7 @@ index d4f52957cc53..3d98e2251ea5 100644
  static void rk3066_vpu_dec_reset(struct hantro_ctx *ctx)
  {
  	struct hantro_dev *vpu = ctx->dev;
-@@ -511,7 +519,7 @@ const struct hantro_variant rk3288_vpu_variant = {
+@@ -507,7 +515,7 @@ const struct hantro_variant rk3288_vpu_variant = {
  	.codec_ops = rk3288_vpu_codec_ops,
  	.irqs = rockchip_vpu1_irqs,
  	.num_irqs = ARRAY_SIZE(rockchip_vpu1_irqs),
@@ -1021,3 +498,129 @@ index d4f52957cc53..3d98e2251ea5 100644
  	.clk_names = rockchip_vpu_clk_names,
  	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
  };
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 3 Apr 2022 13:45:57 +0200
+Subject: [PATCH] media: hantro: rockchip: Enable H.264 codec for RK3399
+
+---
+ drivers/staging/media/hantro/rockchip_vpu_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+index f31550c21172..304d7b359295 100644
+--- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
++++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+@@ -544,7 +544,7 @@ const struct hantro_variant rk3399_vpu_variant = {
+ 	.dec_fmts = rk3399_vpu_dec_fmts,
+ 	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
+ 	.codec = HANTRO_JPEG_ENCODER | HANTRO_MPEG2_DECODER |
+-		 HANTRO_VP8_DECODER,
++		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
+ 	.codec_ops = rk3399_vpu_codec_ops,
+ 	.irqs = rockchip_vpu2_irqs,
+ 	.num_irqs = ARRAY_SIZE(rockchip_vpu2_irqs),
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 4 Jul 2021 15:19:44 +0200
+Subject: [PATCH] media: rkvdec: disable QoS for VP9 (corruptions on RK3328
+ otherwise)
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-regs.h | 2 ++
+ drivers/staging/media/rkvdec/rkvdec-vp9.c  | 8 ++++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec-regs.h b/drivers/staging/media/rkvdec/rkvdec-regs.h
+index 3acc914888f6..265f5234f4eb 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-regs.h
++++ b/drivers/staging/media/rkvdec/rkvdec-regs.h
+@@ -222,6 +222,8 @@
+ #define RKVDEC_REG_H264_ERR_E				0x134
+ #define RKVDEC_H264_ERR_EN_HIGHBITS(x)			((x) & 0x3fffffff)
+ 
++#define RKVDEC_QOS_CTRL					0x18C
++
+ #define RKVDEC_REG_PREF_LUMA_CACHE_COMMAND		0x410
+ #define RKVDEC_REG_PREF_CHR_CACHE_COMMAND		0x450
+ 
+diff --git a/drivers/staging/media/rkvdec/rkvdec-vp9.c b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+index 311a12656072..ea270262bbed 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-vp9.c
++++ b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+@@ -802,6 +802,7 @@ static int rkvdec_vp9_run(struct rkvdec_ctx *ctx)
+ 	struct rkvdec_dev *rkvdec = ctx->dev;
+ 	struct rkvdec_vp9_run run = { };
+ 	int ret;
++	u32 reg;
+ 
+ 	ret = rkvdec_vp9_run_preamble(ctx, &run);
+ 	if (ret) {
+@@ -823,6 +824,13 @@ static int rkvdec_vp9_run(struct rkvdec_ctx *ctx)
+ 	writel(1, rkvdec->regs + RKVDEC_REG_PREF_CHR_CACHE_COMMAND);
+ 
+ 	writel(0xe, rkvdec->regs + RKVDEC_REG_STRMD_ERR_EN);
++
++	/* disable QOS for RK3328 - no effect on other SoCs */
++	reg = readl(rkvdec->regs + RKVDEC_QOS_CTRL);
++	reg |= 0xFFFF;
++	reg &= (~BIT(12));
++	writel(reg, rkvdec->regs + RKVDEC_QOS_CTRL);
++
+ 	/* Start decoding! */
+ 	writel(RKVDEC_INTERRUPT_DEC_E | RKVDEC_CONFIG_DEC_CLK_GATE_E |
+ 	       RKVDEC_TIMEOUT_E | RKVDEC_BUF_EMPTY_E,
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Thu, 16 Jun 2022 13:15:09 +0200
+Subject: [PATCH] arm64: dts: use correct PLL for vdec core
+
+vdec core should use codec pll for proper operation, by default
+it uses general pll (GPLL) - as all other clocks would
+---
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 748eb7368e6a..658ec3b00445 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1346,6 +1346,8 @@ vdec: video-codec@ff660000 {
+ 		clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>,
+ 			 <&cru SCLK_VDU_CA>, <&cru SCLK_VDU_CORE>;
+ 		clock-names = "axi", "ahb", "cabac", "core";
++		assigned-clocks = <&cru ACLK_VDU>;
++		assigned-clock-parents = <&cru PLL_CPLL>;
+ 		iommus = <&vdec_mmu>;
+ 		power-domains = <&power RK3399_PD_VDU>;
+ 		resets = <&cru SRST_H_VDU>, <&cru SRST_A_VDU>,
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Thu, 16 Jun 2022 13:18:22 +0200
+Subject: [PATCH] WIP: arm64: dts: add resets to vdec for RK3328
+
+---
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index 5519347232f6..431c4ec198be 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -674,6 +674,11 @@ vdec: video-codec@ff360000 {
+ 		assigned-clocks = <&cru ACLK_RKVDEC>, <&cru SCLK_VDEC_CABAC>,
+ 				  <&cru SCLK_VDEC_CORE>;
+ 		assigned-clock-rates = <400000000>, <400000000>, <300000000>;
++		resets = <&cru SRST_VDEC_H>, <&cru SRST_VDEC_A>,
++			 <&cru SRST_VDEC_CORE>, <&cru SRST_VDEC_CABAC>,
++			 <&cru SRST_VDEC_NIU_A>, <&cru SRST_VDEC_NIU_H>;
++		reset-names = "video_h", "video_a", "video_core", "video_cabac",
++			       "niu_a", "niu_h";
+ 		iommus = <&vdec_mmu>;
+ 		power-domains = <&power RK3328_PD_VIDEO>;
+ 	};
