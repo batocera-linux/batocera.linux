@@ -3,13 +3,13 @@
 # rpcs3
 #
 ################################################################################
-
-RPCS3_VERSION = v0.0.24
+# Version: Build 0.0.24-14153
+RPCS3_VERSION = 2807be7080ab71d5c542a2bef7323f9b43f192e6
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
 RPCS3_LICENSE = GPLv2
-RPCS3_DEPENDENCIES = qt5declarative libxml2 mesa3d libglu openal alsa-lib 
+RPCS3_DEPENDENCIES += qt5declarative libxml2 mesa3d libglu openal alsa-lib 
 RPCS3_DEPENDENCIES += libevdev libglew libusb ffmpeg faudio wolfssl
 
 RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
