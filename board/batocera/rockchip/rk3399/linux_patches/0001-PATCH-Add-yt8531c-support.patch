@@ -1,45 +1,49 @@
-From 3b60e97e8cf8a1ae78ec68a2fed37cd763675e56 Mon Sep 17 00:00:00 2001
-From: baiywt <baiywt_gj@163.com>
-Date: Fri, 18 Feb 2022 16:38:43 +0800
-Subject: [PATCH] Add yt8531c support. 
-Adapted from orangepi-xunlong/openwrt - 600-Add-yt8531c-support.patch by schwar3kat
+From 8681951697843944586c72bd2cde7479144d2b06 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Fri, 16 Sep 2022 19:52:54 +0300
+Subject: [PATCH] [PATCH] Add yt8531c support. Adapted from
+ orangepi-xunlong/openwrt - 600-Add-yt8531c-support.patch by schwar3kat
+ Adapted from armbian to work on 5.19 mainline kernel for batocera and lakka
+
 ---
- drivers/net/phy/Kconfig       |    5 +
- drivers/net/phy/motorcomm.c   | 1540 +++++++++++++++++++++++++++++++++
+ drivers/net/phy/Kconfig       |    7 +-
+ drivers/net/phy/motorcomm.c   | 1561 +++++++++++++++++++++++++++++++--
  drivers/net/phy/yt8614-phy.h  |  491 +++++++++++
  include/linux/motorcomm_phy.h |  119 +++
- 5 files changed, 2156 insertions(+)
- create mode 100644 drivers/net/phy/motorcomm.c
+ 4 files changed, 2095 insertions(+), 83 deletions(-)
  create mode 100644 drivers/net/phy/yt8614-phy.h
  create mode 100644 include/linux/motorcomm_phy.h
 
 diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index ce030fcb1..ff4861847 100644
+index 9fee639ee..9e5664c8a 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -297,6 +297,11 @@ config MICROSEMI_PHY
- 	help
+@@ -250,10 +250,9 @@ config MICROSEMI_PHY
  	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
  
-+config MOTORCOMM_PHY
+ config MOTORCOMM_PHY
+-	tristate "Motorcomm PHYs"
+-	help
+-	  Enables support for Motorcomm network PHYs.
+-	  Currently supports the YT8511 gigabit PHY.
 +        tristate "Motorcomm PHYs"
 +        help
 +          Supports the YT8010, YT8510, YT8511, YT8512 YT8521 YT8531 PHYs.
-+
+ 
  config NATIONAL_PHY
  	tristate "National Semiconductor PHYs"
- 	help
 diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-new file mode 100644
-index 000000000..74eef3dfa
---- /dev/null
+index 7e6ac2c5e..74eef3dfa 100644
+--- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
-@@ -0,0 +1,1540 @@
-+/*
+@@ -1,137 +1,1540 @@
+-// SPDX-License-Identifier: GPL-2.0+
+ /*
 + * drivers/net/phy/motorcomm.c
 + *
-+ * Driver for Motorcomm PHYs
-+ *
+  * Driver for Motorcomm PHYs
+  *
+- * Author: Peter Geis <pgwipeout@gmail.com>
 + * Author: Leilei Zhao <leilei.zhao@motorcomm.com>
 + *
 + * Copyright (c) 2019 Motorcomm, Inc.
@@ -54,11 +58,11 @@ index 000000000..74eef3dfa
 + *		100/10 Phys : yt8512, yt8512b, yt8510
 + *		Automotive 100Mb Phys : yt8010
 + *		Automotive 100/10 hyper range Phys: yt8510
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/phy.h>
+  */
+ 
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/phy.h>
 +#include <linux/motorcomm_phy.h>
 +#include <linux/of.h>
 +#include <linux/clk.h>
@@ -70,25 +74,47 @@ index 000000000..74eef3dfa
 +#endif
 +/*for wol, 20210604*/
 +#include <linux/netdevice.h>
-+
+ 
+-#define PHY_ID_YT8511		0x0000010a
 +#include "yt8614-phy.h"
-+
+ 
+-#define YT8511_PAGE_SELECT	0x1e
+-#define YT8511_PAGE		0x1f
+-#define YT8511_EXT_CLK_GATE	0x0c
+-#define YT8511_EXT_DELAY_DRIVE	0x0d
+-#define YT8511_EXT_SLEEP_CTRL	0x27
 +/**** configuration section begin ***********/
-+
+ 
+-/* 2b00 25m from pll
+- * 2b01 25m from xtl *default*
+- * 2b10 62.m from pll
+- * 2b11 125m from pll
 +/* if system depends on ethernet packet to restore from sleep, please define this macro to 1
 + * otherwise, define it to 0.
-+ */
+  */
+-#define YT8511_CLK_125M		(BIT(2) | BIT(1))
+-#define YT8511_PLLON_SLP	BIT(14)
 +#define SYS_WAKEUP_BASED_ON_ETH_PKT 	1
-+
+ 
+-/* RX Delay enabled = 1.8ns 1000T, 8ns 10/100T */
+-#define YT8511_DELAY_RX		BIT(0)
 +/* to enable system WOL of phy, please define this macro to 1
 + * otherwise, define it to 0.
 + */
 +#define YTPHY_ENABLE_WOL 		0
-+
+ 
+-/* TX Gig-E Delay is bits 7:4, default 0x5
+- * TX Fast-E Delay is bits 15:12, default 0xf
+- * Delay = 150ps * N - 250ps
+- * On = 2000ps, off = 50ps
 +/* some GMAC need clock input from PHY, for eg., 125M, please enable this macro
 + * by degault, it is set to 0
 + * NOTE: this macro will need macro SYS_WAKEUP_BASED_ON_ETH_PKT to set to 1
-+ */
+  */
+-#define YT8511_DELAY_GE_TX_EN	(0xf << 4)
+-#define YT8511_DELAY_GE_TX_DIS	(0x2 << 4)
+-#define YT8511_DELAY_FE_TX_EN	(0xf << 12)
+-#define YT8511_DELAY_FE_TX_DIS	(0x2 << 12)
 +#define GMAC_CLOCK_INPUT_NEEDED 1
 +
 +
@@ -112,7 +138,8 @@ index 000000000..74eef3dfa
 +#undef SYS_WAKEUP_BASED_ON_ETH_PKT
 +#define SYS_WAKEUP_BASED_ON_ETH_PKT 	1
 +#endif
-+
+ 
+-static int yt8511_read_page(struct phy_device *phydev)
 +/* workaround for 8521 fiber 100m mode */
 +static int link_mode_8521 = 0; //0: no link; 1: utp; 32: fiber. traced that 1000m fiber uses 32.
 +static int link_mode_8614[4] = {0}; //0: no link; 1: utp; 32: fiber. traced that 1000m fiber uses 32.
@@ -126,7 +153,9 @@ index 000000000..74eef3dfa
 +
 +#if ( LINUX_VERSION_CODE > KERNEL_VERSION(5,0,0) )
 +int genphy_config_init(struct phy_device *phydev)
-+{
+ {
+-	return __phy_read(phydev, YT8511_PAGE_SELECT);
+-};
 +	int ret;
 +
 +	printk (KERN_INFO "yzhang..read phyaddr=%d, phyid=%08x\n",phydev->mdio.addr, phydev->phy_id);
@@ -138,7 +167,8 @@ index 000000000..74eef3dfa
 +		printk (KERN_INFO "yzhang..8511 set 125m clk out, reg=%#04x\n",phydev->mdio.bus->read(phydev->mdio.bus,phydev->mdio.addr,0x1f)/*double check as delay*/);
 +		if (ret<0)
 +			printk (KERN_INFO "yzhang..failed to set 125m clk out, ret=%d\n",ret);
-+
+ 
+-static int yt8511_write_page(struct phy_device *phydev, int page)
 +		phy_yt8531_led_fixup(phydev->mdio.bus, phydev->mdio.addr);
 +	}
 +	return  genphy_read_abilities(phydev);
@@ -147,7 +177,9 @@ index 000000000..74eef3dfa
 +
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
 +static int ytphy_config_init(struct phy_device *phydev)
-+{
+ {
+-	return __phy_write(phydev, YT8511_PAGE_SELECT, page);
+-};
 +	return 0;
 +}
 +#endif
@@ -498,9 +530,11 @@ index 000000000..74eef3dfa
 +}
 +
 +EXPORT_SYMBOL(yt8511_config_out_125m);
-+
-+static int yt8511_config_init(struct phy_device *phydev)
-+{
+ 
+ static int yt8511_config_init(struct phy_device *phydev)
+ {
+-	int oldpage, ret = 0;
+-	unsigned int ge, fe;
 +	int ret;
 +
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
@@ -578,7 +612,10 @@ index 000000000..74eef3dfa
 +
 +	wol->supported = WAKE_MAGIC;
 +	wol->wolopts = 0;
-+
+ 
+-	oldpage = phy_select_page(phydev, YT8511_EXT_CLK_GATE);
+-	if (oldpage < 0)
+-		goto err_restore_page;
 +	val = ytphy_read_ext(phydev, YTPHY_WOL_CFG_REG);
 +	if (val < 0)
 +		return;
@@ -688,7 +725,12 @@ index 000000000..74eef3dfa
 +	ret = ytphy_write_ext(phydev, 0xa000, 0);
 +	if (ret < 0)
 +		return ret;
-+
+ 
+-	/* set rgmii delay mode */
+-	switch (phydev->interface) {
+-	case PHY_INTERFACE_MODE_RGMII:
+-		ge = YT8511_DELAY_GE_TX_DIS;
+-		fe = YT8511_DELAY_FE_TX_DIS;
 +	val = ytphy_read_ext(phydev, 0xc);
 +	if (val < 0)
 +		return val;
@@ -723,21 +765,34 @@ index 000000000..74eef3dfa
 +		break;
 +	case 1:
 +		speed = SPEED_100;
-+		break;
+ 		break;
+-	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		ge = YT8511_DELAY_RX | YT8511_DELAY_GE_TX_DIS;
+-		fe = YT8511_DELAY_FE_TX_DIS;
 +	case 2:
 +		speed = SPEED_1000;
-+		break;
+ 		break;
+-	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		ge = YT8511_DELAY_GE_TX_EN;
+-		fe = YT8511_DELAY_FE_TX_EN;
 +	case 3:
-+		break;
+ 		break;
+-	case PHY_INTERFACE_MODE_RGMII_ID:
+-		ge = YT8511_DELAY_RX | YT8511_DELAY_GE_TX_EN;
+-		fe = YT8511_DELAY_FE_TX_EN;
 +	default:
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
 +		speed = -1;
 +#else
 +		speed = SPEED_UNKNOWN;
 +#endif
-+		break;
-+	}
-+
+ 		break;
+-	default: /* do not support other modes */
+-		ret = -EOPNOTSUPP;
+-		goto err_restore_page;
+ 	}
+ 
+-	ret = __phy_modify(phydev, YT8511_PAGE, (YT8511_DELAY_RX | YT8511_DELAY_GE_TX_EN), ge);
 +	phydev->speed = speed;
 +	phydev->duplex = duplex;
 +	//printk (KERN_INFO "yt8521_adjust_status call out,regval=0x%04x,mode=%s,speed=%dm...\n", val,is_utp?"utp":"fiber", phydev->speed);
@@ -900,16 +955,20 @@ index 000000000..74eef3dfa
 +
 +	value &= (~BIT(YT8521_EN_SLEEP_SW_BIT));
 +	ret = ytphy_write_ext(phydev, YT8521_EXTREG_SLEEP_CONTROL1, value);
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
-+
+ 
+-	/* set clock mode to 125mhz */
+-	ret = __phy_modify(phydev, YT8511_PAGE, 0, YT8511_CLK_125M);
 +	/* enable RXC clock when no wire plug */
 +	value = ytphy_read_ext(phydev, 0xc);
 +	if (value < 0)
 +		return value;
 +	value &= ~(1 << 12);
 +	ret = ytphy_write_ext(phydev, 0xc, value);
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
 +
 +	ytphy_write_ext(phydev, 0xa000, 2);
@@ -936,15 +995,19 @@ index 000000000..74eef3dfa
 +int yt8618_soft_reset(struct phy_device *phydev)
 +{
 +	int ret;
-+
+ 
+-	/* fast ethernet delay is in a separate page */
+-	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_DELAY_DRIVE);
 +	ytphy_write_ext(phydev, 0xa000, 0);
 +	ret = genphy_soft_reset(phydev);
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
 +
 +	return 0;
 +}
-+
+ 
+-	ret = __phy_modify(phydev, YT8511_PAGE, YT8511_DELAY_FE_TX_EN, fe);
 +int yt8614_soft_reset(struct phy_device *phydev)
 +{
 +	int ret;
@@ -952,7 +1015,8 @@ index 000000000..74eef3dfa
 +	/* utp */
 +	ytphy_write_ext(phydev, 0xa000, 0);
 +	ret = genphy_soft_reset(phydev);
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
 +
 +	/* qsgmii */
@@ -962,7 +1026,9 @@ index 000000000..74eef3dfa
 +		ytphy_write_ext(phydev, 0xa000, 0); //back to utp mode
 +		return ret;
 +	}
-+
+ 
+-	/* leave pll enabled in sleep */
+-	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_SLEEP_CTRL);
 +	/* sgmii */
 +	ytphy_write_ext(phydev, 0xa000, 3);
 +	ret = genphy_soft_reset(phydev);
@@ -1005,12 +1071,15 @@ index 000000000..74eef3dfa
 +#else
 +	ret = genphy_config_init(phydev);
 +#endif
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
-+
+ 
+-	ret = __phy_modify(phydev, YT8511_PAGE, 0, YT8511_PLLON_SLP);
 +	/* for utp to optimize signal */
 +	ret = ytphy_write_ext(phydev, 0x41, 0x33);
-+	if (ret < 0)
+ 	if (ret < 0)
+-		goto err_restore_page;
 +		return ret;
 +	ret = ytphy_write_ext(phydev, 0x42, 0x66);
 +	if (ret < 0)
@@ -1034,11 +1103,14 @@ index 000000000..74eef3dfa
 +
 +	val = phy_read(phydev, MII_BMCR);
 +	phy_write(phydev, MII_BMCR, val | BMCR_RESET);
-+
+ 
+-err_restore_page:
+-	return phy_restore_page(phydev, oldpage, ret);
 +	printk (KERN_INFO "yt8618_config_init call out.\n");
 +	return ret;
-+}
-+
+ }
+ 
+-static struct phy_driver motorcomm_phy_drvs[] = {
 +static int yt8614_config_init(struct phy_device *phydev)
 +{
 +	int ret = 0;
@@ -1048,7 +1120,8 @@ index 000000000..74eef3dfa
 +	if(0xff == yt_mport_base_phy_addr_8614)
 +		/* by default, we think the first phy should be the base phy addr. for mul */
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
-+	{
+ 	{
+-		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
 +		yt_mport_base_phy_addr_8614 = (unsigned int)phydev->addr;
 +	}else if (yt_mport_base_phy_addr_8614 > (unsigned int)phydev->addr) { 
 +		printk (KERN_INFO "yzhang..8618 init, phy address mismatch, base=%u, cur=%d\n", yt_mport_base_phy_addr_8614, phydev->addr);
@@ -1346,7 +1419,7 @@ index 000000000..74eef3dfa
 +		.read_status	= genphy_read_status,
 +	}, {
 +		.phy_id		= PHY_ID_YT8511,
-+		.name		= "YT8511 Gigabit Ethernet",
+ 		.name		= "YT8511 Gigabit Ethernet",
 +		.phy_id_mask	= MOTORCOMM_PHY_ID_MASK,
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0) )
 +		.features	= PHY_GBIT_FEATURES,
@@ -1354,7 +1427,7 @@ index 000000000..74eef3dfa
 +#endif		
 +		.config_aneg	= genphy_config_aneg,
 +#if GMAC_CLOCK_INPUT_NEEDED
-+		.config_init	= yt8511_config_init,
+ 		.config_init	= yt8511_config_init,
 +#else
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
 +		.config_init	= ytphy_config_init,
@@ -1376,8 +1449,11 @@ index 000000000..74eef3dfa
 +		.config_aneg	= genphy_config_aneg,
 +		.config_init	= yt8512_config_init,
 +		.read_status	= yt8512_read_status,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+-		.read_page	= yt8511_read_page,
+-		.write_page	= yt8511_write_page,
+-	},
 +	}, {
 +		.phy_id		= PHY_ID_YT8512B,
 +		.name		= "YT8512B Ethernet",
@@ -1503,8 +1579,9 @@ index 000000000..74eef3dfa
 +		.suspend		= yt8614_suspend,
 +		.resume 		= yt8614_resume,
 +		}, 
-+};
-+
+ };
+ 
+-module_phy_driver(motorcomm_phy_drvs);
 +#if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,0,0) )
 +static int ytphy_drivers_register(struct phy_driver* phy_drvs, int size)
 +{
@@ -1553,11 +1630,15 @@ index 000000000..74eef3dfa
 +/* for linux 4.x */
 +module_phy_driver(ytphy_drvs);
 +#endif
-+
-+MODULE_DESCRIPTION("Motorcomm PHY driver");
+ 
+ MODULE_DESCRIPTION("Motorcomm PHY driver");
+-MODULE_AUTHOR("Peter Geis");
 +MODULE_AUTHOR("Leilei Zhao");
-+MODULE_LICENSE("GPL");
-+
+ MODULE_LICENSE("GPL");
+ 
+-static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+-	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+-	{ /* sentinal */ }
 +static struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
 +	{ PHY_ID_YT8010, MOTORCOMM_PHY_ID_MASK },
 +	{ PHY_ID_YT8510, MOTORCOMM_PHY_ID_MASK },
@@ -1570,9 +1651,9 @@ index 000000000..74eef3dfa
 +	{ PHY_ID_YT8618, MOTORCOMM_MPHY_ID_MASK },
 +	{ PHY_ID_YT8614, MOTORCOMM_MPHY_ID_MASK_8614 },
 +	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, motorcomm_tbl);
+ };
+ 
+ MODULE_DEVICE_TABLE(mdio, motorcomm_tbl);
 +
 +
 diff --git a/drivers/net/phy/yt8614-phy.h b/drivers/net/phy/yt8614-phy.h
@@ -2198,5 +2279,5 @@ index 000000000..9e01fc205
 +
 +
 -- 
-2.25.1
+2.34.1
 
