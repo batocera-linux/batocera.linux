@@ -142,8 +142,19 @@ BATOCERA_EMULATIONSTATION_ARGS = --windowed
 BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_XINITRC
 endif
 
+# # on Wayland weston.ini runs ES
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND),y)
+BATOCERA_EMULATIONSTATION_CMD = weston
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WESTON
+endif
+
 define BATOCERA_EMULATIONSTATION_XINITRC
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+endef
+
+define BATOCERA_EMULATIONSTATION_WESTON
+    mkdir -p $(TARGET_DIR)/etc/xdg/weston
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/weston.ini $(TARGET_DIR)/etc/xdg/weston/weston.ini
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
