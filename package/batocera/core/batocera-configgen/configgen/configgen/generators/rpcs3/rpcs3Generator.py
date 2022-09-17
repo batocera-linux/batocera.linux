@@ -69,7 +69,7 @@ class Rpcs3Generator(Generator):
         
         # [Core]
         # Set the PPU Decoder based on config
-        if system.isOptSet("spudecoder"):
+        if system.isOptSet("ppudecoder"):
             rpcs3ymlconfig["Core"]['PPU Decoder'] = system.config["ppudecoder"]
         else:
             rpcs3ymlconfig["Core"]['PPU Decoder'] = 'Recompiler (LLVM)'
