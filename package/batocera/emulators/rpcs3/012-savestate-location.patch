@@ -1,0 +1,13 @@
+diff --git a/rpcs3/Emu/savestate_utils.cpp b/rpcs3/Emu/savestate_utils.cpp
+index 1c1d00d5bb..bed78bd7b2 100644
+--- a/rpcs3/Emu/savestate_utils.cpp
++++ b/rpcs3/Emu/savestate_utils.cpp
+@@ -175,7 +175,7 @@ bool boot_last_savestate()
+ 	{
+ 		extern bool is_savestate_compatible(const fs::file& file);
+ 
+-		const std::string save_dir = fs::get_cache_dir() + "/savestates/";
++		const std::string save_dir = "/userdata/saves/ps3/";
+ 
+ 		std::string savestate_path;
+ 		s64 mtime = smin;
