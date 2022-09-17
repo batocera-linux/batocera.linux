@@ -16,7 +16,15 @@ RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
 
 RPCS3_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CROSSCOMPILING=ON -DBUILD_SHARED_LIBS=OFF \
-    -DUSE_SYSTEM_FFMPEG=ON -DUSE_NATIVE_INSTRUCTIONS=OFF
+    -DUSE_SYSTEM_FFMPEG=ON -DUSE_NATIVE_INSTRUCTIONS=OFF \
+	-DBUILD_LLVM_SUBMODULE=OFF -DLLVM_DIR=$(@D)/llvmlibs/lib/cmake/llvm/ \
+	-DUSE_PRECOMPILED_HEADERS=OFF -DUSE_SYSTEM_CURL=ON
+
+define RPCS3_LLVM_LIBS
+	mkdir -p $(@D)/llvmlibs
+    $(HOST_DIR)/bin/curl -L https://github.com/RPCS3/llvm-mirror/releases/download/custom-build/llvmlibs-linux.tar.gz -o $(@D)/llvmlibs-linux.tar.gz
+	cd $(@D) && tar -xf llvmlibs-linux.tar.gz -C $(@D)/llvmlibs
+endef
 
 define RPCS3_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) \
@@ -29,6 +37,7 @@ define RPCS3_INSTALL_EVMAPY
 	    $(TARGET_DIR)/usr/share/evmapy/ps3.keys
 endef
 
+RPCS3_PRE_CONFIGURE_HOOKS = RPCS3_LLVM_LIBS
 RPCS3_POST_INSTALL_TARGET_HOOKS = RPCS3_INSTALL_EVMAPY
 
 $(eval $(cmake-package))
