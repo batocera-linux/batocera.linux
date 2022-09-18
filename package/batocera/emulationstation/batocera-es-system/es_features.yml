@@ -217,11 +217,28 @@ shared:
         "60%": 60
         "80%": 80
         "100%": 100
+    audio_volume:
+      prompt:      AUDIO VOLUME GAIN
+      description: Set game audio level gain in dB.
+      choices:
+        "-12":         -12.000000
+        "-10":         -10.000000
+        "-8":          -8.000000
+        "-6":          -6.000000
+        "-4":          -4.000000
+        "-2":          -2.000000
+        "0 (No gain)": 0
+        "+2":          2.000000
+        "+4":          4.000000
+        "+6":          6.000000
+        "+8":          8.000000
+        "+10":         10.000000
+        "+12":         12.000000
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
-  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, bcm2711, rk3326]
