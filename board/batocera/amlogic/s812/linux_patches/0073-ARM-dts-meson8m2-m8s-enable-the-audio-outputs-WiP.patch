@@ -1,0 +1,89 @@
+From d825b340d262ab129fa42a27e7d3db9e648e03a5 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 4 May 2019 17:47:29 +0200
+Subject: [PATCH 073/122] ARM: dts: meson8m2: m8s: enable the audio outputs -
+ WiP
+
+The M8S board uses an Everest Semi ES7134 I2S stereo codec which is
+connected to GPIOAO_8..11. SPDIF output is connected through GPIOY_3.
+
+WIP:
+- depends on previous commits (audio driver and bindings not finalized)
+- doesn't seem to work?
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8m2-m8s.dts | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/arch/arm/boot/dts/meson8m2-m8s.dts b/arch/arm/boot/dts/meson8m2-m8s.dts
+index 8f294de22e6a..d2210a983955 100644
+--- a/arch/arm/boot/dts/meson8m2-m8s.dts
++++ b/arch/arm/boot/dts/meson8m2-m8s.dts
+@@ -88,6 +88,8 @@ sound {
+ 				  <&clkc CLKID_MPLL2>;
+ 		assigned-clock-rates = <270950400>,
+ 				       <294912000>,
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
+ 				       <393216000>;
+ 
+ 		dai-link-0 {
+@@ -106,6 +108,10 @@ dai-link-2 {
+ 			codec-0 {
+ 				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&stereo_i2s_codec>;
++			};
+ 		};
+ 
+ 		dai-link-3 {
+@@ -114,6 +120,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 1>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&spdif_dit>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -125,6 +135,17 @@ codec-0 {
+ 		};
+ 	};
+ 
++	stereo_i2s_codec: i2s-audio-codec {
++		compatible = "everest,es7134";
++		#sound-dai-cells = <0>;
++	};
++
++	spdif_dit: spdif-audio-codec {
++		#sound-dai-cells = <0>;
++		compatible = "linux,spdif-dit";
++		sound-name-prefix = "DIT";
++	};
++
+ 	cvbs-connector {
+ 		compatible = "composite-video-connector";
+ 
+@@ -184,6 +205,14 @@ xtal_32k_out: xtal-32k-out-clk {
+ 
+ &aiu {
+ 	status = "okay";
++<<<<<<< HEAD
++=======
++
++	pinctrl-0 = <&i2s_am_clk_pins>, <&i2s_out_ao_clk_pins>,
++		    <&i2s_out_lr_clk_pins>, <&i2s_out_ch01_ao_pins>,
++		    <&spdif_out_pins>;
++	pinctrl-names = "default";
++>>>>>>> 7e69df433bae (ARM: dts: meson8m2: m8s: enable the audio outputs - WiP)
+ };
+ 
+ &cec_AO {
+-- 
+2.25.1
+

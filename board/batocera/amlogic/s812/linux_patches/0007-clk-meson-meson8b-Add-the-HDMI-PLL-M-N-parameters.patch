@@ -1,0 +1,63 @@
+From 1897eb392ccc2b2404f60cd6b97071ea819c24e4 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 26 Dec 2020 02:05:07 +0100
+Subject: [PATCH 007/122] clk: meson: meson8b: Add the HDMI PLL M/N parameters
+
+The 3.10 vendor kernel uses only specific HDMI PLL M/N parameter
+combinations. The PLL won't lock for values smaller than 50 if the
+internal doubling (which is yet unknown how to use it) is disabled.
+However, when this doubling is enabled then the values smaller than 50
+will lock just fine. The only restriction for values greater than 50 is
+that the resulting frequency must not exceed the 3.0GHz limit.
+
+These values are taken from the endlessm 3.10 kernel which includes
+additional M/N combinations for some VESA and 75Hz display modes.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/clk/meson/meson8b.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/clk/meson/meson8b.c b/drivers/clk/meson/meson8b.c
+index 9ccffbfe44e5..8f29d26ed726 100644
+--- a/drivers/clk/meson/meson8b.c
++++ b/drivers/clk/meson/meson8b.c
+@@ -118,6 +118,27 @@ static struct clk_regmap meson8b_fixed_pll = {
+ 	},
+ };
+ 
++static const struct pll_params_table hdmi_pll_params_table[] = {
++	PLL_PARAMS(40, 1),
++	PLL_PARAMS(42, 1),
++	PLL_PARAMS(44, 1),
++	PLL_PARAMS(45, 1),
++	PLL_PARAMS(49, 1),
++	PLL_PARAMS(52, 1),
++	PLL_PARAMS(54, 1),
++	PLL_PARAMS(56, 1),
++	PLL_PARAMS(59, 1),
++	PLL_PARAMS(60, 1),
++	PLL_PARAMS(61, 1),
++	PLL_PARAMS(62, 1),
++	PLL_PARAMS(64, 1),
++	PLL_PARAMS(66, 1),
++	PLL_PARAMS(68, 1),
++	PLL_PARAMS(71, 1),
++	PLL_PARAMS(82, 1),
++	{ /* sentinel */ }
++};
++
+ static struct clk_regmap meson8b_hdmi_pll_dco = {
+ 	.data = &(struct meson_clk_pll_data){
+ 		.en = {
+@@ -150,6 +171,7 @@ static struct clk_regmap meson8b_hdmi_pll_dco = {
+ 			.shift   = 29,
+ 			.width   = 1,
+ 		},
++		.table = hdmi_pll_params_table,
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		/* sometimes also called "HPLL" or "HPLL PLL" */
+-- 
+2.25.1
+

@@ -1,0 +1,364 @@
+From 13d6d9a8a5fa5f84173265e7526679344009f276 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 15 Apr 2017 16:59:07 +0200
+Subject: [PATCH 066/122] ARM: dts: meson8m2: add support for the Akaso M8S -
+ WiP
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/Makefile         |   1 +
+ arch/arm/boot/dts/meson8m2-m8s.dts | 330 +++++++++++++++++++++++++++++
+ 2 files changed, 331 insertions(+)
+ create mode 100644 arch/arm/boot/dts/meson8m2-m8s.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 8c911637156d..25ae0e6b69d3 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -366,6 +366,7 @@ dtb-$(CONFIG_MACH_MESON8) += \
+ 	meson8b-odroidc1.dtb \
+ 	meson8m2-mxiii.dtb \
+ 	meson8m2-mxiii-plus.dtb \
++	meson8m2-m8s.dtb \
+ 	meson8m2-wetek-core.dtb
+ dtb-$(CONFIG_ARCH_MMP) += \
+ 	pxa168-aspenite.dtb \
+diff --git a/arch/arm/boot/dts/meson8m2-m8s.dts b/arch/arm/boot/dts/meson8m2-m8s.dts
+new file mode 100644
+index 000000000000..6065a19acc96
+--- /dev/null
++++ b/arch/arm/boot/dts/meson8m2-m8s.dts
+@@ -0,0 +1,330 @@
++/*
++ * Copyright (c) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>.
++ *
++ * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++ */
++
++/dts-v1/;
++
++#include "meson8m2.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Akaso M8S";
++	compatible = "akaso,m8s", "amlogic,meson8m2";
++
++	aliases {
++		ethernet0 = &ethmac;
++		serial0 = &uart_AO;
++		mmc0 = &sdio_sd_card_slot;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		reg = <0x40000000 0x80000000>;
++	};
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1710000>;
++
++		button-function {
++			label = "Function";
++			linux,code = <KEY_FN>;
++			press-threshold-microvolt = <10000>;
++		};
++	};
++
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_tx_tmds_out>;
++			};
++		};
++	};
++
++	pwmleds {
++		compatible = "pwm-leds";
++
++		power {
++			label = "m8s:blue:power";
++			pwms = <&pwm_ef 1 7812500 0>;
++			max-brightness = <255>;
++			active-low;
++			linux,default-trigger = "default-on";
++		};
++	};
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++
++		pinctrl-0 = <&xtal_32k_out_pins>;
++		pinctrl-names = "default";
++
++		reset-gpios = <&gpio_ao GPIOAO_6 GPIO_ACTIVE_LOW>,
++			      <&gpio GPIOX_11 GPIO_ACTIVE_LOW>; /* TODO: should be enable-gpios with GPIO_ACTIVE_HIGH in the card's node, this is WIFI_DISn */
++
++		clocks = <&xtal_32k_out>;
++		clock-names = "ext_clock";
++	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "M8M2-M8S";
++
++		assigned-clocks = <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>,
++				  <&clkc CLKID_MPLL2>;
++		assigned-clock-rates = <270950400>,
++				       <294912000>,
++				       <393216000>;
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 0>;
++			};
++		};
++	};
++
++	cvbs-connector {
++		compatible = "composite-video-connector";
++
++		port {
++			cvbs_connector_in: endpoint {
++				remote-endpoint = <&cvbs_vdac_out>;
++			};
++		};
++	};
++
++	vcck: regulator-vcck {
++		compatible = "regulator-fixed";
++		regulator-name = "VCCK";
++		regulator-min-microvolt = <975000>;
++		regulator-max-microvolt = <975000>;
++		vin-supply = <&vcc_5v>;
++	};
++
++	vddee: regulator-vddee {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD_EE";
++		regulator-min-microvolt = <1150000>;
++		regulator-max-microvolt = <1150000>;
++		vin-supply = <&vcc_5v>;
++	};
++
++	vcc_1v8: regulator-vcc1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc_5v>;
++	};
++
++	vcc_3v3: regulator-vcc3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc_5v>;
++	};
++
++	vcc_5v: regulator-vcc5v {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
++	xtal_32k_out: xtal-32k-out-clk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++		clock-output-names = "xtal_32k_out";
++	};
++};
++
++&aiu {
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&vcck>;
++};
++
++&cvbs_vdac_port {
++	cvbs_vdac_out: endpoint {
++		remote-endpoint = <&cvbs_connector_in>;
++	};
++};
++
++&ethmac {
++	status = "okay";
++
++	pinctrl-0 = <&eth_pins>;
++	pinctrl-names = "default";
++
++	phy-handle = <&eth_phy0>;
++	phy-mode = "rmii";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		eth_phy0: ethernet-phy@0 {
++			/* IC Plus IP101GR (0x02430c54) */
++			reg = <0>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <10000>;
++			reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&hdmi_tx {
++	status = "okay";
++	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
++	pinctrl-names = "default";
++};
++
++&hdmi_tx_tmds_port {
++	hdmi_tx_tmds_out: endpoint {
++		remote-endpoint = <&hdmi_connector_in>;
++	};
++};
++
++&ir_receiver {
++	status = "okay";
++	pinctrl-0 = <&ir_recv_pins>;
++	pinctrl-names = "default";
++};
++
++&mali {
++	mali-supply = <&vddee>;
++};
++
++&saradc {
++	status = "okay";
++	vref-supply = <&vcc_1v8>;
++};
++
++/* wifi */
++&sdhc {
++	status = "okay";
++
++	pinctrl-0 = <&sdxc_a_pins>;
++	pinctrl-names = "default";
++
++	bus-width = <4>;
++	max-frequency = <50000000>;
++
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	non-removable;
++	disable-wp;
++
++	mmc-pwrseq = <&sdio_pwrseq>;
++
++	vmmc-supply = <&vcc_3v3>;
++	vqmmc-supply = <&vcc_3v3>;
++};
++
++/* SD card */
++&sdio {
++	status = "okay";
++
++	pinctrl-0 = <&sd_b_pins>;
++	pinctrl-names = "default";
++
++	sdio_sd_card_slot: slot@1 {
++		compatible = "mmc-slot";
++		reg = <1>;
++
++		bus-width = <4>;
++		max-frequency = <50000000>;
++
++		no-mmc;
++		no-sdio;
++		cap-sd-highspeed;
++		disable-wp;
++
++		cd-gpios = <&gpio CARD_6 GPIO_ACTIVE_LOW>;
++
++		vmmc-supply = <&vcc_3v3>;
++	};
++};
++
++&uart_A {
++	status = "okay";
++
++	pinctrl-0 = <&uart_a1_pins>, <&uart_a1_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "realtek,rtl8723bs-bt";
++		enable-gpios = <&gpio GPIOX_20 GPIO_ACTIVE_HIGH>;
++	};
++};
++
++&uart_AO {
++	status = "okay";
++	pinctrl-0 = <&uart_ao_a_pins>;
++	pinctrl-names = "default";
++};
++
++&usb0 {
++	status = "okay";
++};
++
++&usb1 {
++	status = "okay";
++};
++
++&usb0_phy {
++	status = "okay";
++};
++
++&usb1_phy {
++	status = "okay";
++};
+-- 
+2.25.1
+

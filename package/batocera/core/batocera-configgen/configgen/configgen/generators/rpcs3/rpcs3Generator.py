@@ -69,7 +69,7 @@ class Rpcs3Generator(Generator):
         
         # [Core]
         # Set the PPU Decoder based on config
-        if system.isOptSet("spudecoder"):
+        if system.isOptSet("ppudecoder"):
             rpcs3ymlconfig["Core"]['PPU Decoder'] = system.config["ppudecoder"]
         else:
             rpcs3ymlconfig["Core"]['PPU Decoder'] = 'Recompiler (LLVM)'
@@ -168,7 +168,7 @@ class Rpcs3Generator(Generator):
           if os.path.exists("/userdata/bios/PS3UPDAT.PUP"):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--installfw", "/userdata/bios/PS3UPDAT.PUP"]
 
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})
 
     def getClosestRatio(gameResolution):
         # Works out the closest screen aspect ratio between the two rpcs3 options - 4:3 and 16:9.

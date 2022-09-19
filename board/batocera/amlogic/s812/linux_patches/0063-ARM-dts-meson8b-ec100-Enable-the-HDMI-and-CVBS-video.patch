@@ -1,0 +1,118 @@
+From 9a7b72db5533ba10a49028ace13c38a40db82912 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Fri, 7 Dec 2018 19:09:51 +0100
+Subject: [PATCH 063/122] ARM: dts: meson8b: ec100: Enable the HDMI and CVBS
+ video outputs - WiP
+
+WiP
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8b-ec100.dts | 63 +++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+
+diff --git a/arch/arm/boot/dts/meson8b-ec100.dts b/arch/arm/boot/dts/meson8b-ec100.dts
+index d54ea42c6eb2..b15a165a9bef 100644
+--- a/arch/arm/boot/dts/meson8b-ec100.dts
++++ b/arch/arm/boot/dts/meson8b-ec100.dts
+@@ -70,6 +70,17 @@ gpio-poweroff {
+ 		timeout-ms = <20000>;
+ 	};
+ 
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_tx_tmds_out>;
++			};
++		};
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -112,6 +123,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -119,6 +134,36 @@ dai-link-1 {
+ 			codec-0 {
+ 				sound-dai = <&rt5640>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 0>;
++			};
++		};
++	};
++
++	cvbs-connector {
++		compatible = "composite-video-connector";
++
++		port {
++			cvbs_connector_in: endpoint {
++				remote-endpoint = <&cvbs_vdac_out>;
++			};
+ 		};
+ 	};
+ 
+@@ -280,6 +325,12 @@ &cpu0 {
+ 	cpu-supply = <&vcck>;
+ };
+ 
++&cvbs_vdac_port {
++	cvbs_vdac_out: endpoint {
++		remote-endpoint = <&cvbs_connector_in>;
++	};
++};
++
+ &ethmac {
+ 	status = "okay";
+ 
+@@ -310,6 +361,18 @@ eth_phy0: ethernet-phy@0 {
+ 	};
+ };
+ 
++&hdmi_tx {
++	status = "okay";
++	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
++	pinctrl-names = "default";
++};
++
++&hdmi_tx_tmds_port {
++	hdmi_tx_tmds_out: endpoint {
++		remote-endpoint = <&hdmi_connector_in>;
++	};
++};
++
+ &i2c_A {
+ 	status = "okay";
+ 	pinctrl-0 = <&i2c_a_pins>;
+-- 
+2.25.1
+
