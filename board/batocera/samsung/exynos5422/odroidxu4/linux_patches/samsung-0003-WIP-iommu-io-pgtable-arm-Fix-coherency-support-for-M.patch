@@ -1,0 +1,37 @@
+From 530424bde16e74a8542d34709ac13be3c426afe1 Mon Sep 17 00:00:00 2001
+From: Pavel Golikov <Paullo612@ya.ru>
+Date: Fri, 24 Jun 2022 15:54:16 +0000
+Subject: [PATCH 03/21] WIP: iommu/io-pgtable-arm: Fix coherency support for
+ Mali LPAE
+
+Mali T628r0p1 which may be found in Samsung Exynos 5422 SOC is
+definitely not dma coherent, and it is not happy with PTE_SH_OS bit set
+by default in commit 728da60da7c1 ("iommu/io-pgtable-arm: Support
+coherency for Mali LPAE"). Use PTE_SH_IS by default for non dma
+coherent Mali GPUs.
+
+Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
+---
+ drivers/iommu/io-pgtable-arm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 94ff319ae8ac..9ac55085e141 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -457,9 +457,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 	 * "outside the GPU" (i.e. either the Inner or System domain in CPU
+ 	 * terms, depending on coherency).
+ 	 */
+-	if (prot & IOMMU_CACHE && data->iop.fmt != ARM_MALI_LPAE)
++	if (prot & IOMMU_CACHE ||
++	    (data->iop.fmt == ARM_MALI_LPAE && !data->iop.cfg.coherent_walk))
+ 		pte |= ARM_LPAE_PTE_SH_IS;
+-	else
++	else if (data->iop.fmt == ARM_MALI_LPAE)
+ 		pte |= ARM_LPAE_PTE_SH_OS;
+ 
+ 	if (prot & IOMMU_NOEXEC)
+-- 
+2.17.1
+

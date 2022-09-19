@@ -1,0 +1,26 @@
+From 3062d6e0008928c46388d6b118d4ae2137d5d0f4 Mon Sep 17 00:00:00 2001
+From: memeka <mihailescu2m@gmail.com>
+Date: Mon, 21 Oct 2019 10:58:47 +1030
+Subject: [PATCH 09/21] MEMEKA: ARM: dma-mapping: increase DMA coherent pool
+ size to 2M
+
+---
+ arch/arm/mm/dma-mapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 8f867cb9fe75..7493dcf0567a 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -315,7 +315,7 @@ static void *__alloc_remap_buffer(struct device *dev, size_t size, gfp_t gfp,
+ 				 pgprot_t prot, struct page **ret_page,
+ 				 const void *caller, bool want_vaddr);
+ 
+-#define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_256K
++#define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_2M
+ static struct gen_pool *atomic_pool __ro_after_init;
+ 
+ static size_t atomic_pool_size __initdata = DEFAULT_DMA_COHERENT_POOL_SIZE;
+-- 
+2.17.1
+

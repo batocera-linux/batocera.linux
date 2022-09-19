@@ -1,0 +1,32 @@
+From 30b928690575651687ae46f4bdbc946efd9cc0bd Mon Sep 17 00:00:00 2001
+From: Marian Mihailescu <mihailescu2m@gmail.com>
+Date: Fri, 24 Jun 2022 17:38:45 +0000
+Subject: [PATCH 13/21] MEMEKA: media: s5p-mfc: stop streaming before releasing
+ queues
+
+If streaming is active when the MFC device is closed, it will generate an IOMMU page-fault.
+
+Signed-off-by: Marian Mihailescu <mihailescu2m@gmail.com>
+---
+ drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+index e33863d9ae2d..f9b4b506c04c 100644
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+@@ -943,6 +943,11 @@ static int s5p_mfc_release(struct file *file)
+ 	mfc_debug_enter();
+ 	if (dev)
+ 		mutex_lock(&dev->mfc_mutex);
++
++	/* stop streaming */
++	vb2_streamoff(&ctx->vq_src, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
++	vb2_streamoff(&ctx->vq_dst, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
++
+ 	vb2_queue_release(&ctx->vq_src);
+ 	vb2_queue_release(&ctx->vq_dst);
+ 	if (dev) {
+-- 
+2.17.1
+
