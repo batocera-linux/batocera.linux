@@ -23,6 +23,10 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     picodrive
+n64:
+  options:
+    # mupen crashes with bezel enabled
+    bezel:  none
 snes:
   emulator: libretro
   core:     snes9x
