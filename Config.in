@@ -56,9 +56,7 @@ menu "System"
 
   menu "Gpu"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/libmali/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-t620-wayland/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-T860/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-midgard-module/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-g31-gbm/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-mp400-wayland/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-mp400-gbm/Config.in"
@@ -321,7 +319,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-lutris-wow64_32/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-proton/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-proton-wow64_32/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine-x86/Config.in"    
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine-x86/Config.in"
   endmenu
 
   menu "ports"
