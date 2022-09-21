@@ -47,7 +47,8 @@ do
     ###
 
     EXTRA_OPTS=
-    if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
+    ARCH=`cat /usr/share/batocera/batocera.arch`
+    if which xrandr && [ "$ARCH" != "bcm2711" ] # if xrandr available, use it (x86_64, odin, ...) except rpi4 for performance reasons
     then
         OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
         TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
