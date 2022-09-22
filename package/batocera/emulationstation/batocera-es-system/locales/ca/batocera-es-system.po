@@ -382,6 +382,21 @@ msgctxt "game_options"
 msgid "RUMBLE LEVEL"
 msgstr "NIVELL DE VIBRACIÓ"
 
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Set game audio level gain in dB."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUDIO VOLUME GAIN"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "0 (No gain)"
+msgstr ""
+
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
@@ -2037,6 +2052,86 @@ msgctxt "game_options"
 msgid "SCREEN ORIENTATION"
 msgstr "ORIENTACIÓ DE PANTALLA"
 
+#. TRANSLATION: libretro/fuse, hatari
+msgctxt "game_options"
+msgid "MODEL"
+msgstr "MODEL"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 48K"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 48K (NTSC)"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 128K"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +2"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +2A"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +3"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +3e"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum SE"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Timex TC2048"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Timex TS2068"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 16K"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 128K"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 512K"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 1024"
+msgstr ""
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Scorpion 256K"
+msgstr ""
+
 #. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games used the borders."
@@ -2549,15 +2644,13 @@ msgstr "TALLAR ARTWORK"
 
 #. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
-msgid "Set gun button 2 to reload for games that require shooting off screen"
+msgid "Set gun button 2 to reload."
 msgstr ""
-"Assigna el botó 2 de la pistola per a recarregar a jocs que requereixin "
-"disparar fora de la pantalla"
 
 #. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
-msgid "OFF SCREEN RELOAD"
-msgstr "APAGAR RECÀRREGA DE PANTALLA"
+msgid "OFF-SCREEN RELOAD BUTTON"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, ...
 msgctxt "game_options"
@@ -6375,6 +6468,16 @@ msgstr "SUPERPOSICIONS DE TAMANY SUPERIOR (SINGE)"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
+msgid "This option is required for some gun games when playing with the mouse"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "ABSOLUTE MOUSE INPUT"
+msgstr ""
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
 msgid "Invert joystick on flight games."
 msgstr "Inverteix palanca als jocs de vol."
 
@@ -6556,7 +6659,7 @@ msgctxt "game_options"
 msgid "PRE-CACHE SHADERS"
 msgstr "SHADERS PRE-MEMÒRIA CAU"
 
-#. TRANSLATION: dolphin, pcsx2
+#. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Off (default)"
 msgstr "Apagat (per defecte)"
@@ -7139,11 +7242,6 @@ msgid "Higher values make textures viewed at oblique angles look sharper."
 msgstr ""
 "Valors més alts fan que les textures vistes des de angles oblics guanyin "
 "nitidesa."
-
-#. TRANSLATION: hatari
-msgctxt "game_options"
-msgid "MODEL"
-msgstr "MODEL"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7884,6 +7982,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
 msgstr "TRUCS DE MAQUINÀRI GRÀFIC AUTOMÀTIC"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "On (default)"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8981,8 +9084,23 @@ msgstr "Estirar a 16:9"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
+msgid "Stretch to 4:3"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
 msgid "Enhancement."
 msgstr "Millora."
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "Improve audio accuracy (experimental)."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "USE DSP AUDIO"
+msgstr ""
 
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
@@ -9200,3 +9318,14 @@ msgstr "OMETRE VÍDEOS D’INTRODUCCIÓ"
 msgctxt "game_options"
 msgid "Show (Default)"
 msgstr "Mostrar (Per defecte)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Set gun button 2 to reload for games that require shooting off screen"
+#~ msgstr ""
+#~ "Assigna el botó 2 de la pistola per a recarregar a jocs que requereixin "
+#~ "disparar fora de la pantalla"
+
+#~ msgctxt "game_options"
+#~ msgid "OFF SCREEN RELOAD"
+#~ msgstr "APAGAR RECÀRREGA DE PANTALLA"
