@@ -1,9 +1,15 @@
 config BR2_PACKAGE_HLSDK_XASH3D
 	bool "Xash3D-FWGS Support Libraries for Half-Life"
 	depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_MIXER
+	select BR2_PACKAGE_SDL2_IMAGE
+    select BR2_PACKAGE_SDL2_TTF
+	select BR2_PACKAGE_LIBSODIUM
+
 	help
 	  Half-Life SDK for Xash3D & GoldSource.
-	
+
 	  Includes client and server libraries needed to run Half-Life with Xash3D.
 
 	  Provides support for several Half-Life-based mods, including the ones listed here:
