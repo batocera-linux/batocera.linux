@@ -1,53 +1,54 @@
 diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-index f0deeb9..8595c96 100644
+index 7223a5a..0972cb9 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-@@ -84,6 +84,7 @@ check_modestting(int devindex)
-     char device[512];
-     int drm_fd;
-     int i;
+@@ -78,6 +78,7 @@ get_driindex(void)
+     int devindex = -1;
+     DIR *folder;
+     const char *hint;
 +    int drmConn = 0;
  
-     SDL_snprintf(device, sizeof (device), KMSDRM_DRI_DEVFMT, KMSDRM_DRI_PATH, devindex);
- 
-@@ -103,9 +104,27 @@ check_modestting(int devindex)
-                  && resources->count_encoders > 0
-                  && resources->count_crtcs > 0)
-                 {
-+		  // batocera
-+		  {
-+		    FILE* fdDrmConn;
-+		    int drmConnRead;
-+		    if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
-+		      if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+			if(drmConnRead>=0 && drmConn<resources->count_connectors) {
-+			  drmConn = drmConnRead;
+     hint = SDL_GetHint(SDL_HINT_KMSDRM_DEVICE_INDEX);
+     if (hint && *hint) {
+@@ -118,13 +119,28 @@ get_driindex(void)
+                                      resources->count_connectors,
+                                      resources->count_encoders,
+                                      resources->count_crtcs);
++			// batocera
++			{
++			  FILE* fdDrmConn;
++			  int drmConnRead;
++			  if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
++			    if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
++			      if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++				drmConn = drmConnRead;
++			      }
++			    }
++			  }
 +			}
-+		      }
-+		    }
-+		  }
-+		  //
-+
-                     available = SDL_FALSE;
-                     for (i = 0; i < resources->count_connectors; i++) {
--                        drmModeConnector *conn = KMSDRM_drmModeGetConnector(drm_fd,
-+		      drmModeConnector *conn;
-+
-+		      if(i != drmConn) continue;
-+
-+		      conn = KMSDRM_drmModeGetConnector(drm_fd,
-                             resources->connectors[i]);
++			//
  
-                         if (!conn) {
-@@ -804,6 +823,7 @@ int KMSDRM_InitDisplays (_THIS) {
+                         if (resources->count_connectors > 0 &&
+                             resources->count_encoders > 0 &&
+                             resources->count_crtcs > 0) {
+                             available = -ENOENT;
+                             for (i = 0; i < resources->count_connectors; i++) {
+-                                drmModeConnector *conn =
++			        drmModeConnector *conn;
++				if(i != drmConn) continue;
++				conn =
+                                     KMSDRM_drmModeGetConnector(
+                                         drm_fd, resources->connectors[i]);
+ 
+@@ -753,6 +769,7 @@ KMSDRM_InitDisplays (_THIS) {
      uint64_t async_pageflip = 0;
      int ret = 0;
      int i;
 +    int drmConn = 0;
  
-     /* Open /dev/dri/cardNN (/dev/drmN if on OpenBSD) */
-     SDL_snprintf(viddata->devpath, sizeof(viddata->devpath), KMSDRM_DRI_CARDPATHFMT, viddata->devindex);
-@@ -825,10 +845,28 @@ int KMSDRM_InitDisplays (_THIS) {
+     /* Open /dev/dri/cardNN (/dev/drmN if on OpenBSD version less than 6.9) */
+     SDL_snprintf(viddata->devpath, sizeof(viddata->devpath), "%s%d",
+@@ -775,10 +792,26 @@ KMSDRM_InitDisplays (_THIS) {
          goto cleanup;
      }
  
@@ -69,11 +70,9 @@ index f0deeb9..8595c96 100644
         we create an SDL_Display and add it to the list of SDL Displays. */
      for (i = 0; i < resources->count_connectors; i++) {
 -        drmModeConnector *connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
-+      drmModeConnector *connector;
-+
-+      if(i != drmConn) continue;
-+
-+      connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
++        drmModeConnector *connector;
++	if(i != drmConn) continue;
++        connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
              resources->connectors[i]);
  
          if (!connector) {

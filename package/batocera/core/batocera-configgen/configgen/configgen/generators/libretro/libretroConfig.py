@@ -114,6 +114,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     if (system.isOptSet("audio_latency")):
         retroarchConfig['audio_latency'] = system.config['audio_latency']
 
+    retroarchConfig['audio_volume'] = '0'
+    if (system.isOptSet("audio_volume")):
+        retroarchConfig['audio_volume'] = system.config['audio_volume']
+
     with open("/usr/share/batocera/batocera.arch") as fb:
         arch = fb.readline().strip()
 

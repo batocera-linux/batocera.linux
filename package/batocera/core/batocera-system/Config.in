@@ -83,9 +83,6 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 \
 	default y
 endif
 
-config BR2_PACKAGE_LIBCEC_EXYNOS_API
-    bool "Exynos API in libcec"
-
 config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
     bool "batocera is limited to abandonned systems"
 
@@ -227,10 +224,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_RG552 || BR2_PACKAGE_BATOCERA_TARGET_RK3128 # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
-    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
-	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
+    select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
 	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
 	select BR2_PACKAGE_LIBCEC                               # libcec
+    select BR2_PACKAGE_LIBCEC_LINUX_API                     if BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_XU4
 	select BR2_PACKAGE_EDID_DECODE                          # edid monitor/tv support
 	select BR2_PACKAGE_READ_EDID                            # edid monitor/tv support
 	select BR2_SYSTEM_ENABLE_NLS                            # locales
@@ -794,7 +791,9 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 													!BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
 													!BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2	&& \
 													!BR2_PACKAGE_BATOCERA_TARGET_CHA		&& \
-													!BR2_PACKAGE_BATOCERA_TARGET_RK3326
+													!BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_XU4
 
 	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \

@@ -5,7 +5,7 @@ shared:
   cfeatures:
     videomode:
       prompt: VIDEO MODE
-      description: Force the emulator to run at this resolution.
+      description: Set the display's resolution. Does not affect the rendering resolution.
       preset: videomodes
     ratio:
       prompt: GAME ASPECT RATIO
@@ -217,11 +217,28 @@ shared:
         "60%": 60
         "80%": 80
         "100%": 100
+    audio_volume:
+      prompt:      AUDIO VOLUME GAIN
+      description: Set game audio level gain in dB.
+      choices:
+        "-12":         -12.000000
+        "-10":         -10.000000
+        "-8":          -8.000000
+        "-6":          -6.000000
+        "-4":          -4.000000
+        "-2":          -2.000000
+        "0 (No gain)": 0
+        "+2":          2.000000
+        "+4":          4.000000
+        "+6":          6.000000
+        "+8":          8.000000
+        "+10":         10.000000
+        "+12":         12.000000
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
-  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, bcm2711, rk3326]
@@ -6096,8 +6113,7 @@ dolphin_triforce:
                 "On":  1
         disable_osd_messages:
             group: ADVANCED OPTIONS
-            prompt:      DISABLE OSD MESSAGES
-            description: Disable status messages displayed by the emulator.
+            prompt:      DISABLE ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off": 0
                 "On":  1
@@ -6142,8 +6158,7 @@ duckstation:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
         duckstation_osd:
-            prompt:      SHOW OSD MESSAGES
-            description: Choose whether to show on the display, configuration messages.
+            prompt:      SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
@@ -6493,13 +6508,12 @@ melonds:
         melonds_framerate:
             group: ADVANCED OPTIONS
             prompt: LIMIT FRAME RATE
-            description: Choose whether or not to limit the framerate.
             choices:
-                "No Limitation":      0
-                "Standard (Default)": 1
+                "No Limit":          0
+                "As game specifies": 1
         melonds_resolution:
             prompt: RENDERING RESOLUTION
-            description: Enhancement. Increase the rendering resolution.
+            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
                 "1x (256x192)":           1
                 "2x (512x384)":           2
@@ -6520,74 +6534,70 @@ melonds:
         melonds_polygons:
             group: ADVANCED OPTIONS
             prompt: ENABLE POLYGON SPLITTING
-            description: Enables improved polygon splitting.
+            description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off (Default)": 0
+                "Off":           0
                 "On":            1
         melonds_rotation:
             prompt: SCREEN ROTATION
-            description: Rotate the screen with the emulator.
+            description: Rotates the screens, to simulate holding the DS sideways.
             choices:
-                "0 degrees (Default)": 0
+                "0 degrees":           0
                 "90 degrees":          1
                 "180 degrees":         2
                 "270 degrees":         3
         melonds_screenswap:
             prompt: SCREEN SWAP
-            description: Swap the Nintendo DS Displays.
+            description: Swap the position of the dual displays.
             choices:
-                "Off (Default)": 0
+                "Off":           0
                 "On":            1
         melonds_screensize:
             prompt: SCREEN SIZE
-            description: Choose the screen size.
+            description: Sets the window size to an integer size.
             choices:
-                "1x (Default)": 0
+                "1x":           0
                 "2x":           1
                 "3x":           2
                 "4x":           3
         melonds_layout:
             prompt: SCREEN LAYOUT
-            description: Choose the preferred screen layout.
+            description: Adjusts the positions of the screens.
             choices:
-                "Natural (Default)": 0
-                "Vertical":          1
-                "Horizontal":        2
-                "Hybrid":            3
+                "Original screen positions": 0
+                "Always enforce vertical":   1
+                "Always enforce horizontal": 2
+                "Hybrid":                    3
         melonds_screensizing:
             prompt: SCREEN SIZING
-            description: Choose the NDS screen sizings.
+            description: How the window space is distributed between the screens.
             choices:
-                "Even (Default)":   0
+                "Even":             0
                 "Emphasize top":    1
-                "Emphasize botton": 2
-                "Auto":             3
+                "Emphasize bottom": 2
+                "Automatic":        3
                 "Top only":         4
                 "Bottom only":      5
         melonds_scaling:
             prompt: INTEGER SCALING
-            description: Force integer scaling for pixels on larger displays.
             choices:
-                "Off (Default)":   0
+                "Off":             0
                 "On":              1
         melonds_cheats:
             prompt: ENABLE CHEATS
-            description: Enable cheats for MelonDS.
             choices:
                 "Off (Default)":   0
                 "On":              1
         melonds_osd:
-            prompt: ENABLE OSD
-            description: Enable the on screen display.
+            prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off":          0
-                "On (Default)": 1
+                "On":           1
         melonds_console:
             prompt: CONSOLE TYPE
-            description: Choose console type.
             choices:
-                "DS (default)":        0
-                "DSi (Experiemental)": 1
+                "DS":                  0
+                "DSi (experiemental)": 1
 
 moonlight:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

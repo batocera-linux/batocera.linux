@@ -22,6 +22,7 @@ VICE_CONF_OPTS += --with-alsa
 VICE_CONF_OPTS += --with-zlib
 VICE_CONF_OPTS += --with-jpeg
 VICE_CONF_OPTS += --with-png
+VICE_CONF_OPTS += --with-fastsid
 VICE_CONF_OPTS += --without-pulse
 VICE_CONF_OPTS += --enable-x64
 
