@@ -57,20 +57,13 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# pipewire-alsa
 	ln -sft $(TARGET_DIR)/etc/alsa/conf.d \
 		/usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf
-	install -Dm644 /dev/null $(TARGET_DIR)/usr/share/pipewire/media-session.d/with-alsa
 
 	# pipewire-media-session config: disable dbus device reservation
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
-		$(TARGET_DIR)/usr/share/pipewire/media-session.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/50-alsa-config.lua \
+		$(TARGET_DIR)/usr/share/wireplumber/main.lua.d/50-alsa-config.lua
 
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf$(PIPEWIRECONF_SUFFIX) \
 		$(TARGET_DIR)/usr/share/pipewire/pipewire.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/client-rt.conf \
-		$(TARGET_DIR)/usr/share/pipewire/client-rt.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
-		$(TARGET_DIR)/usr/share/pipewire/pipewire-pulse.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
-		$(TARGET_DIR)/usr/share/pipewire/media-session.d/media-session.conf
 endef
 
 $(eval $(generic-package))

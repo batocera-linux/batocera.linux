@@ -60,7 +60,7 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
 
   logging.info("typeInput={}, typeAudio={}, typeDevice={}, Icon={}, Address={}".format(typeInput, typeAudio, typeDevice, prop2str(properties["Icon"]), prop2str(properties["Address"])))
 
-  if not ( (typeDevice is None and typeInput and prop2str(properties["Icon"]).startswith("input")) or (typeDevice is None and typeAudio and prop2str(properties["Icon"]).startswith("audio-card")) or (typeDevice is not None and typeDevice == prop2str(properties["Address"])) ):
+  if not ( (typeDevice is None and typeInput and prop2str(properties["Icon"]).startswith("input")) or (typeDevice is None and typeAudio and prop2str(properties["Icon"]).startswith("audio")) or (typeDevice is not None and typeDevice == prop2str(properties["Address"])) ):
     if (typeInput or typeAudio) and typeDevice is None:
       logging.info("Skipping device {} because of type {}".format(getDevName(properties), prop2str(properties["Icon"])));
     else:
