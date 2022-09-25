@@ -843,6 +843,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('bluemsx_nospritelimits', '"OFF"')
         else:
             coreSettings.save('bluemsx_nospritelimits', '"ON"')
+        # Zoom, Hide Video Border
+        if system.isOptSet('bluemsx_overscan'):
+            coreSettings.save('bluemsx_overscan', system.config['bluemsx_overscan'])
+        else:
+            coreSettings.save('bluemsx_overscan', '"MSX2"')
 
     # Nec PC Engine / CD
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
@@ -1211,7 +1216,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                     coreSettings.save('gambatte_gb_colorization',     '"custom"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 else:                                                                    #User Selection
-                    coreSettings.save('gambatte_gb_colorization',     '"internal"')           
+                    coreSettings.save('gambatte_gb_colorization',     '"internal"')
                     coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
             else:
                 coreSettings.save('gambatte_gb_colorization',         '"internal"')      #It's an empty file, set to Classic Green
