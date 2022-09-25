@@ -17,7 +17,7 @@ import subprocess
 from xml.dom import minidom
 from PIL import Image, ImageOps
 
-def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations):
+def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, useMouse, multiMouse):
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -64,16 +64,36 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         #"BUTTON15": ""
     }
 
-    gunmappings = {
+    # Only use gun buttons if lightguns are enabled to prevent conflicts with mouse
+    if useGuns:
+        gunmappings = {
+            "BUTTON1": "BUTTON1",
+            "BUTTON2": "BUTTON2",
+            "START"  : "BUTTON3",
+            "COIN"   : "BUTTON4",
+            "BUTTON3": "BUTTON5",
+            "BUTTON4": "BUTTON6",
+            "BUTTON5": "BUTTON7",
+            "BUTTON6": "BUTTON8"
+        }
+    else:
+        gunmappings = {}
+
+    # Only define mouse buttons if mouse is enabled, to prevent unwanted inputs
+    # For a standard mouse, left, right, scroll wheel should be mapped to action buttons, and if side buttons are available, they will be coin & start
+    if useMouse:
+        mousemappings = {
         "BUTTON1": "BUTTON1",
         "BUTTON2": "BUTTON2",
-        "START"  : "BUTTON3",
-        "COIN"   : "BUTTON4",
-        "BUTTON3": "BUTTON5",
+        "BUTTON3": "BUTTON3",
+        "START"  : "BUTTON4",
+        "COIN"   : "BUTTON5",
         "BUTTON4": "BUTTON6",
         "BUTTON5": "BUTTON7",
         "BUTTON6": "BUTTON8"
-    }
+        }
+    else:
+        mousemappings = {}
 
     # Buttons that change based on game/setting
     if altButtons == "sfsnes": # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
@@ -230,13 +250,13 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings))
+                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings, mousemappings, multiMouse))
                 else:
-                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings))
+                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings, mousemappings, multiMouse))
             else:
                 rmapping = reverseMapping(mappings_use[mapping])
                 if rmapping in pad.inputs:
-                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings))
+                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings, mousemappings, multiMouse))
 
             #UI Mappings
             if nplayer == 1:
@@ -570,7 +590,7 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings):
+def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings, mousemappings, multiMouse):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
@@ -580,12 +600,17 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
     keyval = input2definition(pad, key, input, padindex + 1, reversed, altButtons)
     if mapping in gunmappings:
         keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+    if mapping in mousemappings:
+        if multiMouse:
+            keyval = keyval + " OR MOUSECODE_{}_{}".format(nplayer, mousemappings[mapping])
+        else:
+            keyval = keyval + " OR MOUSECODE_1_{}".format(mousemappings[mapping])
     value = config.createTextNode(keyval)
     xml_newseq.appendChild(value)
     print(f"MAME Debug: {mapping}: {key}, {input.id}")
     return xml_port
 
-def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings):
+def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings, mousemappings, multiMouse):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -598,6 +623,11 @@ def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mappin
     keyval = input2definition(pad, key, input, padindex + 1, reversed, 0)
     if mapping in gunmappings:
         keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+    if mapping in mousemappings:
+        if multiMouse:
+            keyval = keyval + " OR MOUSECODE_{}_{}".format(nplayer, mousemappings[mapping])
+        else:
+            keyval = keyval + " OR MOUSECODE_1_{}".format(mousemappings[mapping])
     value = config.createTextNode(keyval)
     xml_newseq.appendChild(value)
     return xml_port
