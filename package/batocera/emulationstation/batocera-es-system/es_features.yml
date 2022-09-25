@@ -367,6 +367,13 @@ libretro:
       features: [padtokeyboard, cheevos]
       shared: [rewind, autosave]
       cfeatures:
+            bluemsx_overscan:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Off":  disabled
+                    "On":   enabled
+                    "MSX2": MSX2
             bluemsx_nospritelimits:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the four sprites per line limit.
