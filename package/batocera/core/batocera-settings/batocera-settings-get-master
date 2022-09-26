@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# this script can be used by values that can have a default value by board
+
+KEY=$1
+
+# prefer the user value
+batocera-settings-get "${KEY}" && exit 0
+
+BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+if test -z "${BOARD_MODEL}"
+then
+    # give an other chance with dmi
+    BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+
+# prefer the board value
+if test -e "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}"
+then
+    batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" "${KEY}" && exit 0
+fi
+
+# prefer the general value
+if test -e "/usr/share/batocera/sysconfigs/batocera.conf"
+then
+    batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf" "${KEY}" && exit 0
+fi
+
+exit 1

@@ -72,9 +72,9 @@ start_audioconfig() {
     # and thus, we let splash before config here while udev is the services taking the most time
 
     # set default device and volume
-    DEVICE=$(/usr/bin/batocera-settings-get audio.device)
-    PROFILE=$(/usr/bin/batocera-settings-get audio.profile)
-    VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
+    DEVICE=$(/usr/bin/batocera-settings-get-master audio.device)
+    PROFILE=$(/usr/bin/batocera-settings-get-master audio.profile)
+    VOLUME=$(/usr/bin/batocera-settings-get-master audio.volume)
     test -z "${DEVICE}"  && DEVICE=auto
     test -z "${PROFILE}" && PROFILE=auto
     test -z "${VOLUME}"  && VOLUME=80
