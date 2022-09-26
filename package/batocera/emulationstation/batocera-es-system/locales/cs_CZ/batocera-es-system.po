@@ -15,8 +15,8 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Force the emulator to run at this resolution."
-msgstr "Vynutí spuštění emulátoru v tomto rozlišení."
+msgid "Set the display's resolution. Does not affect the rendering resolution."
+msgstr ""
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -508,6 +508,21 @@ msgstr ""
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Zakázáno"
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+msgctxt "game_options"
+msgid "Hides borders on many games. Some games used the borders."
+msgstr "Skrývá hranice mnoha her. U některých her se okraje používají."
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, vice
+msgctxt "game_options"
+msgid "ZOOM (HIDE BORDERS)"
+msgstr "ZOOM (SKRÝT OKRAJE)"
+
+#. TRANSLATION: libretro/bluemsx
+msgctxt "game_options"
+msgid "MSX2"
+msgstr ""
 
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
@@ -1790,12 +1805,12 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprites per line limit."
 msgstr "Vylepšení. Odstranění limitu osmi spritů na řádek."
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Horizontal"
 msgstr "Horizontální"
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Vertical"
 msgstr "Vertikální"
@@ -2115,16 +2130,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Scorpion 256K"
 msgstr ""
-
-#. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
-msgid "Hides borders on many games. Some games used the borders."
-msgstr "Skrývá hranice mnoha her. U některých her se okraje používají."
-
-#. TRANSLATION: libretro/fuse, vice
-msgctxt "game_options"
-msgid "ZOOM (HIDE BORDERS)"
-msgstr "ZOOM (SKRÝT OKRAJE)"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2609,7 +2614,7 @@ msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr "SDÍLET UMĚLECKÁ DÍLA MAME"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, melonds
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick
 msgctxt "game_options"
 msgid "On (Default)"
 msgstr "Zapnout (Výchozí)"
@@ -4461,7 +4466,7 @@ msgctxt "game_options"
 msgid "4.5x (1440x1080)"
 msgstr ""
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3, ...
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automaticky"
@@ -6396,7 +6401,7 @@ msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Vynucení 4:3"
 
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Rotate the screen with the emulator."
 msgstr "Otáčet obrazovkou pomocí emulátoru."
@@ -6406,7 +6411,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "OTÁČENÍ OBRAZOVKY"
 
-#. TRANSLATION: daphne
+#. TRANSLATION: daphne, melonds
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 stupňů"
@@ -6806,13 +6811,8 @@ msgstr "4x (SSAA)"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
-msgid "Disable status messages displayed by the emulator."
-msgstr "Zakázat stavové zprávy zobrazované emulátorem."
-
-#. TRANSLATION: dolphin_triforce
-msgctxt "game_options"
-msgid "DISABLE OSD MESSAGES"
-msgstr "ZAKÁZAT ZPRÁVY OSD"
+msgid "DISABLE ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6854,15 +6854,10 @@ msgctxt "game_options"
 msgid "Per 1s, 120s total (1320MB|240MB)"
 msgstr "Za 1s, celkem 120s (1320MB|240MB)"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, melonds
 msgctxt "game_options"
-msgid "Choose whether to show on the display, configuration messages."
-msgstr "Zvolte, zda se mají na displeji zobrazovat konfigurační zprávy."
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "SHOW OSD MESSAGES"
-msgstr "ZOBRAZIT ZPRÁVY OSD"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7287,33 +7282,23 @@ msgstr "4M"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose whether or not to limit the framerate."
-msgstr "Zvolte, zda chcete omezit snímkovou frekvenci, nebo ne."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "LIMIT FRAME RATE"
 msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "No Limitation"
-msgstr "Bez omezení"
+msgid "No Limit"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Standard (Default)"
-msgstr "Standardní (Výchozí)"
+msgid "As game specifies"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Enhancement. Increase the rendering resolution."
-msgstr "Vylepšení. Zvyšte rozlišení vykreslování."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enables improved polygon splitting."
-msgstr "Umožňuje vylepšené dělení polygonů."
+msgid "Enhancement. Enables improved polygon splitting."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7322,13 +7307,13 @@ msgstr "POVOLIT DĚLENÍ POLYGONŮ"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "0 degrees (Default)"
-msgstr "0 stupňů (Výchozí)"
+msgid "Rotates the screens, to simulate holding the DS sideways."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Swap the Nintendo DS Displays."
-msgstr "Výměna displeje Nintenda DS."
+msgid "Swap the position of the dual displays."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7337,8 +7322,8 @@ msgstr "VÝMĚNA OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the screen size."
-msgstr "Zvolte velikost obrazovky."
+msgid "Sets the window size to an integer size."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7347,18 +7332,23 @@ msgstr "VELIKOST OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "1x (Default)"
-msgstr "1x (Výchozí)"
+msgid "Adjusts the positions of the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the preferred screen layout."
-msgstr "Vyberte upřednostňované rozložení obrazovky."
+msgid "Original screen positions"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Natural (Default)"
-msgstr "Přírodní (Výchozí)"
+msgid "Always enforce vertical"
+msgstr ""
+
+#. TRANSLATION: melonds
+msgctxt "game_options"
+msgid "Always enforce horizontal"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7367,8 +7357,8 @@ msgstr "Hybridní"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the NDS screen sizings."
-msgstr "Zvolte velikosti obrazovky NDS."
+msgid "How the window space is distributed between the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7377,8 +7367,8 @@ msgstr "DIMENZOVÁNÍ OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Even (Default)"
-msgstr "Sudá (Výchozí)"
+msgid "Even"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7387,13 +7377,8 @@ msgstr "Zdůraznění vrcholu"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Emphasize botton"
-msgstr "Zdůraznění dna"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Auto"
-msgstr "Auto"
+msgid "Emphasize bottom"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7407,33 +7392,8 @@ msgstr "Pouze spodní"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Force integer scaling for pixels on larger displays."
-msgstr "Vynucení celočíselného škálování pixelů na větších displejích."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "CELOČÍSELNÉ ŠKÁLOVÁNÍ"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable cheats for MelonDS."
-msgstr "Povolit cheaty pro MelonDS."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable the on screen display."
-msgstr "Povolte zobrazení na obrazovce."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "ENABLE OSD"
-msgstr "POVOLIT OSD"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Choose console type."
-msgstr "Vyberte typ konzole."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7442,13 +7402,13 @@ msgstr "TYP KONZOLE"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DS (default)"
-msgstr "DS (výchozí)"
+msgid "DS"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DSi (Experiemental)"
-msgstr "DSi (Experimentální)"
+msgid "DSi (experiemental)"
+msgstr ""
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -9273,6 +9233,114 @@ msgstr ""
 msgctxt "game_options"
 msgid "Show (Default)"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "Force the emulator to run at this resolution."
+#~ msgstr "Vynutí spuštění emulátoru v tomto rozlišení."
+
+#~ msgctxt "game_options"
+#~ msgid "Disable status messages displayed by the emulator."
+#~ msgstr "Zakázat stavové zprávy zobrazované emulátorem."
+
+#~ msgctxt "game_options"
+#~ msgid "DISABLE OSD MESSAGES"
+#~ msgstr "ZAKÁZAT ZPRÁVY OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether to show on the display, configuration messages."
+#~ msgstr "Zvolte, zda se mají na displeji zobrazovat konfigurační zprávy."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW OSD MESSAGES"
+#~ msgstr "ZOBRAZIT ZPRÁVY OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether or not to limit the framerate."
+#~ msgstr "Zvolte, zda chcete omezit snímkovou frekvenci, nebo ne."
+
+#~ msgctxt "game_options"
+#~ msgid "No Limitation"
+#~ msgstr "Bez omezení"
+
+#~ msgctxt "game_options"
+#~ msgid "Standard (Default)"
+#~ msgstr "Standardní (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enhancement. Increase the rendering resolution."
+#~ msgstr "Vylepšení. Zvyšte rozlišení vykreslování."
+
+#~ msgctxt "game_options"
+#~ msgid "Enables improved polygon splitting."
+#~ msgstr "Umožňuje vylepšené dělení polygonů."
+
+#~ msgctxt "game_options"
+#~ msgid "0 degrees (Default)"
+#~ msgstr "0 stupňů (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Swap the Nintendo DS Displays."
+#~ msgstr "Výměna displeje Nintenda DS."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the screen size."
+#~ msgstr "Zvolte velikost obrazovky."
+
+#~ msgctxt "game_options"
+#~ msgid "1x (Default)"
+#~ msgstr "1x (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the preferred screen layout."
+#~ msgstr "Vyberte upřednostňované rozložení obrazovky."
+
+#~ msgctxt "game_options"
+#~ msgid "Natural (Default)"
+#~ msgstr "Přírodní (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the NDS screen sizings."
+#~ msgstr "Zvolte velikosti obrazovky NDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Even (Default)"
+#~ msgstr "Sudá (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Emphasize botton"
+#~ msgstr "Zdůraznění dna"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto"
+#~ msgstr "Auto"
+
+#~ msgctxt "game_options"
+#~ msgid "Force integer scaling for pixels on larger displays."
+#~ msgstr "Vynucení celočíselného škálování pixelů na větších displejích."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable cheats for MelonDS."
+#~ msgstr "Povolit cheaty pro MelonDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the on screen display."
+#~ msgstr "Povolte zobrazení na obrazovce."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE OSD"
+#~ msgstr "POVOLIT OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose console type."
+#~ msgstr "Vyberte typ konzole."
+
+#~ msgctxt "game_options"
+#~ msgid "DS (default)"
+#~ msgstr "DS (výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "DSi (Experiemental)"
+#~ msgstr "DSi (Experimentální)"
 
 #~ msgctxt "game_options"
 #~ msgid "PS2's internal ratio setting. Some games only support 4/3."

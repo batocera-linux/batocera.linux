@@ -15,8 +15,8 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Force the emulator to run at this resolution."
-msgstr "Принудительно запускать эмулятор с этим разрешением."
+msgid "Set the display's resolution. Does not affect the rendering resolution."
+msgstr ""
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -510,6 +510,21 @@ msgstr "Точка"
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Отключено"
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+msgctxt "game_options"
+msgid "Hides borders on many games. Some games used the borders."
+msgstr "Скрывает рамки во многих играх."
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, vice
+msgctxt "game_options"
+msgid "ZOOM (HIDE BORDERS)"
+msgstr "МАСШТАБ (СКРЫТЬ РАМКИ)"
+
+#. TRANSLATION: libretro/bluemsx
+msgctxt "game_options"
+msgid "MSX2"
+msgstr ""
 
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
@@ -1795,12 +1810,12 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprites per line limit."
 msgstr "Улучшение. Удаляет ограничение в восемь спрайтов."
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Horizontal"
 msgstr "Горизонтально"
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Vertical"
 msgstr "Вертикально"
@@ -2123,16 +2138,6 @@ msgstr "Pentagon 1024"
 msgctxt "game_options"
 msgid "Scorpion 256K"
 msgstr "Scorpion 256K"
-
-#. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
-msgid "Hides borders on many games. Some games used the borders."
-msgstr "Скрывает рамки во многих играх."
-
-#. TRANSLATION: libretro/fuse, vice
-msgctxt "game_options"
-msgid "ZOOM (HIDE BORDERS)"
-msgstr "МАСШТАБ (СКРЫТЬ РАМКИ)"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2619,7 +2624,7 @@ msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr "ОБЩИЕ МАМЕ АРТЫ"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, melonds
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick
 msgctxt "game_options"
 msgid "On (Default)"
 msgstr "Вкл. (по умолчанию)"
@@ -4470,7 +4475,7 @@ msgctxt "game_options"
 msgid "4.5x (1440x1080)"
 msgstr "4.5x (1440x1080)"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3, ...
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Автоматический"
@@ -6408,7 +6413,7 @@ msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Принудительно 4:3"
 
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Rotate the screen with the emulator."
 msgstr "Поворот экрана с помощью эмулятора."
@@ -6418,7 +6423,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "ПОВОРОТ ЭКРАНА"
 
-#. TRANSLATION: daphne
+#. TRANSLATION: daphne, melonds
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 градусов"
@@ -6823,13 +6828,8 @@ msgstr "4x (SSAA)"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
-msgid "Disable status messages displayed by the emulator."
-msgstr "Отключает сообщения, отображаемые эмулятором."
-
-#. TRANSLATION: dolphin_triforce
-msgctxt "game_options"
-msgid "DISABLE OSD MESSAGES"
-msgstr "ОТКЛЮЧИТЬ OSD СООБЩЕНИЯ"
+msgid "DISABLE ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6871,15 +6871,10 @@ msgctxt "game_options"
 msgid "Per 1s, 120s total (1320MB|240MB)"
 msgstr "За 1s, всего 120s (1320MB|240MB)"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, melonds
 msgctxt "game_options"
-msgid "Choose whether to show on the display, configuration messages."
-msgstr "Выберите, показывать ли на дисплее сообщения о конфигурации."
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "SHOW OSD MESSAGES"
-msgstr "ПОКАЗАТЬ OSD СООБЩЕНИЯ"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7308,33 +7303,23 @@ msgstr "4M"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose whether or not to limit the framerate."
-msgstr "Выберите, ограничивать ли частоту кадров."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "LIMIT FRAME RATE"
 msgstr "ОГРАНИЧЕНИЕ ЧАСТОТЫ КАДРОВ"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "No Limitation"
-msgstr "Без ограничений"
+msgid "No Limit"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Standard (Default)"
-msgstr "Стандарт (по умолчанию)"
+msgid "As game specifies"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Enhancement. Increase the rendering resolution."
-msgstr "Улучшение. Увеличивает разрешение рендеринга."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enables improved polygon splitting."
-msgstr "Включает улучшенное разделение полигонов."
+msgid "Enhancement. Enables improved polygon splitting."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7343,13 +7328,13 @@ msgstr "ВКЛЮЧИТЬ РАЗДЕЛЕНИЕ ПОЛИГОНОВ"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "0 degrees (Default)"
-msgstr "0 градусов (по умолчанию)"
+msgid "Rotates the screens, to simulate holding the DS sideways."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Swap the Nintendo DS Displays."
-msgstr "Меняет местами экраны Nintendo DS."
+msgid "Swap the position of the dual displays."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7358,8 +7343,8 @@ msgstr "СМЕНА ЭКРАНА"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the screen size."
-msgstr "Выберите размер экрана."
+msgid "Sets the window size to an integer size."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7368,18 +7353,23 @@ msgstr "РАЗМЕР ЭКРАНА"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "1x (Default)"
-msgstr "1x (по умолчанию)"
+msgid "Adjusts the positions of the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the preferred screen layout."
-msgstr "Выберите расположение экранов."
+msgid "Original screen positions"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Natural (Default)"
-msgstr "Натуральное (по умолчанию)"
+msgid "Always enforce vertical"
+msgstr ""
+
+#. TRANSLATION: melonds
+msgctxt "game_options"
+msgid "Always enforce horizontal"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7388,8 +7378,8 @@ msgstr "Гибридное"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the NDS screen sizings."
-msgstr "Выберите размеры экрана NDS."
+msgid "How the window space is distributed between the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7398,8 +7388,8 @@ msgstr "РАЗМЕР ЭКРАНА"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Even (Default)"
-msgstr "Ровный (по умолчанию)"
+msgid "Even"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7408,13 +7398,8 @@ msgstr "Верхний больше"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Emphasize botton"
-msgstr "Нижний больше"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Auto"
-msgstr "Авто"
+msgid "Emphasize bottom"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7428,34 +7413,8 @@ msgstr "Только нижний"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Force integer scaling for pixels on larger displays."
-msgstr ""
-"Принудительное целочисленное масштабирование пикселей на больших дисплеях."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "ЦЕЛОЕ МАСШТАБИРОВАНИЕ"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable cheats for MelonDS."
-msgstr "Включить читы для MelonDS."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable the on screen display."
-msgstr "Включить отображение на экране."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "ENABLE OSD"
-msgstr "ВКЛЮЧИТЬ OSD"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Choose console type."
-msgstr "Выбрать тип консоли."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7464,13 +7423,13 @@ msgstr "ТИП КОНСОЛИ"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DS (default)"
-msgstr "DS (по умолчанию)"
+msgid "DS"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DSi (Experiemental)"
-msgstr "DSi (экспериментальный)"
+msgid "DSi (experiemental)"
+msgstr ""
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -9325,6 +9284,115 @@ msgstr "ПРОПУСТИТЬ ВСТУПИТЕЛЬНЫЕ РОЛИКИ"
 msgctxt "game_options"
 msgid "Show (Default)"
 msgstr "Показать (По умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Force the emulator to run at this resolution."
+#~ msgstr "Принудительно запускать эмулятор с этим разрешением."
+
+#~ msgctxt "game_options"
+#~ msgid "Disable status messages displayed by the emulator."
+#~ msgstr "Отключает сообщения, отображаемые эмулятором."
+
+#~ msgctxt "game_options"
+#~ msgid "DISABLE OSD MESSAGES"
+#~ msgstr "ОТКЛЮЧИТЬ OSD СООБЩЕНИЯ"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether to show on the display, configuration messages."
+#~ msgstr "Выберите, показывать ли на дисплее сообщения о конфигурации."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW OSD MESSAGES"
+#~ msgstr "ПОКАЗАТЬ OSD СООБЩЕНИЯ"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether or not to limit the framerate."
+#~ msgstr "Выберите, ограничивать ли частоту кадров."
+
+#~ msgctxt "game_options"
+#~ msgid "No Limitation"
+#~ msgstr "Без ограничений"
+
+#~ msgctxt "game_options"
+#~ msgid "Standard (Default)"
+#~ msgstr "Стандарт (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enhancement. Increase the rendering resolution."
+#~ msgstr "Улучшение. Увеличивает разрешение рендеринга."
+
+#~ msgctxt "game_options"
+#~ msgid "Enables improved polygon splitting."
+#~ msgstr "Включает улучшенное разделение полигонов."
+
+#~ msgctxt "game_options"
+#~ msgid "0 degrees (Default)"
+#~ msgstr "0 градусов (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Swap the Nintendo DS Displays."
+#~ msgstr "Меняет местами экраны Nintendo DS."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the screen size."
+#~ msgstr "Выберите размер экрана."
+
+#~ msgctxt "game_options"
+#~ msgid "1x (Default)"
+#~ msgstr "1x (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the preferred screen layout."
+#~ msgstr "Выберите расположение экранов."
+
+#~ msgctxt "game_options"
+#~ msgid "Natural (Default)"
+#~ msgstr "Натуральное (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the NDS screen sizings."
+#~ msgstr "Выберите размеры экрана NDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Even (Default)"
+#~ msgstr "Ровный (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "Emphasize botton"
+#~ msgstr "Нижний больше"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto"
+#~ msgstr "Авто"
+
+#~ msgctxt "game_options"
+#~ msgid "Force integer scaling for pixels on larger displays."
+#~ msgstr ""
+#~ "Принудительное целочисленное масштабирование пикселей на больших дисплеях."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable cheats for MelonDS."
+#~ msgstr "Включить читы для MelonDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the on screen display."
+#~ msgstr "Включить отображение на экране."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE OSD"
+#~ msgstr "ВКЛЮЧИТЬ OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose console type."
+#~ msgstr "Выбрать тип консоли."
+
+#~ msgctxt "game_options"
+#~ msgid "DS (default)"
+#~ msgstr "DS (по умолчанию)"
+
+#~ msgctxt "game_options"
+#~ msgid "DSi (Experiemental)"
+#~ msgstr "DSi (экспериментальный)"
 
 #~ msgctxt "game_options"
 #~ msgid ""

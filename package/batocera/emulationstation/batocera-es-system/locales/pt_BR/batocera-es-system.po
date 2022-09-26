@@ -20,8 +20,8 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "Force the emulator to run at this resolution."
-msgstr "Força o emulador a ser executado nesta resolução."
+msgid "Set the display's resolution. Does not affect the rendering resolution."
+msgstr ""
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -515,6 +515,21 @@ msgstr "Ponto"
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Desativado"
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+msgctxt "game_options"
+msgid "Hides borders on many games. Some games used the borders."
+msgstr "Oculta bordas em muitos jogos. Alguns jogos usam as bordas."
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, vice
+msgctxt "game_options"
+msgid "ZOOM (HIDE BORDERS)"
+msgstr "AMPLIAR (OCULTAR BORDAS)"
+
+#. TRANSLATION: libretro/bluemsx
+msgctxt "game_options"
+msgid "MSX2"
+msgstr ""
 
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
@@ -1808,12 +1823,12 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprites per line limit."
 msgstr "Aprimoramento. Remove o limite de oito imagens por linha."
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Vertical"
 msgstr "Vertical"
@@ -2136,16 +2151,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Scorpion 256K"
 msgstr ""
-
-#. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
-msgid "Hides borders on many games. Some games used the borders."
-msgstr "Oculta bordas em muitos jogos. Alguns jogos usam as bordas."
-
-#. TRANSLATION: libretro/fuse, vice
-msgctxt "game_options"
-msgid "ZOOM (HIDE BORDERS)"
-msgstr "AMPLIAR (OCULTAR BORDAS)"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2630,7 +2635,7 @@ msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr "COMPARTILHE A ARTE DE MAME"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, melonds
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick
 msgctxt "game_options"
 msgid "On (Default)"
 msgstr "Ligado (Padrão)"
@@ -4486,7 +4491,7 @@ msgctxt "game_options"
 msgid "4.5x (1440x1080)"
 msgstr "4.5x (1440x1080)"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3, ...
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automático"
@@ -6433,7 +6438,7 @@ msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Forçar 4:3"
 
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Rotate the screen with the emulator."
 msgstr "Gire a tela com o emulador."
@@ -6443,7 +6448,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "ROTAÇÃO DA TELA"
 
-#. TRANSLATION: daphne
+#. TRANSLATION: daphne, melonds
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 graus"
@@ -6851,13 +6856,8 @@ msgstr "4x (SSAA)"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
-msgid "Disable status messages displayed by the emulator."
-msgstr "Desative as mensagens de estado exibidas pelo emulador."
-
-#. TRANSLATION: dolphin_triforce
-msgctxt "game_options"
-msgid "DISABLE OSD MESSAGES"
-msgstr "DISATIVAR MENSAGENS DE IMAGEM SOBREPOSTA NA TELA (OSD)"
+msgid "DISABLE ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6899,15 +6899,10 @@ msgctxt "game_options"
 msgid "Per 1s, 120s total (1320MB|240MB)"
 msgstr "Por 1s, 120s no total (1320MB|240MB)"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, melonds
 msgctxt "game_options"
-msgid "Choose whether to show on the display, configuration messages."
-msgstr "Escolha se deseja exibir no visor as mensagens de configuração."
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "SHOW OSD MESSAGES"
-msgstr "MOSTRAR MENSAGENS NA TELA"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7337,33 +7332,23 @@ msgstr "4M"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose whether or not to limit the framerate."
-msgstr "Escolha se deseja ou não limitar a taxa de quadros."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "LIMIT FRAME RATE"
 msgstr "LIMITAR TAXA DE QUADROS"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "No Limitation"
-msgstr "Sem Limitação"
+msgid "No Limit"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Standard (Default)"
-msgstr "Padrão (Padrão)"
+msgid "As game specifies"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Enhancement. Increase the rendering resolution."
-msgstr "Aprimoramento. Aumente a resolução de renderização."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enables improved polygon splitting."
-msgstr "Ativa a divisão de polígonos aprimorada."
+msgid "Enhancement. Enables improved polygon splitting."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7372,13 +7357,13 @@ msgstr "ATIVAR A DIVISÃO DE POLÍGONOS"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "0 degrees (Default)"
-msgstr "0 graus (Padrão)"
+msgid "Rotates the screens, to simulate holding the DS sideways."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Swap the Nintendo DS Displays."
-msgstr "Troca as telas do Nintendo DS."
+msgid "Swap the position of the dual displays."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7387,8 +7372,8 @@ msgstr "TROCA DE TELA"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the screen size."
-msgstr "Escolha o tamanho da tela."
+msgid "Sets the window size to an integer size."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7397,18 +7382,23 @@ msgstr "TAMANHO DA TELA"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "1x (Default)"
-msgstr "1x (Padrão)"
+msgid "Adjusts the positions of the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the preferred screen layout."
-msgstr "Escolha a disposição de tela preferido."
+msgid "Original screen positions"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Natural (Default)"
-msgstr "Natural (Padrão)"
+msgid "Always enforce vertical"
+msgstr ""
+
+#. TRANSLATION: melonds
+msgctxt "game_options"
+msgid "Always enforce horizontal"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7417,8 +7407,8 @@ msgstr "Híbrido"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the NDS screen sizings."
-msgstr "Escolha os tamanhos de tela do NDS."
+msgid "How the window space is distributed between the screens."
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7427,8 +7417,8 @@ msgstr "TAMANHO DA TELA"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Even (Default)"
-msgstr "Par (Padrão)"
+msgid "Even"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7437,13 +7427,8 @@ msgstr "Enfatizar tela superior"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Emphasize botton"
-msgstr "Enfatizar tela inferior"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Auto"
-msgstr "Automático"
+msgid "Emphasize bottom"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7457,33 +7442,8 @@ msgstr "Inferior apenas"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Force integer scaling for pixels on larger displays."
-msgstr "Força a escala de números inteiros para pixels em telas maiores."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "ESCALA INTEIRA"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable cheats for MelonDS."
-msgstr "Habilite trapaças no MelonDS."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable the on screen display."
-msgstr "Ative a exibição na tela."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "ENABLE OSD"
-msgstr "ATIVAR IMAGEM SOBREPOSTA NA TELA (OSD)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Choose console type."
-msgstr "Escolha o tipo de console."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7492,13 +7452,13 @@ msgstr "TIPO DE CONSOLE"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DS (default)"
-msgstr "DS (padrão)"
+msgid "DS"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DSi (Experiemental)"
-msgstr "DSi (Experimental)"
+msgid "DSi (experiemental)"
+msgstr ""
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -9356,6 +9316,114 @@ msgstr "PULAR VÍDEOS DE INTRODUÇÃO"
 msgctxt "game_options"
 msgid "Show (Default)"
 msgstr "Mostrar (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Force the emulator to run at this resolution."
+#~ msgstr "Força o emulador a ser executado nesta resolução."
+
+#~ msgctxt "game_options"
+#~ msgid "Disable status messages displayed by the emulator."
+#~ msgstr "Desative as mensagens de estado exibidas pelo emulador."
+
+#~ msgctxt "game_options"
+#~ msgid "DISABLE OSD MESSAGES"
+#~ msgstr "DISATIVAR MENSAGENS DE IMAGEM SOBREPOSTA NA TELA (OSD)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether to show on the display, configuration messages."
+#~ msgstr "Escolha se deseja exibir no visor as mensagens de configuração."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW OSD MESSAGES"
+#~ msgstr "MOSTRAR MENSAGENS NA TELA"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether or not to limit the framerate."
+#~ msgstr "Escolha se deseja ou não limitar a taxa de quadros."
+
+#~ msgctxt "game_options"
+#~ msgid "No Limitation"
+#~ msgstr "Sem Limitação"
+
+#~ msgctxt "game_options"
+#~ msgid "Standard (Default)"
+#~ msgstr "Padrão (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enhancement. Increase the rendering resolution."
+#~ msgstr "Aprimoramento. Aumente a resolução de renderização."
+
+#~ msgctxt "game_options"
+#~ msgid "Enables improved polygon splitting."
+#~ msgstr "Ativa a divisão de polígonos aprimorada."
+
+#~ msgctxt "game_options"
+#~ msgid "0 degrees (Default)"
+#~ msgstr "0 graus (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Swap the Nintendo DS Displays."
+#~ msgstr "Troca as telas do Nintendo DS."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the screen size."
+#~ msgstr "Escolha o tamanho da tela."
+
+#~ msgctxt "game_options"
+#~ msgid "1x (Default)"
+#~ msgstr "1x (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the preferred screen layout."
+#~ msgstr "Escolha a disposição de tela preferido."
+
+#~ msgctxt "game_options"
+#~ msgid "Natural (Default)"
+#~ msgstr "Natural (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the NDS screen sizings."
+#~ msgstr "Escolha os tamanhos de tela do NDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Even (Default)"
+#~ msgstr "Par (Padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "Emphasize botton"
+#~ msgstr "Enfatizar tela inferior"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto"
+#~ msgstr "Automático"
+
+#~ msgctxt "game_options"
+#~ msgid "Force integer scaling for pixels on larger displays."
+#~ msgstr "Força a escala de números inteiros para pixels em telas maiores."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable cheats for MelonDS."
+#~ msgstr "Habilite trapaças no MelonDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the on screen display."
+#~ msgstr "Ative a exibição na tela."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE OSD"
+#~ msgstr "ATIVAR IMAGEM SOBREPOSTA NA TELA (OSD)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose console type."
+#~ msgstr "Escolha o tipo de console."
+
+#~ msgctxt "game_options"
+#~ msgid "DS (default)"
+#~ msgstr "DS (padrão)"
+
+#~ msgctxt "game_options"
+#~ msgid "DSi (Experiemental)"
+#~ msgstr "DSi (Experimental)"
 
 #~ msgctxt "game_options"
 #~ msgid ""
