@@ -85,10 +85,15 @@ then
 fi
 
 echo "Architecture: ${V_BOARD}"
-if test -e /sys/firmware/devicetree/base/model
+V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+if test -z "${V_BOARD_MODEL}"
 then
-    DTMODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
-    echo "Model: ${DTMODEL}"
+    # give an other chance with dmi
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+if test -n "${V_BOARD_MODEL}"
+then
+    echo "Model: ${V_BOARD_MODEL}"
 fi
 
 if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"

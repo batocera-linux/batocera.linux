@@ -57,6 +57,7 @@ aplay -l                > "${DSYSTEM}/aplay-l.txt"
 which glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
 which xrandr  >/dev/null && xrandr     > "${DSYSTEM}/xrandr.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
+wpctl status            > "${DSYSTEM}/wireplumber.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
 batocera-systems        > "${DSYSTEM}/bios.txt"
@@ -76,7 +77,7 @@ f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 f_cp /var/log/bluetooth-agent.log                             "${DSYSTEM}"
 
 # Emulators configs
-d_cp /userdata/system/configs                           "${TMPDIR}/configs"
+#d_cp /userdata/system/configs                           "${TMPDIR}/configs", disabled, too big
 
 # joysticks
 DJOYS="${TMPDIR}/joysticks"
