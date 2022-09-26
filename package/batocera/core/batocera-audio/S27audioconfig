@@ -12,14 +12,32 @@ apply_audioconfig() {
     VOLUME=$3
 
     EXITCODE=0
-    if batocera-audio set "${DEVICE}"
-       then
-	   if ! batocera-audio set-profile "${PROFILE}"
-	   then
-	       EXITCODE=1
-	   fi
+
+    # profile do card+profile
+    if test -n "${PROFILE}"
+    then
+	# set card profile
+	if batocera-audio set-profile "${PROFILE}"
+	then
+	    if test -n "${DEVICE}"
+	    then
+		# then set the default sink
+		if ! batocera-audio set "${DEVICE}"
+		then
+		    EXITCODE=1
+		fi
+	    fi
+	else
+	    EXITCODE=1
+	fi
     else
-	EXITCODE=1
+	if test -n "${DEVICE}"
+	then
+	    if ! batocera-audio set "${DEVICE}"
+	    then
+		EXITCODE=1
+	    fi
+	fi
     fi
 
     # always apply audio volume at last on the selected output
