@@ -12,4 +12,8 @@ BATOCERA_SETTINGS_CONF_OPTS = \
   -Dget_exe_name=batocera-settings-get \
   -Dset_exe_name=batocera-settings-set
 
+define BATOCERA_SETTINGS_INSTALL_TARGET_CMDS
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-settings/batocera-settings-get-master $(TARGET_DIR)/usr/bin/batocera-settings-get-master
+endef
+
 $(eval $(meson-package))
