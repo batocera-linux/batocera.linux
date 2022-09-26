@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Apr 24, 2022
-YUZU_VERSION = 7f77aafe41051c5fa8c7729e8743af2c09f3365e
+YUZU_VERSION = 465c46387d38c9fd0c14ad856fb22edb7c2858d7
 YUZU_SITE = https://github.com/yuzu-emu/yuzu.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
@@ -24,6 +24,7 @@ YUZU_CONF_OPTS += -DENABLE_SDL2=ON
 YUZU_CONF_OPTS += -DARCHITECTURE_x86_64=ON
 YUZU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 YUZU_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
+YUZU_CONF_OPTS += -DBoost_NO_WARN_NEW_VERSIONS=ON
 
 YUZU_CONF_ENV += LDFLAGS=-lpthread ARCHITECTURE_x86_64=1
 

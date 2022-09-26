@@ -8,5 +8,5 @@ class YuzuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
 
-        #commandArray = ["/usr/bin/yuzu", "-f", "-g", rom ]
-        return Command.Command(array=commandArray)
+        commandArray = ["/usr/bin/yuzu", "-f", "-g", rom ]
+        return Command.Command(array=commandArray, env={"QT_QPA_PLATFORM":"xcb"})
