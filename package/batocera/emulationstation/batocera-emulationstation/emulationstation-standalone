@@ -38,11 +38,11 @@ do
     effective_output=$(batocera-resolution currentOutput)
     if test -n "${effective_output}"
     then
-	display_rotate=$(/usr/bin/batocera-settings-get "display.rotate.${effective_output}")
+	display_rotate=$(/usr/bin/batocera-settings-get-master "display.rotate.${effective_output}")
     fi
     if test -z "${display_rotate}"
     then
-	display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+	display_rotate="$(/usr/bin/batocera-settings-get-master display.rotate)"
     fi
     ###
 
