@@ -49,6 +49,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 	BATOCERA_SYSTEM_ARCH=x86
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 	BATOCERA_SYSTEM_ARCH=x86_64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_STEAMDECK),y)
+	BATOCERA_SYSTEM_ARCH=steamdeck
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_PS4),y)
 	BATOCERA_SYSTEM_ARCH=ps4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ZNVER2),y)
@@ -91,7 +93,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# sysconfigs (default batocera.conf for boards)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/sysconfigs
-        test -d $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH} && cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* $(TARGET_DIR)/usr/share/batocera/sysconfigs
+        if test -d $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}; then cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* $(TARGET_DIR)/usr/share/batocera/sysconfigs; fi
 
 	# mounts
 	mkdir -p $(TARGET_DIR)/boot $(TARGET_DIR)/overlay $(TARGET_DIR)/userdata
