@@ -8470,6 +8470,21 @@ mame:
                     choices:
                         "Enabled":            1
                         "Disabled (Default)": 0
+                use_mouse:
+                    group: ADVANCED OPTIONS
+                    prompt:      ENABLE MOUSE
+                    description: Enable mouse input for trackballs, spinners, lightguns (if no gun connected), and similar controls
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
+#                Placeholder for ManyMouse integration or SDL2 multi mouse support
+#                multimouse:
+#                    group: ADVANCED OPTIONS
+#                    prompt:      MULTI MOUSE
+#                    description: Separate inputs for multiple trackballs, spinners, or other mice (may require manual mapping)
+#                    choices:
+#                        "Enabled":            1
+#                        "Disabled (Default)": 0
        neogeo:
             cfeatures:
                 altlayout:
