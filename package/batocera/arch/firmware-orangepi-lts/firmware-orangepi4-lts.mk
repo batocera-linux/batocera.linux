@@ -3,8 +3,8 @@
 # firmware-orangepi-lts
 #
 ################################################################################
-
-FIRMWARE_ORANGEPI_LTS_VERSION = fed041f02d02c5e257d033db2144bfc1c7f5e91e
+#Version: Commits on Sep 29, 2022
+FIRMWARE_ORANGEPI_LTS_VERSION = 4159bc34f3f6a25732fe59e3d92e6658f17e45ce
 FIRMWARE_ORANGEPI_LTS_SITE = $(call github,dmanlfc,opi4-lts-firmware,$(FIRMWARE_ORANGEPI_LTS_VERSION))
 
 FIRMWARE_ORANGEPI_LTS_TARGET_DIR=$(TARGET_DIR)/lib/firmware

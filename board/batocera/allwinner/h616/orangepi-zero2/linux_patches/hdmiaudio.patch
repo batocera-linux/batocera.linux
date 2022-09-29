@@ -1,0 +1,15 @@
+diff --git a/sound/soc/sunxi/sun50i-sndhdmi.c b/sound/soc/sunxi/sun50i-sndhdmi.c
+old mode 100755
+new mode 100644
+index 484b8d3e6f..56c04497b0
+--- a/sound/soc/sunxi/sun50i-sndhdmi.c
++++ b/sound/soc/sunxi/sun50i-sndhdmi.c
+@@ -79,7 +79,7 @@ static struct snd_soc_ops sunxi_sound_hdmi_ops = {
+ 
+ SND_SOC_DAILINK_DEFS(audio,
+         DAILINK_COMP_ARRAY(COMP_EMPTY()),
+-        DAILINK_COMP_ARRAY(COMP_CODEC("hdmi-audio-codec.4.auto", "i2s-hifi")),
++        DAILINK_COMP_ARRAY(COMP_CODEC("hdmi-audio-codec.2.auto", "i2s-hifi")),
+         DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ static struct snd_soc_dai_link sunxi_dailink = {
