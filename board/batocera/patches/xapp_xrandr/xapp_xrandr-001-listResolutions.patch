@@ -1,5 +1,5 @@
 diff --git a/xrandr.c b/xrandr.c
-index fd1ec9a..14d9079 100644
+index fd1ec9a..79bc1ff 100644
 --- a/xrandr.c
 +++ b/xrandr.c
 @@ -2683,6 +2683,8 @@ main (int argc, char **argv)
@@ -28,7 +28,7 @@ index fd1ec9a..14d9079 100644
  	if (!strcmp ("--newmode", argv[i]))
  	{
  	    umode_t  *m = calloc (1, sizeof (umode_t));
-@@ -3719,6 +3731,83 @@ main (int argc, char **argv)
+@@ -3719,6 +3731,84 @@ main (int argc, char **argv)
  	}
  	exit (0);
      }
@@ -97,8 +97,9 @@ index fd1ec9a..14d9079 100644
 +	  crtc_t	    *cur_crtc = output->crtc_info;
 +	  XRRCrtcInfo	    *crtc_info = cur_crtc ? cur_crtc->crtc_info : NULL;
 +	  XRRModeInfo	    *cur_mode = output->mode_info;
++	  XRROutputInfo     *output_info = output->output_info;
 +
-+	  if(cur_mode) {
++	  if(cur_mode && output_info->connection == RR_Connected) {
 +	    if (crtc_info) {
 +	      printf ("%dx%d\n", crtc_info->width, crtc_info->height);
 +	    } else {

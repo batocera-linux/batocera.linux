@@ -16,6 +16,8 @@ touch "${REBOOT_FLAG}" || exit 1
 # environment
 export HOME=/userdata/system
 
+batocera-switch-screen-checker --init
+
 GAMELAUNCH=1
 while test -e "${REBOOT_FLAG}"
 do
@@ -28,7 +30,14 @@ do
 
     ### video output ###
     # because of xinerama breaking es, enable only one screen at a time
-    settings_output="$(batocera-settings-get global.videooutput)"
+    # /var/run/switch_screen_request is a file to request screen switch
+    if test -e "/var/run/switch_screen_request"
+    then
+	settings_output=$(cat "/var/run/switch_screen_request")
+	rm "/var/run/switch_screen_request"
+    else
+	settings_output="$(batocera-settings-get global.videooutput)"
+    fi
     batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
     ###################
 
@@ -146,6 +155,9 @@ do
     else
 	GAMELAUNCHOPT="--no-startup-game"
     fi
+
+    # save the current output in which es is started (used to switch screen, when unplugged)
+    batocera-resolution currentOutput > "/var/run/switch_screen_current"
 
     cd /userdata # es need a PWD
     %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
