@@ -3,7 +3,7 @@
 # Suspend or shutdown
 #
 
-SUSPEND_MODE="$(/usr/bin/batocera-settings-get system.suspendmode)"
+SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
 
 ###############################
 command="$1"
