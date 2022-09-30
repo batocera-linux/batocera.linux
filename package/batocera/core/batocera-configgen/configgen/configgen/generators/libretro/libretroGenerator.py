@@ -292,7 +292,7 @@ class LibretroGenerator(Generator):
                 corePath = 'lr-' + system.config['core']
             else:
                 corePath = system.config['core']
-            commandArray.append("/var/run/{}.cmd".format(corePath))
+            commandArray.append("/var/run/cmdfiles/{}.cmd".format(os.path.splitext(os.path.basename(rom))[0]))
 
         if dontAppendROM == False:
             commandArray.append(rom)
