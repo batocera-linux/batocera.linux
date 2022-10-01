@@ -319,10 +319,17 @@ def generateMAMEConfigs(playersControllers, system, rom):
         os.makedirs("/userdata/saves/mame/plugins/")
     commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
 
+    # Delete old cmd files & prepare path
+    cmdPath = "/var/run/cmdfiles/"
+    if not os.path.exists(cmdPath):
+        os.makedirs(cmdPath)
+    cmdFileList = os.listdir(cmdPath)
+    for file in cmdFileList:
+        if file.endswith(".cmd"):
+            os.remove(os.path.join(cmdPath, file))
+
     # Write command line file
-    cmdFilename = "/var/run/{}.cmd".format(corePath)
-    if os.path.exists(cmdFilename):
-        os.remove(cmdFilename)
+    cmdFilename = "{}{}.cmd".format(cmdPath, romDrivername)
     cmdFile = open(cmdFilename, "w")
     cmdFile.write(' '.join(commandLine))
     cmdFile.close()
