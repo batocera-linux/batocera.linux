@@ -193,6 +193,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_OPENVPN                              # VPN support
 	select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
 	select BR2_PACKAGE_UMTOOL								# command line tool for configuring Ultimarc arcade hardware
+	select BR2_PACKAGE_PYTHON_HIDAPI                        # Communication with USB HID devices via Python
 
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
