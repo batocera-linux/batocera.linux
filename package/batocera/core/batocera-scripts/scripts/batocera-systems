@@ -680,6 +680,12 @@ systems = {
     "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip" },
                                                 { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
 
+    # ---------- Playstation Vita ---------- #
+    # https://www.playstation.com/en-us/support/hardware/psvita/system-software/
+    # http://dus01.psp2.update.playstation.net/update/psp2/image/2022_0209/sd_59dcf059d3328fb67be7e51f8aa33418/PSP2UPDAT.PUP?dest=us
+    "psvita":   { "name": "PS Vita", "biosFiles":  [ { "md5": "59dcf059d3328fb67be7e51f8aa33418", "file": "bios/psvita/PSP2UPDAT.PUP" },
+                                                { "md5": "f2c7b12fe85496ec88a0391b514d6e3b", "file": "bios/psvita/PSVUPDAT.PUP"} ] },
+
     # ---------- GCE Vectrex ---------- #
     # Not required for libretro-vecx, the default emulator
     # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },

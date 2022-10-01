@@ -766,6 +766,9 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	# Arduboy
 	select BR2_PACKAGE_LIBRETRO_ARDUOUS          # ALL
 
+	# Sony PS Vita
+	select BR2_PACKAGE_VITA3K                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
 	help
 		Handheld cores/emulators
 

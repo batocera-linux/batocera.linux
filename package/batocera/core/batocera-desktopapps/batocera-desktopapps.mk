@@ -141,6 +141,13 @@ ifeq ($(BR2_PACKAGE_XENIA),y)
   BATOCERA_DESKTOPAPPS_ICONS   += xenia.png
 endif
 
+# vita3k
+ifeq ($(BR2_PACKAGE_VITA3K),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-vita3k
+  BATOCERA_DESKTOPAPPS_APPS    += vita3k-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
