@@ -20,7 +20,7 @@ Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 951e19231da2..3becb0186062 100644
+index 76e97cbe2512..af44a16c0c4a 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -752,7 +752,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
@@ -47,10 +47,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index ad2624c30843..efd316550807 100644
+index 7131156c1f2c..65a8334a188b 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -268,6 +268,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -233,6 +233,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
  
  	/* Always apply the frmsize constraint of the coded end. */
@@ -83,7 +83,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 3becb0186062..a379e43147fb 100644
+index af44a16c0c4a..9852c3519f56 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
 +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
 @@ -671,8 +671,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
@@ -98,7 +98,7 @@ index 3becb0186062..a379e43147fb 100644
  		  FRAME_MBS_ONLY_FLAG);
  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index efd316550807..c88e817cac0a 100644
+index 65a8334a188b..f4c5ee4a1e26 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -29,8 +29,11 @@
@@ -147,10 +147,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 38 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-index df34b2a283bc..287488016ff2 100644
+index 04af03285a20..ae585828c388 100644
 --- a/drivers/media/v4l2-core/v4l2-common.c
 +++ b/drivers/media/v4l2-core/v4l2-common.c
-@@ -336,6 +336,33 @@ static inline unsigned int v4l2_format_block_height(const struct v4l2_format_inf
+@@ -333,6 +333,33 @@ static inline unsigned int v4l2_format_block_height(const struct v4l2_format_inf
  	return info->block_h[plane];
  }
  
@@ -184,7 +184,7 @@ index df34b2a283bc..287488016ff2 100644
  void v4l2_apply_frmsize_constraints(u32 *width, u32 *height,
  				    const struct v4l2_frmsize_stepwise *frmsize)
  {
-@@ -371,37 +398,19 @@ int v4l2_fill_pixfmt_mp(struct v4l2_pix_format_mplane *pixfmt,
+@@ -368,37 +395,19 @@ int v4l2_fill_pixfmt_mp(struct v4l2_pix_format_mplane *pixfmt,
  
  	if (info->mem_planes == 1) {
  		plane = &pixfmt->plane_fmt[0];
@@ -229,7 +229,7 @@ index df34b2a283bc..287488016ff2 100644
  		}
  	}
  	return 0;
-@@ -425,22 +434,12 @@ int v4l2_fill_pixfmt(struct v4l2_pix_format *pixfmt, u32 pixelformat,
+@@ -422,22 +431,12 @@ int v4l2_fill_pixfmt(struct v4l2_pix_format *pixfmt, u32 pixelformat,
  	pixfmt->width = width;
  	pixfmt->height = height;
  	pixfmt->pixelformat = pixelformat;
@@ -284,7 +284,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  3 files changed, 8 insertions(+)
 
 diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-index 287488016ff2..01f8a50586eb 100644
+index ae585828c388..5bafbdbe30b0 100644
 --- a/drivers/media/v4l2-core/v4l2-common.c
 +++ b/drivers/media/v4l2-core/v4l2-common.c
 @@ -267,6 +267,9 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
@@ -298,25 +298,25 @@ index 287488016ff2..01f8a50586eb 100644
  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
  		{ .format = V4L2_PIX_FMT_YUV411P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 1 },
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 51289d4741dc..e6f2c65e24ca 100644
+index 05d5db3d85e5..fe43d785414c 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1299,6 +1299,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+@@ -1282,6 +1282,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
 +	case V4L2_PIX_FMT_NV15:		descr = "10-bit Y/CbCr 4:2:0 (Packed)"; break;
 +	case V4L2_PIX_FMT_NV20:		descr = "10-bit Y/CbCr 4:2:2 (Packed)"; break;
- 	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
- 	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
- 	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+ 	case V4L2_PIX_FMT_NV12M:	descr = "Y/CbCr 4:2:0 (N-C)"; break;
+ 	case V4L2_PIX_FMT_NV21M:	descr = "Y/CrCb 4:2:0 (N-C)"; break;
+ 	case V4L2_PIX_FMT_NV16M:	descr = "Y/CbCr 4:2:2 (N-C)"; break;
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index df8b9c486ba1..9845ce720b4e 100644
+index 9260791b8438..169f8ad6fade 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -602,6 +602,9 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+@@ -603,6 +603,9 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
+ #define V4L2_PIX_FMT_HM12    v4l2_fourcc('H', 'M', '1', '2') /*  8  YUV 4:2:0 16x16 macroblocks */
  
 +#define V4L2_PIX_FMT_NV15    v4l2_fourcc('N', 'V', '1', '5') /* 15  Y/CbCr 4:2:0 10-bit packed */
 +#define V4L2_PIX_FMT_NV20    v4l2_fourcc('N', 'V', '2', '0') /* 20  Y/CbCr 4:2:2 10-bit packed */
@@ -387,7 +387,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index c88e817cac0a..d4ae792874bb 100644
+index f4c5ee4a1e26..d8d0eab9e25d 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -27,6 +27,17 @@
@@ -408,7 +408,7 @@ index c88e817cac0a..d4ae792874bb 100644
  static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
  {
  	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
-@@ -212,13 +223,9 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
+@@ -177,13 +188,9 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
  
  	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
  	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -425,7 +425,7 @@ index c88e817cac0a..d4ae792874bb 100644
  }
  
  static int rkvdec_enum_framesizes(struct file *file, void *priv,
-@@ -284,13 +291,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -249,13 +256,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  				       &pix_mp->height,
  				       &coded_desc->frmsize);
  
@@ -459,7 +459,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  2 files changed, 55 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index d4ae792874bb..3cbb1d26b972 100644
+index d8d0eab9e25d..d31344c4acaa 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -38,6 +38,16 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -518,7 +518,7 @@ index d4ae792874bb..3cbb1d26b972 100644
  };
  
  static const struct rkvdec_ctrl_desc rkvdec_h264_ctrl_descs[] = {
-@@ -221,6 +254,7 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
+@@ -186,6 +219,7 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
  {
  	struct v4l2_format *f = &ctx->decoded_fmt;
  
@@ -526,7 +526,7 @@ index d4ae792874bb..3cbb1d26b972 100644
  	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
  	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
  	f->fmt.pix_mp.width = ctx->coded_fmt.fmt.pix_mp.width;
-@@ -276,13 +310,17 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+@@ -241,13 +275,17 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
  	if (WARN_ON(!coded_desc))
  		return -EINVAL;
  
@@ -550,7 +550,7 @@ index d4ae792874bb..3cbb1d26b972 100644
  
  	/* Always apply the frmsize constraint of the coded end. */
  	pix_mp->width = max(pix_mp->width, ctx->coded_fmt.fmt.pix_mp.width);
-@@ -346,6 +384,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
+@@ -322,6 +360,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
  		return ret;
  
  	ctx->decoded_fmt = *f;
@@ -558,7 +558,7 @@ index d4ae792874bb..3cbb1d26b972 100644
  	return 0;
  }
  
-@@ -446,6 +485,14 @@ static int rkvdec_enum_capture_fmt(struct file *file, void *priv,
+@@ -411,6 +450,14 @@ static int rkvdec_enum_capture_fmt(struct file *file, void *priv,
  	if (WARN_ON(!ctx->coded_fmt_desc))
  		return -EINVAL;
  
@@ -574,10 +574,10 @@ index d4ae792874bb..3cbb1d26b972 100644
  		return -EINVAL;
  
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 2f4ea1786b93..c26c472baa6f 100644
+index 52ac3874c5e5..7b6f44ee8a1a 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
 +++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -66,6 +66,7 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
+@@ -62,6 +62,7 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
  struct rkvdec_coded_fmt_ops {
  	int (*adjust_fmt)(struct rkvdec_ctx *ctx,
  			  struct v4l2_format *f);
@@ -585,7 +585,7 @@ index 2f4ea1786b93..c26c472baa6f 100644
  	int (*start)(struct rkvdec_ctx *ctx);
  	void (*stop)(struct rkvdec_ctx *ctx);
  	int (*run)(struct rkvdec_ctx *ctx);
-@@ -99,6 +100,7 @@ struct rkvdec_ctx {
+@@ -95,6 +96,7 @@ struct rkvdec_ctx {
  	struct v4l2_fh fh;
  	struct v4l2_format coded_fmt;
  	struct v4l2_format decoded_fmt;
@@ -652,7 +652,7 @@ index 88f5f4bb320b..c9a551dbd9bc 100644
  	.stop = rkvdec_h264_stop,
  	.run = rkvdec_h264_run,
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 3cbb1d26b972..bd106b23f4a0 100644
+index d31344c4acaa..d068383aeea8 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -31,7 +31,7 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
@@ -691,11 +691,11 @@ index 3cbb1d26b972..bd106b23f4a0 100644
  		if (ctx->valid_fmt && ctx->valid_fmt != rkvdec_valid_fmt(ctx, ctrl))
 @@ -155,6 +151,9 @@ static const struct rkvdec_ctrls rkvdec_h264_ctrls = {
  
- static const u32 rkvdec_h264_vp9_decoded_fmts[] = {
+ static const u32 rkvdec_h264_decoded_fmts[] = {
  	V4L2_PIX_FMT_NV12,
 +	V4L2_PIX_FMT_NV15,
 +	V4L2_PIX_FMT_NV16,
 +	V4L2_PIX_FMT_NV20,
  };
  
- static const struct rkvdec_ctrl_desc rkvdec_vp9_ctrl_descs[] = {
+ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
