@@ -1,19 +1,19 @@
-From 682121f340fe0b8ec885f9b628e754d2298a32a2 Mon Sep 17 00:00:00 2001
+From de74a350782cc5f42f2f3b58ffd6771c4dea27ab Mon Sep 17 00:00:00 2001
 From: Paolo Sabatino <paolo.sabatino@gmail.com>
-Date: Thu, 16 Jun 2022 19:52:20 +0000
-Subject: [PATCH] fix spreadtrum (sprd) broken bluetooth park link status
+Date: Thu, 16 Jun 2022 19:19:49 +0000
+Subject: [PATCH] fix spreadtrum (sprd) bluetooth broken park link status
 
 ---
  drivers/bluetooth/hci_ldisc.c | 6 ++++++
  include/net/bluetooth/hci.h   | 6 ++++++
- net/bluetooth/hci_sync.c      | 2 +-
+ net/bluetooth/hci_core.c      | 2 +-
  3 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index f537673ede1..a3222cb727e 100644
+index 5ed2cfa7da1..0c2448e73c1 100644
 --- a/drivers/bluetooth/hci_ldisc.c
 +++ b/drivers/bluetooth/hci_ldisc.c
-@@ -655,6 +655,12 @@ static int hci_uart_register_dev(struct hci_uart *hu)
+@@ -652,6 +652,12 @@ static int hci_uart_register_dev(struct hci_uart *hu)
  	hdev->setup = hci_uart_setup;
  	SET_HCIDEV_DEV(hdev, hu->tty->dev);
  
@@ -27,27 +27,27 @@ index f537673ede1..a3222cb727e 100644
  		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
  
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 656b609cb68..d2dc448501c 100644
+index 2ed6af29352..5fef855cfdf 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
-@@ -281,6 +281,12 @@ enum {
+@@ -262,6 +262,12 @@ enum {
  	 * during the hdev->setup vendor callback.
  	 */
- 	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
+ 	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
 +
 +	/*
-+	* Device declares that support Park link status, but it really
-+	* does not support it and fails to initialize
-+	*/
-+	HCI_QUIRK_BROKEN_PARK_LINK_STATUS,
++	 * Device declares that support Park link status, but it really
++	 * does not support it and fails to initialize
++	 */
++	HCI_QUIRK_BROKEN_PARK_LINK_STATUS
  };
  
  /* HCI device flags */
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 13600bf120b..a6437cd0935 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3171,7 +3171,7 @@ static int hci_setup_link_policy_sync(struct hci_dev *hdev)
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index cdca5373230..123ce7042bb 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -511,7 +511,7 @@ static void hci_setup_link_policy(struct hci_request *req)
  		link_policy |= HCI_LP_HOLD;
  	if (lmp_sniff_capable(hdev))
  		link_policy |= HCI_LP_SNIFF;

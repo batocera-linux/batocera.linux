@@ -25,9 +25,9 @@ index ef463da4b6a..f9a48ef07ff 100644
 --- a/drivers/net/wireless/Makefile
 +++ b/drivers/net/wireless/Makefile
 @@ -21,6 +21,7 @@ obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
- obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
  obj-$(CONFIG_HFLPS170) += hflps170/
  obj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/
+ obj-$(CONFIG_WLAN_VENDOR_QUANTENNA) += quantenna/
 +obj-$(CONFIG_SPARD_WLAN_SUPPORT) += uwe5622/
  
  # 16-bit wireless PCMCIA client drivers
