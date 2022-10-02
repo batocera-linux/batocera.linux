@@ -29,6 +29,10 @@ then
 	curl http://localhost:1234/quit
     fi
 else
+    # es not (yet) running exit
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/runningGame)
+    test $? != 0                 && exit 0
+
     # seems that when the screen is no more available, es exists automatically
     SUPPOSED_OUTPUT=$(cat /var/run/switch_screen_current)
     CURRENT_OUTPUT=$(batocera-resolution currentOutput)
