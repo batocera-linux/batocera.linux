@@ -145,6 +145,12 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun):
         specialvalue = retroarchspecials['start']
         input = controller.inputs['start']
         config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
+    # Adjustment for Sony touchpad
+    if "Sony Interactive Entertainment" in controller.configName or controller.configName == "Wireless Controller":
+        mouseShift = getMouseShift(system)
+        if mouseShift > 0:
+            mouseIndex = mouseShift + int(controller.player) - 1
+            config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
     return config
 
 
@@ -173,3 +179,18 @@ def getAnalogMode(controller, system):
             if (controller.inputs[dirkey].type == 'button') or (controller.inputs[dirkey].type == 'hat'):
                 return '1'
     return '0'
+
+# Scan mouse devices, see if we need to shift them.
+# Returns the number of mouse devices found that are not Sony controllers.
+# If > 0, the shift will be applied to the controller inputs, otherwise it will be left on the defaults.
+def getMouseShift(system):
+    if not system.name in ['nds', '3ds']:
+        return 0
+
+    mouseCount = 0
+    inputDeviceList = sorted(os.listdir('/dev/input/by-id'))
+    for device in inputDeviceList:
+        if 'event-mouse' in device:
+            if not 'Sony' in device:
+                mouseCount += 1
+    return mouseCount
