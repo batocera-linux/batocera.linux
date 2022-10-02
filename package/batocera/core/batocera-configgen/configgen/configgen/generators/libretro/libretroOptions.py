@@ -1140,7 +1140,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Enable threaded rendering
         coreSettings.save('melonds_threaded_renderer', '"enabled"')
         # Emulate Stylus on Right Stick
-        coreSettings.save('melonds_touch_mode',        '"Joystick"')
+        if system.isOptSet('melonds_touch_mode'):
+            coreSettings.save('melonds_touch_mode',  '"' + system.config['melonds_touch_mode'] + '"')
+        else:
+            coreSettings.save('melonds_touch_mode','"Joystick"')
         # Boot game directly
         if system.isOptSet('melonds_boot_directly'):
             coreSettings.save('melonds_boot_directly', system.config['melonds_boot_directly'])

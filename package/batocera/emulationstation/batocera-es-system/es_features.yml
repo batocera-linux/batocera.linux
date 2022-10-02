@@ -668,6 +668,14 @@ libretro:
                     "hybrid top ratio 3":    Hybrid Top-Ratio3
                     "hybrid bottom ratio 2": Hybrid Bottom-Ratio2
                     "hybrid bottom ratio 3": Hybrid Bottom-Ratio3
+            melonds_touch_mode:
+                prompt:      TOUCH SCREEN MODE
+                description: Select the input type to navigate the touch screen
+                choices:
+                    "None":         Disabled
+                    "Mouse":        Mouse
+                    "Touch Screen": Touch
+                    "Right Stick":  Joystick
     #dolphin:
     dosbox:
       features: [padtokeyboard]
