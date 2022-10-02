@@ -6,7 +6,8 @@ from generators.Generator import Generator
 import controllersConfig
 import os
 from os import path
-import yaml
+import ruamel.yaml
+import ruamel.yaml.util
 from distutils.dir_util import copy_tree
 
 vitaConfig = batoceraFiles.CONF + '/vita3k'
@@ -31,12 +32,11 @@ class Vita3kGenerator(Generator):
         vita3kymlconfig = {}
         if os.path.isfile(vitaConfigFile):
             with open(vitaConfigFile, 'r') as stream:
-                vita3kymlconfig = yaml.safe_load(stream)
+                vita3kymlconfig, indent, block_seq_indent = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
         if vita3kymlconfig is None:
             vita3kymlconfig = {}
-        
-        # [Emulator configuration options]
+         
         # Set the renderer
         if system.isOptSet("vita3k_gfxbackend"):
             vita3kymlconfig["backend-renderer"] = system.config["vita3k_gfxbackend"]
@@ -45,7 +45,7 @@ class Vita3kGenerator(Generator):
         
         # Set the resolution multiplier
         if system.isOptSet("vita3k_resolution"):
-            vita3kymlconfig["resolution-multiplier"] = system.config["vita3k_resolution"]
+            vita3kymlconfig["resolution-multiplier"] = int(system.config["vita3k_resolution"])
         else:
             vita3kymlconfig["resolution-multiplier"] = 1        
         
@@ -59,15 +59,30 @@ class Vita3kGenerator(Generator):
         if system.isOptSet("vita3k_vsync"):
             vita3kymlconfig["v-sync"] = system.config["vita3k_vsync"]
         else:
-            vita3kymlconfig["v-sync"] = True        
+            vita3kymlconfig["v-sync"] = True
 
-        with open(vitaConfigFile, 'w') as file:
-            documents = yaml.safe_dump(vita3kymlconfig, file, default_flow_style=False)
+        # Set the anisotropic filtering
+        if system.isOptSet("vita3k_anisotropic"):
+            vita3kymlconfig["resolution-multiplier"] = int(system.config["vita3k_anisotropic"])
+        else:
+            vita3kymlconfig["resolution-multiplier"] = 1
         
+        # Vita3k is fussy over it's yml file
+        # We try to match it as close as possible but the 'vectors' cause yml formatting issues
+        yaml = ruamel.yaml.YAML()
+        yaml.explicit_start = True
+        yaml.explicit_end = True
+        yaml.indent(mapping=indent, sequence=indent, offset=block_seq_indent)
+        with open(vitaConfigFile, 'w') as fp:
+            yaml.dump(vita3kymlconfig, fp)
+
         # Simplify the rom name (strip the directory & extension)
         begin, end = rom.find('['), rom.rfind(']')
         smplromname = rom[begin+1: end]
-        commandArray = ["/usr/bin/vita3k/Vita3K", "-F", "-c", vitaConfigFile, "-r", smplromname]
+        # becuase of the yml formatting, we don't allow Vita3k to modify it
+        # using the -w & -f options prevents Vuta3k from re-writing & prompting the user in GUI
+        # we wwant to avoid that so roms load staright away
+        commandArray = ["/usr/bin/vita3k/Vita3K", "-F", "-w", "-f", "-c", vitaConfigFile, "-r", smplromname]
 
         return Command.Command(
             array=commandArray,
