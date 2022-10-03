@@ -102,6 +102,9 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/etc/profile.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/xdg.sh $(TARGET_DIR)/etc/profile.d/xdg.sh
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/dbus.sh $(TARGET_DIR)/etc/profile.d/dbus.sh
+
+	# list of modules that doesnt like suspend
+	echo 'SUSPEND_MODULES="rtw88_8822ce snd_pci_acp5x"' > $(TARGET_DIR)/etc/pm/config.d/config
 endef
 
 $(eval $(generic-package))
