@@ -268,9 +268,9 @@ class YuzuGenerator(Generator):
         nplayer = 1
         for playercontroller, pad in sorted(playersControllers.items()):
             if system.isOptSet('p{}_pad'.format(nplayer-1)):
-                yuzuConfig.set("Controls", "player_{}_type".format(nplayer-1), system.config["p{}_pad"].format(nplayer))
+                yuzuConfig.set("Controls", "player_{}_type".format(nplayer-1), system.config["p{}_pad".format(nplayer)])
             else:
-                yuzuConfig.set("Controls", "player_{}_type".format(nplayer-1), str(nplayer-1))
+                yuzuConfig.set("Controls", "player_{}_type".format(nplayer-1), 0)
             yuzuConfig.set("Controls", "player_{}_type\default".format(nplayer-1), "false")
 
             for x in yuzuButtonsMapping:
