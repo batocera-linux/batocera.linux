@@ -116,9 +116,11 @@ function install_theme() {
       gitname=$(git_name "$url")
       cd "$THEMESDIR"
       filezip="${url}/archive/master.zip"
+      res=$(curl -sfI "$filezip" | head -n1 | sed "s:HTTP/.* \([0-9][0-9][0-9]\).*:\1:" )
+      [ x"$res" == x404 ] && filezip="${url}/archive/main.zip"
 
       # Download Process
-      [[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
+      [[ -f "$gitname.zip" ]] && rm -f "$gitname.zip"
       touch "$gitname.zip"
 
       case $TERMINAL in
