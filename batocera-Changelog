@@ -1,7 +1,7 @@
 202x/xx/xx - batocera.linux 36 - Luna Moth
         * add: alsa ucm2 to x86 builds for soundcard compatibility
         * add: Vita3k - PlayStation Vita emulator
-	* add: automatic switch when a new display is plugged or unplugged (on es only for plugging)
+        * add: automatic switch when a new display is plugged or unplugged (on es only for plugging)
         * change: move to pipewire wireplumber audio
         * es: volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
         * bump: pcsx2 to v1.7.3292
@@ -45,6 +45,7 @@
         * fix: slow rpcs3 initial ppu compilation times
         * fix: rpcs3 cache & saves dir
           - note: move existing cache from /userdata/saves/rpcs3 to /userdata/system/cache/rpcs3
+        * fix: can now boot in verbose mode from syslinux (spam down on keyboard while booting)
 
 2022/09/20 - batocera.linux 35 - Monarch Butterfly
         * add: gun support in emulationstation
