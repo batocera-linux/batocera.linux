@@ -5,7 +5,6 @@ import batoceraFiles
 from generators.Generator import Generator
 import shutil
 import os
-from . import daphneControllers
 import controllersConfig
 
 class DaphneGenerator(Generator):
