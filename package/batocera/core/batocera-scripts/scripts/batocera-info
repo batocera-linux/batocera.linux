@@ -95,11 +95,11 @@ then
 fi
 
 echo "Architecture: ${V_BOARD}"
-V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+V_BOARD_MODEL=$(tr -d '\0' < /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 if test -z "${V_BOARD_MODEL}"
 then
     # give an other chance with dmi
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+    V_BOARD_MODEL=$(tr -d '\0' < /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
 if test -n "${V_BOARD_MODEL}"
 then
