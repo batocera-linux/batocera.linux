@@ -185,9 +185,7 @@ class MameGenerator(Generator):
             commandArray += [ "-modesetting" ]
             commandArray += [ "-readconfig" ]
         else:
-            commandArray += [ "-nomodeline_generation" ]
-            commandArray += [ "-nochangeres" ]
-            commandArray += [ "-noswitchres" ]
+            commandArray += [ "-resolution", "{}x{}".format(gameResolution["width"], gameResolution["height"]) ]
 
         # Refresh rate options to help with screen tearing
         # syncrefresh is unlisted, it requires specific display timings and 99.9% of users will get unplayable games.

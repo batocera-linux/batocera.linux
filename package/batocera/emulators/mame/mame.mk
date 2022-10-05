@@ -1,10 +1,10 @@
 ################################################################################
 #
-# MAME
+# mame
 #
 ################################################################################
-# Version.: Release 0.247 - Switchres 2.002l
-MAME_VERSION = gm0247sr002l
+# Version.: Release 0.248 - Switchres 2.002m
+MAME_VERSION = gm0248sr002m
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -14,7 +14,7 @@ MAME_CROSS_OPTS =
 MAME_CFLAGS =
 
 # Limit number of jobs not to eat too much RAM....
-MAME_JOBS = 16
+MAME_JOBS = 17
 
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
