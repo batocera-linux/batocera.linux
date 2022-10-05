@@ -401,4 +401,10 @@ then
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
         for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
     fi
+
+elif test "${MODE}" = "nouveau"
+then
+    echo "Using OpenSource Mesa Nouveau driver" > $LOG
+    test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
+    test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
