@@ -2182,9 +2182,9 @@ index c852eb40c4f7..a366016d6254 100644
  TARGETS += drivers/dma-buf
  TARGETS += drivers/s390x/uvdevice
 +TARGETS += drivers/winesync
+ TARGETS += drivers/net/bonding
+ TARGETS += drivers/net/team
  TARGETS += efivarfs
- TARGETS += exec
- TARGETS += filesystems
 diff --git a/tools/testing/selftests/drivers/winesync/Makefile b/tools/testing/selftests/drivers/winesync/Makefile
 new file mode 100644
 index 000000000000..43b39fdeea10

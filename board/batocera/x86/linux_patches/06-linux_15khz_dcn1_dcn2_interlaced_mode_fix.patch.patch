@@ -1,0 +1,170 @@
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	1970-01-01 01:00:00.000000000 +0100
+@@ -5207,6 +5207,8 @@
+ 			timing_out->flags.HSYNC_POSITIVE_POLARITY = 1;
+ 		if (mode_in->flags & DRM_MODE_FLAG_PVSYNC)
+ 			timing_out->flags.VSYNC_POSITIVE_POLARITY = 1;
++		if (mode_in->flags & DRM_MODE_FLAG_INTERLACE)
++			timing_out->flags.INTERLACE = 1;
+ 	}
+ 
+ 	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
+@@ -5778,7 +5780,7 @@
+ 
+ 	if (recalculate_timing)
+ 		drm_mode_set_crtcinfo(&saved_mode, 0);
+-	else if (!dm_state)
++	else if (!dm_state || mode.flags & DRM_MODE_FLAG_INTERLACE)
+ 		drm_mode_set_crtcinfo(&mode, 0);
+ 
+ 	/*
+@@ -6221,8 +6223,7 @@
+ 	struct dc_stream_state *stream;
+ 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
+ 
+-	if ((mode->flags & DRM_MODE_FLAG_INTERLACE) ||
+-			(mode->flags & DRM_MODE_FLAG_DBLSCAN))
++	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
+ 		return result;
+ 
+ 	/*
+@@ -6884,7 +6885,7 @@
+ 
+ 	aconnector->connector_id = link_index;
+ 	aconnector->dc_link = link;
+-	aconnector->base.interlace_allowed = false;
++	aconnector->base.interlace_allowed = true;
+ 	aconnector->base.doublescan_allowed = false;
+ 	aconnector->base.stereo_allowed = false;
+ 	aconnector->base.dpms = DRM_MODE_DPMS_OFF;
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c	1970-01-01 01:00:00.000000000 +0100
+@@ -2629,6 +2629,9 @@
+ 	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = per_pixel_alpha;
+ 	pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_36BPP;
+ 	/* scaler configuration */
++	pipe_ctx->plane_res.scl_data.lb_params.interleave_en =
++			pipe_ctx->stream->timing.flags.INTERLACE? 1:0;
++
+ 	pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
+ 			pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
+ }
+@@ -3751,8 +3754,7 @@
+ 
+ 	asic_blank_end = (patched_crtc_timing.v_total -
+ 			vesa_sync_start -
+-			patched_crtc_timing.v_border_top)
+-			* interlace_factor;
++			patched_crtc_timing.v_border_top); // * interlace_factor;
+ 
+ 	vertical_line_start = asic_blank_end -
+ 			pipe_ctx->pipe_dlg_param.vstartup_start + 1;
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c	1970-01-01 01:00:00.000000000 +0100
+@@ -577,10 +577,6 @@
+ 		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
+ 		return false;
+ 
+-	/* Temporarily blocking interlacing mode until it's supported */
+-	if (timing->flags.INTERLACE == 1)
+-		return false;
+-
+ 	/* Check maximum number of pixels supported by Timing Generator
+ 	 * (Currently will never fail, in order to fail needs display which
+ 	 * needs more than 8192 horizontal and
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1535,6 +1535,9 @@
+ 		pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->plane_state->per_pixel_alpha;
+ 		ASSERT(pipe_ctx->plane_res.scl_data.lb_params.depth == LB_PIXEL_DEPTH_36BPP);
+ 		/* scaler configuration */
++		pipe_ctx->plane_res.scl_data.lb_params.interleave_en =
++			pipe_ctx->stream->timing.flags.INTERLACE? 1:0;
++
+ 		pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
+ 				pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
+ 	}
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c	1970-01-01 01:00:00.000000000 +0100
+@@ -61,7 +61,8 @@
+ 			v->v_ratio[k] = v->h_ratio[k];
+ 		}
+ 		if (v->interlace_output[k] == 1.0) {
+-			v->v_ratio[k] = 2.0 * v->v_ratio[k];
++			// Commented out: this makes scale and ratio taps validation fail
++			//v->v_ratio[k] = 2.0 * v->v_ratio[k];
+ 		}
+ 		if (v->underscan_output[k] == 1.0) {
+ 			v->h_ratio[k] = v->h_ratio[k] * v->under_scan_factor;
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c	1970-01-01 01:00:00.000000000 +0100
+@@ -446,6 +446,7 @@
+ 	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
+ 	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
+ 	input->dest.vupdate_width = pipe->pipe_dlg_param.vupdate_width;
++	input->dest.interlaced = pipe->stream->timing.flags.INTERLACE;
+ 
+ }
+ 
+@@ -917,7 +918,7 @@
+ 			continue;
+ 
+ 		v->underscan_output[input_idx] = false; /* taken care of in recout already*/
+-		v->interlace_output[input_idx] = false;
++		v->interlace_output[input_idx] = pipe->stream->timing.flags.INTERLACE? 1.0 : false;
+ 
+ 		v->htotal[input_idx] = pipe->stream->timing.h_total;
+ 		v->vtotal[input_idx] = pipe->stream->timing.v_total;
+@@ -1236,14 +1237,12 @@
+ 
+ 			asic_blank_end = (pipe->stream->timing.v_total -
+ 						vesa_sync_start -
+-						pipe->stream->timing.v_border_top)
+-			* (pipe->stream->timing.flags.INTERLACE ? 1 : 0);
++						pipe->stream->timing.v_border_top);
+ 
+ 			asic_blank_start = asic_blank_end +
+ 						(pipe->stream->timing.v_border_top +
+ 						pipe->stream->timing.v_addressable +
+-						pipe->stream->timing.v_border_bottom)
+-			* (pipe->stream->timing.flags.INTERLACE ? 1 : 0);
++						pipe->stream->timing.v_border_bottom);
+ 
+ 			pipe->pipe_dlg_param.vblank_start = asic_blank_start;
+ 			pipe->pipe_dlg_param.vblank_end = asic_blank_end;
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c	1970-01-01 01:00:00.000000000 +0100
+@@ -586,9 +586,11 @@
+ 		mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] = scl->vscl_ratio_c;
+ 		mode_lib->vba.ScalerEnabled[mode_lib->vba.NumberOfActivePlanes] = scl->scl_enable;
+ 		mode_lib->vba.Interlace[mode_lib->vba.NumberOfActivePlanes] = dst->interlaced;
++
+ 		if (dst->interlaced && !ip->ptoi_supported) {
+-			mode_lib->vba.VRatio[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
+-			mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
++			// Commented out: this makes scale and ratio taps validation fail
++			//mode_lib->vba.VRatio[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
++			//mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
+ 		}
+ 		mode_lib->vba.htaps[mode_lib->vba.NumberOfActivePlanes] = taps->htaps;
+ 		mode_lib->vba.vtaps[mode_lib->vba.NumberOfActivePlanes] = taps->vtaps;
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c
+--- linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
+@@ -163,6 +163,9 @@
+ 				continue;
+ 		}
+ 
++		if ((mode->flags & DRM_MODE_FLAG_INTERLACE) != cmdline_mode->interlace)
++			continue;
++
+ 		/* Mark the matching mode as being preferred by the user */
+ 		mode->type |= DRM_MODE_TYPE_USERDEF;
+ 		return 0;
