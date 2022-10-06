@@ -2,17 +2,15 @@ diff --git a/pcsx2/gui/Panels/MemoryCardListView.cpp b/pcsx2/gui/Panels/MemoryCa
 index 5280d71..4c79324 100644
 --- a/pcsx2/gui/Panels/MemoryCardListView.cpp
 +++ b/pcsx2/gui/Panels/MemoryCardListView.cpp
-@@ -52,10 +52,10 @@ void BaseMcdListView::LoadSaveColumns( IniInterface& ini )
- 
+@@ -52,10 +52,10 @@
+
  		int width = GetColumnWidth(col);
- 
+
 -		ini.Entry( label, width, cinfo.width );
-+		//ini.Entry( label, width, cinfo.width );
- 		
++		// ini.Entry( label, width, cinfo.width );
+
 -		if (ini.IsLoading())
 -			SetColumnWidth(col, width);
-+		//if (ini.IsLoading())
-+		//	SetColumnWidth(col, width);
++		// if (ini.IsLoading())
++		// 	SetColumnWidth(col, width);
  	}
- }
- 
