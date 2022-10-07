@@ -1,58 +1,79 @@
-diff --git a/configuration.c b/configuration.c
-index 6850178..d5bb787 100644
---- a/configuration.c
-+++ b/configuration.c
-@@ -1264,6 +1264,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
- #ifdef HAVE_CHEEVOS
-    SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
-    SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
-+   SETTING_ARRAY("cheevos_unlock_sound",     settings->arrays.cheevos_unlock_sound, false, NULL, true);
-    SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
-    SETTING_ARRAY("cheevos_leaderboards_enable", settings->arrays.cheevos_leaderboards_enable, true, "false", true);
- #endif
-@@ -2431,6 +2432,7 @@ void config_set_defaults(void *data)
- #ifdef HAVE_CHEEVOS
-    *settings->arrays.cheevos_username                 = '\0';
-    *settings->arrays.cheevos_password                 = '\0';
-+   *settings->arrays.cheevos_unlock_sound             = '\0';
-    *settings->arrays.cheevos_token                    = '\0';
- #endif
-
-diff --git a/configuration.h b/configuration.h
-index 81a2f3c..cd2d698 100644
---- a/configuration.h
-+++ b/configuration.h
-@@ -365,6 +365,7 @@ typedef struct settings
-       char menu_driver[32];
-       char cheevos_username[32];
-       char cheevos_password[256];
-+      char cheevos_unlock_sound[128];
-       char cheevos_token[32];
-       char cheevos_leaderboards_enable[32];
-       char video_context_driver[32];
 diff --git a/audio/audio_driver.c b/audio/audio_driver.c
-index 4e643c2..d8b0fa8 100644
+index f4a0d20..770ae6d 100644
 --- a/audio/audio_driver.c
 +++ b/audio/audio_driver.c
-@@ -29226,8 +29226,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
-
+@@ -219,7 +219,7 @@ static bool audio_driver_free_devices_list(void)
+ {
+    audio_driver_state_t *audio_st = &audio_driver_st;
+    if (
+-            !audio_st->current_audio 
++            !audio_st->current_audio
+          || !audio_st->current_audio->device_list_free
+          || !audio_st->context_audio_data)
+       return false;
+@@ -269,7 +269,7 @@ static void audio_driver_deinit_resampler(void)
+ static bool audio_driver_deinit_internal(bool audio_enable)
+ {
+    audio_driver_state_t *audio_st = &audio_driver_st;
+-   if (     audio_st->current_audio 
++   if (     audio_st->current_audio
+          && audio_st->current_audio->free)
+    {
+       if (audio_st->context_audio_data)
+@@ -403,7 +403,7 @@ static void audio_driver_flush(
+    struct resampler_data src_data;
+    float audio_volume_gain           = (audio_st->mute_enable ||
+          (audio_fastforward_mute && is_fastmotion))
+-               ? 0.0f 
++               ? 0.0f
+                : audio_st->volume_gain;
+ 
+    src_data.data_out                 = NULL;
+@@ -444,7 +444,7 @@ static void audio_driver_flush(
+    {
+       /* Readjust the audio input rate. */
+       int      half_size             = (int)(audio_st->buffer_size / 2);
+-         
++
+       int      avail               =
+           (int)audio_st->current_audio->write_avail(
+                audio_st->context_audio_data);
+@@ -510,7 +510,7 @@ static void audio_driver_flush(
+          if (audio_st->mixer_volume_gain == 1.0f)
+             override                      = false;
+          mixer_gain                       = audio_st->mixer_volume_gain;
+-            
++
+       }
+       audio_mixer_mix(audio_st->output_samples_buf,
+             src_data.output_frames, mixer_gain, override);
+@@ -1226,7 +1226,7 @@ bool audio_driver_mixer_add_stream(audio_mixer_stream_params_t *params)
+           * so have to do it here */
+          free(buf);
+          buf = NULL;
+-         break; 
++         break;
+       case AUDIO_MIXER_TYPE_OGG:
+          handle = audio_mixer_load_ogg(buf, (int32_t)params->bufsize);
+          break;
+@@ -1332,8 +1332,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
  void audio_driver_load_system_sounds(void)
  {
+    char basename_noext[256];
 -   char sounds_path[PATH_MAX_LENGTH];
 -   char sounds_fallback_path[PATH_MAX_LENGTH];
 +   char* sounds_path = "/usr/share/libretro/assets/sounds";
 +   char* sounds_fallback_path = "/userdata/sounds/retroachievements";
-    char basename_noext[PATH_MAX_LENGTH];
-    struct rarch_state *p_rarch           = &rarch_st;
-    settings_t *settings                  = p_rarch->configuration_settings;
-@@ -29250,20 +29250,6 @@ void audio_driver_load_system_sounds(void)
+    settings_t *settings                  = config_get_ptr();
+    const char *dir_assets                = settings->paths.directory_assets;
+    const bool audio_enable_menu          = settings->bools.audio_enable_menu;
+@@ -1354,19 +1354,6 @@ void audio_driver_load_system_sounds(void)
     if (!audio_enable_menu && !audio_enable_cheevo_unlock)
        goto end;
-
--   sounds_path[0] = sounds_fallback_path[0] =
--                          basename_noext[0] ='\0';
+ 
+-   sounds_path[0] = basename_noext[0] ='\0';
 -
--   fill_pathname_join(
+-   fill_pathname_join_special(
 -         sounds_fallback_path,
 -         dir_assets,
 -         "sounds",
@@ -65,19 +86,104 @@ index 4e643c2..d8b0fa8 100644
 -
     list          = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
     list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
-
-@@ -29306,8 +29292,13 @@ void audio_driver_load_system_sounds(void)
+ 
+@@ -1410,8 +1397,13 @@ void audio_driver_load_system_sounds(void)
              path_notice = path;
           else if (string_is_equal_noncase(basename_noext, "bgm"))
              path_bgm = path;
 -         else if (string_is_equal_noncase(basename_noext, "unlock"))
 -            path_cheevo_unlock = path;
 +         else if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
-+	         if (string_is_equal_noncase(basename_noext, "unlock"))
-+	            path_cheevo_unlock = path;
-+	         } else {
-+	            if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
-+	               path_cheevo_unlock = path;
-+	         }
++            if (string_is_equal_noncase(basename_noext, "unlock"))
++               path_cheevo_unlock = path;
++            } else {
++               if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
++                  path_cheevo_unlock = path;
++            }
        }
     }
+ 
+@@ -1619,7 +1611,7 @@ bool audio_driver_start(bool is_shutdown)
+ {
+    audio_driver_state_t *audio_st = &audio_driver_st;
+    if (
+-            !audio_st->current_audio 
++            !audio_st->current_audio
+          || !audio_st->current_audio->start
+          || !audio_st->context_audio_data)
+       goto error;
+@@ -1826,8 +1818,8 @@ void audio_driver_menu_sample(void)
+    unsigned sample_count                  = (info->sample_rate / info->fps) * 2;
+    audio_driver_state_t *audio_st         = &audio_driver_st;
+    bool check_flush                       = !(
+-             runloop_st->paused              
+-         || !audio_st->active     
++             runloop_st->paused
++         || !audio_st->active
+          || !audio_st->output_samples_buf);
+    if (audio_st->suspended)
+       check_flush                         = false;
+diff --git a/configuration.c b/configuration.c
+index 20984ea..5beef40 100644
+--- a/configuration.c
++++ b/configuration.c
+@@ -1406,6 +1406,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
+    SETTING_ARRAY("cheevos_custom_host",      settings->arrays.cheevos_custom_host, false, NULL, true);
+    SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
+    SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
++   SETTING_ARRAY("cheevos_unlock_sound",     settings->arrays.cheevos_unlock_sound, false, NULL, true);
+    SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
+    SETTING_ARRAY("cheevos_leaderboards_enable", settings->arrays.cheevos_leaderboards_enable, true, "true", true);
+ #endif
+@@ -2672,6 +2673,7 @@ void config_set_defaults(void *data)
+ #ifdef HAVE_CHEEVOS
+    *settings->arrays.cheevos_username                 = '\0';
+    *settings->arrays.cheevos_password                 = '\0';
++   *settings->arrays.cheevos_unlock_sound             = '\0';
+    *settings->arrays.cheevos_token                    = '\0';
+ #endif
+ 
+@@ -4220,7 +4222,7 @@ static void save_keybind_hat(config_file_t *conf, const char *key,
+    config[0]        = 'h';
+    config[1]        = '\0';
+ 
+-   snprintf(config + 1, sizeof(config) - 1, "%u", hat); 
++   snprintf(config + 1, sizeof(config) - 1, "%u", hat);
+ 
+    switch (GET_HAT_DIR(bind->joykey))
+    {
+@@ -4766,7 +4768,7 @@ bool config_save_file(const char *path)
+       config_set_string(conf, "log_verbosity",
+             verbosity_is_enabled() ? "true" : "false");
+    config_set_string(conf, "perfcnt_enable",
+-            retroarch_ctl(RARCH_CTL_IS_PERFCNT_ENABLE, NULL) 
++            retroarch_ctl(RARCH_CTL_IS_PERFCNT_ENABLE, NULL)
+          ? "true" : "false");
+ 
+    msg_color = (((int)(settings->floats.video_msg_color_r * 255.0f) & 0xff) << 16) +
+@@ -5736,10 +5738,10 @@ void input_config_parse_joy_axis(
+             && tmp[3] == '\0'
+          )
+          bind->joyaxis = AXIS_NONE;
+-      else if 
+-         (     tmp[0] != '\0'   
++      else if
++         (     tmp[0] != '\0'
+           &&   tmp[1] != '\0'
+-          && (*tmp    == '+' 
++          && (*tmp    == '+'
+           ||  *tmp    == '-'))
+       {
+          int i_axis = (int)strtol(tmp + 1, NULL, 0);
+diff --git a/configuration.h b/configuration.h
+index 839fdde..aa6e709 100644
+--- a/configuration.h
++++ b/configuration.h
+@@ -410,6 +410,7 @@ typedef struct settings
+       char menu_driver[32];
+       char cheevos_username[32];
+       char cheevos_password[256];
++      char cheevos_unlock_sound[128];
+       char cheevos_token[32];
+       char cheevos_leaderboards_enable[32];
+       char cheevos_custom_host[64];

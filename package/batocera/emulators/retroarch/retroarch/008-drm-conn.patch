@@ -1,5 +1,5 @@
 diff --git a/deps/libgo2/src/display.c b/deps/libgo2/src/display.c
-index b91cf06..cedf3c4 100644
+index b91cf06..fef6990 100644
 --- a/deps/libgo2/src/display.c
 +++ b/deps/libgo2/src/display.c
 @@ -99,6 +99,7 @@ typedef struct go2_presenter
@@ -14,15 +14,15 @@ index b91cf06..cedf3c4 100644
          goto err_01;
      }
  
-+    // batocera
++   // batocera
 +    {
 +     FILE* fdDrmConn;
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<resources->count_connectors) {
-+	   drmConn = drmConnRead;
-+	 }
++    if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++      drmConn = drmConnRead;
++    }
 +       }
 +     }
 +   }
@@ -37,74 +37,84 @@ index b91cf06..cedf3c4 100644
          connector = drmModeGetConnector(result->fd, resources->connectors[i]);
          if (connector->connection == DRM_MODE_CONNECTED) {
              break;
+@@ -1211,7 +1227,7 @@ go2_context_t* go2_context_create(go2_display_t* display, int width, int height,
+     }
+ 
+ 
+-    result->eglSurface = eglCreateWindowSurface(result->eglDisplay, eglConfig, (EGLNativeWindowType)result->gbmSurface, NULL);	
++    result->eglSurface = eglCreateWindowSurface(result->eglDisplay, eglConfig, (EGLNativeWindowType)result->gbmSurface, NULL);
+     if (result->eglSurface == EGL_NO_SURFACE)
+     {
+         printf("eglCreateWindowSurface failed\n");
 diff --git a/deps/switchres/custom_video_drmkms.cpp b/deps/switchres/custom_video_drmkms.cpp
-index 3706f2e..876179c 100644
+index 3706f2e..55d77f3 100644
 --- a/deps/switchres/custom_video_drmkms.cpp
 +++ b/deps/switchres/custom_video_drmkms.cpp
-@@ -342,6 +342,21 @@ bool drmkms_timing::init()
+@@ -342,7 +342,21 @@ bool drmkms_timing::init()
  	char drm_name[15] = "/dev/dri/card_";
  	drmModeRes *p_res;
  	drmModeConnector *p_connector;
+-
 +	int drmConn = 0;
 +
-+	// batocera
-+	{
-+	  FILE* fdDrmConn;
-+	  int drmConnRead;
-+	  if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
-+	    if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	      if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
-+		drmConn = drmConnRead;
-+	      }
-+	    }
-+	  }
-+	}
-+	//
- 
++   // batocera
++   {
++     FILE* fdDrmConn;
++     int drmConnRead;
++     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
++       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
++         if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
++            drmConn = drmConnRead;
++         }
++       }
++     }
++   }
++   //
  	int output_position = 0;
  	for (int num = 0; !m_desktop_output && num < 10; num++)
-@@ -366,6 +381,8 @@ bool drmkms_timing::init()
+ 	{
+@@ -366,6 +380,8 @@ bool drmkms_timing::init()
  
  			for (int i = 0; i < p_res->count_connectors; i++)
  			{
-+			        if(i != drmConn) continue;
++            if(i != drmConn) continue;
 +
  				p_connector = drmModeGetConnector(m_drm_fd, p_res->connectors[i]);
  				if (p_connector)
  				{
-@@ -730,10 +747,29 @@ bool drmkms_timing::get_timing(modeline *mode)
+@@ -730,10 +746,29 @@ bool drmkms_timing::get_timing(modeline *mode)
  
  	// INFO: not used vrefresh, hskew, vscan
  	drmModeRes *p_res = drmModeGetResources(m_drm_fd);
-+	int drmConn = 0;
++   int drmConn = 0;
 +
-+	// batocera
-+	{
-+	  FILE* fdDrmConn;
-+	  int drmConnRead;
-+	  if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
-+	    if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	      if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
-+		drmConn = drmConnRead;
-+	      }
-+	    }
-+	  }
-+	}
-+	//
++   // batocera
++   {
++     FILE* fdDrmConn;
++     int drmConnRead;
++     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
++       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
++         if(drmConnRead>=0 && drmConn<p_res->count_connectors) {
++            drmConn = drmConnRead;
++         }
++       }
++     }
++   }
++   //
  
  	for (int i = 0; i < p_res->count_connectors; i++)
  	{
 -		drmModeConnector *p_connector = drmModeGetConnector(m_drm_fd, p_res->connectors[i]);
-+	  drmModeConnector *p_connector;
++      drmModeConnector *p_connector;
 +
-+	  if(i != drmConn) continue;
++      if(i != drmConn) continue;
 +
-+	  p_connector = drmModeGetConnector(m_drm_fd, p_res->connectors[i]);
++      p_connector = drmModeGetConnector(m_drm_fd, p_res->connectors[i]);
  
  		// Cycle through the modelines and report them back to the display manager
  		if (p_connector && m_desktop_output == p_connector->connector_id)
 diff --git a/gfx/common/drm_common.c b/gfx/common/drm_common.c
-index 5759d82..e352b1d 100644
+index 418fe67..705fa72 100644
 --- a/gfx/common/drm_common.c
 +++ b/gfx/common/drm_common.c
 @@ -68,6 +68,21 @@ bool drm_get_connector(int fd, unsigned monitor_index)
@@ -119,9 +129,9 @@ index 5759d82..e352b1d 100644
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
-+	   drmConn = drmConnRead;
-+	 }
++    if(drmConnRead>=0 && drmConn<g_drm_resources->count_connectors) {
++      drmConn = drmConnRead;
++    }
 +       }
 +     }
 +   }
@@ -134,11 +144,11 @@ index 5759d82..e352b1d 100644
     for (i = 0; (int)i < g_drm_resources->count_connectors; i++)
     {
 -      drmModeConnectorPtr conn = drmModeGetConnector(
-+     drmModeConnectorPtr conn;
++      drmModeConnectorPtr conn;
 +
-+     if(i != drmConn) continue;
++      if(i != drmConn) continue;
 +
-+     conn = drmModeGetConnector(
++      conn = drmModeGetConnector(
              fd, g_drm_resources->connectors[i]);
  
        if (conn)
@@ -152,18 +162,18 @@ index 5759d82..e352b1d 100644
              g_drm_resources->connectors[i]);
  
 diff --git a/gfx/drivers/drm_gfx.c b/gfx/drivers/drm_gfx.c
-index b0b380c..ff85e60 100644
+index d4349df..15e7276 100644
 --- a/gfx/drivers/drm_gfx.c
 +++ b/gfx/drivers/drm_gfx.c
-@@ -607,6 +607,7 @@ static bool init_drm(void)
-    int ret;
-    drmModeConnector *connector;
+@@ -600,6 +600,7 @@ static bool init_drm(void)
+ {
     uint i;
+    drmModeConnector *connector;
 +   int drmConn = 0;
  
     drm.fd = open("/dev/dri/card0", O_RDWR);
  
-@@ -642,9 +643,25 @@ static bool init_drm(void)
+@@ -633,9 +634,25 @@ static bool init_drm(void)
        return false;
     }
  
@@ -173,9 +183,9 @@ index b0b380c..ff85e60 100644
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<(uint)drm_resources->count_connectors) {
-+	   drmConn = drmConnRead;
-+	 }
++    if(drmConnRead>=0 && drmConn<(uint)drm_resources->count_connectors) {
++      drmConn = drmConnRead;
++    }
 +       }
 +     }
 +   }
@@ -184,13 +194,13 @@ index b0b380c..ff85e60 100644
     /* Find a connected connector. */
     for (i = 0; i < (uint)drm.resources->count_connectors; i++)
     {
-+     if(i != drmConn) continue;
++      if(i != drmConn) continue;
 +
        connector = drmModeGetConnector(drm.fd, drm.resources->connectors[i]);
        /* It's connected, let's use it. */
        if (connector->connection == DRM_MODE_CONNECTED)
 diff --git a/gfx/drivers/oga_gfx.c b/gfx/drivers/oga_gfx.c
-index 0e7a321..ff11fac 100644
+index 1be0569..81acf5e 100644
 --- a/gfx/drivers/oga_gfx.c
 +++ b/gfx/drivers/oga_gfx.c
 @@ -111,6 +111,7 @@ static bool oga_create_display(oga_video_t* vid)
@@ -211,9 +221,9 @@ index 0e7a321..ff11fac 100644
 +     int drmConnRead;
 +     if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +       if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	 if(drmConnRead>=0 && drmConn<resources->count_connectors) {
-+	   drmConn = drmConnRead;
-+	 }
++    if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++      drmConn = drmConnRead;
++    }
 +       }
 +     }
 +   }
