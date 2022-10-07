@@ -1,18 +1,34 @@
 diff --git a/gfx/common/x11_common.c b/gfx/common/x11_common.c
-index f5cd494..0857f6a 100644
+index 02f937f..96d3d06 100644
 --- a/gfx/common/x11_common.c
 +++ b/gfx/common/x11_common.c
-@@ -426,25 +426,25 @@ static void x11_handle_key_event(XEvent *event, XIC ic, bool filter)
+@@ -418,7 +418,7 @@ static bool x11_create_input_context(Display *dpy,
+    x11_init_keyboard_lut();
+ 
+    g_x11_has_focus = true;
+-   
++
+    if (!(*xim = XOpenIM(dpy, NULL, NULL, NULL)))
+    {
+       RARCH_ERR("[X11]: Failed to open input method.\n");
+@@ -466,7 +466,7 @@ bool x11_get_metrics(void *data,
+          break;
+       case DISPLAY_METRIC_DPI:
+          dpy    = (Display*)XOpenDisplay(NULL);
+-         *value = ((((float)DisplayWidth  (dpy, screen_no)) * 25.4) 
++         *value = ((((float)DisplayWidth  (dpy, screen_no)) * 25.4)
+                /  (  (float)DisplayWidthMM(dpy, screen_no)));
+          XCloseDisplay(dpy);
+          break;
+@@ -522,30 +522,30 @@ static void x11_handle_key_event(unsigned keycode, XEvent *event,
           char keybuf[32];
  
           keybuf[0] = '\0';
 -#ifdef X_HAVE_UTF8_STRING
 -         status = 0;
--
 -         /* XwcLookupString doesn't seem to work. */
 -         num = Xutf8LookupString(ic, &event->xkey, keybuf,
 -               ARRAY_SIZE(keybuf), &keysym, &status);
--
 -         /* libc functions need UTF-8 locale to work properly,
 -          * which makes mbrtowc a bit impractical.
 -          *
@@ -21,18 +37,15 @@ index f5cd494..0857f6a 100644
 -#else
 +//#ifdef X_HAVE_UTF8_STRING
 +//         status = 0;
-+//
 +//         /* XwcLookupString doesn't seem to work. */
 +//         num = Xutf8LookupString(ic, &event->xkey, keybuf,
 +//               ARRAY_SIZE(keybuf), &keysym, &status);
-+//
 +//         /* libc functions need UTF-8 locale to work properly,
 +//          * which makes mbrtowc a bit impractical.
 +//          *
 +//          * Use custom UTF8 -> UTF-32 conversion. */
 +//         num = utf8_conv_utf32(chars, ARRAY_SIZE(chars), keybuf, num);
 +//#else
-          (void)ic;
           num = XLookupString(&event->xkey, keybuf,
                 sizeof(keybuf), &keysym, NULL); /* ASCII only. */
           for (i = 0; i < num; i++)
@@ -41,4 +54,26 @@ index f5cd494..0857f6a 100644
 +//#endif
        }
        else
-          keysym = XLookupKeysym(&event->xkey, (state & ShiftMask) || (state & LockMask));
+          keysym = XLookupKeysym(&event->xkey,
+                (state & ShiftMask) || (state & LockMask));
+    }
+ 
+-   /* We can't feed uppercase letters to the keycode translator. 
+-    * Seems like a bad idea to feed it keysyms anyway, so here 
++   /* We can't feed uppercase letters to the keycode translator.
++    * Seems like a bad idea to feed it keysyms anyway, so here
+     * is a little hack...
+     **/
+    if (keysym >= XK_A && keysym <= XK_Z)
+@@ -656,9 +656,9 @@ bool x11_alive(void *data)
+             break;
+ 
+          case KeyRelease:
+-            /*  When you receive a key release and the next event 
++            /*  When you receive a key release and the next event
+              * is a key press of the same key combination,
+-             * then it's auto-repeat and the key wasn't 
++             * then it's auto-repeat and the key wasn't
+              * actually released. */
+             if(XEventsQueued(g_x11_dpy, QueuedAfterReading))
+             {

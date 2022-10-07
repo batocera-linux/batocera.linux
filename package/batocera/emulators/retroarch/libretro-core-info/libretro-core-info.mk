@@ -3,8 +3,8 @@
 # libretro-core-info
 #
 ################################################################################
-# Version:Commits on mar 31 2022
-LIBRETRO_CORE_INFO_VERSION = 11f7280e6ba7414c1b8f5ba519063ac3d8aa10b9
+# Version:Commits on Oct 04 2022
+LIBRETRO_CORE_INFO_VERSION = 90eff5d4e72db1b5929af7210c9b665c33034536
 LIBRETRO_CORE_INFO_SITE = $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
 LIBRETRO_CORE_INFO_LICENSE = GPL
 
