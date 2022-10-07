@@ -19,7 +19,7 @@ Batocera Linux is an open-source and completely free retro-gaming distribution t
 
 ## Do you need help with Batocera?
 
- - :sos: The most effective way is to join our [Discord Server](https://discord.gg/ndyUKA5) and go to the \#support-help channel
+ - :sos: The most effective way is to join our [Discord Server](https://discord.gg/ndyUKA5) and go to the \#help-and-support channel
  - :neckbeard: There is a [Batocera subreddit](https://www.reddit.com/r/batocera/) that is fairly active
  - :bowtie: Finally, we also have a [forum](https://forum.batocera.org/public/) 
 
