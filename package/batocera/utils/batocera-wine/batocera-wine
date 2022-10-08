@@ -83,6 +83,7 @@ wine_options() {
     FORCE_LARGE_ADRESS="$(get_setting force_large_adress "${SYSTEM}" "${ROMGAMENAME}")"
     HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
     HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
+    RAW_INPUT="$(get_setting raw_input "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
@@ -149,6 +150,15 @@ wine_options() {
     fi
 
     setxkbmap "${KEYBOARD}"
+
+    # Create registry file for raw input
+    echo 'Windows Registry Editor Version 5.00' >| /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    echo '[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\winebus]' >> /var/run/rawinput.reg
+    echo '"DisableHidraw"=dword:0000000'"${RAW_INPUT}" >> /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    unix2dos /var/run/rawinput.reg
 }
 
 mf_install() {
@@ -271,12 +281,18 @@ WINEPREFIX=$1
 
 reg_install() {
 WINEPREFIX=$1
+    if test -e "/var/run/rawinput.reg"; then
+        WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        rm /var/run/rawinput.reg
+    fi
+
     if test -e "${USER_DIR}/regs"; then
 
         for file in ${USER_DIR}/regs/*.reg; do
             echo "Importing registry $file"
-            WINEPREFIX=${WINEPOINT} "${WINE}" regedit "${file}" &>/dev/null || return 1
-            WINEPREFIX=${WINEPOINT} "${WINE64}" regedit "${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
         done
 
         mv "${USER_DIR}/regs" "${USER_DIR}/regs.bak" || return 1
