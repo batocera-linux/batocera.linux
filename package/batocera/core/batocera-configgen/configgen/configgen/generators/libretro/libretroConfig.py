@@ -118,10 +118,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     if (system.isOptSet("audio_volume")):
         retroarchConfig['audio_volume'] = system.config['audio_volume']
 
-    with open("/usr/share/batocera/batocera.arch") as fb:
-        arch = fb.readline().strip()
-
-    if (system.isOptSet("display.rotate") and arch not in [ 'x86_64', 'x86', 'bcm2711']):
+    if (system.isOptSet("display.rotate") and videoMode.getDisplayMode() not in ['xorg']):
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
         if system.config["display.rotate"] == "0":
             retroarchConfig['video_rotation'] = "0"
