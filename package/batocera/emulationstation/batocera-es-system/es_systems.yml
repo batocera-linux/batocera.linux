@@ -3285,6 +3285,7 @@ gzdoom:
   release:
   hardware: port
   extensions: [wad, iwad, pwad, gz]
+  platform: pc
   group: ports
   emulators:
     gzdoom:
@@ -3302,6 +3303,7 @@ eduke32:
   release:
   hardware: port
   extensions: [ eduke32 ]
+  platform: pc
   group: ports
   emulators:
     eduke32:
@@ -3349,6 +3351,7 @@ fury:
   release: 2019
   hardware: port
   extensions: [grp]
+  platform: pc
   group: ports
   emulators:
     eduke32:
@@ -3366,6 +3369,7 @@ raze:
   release:
   hardware: port
   extensions: [ raze ]
+  platform: pc
   group: ports
   emulators:
     raze:
@@ -3470,7 +3474,7 @@ psvita:
   manufacturer: Sony
   release: 2012
   hardware: console
-  extensions: [zip]
+  extensions: [zip, psvita]
   emulators:
     vita3k:
       vita3k: { requireAnyOf: [BR2_PACKAGE_VITA3K] }
@@ -3514,6 +3518,9 @@ psvita:
 
     4. Now in your /userdata/roms/psvita folder ensure the rom has the Game ID embedded in the zip file between square brackets [].
     i.e. Street Fighter X Tekken (USA) [PCSE00005].zip
+    Alternatively to save space & because the rom is installed in the psvita config directory you can remove the rom zip files.
+    Just be sure the replace the file with a .psvita extension alternative.
+    i.e. Street Fighter X Tekken (USA) [PCSE00005].psvita
 
     This will enable Emulation Station to see your installed game & launch it via the ES GUI.
 
