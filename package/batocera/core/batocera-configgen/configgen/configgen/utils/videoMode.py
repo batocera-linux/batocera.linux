@@ -35,6 +35,11 @@ def getCurrentResolution():
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
 
+def getDisplayMode():
+    proc = subprocess.Popen(["batocera-resolution getDisplayMode"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    return out.decode().strip()
+
 def isResolutionReversed():
     return os.path.exists("/var/run/rk-rotation")
 
