@@ -27,19 +27,6 @@ do_es_menu() {
 
 if test "${SETACTION}" = 1
 then
-    ### callable only once every 7 seconds
-    ### because some boards (steamdeck) have 2 events reacting to the KEY_POWER
-    if test -e "/var/run/shutdown-delay.last"
-    then
-	DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.last"))))
-	if test "${DELAY}" -lt 7
-	then
-	    echo "wait between 2 calls" >2&
-	    exit 0
-	fi
-    fi
-    touch "/var/run/shutdown-delay.last"
-
     ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
     if test "${SUSPEND_MODE}" = "" -a "${SHUTDOWNDELAY}" = ""
     then
@@ -53,6 +40,7 @@ then
 	    # the one who manage to remove the file can do the action
 	    if rm "/var/run/shutdown-delay.flag" 2>/dev/null
 	    then
+		touch "/var/run/shutdown-delay.last"
 		do_es_menu
 	    fi
 	fi
@@ -71,6 +59,21 @@ else
 		exit 0
 	    fi
 	fi
+
+	### callable only once every 7 seconds
+	### because some boards (steamdeck) have 2 events reacting to the KEY_POWER
+	### this is mainly for suspend to not call it 2 times
+	if test -e "/var/run/shutdown-delay.last"
+	then
+	    DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.last"))))
+	    if test "${DELAY}" -lt 5
+	    then
+		echo "wait between 2 calls" >2&
+		exit 0
+	    fi
+	fi
+	touch "/var/run/shutdown-delay.last"
+	########
 
 	# shutdown / suspend
 	case "${SUSPEND_MODE}" in
