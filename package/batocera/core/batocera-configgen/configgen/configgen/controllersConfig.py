@@ -230,8 +230,14 @@ def gunsBordersSizeName(guns, config):
     bordersSize = "big"
     if "controllers.guns.borderssize" in config and config["controllers.guns.borderssize"]:
         bordersSize = config["controllers.guns.borderssize"]
-    if "controllers.guns.forceborders" in config and config["controllers.guns.forceborders"]:
-        return bordersSize
+
+    if "controllers.guns.bordersmode" in config and config["controllers.guns.bordersmode"]:
+        # others are gameonly and normal
+        if config["controllers.guns.bordersmode"] == "hidden":
+            return None
+        if config["controllers.guns.bordersmode"] == "force":
+            return bordersSize
+
     for gun in guns:
         if guns[gun]["need_borders"]:
             return bordersSize
