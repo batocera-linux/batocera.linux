@@ -102,8 +102,9 @@ do
     ###################
 
     ### keyboard (specific to xorg) ###
+    map_name="$(batocera-settings-get system.kblayout)"
     # not always true (en_US for us), but it's really better than always english
-    map_name=$(echo $settings_lang | cut -c 1-2)
+    test -z "${map_name}" && map_name=$(echo $settings_lang | cut -c 1-2)
     which setxkbmap && setxkbmap "${map_name}"
     ###################
 
