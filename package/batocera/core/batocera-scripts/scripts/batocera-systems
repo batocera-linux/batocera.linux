@@ -245,8 +245,11 @@ systems = {
     "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"         },
                                                            { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"         },
                                                            { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"         },
+                                                           # The Amiga Forever equivalents. a3000 seems to not have a kickstart equivalent. amiga-os-310.rom doesn't match libretro's docs.
+                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga-os-300-a1200.rom"  },
                                                            { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
                                                            { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga-os-310-a4000.rom"  },
                                                            { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        }] },
 
     "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"          },
