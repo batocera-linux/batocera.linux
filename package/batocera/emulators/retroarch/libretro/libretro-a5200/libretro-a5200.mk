@@ -3,8 +3,8 @@
 # libretro-a5200
 #
 ################################################################################
-# Version.: Commits on Jun 22, 2022
-LIBRETRO_A5200_VERSION = 46035d00a5fb7ffd3a63172c2d0a8c6b6ae7efc1
+# Version.: Commits on Jul 26, 2022
+LIBRETRO_A5200_VERSION = b8f8571eb5c6f484fe6be9a3a895ffb162b08422
 LIBRETRO_A5200_SITE = $(call github,libretro,a5200,$(LIBRETRO_A5200_VERSION))
 LIBRETRO_A5200_LICENSE = GPLv2
 

@@ -1,7 +1,7 @@
-diff --git a/src/libretro/Makefile b/src/libretro/Makefile
-index a170992..e03ed2b 100644
---- a/src/libretro/Makefile
-+++ b/src/libretro/Makefile
+diff --git a/src/os/libretro/Makefile b/src/os/libretro/Makefile
+index d8695fa..a49b41b 100644
+--- a/src/os/libretro/Makefile
++++ b/src/os/libretro/Makefile
 @@ -71,11 +71,24 @@ ifneq (,$(findstring unix,$(platform)))
        SHARED := -shared -Wl,--version-script=link.T -Wl,-z,defs
     endif
@@ -19,7 +19,7 @@ index a170992..e03ed2b 100644
 +   		CXXFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 +   	else ifneq (,$(findstring rpi3,$(platform)))
 +   		ifneq (,$(findstring rpi3_64,$(platform)))
-+               CXXFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++            CXXFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
 +   		else
 +   			CXXFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
 +   		endif
@@ -31,12 +31,3 @@ index a170992..e03ed2b 100644
        CXXFLAGS += -DARM
     endif
  
-@@ -580,7 +593,7 @@ else ifneq (,$(findstring msvc,$(platform)))
-    CODE_DEFINES =
- else
-    WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter
--   CODE_DEFINES = 
-+   CODE_DEFINES =
- endif
- 
- CXXFLAGS += $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)

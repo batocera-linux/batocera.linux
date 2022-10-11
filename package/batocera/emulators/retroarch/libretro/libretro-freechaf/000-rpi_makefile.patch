@@ -1,11 +1,11 @@
 diff --git a/Makefile b/Makefile
-index a885fca..83cd470 100644
+index 5e89fa7..54f09e9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -59,6 +59,26 @@ ifneq (,$(filter $(platform), unix unix-armv7-hardfloat-neon))
- 	TARGET := $(TARGET_NAME)_libretro.$(EXT)
- 	fpic := -fPIC
- 	SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
+@@ -59,6 +59,26 @@ ifneq (,$(filter $(platform), unix unix-armv7-hardfloat-neon unix-armv7-neon-har
+ 			endif
+ 		endif
+ 	endif
 +# Raspberry Pi
 +else ifneq (,$(findstring rpi,$(platform)))
 +	EXT ?= so
@@ -19,13 +19,13 @@ index a885fca..83cd470 100644
 +		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 +	else ifneq (,$(findstring rpi3,$(platform)))
 +		ifneq (,$(findstring rpi3_64,$(platform)))
-+           CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++           	CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
 +		else
 +			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
-+	endif
++	endif	
  else ifeq ($(platform), linux-portable)
  	TARGET := $(TARGET_NAME)_libretro.$(EXT)
  	fpic := -fPIC -nostdlib

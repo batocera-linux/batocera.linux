@@ -1,29 +1,45 @@
 diff --git a/Makefile b/Makefile
-index 747d5c0..d8e555d 100644
+index 1ce3e86..1e6b294 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -64,10 +64,23 @@ else ifneq (,$(findstring android,$(platform)))
+@@ -63,7 +63,7 @@ else ifneq (,$(findstring android,$(platform)))
+    	CXX = arm-linux-androideabi-g++
  # Raspberry Pi
  else ifneq (,$(findstring rpi,$(platform)))
+-	CFLAGS += -Wall -mword-relocations -fomit-frame-pointer -ffast-math
++	CFLAGS += -Wall -fomit-frame-pointer -ffast-math
+ 	CFLAGS += -falign-functions=1 -falign-jumps=1 -falign-loops=1
+ 
  	TARGET := $(TARGET_NAME)_libretro.so
--	LDFLAGS += -shared -Wl,--version-script=libretro/link.T
- 	fpic = -fPIC
+@@ -71,7 +71,7 @@ else ifneq (,$(findstring rpi,$(platform)))
  	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
  
-+	ifneq (,$(findstring rpi1,$(platform)))
-+		CFLAGS += -marm -mcpu=arm1176jzf-s -mfloat-abi=hard
-+	else ifneq (,$(findstring rpi2,$(platform)))
-+		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-+	else ifneq (,$(findstring rpi3,$(platform)))
+ 	ifneq (,$(findstring rpi1,$(platform)))
+-		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16B
++		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16B -mword-relocations
+ #		Raspberry Pi 1 - Model B (original)
+ 		ifneq (,$(findstring rpi1bo,$(platform)))
+ 			CFLAGS += -funsafe-math-optimizations -fsingle-precision-constant -fexpensive-optimizations
+@@ -83,11 +83,19 @@ else ifneq (,$(findstring rpi,$(platform)))
+ 			LDFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard -marm
+ 		endif
+ 	else ifneq (,$(findstring rpi2,$(platform)))
+-		CFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm
++		CFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm -mword-relocations
+ 		LDFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm
+ 	else ifneq (,$(findstring rpi3,$(platform)))
+-		CFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
+-		LDFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
 +		ifneq (,$(findstring rpi3_64,$(platform)))
-+            CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++			CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++			LDFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
 +		else
-+			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			CFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm -mword-relocations
++			LDFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
-+         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
-+	endif
-+
- # OS X
- else ifeq ($(platform), osx)
- 	TARGET := $(TARGET_NAME)_libretro.dylib
++		CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++		LDFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 	endif
+ # evercade armv7
+ else ifneq (,$(findstring evercade,$(platform)))
