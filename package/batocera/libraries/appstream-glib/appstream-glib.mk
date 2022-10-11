@@ -3,7 +3,7 @@
 # appstream-glib
 #
 ################################################################################
-APPSTREAM_GLIB_VERSION = appstream_glib_0_7_18
+APPSTREAM_GLIB_VERSION = appstream_glib_0_8_1
 APPSTREAM_GLIB_SITE = $(call github,hughsie,appstream-glib,$(APPSTREAM_GLIB_VERSION))
 APPSTREAM_GLIB_INSTALL_STAGING = YES
 
