@@ -1406,54 +1406,6 @@ msxturbor:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
-  comment_en: |
-    ## BIOS ##
-
-    - BlueMSX (DEFAULT)
-    Download the BlueMSX standalone version, available at http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    then extract the "Databases" and "Machines" folders and add them to the /userdata/bios folder.
-
-    - FMSX
-    Requires the following files (available with fmsx distribution), in the /userdata/bios folder.
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
-  comment_fr: |
-    ## BIOS ##
-
-    - Emulateur BlueMSX (choix initial) :
-    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-
-    - Emulateur FMSX :
-    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
 
 odyssey2:
   name:       Odyssey2
