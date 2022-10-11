@@ -3,7 +3,7 @@
 # fdupes
 #
 ################################################################################
-FDUPES_VERSION = 791fc12a093b77e8e897241bff731d6ec1e8f5b9
+FDUPES_VERSION = v2.2.1
 FDUPES_SITE = $(call github,adrianlopezroche,fdupes,$(FDUPES_VERSION))
 FDUPES_AUTORECONF = YES
 # fdupes needs curses.h but full ncurses support is disabled
