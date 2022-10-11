@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-09-20 12:20-0300\n"
+"PO-Revision-Date: 2022-10-11 01:48-0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -21,7 +21,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
-msgstr ""
+msgstr "Define a resolução do monitor. Não afeta a resolução de renderização."
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -381,17 +381,17 @@ msgstr "NÍVEL DE VIBRAÇÃO"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set game audio level gain in dB."
-msgstr ""
+msgstr "Define o ganho de nível de áudio do jogo em dB."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUDIO VOLUME GAIN"
-msgstr ""
+msgstr "GANHO DE VOLUME DE ÁUDIO"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "0 (No gain)"
-msgstr ""
+msgstr "0 (Não há ganho)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -529,7 +529,7 @@ msgstr "AMPLIAR (OCULTAR BORDAS)"
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
 msgid "MSX2"
-msgstr ""
+msgstr "MSX2"
 
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
@@ -1053,6 +1053,31 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 3"
 msgstr "proporção inferior híbrida 3"
 
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Select the input type to navigate the touch screen"
+msgstr ""
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "TOUCH SCREEN MODE"
+msgstr ""
+
+#. TRANSLATION: libretro/melonds, libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "Mouse"
+msgstr "Mouse"
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Touch Screen"
+msgstr ""
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Right Stick"
+msgstr ""
+
 #. TRANSLATION: libretro/dosbox
 msgctxt "game_options"
 msgid "CPU TIMING MODE (FPS)"
@@ -1181,7 +1206,7 @@ msgstr "Simples (intérprete para jogos antigos em modo real)"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Manually set cycles per second. Use with caution."
-msgstr "Defina ciclos por segundo manualmente. Use com cuidado."
+msgstr "Define ciclos por segundo manualmente. Use com cuidado."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -2042,11 +2067,6 @@ msgctxt "game_options"
 msgid "Keyboard"
 msgstr "Teclado"
 
-#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast, libretro/genesisplusgx, ...
-msgctxt "game_options"
-msgid "Mouse"
-msgstr "Mouse"
-
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
 msgid "Light Gun"
@@ -2215,7 +2235,7 @@ msgstr "TIPO DE CONTROLE 2"
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Set controller 1 and 2 to None to use it standalone."
-msgstr "Defina o controle 1 e 2 para Nenhum para usá-lo de forma independente."
+msgstr "Define o controle 1 e 2 para Nenhum para usá-lo de forma independente."
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2260,7 +2280,7 @@ msgstr "CORREÇÃO DE COR"
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
 msgid "Set the color palette to use."
-msgstr "Defina a paleta de cores a ser usada."
+msgstr "Define a paleta de cores a ser usada."
 
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
@@ -4519,8 +4539,7 @@ msgstr "Desligado é mais seguro, e Ativado para jogos específicos."
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Double the rendering resolution. No effect on 64-bit machines."
-msgstr ""
-"Duplique a resolução de renderização. Sem efeito em máquinas de 64 bits."
+msgstr "Dobra a resolução de renderização. Sem efeito em máquinas de 64 bits."
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
@@ -6857,7 +6876,7 @@ msgstr "4x (SSAA)"
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "DISABLE ON-SCREEN DISPLAY MESSAGES"
-msgstr ""
+msgstr "DESATIVAR MENSAGENS DE EXIBIÇÃO NA TELA"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6902,7 +6921,7 @@ msgstr "Por 1s, 120s no total (1320MB|240MB)"
 #. TRANSLATION: duckstation, melonds
 msgctxt "game_options"
 msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
-msgstr ""
+msgstr "MOSTRAR MENSAGENS DE EXIBIÇÃO NA TELA"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7338,17 +7357,17 @@ msgstr "LIMITAR TAXA DE QUADROS"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "No Limit"
-msgstr ""
+msgstr "Sem Limite"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "As game specifies"
-msgstr ""
+msgstr "Como o jogo especifica"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Enhancement. Enables improved polygon splitting."
-msgstr ""
+msgstr "Aprimoramento. Ativa a divisão de polígonos aprimorada."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7358,12 +7377,12 @@ msgstr "ATIVAR A DIVISÃO DE POLÍGONOS"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Rotates the screens, to simulate holding the DS sideways."
-msgstr ""
+msgstr "Gira as telas, para simular quando seguramos o DS de lado."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Swap the position of the dual displays."
-msgstr ""
+msgstr "Troca a posição das telas duplas."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7373,7 +7392,7 @@ msgstr "TROCA DE TELA"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Sets the window size to an integer size."
-msgstr ""
+msgstr "Define o tamanho da janela para um tamanho inteiro."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7383,22 +7402,22 @@ msgstr "TAMANHO DA TELA"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Adjusts the positions of the screens."
-msgstr ""
+msgstr "Ajusta as posições das telas."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Original screen positions"
-msgstr ""
+msgstr "Posições originais da tela"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Always enforce vertical"
-msgstr ""
+msgstr "Sempre aplicar em vertical"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Always enforce horizontal"
-msgstr ""
+msgstr "Sempre aplicar em horizontal"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7408,7 +7427,7 @@ msgstr "Híbrido"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "How the window space is distributed between the screens."
-msgstr ""
+msgstr "Como o espaço da tela é distribuído entre as telas."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7418,7 +7437,7 @@ msgstr "TAMANHO DA TELA"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Even"
-msgstr ""
+msgstr "Uniforme"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7428,7 +7447,7 @@ msgstr "Enfatizar tela superior"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Emphasize bottom"
-msgstr ""
+msgstr "Enfatizar tela inferior"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7453,12 +7472,12 @@ msgstr "TIPO DE VIDEOGAME"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "DS"
-msgstr ""
+msgstr "DS"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "DSi (experiemental)"
-msgstr ""
+msgstr "DSi (experimental)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8700,6 +8719,8 @@ msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
 msgstr ""
+"Ative a entrada do mouse para trackballs, spinners, pistolas (se nenhuma "
+"arma estiver conectada) e controles semelhantes"
 
 #. TRANSLATION: mame/uzem, wine
 msgctxt "game_options"
@@ -8956,6 +8977,17 @@ msgstr "OCULTAR PLACA GRÁFICA DA NVIDIA"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
+msgid ""
+"Disabling this may help compatibility with certain controllers and games."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "RAW CONTROLLER INPUT"
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
 msgid "ENABLE DEBUG"
 msgstr "ATIVAR DEPURAÇÃO"
 
@@ -8993,8 +9025,8 @@ msgstr "Pode melhorar as taxas de quadros e a capacidade de resposta."
 msgctxt "game_options"
 msgid "Enhancement. Double the rendering resolution. Makes 3D objects clearer."
 msgstr ""
-"Aprimoramento. Duplique a resolução de renderização. Torna os objetos 3D "
-"mais evidentes."
+"Aprimoramento. Dobra a resolução de renderização. Torna os objetos 3D mais "
+"evidentes."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -9327,12 +9359,12 @@ msgstr "Mostrar (Padrão)"
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
-msgstr ""
+msgstr "Anti serrilhado é uma técnica para suavizar bordas irregulares."
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "FXAA"
-msgstr ""
+msgstr "ANTI SERRILHADO DE RÁPIDA APROXIMAÇÃO (FXAA)"
 
 #~ msgctxt "game_options"
 #~ msgid "Force the emulator to run at this resolution."
