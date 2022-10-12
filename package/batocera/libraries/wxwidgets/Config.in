@@ -1,9 +1,9 @@
 config BR2_PACKAGE_WXWIDGETS
-        bool "wxwidgets"
+    bool "wxwidgets"
 	select BR2_PACKAGE_LIBPNG
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_GDK_PIXBUF
 	select BR2_PACKAGE_LIBGTK3
-        help
-          A crossplatform gui library
+    help
+        A crossplatform gui library

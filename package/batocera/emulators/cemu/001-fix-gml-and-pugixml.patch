@@ -1,0 +1,80 @@
+diff --git a/src/Common/CMakeLists.txt b/src/Common/CMakeLists.txt
+index ca7ea238cc..7f5248d271 100644
+--- a/src/Common/CMakeLists.txt
++++ b/src/Common/CMakeLists.txt
+@@ -54,7 +54,7 @@ target_link_libraries(CemuCommon PRIVATE
+ 	CemuComponents
+ 	Boost::nowide
+ 	Boost::filesystem
+-	glm::glm
++	glm
+ )
+ 
+ if (UNIX AND NOT APPLE)
+diff --git a/src/input/CMakeLists.txt b/src/input/CMakeLists.txt
+index ecb88cd285..16bb9d7596 100644
+--- a/src/input/CMakeLists.txt
++++ b/src/input/CMakeLists.txt
+@@ -83,8 +83,8 @@ target_link_libraries(CemuInput PRIVATE
+ 	CemuUtil
+ 	Boost::headers
+ 	Boost::program_options
+-	glm::glm
+-	pugixml::pugixml
++	glm
++	pugixml
+ 	SDL2::SDL2
+ )
+ 
+diff --git a/src/Cafe/CMakeLists.txt b/src/Cafe/CMakeLists.txt.new
+index 6657bc9cd4..2ba0632709 100644
+--- a/src/Cafe/CMakeLists.txt
++++ b/src/Cafe/CMakeLists.txt
+@@ -495,7 +495,7 @@ target_link_libraries(CemuCafe PRIVATE
+ 	OpenSSL::Crypto
+ 	OpenSSL::SSL
+ 	PNG::PNG
+-	pugixml::pugixml
++	pugixml
+ 	ZArchive::zarchive
+ 	ZLIB::ZLIB
+ 	zstd::zstd
+diff --git a/src/Cemu/CMakeLists.txt b/src/Cemu/CMakeLists.txt
+index 1fce8ec1db..bb09cf7348 100644
+--- a/src/Cemu/CMakeLists.txt
++++ b/src/Cemu/CMakeLists.txt
+@@ -46,7 +46,7 @@ target_link_libraries(CemuComponents PRIVATE
+ 	CURL::libcurl
+ 	OpenSSL::Crypto
+ 	OpenSSL::SSL
+-	pugixml::pugixml
++	pugixml
+ 	ZLIB::ZLIB
+ )
+ 
+diff --git a/src/config/CMakeLists.txt b/src/config/CMakeLists.txt
+index c329d58b95..83d8ee372e 100644
+--- a/src/config/CMakeLists.txt
++++ b/src/config/CMakeLists.txt
+@@ -23,7 +23,7 @@ target_link_libraries(CemuConfig PRIVATE
+ 	CemuUtil
+ 	Boost::headers
+ 	Boost::program_options
+-	pugixml::pugixml
++	pugixml
+ )
+ 
+ if (ENABLE_WXWIDGETS)
+diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
+index 0a2ecc7b26..a8f3982e76 100644
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -143,7 +143,7 @@ target_link_libraries(CemuGui PRIVATE
+ 	CURL::libcurl
+ 	libzip::zip
+ 	OpenSSL::Crypto
+-	pugixml::pugixml
++	pugixml
+ 	ZArchive::zarchive
+ )
+ 

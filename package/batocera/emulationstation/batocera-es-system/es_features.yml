@@ -5655,29 +5655,30 @@ cannonball:
 cemu:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        gfxbackend:
+        cemu_gfxbackend:
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
-                "OpenGL":                      OpenGL
-                "Vulkan":                      Vulkan
-        async:
+                "OpenGL":           0
+                "Vulkan (Default)": 1
+        cemu_async:
             group: ADVANCED OPTIONS
-            prompt:      ASYNC SHADER (VULKAN ONLY)
-            description: Speed up. Causes visual glitches on first load.
+            prompt: ASYNC SHADER COMPILE (VULKAN ONLY)
+            description: Speed up shader compilation.
             choices:
-                "Off":                         0
-                "On":                          1
-        rumble:
-            prompt:      RUMBLE
+                "Off":          false
+                "On (Default)": true
+        cemu_rumble:
+            prompt: RUMBLE
+            description: Set the controller rumble strength if supported.
             choices:
-                "Off (Default)":               0
-                "25%":                         0.25
-                "50%":                         0.5
-                "75%":                         0.75
-                "100%":                        1
-        controller_combination:
-            prompt:      CONTROLLER COMBINATION
+                "Off (Default)": 0
+                "25%":           0.25
+                "50%":           0.5
+                "75%":           0.75
+                "100%":          1
+        cemu_controller_combination:
+            prompt: CONTROLLER COMBINATION
             description: Pro Controller required for games that require shake motions.
             choices:
                 "GamePad + 4 Pro Controller":  0
@@ -5685,6 +5686,51 @@ cemu:
                 "5 Pro Controller":            2
                 "5 Sideway Wiimote":           3
                 "Wii U Classic Controller":    4
+        cemu_audio_channels:
+            prompt: AUDIO CHANNELS
+            description: Choose the audio output type.
+            choices:
+                "Stereo (Default)": 1
+                "Surround":         2        
+        cemu_audio_config:
+            group: ADVANCED OPTIONS
+            prompt: AUDIO OUTPUT
+            description: Have Batocera set the first audio output device.
+            choices:
+                "Set in Config - choose if no audio output":  false
+                "Batocera sets first audio device (Default)": true
+        cemu_vsync:
+            prompt: VSYNC
+            description: Fix screen tearing.
+            choices:
+                "Off (Default)":                         0
+                "Double buffering":                      1
+                "Triple buffering":                      2
+                "Match emulated display (Experimental)": 3
+        cemu_upscale:
+            group: ADVANCED OPTIONS
+            prompt: UPSCALE FILTER
+            description: Choose upscaling method.
+            choices:
+                "Bilinear":          0
+                "Bicubic":           1
+                "Hermite (Default)": 2
+                "Nearest Neighbour": 3
+        cemu_downscale:
+            group: ADVANCED OPTIONS
+            prompt: DOWNSCALE FILTER
+            description: Choose downscaling method.
+            choices:
+                "Bilinear (Default)": 0
+                "Bicubic":            1
+                "Hermite":            2
+                "Nearest Neighbour":  3
+        cemu_aspect:
+            prompt: ASPECT RATIO
+            description: Change the output resolution ratio.
+            choices:
+                "Keep Aspect Ration (Default)": 0
+                "Stretch":                      1
 
 citra:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
