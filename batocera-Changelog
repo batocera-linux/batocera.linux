@@ -3,6 +3,11 @@
         * add: Vita3k - PlayStation Vita emulator
         * add: automatic switch when a new display is plugged or unplugged (on es only for plugging)
         * change: move to pipewire wireplumber audio
+        * change: kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
+            *.ram to *.bkr
+            *-ext512K.ram to *.bcr
+          or you can continue to use the old save format by entering the following line into batocera.conf:
+          saturn.kronos_use_beetle_saves = disabled
         * es: volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
         * bump: pcsx2 to v1.7.3292
         * bump: alsa to 1.2.7.2
