@@ -7,6 +7,7 @@ from os.path import isfile
 from collections import OrderedDict
 import sys
 import zipfile
+import xml.etree.ElementTree as elementTree
 
 systems = {
 
@@ -315,54 +316,54 @@ systems = {
     "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
                                                   { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
-    "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM"  },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM" },
-                                                  { "md5": "", "file": "bios/mac128k.zip" },
-                                                  { "md5": "bc04a4252ee96826c1f41f927c145225", "zippedFile": "342-0220-a.u6d", "file": "bios/mac128k.zip"},
-                                                  { "md5": "409d8b9a04db15b7bfbbd5fcb931bf2e", "zippedFile": "342-0221-a.u8d", "file": "bios/mac128k.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0110.zip" },
-                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0110.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0120.zip" },
-                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0120.zip"},
-                                                  { "md5": "", "file": "bios/mac512k.zip" },
-                                                  { "md5": "b4118b89fa68a913a225f0cf9a751fae", "zippedFile": "342-0220-b.u6d", "file": "bios/mac512k.zip"},
-                                                  { "md5": "ab4e461833e98ef7106f24455a07769d", "zippedFile": "342-0221-b.u8d", "file": "bios/mac512k.zip"},
-                                                  { "md5": "", "file": "bios/macplus.zip" },
-                                                  { "md5": "1467a42dee57ac265d063b3f351189fc", "zippedFile": "342-0341-a.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "25b1bf85b3b072d957499cef4d7e313f", "zippedFile": "342-0341-b.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "cf7c3259844245a8967556fa40d81243", "zippedFile": "342-0341-c.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "d5584762b43a9b1cb24a981f9b9b4198", "zippedFile": "342-0342-a.u8d", "file": "bios/macplus.zip"},
-                                                  { "md5": "f83069fd7ff1fb011958f819cbff4c88", "zippedFile": "342-0342-b.u8d", "file": "bios/macplus.zip"},
-                                                  { "md5": "875919e2544644cd628f44b5c11db036", "zippedFile": "modplus-harp2.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "efcefe8f11c10541a503d48a07878201", "zippedFile": "rominator-20150225-hi.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "f4b06da98500df0747a764dfbf1862b9", "zippedFile": "rominator-20150225-lo.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "", "file": "bios/macse.zip" },
-                                                  { "md5": "9fb38bdcc0d53d9d380897ee53dc1322", "zippedFile": "macse.rom", "file": "bios/macse.zip"},
-                                                  { "md5": "", "file": "bios/macclasc.zip" },
-                                                  { "md5": "c229bb677cb41b84b780c9e38a09173e", "zippedFile": "341-0813__=c=1983-90_apple__japan__910d_d.27c4096_be.ue1", "file": "bios/macclasc.zip"},
-                                                  { "md5": "", "file": "bios/mac2fdhd.zip" },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/mac2fdhd.zip"},
-                                                  { "md5": "", "file": "bios/nb_48gc.zip" },
-                                                  { "md5": "1bf16eefb23a1bea02f031f1ef1de528", "zippedFile": "3410801.bin", "file": "bios/nb_48gc.zip"},
-                                                  { "md5": "", "file": "bios/maciix.zip" },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/maciix.zip"},
-                                                  { "md5": "", "file": "bios/maclc3.zip" },
-                                                  { "md5": "fa16d49527c4e6e9c0d9e46904133d39", "zippedFile": "ecbbc41c.rom", "file": "bios/maclc3.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0110a.zip" },
-                                                  { "md5": "9e8ea1552153c5e0f895e247e7d3ec1c", "zippedFile": "341-0332-a.bin", "file": "bios/mackbd_m0110a.zip"},
-                                                  { "md5": "", "file": "bios/nb_image.zip" },
-                                                  { "md5": "93155ac7bad0fec36837252bb1e408f2", "zippedFile": "nb_fake.bin", "file": "bios/nb_image.zip"},
-                                                  { "md5": "", "file": "bios/egret.zip" },
-                                                  { "md5": "96665499f5cf2bb5b4aae6fdaf0a9fb5", "zippedFile": "341s0850.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "b955ecbdf6d2f979f3683dd1d6884643", "zippedFile": "341s0851.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "5035d321c5d5fa1eab5ce6bf986676e4", "zippedFile": "344s0100.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "", "file": "bios/macos3.img" },
-                                                  { "md5": "", "file": "bios/macos608.img" },
-                                                  { "md5": "", "file": "bios/macos701.img" },
-                                                  { "md5": "", "file": "bios/macos75.img" },
-                                                  { "md5": "", "file": "bios/mac608.chd" },
-                                                  { "md5": "", "file": "bios/mac701.chd" },
-                                                  { "md5": "", "file": "bios/mac755.chd" } ] },
+    "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM", "emulator": "libretro", "core": "minivmac" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM", "emulator": "libretro", "core": "minivmac" },
+                                                  { "md5": "", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "bc04a4252ee96826c1f41f927c145225", "zippedFile": "342-0220-a.u6d", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "409d8b9a04db15b7bfbbd5fcb931bf2e", "zippedFile": "342-0221-a.u8d", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0110.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0110.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0120.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0120.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "b4118b89fa68a913a225f0cf9a751fae", "zippedFile": "342-0220-b.u6d", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "ab4e461833e98ef7106f24455a07769d", "zippedFile": "342-0221-b.u8d", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "1467a42dee57ac265d063b3f351189fc", "zippedFile": "342-0341-a.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "25b1bf85b3b072d957499cef4d7e313f", "zippedFile": "342-0341-b.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "cf7c3259844245a8967556fa40d81243", "zippedFile": "342-0341-c.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "d5584762b43a9b1cb24a981f9b9b4198", "zippedFile": "342-0342-a.u8d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "f83069fd7ff1fb011958f819cbff4c88", "zippedFile": "342-0342-b.u8d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "875919e2544644cd628f44b5c11db036", "zippedFile": "modplus-harp2.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "efcefe8f11c10541a503d48a07878201", "zippedFile": "rominator-20150225-hi.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "f4b06da98500df0747a764dfbf1862b9", "zippedFile": "rominator-20150225-lo.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macse.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9fb38bdcc0d53d9d380897ee53dc1322", "zippedFile": "macse.rom", "file": "bios/macse.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macclasc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "c229bb677cb41b84b780c9e38a09173e", "zippedFile": "341-0813__=c=1983-90_apple__japan__910d_d.27c4096_be.ue1", "file": "bios/macclasc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/nb_48gc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "1bf16eefb23a1bea02f031f1ef1de528", "zippedFile": "3410801.bin", "file": "bios/nb_48gc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/maclc3.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "fa16d49527c4e6e9c0d9e46904133d39", "zippedFile": "ecbbc41c.rom", "file": "bios/maclc3.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0110a.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9e8ea1552153c5e0f895e247e7d3ec1c", "zippedFile": "341-0332-a.bin", "file": "bios/mackbd_m0110a.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/nb_image.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "93155ac7bad0fec36837252bb1e408f2", "zippedFile": "nb_fake.bin", "file": "bios/nb_image.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "96665499f5cf2bb5b4aae6fdaf0a9fb5", "zippedFile": "341s0850.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "b955ecbdf6d2f979f3683dd1d6884643", "zippedFile": "341s0851.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "5035d321c5d5fa1eab5ce6bf986676e4", "zippedFile": "344s0100.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos3.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos608.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos701.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos75.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac608.chd", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac701.chd", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac755.chd", "emulator": "libretro", "core": "mame" } ] },
 
     # ---------- Tandy Color Conputer ---------- #
     "coco":   { "name": "Tandy Color Computer", "biosFiles":  [ { "md5": "", "file": "bios/coco.zip"  },
@@ -688,9 +689,9 @@ systems = {
 
     # ---------- GCE Vectrex ---------- #
     # Not required for libretro-vecx, the default emulator
-    # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
-    #                                            { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
-    #                                            { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
 }
 
 class BiosStatus:
@@ -733,34 +734,86 @@ def checkInsideZip(container, fileName, md5sum):
     print('Missing file inside .zip: File {} not found in {}'.format(fileName, container))
     return False
 
-def checkBios(systems, prefix):
+def coreExists(checkMe, emuDict):
+    if "emulator" in checkMe:
+        if checkMe["emulator"] in emuDict.keys():
+            hasEmu = True
+        else:
+            hasEmu = False
+    else:
+        # Emulator not defined, check BIOS
+        hasEmu = True
+    if hasEmu and "core" in checkMe:
+        if checkMe["core"] in emuDict[checkMe["emulator"]]:
+            hasCore = True
+        else:
+            hasCore = False
+    else:
+        # Either core is undefined or emulator is not installed.
+        # Set core presence to emulator presence, we'll assume there's only one core or it applies to all.
+        hasCore = hasEmu
+    return hasCore
+
+def checkBios(systems, prefix, filterROMs):
+    systemDict = {}
+    emuDict = {}
+    systemName = ""
+    configFile = "/usr/share/emulationstation/es_systems.cfg"
+    configData = elementTree.parse(configFile)
+    configRoot = configData.getroot()
+
+    if filterROMs:
+        # Load systems & emulators from es_systems.cfg
+        # System full name stored but not currently used, may be useful for the readme function.
+        for activeSystem in configRoot:
+            for systemTag in activeSystem:
+                if systemTag.tag == "fullname":
+                    systemName = systemTag.text
+                elif systemTag.tag == "name":
+                    systemDict[systemTag.text] = systemName
+                    systemName = ""
+                elif systemTag.tag == "emulators":
+                    for emulatorTag in systemTag:
+                        emulatorName = emulatorTag.attrib['name']
+                        for coreTag in emulatorTag[0]:
+                            if emulatorName in emuDict.keys():
+                                if not coreTag.text in emuDict[emulatorName]:
+                                    emuDict[emulatorName].append(coreTag.text)
+                            else:
+                                emuDict[emulatorName] = [coreTag.text]
+    else:
+        for system in systems.keys():
+            systemDict[system] = systems[system]['name']
+
     missingBios = {}
     for system in systems.keys():
-        for file in systems[system]["biosFiles"]:
-            filepath = prefix + "/" + file["file"]
-            if isfile(filepath):
-                if not "zippedFile" in file:
-                    md5 = md5sum(filepath)
-                    if md5 != file["md5"] and file["md5"] != "":
-                        if system not in missingBios:
-                            missingBios[system] = {}
-                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-                else:
-                    if 'altmd5' in file:
-                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
-                            print('Debug: Alternate MD5 Exists')
+        if system in systemDict.keys():
+            if coreExists(systems[system], emuDict) or filterROMs == False:
+                for file in systems[system]["biosFiles"]:
+                    if coreExists(file, emuDict) or filterROMs == False:
+                        filepath = prefix + "/" + file["file"]
+                        if isfile(filepath):
+                            if not "zippedFile" in file:
+                                md5 = md5sum(filepath)
+                                if md5 != file["md5"] and file["md5"] != "":
+                                    if system not in missingBios:
+                                        missingBios[system] = {}
+                                    missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                            else:
+                                if 'altmd5' in file:
+                                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
+                                        if system not in missingBios:
+                                            missingBios[system] = {}
+                                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                                else:
+                                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
+                                        if system not in missingBios:
+                                            missingBios[system] = {}
+                                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                        else:
                             if system not in missingBios:
                                 missingBios[system] = {}
-                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-                    else:
-                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
-                            if system not in missingBios:
-                                missingBios[system] = {}
-                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-            else:
-                if system not in missingBios:
-                    missingBios[system] = {}
-                missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
+                            missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
     return missingBios
 
 def displayMissingBios(systems, missingBios):
@@ -786,7 +839,10 @@ def createReadme(systems):
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         prefix = "/userdata"
-        displayMissingBios(systems, checkBios(systems, prefix))
+        displayMissingBios(systems, checkBios(systems, prefix, True))
+    elif sys.argv[1] == "--noFilter":
+        prefix = "/userdata"
+        displayMissingBios(systems, checkBios(systems, prefix, False))
     elif sys.argv[1] == "--createReadme":
         createReadme(systems)
     elif len(sys.argv) == 3 and sys.argv[1] == "--filter":
@@ -802,4 +858,4 @@ if __name__ == '__main__':
             print("No system named {} found".format(sys.argv[2]))
             exit(1)
 
-        displayMissingBios(filtered_systems, checkBios(filtered_systems, prefix))
+        displayMissingBios(filtered_systems, checkBios(filtered_systems, prefix, True))
