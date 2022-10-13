@@ -1687,7 +1687,7 @@ msgctxt "game_options"
 msgid "Nearest"
 msgstr ""
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, duckstation, openbor, ...
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, cemu, duckstation, ...
 msgctxt "game_options"
 msgid "Bilinear"
 msgstr ""
@@ -2600,12 +2600,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, duckstation, duckstation, flycast/uzem, mame/uzem, ...
+#. TRANSLATION: libretro/mame, cemu, duckstation, duckstation, flycast/uzem, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, duckstation, duckstation, mame/uzem, mame/uzem, ...
+#. TRANSLATION: libretro/mame, cemu, duckstation, duckstation, mame/uzem, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr ""
@@ -2622,7 +2622,7 @@ msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, cemu
 msgctxt "game_options"
 msgid "On (Default)"
 msgstr ""
@@ -4487,12 +4487,12 @@ msgstr ""
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
-msgid "Double the rendering resolution. No effect on 64-bit machines."
+msgid "Double the rendering resolution."
 msgstr ""
 
-#. TRANSLATION: libretro/pcsx_rearmed
+#. TRANSLATION: libretro/pcsx_rearmed, drastic
 msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION (32-BIT ONLY)"
+msgid "ENHANCED RENDERING RESOLUTION"
 msgstr ""
 
 #. TRANSLATION: libretro/pcsx_rearmed
@@ -6118,7 +6118,7 @@ msgctxt "game_options"
 msgid "GLCore"
 msgstr ""
 
-#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
+#. TRANSLATION: libretro, daphne, dolphin, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr ""
@@ -6258,12 +6258,22 @@ msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
-msgid "Speed up. Causes visual glitches on first load."
+msgid "Vulkan (Default)"
 msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
-msgid "ASYNC SHADER (VULKAN ONLY)"
+msgid "Speed up shader compilation."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "ASYNC SHADER COMPILE (VULKAN ONLY)"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Set the controller rumble strength if supported."
 msgstr ""
 
 #. TRANSLATION: cemu
@@ -6301,6 +6311,211 @@ msgctxt "game_options"
 msgid "Wii U Classic Controller"
 msgstr ""
 
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Not all games support all languages."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "CONSOLE LANGUAGE"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Current language"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Japanese"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, sonic2013, soniccd
+msgctxt "game_options"
+msgid "English"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "French"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "German"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Italian"
+msgstr ""
+
+#. TRANSLATION: cemu, flycast/uzem, redream, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Spanish"
+msgstr ""
+
+#. TRANSLATION: cemu, sonic2013
+msgctxt "game_options"
+msgid "Chinese"
+msgstr ""
+
+#. TRANSLATION: cemu, easyrpg, sonic2013
+msgctxt "game_options"
+msgid "Korean"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Dutch"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Portuguese"
+msgstr ""
+
+#. TRANSLATION: cemu, sonic2013
+msgctxt "game_options"
+msgid "Russian"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Taiwanese"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose the audio output type."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "AUDIO CHANNELS"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Stereo (Default)"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Surround"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Have Batocera set the first audio output device."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "AUDIO OUTPUT"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Set in Config - choose if no audio output"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Batocera sets first audio device (Default)"
+msgstr ""
+
+#. TRANSLATION: cemu, sonic2013, demul, vita3k
+msgctxt "game_options"
+msgid "Fix screen tearing."
+msgstr ""
+
+#. TRANSLATION: cemu, citra, dolphin, dolphin_triforce, duckstation, ...
+msgctxt "game_options"
+msgid "VSYNC"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Double buffering"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Triple buffering"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Match emulated display (Experimental)"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose upscaling method."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "UPSCALE FILTER"
+msgstr ""
+
+#. TRANSLATION: cemu, cemu
+msgctxt "game_options"
+msgid "Bicubic"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Hermite (Default)"
+msgstr ""
+
+#. TRANSLATION: cemu, cemu, sonic2013, soniccd
+msgctxt "game_options"
+msgid "Nearest Neighbour"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose downscaling method."
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "DOWNSCALE FILTER"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Bilinear (Default)"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Hermite"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Keep Aspect Ration (Default)"
+msgstr ""
+
+#. TRANSLATION: cemu, daphne, openbor, redream, demul
+msgctxt "game_options"
+msgid "Stretch"
+msgstr ""
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Enable mouse input to simulate touchscreen."
+msgstr ""
+
+#. TRANSLATION: cemu, mame/uzem, wine
+msgctxt "game_options"
+msgid "ENABLE MOUSE"
+msgstr ""
+
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "hybrid top ratio 4"
@@ -6314,11 +6529,6 @@ msgstr ""
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
-msgstr ""
-
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2, ...
-msgctxt "game_options"
-msgid "VSYNC"
 msgstr ""
 
 #. TRANSLATION: citra
@@ -6369,11 +6579,6 @@ msgstr ""
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Not all games support Stretch, depending on the video files."
-msgstr ""
-
-#. TRANSLATION: daphne, openbor, redream, demul
-msgctxt "game_options"
-msgid "Stretch"
 msgstr ""
 
 #. TRANSLATION: daphne, dolphin, dolphin_triforce
@@ -6636,6 +6841,56 @@ msgstr ""
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "USE PAD PROFILES"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Change what's plugged into the virtual GameCube ports."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 1 TYPE"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Standard Controller"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GameCube Adapter for Wii U"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Steering Wheel"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Dance Mat"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "DK Bongos"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 2 TYPE"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 3 TYPE"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 4 TYPE"
 msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce, pcsx2, ppsspp, vita3k
@@ -6996,36 +7251,6 @@ msgstr ""
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "CHOOSE DREAMCAST LANGUAGE"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Japanese"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, sonic2013, soniccd
-msgctxt "game_options"
-msgid "English"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "German"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "French"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Spanish"
-msgstr ""
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Italian"
 msgstr ""
 
 #. TRANSLATION: flycast/uzem
@@ -8224,11 +8449,6 @@ msgctxt "game_options"
 msgid "Cyrillic [Windows-1251]"
 msgstr ""
 
-#. TRANSLATION: easyrpg, sonic2013
-msgctxt "game_options"
-msgid "Korean"
-msgstr ""
-
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
 msgid "Chinese (Simplified)"
@@ -8563,11 +8783,6 @@ msgid ""
 "connected), and similar controls"
 msgstr ""
 
-#. TRANSLATION: mame/uzem, wine
-msgctxt "game_options"
-msgid "ENABLE MOUSE"
-msgstr ""
-
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "BGFX for post-processing, accel/opengl for raw image."
@@ -8859,11 +9074,6 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr ""
-
-#. TRANSLATION: drastic
-msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -8973,29 +9183,9 @@ msgctxt "game_options"
 msgid "Portugese"
 msgstr ""
 
-#. TRANSLATION: sonic2013
-msgctxt "game_options"
-msgid "Russian"
-msgstr ""
-
-#. TRANSLATION: sonic2013
-msgctxt "game_options"
-msgid "Chinese"
-msgstr ""
-
-#. TRANSLATION: sonic2013, demul, vita3k
-msgctxt "game_options"
-msgid "Fix screen tearing."
-msgstr ""
-
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "Can smooth the image."
-msgstr ""
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "Nearest Neighbour"
 msgstr ""
 
 #. TRANSLATION: sonic2013, soniccd
