@@ -5686,6 +5686,24 @@ cemu:
                 "5 Pro Controller":            2
                 "5 Sideway Wiimote":           3
                 "Wii U Classic Controller":    4
+        console_language:
+            group: ADVANCED OPTIONS
+            prompt:      CONSOLE LANGUAGE
+            description: Not all games support all languages.
+            choices:
+                "Current language":            ui
+                "Japanese":                    ja_JP
+                "English":                     en_US
+                "French":                      fr_FR
+                "German":                      de_DE
+                "Italian":                     it_IT
+                "Spanish":                     es_ES
+                "Chinese":                     zh_CN
+                "Korean":                      ko_KR
+                "Dutch":                       nl_NL
+                "Portuguese":                  pt_PT
+                "Russian":                     ru_RU
+                "Taiwanese":                   zh_TW
         cemu_audio_channels:
             prompt: AUDIO CHANNELS
             description: Choose the audio output type.
