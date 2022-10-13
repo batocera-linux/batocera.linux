@@ -5686,7 +5686,7 @@ cemu:
                 "5 Pro Controller":            2
                 "5 Sideway Wiimote":           3
                 "Wii U Classic Controller":    4
-        console_language:
+        cemu_console_language:
             group: ADVANCED OPTIONS
             prompt:      CONSOLE LANGUAGE
             description: Not all games support all languages.
@@ -5749,6 +5749,12 @@ cemu:
             choices:
                 "Keep Aspect Ration (Default)": 0
                 "Stretch":                      1
+        cemu_touchpad:
+            prompt:      ENABLE MOUSE
+            description: Enable mouse input to simulate touchscreen.
+            choices:
+                "Disabled (Default)": 0
+                "Enabled":            1               
 
 citra:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
