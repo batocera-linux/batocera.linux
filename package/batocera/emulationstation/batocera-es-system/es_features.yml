@@ -3848,8 +3848,8 @@ libretro:
                     "2":                2
                     "3":                3
             neon_enhancement:
-                prompt:      ENHANCED RENDERING RESOLUTION (32-BIT ONLY)
-                description: Double the rendering resolution. No effect on 64-bit machines.
+                prompt:      ENHANCED RENDERING RESOLUTION
+                description: Double the rendering resolution.
                 choices:
                     "Off":              disabled
                     "On":               enabled
@@ -5691,7 +5691,7 @@ cemu:
             description: Choose the audio output type.
             choices:
                 "Stereo (Default)": 1
-                "Surround":         2        
+                "Surround":         2
         cemu_audio_config:
             group: ADVANCED OPTIONS
             prompt: AUDIO OUTPUT
