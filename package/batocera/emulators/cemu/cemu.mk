@@ -3,8 +3,8 @@
 # cemu
 #
 ################################################################################
-
-CEMU_VERSION = 2b9edced8144c885e5b3b14d3e3a75217e2065ec
+# Version: v2.06 - Commits on Oct 13, 2022
+CEMU_VERSION = d251ce07e0cbbe8a85a4013fbfb15efa0f422b76
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
@@ -15,7 +15,7 @@ CEMU_DEPENDENCIES = sdl2 host-libcurl host-imgui host-pugixml pugixml rapidjson 
 CEMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 CEMU_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -Wno-dev -DBUILD_SHARED_LIBS=OFF
-CEMU_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF -DENABLE_VCPKG=OFF -DENABLE_XDG_DIRS=ON
+CEMU_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF -DENABLE_VCPKG=OFF -DPORTABLE=OFF
 CEMU_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/glslang"
 
 define CEMU_INSTALL_TARGET_CMDS
