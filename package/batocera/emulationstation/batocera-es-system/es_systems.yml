@@ -704,6 +704,7 @@ devilutionx:
   release:
   hardware:   port
   extensions: [mpq]
+  platform: pc
   group: ports
   emulators:
     devilutionx:
@@ -987,6 +988,7 @@ prboom:
   release:
   hardware: port
   extensions: [wad, iwad, pwad]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -1008,6 +1010,7 @@ tyrquake:
   release:
   hardware: port
   extensions: [pak]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -1027,6 +1030,7 @@ mrboom:
   release:
   hardware: port
   extensions: [libretro]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -1090,6 +1094,7 @@ cannonball:
   release:
   hardware: port
   extensions: [cannonball]
+  platform: pc
   group: ports
   emulators:
     cannonball:
@@ -1109,6 +1114,7 @@ sdlpop:
   release:
   hardware: port
   extensions: [sdlpop]
+  platform: pc
   group: ports
   emulators:
     sdlpop:
@@ -1159,6 +1165,7 @@ cavestory:
   release: 2004
   hardware: port
   extensions: [exe]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -1817,6 +1824,7 @@ ports:
   release:
   hardware: port
   extensions: [sh, squashfs]
+  platform: pc
   group: ports
   path:       /userdata/roms/ports
   emulators:
@@ -1888,6 +1896,7 @@ xash3d_fwgs:
   release:
   hardware:   port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     xash3d_fwgs:
@@ -1957,6 +1966,7 @@ cgenius:
   release:
   hardware: port
   extensions: [zip]
+  platform: pc
   emulators:
     cgenius:
       cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
@@ -2114,6 +2124,7 @@ flatpak:
   release:
   hardware:
   extensions: [flatpak]
+  platform: pc
   group: ports
   emulators:
     flatpak:
@@ -2136,6 +2147,7 @@ steam:
   release:
   hardware:
   extensions: [steam]
+  platform: pc
   emulators:
     steam:
       steam: { requireAnyOf: [BR2_PACKAGE_BATOCERA_STEAM] }
@@ -2174,6 +2186,7 @@ ecwolf:
   release: 2013
   hardware: port
   extensions: [ecwolf, pk3, squashfs]
+  platform: pc
   group: ports
   emulators:
     ecwolf:
@@ -2742,6 +2755,7 @@ superbroswar:
   release: 2006
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -2771,6 +2785,7 @@ vitaquake2:
   release: 1997
   hardware: port
   extensions: [pak, zip, 7zip]
+  platform: pc
   group: ports
   emulators:
     libretro:
@@ -2794,6 +2809,7 @@ zc210:
   hardware: console
   theme: zeldac
   extensions: [qst]
+  platform: pc
   emulators:
     libretro:
       zc210:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ZC210] }
@@ -2814,6 +2830,7 @@ openjazz:
   release: 1994
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     openjazz:
@@ -2825,6 +2842,7 @@ hurrican:
   release: 1990
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     hurrican:
@@ -2840,6 +2858,7 @@ hcl:
   release: 2011
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     hcl:
@@ -2865,6 +2884,7 @@ abuse:
   release: 1996
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     abuse:
@@ -2880,6 +2900,7 @@ cdogs:
   release: 1997
   hardware: port
   extensions: [game]
+  platform: pc
   group: ports
   emulators:
     cdogs:
@@ -2895,6 +2916,7 @@ xrick:
   release:
   hardware: port
   extensions: [zip]
+  platform: pc
   group: ports
   emulators:
     libretro:
