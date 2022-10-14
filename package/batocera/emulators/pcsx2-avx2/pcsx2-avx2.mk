@@ -45,6 +45,7 @@ define PCSX2_AVX2_INSTALL_TARGET_CMDS
 	cp -p $(@D)/buildroot-build/3rdparty/zstd/libpcsx2-zstd.so $(TARGET_DIR)/usr/pcsx2-avx2/lib
 	cp -p $(@D)/buildroot-build/3rdparty/jpgd/libjpgd.so $(TARGET_DIR)/usr/pcsx2-avx2/lib
 	cp -p $(@D)/buildroot-build/3rdparty/cubeb/libcubeb.so.0 $(TARGET_DIR)/usr/pcsx2-avx2/lib
+	cp -p $(@D)/buildroot-build/3rdparty/cpuinfo/libcpuinfo.so $(TARGET_DIR)/usr/pcsx2-avx2/lib
 endef
 
 $(eval $(cmake-package))
