@@ -5754,7 +5754,21 @@ cemu:
             description: Enable mouse input to simulate touchscreen.
             choices:
                 "Disabled (Default)": 0
-                "Enabled":            1               
+                "Enabled":            1
+        #cemu_overlay:
+        #    group: ADVANCED OPTIONS
+        #    prompt: ENABLE PERFORMANCE OVERLAY
+        #    description: Enable Cemu's performance overlay.
+        #    choices:
+        #        "Disabled (Default)": false
+        #        "Enabled":            true
+        #cemu_notifications:
+        #    group: ADVANCED OPTIONS
+        #    prompt: ENABLE NOTIFICATIONS
+        #    description: Enable notifications of cache, controller events etc.
+        #    choices:
+        #       "Disabled (Default)": false
+        #       "Enabled":            true
 
 citra:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
