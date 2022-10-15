@@ -178,17 +178,17 @@ class CemuGenerator(Generator):
         overlay_root = CemuGenerator.getRoot(config, "Overlay")
         # Display FPS / CPU / GPU / RAM
         if system.isOptSet("cemu_overlay") and system.config["cemu_overlay"] == "True":
-            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "1")
+            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "3")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextScale",       "100")
             CemuGenerator.setSectionConfig(config, overlay_root, "FPS",             "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "false") #currently doesn't work
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "false") #causes crash if enabled in linux
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "false") #currently doesn't work
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "false") #currently doesn't work
         else:
-            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "1")
+            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "3")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextScale",       "100")
             CemuGenerator.setSectionConfig(config, overlay_root, "FPS",             "false")
@@ -201,7 +201,7 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, graphic_root, "Notification", "")
         notification_root = CemuGenerator.getRoot(config, "Notification")
         if system.isOptSet("cemu_notifications") and system.config["cemu_notifications"] == "True":
-            CemuGenerator.setSectionConfig(config, notification_root, "Position", "0")
+            CemuGenerator.setSectionConfig(config, notification_root, "Position", "1")
             CemuGenerator.setSectionConfig(config, notification_root, "TextColor", "4294967295")
             CemuGenerator.setSectionConfig(config, notification_root, "TextScale", "100")
             CemuGenerator.setSectionConfig(config, notification_root, "ControllerProfiles", "true")
@@ -209,7 +209,7 @@ class CemuGenerator(Generator):
             CemuGenerator.setSectionConfig(config, notification_root, "ShaderCompiling",    "true")
             CemuGenerator.setSectionConfig(config, notification_root, "FriendService",      "true")
         else:
-            CemuGenerator.setSectionConfig(config, notification_root, "Position", "0")
+            CemuGenerator.setSectionConfig(config, notification_root, "Position", "1")
             CemuGenerator.setSectionConfig(config, notification_root, "TextColor", "4294967295")
             CemuGenerator.setSectionConfig(config, notification_root, "TextScale", "100")
             CemuGenerator.setSectionConfig(config, notification_root, "ControllerProfiles", "false")
