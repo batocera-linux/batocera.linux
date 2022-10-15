@@ -37,7 +37,10 @@ class XeniaGenerator(Generator):
        
         # now setup the command array for the emulator
         # lutris doesn't produce choppy sound
-        commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe', '--fullscreen', 'z:' + rom]
+        if rom == 'config':
+            commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe', '--fullscreen']
+        else:
+            commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe', '--fullscreen', 'z:' + rom]
         # previous commandline option currently crashes xenia now '--gpu="vulkan"',]
 
         return Command.Command(
