@@ -182,11 +182,11 @@ class CemuGenerator(Generator):
             CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextScale",       "100")
             CemuGenerator.setSectionConfig(config, overlay_root, "FPS",             "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "false")
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "false") #currently doesn't work
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "false") #causes crash if enabled in linux
-            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "false") #currently doesn't work
-            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "false") #currently doesn't work
+            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "true")
         else:
             CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "3")
             CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
