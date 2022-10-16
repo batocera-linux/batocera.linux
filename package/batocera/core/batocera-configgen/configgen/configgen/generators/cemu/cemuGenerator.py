@@ -114,7 +114,7 @@ class CemuGenerator(Generator):
             lang = getLangFromEnvironment()
         else:
             lang = system.config["cemu_console_language"]
-        CemuGenerator.setSectionConfig(config, xml_root, "cemu_console_language", str(getCemuLang(lang)))
+        CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLang(lang)))
 
         ## [WINDOW POSITION]
         CemuGenerator.setSectionConfig(config, xml_root, "window_position", "")
