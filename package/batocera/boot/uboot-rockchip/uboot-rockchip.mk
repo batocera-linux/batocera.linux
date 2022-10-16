@@ -3,7 +3,7 @@
 # Prebuilt mainline U-Boot for Rockchip boards
 #
 ################################################################################
-UBOOT_ROCKCHIP_VERSION = 1.3.0
+UBOOT_ROCKCHIP_VERSION = 1.3.1
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3288),y)
 	UBOOT_ROCKCHIP_SOURCE = u-boot-rk3288-v$(UBOOT_ROCKCHIP_VERSION).tar.gz
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3328),y)
