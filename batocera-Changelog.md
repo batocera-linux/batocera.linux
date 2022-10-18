@@ -10,7 +10,7 @@
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
     - *-ext512K.ram to *.bcr
-    - or you can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
+    - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
 - automatic screen switch when a new screen if plugged or unplugged
 - cemu to native linux version (v2.0.4)
 ### Updated
@@ -50,7 +50,7 @@
 - mame to v0.248
 - switchres to sep 25th 2022 build
 - lr-mame to v0.248
-- retroarch to v1.11.1
+- retroarch to v1.12.0 [Changelog](https://github.com/libretro/RetroArch/blob/master/CHANGES.md#1120)
 - libretro cores synced with retroarch v1.11.1 [#7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
 - libretro-core-info to Oct 04 2022 build
 - retroarch-assets to Aug 06 2022 build
@@ -118,9 +118,9 @@
 * add: joycond support - joycons can now be paired as one 'virtual' controller
 * add: libretro-bsnes as a SNES emulator option to the RPi4 & S922x devices
 * add: RetroAchievements for Channel-F
-* add: Rock960 Developer board support "https://www.96boards.org/product/rock960/"
-* add: start of Orange Pi4-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-4-LTS.html"
-* add: start of Orange Pi3-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html"
+* add: Rock960 Developer board support [rock960](https://www.96boards.org/product/rock960/)
+* add: start of Orange Pi4-LTS board support [orange-pi-4-LTS](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-4-LTS.html)
+* add: start of Orange Pi3-LTS board support [orange-pi-3-LTS](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html)
 * bump: x86_64 linux kernel to v5.18.19
 * bump: Nvidia linux driver to v515.48.07
 * bump: btop to v1.2.7
