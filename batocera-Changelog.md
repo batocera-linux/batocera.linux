@@ -1,6 +1,7 @@
 # 202x/xx/xx - batocera.linux 36 - Luna Moth
 * add: alsa ucm2 to x86 builds for soundcard compatibility
 * add: Vita3k - PlayStation Vita emulator
+* add: WASM4 - WebAssembly fantasy console (x86_64)
 * add: automatic switch when a new display is plugged or unplugged (on es only for plugging)
 * change: move to pipewire wireplumber audio
 * change: kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
