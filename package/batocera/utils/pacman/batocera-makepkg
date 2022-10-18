@@ -154,6 +154,7 @@ function main() {
 		    shift
 	    done
 	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO, aborting." >&2; exit 1; }
+	    dos2unix "$INFO"
 
 	    for mandatory in pkgname pkgver pkgdesc arch group ; do
 		    check_argument "$mandatory"
@@ -172,6 +173,7 @@ function main() {
 		    i=0
 		    mkdir -p "$BATOEXEC_PATH"
 		    for F in "${LST_BATOEXEC[@]}"; do
+			    dos2unix "$F"
 			    cp -f "$F" "$BATOEXEC_PATH"/"$(get_config pkgname)"_"$i"
 			    i=$((i+1))
 		    done
