@@ -1,79 +1,83 @@
 # 202x/xx/xx - batocera.linux 36 - Luna Moth
-* add: alsa ucm2 to x86 builds for soundcard compatibility
-* add: Vita3k - PlayStation Vita emulator
-* add: WASM4 - WebAssembly fantasy console (x86_64)
-* add: automatic switch when a new display is plugged or unplugged (on es only for plugging)
-* change: move to pipewire wireplumber audio
-* change: kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
-    *.ram to *.bkr
-    *-ext512K.ram to *.bcr
-  or you can continue to use the old save format by entering the following line into batocera.conf:
-  saturn.kronos_use_beetle_saves = disabled
-* change: automatic screen switch when a new screen if plugged or unplugged
-* change: cemu to native linux version (v2.0.4)
-* es: volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
-* bump: pcsx2 to v1.7.3292
-* bump: alsa to 1.2.7.2
-* bump: ruffle to August 19th release
-* bump: lightspark to August 18th release
-* bump: btop to 1.2.8
-* bump: ryzenadj to 0.11.1
-* bump: pipewire to 0.3.57
-* bump: rust to 1.63
-* bump: bluez to 5.65
-* bump: xemu to 0.7.67
-* bump: citra to nightly-1784
-* bump: dolphin to 5.0-17316
-* bump: rpcs3 to v0.0.24
-* bump: flycast emulators to v2.0
-* bump: dosbox to v0.78.1
-* bump: dosbox-x to v0.84.3
-* bump: PPSSPP & lr-PPSSPP to v1.13.2
-* bump: nvidia production driver to 520.56.06
-* bump: nvidia legacy driver to 470.141.03
-* bump: nvidia legacy 390 driver to 390.154
-* bump: openMSX to v18
-* bump: moonlight embedded to v2.5.2
-* bump: groovy mame to 0.247
-* bump: hatari to v2.4.1
-* bump: fsuae to July 30 build
-* bump: scummvm to Oct 13, 2022 (v2.6.1)
-* bump: simcoupe to v1.2.11
-* bump: supermodel to Aug 19 2022 build
-* bump: tsugaru to v20220702
-* bump: vice to 3.6.1
-* bump: linux kernel for x86_64 to 6.0.2
-* bump: daphne emulator hypseus-singe to v2.10.1 (now uses SDL controller)
-* bump: amiberry to v5.4
-* bump: mame to v0.248
-* bump: switchres to sep 25th 2022 build
-* bump: lr-mame to v0.248
-* bump: retroarch to v1.11.1
-* bump: libretro cores synced with retroarch v1.11.1 [
-    #7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
-* bump: libretro-core-info to Oct 04 2022 build
-* bump: retroarch-assets to Aug 06 2022 build
-* bump: common-shaders to Apr 16 2022 build
-* bump: glsl-shaders to Sep 23 2022 build
-* bump: alllinuxfirmwares to 20221012
-* bump: mupen64plus-video-rice to Sep 30, 2022
-* bump: mupen64plus-video-glide64mk2 to Sep 30, 2022
-* bump: mupen64plus-ui-console to Oct 01, 2022
-* bump: mupen64plus-rsp-hle to Sep 30, 2022
-* bump: mupen64plus-input-sdl to Sep 30, 2022
-* bump: mupen64plus-audio-sdl to Oct 01, 2022
-* bump: mupen64plus-core to Oct 01, 2022
-* bump: mesa3d to 22.2.1
-* fix: lr-mame save state file names
-* fix: slow rpcs3 initial ppu compilation times
-* fix: rpcs3 cache & saves dir
+### EmulationStation
+- volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
+### Added
+- alsa ucm2 to x86 builds for soundcard compatibility
+- Vita3k - PlayStation Vita emulator
+- WASM4 - WebAssembly fantasy console (x86_64)
+- automatic switch when a new display is plugged or unplugged (on es only for plugging)
+### Changed
+- move to pipewire wireplumber audio
+- kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
+    - *.ram to *.bkr
+    - *-ext512K.ram to *.bcr
+    - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
+- automatic screen switch when a new screen if plugged or unplugged
+- cemu to native linux version (v2.0.4)
+### Updated
+- pcsx2 to v1.7.3292
+- alsa to 1.2.7.2
+- ruffle to August 19th release
+- lightspark to August 18th release
+- btop to 1.2.8
+- ryzenadj to 0.11.1
+- pipewire to 0.3.57
+- rust to 1.63
+- bluez to 5.65
+- xemu to 0.7.67
+- citra to nightly-1784
+- dolphin to 5.0-17316
+- rpcs3 to v0.0.24
+- flycast emulators to v2.0
+- dosbox to v0.78.1
+- dosbox-x to v0.84.3
+- PPSSPP & lr-PPSSPP to v1.13.2
+- nvidia production driver to 520.56.06
+- nvidia legacy driver to 470.141.03
+- nvidia legacy 390 driver to 390.154
+- openMSX to v18
+- moonlight embedded to v2.5.2
+- groovy mame to 0.247
+- hatari to v2.4.1
+- fsuae to July 30 build
+- scummvm to Oct 13, 2022 (v2.6.1)
+- simcoupe to v1.2.11
+- supermodel to Aug 19 2022 build
+- tsugaru to v20220702
+- vice to 3.6.1
+- linux kernel for x86_64 to 6.0.2
+- daphne emulator hypseus-singe to v2.10.1 (now uses SDL controller)
+- amiberry to v5.4
+- mame to v0.248
+- switchres to sep 25th 2022 build
+- lr-mame to v0.248
+- retroarch to v1.12.0 [Changelog](https://github.com/libretro/RetroArch/blob/master/CHANGES.md#1120)
+- libretro cores synced with retroarch v1.11.1 [#7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
+- libretro-core-info to Oct 04 2022 build
+- retroarch-assets to Aug 06 2022 build
+- common-shaders to Apr 16 2022 build
+- glsl-shaders to Sep 23 2022 build
+- alllinuxfirmwares to 20221012
+- mupen64plus-video-rice to Sep 30, 2022
+- mupen64plus-video-glide64mk2 to Sep 30, 2022
+- mupen64plus-ui-console to Oct 01, 2022
+- mupen64plus-rsp-hle to Sep 30, 2022
+- mupen64plus-input-sdl to Sep 30, 2022
+- mupen64plus-audio-sdl to Oct 01, 2022
+- mupen64plus-core to Oct 01, 2022
+- mesa3d to 22.2.1
+### Fixed
+- lr-mame save state file names
+- slow rpcs3 initial ppu compilation times
+- rpcs3 cache & saves dir
   - note: move existing cache from /userdata/saves/rpcs3 to /userdata/system/cache/rpcs3
-* fix: can now boot in verbose mode from syslinux (spam down on keyboard while booting)
-* dev: buildroot upgrade to 2022.08.1
-* dev: rpi1 image renamed to bcm2835
-* dev: rpi2 image renamed to bcm2836
-* dev: rpi3 image renamed to bcm2837
-* dev: rpi4 image renamed to bcm2711
+- can now boot in verbose mode from syslinux (spam down on keyboard while booting)
+### Dev  
+- buildroot upgrade to 2022.08.1
+- rpi1 image renamed to bcm2835
+- rpi2 image renamed to bcm2836
+- rpi3 image renamed to bcm2837
+- rpi4 image renamed to bcm2711
 
 # 2022/09/20 - batocera.linux 35 - Monarch Butterfly
 * add: gun support in emulationstation
@@ -115,9 +119,9 @@
 * add: joycond support - joycons can now be paired as one 'virtual' controller
 * add: libretro-bsnes as a SNES emulator option to the RPi4 & S922x devices
 * add: RetroAchievements for Channel-F
-* add: Rock960 Developer board support "https://www.96boards.org/product/rock960/"
-* add: start of Orange Pi4-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-4-LTS.html"
-* add: start of Orange Pi3-LTS board support "http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html"
+* add: Rock960 Developer board support [rock960](https://www.96boards.org/product/rock960/)
+* add: start of Orange Pi4-LTS board support [orange-pi-4-LTS](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-4-LTS.html)
+* add: start of Orange Pi3-LTS board support [orange-pi-3-LTS](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/orange-pi-3-LTS.html)
 * bump: x86_64 linux kernel to v5.18.19
 * bump: Nvidia linux driver to v515.48.07
 * bump: btop to v1.2.7
