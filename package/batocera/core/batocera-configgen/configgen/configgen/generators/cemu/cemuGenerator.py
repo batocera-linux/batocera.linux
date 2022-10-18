@@ -116,21 +116,32 @@ class CemuGenerator(Generator):
             lang = system.config["cemu_console_language"]
         CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLang(lang)))
 
-        ## [WINDOW POSITION]
+        ## [WINDOWS]
+        # Position
         CemuGenerator.setSectionConfig(config, xml_root, "window_position", "")
         window_position = CemuGenerator.getRoot(config, "window_position")
-        # Default window position
-        CemuGenerator.setSectionConfig(config, window_position, "x", "-4")
-        # Default games path
-        CemuGenerator.setSectionConfig(config, window_position, "y", "-23")
-
-        ## [WINDOW SIZE]
+        CemuGenerator.setSectionConfig(config, window_position, "x", "0")
+        CemuGenerator.setSectionConfig(config, window_position, "y", "0")
+        # Size
         CemuGenerator.setSectionConfig(config, xml_root, "window_size", "")
         window_size = CemuGenerator.getRoot(config, "window_size")
-        # Default window size
         CemuGenerator.setSectionConfig(config, window_size, "x", "640")
-        # Default games path
         CemuGenerator.setSectionConfig(config, window_size, "y", "480")
+
+        ## [GAMEPAD]
+        if system.isOptSet("cemu_gamepad") and system.config["cemu_gamepad"] == "True":
+            CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "true")
+        else:
+            CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "false")
+        CemuGenerator.setSectionConfig(config, xml_root, "pad_position", "")
+        pad_position = CemuGenerator.getRoot(config, "pad_position")
+        CemuGenerator.setSectionConfig(config, pad_position, "x", "0")
+        CemuGenerator.setSectionConfig(config, pad_position, "y", "0")
+        # Size
+        CemuGenerator.setSectionConfig(config, xml_root, "pad_size", "")
+        pad_size = CemuGenerator.getRoot(config, "pad_size")
+        CemuGenerator.setSectionConfig(config, pad_size, "x", "640")
+        CemuGenerator.setSectionConfig(config, pad_size, "y", "480")
 
         ## [GAME PATH]
         CemuGenerator.setSectionConfig(config, xml_root, "GamePaths", "")
@@ -252,7 +263,7 @@ class CemuGenerator(Generator):
     
     # Show mouse for touchscreen actions    
     def getMouseMode(self, config):
-        if "cemu_touchpad" in config and config["cemu_touchpad"] == "True":
+        if "cemu_touchpad" in config and config["cemu_touchpad"] == "1":
             return True
         else:
             return False
