@@ -5519,6 +5519,9 @@ libretro:
                 choices:
                     "Off":      disabled
                     "On":       enabled
+    wasm4:
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
     x1:
       features: [padtokeyboard]
       shared: [rewind, autosave]

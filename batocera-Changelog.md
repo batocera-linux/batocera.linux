@@ -4,6 +4,7 @@
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator
+- WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 ### Changed
 - move to pipewire wireplumber audio
