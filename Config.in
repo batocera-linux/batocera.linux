@@ -86,6 +86,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/qrtr/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/rmtfs/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/qualcomm/tqftpserv/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/r8125/Config.in"
   endmenu
 
   menu "Device trees"
