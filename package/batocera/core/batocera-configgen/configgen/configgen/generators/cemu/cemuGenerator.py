@@ -57,10 +57,6 @@ class CemuGenerator(Generator):
         if not path.isdir(cemuConfig + "/controllerProfiles"):
             os.mkdir(cemuConfig + "/controllerProfiles")
 
-        # Create save folder
-        if not path.isdir(batoceraFiles.SAVES + "/cemu"):
-            os.mkdir(batoceraFiles.SAVES + "/cemu")
-
         # Create the settings file
         CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
         
