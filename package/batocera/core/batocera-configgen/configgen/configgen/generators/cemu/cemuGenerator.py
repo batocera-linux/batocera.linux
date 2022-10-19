@@ -53,10 +53,9 @@ class CemuGenerator(Generator):
             shutil.copytree(cemuDatadir + "/gameProfiles", game_dir)
         if not os.path.exists(resources_dir):
             shutil.copytree(cemuDatadir + "/resources", resources_dir)
-
-        for folder in ["controllerProfiles", "graphicPacks"]:
-            if not path.isdir(cemuConfig + "/" + folder):
-                os.mkdir(cemuConfig + "/" + folder)
+        #controller profiles
+        if not path.isdir(cemuConfig + "/controllerProfiles"):
+            os.mkdir(cemuConfig + "/controllerProfiles")
 
         # Create save folder
         if not path.isdir(batoceraFiles.SAVES + "/cemu"):
