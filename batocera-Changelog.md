@@ -40,7 +40,7 @@
 - groovy mame to 0.247
 - hatari to v2.4.1
 - fsuae to July 30 build
-- scummvm to Oct 13, 2022 (v2.6.1)
+- scummvm to v2.6.1
 - simcoupe to v1.2.11
 - supermodel to Aug 19 2022 build
 - tsugaru to v20220702
