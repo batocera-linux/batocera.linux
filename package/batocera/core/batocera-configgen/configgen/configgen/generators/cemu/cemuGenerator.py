@@ -70,6 +70,9 @@ class CemuGenerator(Generator):
             commandArray = ["/usr/bin/cemu/cemu"]
         else:
             commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rpxrom]
+
+        # force no menubar
+        commandArray.append("--force-no-menubar")
         
         return Command.Command(
             array=commandArray,
