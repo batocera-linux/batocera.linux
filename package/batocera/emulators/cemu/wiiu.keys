@@ -7,11 +7,10 @@
             "description": "Exit emulator"
         },
         {
-           "trigger": ["pageup", "pagedown"],
+           "trigger": ["hotkey", "r2"],
             "type": "key", 
             "target": ["KEY_LEFTALT", "KEY_TAB"],
             "description": "Display the controller screen"
         }
     ]
-
 }
