@@ -39,8 +39,6 @@ class CemuGenerator(Generator):
                 if extension == ".rpx":
                     rpxrom = rom + "/code/" + basename + extension
 
-        game_dir = cemuConfig + "/gameProfiles"
-        resources_dir = cemuConfig + "/resources"
         cemu_exe = cemuConfig + "/cemu"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
@@ -49,11 +47,6 @@ class CemuGenerator(Generator):
         #graphic packs
         if not path.isdir(cemuSaves + "/graphicPacks"):
             os.mkdir(cemuSaves + "/graphicPacks")         
-        if not os.path.exists(game_dir):
-            shutil.copytree(cemuDatadir + "/gameProfiles", game_dir)
-        if not os.path.exists(resources_dir):
-            shutil.copytree(cemuDatadir + "/resources", resources_dir)
-        #controller profiles
         if not path.isdir(cemuConfig + "/controllerProfiles"):
             os.mkdir(cemuConfig + "/controllerProfiles")
 
