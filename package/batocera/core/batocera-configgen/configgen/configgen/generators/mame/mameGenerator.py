@@ -580,8 +580,8 @@ class MameGenerator(Generator):
                         elif infoLineData[0].lower() == "opacity":
                             bz_alpha = float(infoLineData[1])
                 bzInfoFile.close()
-                bz_width = bz_right - bz_x
-                bz_height = bz_bottom - bz_y
+                bz_width = img_width - bz_x - bz_right
+                bz_height = img_height - bz_y - bz_bottom
             else:
                 img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
                 _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
