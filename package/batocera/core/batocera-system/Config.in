@@ -1409,14 +1409,18 @@ config BR2_PACKAGE_BATOCERA_SDL2
 config BR2_PACKAGE_BATOCERA_WAYLAND
 	bool "batocera.linux wayland packages selection"
 
+     # Wayland Protocol
     select BR2_PACKAGE_WAYLAND
     select BR2_PACKAGE_WAYLANDPP
     select BR2_PACKAGE_WAYLAND_UTILS
     select BR2_PACKAGE_WAYLAND_PROTOCOLS
+
+    # Seat management daemon
     select BR2_PACKAGE_SEATD
     select BR2_PACKAGE_SEATD_DAEMON
-    select BR2_PACKAGE_WESTON
-    select BR2_PACKAGE_WESTON_DRM
+
+    # Compositor for wayland
+    select BR2_PACKAGE_SWAY
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
