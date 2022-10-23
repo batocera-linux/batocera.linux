@@ -1,0 +1,10 @@
+comment "rtl8188fu needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RTL8188FU
+	bool "rtl8188fu"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux Driver for USB WiFi Adapters that are based on the RTL8188FU chipsets.
+
+	  https://github.com/kelebek333/rtl8188fu
