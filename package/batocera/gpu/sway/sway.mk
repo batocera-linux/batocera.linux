@@ -35,6 +35,10 @@ define SWAY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/etc/sway
     $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/sway/config \
         $(TARGET_DIR)/etc/sway
+
+    mkdir -p $(TARGET_DIR)/etc/profile.d
+    $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/sway/04-sway.sh \
+        $(TARGET_DIR)/etc/profile.d/04-sway.sh
 endef
 
 $(eval $(meson-package))
