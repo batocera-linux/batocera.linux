@@ -443,7 +443,7 @@ class MameGenerator(Generator):
                 commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
         # bezels
-        if 'bezel' not in system.config or system.config['bezel'] == '':
+        if 'bezel' not in system.config.keys() or system.config['bezel'] == '':
             bezelSet = None
         else:
             bezelSet = system.config['bezel']
