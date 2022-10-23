@@ -6,7 +6,7 @@
 
 SWAY_VERSION = 1.7
 SWAY_SITE = $(call github,swaywm,sway,$(SWAY_VERSION))
-SWAY_LICENSE = GPLv2
+SWAY_LICENSE = MIT
 SWAY_LICENSE_FILES = LICENSE
 SWAY_DEPENDENCIES = wlroots cairo pango libglib2
 

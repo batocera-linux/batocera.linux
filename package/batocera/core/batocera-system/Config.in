@@ -1423,6 +1423,7 @@ config BR2_PACKAGE_BATOCERA_WAYLAND
 
     # Compositor for wayland
     select BR2_PACKAGE_SWAY
+    select BR2_PACKAGE_SWAYBG
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
