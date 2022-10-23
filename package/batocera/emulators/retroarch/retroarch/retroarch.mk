@@ -53,7 +53,7 @@ endif
 
 # x86 : no option
 
-ifeq ($(BR2_PACKAGE_XORG7),y)
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 	RETROARCH_CONF_OPTS += --enable-x11
 	RETROARCH_DEPENDENCIES += xserver_xorg-server
 else
