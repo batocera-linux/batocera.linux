@@ -179,7 +179,7 @@ def generateControllerConfig(system, playersControllers):
         # Rumble
         if system.isOptSet("cemu_rumble"):
             ctrl = ET.SubElement(doc, "rumble")
-            ctrl.text = system.config["rumble"] # % chosen
+            ctrl.text = system.config["cemu_rumble"] # % chosen
         else:
             ctrl = ET.SubElement(doc, "rumble")
             ctrl.text = "0" # none
