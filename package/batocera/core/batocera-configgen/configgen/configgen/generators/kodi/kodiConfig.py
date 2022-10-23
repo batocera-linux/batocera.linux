@@ -5,6 +5,8 @@ import signal
 import os
 import batoceraFiles
 from xml.dom import minidom
+import hashlib
+
 # TODO: python3 - delete me!
 import codecs
 
@@ -45,7 +47,7 @@ def writeKodiConfigs(kodiJoystick, currentControllers, provider):
         controllersDone[cur.realName] = True
 
         # initialized the file
-        kodiJoy = open(kodiJoystick.format(cur.guid), "w")
+        kodiJoy = open(kodiJoystick.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest()), "w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
