@@ -1,3 +1,16 @@
+diff --git a/sway/ipc-server.c b/sway/ipc-server.c
+index 1bf5a05..be2dcc9 100644
+--- a/sway/ipc-server.c
++++ b/sway/ipc-server.c
+@@ -140,7 +140,7 @@ struct sockaddr_un *ipc_user_sockaddr(void) {
+ 		dir = "/tmp";
+ 	}
+ 	if (path_size <= snprintf(ipc_sockaddr->sun_path, path_size,
+-			"%s/sway-ipc.%u.%i.sock", dir, getuid(), getpid())) {
++			"%s/sway-ipc.%u.sock", dir, getuid())) {
+ 		sway_abort("Socket path won't fit into ipc_sockaddr->sun_path");
+ 	}
+ 
 diff --git a/sway/main.c b/sway/main.c
 index b6f8a8b..84a0523 100644
 --- a/sway/main.c
