@@ -321,14 +321,12 @@ then
     fi
 fi
 
-
-# share upgrade, just unzip share.zip from upgrade, no need to reboot
-if [ -e "/userdata/system/upgrade/share.zip" ]
-then
-    (cd /userdata && unzip -o /userdata/system/upgrade/share.zip) > /userdata/system/upgrade/upgrade.share.out.log 2> /userdata/system/upgrade/upgrade.share.err.log
-    # always remove to not apply indefinitly
-    rm -f /userdata/system/upgrade/share.zip
-fi
+# some custom files, like extension_strace.tar.gz or gdb.
+find /userdata/system -name "extension_*.tar.gz" -maxdepth 1 |
+    while read FILE
+    do
+	(cd / && gunzip -c "${FILE}" | tar xf -)
+    done
 
 # now, let mount delayed usbmount devices
 ls /var/run/usbmount.delay |
