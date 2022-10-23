@@ -18,11 +18,11 @@ class DolphinGenerator(Generator):
         # Dir required for saves
         if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
-
+        
+        # Generate the controller config(s)
         dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
-        ## dolphin.ini ##
-
+        ## [ dolphin.ini ] ##
         dolphinSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
@@ -128,8 +128,7 @@ class DolphinGenerator(Generator):
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
 
-        ## gfx.ini ##
-
+        ## [ gfx.ini ] ##
         dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
@@ -261,11 +260,16 @@ class DolphinGenerator(Generator):
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        commandArray = ["dolphin-emu", "-e", rom]
-        if system.isOptSet('platform'):
-            commandArray = ["dolphin-emu-nogui", "-p", system.config["platform"], "-e", rom]
-
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+        # Check what version we've got
+        if path.isfile("/usr/bin/dolphin-emu"):
+            commandArray = ["dolphin-emu", "-e", rom]
+        else:
+            commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
+        
+        return Command.Command(array=commandArray, \
+            env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+            "XDG_DATA_HOME":batoceraFiles.SAVES, \
+            "QT_QPA_PLATFORM":"xcb"})
 
     def getInGameRatio(self, config, gameResolution, rom):
 

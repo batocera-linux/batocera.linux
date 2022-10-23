@@ -2857,11 +2857,11 @@ index 4b4ed1668e8..baebf998c4a 100644
        return;
  
 -   printf("[EGL]: eglSwapInterval(%u)\n", interval);
-+   INFO_LOG(VIDEO, "[EGL]: eglSwapInterval(%u)\n", interval);
++   INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval({})\n", interval);
     if (!eglSwapInterval(egl->dpy, interval))
     {
 -      printf("[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
-+      INFO_LOG(VIDEO, "[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
++      INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval() failed 0x{}.\n", eglGetError());
     }
  }
  
@@ -2913,7 +2913,7 @@ index 4b4ed1668e8..baebf998c4a 100644
           pfn_eglGetPlatformDisplay ptr_eglGetPlatformDisplay;
  
 -         printf("[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
-+         INFO_LOG(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
++         INFO_LOG_FMT(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
           ptr_eglGetPlatformDisplay = (pfn_eglGetPlatformDisplay)
              eglGetProcAddress("eglGetPlatformDisplay");
  
@@ -2922,7 +2922,7 @@ index 4b4ed1668e8..baebf998c4a 100644
           PFNEGLGETPLATFORMDISPLAYEXTPROC ptr_eglGetPlatformDisplayEXT;
  
 -         printf("[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
-+         INFO_LOG(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
++         INFO_LOG_FMT(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
           ptr_eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)
              eglGetProcAddress("eglGetPlatformDisplayEXT");
  
@@ -2931,7 +2931,7 @@ index 4b4ed1668e8..baebf998c4a 100644
      * implementation doesn't support eglGetPlatformDisplay. In this case, try
      * eglGetDisplay and hope for the best. */
 -   printf("[EGL] Falling back to eglGetDisplay\n");
-+   INFO_LOG(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
++   INFO_LOG_FMT(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
     return eglGetDisplay((EGLNativeDisplayType) native);
  }
  
@@ -2940,7 +2940,7 @@ index 4b4ed1668e8..baebf998c4a 100644
           EGL_NATIVE_VISUAL_ID, value))
     {
 -      printf("[EGL]: egl_get_native_visual_id failed.\n");
-+      INFO_LOG(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
++      INFO_LOG_FMT(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
        return false;
     }
  
@@ -2949,7 +2949,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!eglGetConfigs(egl->dpy, NULL, 0, count) || *count < 1)
     {
 -      printf("[EGL]: No configs to choose from.\n");
-+      INFO_LOG(VIDEO, "[EGL]: No configs to choose from.\n");
++      INFO_LOG_FMT(VIDEO, "[EGL]: No configs to choose from.\n");
        return false;
     }
  
@@ -2958,7 +2958,7 @@ index 4b4ed1668e8..baebf998c4a 100644
              configs, *count, &matched) || !matched)
     {
 -      printf("[EGL]: No EGL configs with appropriate attributes.\n");
-+      INFO_LOG(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
++      INFO_LOG_FMT(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
        return false;
     }
  
@@ -2967,7 +2967,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (i == *count)
     {
 -      printf("[EGL]: No EGL config found which satifies requirements.\n");
-+      INFO_LOG(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
++      INFO_LOG_FMT(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
        return false;
     }
  
@@ -2976,7 +2976,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (dpy == EGL_NO_DISPLAY)
     {
 -      printf("[EGL]: Couldn't get EGL display.\n");
-+      INFO_LOG(VIDEO, "[EGL]: Couldn't get EGL display.\n");
++      INFO_LOG_FMT(VIDEO, "[EGL]: Couldn't get EGL display.\n");
        return false;
     }
  
@@ -2985,7 +2985,7 @@ index 4b4ed1668e8..baebf998c4a 100644
        return false;
  
 -   printf("[EGL]: EGL version: %d.%d\n", *major, *minor);
-+   INFO_LOG(VIDEO, "[EGL]: EGL version: %d.%d\n", *major, *minor);
++   INFO_LOG_FMT(VIDEO, "[EGL]: EGL version: {}.{}\n", *major, *minor);
  
     return egl_init_context_common(egl, count, attrib_ptr, cb,
           display_data);
@@ -2994,7 +2994,7 @@ index 4b4ed1668e8..baebf998c4a 100644
        return false;
  
 -   printf("[EGL]: Current context: %p.\n", (void*)eglGetCurrentContext());
-+   INFO_LOG(VIDEO, "[EGL]: Current context: %p.\n", (void*)eglGetCurrentContext());
++   INFO_LOG_FMT(VIDEO, "[EGL]: Current context: {}.\n", (void*)eglGetCurrentContext());
  
     return true;
  }
@@ -3003,7 +3003,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!g_drm_resources)
     {
 -      printf("[DRM]: Couldn't get device resources.\n");
-+      INFO_LOG(VIDEO, "[DRM]: Couldn't get device resources.\n");
++      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device resources.\n");
        return false;
     }
  
@@ -3012,7 +3012,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     /* Enumerate all connectors. */
  
 -   printf("[DRM]: Found %d connectors.\n", g_drm_resources->count_connectors);
-+   INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm_resources->count_connectors);
++   INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm_resources->count_connectors);
  
     for (i = 0; (int)i < g_drm_resources->count_connectors; i++)
     {
@@ -3022,13 +3022,13 @@ index 4b4ed1668e8..baebf998c4a 100644
           bool connected = conn->connection == DRM_MODE_CONNECTED;
 -         printf("[DRM]: Connector %d connected: %s\n", i, connected ? "yes" : "no");
 -         printf("[DRM]: Connector %d has %d modes.\n", i, conn->count_modes);
-+         INFO_LOG(VIDEO, "[DRM]: Connector %d connected: %s\n", i, connected ? "yes" : "no");
-+         INFO_LOG(VIDEO, "[DRM]: Connector %d has %d modes.\n", i, conn->count_modes);
++         INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} connected: {}\n", i, connected ? "yes" : "no");
++         INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} has {} modes.\n", i, conn->count_modes);
           if (connected && conn->count_modes > 0)
           {
              monitor_index_count++;
 -            printf("[DRM]: Connector %d assigned to monitor index: #%u.\n", i, monitor_index_count);
-+            INFO_LOG(VIDEO, "[DRM]: Connector %d assigned to monitor index: #%u.\n", i, monitor_index_count);
++            INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} assigned to monitor index: #{}.\n", i, monitor_index_count);
           }
           drmModeFreeConnector(conn);
        }
@@ -3037,7 +3037,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!g_drm_connector)
     {
 -      printf("[DRM]: Couldn't get device connector.\n");
-+      INFO_LOG(VIDEO, "[DRM]: Couldn't get device connector.\n");
++      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device connector.\n");
        return false;
     }
     return true;
@@ -3046,14 +3046,14 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!g_drm_encoder)
     {
 -      printf("[DRM]: Couldn't find DRM encoder.\n");
-+      INFO_LOG(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
++      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
        return false;
     }
  
     for (i = 0; (int)i < g_drm_connector->count_modes; i++)
     {
 -      printf("[DRM]: Mode %d: (%s) %d x %d, %u Hz\n",
-+      INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n",
++      INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n",
              i,
              g_drm_connector->modes[i].name,
              g_drm_connector->modes[i].hdisplay,
@@ -3062,7 +3062,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     g_orig_crtc      = drmModeGetCrtc(fd, g_crtc_id);
     if (!g_orig_crtc)
 -      printf("[DRM]: Cannot find original CRTC.\n");
-+      INFO_LOG(VIDEO, "[DRM]: Cannot find original CRTC.\n");
++      INFO_LOG_FMT(VIDEO, "[DRM]: Cannot find original CRTC.\n");
  }
  
  float drm_get_refresh_rate(void *data)
@@ -3071,7 +3071,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     handle = gbm_bo_get_handle(bo).u32;
  
 -   printf("[KMS]: New FB: %ux%u (stride: %u).\n",
-+   INFO_LOG(VIDEO, "[KMS]: New FB: %ux%u (stride: %u).\n",
++   INFO_LOG_FMT(VIDEO, "[KMS]: New FB: {}x{} (stride: {}).\n",
           width, height, stride);
  
     ret = drmModeAddFB(g_drm_fd, width, height, 24, 32,
@@ -3080,7 +3080,7 @@ index 4b4ed1668e8..baebf998c4a 100644
  
  error:
 -   printf("[KMS]: Failed to create FB: %s\n", strerror(errno));
-+   INFO_LOG(VIDEO, "[KMS]: Failed to create FB: %s\n", strerror(errno));
++   INFO_LOG_FMT(VIDEO, "[KMS]: Failed to create FB: {}\n", strerror(errno));
     free(fb);
     return NULL;
  }
@@ -3089,7 +3089,7 @@ index 4b4ed1668e8..baebf998c4a 100644
  
     if (interval > 1)
 -      printf("[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
-+      INFO_LOG(VIDEO, "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
  }
  
  static void drm_flip_handler(int fd, unsigned frame,
@@ -3098,7 +3098,7 @@ index 4b4ed1668e8..baebf998c4a 100644
        unsigned missed = frame - last_page_flip - 1;
        if (missed)
 -         printf("[KMS]: Missed %u VBlank(s) (Frame: %u, DRM frame: %u).\n",
-+         INFO_LOG(VIDEO, "[KMS]: Missed %u VBlank(s) (Frame: %u, DRM frame: %u).\n",
++         INFO_LOG_FMT(VIDEO, "[KMS]: Missed {} VBlank(s) (Frame: {}, DRM frame: {}).\n",
                 missed, frame - first_page_flip, frame);
     }
  
@@ -3107,7 +3107,7 @@ index 4b4ed1668e8..baebf998c4a 100644
  
     if (drm->waiting_for_flip)
 -      { printf("\nwait flip 2"); return true; }
-+      { INFO_LOG(VIDEO, "\nwait flip 2"); return true; }
++      { INFO_LOG_FMT(VIDEO, "\nwait flip 2"); return true; }
  
     /* Page flip has taken place. */
  
@@ -3116,7 +3116,7 @@ index 4b4ed1668e8..baebf998c4a 100644
  
     /* Failed to queue page flip. */
 -   printf("\nFailed to queue page flip\n");
-+   INFO_LOG(VIDEO, "\nFailed to queue page flip\n");
++   INFO_LOG_FMT(VIDEO, "\nFailed to queue page flip\n");
     return false;
  }
  
@@ -3125,7 +3125,7 @@ index 4b4ed1668e8..baebf998c4a 100644
      * (nonblocking mode, so just drop the frame). */
     if (gfx_ctx_drm_wait_flip(drm, drm->interval))
 -   { printf("\nwait flip"); return; }
-+   { INFO_LOG(VIDEO, "\nwait flip"); return; }
++   { INFO_LOG_FMT(VIDEO, "\nwait flip"); return; }
  
     drm->waiting_for_flip = gfx_ctx_drm_queue_flip(drm);
  
@@ -3134,7 +3134,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!drm)
     {
 -      printf("\nCannot  get drm video size\n");
-+      INFO_LOG(VIDEO, "\nCannot  get drm video size\n");
++      INFO_LOG_FMT(VIDEO, "\nCannot  get drm video size\n");
        return;
     }
  
@@ -3143,7 +3143,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (drm->fd < 0)
     {
 -      printf("[KMS]: Couldn't open DRM device.\n");
-+      INFO_LOG(VIDEO, "[KMS]: Couldn't open DRM device.\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't open DRM device.\n");
        return nullptr;
     }
  
@@ -3152,21 +3152,21 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!drm_get_resources(fd))
     {
 -      printf("[KMS]: drm_get_resources failed\n");
-+      INFO_LOG(VIDEO, "[KMS]: drm_get_resources failed\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_resources failed\n");
        return nullptr;
     }
  
     if (!drm_get_connector(fd))
     {
 -      printf("[KMS]: drm_get_connector failed\n");
-+      INFO_LOG(VIDEO, "[KMS]: drm_get_connector failed\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_connector failed\n");
        return nullptr;
     }
  
     if (!drm_get_encoder(fd))
     {
 -      printf("[KMS]: drm_get_encoder failed\n");
-+      INFO_LOG(VIDEO, "[KMS]: drm_get_encoder failed\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_encoder failed\n");
        return nullptr;
     }
  
@@ -3175,7 +3175,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!drm->gbm_dev)
     {
 -      printf("[KMS]: Couldn't create GBM device.\n");
-+      INFO_LOG(VIDEO, "[KMS]: Couldn't create GBM device.\n");
++      INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't create GBM device.\n");
        return nullptr;
     }
  
@@ -3184,7 +3184,7 @@ index 4b4ed1668e8..baebf998c4a 100644
              &minor, &n, attrib_ptr, gbm_choose_xrgb8888_cb))
     {
 -     printf("\n[EGL] Cannot init context error 0x%x",eglGetError());
-+     INFO_LOG(VIDEO, "\n[EGL] Cannot init context error 0x%x",eglGetError());
++     INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot init context error 0x{}",eglGetError());
        goto error;
     }
     attr            = gfx_ctx_drm_egl_fill_attribs(drm, egl_attribs);
@@ -3193,14 +3193,14 @@ index 4b4ed1668e8..baebf998c4a 100644
              ? egl_attribs_ptr : NULL))
     {
 -    printf("\n[EGL] Cannot create context error 0x%x",eglGetError());
-+    INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x",eglGetError());
++    INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}",eglGetError());
        goto error;
     }
  
     if (!egl_create_surface(&drm->egl, (EGLNativeWindowType)drm->gbm_surface))
     {
 -     printf("\n[EGL] Cannot create context error 0x%x",eglGetError());
-+     INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x",eglGetError());
++     INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}",eglGetError());
        return false;
     }
  
@@ -3209,7 +3209,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!g_drm_mode)
     {
 -      printf("[KMS/EGL]: Did not find suitable video mode for %u x %u.\n",
-+      INFO_LOG(VIDEO, "[KMS/EGL]: Did not find suitable video mode for %u x %u.\n",
++      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Did not find suitable video mode for {} x {}.\n",
              width, height);
        goto error;
     }
@@ -3218,14 +3218,14 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!drm->gbm_surface)
     {
 -      printf("[KMS/EGL]: Couldn't create GBM surface.\n");
-+      INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
++      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
        goto error;
     }
  
     if (!gfx_ctx_drm_egl_set_video_mode(drm))
     {
 -      printf("[KMS/EGL]: Couldn't set EGL video mode.\n");
-+      INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
++      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
        goto error;
     }
  
@@ -3234,7 +3234,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (ret < 0)
     {
 -      printf("[KMS/EGL]: drmModeSetCrtc failed\n");
-+      INFO_LOG(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
++      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
        goto error;
     }
     return true;
@@ -3252,7 +3252,7 @@ index 4b4ed1668e8..baebf998c4a 100644
    if (!new_context->m_egl->ctx)
    {
 -    printf("\nError: eglCreateContext failed 0x%x\n", eglGetError());
-+    INFO_LOG(VIDEO, "\nError: eglCreateContext failed 0x%x\n", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\nError: eglCreateContext failed 0x{}\n", eglGetError());
      return nullptr;
    }
    eglBindAPI(EGL_OPENGL_ES_API);
@@ -3261,7 +3261,7 @@ index 4b4ed1668e8..baebf998c4a 100644
    if (!new_context->CreateWindowSurface())
    {
 -    printf("\nError: CreateWindowSurface failed 0x%x\n", eglGetError());
-+    INFO_LOG(VIDEO, "\nError: CreateWindowSurface failed 0x%x\n", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\nError: CreateWindowSurface failed 0x{}\n", eglGetError());
      return nullptr;
    }
    return new_context;
@@ -3270,7 +3270,7 @@ index 4b4ed1668e8..baebf998c4a 100644
    {
      m_egl->surf = EGL_NO_SURFACE;
 -    printf("\nCreated surfaceless context\n");
-+    INFO_LOG(VIDEO, "\nCreated surfaceless context\n");
++    INFO_LOG_FMT(VIDEO, "\nCreated surfaceless context\n");
      return true;
    }
  
@@ -3279,18 +3279,18 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!egl_create_surface(m_egl, (EGLNativeWindowType)g_drm->gbm_surface))
     {
 -      printf("\negl_create_surface failed, trying pbuffer failed 0x%x\n", eglGetError());
-+      INFO_LOG(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x%x\n", eglGetError());
++      INFO_LOG_FMT(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x{}\n", eglGetError());
        goto pbuffer;
     }
 -   printf("\nm_egl_surface=0x%x",m_egl->surf);
-+   INFO_LOG(VIDEO, "\nm_egl_surface=0x%x",m_egl->surf);
++   INFO_LOG_FMT(VIDEO, "\nm_egl_surface=0x{}",m_egl->surf);
      // Get dimensions from the surface.
      EGLint surface_width = 1, surface_height = 1;
      if (!eglQuerySurface(m_egl->dpy, m_egl->surf, EGL_WIDTH, &surface_width) ||
          !eglQuerySurface(m_egl->dpy, m_egl->surf, EGL_HEIGHT, &surface_height))
      {
 -      printf("Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
-+      INFO_LOG(VIDEO, "Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
++      INFO_LOG_FMT(VIDEO, "Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
      }
      m_backbuffer_width = static_cast<int>(surface_width);
      m_backbuffer_height = static_cast<int>(surface_height);
@@ -3299,7 +3299,7 @@ index 4b4ed1668e8..baebf998c4a 100644
     if (!m_egl->surf)
     {
 -      printf("\nError: eglCreatePbufferSurface failed 0x%x\n", eglGetError());
-+      INFO_LOG(VIDEO, "\nError: eglCreatePbufferSurface failed 0x%x\n", eglGetError());
++      INFO_LOG_FMT(VIDEO, "\nError: eglCreatePbufferSurface failed 0x{}\n", eglGetError());
        return false;
     }
     return true;
@@ -3308,7 +3308,7 @@ index 4b4ed1668e8..baebf998c4a 100644
      eglMakeCurrent(m_egl->dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
    if (!eglDestroySurface(m_egl->dpy, m_egl->surf))
 -    printf("\nCould not destroy window surface.");
-+    INFO_LOG(VIDEO, "\nCould not destroy window surface.");
++    INFO_LOG_FMT(VIDEO, "\nCould not destroy window surface.");
    m_egl->surf = EGL_NO_SURFACE;
  }
  
@@ -3317,10 +3317,10 @@ index 4b4ed1668e8..baebf998c4a 100644
      eglMakeCurrent(m_egl->dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
    if (!eglDestroyContext(m_egl->dpy, m_egl->ctx))
 -    printf("\nCould not destroy drawing context.");
-+    INFO_LOG(VIDEO, "\nCould not destroy drawing context.");
++    INFO_LOG_FMT(VIDEO, "\nCould not destroy drawing context.");
    if (!m_is_shared && !eglTerminate(m_egl->dpy))
 -    printf("\nCould not destroy display connection.");
-+    INFO_LOG(VIDEO, "\nCould not destroy display connection.");
++    INFO_LOG_FMT(VIDEO, "\nCould not destroy display connection.");
    m_egl->ctx = EGL_NO_CONTEXT;
    m_egl->dpy = EGL_NO_DISPLAY;
  }
@@ -3399,8 +3399,8 @@ index baebf998c4a..e617592e677 100644
    new_context->m_egl->ctx = eglCreateContext(m_egl->dpy, m_egl->config, m_egl->ctx, egl_attribs_ptr);
    if (!new_context->m_egl->ctx)
    {
--    INFO_LOG(VIDEO, "\nError: eglCreateContext failed 0x%x\n", eglGetError());
-+    ERROR_LOG(VIDEO, "\nError: eglCreateContext failed 0x%x\n", eglGetError());
+-    INFO_LOG_FMT(VIDEO, "\nError: eglCreateContext failed 0x{}\n", eglGetError());
++    ERROR_LOG_FMT(VIDEO, "\nError: eglCreateContext failed 0x{}\n", eglGetError());
      return nullptr;
    }
    eglBindAPI(EGL_OPENGL_ES_API);
@@ -3408,16 +3408,16 @@ index baebf998c4a..e617592e677 100644
    new_context->m_is_shared = true;
    if (!new_context->CreateWindowSurface())
    {
--    INFO_LOG(VIDEO, "\nError: CreateWindowSurface failed 0x%x\n", eglGetError());
-+    ERROR_LOG(VIDEO, "\nError: CreateWindowSurface failed 0x%x\n", eglGetError());
+-    INFO_LOG_FMT(VIDEO, "\nError: CreateWindowSurface failed 0x{}\n", eglGetError());
++    ERROR_LOG_FMT(VIDEO, "\nError: CreateWindowSurface failed 0x{}\n", eglGetError());
      return nullptr;
    }
    return new_context;
 @@ -1225,7 +1218,6 @@ bool GLContextEGLDRM::CreateWindowSurface()
-       INFO_LOG(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x%x\n", eglGetError());
+       INFO_LOG_FMT(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x{}\n", eglGetError());
        goto pbuffer;
     }
--   INFO_LOG(VIDEO, "\nm_egl_surface=0x%x",m_egl->surf);
+-   INFO_LOG_FMT(VIDEO, "\nm_egl_surface=0x{}",m_egl->surf);
      // Get dimensions from the surface.
      EGLint surface_width = 1, surface_height = 1;
      if (!eglQuerySurface(m_egl->dpy, m_egl->surf, EGL_WIDTH, &surface_width) ||
@@ -3745,10 +3745,10 @@ index d341d26f8bc..100e60d1c78 100644
 -   if (!eglGetCurrentContext())
 -      return;
 -
--   INFO_LOG(VIDEO, "[EGL]: eglSwapInterval(%u)\n", interval);
+-   INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval({})\n", interval);
 -   if (!eglSwapInterval(egl->dpy, interval))
 -   {
--      INFO_LOG(VIDEO, "[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
+-      INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval() failed 0x{}.\n", eglGetError());
 -   }
 +  /* Can be called before initialization.
 +   * Some contexts require that swap interval
@@ -3761,10 +3761,10 @@ index d341d26f8bc..100e60d1c78 100644
 +  if (!eglGetCurrentContext())
 +    return;
 +
-+  INFO_LOG(VIDEO, "[EGL]: eglSwapInterval(%u)\n", interval);
++  INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval({})\n", interval);
 +  if (!eglSwapInterval(egl->dpy, interval))
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
++    INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval() failed 0x{}.\n", eglGetError());
 +  }
  }
  
@@ -3925,7 +3925,7 @@ index d341d26f8bc..100e60d1c78 100644
 +          EGLenum platform, void* native_display, const EGLAttrib* attrib_list);
 +      pfn_eglGetPlatformDisplay ptr_eglGetPlatformDisplay;
 +
-+      INFO_LOG(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
++      INFO_LOG_FMT(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
 +      ptr_eglGetPlatformDisplay =
 +          (pfn_eglGetPlatformDisplay)eglGetProcAddress("eglGetPlatformDisplay");
 +
@@ -3935,7 +3935,7 @@ index d341d26f8bc..100e60d1c78 100644
 -            (EGLenum platform, void *native_display, const EGLAttrib *attrib_list);
 -         pfn_eglGetPlatformDisplay ptr_eglGetPlatformDisplay;
 -
--         INFO_LOG(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
+-         INFO_LOG_FMT(VIDEO, "[EGL] Found EGL client version >= 1.5, trying eglGetPlatformDisplay\n");
 -         ptr_eglGetPlatformDisplay = (pfn_eglGetPlatformDisplay)
 -            eglGetProcAddress("eglGetPlatformDisplay");
 -
@@ -3958,7 +3958,7 @@ index d341d26f8bc..100e60d1c78 100644
 +    {
 +      PFNEGLGETPLATFORMDISPLAYEXTPROC ptr_eglGetPlatformDisplayEXT;
 +
-+      INFO_LOG(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
++      INFO_LOG_FMT(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
 +      ptr_eglGetPlatformDisplayEXT =
 +          (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
 +
@@ -3966,7 +3966,7 @@ index d341d26f8bc..100e60d1c78 100644
        {
 -         PFNEGLGETPLATFORMDISPLAYEXTPROC ptr_eglGetPlatformDisplayEXT;
 -
--         INFO_LOG(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
+-         INFO_LOG_FMT(VIDEO, "[EGL] Found EGL_EXT_platform_base, trying eglGetPlatformDisplayEXT\n");
 -         ptr_eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)
 -            eglGetProcAddress("eglGetPlatformDisplayEXT");
 -
@@ -3988,12 +3988,12 @@ index d341d26f8bc..100e60d1c78 100644
 -   /* Either the caller didn't provide a platform type, or the EGL
 -    * implementation doesn't support eglGetPlatformDisplay. In this case, try
 -    * eglGetDisplay and hope for the best. */
--   INFO_LOG(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
+-   INFO_LOG_FMT(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
 -   return eglGetDisplay((EGLNativeDisplayType) native);
 +  /* Either the caller didn't provide a platform type, or the EGL
 +   * implementation doesn't support eglGetPlatformDisplay. In this case, try
 +   * eglGetDisplay and hope for the best. */
-+  INFO_LOG(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
++  INFO_LOG_FMT(VIDEO, "[EGL] Falling back to eglGetDisplay\n");
 +  return eglGetDisplay((EGLNativeDisplayType)native);
  }
  
@@ -4003,12 +4003,12 @@ index d341d26f8bc..100e60d1c78 100644
 -   if (!eglGetConfigAttrib(egl->dpy, egl->config,
 -         EGL_NATIVE_VISUAL_ID, value))
 -   {
--      INFO_LOG(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
+-      INFO_LOG_FMT(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
 -      return false;
 -   }
 +  if (!eglGetConfigAttrib(egl->dpy, egl->config, EGL_NATIVE_VISUAL_ID, value))
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
++    INFO_LOG_FMT(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
 +    return false;
 +  }
  
@@ -4037,12 +4037,12 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!eglGetConfigs(egl->dpy, NULL, 0, count) || *count < 1)
 -   {
--      INFO_LOG(VIDEO, "[EGL]: No configs to choose from.\n");
+-      INFO_LOG_FMT(VIDEO, "[EGL]: No configs to choose from.\n");
 -      return false;
 -   }
 +  if (!eglGetConfigs(egl->dpy, NULL, 0, count) || *count < 1)
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: No configs to choose from.\n");
++    INFO_LOG_FMT(VIDEO, "[EGL]: No configs to choose from.\n");
 +    return false;
 +  }
  
@@ -4056,12 +4056,12 @@ index d341d26f8bc..100e60d1c78 100644
 -   if (!eglChooseConfig(egl->dpy, attrib_ptr,
 -            configs, *count, &matched) || !matched)
 -   {
--      INFO_LOG(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
+-      INFO_LOG_FMT(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
 -      return false;
 -   }
 +  if (!eglChooseConfig(egl->dpy, attrib_ptr, configs, *count, &matched) || !matched)
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
++    INFO_LOG_FMT(VIDEO, "[EGL]: No EGL configs with appropriate attributes.\n");
 +    return false;
 +  }
  
@@ -4087,12 +4087,12 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (i == *count)
 -   {
--      INFO_LOG(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
+-      INFO_LOG_FMT(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
 -      return false;
 -   }
 +  if (i == *count)
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
++    INFO_LOG_FMT(VIDEO, "[EGL]: No EGL config found which satifies requirements.\n");
 +    return false;
 +  }
  
@@ -4116,12 +4116,12 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (dpy == EGL_NO_DISPLAY)
 -   {
--      INFO_LOG(VIDEO, "[EGL]: Couldn't get EGL display.\n");
+-      INFO_LOG_FMT(VIDEO, "[EGL]: Couldn't get EGL display.\n");
 -      return false;
 -   }
 +  if (dpy == EGL_NO_DISPLAY)
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: Couldn't get EGL display.\n");
++    INFO_LOG_FMT(VIDEO, "[EGL]: Couldn't get EGL display.\n");
 +    return false;
 +  }
  
@@ -4133,8 +4133,8 @@ index d341d26f8bc..100e60d1c78 100644
 +  if (!eglInitialize(egl->dpy, major, minor))
 +    return false;
  
--   INFO_LOG(VIDEO, "[EGL]: EGL version: %d.%d\n", *major, *minor);
-+  INFO_LOG(VIDEO, "[EGL]: EGL version: %d.%d\n", *major, *minor);
+-   INFO_LOG_FMT(VIDEO, "[EGL]: EGL version: {}.{}\n", *major, *minor);
++  INFO_LOG_FMT(VIDEO, "[EGL]: EGL version: {}.{}\n", *major, *minor);
  
 -   return egl_init_context_common(egl, count, attrib_ptr, cb,
 -         display_data);
@@ -4189,8 +4189,8 @@ index d341d26f8bc..100e60d1c78 100644
 +  if (!eglMakeCurrent(egl->dpy, egl->surf, egl->surf, egl->ctx))
 +    return false;
  
--   INFO_LOG(VIDEO, "[EGL]: Current context: %p.\n", (void*)eglGetCurrentContext());
-+  INFO_LOG(VIDEO, "[EGL]: Current context: %p.\n", (void*)eglGetCurrentContext());
+-   INFO_LOG_FMT(VIDEO, "[EGL]: Current context: {}.\n", (void*)eglGetCurrentContext());
++  INFO_LOG_FMT(VIDEO, "[EGL]: Current context: {}.\n", (void*)eglGetCurrentContext());
  
 -   return true;
 +  return true;
@@ -4253,13 +4253,13 @@ index d341d26f8bc..100e60d1c78 100644
 -   g_drm_resources = drmModeGetResources(fd);
 -   if (!g_drm_resources)
 -   {
--      INFO_LOG(VIDEO, "[DRM]: Couldn't get device resources.\n");
+-      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device resources.\n");
 -      return false;
 -   }
 +  g_drm_resources = drmModeGetResources(fd);
 +  if (!g_drm_resources)
 +  {
-+    INFO_LOG(VIDEO, "[DRM]: Couldn't get device resources.\n");
++    INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device resources.\n");
 +    return false;
 +  }
  
@@ -4279,8 +4279,8 @@ index d341d26f8bc..100e60d1c78 100644
 -   /* Enumerate all connectors. */
 +  /* Enumerate all connectors. */
  
--   INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm_resources->count_connectors);
-+  INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm_resources->count_connectors);
+-   INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm_resources->count_connectors);
++  INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm_resources->count_connectors);
  
 -   for (i = 0; (int)i < g_drm_resources->count_connectors; i++)
 -   {
@@ -4294,21 +4294,21 @@ index d341d26f8bc..100e60d1c78 100644
 +    if (conn)
 +    {
 +      bool connected = conn->connection == DRM_MODE_CONNECTED;
-+      INFO_LOG(VIDEO, "[DRM]: Connector %d connected: %s\n", i, connected ? "yes" : "no");
-+      INFO_LOG(VIDEO, "[DRM]: Connector %d has %d modes.\n", i, conn->count_modes);
++      INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} connected: {}\n", i, connected ? "yes" : "no");
++      INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} has {} modes.\n", i, conn->count_modes);
 +      if (connected && conn->count_modes > 0)
        {
 -         bool connected = conn->connection == DRM_MODE_CONNECTED;
--         INFO_LOG(VIDEO, "[DRM]: Connector %d connected: %s\n", i, connected ? "yes" : "no");
--         INFO_LOG(VIDEO, "[DRM]: Connector %d has %d modes.\n", i, conn->count_modes);
+-         INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} connected: {}\n", i, connected ? "yes" : "no");
+-         INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} has {} modes.\n", i, conn->count_modes);
 -         if (connected && conn->count_modes > 0)
 -         {
 -            monitor_index_count++;
--            INFO_LOG(VIDEO, "[DRM]: Connector %d assigned to monitor index: #%u.\n", i, monitor_index_count);
+-            INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} assigned to monitor index: #{}.\n", i, monitor_index_count);
 -         }
 -         drmModeFreeConnector(conn);
 +        monitor_index_count++;
-+        INFO_LOG(VIDEO, "[DRM]: Connector %d assigned to monitor index: #%u.\n", i,
++        INFO_LOG_FMT(VIDEO, "[DRM]: Connector {} assigned to monitor index: #{}.\n", i,
 +                 monitor_index_count);
        }
 -   }
@@ -4354,13 +4354,13 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!g_drm_connector)
 -   {
--      INFO_LOG(VIDEO, "[DRM]: Couldn't get device connector.\n");
+-      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device connector.\n");
 -      return false;
 -   }
 -   return true;
 +  if (!g_drm_connector)
 +  {
-+    INFO_LOG(VIDEO, "[DRM]: Couldn't get device connector.\n");
++    INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device connector.\n");
 +    return false;
 +  }
 +  return true;
@@ -4397,18 +4397,18 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!g_drm_encoder)
 -   {
--      INFO_LOG(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
+-      INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
 -      return false;
 -   }
 +  if (!g_drm_encoder)
 +  {
-+    INFO_LOG(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
++    INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
 +    return false;
 +  }
  
 -   for (i = 0; (int)i < g_drm_connector->count_modes; i++)
 -   {
--      INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n",
+-      INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n",
 -            i,
 -            g_drm_connector->modes[i].name,
 -            g_drm_connector->modes[i].hdisplay,
@@ -4417,7 +4417,7 @@ index d341d26f8bc..100e60d1c78 100644
 -   }
 +  for (i = 0; (int)i < g_drm_connector->count_modes; i++)
 +  {
-+    INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n", i, g_drm_connector->modes[i].name,
++    INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n", i, g_drm_connector->modes[i].name,
 +             g_drm_connector->modes[i].hdisplay, g_drm_connector->modes[i].vdisplay,
 +             g_drm_connector->modes[i].vrefresh);
 +  }
@@ -4432,12 +4432,12 @@ index d341d26f8bc..100e60d1c78 100644
 -   g_connector_id   = g_drm_connector->connector_id;
 -   g_orig_crtc      = drmModeGetCrtc(fd, g_crtc_id);
 -   if (!g_orig_crtc)
--      INFO_LOG(VIDEO, "[DRM]: Cannot find original CRTC.\n");
+-      INFO_LOG_FMT(VIDEO, "[DRM]: Cannot find original CRTC.\n");
 +  g_crtc_id = g_drm_encoder->crtc_id;
 +  g_connector_id = g_drm_connector->connector_id;
 +  g_orig_crtc = drmModeGetCrtc(fd, g_crtc_id);
 +  if (!g_orig_crtc)
-+    INFO_LOG(VIDEO, "[DRM]: Cannot find original CRTC.\n");
++    INFO_LOG_FMT(VIDEO, "[DRM]: Cannot find original CRTC.\n");
  }
  
 -float drm_get_refresh_rate(void *data)
@@ -4526,9 +4526,9 @@ index d341d26f8bc..100e60d1c78 100644
 +  stride = gbm_bo_get_stride(bo);
 +  handle = gbm_bo_get_handle(bo).u32;
  
--   INFO_LOG(VIDEO, "[KMS]: New FB: %ux%u (stride: %u).\n",
+-   INFO_LOG_FMT(VIDEO, "[KMS]: New FB: {}x{} (stride: {}).\n",
 -         width, height, stride);
-+  INFO_LOG(VIDEO, "[KMS]: New FB: %ux%u (stride: %u).\n", width, height, stride);
++  INFO_LOG_FMT(VIDEO, "[KMS]: New FB: {}x{} (stride: {}).\n", width, height, stride);
  
 -   ret = drmModeAddFB(g_drm_fd, width, height, 24, 32,
 -         stride, handle, &fb->fb_id);
@@ -4544,10 +4544,10 @@ index d341d26f8bc..100e60d1c78 100644
 +  return fb;
  
  error:
--   INFO_LOG(VIDEO, "[KMS]: Failed to create FB: %s\n", strerror(errno));
+-   INFO_LOG_FMT(VIDEO, "[KMS]: Failed to create FB: {}\n", strerror(errno));
 -   free(fb);
 -   return NULL;
-+  INFO_LOG(VIDEO, "[KMS]: Failed to create FB: %s\n", strerror(errno));
++  INFO_LOG_FMT(VIDEO, "[KMS]: Failed to create FB: {}\n", strerror(errno));
 +  free(fb);
 +  return NULL;
  }
@@ -4561,9 +4561,9 @@ index d341d26f8bc..100e60d1c78 100644
 +  drm->interval = interval;
  
 -   if (interval > 1)
--      INFO_LOG(VIDEO, "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
 +  if (interval > 1)
-+    INFO_LOG(VIDEO,
++    INFO_LOG_FMT(VIDEO,
 +             "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
  }
  
@@ -4609,10 +4609,10 @@ index d341d26f8bc..100e60d1c78 100644
 +  }
  
 -   if (drm->waiting_for_flip)
--      { INFO_LOG(VIDEO, "\nwait flip 2"); return true; }
+-      { INFO_LOG_FMT(VIDEO, "\nwait flip 2"); return true; }
 +  if (drm->waiting_for_flip)
 +  {
-+    INFO_LOG(VIDEO, "\nwait flip 2");
++    INFO_LOG_FMT(VIDEO, "\nwait flip 2");
 +    return true;
 +  }
  
@@ -4655,10 +4655,10 @@ index d341d26f8bc..100e60d1c78 100644
 +    return true;
  
 -   /* Failed to queue page flip. */
--   INFO_LOG(VIDEO, "\nFailed to queue page flip\n");
+-   INFO_LOG_FMT(VIDEO, "\nFailed to queue page flip\n");
 -   return false;
 +  /* Failed to queue page flip. */
-+  INFO_LOG(VIDEO, "\nFailed to queue page flip\n");
++  INFO_LOG_FMT(VIDEO, "\nFailed to queue page flip\n");
 +  return false;
  }
  
@@ -4679,7 +4679,7 @@ index d341d26f8bc..100e60d1c78 100644
 -    * If true, we are still waiting for a flip
 -    * (nonblocking mode, so just drop the frame). */
 -   if (gfx_ctx_drm_wait_flip(drm, drm->interval))
--   { INFO_LOG(VIDEO, "\nwait flip"); return; }
+-   { INFO_LOG_FMT(VIDEO, "\nwait flip"); return; }
 +  /* I guess we have to wait for flip to have taken
 +   * place before another flip can be queued up.
 +   *
@@ -4687,7 +4687,7 @@ index d341d26f8bc..100e60d1c78 100644
 +   * (nonblocking mode, so just drop the frame). */
 +  if (gfx_ctx_drm_wait_flip(drm, drm->interval))
 +  {
-+    INFO_LOG(VIDEO, "\nwait flip");
++    INFO_LOG_FMT(VIDEO, "\nwait flip");
 +    return;
 +  }
  
@@ -4715,12 +4715,12 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!drm)
 -   {
--      INFO_LOG(VIDEO, "\nCannot  get drm video size\n");
+-      INFO_LOG_FMT(VIDEO, "\nCannot  get drm video size\n");
 -      return;
 -   }
 +  if (!drm)
 +  {
-+    INFO_LOG(VIDEO, "\nCannot  get drm video size\n");
++    INFO_LOG_FMT(VIDEO, "\nCannot  get drm video size\n");
 +    return;
 +  }
  
@@ -4845,13 +4845,13 @@ index d341d26f8bc..100e60d1c78 100644
 -   drm->fd    = open("/dev/dri/card0", O_RDWR);
 -   if (drm->fd < 0)
 -   {
--      INFO_LOG(VIDEO, "[KMS]: Couldn't open DRM device.\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't open DRM device.\n");
 -      return nullptr;
 -   }
 +  drm->fd = open("/dev/dri/card0", O_RDWR);
 +  if (drm->fd < 0)
 +  {
-+    INFO_LOG(VIDEO, "[KMS]: Couldn't open DRM device.\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't open DRM device.\n");
 +    return nullptr;
 +  }
  
@@ -4860,34 +4860,34 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!drm_get_resources(fd))
 -   {
--      INFO_LOG(VIDEO, "[KMS]: drm_get_resources failed\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_resources failed\n");
 -      return nullptr;
 -   }
 +  if (!drm_get_resources(fd))
 +  {
-+    INFO_LOG(VIDEO, "[KMS]: drm_get_resources failed\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_resources failed\n");
 +    return nullptr;
 +  }
  
 -   if (!drm_get_connector(fd))
 -   {
--      INFO_LOG(VIDEO, "[KMS]: drm_get_connector failed\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_connector failed\n");
 -      return nullptr;
 -   }
 +  if (!drm_get_connector(fd))
 +  {
-+    INFO_LOG(VIDEO, "[KMS]: drm_get_connector failed\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_connector failed\n");
 +    return nullptr;
 +  }
  
 -   if (!drm_get_encoder(fd))
 -   {
--      INFO_LOG(VIDEO, "[KMS]: drm_get_encoder failed\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_encoder failed\n");
 -      return nullptr;
 -   }
 +  if (!drm_get_encoder(fd))
 +  {
-+    INFO_LOG(VIDEO, "[KMS]: drm_get_encoder failed\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_encoder failed\n");
 +    return nullptr;
 +  }
  
@@ -4929,12 +4929,12 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!drm->gbm_dev)
 -   {
--      INFO_LOG(VIDEO, "[KMS]: Couldn't create GBM device.\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't create GBM device.\n");
 -      return nullptr;
 -   }
 +  if (!drm->gbm_dev)
 +  {
-+    INFO_LOG(VIDEO, "[KMS]: Couldn't create GBM device.\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't create GBM device.\n");
 +    return nullptr;
 +  }
  
@@ -5074,7 +5074,7 @@ index d341d26f8bc..100e60d1c78 100644
 -            (EGLNativeDisplayType)drm->gbm_dev, &major,
 -            &minor, &n, attrib_ptr, gbm_choose_xrgb8888_cb))
 -   {
--     INFO_LOG(VIDEO, "\n[EGL] Cannot init context error 0x%x",eglGetError());
+-     INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot init context error 0x{}",eglGetError());
 -      goto error;
 -   }
 -   attr            = gfx_ctx_drm_egl_fill_attribs(drm, egl_attribs);
@@ -5090,20 +5090,20 @@ index d341d26f8bc..100e60d1c78 100644
 -   if (!egl_create_context(&drm->egl, (attr != egl_attribs_ptr)
 -            ? egl_attribs_ptr : NULL))
 -   {
--    INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x",eglGetError());
+-    INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}",eglGetError());
 -      goto error;
 -   }
 +  attrib_ptr = egl_attribs_gles3;
  
 -   if (!egl_create_surface(&drm->egl, (EGLNativeWindowType)drm->gbm_surface))
 -   {
--     INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x",eglGetError());
+-     INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}",eglGetError());
 -      return false;
 -   }
 +  if (!egl_init_context(&drm->egl, EGL_PLATFORM_GBM_KHR, (EGLNativeDisplayType)drm->gbm_dev, &major,
 +                        &minor, &n, attrib_ptr, gbm_choose_xrgb8888_cb))
 +  {
-+    INFO_LOG(VIDEO, "\n[EGL] Cannot init context error 0x%x", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot init context error 0x{}", eglGetError());
 +    goto error;
 +  }
 +  attr = gfx_ctx_drm_egl_fill_attribs(drm, egl_attribs);
@@ -5111,14 +5111,14 @@ index d341d26f8bc..100e60d1c78 100644
 +
 +  if (!egl_create_context(&drm->egl, (attr != egl_attribs_ptr) ? egl_attribs_ptr : NULL))
 +  {
-+    INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}", eglGetError());
 +    goto error;
 +  }
  
 -   egl_swap_buffers(&drm->egl);
 +  if (!egl_create_surface(&drm->egl, (EGLNativeWindowType)drm->gbm_surface))
 +  {
-+    INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}", eglGetError());
 +    return false;
 +  }
  
@@ -5216,13 +5216,13 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!g_drm_mode)
 -   {
--      INFO_LOG(VIDEO, "[KMS/EGL]: Did not find suitable video mode for %u x %u.\n",
+-      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Did not find suitable video mode for {} x {}.\n",
 -            width, height);
 -      goto error;
 -   }
 +  if (!g_drm_mode)
 +  {
-+    INFO_LOG(VIDEO, "[KMS/EGL]: Did not find suitable video mode for %u x %u.\n", width, height);
++    INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Did not find suitable video mode for {} x {}.\n", width, height);
 +    goto error;
 +  }
  
@@ -5245,23 +5245,23 @@ index d341d26f8bc..100e60d1c78 100644
  
 -   if (!drm->gbm_surface)
 -   {
--      INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
 -      goto error;
 -   }
 +  if (!drm->gbm_surface)
 +  {
-+    INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
++    INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't create GBM surface.\n");
 +    goto error;
 +  }
  
 -   if (!gfx_ctx_drm_egl_set_video_mode(drm))
 -   {
--      INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
 -      goto error;
 -   }
 +  if (!gfx_ctx_drm_egl_set_video_mode(drm))
 +  {
-+    INFO_LOG(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
++    INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Couldn't set EGL video mode.\n");
 +    goto error;
 +  }
  
@@ -5280,14 +5280,14 @@ index d341d26f8bc..100e60d1c78 100644
 -         g_crtc_id, fb->fb_id, 0, 0, &g_connector_id, 1, g_drm_mode);
 -   if (ret < 0)
 -   {
--      INFO_LOG(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
+-      INFO_LOG_FMT(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
 -      goto error;
 -   }
 -   return true;
 +  ret = drmModeSetCrtc(g_drm_fd, g_crtc_id, fb->fb_id, 0, 0, &g_connector_id, 1, g_drm_mode);
 +  if (ret < 0)
 +  {
-+    INFO_LOG(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
++    INFO_LOG_FMT(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
 +    goto error;
 +  }
 +  return true;
@@ -5372,7 +5372,7 @@ index d341d26f8bc..100e60d1c78 100644
 +      eglCreateContext(m_egl->dpy, m_egl->config, m_egl->ctx, egl_attribs_ptr);
    if (!new_context->m_egl->ctx)
    {
-     ERROR_LOG(VIDEO, "\nError: eglCreateContext failed 0x%x\n", eglGetError());
+     ERROR_LOG_FMT(VIDEO, "\nError: eglCreateContext failed 0x{}\n", eglGetError());
 @@ -1203,7 +1171,9 @@ std::unique_ptr<GLContext> GLContextEGLDRM::CreateSharedContext()
  
  bool GLContextEGLDRM::CreateWindowSurface()
@@ -5392,7 +5392,7 @@ index d341d26f8bc..100e60d1c78 100644
 -   {
 +    if (!egl_create_surface(m_egl, (EGLNativeWindowType)g_drm->gbm_surface))
 +    {
-       INFO_LOG(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x%x\n", eglGetError());
+       INFO_LOG_FMT(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x{}\n", eglGetError());
        goto pbuffer;
 -   }
 +    }
@@ -5401,8 +5401,8 @@ index d341d26f8bc..100e60d1c78 100644
      if (!eglQuerySurface(m_egl->dpy, m_egl->surf, EGL_WIDTH, &surface_width) ||
          !eglQuerySurface(m_egl->dpy, m_egl->surf, EGL_HEIGHT, &surface_height))
      {
--      INFO_LOG(VIDEO, "Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
-+      INFO_LOG(VIDEO,
+-      INFO_LOG_FMT(VIDEO, "Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
++      INFO_LOG_FMT(VIDEO,
 +               "Failed to get surface dimensions via eglQuerySurface. Size may be incorrect.");
      }
      m_backbuffer_width = static_cast<int>(surface_width);
@@ -5414,14 +5414,14 @@ index d341d26f8bc..100e60d1c78 100644
 -   m_egl->surf = eglCreatePbufferSurface(m_egl->dpy, m_egl->config, attrib_list);
 -   if (!m_egl->surf)
 -   {
--      INFO_LOG(VIDEO, "\nError: eglCreatePbufferSurface failed 0x%x\n", eglGetError());
+-      INFO_LOG_FMT(VIDEO, "\nError: eglCreatePbufferSurface failed 0x{}\n", eglGetError());
 -      return false;
 -   }
 -   return true;
 +  m_egl->surf = eglCreatePbufferSurface(m_egl->dpy, m_egl->config, attrib_list);
 +  if (!m_egl->surf)
 +  {
-+    INFO_LOG(VIDEO, "\nError: eglCreatePbufferSurface failed 0x%x\n", eglGetError());
++    INFO_LOG_FMT(VIDEO, "\nError: eglCreatePbufferSurface failed 0x{}\n", eglGetError());
 +    return false;
 +  }
 +  return true;
@@ -5898,7 +5898,7 @@ index f252fb09170..79992127006 100644
 -  if (!eglGetConfigs(egl->dpy, NULL, 0, count) || *count < 1)
 +  if (!eglGetConfigs(egl->dpy, nullptr, 0, count) || *count < 1)
    {
-     INFO_LOG(VIDEO, "[EGL]: No configs to choose from.\n");
+     INFO_LOG_FMT(VIDEO, "[EGL]: No configs to choose from.\n");
      return false;
 @@ -451,7 +451,7 @@ void drm_restore_crtc(void)
                   g_orig_crtc->y, &g_connector_id, 1, &g_orig_crtc->mode);
@@ -5942,7 +5942,7 @@ index f252fb09170..79992127006 100644
  static void drm_fb_destroy_callback(struct gbm_bo* bo, void* data)
 @@ -629,7 +629,7 @@ static struct drm_fb* drm_fb_get_from_bo(struct gbm_bo* bo)
  error:
-   INFO_LOG(VIDEO, "[KMS]: Failed to create FB: %s\n", strerror(errno));
+   INFO_LOG_FMT(VIDEO, "[KMS]: Failed to create FB: {}\n", strerror(errno));
    free(fb);
 -  return NULL;
 +  return nullptr;
@@ -6035,7 +6035,7 @@ index f252fb09170..79992127006 100644
 -  if (!egl_create_context(&drm->egl, (attr != egl_attribs_ptr) ? egl_attribs_ptr : NULL))
 +  if (!egl_create_context(&drm->egl, (attr != egl_attribs_ptr) ? egl_attribs_ptr : nullptr))
    {
-     INFO_LOG(VIDEO, "\n[EGL] Cannot create context error 0x%x", eglGetError());
+     INFO_LOG_FMT(VIDEO, "\n[EGL] Cannot create context error 0x{}", eglGetError());
      goto error;
 @@ -990,7 +990,7 @@ static bool gfx_ctx_drm_egl_set_video_mode(GFXContextDRMData* drm)
  static bool gfx_ctx_drm_set_video_mode(void* data, unsigned width, unsigned height, bool fullscreen)
@@ -6132,7 +6132,7 @@ index ec5113d5660..0414072170c 100644
 -{
 -  if (!eglGetConfigAttrib(egl->dpy, egl->config, EGL_NATIVE_VISUAL_ID, value))
 -  {
--    INFO_LOG(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
+-    INFO_LOG_FMT(VIDEO, "[EGL]: egl_get_native_visual_id failed.\n");
 -    return false;
 -  }
 -
@@ -6152,7 +6152,7 @@ index ec5113d5660..0414072170c 100644
 -
 -  if (!drm)
 -  {
--    INFO_LOG(VIDEO, "\nCannot  get drm video size\n");
+-    INFO_LOG_FMT(VIDEO, "\nCannot  get drm video size\n");
 -    return;
 -  }
 -
@@ -6264,7 +6264,7 @@ index 0414072170c..8bf87db2270 100644
 -   * (nonblocking mode, so just drop the frame). */
 -  if (gfx_ctx_drm_wait_flip(drm, drm->interval))
 -  {
--    INFO_LOG(VIDEO, "\nwait flip");
+-    INFO_LOG_FMT(VIDEO, "\nwait flip");
 -    return;
 -  }
 -
@@ -6346,7 +6346,7 @@ index 0414072170c..8bf87db2270 100644
 +   * (nonblocking mode, so just drop the frame). */
 +  if (gfx_ctx_drm_wait_flip(g_drm, g_drm->interval))
 +  {
-+    INFO_LOG(VIDEO, "\nwait flip");
++    INFO_LOG_FMT(VIDEO, "\nwait flip");
 +    return;
 +  }
 +
@@ -6489,7 +6489,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 -  g_drm_resources = drmModeGetResources(fd);
 -  if (!g_drm_resources)
 -  {
--    INFO_LOG(VIDEO, "[DRM]: Couldn't get device resources.\n");
+-    INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device resources.\n");
 -    return false;
 -  }
 -
@@ -6503,8 +6503,8 @@ index 8bf87db2270..14c7f45b7b1 100644
  
    /* Enumerate all connectors. */
  
--  INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm_resources->count_connectors);
-+  INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm->drm_resources->count_connectors);
+-  INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm_resources->count_connectors);
++  INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm->drm_resources->count_connectors);
  
 -  for (i = 0; (int)i < g_drm_resources->count_connectors; i++)
 +  for (i = 0; (int)i < g_drm->drm_resources->count_connectors; i++)
@@ -6544,7 +6544,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 -  if (!g_drm_connector)
 +  if (!g_drm->drm_connector)
    {
-     INFO_LOG(VIDEO, "[DRM]: Couldn't get device connector.\n");
+     INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device connector.\n");
      return false;
 @@ -514,63 +475,42 @@ bool drm_get_encoder(int fd)
  {
@@ -6573,17 +6573,17 @@ index 8bf87db2270..14c7f45b7b1 100644
 -  if (!g_drm_encoder)
 +  if (!g_drm->drm_encoder)
    {
-     INFO_LOG(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
+     INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
      return false;
    }
  
 -  for (i = 0; (int)i < g_drm_connector->count_modes; i++)
 +  for (i = 0; (int)i < g_drm->drm_connector->count_modes; i++)
    {
--    INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n", i, g_drm_connector->modes[i].name,
+-    INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n", i, g_drm_connector->modes[i].name,
 -             g_drm_connector->modes[i].hdisplay, g_drm_connector->modes[i].vdisplay,
 -             g_drm_connector->modes[i].vrefresh);
-+    INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n", i, g_drm->drm_connector->modes[i].name,
++    INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n", i, g_drm->drm_connector->modes[i].name,
 +             g_drm->drm_connector->modes[i].hdisplay, g_drm->drm_connector->modes[i].vdisplay,
 +             g_drm->drm_connector->modes[i].vrefresh);
    }
@@ -6597,7 +6597,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 -  g_connector_id = g_drm_connector->connector_id;
 -  g_orig_crtc = drmModeGetCrtc(fd, g_crtc_id);
 -  if (!g_orig_crtc)
--    INFO_LOG(VIDEO, "[DRM]: Cannot find original CRTC.\n");
+-    INFO_LOG_FMT(VIDEO, "[DRM]: Cannot find original CRTC.\n");
 -}
 -
 -float drm_get_refresh_rate(void* data)
@@ -6624,7 +6624,7 @@ index 8bf87db2270..14c7f45b7b1 100644
  }
 @@ -590,7 +530,7 @@ static struct drm_fb* drm_fb_get_from_bo(struct gbm_bo* bo)
  
-   INFO_LOG(VIDEO, "[KMS]: New FB: %ux%u (stride: %u).\n", width, height, stride);
+   INFO_LOG_FMT(VIDEO, "[KMS]: New FB: {}x{} (stride: {}).\n", width, height, stride);
  
 -  ret = drmModeAddFB(g_drm_fd, width, height, 24, 32, stride, handle, &fb->fb_id);
 +  ret = drmModeAddFB(g_drm->drm_fd, width, height, 24, 32, stride, handle, &fb->fb_id);
@@ -6646,7 +6646,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 -   {
 -      unsigned missed = frame - last_page_flip - 1;
 -      if (missed)
--         INFO_LOG(VIDEO, "[KMS]: Missed %u VBlank(s) (Frame: %u, DRM frame: %u).\n",
+-         INFO_LOG_FMT(VIDEO, "[KMS]: Missed {} VBlank(s) (Frame: {}, DRM frame: {}).\n",
 -               missed, frame - first_page_flip, frame);
 -   }
 -
@@ -6749,8 +6749,8 @@ index 8bf87db2270..14c7f45b7b1 100644
 +  drm->drm_resources = drmModeGetResources(fd);
 +  if (!drm->drm_resources)
    {
--    INFO_LOG(VIDEO, "[KMS]: drm_get_resources failed\n");
-+    INFO_LOG(VIDEO, "[KMS]: Couldn't get DRM device resources.\n");
+-    INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_resources failed\n");
++    INFO_LOG_FMT(VIDEO, "[KMS]: Couldn't get DRM device resources.\n");
      return nullptr;
    }
  
@@ -6763,7 +6763,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 +  drm->connector_id = drm->drm_connector->connector_id;
 +  drm->orig_crtc = drmModeGetCrtc(fd, drm->crtc_id);
 +  if (!drm->orig_crtc)
-+    INFO_LOG(VIDEO, "[DRM]: Cannot find original CRTC.\n");
++    INFO_LOG_FMT(VIDEO, "[DRM]: Cannot find original CRTC.\n");
  
    /* Choose the optimal video mode for get_video_size():
      - the current video mode from the CRTC
@@ -6846,7 +6846,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 -  if (!g_drm_mode)
 +  if (!drm->drm_mode)
    {
-     INFO_LOG(VIDEO, "[KMS/EGL]: Did not find suitable video mode for %u x %u.\n", width, height);
+     INFO_LOG_FMT(VIDEO, "[KMS/EGL]: Did not find suitable video mode for {} x {}.\n", width, height);
      goto error;
    }
  
@@ -6865,7 +6865,7 @@ index 8bf87db2270..14c7f45b7b1 100644
 +  ret = drmModeSetCrtc(drm->drm_fd, drm->crtc_id, fb->fb_id, 0, 0, &drm->connector_id, 1, drm->drm_mode);
    if (ret < 0)
    {
-     INFO_LOG(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
+     INFO_LOG_FMT(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
 
 From c6a374bae4c0b1c990d06acb4266ca60358b9419 Mon Sep 17 00:00:00 2001
 From: Romain TISSERAND <romain.tisserand@gmail.com>
@@ -6932,10 +6932,10 @@ index 14c7f45b7b1..726c68a95a5 100644
 -  if (!eglGetCurrentContext())
 -    return;
 -
--  INFO_LOG(VIDEO, "[EGL]: eglSwapInterval(%u)\n", interval);
+-  INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval({})\n", interval);
 -  if (!eglSwapInterval(egl->dpy, interval))
 -  {
--    INFO_LOG(VIDEO, "[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
+-    INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval() failed 0x{}.\n", eglGetError());
 -  }
 -}
 -
@@ -6964,7 +6964,7 @@ index 14c7f45b7b1..726c68a95a5 100644
 -  drm->interval = interval;
 -
 -  if (interval > 1)
--    INFO_LOG(VIDEO,
+-    INFO_LOG_FMT(VIDEO,
 -             "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
 -}
 -
@@ -7009,7 +7009,7 @@ index 14c7f45b7b1..726c68a95a5 100644
 -  egl_set_swap_interval(m_egl, interval);
 +  g_drm->interval = interval;
 +  if (interval > 1)
-+    INFO_LOG(VIDEO,
++    INFO_LOG_FMT(VIDEO,
 +             "[KMS]: Swap intervals > 1 currently not supported. Will use swap interval of 1.\n");
 +
 +  /* Can be called before initialization.
@@ -7023,10 +7023,10 @@ index 14c7f45b7b1..726c68a95a5 100644
 +  if (!eglGetCurrentContext())
 +    return;
 +
-+  INFO_LOG(VIDEO, "[EGL]: eglSwapInterval(%u)\n", interval);
++  INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval({})\n", interval);
 +  if (!eglSwapInterval(m_egl->dpy, interval))
 +  {
-+    INFO_LOG(VIDEO, "[EGL]: eglSwapInterval() failed 0x%x.\n", eglGetError());
++    INFO_LOG_FMT(VIDEO, "[EGL]: eglSwapInterval() failed 0x{}.\n", eglGetError());
 +  }
  }
  
@@ -7035,8 +7035,8 @@ index 14c7f45b7b1..726c68a95a5 100644
    if (m_supports_surfaceless)
    {
      m_egl->surf = EGL_NO_SURFACE;
--    INFO_LOG(VIDEO, "\nCreated surfaceless context\n");
-+    INFO_LOG(VIDEO, "\nCreated surfaceless EGL shared context\n");
+-    INFO_LOG_FMT(VIDEO, "\nCreated surfaceless context\n");
++    INFO_LOG_FMT(VIDEO, "\nCreated surfaceless EGL shared context\n");
      return true;
    }
  
@@ -7044,8 +7044,8 @@ index 14c7f45b7b1..726c68a95a5 100644
    {
      if (!egl_create_surface(m_egl, (EGLNativeWindowType)g_drm->gbm_surface))
      {
--      INFO_LOG(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x%x\n", eglGetError());
-+      INFO_LOG(VIDEO, "\negl_create_surface failed (error 0x%x), trying pbuffer instead...\n", eglGetError());
+-      INFO_LOG_FMT(VIDEO, "\negl_create_surface failed, trying pbuffer failed 0x{}\n", eglGetError());
++      INFO_LOG_FMT(VIDEO, "\negl_create_surface failed (error 0x{}), trying pbuffer instead...\n", eglGetError());
        goto pbuffer;
      }
      // Get dimensions from the surface.
@@ -7219,7 +7219,7 @@ index a7ae0a6dbfb..367e875371f 100644
 +                       drm->drm_mode);
    if (ret < 0)
    {
-     INFO_LOG(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
+     INFO_LOG_FMT(VIDEO, "[KMS/EGL]: drmModeSetCrtc failed\n");
 @@ -922,7 +925,7 @@ bool GLContextEGLDRM::IsHeadless() const
  
  void GLContextEGLDRM::Swap()
@@ -7233,8 +7233,8 @@ index a7ae0a6dbfb..367e875371f 100644
    {
      if (!egl_create_surface(m_egl, (EGLNativeWindowType)g_drm->gbm_surface))
      {
--      INFO_LOG(VIDEO, "\negl_create_surface failed (error 0x%x), trying pbuffer instead...\n", eglGetError());
-+      INFO_LOG(VIDEO, "\negl_create_surface failed (error 0x%x), trying pbuffer instead...\n",
+-      INFO_LOG_FMT(VIDEO, "\negl_create_surface failed (error 0x{}), trying pbuffer instead...\n", eglGetError());
++      INFO_LOG_FMT(VIDEO, "\negl_create_surface failed (error 0x{}), trying pbuffer instead...\n",
 +               eglGetError());
        goto pbuffer;
      }
@@ -7322,8 +7322,8 @@ index 367e875371f..f8487619809 100644
  
    /* Enumerate all connectors. */
  
--  INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", g_drm->drm_resources->count_connectors);
-+  INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", drm->drm_resources->count_connectors);
+-  INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", g_drm->drm_resources->count_connectors);
++  INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", drm->drm_resources->count_connectors);
  
 -  for (i = 0; (int)i < g_drm->drm_resources->count_connectors; i++)
 +  for (i = 0; (int)i < drm->drm_resources->count_connectors; i++)
@@ -7364,7 +7364,7 @@ index 367e875371f..f8487619809 100644
 -  if (!g_drm->drm_connector)
 +  if (!drm->drm_connector)
    {
-     INFO_LOG(VIDEO, "[DRM]: Couldn't get device connector.\n");
+     INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't get device connector.\n");
      return false;
 @@ -423,35 +422,35 @@ static bool drm_get_connector(int fd)
    return true;
@@ -7398,17 +7398,17 @@ index 367e875371f..f8487619809 100644
 -  if (!g_drm->drm_encoder)
 +  if (!drm->drm_encoder)
    {
-     INFO_LOG(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
+     INFO_LOG_FMT(VIDEO, "[DRM]: Couldn't find DRM encoder.\n");
      return false;
    }
  
 -  for (i = 0; (int)i < g_drm->drm_connector->count_modes; i++)
 +  for (i = 0; (int)i < drm->drm_connector->count_modes; i++)
    {
--    INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n", i, g_drm->drm_connector->modes[i].name,
+-    INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n", i, g_drm->drm_connector->modes[i].name,
 -             g_drm->drm_connector->modes[i].hdisplay, g_drm->drm_connector->modes[i].vdisplay,
 -             g_drm->drm_connector->modes[i].vrefresh);
-+    INFO_LOG(VIDEO, "[DRM]: Mode %d: (%s) %d x %d, %u Hz\n", i, drm->drm_connector->modes[i].name,
++    INFO_LOG_FMT(VIDEO, "[DRM]: Mode {}: ({}) {} x {}, {} Hz\n", i, drm->drm_connector->modes[i].name,
 +             drm->drm_connector->modes[i].hdisplay, drm->drm_connector->modes[i].vdisplay,
 +             drm->drm_connector->modes[i].vrefresh);
    }
@@ -7432,7 +7432,7 @@ index 367e875371f..f8487619809 100644
    unsigned width, height, stride, handle;
 @@ -482,7 +481,7 @@ static struct drm_fb* drm_fb_get_from_bo(struct gbm_bo* bo)
  
-   INFO_LOG(VIDEO, "[KMS]: New FB: %ux%u (stride: %u).\n", width, height, stride);
+   INFO_LOG_FMT(VIDEO, "[KMS]: New FB: {}x{} (stride: {}).\n", width, height, stride);
  
 -  ret = drmModeAddFB(g_drm->drm_fd, width, height, 24, 32, stride, handle, &fb->fb_id);
 +  ret = drmModeAddFB(drm->drm_fd, width, height, 24, 32, stride, handle, &fb->fb_id);
@@ -7450,7 +7450,7 @@ index 367e875371f..f8487619809 100644
  
    if (drm->waiting_for_flip)
 -  {
--    INFO_LOG(VIDEO, "\nwait flip 2");
+-    INFO_LOG_FMT(VIDEO, "\nwait flip 2");
      return true;
 -  }
  
@@ -7475,14 +7475,14 @@ index 367e875371f..f8487619809 100644
 -  if (!drm_get_connector(fd))
 +  if (!drm_get_connector(drm, fd))
    {
-     INFO_LOG(VIDEO, "[KMS]: drm_get_connector failed\n");
+     INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_connector failed\n");
      return nullptr;
    }
  
 -  if (!drm_get_encoder(fd))
 +  if (!drm_get_encoder(drm, fd))
    {
-     INFO_LOG(VIDEO, "[KMS]: drm_get_encoder failed\n");
+     INFO_LOG_FMT(VIDEO, "[KMS]: drm_get_encoder failed\n");
      return nullptr;
 @@ -886,7 +882,7 @@ static bool gfx_ctx_drm_set_video_mode(void* data, unsigned width, unsigned heig
    fb = (struct drm_fb*)gbm_bo_get_user_data(drm->bo);
