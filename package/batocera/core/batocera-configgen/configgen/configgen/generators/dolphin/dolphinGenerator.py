@@ -261,7 +261,7 @@ class DolphinGenerator(Generator):
             pass # don't fail in case of SYSCONF update
 
         # Check what version we've got
-        if path.isfile("/usr/bin/dolphin-emu"):
+        if os.path.isfile("/usr/bin/dolphin-emu"):
             commandArray = ["dolphin-emu", "-e", rom]
         else:
             commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
