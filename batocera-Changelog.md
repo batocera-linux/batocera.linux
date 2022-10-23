@@ -66,7 +66,7 @@
 - mupen64plus-input-sdl to Sep 30, 2022
 - mupen64plus-audio-sdl to Oct 01, 2022
 - mupen64plus-core to Oct 01, 2022
-- mesa3d to 22.2.1
+- mesa3d to 22.2.2 [Changelog](https://docs.mesa3d.org/relnotes/22.2.2.html)
 - moonlight embedded to 2.5.3
 ### Fixed
 - lr-mame save state file names
