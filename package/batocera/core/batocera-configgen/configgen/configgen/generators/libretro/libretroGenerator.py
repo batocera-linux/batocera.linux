@@ -220,7 +220,12 @@ class LibretroGenerator(Generator):
                 elif os.path.exists(os.path.join(rom, "dosbox.bat")):
                     exe = os.path.join(rom, "dosbox.bat")
                 else:
-                    exe = '/userdata/roms/dos' # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
+                    exe = '/tmp/'+ romDOSName # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
+                    try:
+                        os.remove(exe)
+                    except OSError:
+                        pass
+                    os.symlink(rom, exe)
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
                 dontAppendROM = True
             else:
