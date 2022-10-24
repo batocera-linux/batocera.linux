@@ -19,9 +19,9 @@ batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker
 if test "${NDELTANEW}" == 1 -a "${DELTANEW}" != ""
 then
     # es not running or running game, exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/runningGame)
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
     test $? != 0                 && exit 0
-    test "${HTTP_STATUS}" != 201 && exit 0 # 201 when not game
+    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle
     
     if echo "${DELTANEW}" > "/var/run/switch_screen_request"
     then
@@ -30,8 +30,9 @@ then
     fi
 else
     # es not (yet) running exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/runningGame)
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
     test $? != 0                 && exit 0
+    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle # don't exit when es is not idle, it could be scrapping. and some screen shuts down after some time.
 
     # seems that when the screen is no more available, es exists automatically
     SUPPOSED_OUTPUT=$(cat /var/run/switch_screen_current)
