@@ -131,7 +131,25 @@ def generateControllerConfig(system, playersControllers):
     ## CONTROLLER: Create the config xml files
     nplayer = 0
     m_encoding = 'UTF-8'
-    for playercontroller, pad in sorted(playersControllers.items()):     
+
+    # cemu assign pads by uuid then by index with the same uuid
+    # so, if 2 pads have the same uuid, the index is not 0 but 1 for the 2nd one
+    # sort pads by index
+    pads_by_index = playersControllers
+    dict(sorted(pads_by_index.items(), key=lambda kv: kv[1].index))
+    guid_n = {}
+    guid_count = {}
+    for playercontroller, pad in pads_by_index.items():
+        if pad.guid in guid_count:
+            guid_count[pad.guid] += 1
+        else:
+            guid_count[pad.guid] = 0
+        guid_n[pad.index] = guid_count[pad.guid]
+    ###
+
+    for playercontroller, pad in sorted(playersControllers.items()):
+        guid_index = guid_n[pad.index]
+
         root = ET.Element("emulated_controller")
         doc = ET.SubElement(root, "type")
         # Controller combination type
@@ -173,7 +191,7 @@ def generateControllerConfig(system, playersControllers):
         ctrl = ET.SubElement(doc, "api")
         ctrl.text = "SDLController" # use SDL
         ctrl = ET.SubElement(doc, "uuid")
-        ctrl.text = "0_{}".format(pad.guid) # SDL guid 
+        ctrl.text = "{}_{}".format(guid_index, pad.guid) # SDL guid
         ctrl = ET.SubElement(doc, "display_name")
         ctrl.text = pad.realName # controller name
         # Rumble
