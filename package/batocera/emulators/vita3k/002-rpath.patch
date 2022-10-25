@@ -1,0 +1,13 @@
+diff --git a/vita3k/CMakeLists.txt b/vita3k/CMakeLists.txt
+index 9c72581..7269b8d 100644
+--- a/vita3k/CMakeLists.txt
++++ b/vita3k/CMakeLists.txt
+@@ -180,7 +180,7 @@ if(APPLE)
+ 	set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.github.Vita3K.Vita3K")
+ 	set(MACOSX_BUNDLE_BUNDLE_NAME "Vita3K")
+ elseif(LINUX)
+-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
++	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
+ 	add_custom_command(
+ 		TARGET vita3k
+ 		POST_BUILD
