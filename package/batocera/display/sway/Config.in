@@ -2,6 +2,7 @@ config BR2_PACKAGE_SWAY
     bool "sway"
 
     select BR2_PACKAGE_WLROOTS
+    select BR2_PACKAGE_WLROOTS_X11  if BR2_PACKAGE_XWAYLAND
     select BR2_PACKAGE_CAIRO
     select BR2_PACKAGE_CAIRO_PNG
     select BR2_PACKAGE_PANGO
