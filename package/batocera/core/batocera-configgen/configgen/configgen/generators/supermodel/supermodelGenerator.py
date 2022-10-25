@@ -59,7 +59,7 @@ class SupermodelGenerator(Generator):
         # config
         configPadsIni(playersControllers, drivingGame)
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
 
 def copy_nvram_files():
     sourceDir = "/usr/share/supermodel/NVRAM"

@@ -54,7 +54,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-orangepi/Config.in"
   endmenu
 
-  menu "Gpu"
+  menu "GPU"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/libmali/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-T860/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-g31-gbm/Config.in"
@@ -74,8 +74,12 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-tools/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-samples/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-lists/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/sway/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/swaybg/Config.in"
+  endmenu
+
+  menu "Display"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/display/xwayland/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/display/sway/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/display/swaybg/Config.in"
   endmenu
 
   menu "Network"

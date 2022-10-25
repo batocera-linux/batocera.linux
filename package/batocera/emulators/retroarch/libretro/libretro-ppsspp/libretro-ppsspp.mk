@@ -26,7 +26,7 @@ else
 endif
 
 # enable x11/vulkan interface only if xorg
-ifeq ($(BR2_PACKAGE_XORG7),y)
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 	LIBRETRO_PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
 else
 	LIBRETRO_PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
