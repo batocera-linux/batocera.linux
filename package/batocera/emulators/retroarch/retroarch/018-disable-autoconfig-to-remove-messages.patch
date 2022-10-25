@@ -1,0 +1,13 @@
+diff --git a/tasks/task_autodetect.c b/tasks/task_autodetect.c
+index a137766..4e81839 100644
+--- a/tasks/task_autodetect.c
++++ b/tasks/task_autodetect.c
+@@ -452,6 +452,8 @@ static void input_autoconfigure_connect_handler(retro_task_t *task)
+        || !(autoconfig_handle->flags & AUTOCONF_FLAG_AUTOCONFIG_ENABLED))
+       goto task_finished;
+ 
++   goto task_finished;
++
+    /* Annoyingly, we have to scan all the autoconfig
+     * files (and in-built configs) in a single shot
+     * > Would prefer to scan one config per iteration
