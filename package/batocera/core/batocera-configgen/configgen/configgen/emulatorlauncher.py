@@ -23,6 +23,7 @@ from sys import exit
 import subprocess
 import batoceraFiles
 import utils.videoMode as videoMode
+import utils.gunsUtils as gunsUtils
 ############################
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -144,6 +145,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         system.config["use_guns"] = True
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         guns = controllers.getGuns()
+        gunsUtils.precalibration(systemName, rom)
     else:
         eslog.info("guns disabled.");
         guns = []
