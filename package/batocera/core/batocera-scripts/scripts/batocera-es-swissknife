@@ -154,7 +154,7 @@ case ${1,,} in
                 ret=1
             fi
         else
-            [[ ${1,,} == "--version" ]] && echo "$VER"
+            [[ ${1,,} == "--version" ]] && batocera-version
             [[ ${1,,} == "--arch" ]] && echo "$BOARD"
         fi
         exit $ret

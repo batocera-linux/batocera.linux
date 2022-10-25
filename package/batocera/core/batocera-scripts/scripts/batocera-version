@@ -1,0 +1,16 @@
+#!/bin/bash
+
+FIND_EXT=$(find /userdata/system -name "extension_*.tar.gz" -maxdepth 1 | head -1)
+
+FIND_OVERLAY=
+test -e "/boot/boot/overlay" && FIND_OVERLAY=1
+
+FIND_CUSTOMSH=
+test -e "/userdata/system/custom.sh" && FIND_CUSTOMSH=1
+
+EXTRA=
+test -n "${FIND_EXT}"      && EXTRA=${EXTRA}e
+test -n "${FIND_OVERLAY}"  && EXTRA=${EXTRA}o
+test -n "${FIND_CUSTOMSH}" && EXTRA=${EXTRA}c
+
+cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
