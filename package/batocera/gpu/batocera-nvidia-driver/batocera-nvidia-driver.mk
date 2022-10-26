@@ -212,6 +212,9 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	)
 	$(BATOCERA_NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
 
+# install nvidia-modprobe, required
+	$(INSTALL) -D -m 0755 $(@D)/nvidia-modprobe $(TARGET_DIR)/usr/bin/nvidia-modprobe
+
 # batocera install files needed by Vulkan
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
 		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_production_layers.json
