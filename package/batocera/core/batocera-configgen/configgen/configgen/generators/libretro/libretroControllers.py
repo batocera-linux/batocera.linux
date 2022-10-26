@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os
+from controllersConfig import getDevicesInformation
+from controllersConfig import getAssociatedMouse
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -55,7 +57,14 @@ def writeControllersConfig(retroconfig, system, controllers, lightgun):
         del retroarchspecials['b']
 
     for controller in controllers:
-        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials, lightgun)
+        mouseIndex = None
+        if system.name in ['nds', '3ds']:
+            deviceList = getDevicesInformation()
+            mouseIndex = getAssociatedMouse(deviceList, controllers[controller].dev)
+        if mouseIndex == None:
+            mouseIndex = 0
+        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials, lightgun, mouseIndex)
+
     writeHotKeyConfig(retroconfig, controllers)
 
 # Remove all controller configurations
@@ -73,8 +82,8 @@ def writeHotKeyConfig(retroconfig, controllers):
 
 
 # Write a configuration for a specified controller
-def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials, lightgun):
-    generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun)
+def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials, lightgun, mouseIndex=0):
+    generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
@@ -83,7 +92,7 @@ def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarc
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller, retroarchspecials, system, lightgun):
+def generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex=0):
 # Map an emulationstation button name to the corresponding retroarch name
     retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
@@ -145,6 +154,7 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun):
         specialvalue = retroarchspecials['start']
         input = controller.inputs['start']
         config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
+    config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
     return config
 
 
