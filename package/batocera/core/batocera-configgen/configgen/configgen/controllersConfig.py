@@ -5,7 +5,6 @@ import batoceraFiles
 import os
 import pyudev
 import re
-import pprint
 
 from utils.logger import get_logger
 eslog = get_logger(__name__)
