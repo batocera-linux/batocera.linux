@@ -5934,6 +5934,13 @@ daphne:
             choices:
                 "Off":                          0
                 "On":                           1
+        daphne_joy:
+            group: ADVANCED OPTIONS
+            prompt:      CUSTOM CONTROLLER
+            description: Allows you to set the controller settings in the custom.ini file manually.
+            choices:
+                "Off":                          0
+                "On":                           1
 
 devilutionx:
   features: [padtokeyboard]
