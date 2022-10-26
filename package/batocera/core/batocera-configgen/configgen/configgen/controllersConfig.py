@@ -3,6 +3,8 @@
 import xml.etree.ElementTree as ET
 import batoceraFiles
 import os
+import pyudev
+import re
 
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -48,7 +50,6 @@ class Controller:
 
     def generateSDLGameDBLine(self):
         return _generateSdlGameControllerConfig(self)
-
 
 # Load all controllers from the es_input.cfg
 def loadAllControllersConfig():
@@ -319,3 +320,54 @@ def getGameGunsMetaData(system, rom):
                         res[attribute] = nodegame.get(attribute)
                     return res
     return res
+
+def getDevicesInformation():
+  groups    = {}
+  devices   = {}
+  context   = pyudev.Context()
+  events    = context.list_devices(subsystem='input')
+  mouses    = []
+  joysticks = []
+  for ev in events:
+    matches = re.match(r"^/dev/input/event([0-9]*)$", str(ev.device_node))
+    if matches != None:
+      eventId = int(matches.group(1))
+      isJoystick = ("ID_INPUT_JOYSTICK" in ev.properties and ev.properties["ID_INPUT_JOYSTICK"] == "1")
+      isMouse    = ("ID_INPUT_MOUSE" in ev.properties and ev.properties["ID_INPUT_MOUSE"] == "1") or ("ID_INPUT_TOUCHPAD" in ev.properties and ev.properties["ID_INPUT_TOUCHPAD"] == "1")
+      group = None
+      if "ID_PATH" in ev.properties:
+        group = ev.properties["ID_PATH"]
+      if isJoystick or isMouse:
+        if isJoystick:
+          joysticks.append(eventId)
+        if isMouse:
+          mouses.append(eventId)
+        if "ID_PATH" in ev.properties:
+          devices[eventId] = { "node": ev.device_node, "group": ev.properties["ID_PATH"], "isJoystick": isJoystick, "isMouse": isMouse }
+          if group not in groups:
+            groups[group] = []
+          groups[group].append(ev.device_node)
+  mouses.sort()
+  joysticks.sort()
+  res = {}
+  for device in devices:
+    d = devices[device]
+    dgroup = groups[d["group"]].copy()
+    dgroup.remove(d["node"])
+    nmouse    = None
+    njoystick = None
+    if d["isJoystick"]:
+      njoystick = joysticks.index(device)
+    nmouse = None
+    if d["isMouse"]:
+      nmouse = mouses.index(device)
+    res[d["node"]] = { "isJoystick": d["isJoystick"], "isMouse": d["isMouse"], "associatedDevices": dgroup, "joystick_index": njoystick, "mouse_index": nmouse }
+  return res
+
+def getAssociatedMouse(devicesInformation, dev):
+    if dev not in devicesInformation:
+        return None
+    for candidate in devicesInformation[dev]["associatedDevices"]:
+        if devicesInformation[candidate]["isMouse"]:
+            return candidate
+    return None
