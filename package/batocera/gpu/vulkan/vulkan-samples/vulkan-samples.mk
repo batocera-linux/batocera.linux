@@ -3,10 +3,8 @@
 # vulkan-samples
 #
 ################################################################################
-
-# version: Commits on Jan 18, 2022
-
-VULKAN_SAMPLES_VERSION = 0d98a3b4b89b63211ccb4b7a7f536b813b0910c9
+# Version: Commits on Oct 11, 2022
+VULKAN_SAMPLES_VERSION = 3f7545d8a0db718c4efc83c49cd71600c512ab52
 VULKAN_SAMPLES_SITE =  https://github.com/KhronosGroup/Vulkan-Samples
 VULKAN_SAMPLES_GIT_SUBMODULES=YES
 VULKAN_SAMPLES_SITE_METHOD=git
@@ -35,7 +33,8 @@ VULKAN_SAMPLES_DEPENDENCIES += mesa3d
 endif
 
 define VULKAN_SAMPLES_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/buildroot-build/app/bin/Release/$(VULKAN_SAMPLES_INSTALL_ARCH)/vulkan_samples $(TARGET_DIR)/usr/bin/vulkan_samples
+	$(INSTALL) -D -m 0755 $(@D)/buildroot-build/app/bin/Release/$(VULKAN_SAMPLES_INSTALL_ARCH)/vulkan_samples \
+	    $(TARGET_DIR)/usr/bin/vulkan_samples
 endef
 
 $(eval $(cmake-package))
