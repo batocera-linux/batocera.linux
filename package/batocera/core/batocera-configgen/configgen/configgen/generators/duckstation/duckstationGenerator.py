@@ -109,6 +109,8 @@ class DuckstationGenerator(Generator):
         # Backend - Default OpenGL
         if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':  # Using Gun, you'll have the Aiming ONLY in Vulkan. Duckstation Issue
             settings.set("GPU", "Renderer", "Vulkan")
+        elif system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Software':
+            settings.set("GPU", "Renderer", "Software")
         else:
             settings.set("GPU", "Renderer", "OpenGL")
         # Multisampling force (MSAA or SSAA)
@@ -279,7 +281,7 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowSpeed",      "false")
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
-        
+
         ## [CDROM]
         if not settings.has_section("CDROM"):
             settings.add_section("CDROM")
@@ -287,13 +289,13 @@ class DuckstationGenerator(Generator):
             settings.set("CDROM", "AllowBootingWithoutSBIFile", system.config["duckstation_boot_without_sbi"])
         else:
             settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
-        
+
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        
+
         env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
 
