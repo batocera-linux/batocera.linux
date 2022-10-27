@@ -16,6 +16,7 @@ config BR2_PACKAGE_DUCKSTATION
     select BR2_PACKAGE_LIBEVDEV
     select BR2_PACKAGE_LIBDRM
     select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_ECM
     help
       DuckStation - PlayStation 1, aka. PSX Emulator
 
