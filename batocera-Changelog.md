@@ -9,7 +9,7 @@
 - WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
-- Light Gun pre-calibration added for arcade gun games (atomiswave, naomi, model2, model3)
+- Light Gun in-game pre-calibration for arcade (atomiswave, naomi, model2, model3)
 ### Changed
 - move to pipewire wireplumber audio
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
