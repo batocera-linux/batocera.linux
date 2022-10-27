@@ -1,19 +1,21 @@
 # 202x/xx/xx - batocera.linux 36 - Luna Moth
 ### EmulationStation
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
+- brightness can go down to 1% (instead of 5%)
+- keep power pressed 3s to et the shutdown menu
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator
 - WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
+- guns in game precalibrations
 ### Changed
 - move to pipewire wireplumber audio
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
     - *-ext512K.ram to *.bcr
     - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
-- automatic screen switch when a new screen if plugged or unplugged
 - cemu to native linux version (v2.0.4)
 ### Updated
 - pcsx2 to v1.7.3292
