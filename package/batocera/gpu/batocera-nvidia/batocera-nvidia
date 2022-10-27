@@ -202,9 +202,9 @@ then
     ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
     
     # link Vulkan icd files
-    ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
+    ln -sf /usr/share/vulkan/nvidia/nvidia_production_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
     ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-    ln -sf /usr/share/vulkan/icd.d/nvidia_production_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
+    ln -sf /usr/share/vulkan/nvidia/nvidia_production_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
     
     # finally link kernel modules & run them
@@ -384,9 +384,9 @@ then
         ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
         
         # link Vulkan icd files
-        ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
+        ln -sf /usr/share/vulkan/nvidia/nvidia_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
         ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-        ln -sf /usr/share/vulkan/icd.d/nvidia_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
+        ln -sf /usr/share/vulkan/nvidia/nvidia_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
         ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
         
         # finally link the kernel modules & run them
