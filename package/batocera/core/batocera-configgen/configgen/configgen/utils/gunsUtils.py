@@ -9,6 +9,17 @@ def precalibration_copyFile(src, dst):
             os.makedirs(os.path.dirname(dst))
         shutil.copyfile(src, dst)
 
+def precalibration_copyDir(src, dst):
+    if os.path.exists(src) and not os.path.exists(dst):
+        if not os.path.exists(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst))
+        shutil.copytree(src, dst)
+
+def precalibration_copyFilesInDir(srcdir, dstdir, startWith, endWith):
+    for src in os.listdir(srcdir):
+        if src.startswith(startWith): # and src.endswith(endswith):
+            precalibration_copyFile(srcdir+"/"+src, dstdir+"/"+src)
+
 def precalibration(systemName, rom):
     dir = "/usr/share/batocera/guns-precalibrations/{}".format(systemName)
     if not os.path.exists(dir):
@@ -22,8 +33,13 @@ def precalibration(systemName, rom):
             precalibration_copyFile(src, dst)
 
     elif systemName == "mame":
-        # todo
-        pass
+        baserom_noext = os.path.splitext(baserom)[0]
+        src = "{}/nvram/{}".format(dir, baserom_noext)
+        dst = "/userdata/saves/mame/nvram/{}".format(baserom_noext)
+        precalibration_copyDir(src, dst)
+        srcdir = "{}/diff".format(dir)
+        dstdir = "/userdata/saves/mame/diff"
+        precalibration_copyFilesInDir(srcdir, dstdir, baserom_noext + "_", ".dif")
 
     elif systemName == "model2":
         src = "{}/NVDATA/{}.DAT".format(dir, baserom)
