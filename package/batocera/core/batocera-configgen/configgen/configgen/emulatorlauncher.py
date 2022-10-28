@@ -145,7 +145,10 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         system.config["use_guns"] = True
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
         guns = controllers.getGuns()
-        gunsUtils.precalibration(systemName, rom)
+        if "core" in system.config:
+            gunsUtils.precalibration(systemName, system.config['emulator'], system.config["core"], rom)
+        else:
+            gunsUtils.precalibration(systemName, system.config['emulator'], None, rom)
     else:
         eslog.info("guns disabled.");
         guns = []
