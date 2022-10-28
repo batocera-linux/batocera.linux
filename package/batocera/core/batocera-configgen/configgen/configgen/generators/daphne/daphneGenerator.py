@@ -11,9 +11,28 @@ class DaphneGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        if not os.path.exists(os.path.dirname(batoceraFiles.daphneConfig)):
-            os.makedirs(os.path.dirname(batoceraFiles.daphneConfig))
+        # copy input.ini file templates
+        if not os.path.isdir(batoceraFiles.daphneDatadir):
+            os.mkdir(batoceraFiles.daphneDatadir)
+        if not os.path.exists(batoceraFiles.daphneConfig):
+            shutil.copyfile("/usr/share/daphne/hypinput_gamepad.ini", batoceraFiles.daphneConfig)
 
+        # create a custom ini
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
+            shutil.copyfile(batoceraFiles.daphneConfig, batoceraFiles.daphneDatadir + "/custom.ini")
+            
+        # copy required resources to config
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/pics"):
+            shutil.copytree("/usr/share/daphne/pics", batoceraFiles.daphneDatadir + "/pics")
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/sound"):
+            shutil.copytree("/usr/share/daphne/sound", batoceraFiles.daphneDatadir + "/sound")
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/fonts"):
+            shutil.copytree("/usr/share/daphne/fonts", batoceraFiles.daphneDatadir + "/fonts")
+        
+        # create symbolic link for singe
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
+            os.symlink(batoceraFiles.daphneHomedir + "/roms", batoceraFiles.daphneDatadir + "/singe")
+        
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
@@ -23,11 +42,17 @@ class DaphneGenerator(Generator):
         if os.path.isfile(singeFile):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
-                            "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+                            "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
-                            "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+        
+        # controller config file
+        if system.isOptSet('daphne_joy')  and system.getOptBoolean('daphne_joy'):
+            commandArray.extend(['-keymapfile', 'custom.ini'])
+        else:
+            commandArray.extend(["-keymapfile", batoceraFiles.daphneConfigfile])
 
         # Default -fullscreen behaviour respects game aspect ratio
         if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
@@ -117,7 +142,8 @@ class DaphneGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                'SDL_JOYSTICK_HIDAPI': '0'
             })
 
     def getInGameRatio(self, config, gameResolution, rom):
