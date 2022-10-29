@@ -84,7 +84,7 @@
 - moonlight embedded not connecting to streams
 - mesa vaapi for additional cards
 - long start times with vulkan in some cases
-= Sont touchpad form Mame
+- Sony touchpad for Mame
 ### Dev  
 - buildroot upgrade to 2022.08.1
 - rpi1 image renamed to bcm2835
