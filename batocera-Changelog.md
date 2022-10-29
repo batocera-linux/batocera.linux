@@ -7,6 +7,8 @@
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator
 - WASM4 - WebAssembly fantasy console (x86_64)
+- Integrated GBA controller type added to Dolphin
+- batocera-gcgbaprep script added for linking/copying GBA ROMs to GC ROMs
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
 - Light Gun in-game pre-calibration for arcade (atomiswave, naomi, model2, model3)

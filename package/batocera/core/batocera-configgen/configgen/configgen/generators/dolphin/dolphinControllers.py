@@ -31,9 +31,9 @@ def generateControllerConfig(system, playersControllers, rom):
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
+        generateControllerConfig_gamecube(system, playersControllers, rom)               # Pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
@@ -158,7 +158,7 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
 
     generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(system, playersControllers,rom):
+def generateControllerConfig_gamecube(system, playersControllers, rom):
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
         'x':            'Buttons/Y',     'a':             'Buttons/X',
@@ -184,6 +184,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
         'l2':             'pageup',
         'r2':             'pagedown'
     }
+    gbaMapping = {
+        'b':        'Buttons/B',        'a':        'Buttons/A',
+        'pageup':   'Buttons/L',        'pagedown': 'Buttons/R',
+        'select':   'Buttons/SELECT',   'start':    'Buttons/START',
+        'up':       'D-Pad/Up',         'down':     'D-Pad/Down',
+        'left':     'D-Pad/Left',       'right':    'D-Pad/Right'
+    }
 
     # This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"       # Define ROM configuration name
@@ -198,9 +205,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 line = cconfig.readline()
 
     generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "GBA.ini", "GBA", gbaMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
+    if os.path.isfile(configFileName):
+        os.remove(configFileName)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GBA.ini")
     if os.path.isfile(configFileName):
         os.remove(configFileName)
 

@@ -8,10 +8,17 @@ from os import environ
 import configparser
 from . import dolphinControllers
 from . import dolphinSYSCONF
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class DolphinGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
+        gbaMode = False
+        gbaSlots = 0
+        gbaPort = {}
+
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
@@ -40,6 +47,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Analytics")
         if not dolphinSettings.has_section("Display"):
             dolphinSettings.add_section("Display")
+        if not dolphinSettings.has_section("GBA"):
+            dolphinSettings.add_section("GBA")
 
         # Define default games path
         if "ISOPaths" not in dolphinSettings["General"]:
@@ -118,8 +127,29 @@ class DolphinGenerator(Generator):
             if system.isOptSet("dolphin_port_" + str(i) + "_type"):
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), system.config["dolphin_port_" + str(i) + "_type"])
+                if system.config["dolphin_port_" + str(i) + "_type"] == "13":
+                    gbaMode = True
+                    gbaSlots = gbaSlots + 1
+                    gbaPort[i] = True
+                else:
+                    gbaPort[i] = False
             else:
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
+                gbaPort[i] = False
+
+        # GBA
+        dolphinSettings.set("GBA", "BIOS", "/userdata/bios/gba_bios.bin")
+        dolphinSettings.set("GBA", "SavesInRomPath", "False")
+        gbaSavePath = "/userdata/saves/gamecube/gba/"
+        if not os.path.exists(gbaSavePath):
+            os.makedirs(gbaSavePath)
+        dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
+        for i in range(1,5):
+            if gbaPort[i]:
+                gbaROM = getGBAROM(rom, i)
+                dolphinSettings.set("GBA", f"Rom{str(i)}", gbaROM)
+            else:
+                dolphinSettings.set("GBA", f"Rom{str(i)}", "")
 
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
@@ -260,12 +290,25 @@ class DolphinGenerator(Generator):
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        # Check what version we've got
-        if os.path.isfile("/usr/bin/dolphin-emu"):
-            commandArray = ["dolphin-emu", "-e", rom]
+        if gbaMode:
+            # Set up scripts & GBA ROMs if GBA is enabled.
+            commandArray = ["/var/run/launchRatpoison.sh"]
+            # Pick layout, if not selected, use horizontal if widescreen hacks are on, vertical otherwise.
+            if system.isOptSet('gba_layout'):
+                gbaLayout = system.config['gba_layout']
+            else:
+                if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
+                    gbaLayout = "horiz"
+                else:
+                    gbaLayout = "vert"
+            createGBAFiles(rom, gbaSlots, gbaLayout)
         else:
-            commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
-        
+            # Check what version we've got
+            if os.path.isfile("/usr/bin/dolphin-emu"):
+                commandArray = ["dolphin-emu", "-e", rom]
+            else:
+                commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
+
         return Command.Command(array=commandArray, \
             env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \
             "XDG_DATA_HOME":batoceraFiles.SAVES, \
@@ -289,6 +332,11 @@ class DolphinGenerator(Generator):
             wii_tv_mode = dolphinSYSCONF.getRatioFromConfig(config, gameResolution)
         except:
             pass
+
+        #GBA Mode
+        for i in range(1,5):
+            if system.isOptSet("dolphin_port_" + str(i) + "_type") and system.config["dolphin_port_" + str(i) + "_type"] == "13":
+               return 16/9
 
         # Auto
         if dolphin_aspect_ratio == "0":
@@ -319,3 +367,99 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages[lang]
     else:
         return availableLanguages["en_US"]
+
+def createGBAFiles(rom, slots, mode):
+    ratpoisonConfig = "/userdata/system/.ratpoisonrc"
+    ratpoisonLauncher = "/var/run/launchRatpoison.sh"
+    dolphinLauncher = "/var/run/launchDolphin.sh"
+    removeExisting(ratpoisonConfig)
+    removeExisting(ratpoisonLauncher)
+    removeExisting(dolphinLauncher)
+
+    # Set up the config for ratpoison, will auto-run on launch.
+    gbaFile = open(ratpoisonConfig, "w")
+    gbaFile.write('set startupmessage 0\n')
+    gbaFile.write('set border 0\n')
+    gbaFile.write('set framemsgwait -1\n')
+    gbaFile.write('set wingravity c\n')
+    gbaFile.write('set maxsizegravity c\n')
+    gbaFile.write('set transgravity c\n\n')
+    if mode == "vert":
+        gbaFile.write('hsplit 3/4\n')
+        gbaFile.write('fselect 1\n')
+        if slots == 2:
+            gbaFile.write('vsplit 1/2\n')
+        elif slots == 3:
+            gbaFile.write('vsplit 1/3\n')
+            gbaFile.write('fselect 2\n')
+            gbaFile.write('vsplit 1/2\n')
+        elif slots == 4:
+            gbaFile.write('vsplit 1/4\n')
+            gbaFile.write('fselect 2\n')
+            gbaFile.write('vsplit 1/3\n')
+            gbaFile.write('fselect 3\n')
+            gbaFile.write('split 1/2\n')
+    elif mode == "horiz":
+        gbaFile.write('vsplit 3/4\n')
+        gbaFile.write('fselect 1\n')
+        if slots == 2:
+            gbaFile.write('hsplit 1/2\n')
+        elif slots == 3:
+            gbaFile.write('hsplit 1/3\n')
+            gbaFile.write('fselect 2\n')
+            gbaFile.write('hsplit 1/2\n')
+        elif slots == 4:
+            gbaFile.write('hsplit 1/4\n')
+            gbaFile.write('fselect 2\n')
+            gbaFile.write('hsplit 1/3\n')
+            gbaFile.write('fselect 3\n')
+            gbaFile.write('hsplit 1/2\n')
+    gbaFile.write('fselect 0\n\n')
+    gbaFile.write('banish\n\n')
+    gbaFile.write('addhook deletewindow quit\n')
+    gbaFile.write('addhook newwindow focus\n\n')
+    gbaFile.write(f'execf 0 {dolphinLauncher}\n')
+    gbaFile.close()
+
+    # Set up the script to launch ratpoison
+    gbaFile = open(ratpoisonLauncher, "w")
+    gbaFile.write("#!/bin/sh\n\n")
+    gbaFile.write(f"LC_ALL={getGameCubeLangFromEnvironment()} startx /usr/bin/ratpoison -- :1")
+    gbaFile.close()
+    makeExecutble(ratpoisonLauncher)
+
+    # Set up the script to launch Dolphin
+    gbaFile = open(dolphinLauncher, "w")
+    gbaFile.write("#!/bin/sh\n\n")
+    if os.path.isfile("/usr/bin/dolphin-emu"):
+        gbaFile.write(f"/usr/bin/dolphin-emu -e \"{rom}\"")
+    else:
+        gbaFile.write(f"/usr/bin/dolphin-emu-nogui -p  drm -e \"{rom}\"")
+    gbaFile.close()
+    makeExecutble(dolphinLauncher)
+
+def getGBAROM(rom, slot):
+    baseFileName = os.path.splitext(os.path.basename(rom))[0]
+    baseFilePath = os.path.dirname(rom)
+
+    for FileExt in ["zip", "7z", "gba", "gb", "gbc", "agb", "mb", "rom", "bin"]:
+        gbaROMFile = f"{baseFilePath}/{baseFileName}-{slot}.{FileExt}"
+        if os.path.exists(gbaROMFile):
+            eslog.debug(f"Found {gbaROMFile} for GBA #{slot}")
+            return gbaROMFile
+
+    eslog.debug(f"No ROM found for GBA #{slot}")
+    return ""
+
+
+def removeExisting(fileName):
+    if os.path.exists(fileName):
+        if os.path.isfile(fileName):
+            os.remove(fileName)
+        elif os.path.islink(fileName):
+            os.unlink(fileName)
+
+def makeExecutble(fileName):
+    fileMode = os.stat(fileName).st_mode
+    fileMode |= (fileMode & 0o444) >> 2
+    os.chmod(fileName, fileMode)
