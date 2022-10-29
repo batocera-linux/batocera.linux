@@ -6,16 +6,19 @@ from generators.Generator import Generator
 import shutil
 import os
 import controllersConfig
+import filecmp
 
 class DaphneGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         # copy input.ini file templates
+        daphneConfigSource = "/usr/share/daphne/hypinput_gamepad.ini"
+
         if not os.path.isdir(batoceraFiles.daphneDatadir):
             os.mkdir(batoceraFiles.daphneDatadir)
-        if not os.path.exists(batoceraFiles.daphneConfig):
-            shutil.copyfile("/usr/share/daphne/hypinput_gamepad.ini", batoceraFiles.daphneConfig)
+        if not os.path.exists(batoceraFiles.daphneConfig) or not filecmp.cmp(daphneConfigSource, batoceraFiles.daphneConfig):
+            shutil.copyfile(daphneConfigSource, batoceraFiles.daphneConfig)
 
         # create a custom ini
         if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
