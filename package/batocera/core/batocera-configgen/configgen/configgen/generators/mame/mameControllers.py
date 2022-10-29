@@ -18,6 +18,8 @@ import csv
 from xml.dom import minidom
 from PIL import Image, ImageOps
 
+eslog = get_logger(__name__)
+
 def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, useMouse, multiMouse):
     # config file
     config = minidom.Document()
@@ -228,8 +230,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
                             mappings_use[thisControl['decMapping']], pad.inputs[mappings_use[thisControl['useMapping1']]], pad.inputs[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
                             thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
                     elif thisControl['type'] == 'combo':
-                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbkey'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['usemapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
+                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
         nplayer = nplayer + 1
 
