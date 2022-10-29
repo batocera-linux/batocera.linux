@@ -5,18 +5,21 @@
 - keep power pressed 3s to et the shutdown menu
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility
-- Vita3k - PlayStation Vita emulator
+- Vita3k - PlayStation Vita emulator (October 25th build)
 - WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
 - Light Gun in-game pre-calibration for arcade (atomiswave, naomi, model2, model3)
+- Mesa hadware codecs for supported Intel & AMD cards
+- Zink for OpenGL to Vulkan
+- patch to allow Switch clones controllers to work in some cases
 ### Changed
 - move to pipewire wireplumber audio
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
     - *-ext512K.ram to *.bcr
     - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
-- cemu to native linux version (v2.0.4)
+- cemu to native linux version (v2.0.10)
 ### Updated
 - pcsx2 to v1.7.3292
 - alsa to 1.2.7.2
@@ -70,6 +73,8 @@
 - mupen64plus-core to Oct 01, 2022
 - mesa3d to 22.2.2 [Changelog](https://docs.mesa3d.org/relnotes/22.2.2.html)
 - moonlight embedded to 2.5.3
+- proton to v2.7
+- vulkan stack to v1.3.231
 ### Fixed
 - lr-mame save state file names
 - slow rpcs3 initial ppu compilation times
@@ -78,6 +83,8 @@
 - can now boot in verbose mode from syslinux (spam down on keyboard while booting)
 - moonlight embedded not connecting to streams
 - mesa vaapi for additional cards
+- long start times with vulkan in some cases
+= Sont touchpad form Mame
 ### Dev  
 - buildroot upgrade to 2022.08.1
 - rpi1 image renamed to bcm2835
