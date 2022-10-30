@@ -648,8 +648,8 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                             mappings_use[thisControl['decMapping']], retroPad[mappings_use[thisControl['useMapping1']]], retroPad[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
                             thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
                     elif thisControl['type'] == 'combo':
-                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbkey'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['usemapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
+                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
         nplayer = nplayer + 1
         
