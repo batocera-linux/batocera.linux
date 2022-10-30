@@ -9,7 +9,7 @@
 - WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
-- Light Gun in-game pre-calibration for arcade (atomiswave, naomi, model2, model3)
+- Light Gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
 - Mesa hadware codecs for supported Intel & AMD cards
 - Zink for OpenGL to Vulkan
 - patch to allow Switch clones controllers to work in some cases
