@@ -6018,6 +6018,7 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA":                        13
         dolphin_port_2_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 2 TYPE
@@ -6030,6 +6031,7 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA":                        13
         dolphin_port_3_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 3 TYPE
@@ -6042,6 +6044,7 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA":                        13
         dolphin_port_4_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 4 TYPE
@@ -6054,6 +6057,7 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA":                        13
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6157,6 +6161,13 @@ dolphin:
                 choices:
                     "Off": 0
                     "On":  1
+        gba_layout:
+            group: ADVANCED OPTIONS
+            prompt:      GBA SCREEN LAYOUT
+            description: GBA screens arranged vertically on the right, or horizontally on the bottom
+            choices:
+                "Vertical":   vert
+                "Horizontal": horiz
     wii:
         cfeatures:
             tv_mode:
