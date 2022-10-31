@@ -1,0 +1,48 @@
+#!/bin/bash
+
+getBattery() {
+    BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+    if ! test -n "${BATT}"
+    then
+	NOW=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
+	MAX=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
+	if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]
+	then
+            BATT=$((200*$NOW/$MAX % 2 + 100*$NOW/$MAX))
+	fi
+    fi
+    echo ${BATT}
+}
+
+LAST_BATTERY=100
+while true
+do
+    NEW_BATTERY=$(getBattery)
+    DELAY=4
+
+    # stop the script if no battery information found
+    if test -z "${NEW_BATTERY}"
+    then
+	exit 0
+    fi
+
+    if test "${NEW_BATTERY}" != "${LAST_BATTERY}" # only when there is a change
+    then
+	if test "${NEW_BATTERY}" -le 30 # not before 30%
+	then
+	    if test "${NEW_BATTERY}" -lt "${LAST_BATTERY}" # only when going down
+	    then
+		if test "${NEW_BATTERY}" -le 10 -o $((${NEW_BATTERY} / 10)) -lt $((${LAST_BATTERY} / 10))  # every 10% + every 1% under 10%
+		then
+		    if test "${NEW_BATTERY}" -le 5 # longer delay under 5%
+		    then
+			DELAY=10
+		    fi
+		    /usr/bin/batocera-info --short | LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=:0.0 osd_cat -f "-*-*-bold-*-*-*-38-120-*-*-*-*-*-*" -cred -s 3 -d ${DELAY}
+		fi
+	    fi
+	fi
+	LAST_BATTERY=${NEW_BATTERY}
+    fi
+    sleep 120 # do a check every 2 minutes
+done
