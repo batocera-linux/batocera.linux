@@ -17,7 +17,6 @@ class DolphinGenerator(Generator):
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         gbaMode = False
         gbaSlots = 0
-        gbaPort = {}
         gbaROMs = []
         if os.path.splitext(rom)[1] == ".gbl":
             openFile = open(rom, 'r')
@@ -144,6 +143,7 @@ class DolphinGenerator(Generator):
 
         # Gamecube ports
         # Create a for loop going 1 through to 4 and iterate through it:
+        assignedROM = 0
         for i in range(1,5):
             if system.isOptSet("dolphin_port_" + str(i) + "_type"):
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
@@ -151,12 +151,16 @@ class DolphinGenerator(Generator):
                 if system.config["dolphin_port_" + str(i) + "_type"] == "13":
                     gbaMode = True
                     gbaSlots = gbaSlots + 1
-                    gbaPort[i] = True
-                else:
-                    gbaPort[i] = False
+                    if len(gbaROMs) <= assignedROM and len(gbaROMs) > 0:
+                        dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[assignedROM], i))
+                        assignedROM = assignedROM + 1
+                    else:
+                        if len(gbaROMs) == 0:
+                            dolphinSettings.set("GBA", f"Rom{str(i)}", "")
+                        else:
+                            dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[len(gbaROMs)-1], i))
             else:
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
-                gbaPort[i] = False
 
         # GBA
         dolphinSettings.set("GBA", "BIOS", "/userdata/bios/gba_bios.bin")
@@ -165,14 +169,6 @@ class DolphinGenerator(Generator):
         if not os.path.exists(gbaSavePath):
             os.makedirs(gbaSavePath)
         dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
-        assignedROM = 0
-        for i in range(1,5):
-            if gbaPort[i]:
-                if len(gbaROMs) <= assignedROM:
-                    dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[assignedROM], i))
-                    assignedROM = assignedROM + 1
-                else:
-                    dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[len(gbaROMs)-1], i))
 
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
@@ -393,7 +389,7 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages["en_US"]
 
 def createGBAFiles(rom, slots, mode):
-    ratpoisonConfig = "/userdata/system/.ratpoisonrc"
+    ratpoisonConfig = "/var/run/ratpoisoncfg"
     ratpoisonLauncher = "/var/run/launchRatpoison.sh"
     dolphinLauncher = "/var/run/launchDolphin.sh"
     removeExisting(ratpoisonConfig)
@@ -448,7 +444,7 @@ def createGBAFiles(rom, slots, mode):
     # Set up the script to launch ratpoison
     gbaFile = open(ratpoisonLauncher, "w")
     gbaFile.write("#!/bin/sh\n\n")
-    gbaFile.write(f"LC_ALL={getGameCubeLangFromEnvironment()} startx /usr/bin/ratpoison -- :1")
+    gbaFile.write(f"LC_ALL={getGameCubeLangFromEnvironment()} startx /usr/bin/ratpoison -f /var/run/ratpoisoncfg -- :1")
     gbaFile.close()
     makeExecutble(ratpoisonLauncher)
 
@@ -469,8 +465,11 @@ def prepGBAROM(rom, slot):
     # By default, we symlink the save file if it doesn't exist.
     if os.path.exists(f"/userdata/saves/gba/{baseFileName}.sav"):
         if not os.path.exists(f"/userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav"):
-            os.symlink(f"/userdata/saves/gba/{baseFileName}.sav", f"/userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
-            eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.sav to /userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
+            try:
+                os.symlink(f"/userdata/saves/gba/{baseFileName}.sav", f"/userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
+                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.sav to /userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
+            except:
+                eslog.error(f"Unable to symlink {basefilename}.sav, may not be supported on this filesystem.")
         else:
             eslog.debug(f"Save file /userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav exists, not overwriting.")
     else:
