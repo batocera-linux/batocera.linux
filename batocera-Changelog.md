@@ -15,6 +15,7 @@
 - patch to allow Switch clones controllers to work in some cases
 ### Changed
 - move to pipewire wireplumber audio
+- bluetooth modes : automatic and manual (via a list)
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
     - *-ext512K.ram to *.bcr
