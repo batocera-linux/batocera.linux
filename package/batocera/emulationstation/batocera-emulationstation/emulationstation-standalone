@@ -103,9 +103,23 @@ do
 
     ### keyboard (specific to xorg) ###
     map_name="$(batocera-settings-get system.kblayout)"
-    # not always true (en_US for us), but it's really better than always english
-    test -z "${map_name}" && map_name=$(echo $settings_lang | cut -c 1-2)
-    which setxkbmap && setxkbmap "${map_name}"
+    variant_type="$(batocera-settings-get system.kbvariant)"
+    if test -n "${map_name}"
+    then
+        if test -n "${variant_type}"
+        then
+        setxkbmap "${map_name}" -variant "${variant_type}"
+        else
+        setxkbmap "${map_name}"
+        fi
+    else
+    map_name=$(echo $settings_lang | cut -c 1-2)
+        if map_name="en"
+        then
+        map_name=$(echo $settings_lang | cut -c 4- | tr '[:upper:]' '[:lower:]')
+        fi
+    setxkbmap "${map_name}"
+    fi
     ###################
 
     # try to force 60hz (specific to xorg)
