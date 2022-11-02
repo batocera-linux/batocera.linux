@@ -1,0 +1,290 @@
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 5e38899..3c5eb90 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -15,6 +15,9 @@ menuconfig INPUT_JOYSTICK
+ 
+ if INPUT_JOYSTICK
+ 
++config JOYSTICK_ADC_GPIO
++	tristate "ADC Analog + GPIO keys. Polled."
++
+ config JOYSTICK_ANALOG
+ 	tristate "Classic PC analog joysticks and gamepads"
+ 	select GAMEPORT
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 31d720c..1d55c42 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -40,3 +40,4 @@
+ obj-$(CONFIG_JOYSTICK_WALKERA0701)	+= walkera0701.o
+ obj-$(CONFIG_JOYSTICK_XPAD)		+= xpad.o
+ obj-$(CONFIG_JOYSTICK_ZHENHUA)		+= zhenhua.o
++obj-$(CONFIG_JOYSTICK_ADC_GPIO)         += adc-gpio.o
+diff --git a/linux-go-next/drivers/input/joystick/adc-gpio.c b/drivers/input/joystick/adc-gpio.c
+new file mode 100644
+index 0000000..ee8dc1f
+--- /dev/null
++++ b/drivers/input/joystick/adc-gpio.c
+@@ -0,0 +1,260 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (C) 2021, Anonymous
++ * Copyright (C) 2021, Tony Jih <tonyjih@gmail.com>
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/input.h>
++#include <linux/ioport.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/pwm.h>
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
++#include <linux/gpio_keys.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/driver.h>
++
++struct adc_joystick_polled_axis {
++	u32 code;
++	s32 range[2];
++	s32 fuzz;
++	s32 flat;
++	int is_analog;
++	struct gpio_desc *gpiod;
++	int prev_val;
++};
++
++struct adc_joystick_polled {
++	struct input_dev *input;
++	struct adc_joystick_polled_axis *axes;
++	struct iio_channel *chans;
++	int num_chans;
++	
++	
++	/* pwm device for rumble*/
++	struct pwm_device *rumble_pwm;
++	struct work_struct rumble_work;
++	u16 rumble_level;
++};
++
++static int pwm_rumble_start(struct adc_joystick_polled *joy)
++{
++	struct device *pdev = joy->input->dev.parent;
++	struct pwm_state state;
++	int err;
++
++	pwm_get_state(joy->rumble_pwm, &state);
++	pwm_set_relative_duty_cycle(&state, joy->rumble_level, 0xffff);
++	state.enabled = true;
++
++	err = pwm_apply_state(joy->rumble_pwm, &state);
++	if (err) {
++		dev_err(pdev, "failed to apply pwm state: %d", err);
++		return err;
++	}
++
++	return 0;
++}
++
++static void pwm_rumble_stop(struct adc_joystick_polled *joy)
++{
++	pwm_disable(joy->rumble_pwm);
++}
++
++static void pwm_rumble_work(struct work_struct *work)
++{
++	struct adc_joystick_polled *joy = container_of(work,
++					struct adc_joystick_polled, rumble_work);
++
++	if (joy->rumble_level)
++		pwm_rumble_start(joy);
++	else
++		pwm_rumble_stop(joy);
++}
++static int rumble_play_effect(struct input_dev *dev, void *data, struct ff_effect *effect)
++{
++	struct adc_joystick_polled *joy = data;
++	if (effect->type != FF_RUMBLE)
++		return 0;
++
++	if (effect->u.rumble.strong_magnitude)
++		joy->rumble_level = effect->u.rumble.strong_magnitude;
++	else
++		joy->rumble_level = effect->u.rumble.weak_magnitude;
++
++	schedule_work(&joy->rumble_work);
++	return 0;
++}
++static int adc_joystick_set_rumble(struct device *dev, struct adc_joystick_polled *joy)
++{
++	int err;
++	struct pwm_state state;
++
++	joy->rumble_pwm = devm_pwm_get(dev, "rumble_pwm");
++	if (IS_ERR(joy->rumble_pwm))
++	{
++		dev_err(dev, "rumble not configured\n");
++		return -EINVAL;
++	}
++
++	INIT_WORK(&joy->rumble_work, pwm_rumble_work);
++
++	/* Sync up PWM state and ensure it is off. */
++	pwm_init_state(joy->rumble_pwm, &state);
++	state.enabled = false;
++	err = pwm_apply_state(joy->rumble_pwm, &state);
++	if (err) {
++		dev_err(dev, "failed to apply initial PWM state: %d",
++			err);
++		return err;
++	}
++	
++	/* Rumble worker setup*/
++	input_set_capability(joy->input, EV_FF, FF_RUMBLE);
++	err = input_ff_create_memless(joy->input, joy, rumble_play_effect);
++	if (err) {
++		dev_err(dev, "unable to register rumble, err = %d\n",
++			err);
++		return err;
++	}
++	
++	dev_info(dev, "rumble setup success!\n");
++	return 0;
++}
++static int adc_joystick_set_axes(struct device *dev, struct adc_joystick_polled *joy)
++{
++	struct adc_joystick_polled_axis *axes;
++	struct fwnode_handle *child;
++	int num_axes, i;
++
++	num_axes = device_get_child_node_count(dev);
++	joy->num_chans = num_axes;
++
++	axes = devm_kmalloc_array(dev, num_axes, sizeof(*axes), GFP_KERNEL);
++
++	device_for_each_child_node(dev, child) {
++		fwnode_property_read_u32(child, "reg", &i);
++
++		fwnode_property_read_u32(child, "linux,code", &axes[i].code);
++
++		if (fwnode_property_present(child, "analog"))
++		{
++			axes[i].is_analog = 1;
++
++			fwnode_property_read_u32_array(child, "abs-range", axes[i].range, 2);
++			fwnode_property_read_u32(child, "abs-fuzz", &axes[i].fuzz);
++			fwnode_property_read_u32(child, "abs-flat", &axes[i].flat);
++			input_set_abs_params(joy->input, axes[i].code,
++					axes[i].range[0], axes[i].range[1],
++					axes[i].fuzz, axes[i].flat);
++			input_set_capability(joy->input, EV_ABS, axes[i].code);
++		}
++		else
++		{
++			axes[i].is_analog = 0;
++			axes[i].gpiod = devm_fwnode_gpiod_get(dev, child, NULL, GPIOD_IN, "btn");
++			input_set_capability(joy->input, EV_KEY, axes[i].code);
++		}
++
++	}
++
++	joy->axes = axes;
++	return 0;
++}
++
++static void adc_joystick_polled_poll(struct input_dev *input)
++{
++	struct adc_joystick_polled *bdev = input_get_drvdata(input);
++	int i;
++
++	int raw;
++
++	for (i = 0; i < bdev->num_chans; i++) {
++		if (bdev->axes[i].is_analog == 1)
++		{
++			iio_read_channel_raw(&bdev->chans[i], &raw);
++			input_event(input, EV_ABS, bdev->axes[i].code, raw);
++		}
++		else
++		{
++			raw = gpiod_get_value_cansleep(bdev->axes[i].gpiod);
++			if (raw != bdev->axes[i].prev_val)
++			{
++				input_event(input, EV_KEY, bdev->axes[i].code, raw);
++				bdev->axes[i].prev_val = raw;
++			}
++		}
++	}
++
++	input_sync(input);
++}
++
++static int adc_joystick_polled_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct adc_joystick_polled *joy;
++	struct input_dev *input;
++	u32 joypad_revision = 0;
++	u32 joypad_product = 0;
++	int err;
++
++	joy = devm_kzalloc(dev, sizeof(*joy), GFP_KERNEL);
++	if (!joy)
++		return -ENOMEM;
++
++	joy->chans = devm_iio_channel_get_all(dev);
++	if (IS_ERR(joy->chans)) {
++		err = PTR_ERR(joy->chans);
++		if (err != -EPROBE_DEFER)
++			dev_err(dev, "Unable to get IIO channels");
++		return err;
++	}
++
++	input = devm_input_allocate_device(dev);
++	if (!input)
++		return -ENOMEM;
++
++	joy->input = input;
++	device_property_read_string(dev, "joypad-name", &input->name);
++	device_property_read_u32(dev, "joypad-revision", &joypad_revision);
++	device_property_read_u32(dev, "joypad-product", &joypad_product);
++	input->id.bustype = BUS_HOST;
++	input->id.product = (u16)joypad_product;
++	input->id.version = (u16)joypad_revision;
++
++	input_setup_polling(input, adc_joystick_polled_poll);
++	input_set_poll_interval(input, 10);
++	
++	adc_joystick_set_axes(dev, joy);	
++
++	adc_joystick_set_rumble(dev, joy);
++
++	input_set_drvdata(input, joy);
++
++	input_register_device(input);
++
++	dev_info(dev, "adc-joystick-polled: Bound to device correctly!");
++	return 0;
++}
++
++static const struct of_device_id adc_joystick_polled_of_match[] = {
++	{ .compatible = "gpio-keys-adc", },
++	{ }
++};
++
++static struct platform_driver adc_joystick_polled_driver = {
++	.driver = {
++		.name = "adc-joystick-polled",
++		.of_match_table = adc_joystick_polled_of_match,
++	},
++	.probe = adc_joystick_polled_probe,
++};
++module_platform_driver(adc_joystick_polled_driver);
++
++MODULE_AUTHOR("Tony Jih <tonyjih@gmail.com>");
++MODULE_LICENSE("GPL v2");
+\ No newline at end of file

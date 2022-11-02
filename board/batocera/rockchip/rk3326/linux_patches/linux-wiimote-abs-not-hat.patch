@@ -2,25 +2,6 @@ diff --git a/drivers/hid/hid-wiimote-modules.c b/drivers/hid/hid-wiimote-modules
 index 4390eee..76ed60b 100644
 --- a/drivers/hid/hid-wiimote-modules.c
 +++ b/drivers/hid/hid-wiimote-modules.c
-@@ -1113,12 +1113,12 @@ static void wiimod_classic_in_ext(struct wiimote_data *wdata, const __u8 *ext)
- 	rt <<= 1;
- 	lt <<= 1;
- 
--	input_report_abs(wdata->extension.input, ABS_HAT1X, lx - 0x20);
--	input_report_abs(wdata->extension.input, ABS_HAT1Y, ly - 0x20);
--	input_report_abs(wdata->extension.input, ABS_HAT2X, rx - 0x20);
--	input_report_abs(wdata->extension.input, ABS_HAT2Y, ry - 0x20);
--	input_report_abs(wdata->extension.input, ABS_HAT3X, rt);
--	input_report_abs(wdata->extension.input, ABS_HAT3Y, lt);
-+	input_report_abs(wdata->extension.input, ABS_HAT0X, lx - 0x20);
-+	input_report_abs(wdata->extension.input, ABS_HAT0Y, ly - 0x20);
-+	input_report_abs(wdata->extension.input, ABS_HAT1X, rx - 0x20);
-+	input_report_abs(wdata->extension.input, ABS_HAT1Y, ry - 0x20);
-+	input_report_abs(wdata->extension.input, ABS_HAT2X, rt);
-+	input_report_abs(wdata->extension.input, ABS_HAT2Y, lt);
- 
- 	input_report_key(wdata->extension.input,
- 			 wiimod_classic_map[WIIMOD_CLASSIC_KEY_RIGHT],
 @@ -1228,12 +1228,16 @@ static int wiimod_classic_probe(const struct wiimod_ops *ops,
  			wdata->extension.input->keybit);
  
