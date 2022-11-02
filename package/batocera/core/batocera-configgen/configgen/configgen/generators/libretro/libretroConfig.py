@@ -804,7 +804,6 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig):
         if nplayer == n:
             for m in mapping:
                 if mapping[m] in pad.inputs:
-                    eslog.error("A5 {}".format(pad.inputs[mapping[m]].type))
                     if pad.inputs[mapping[m]].type == "button":
                         retroarchConfig['input_player{}_{}_btn'.format(n, m)] = pad.inputs[mapping[m]].id
                     elif pad.inputs[mapping[m]].type == "hat":
