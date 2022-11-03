@@ -20,7 +20,12 @@ test -n "${FIND_CUSTOMESSYSTEMS}" && EXTRA=${EXTRA}s
 
 if test "${1}" = "--extra"
 then
-    echo "${EXTRA}"
+    if test -z "${EXTRA}"
+    then
+	echo "none"
+    else
+	echo "${EXTRA}"
+    fi
 else
     cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
 fi
