@@ -2449,6 +2449,20 @@ mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
+ikemen:
+  name:       IKEMEN
+  manufacturer: Elecbyte
+  release: 2021
+  hardware: port
+  extensions: [ikemen, pc, squashfs]
+  emulators:
+    ikemen:
+      ikemen:  { requireAnyOf: [BR2_PACKAGE_IKEMEN] }
+  comment_en: |
+    IKEMEN Go is a reimplementation of IKEMEN, an engine which extends the capacities of MUGEN for fighting games
+  comment_fr: |
+    IKEMEN Go est une re-ecriture de IKEMEN, un moteur qui etend les capacites de MUGEN pour les jeux de combat
+
 fpinball:
   name:       Future Pinball
   manufacturer: Christopher Leathley

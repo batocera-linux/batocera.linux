@@ -271,6 +271,10 @@ def getGenerator(emulator):
         from generators.vita3k.vita3kGenerator import Vita3kGenerator
         return Vita3kGenerator()
 
+    if emulator == "ikemen":
+        from generators.ikemen.ikemenGenerator import IkemenGenerator
+        return IkemenGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),
