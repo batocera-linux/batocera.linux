@@ -172,9 +172,8 @@ class IkemenGenerator(Generator):
         except:
             conf = {}
 
-        jconf = conf["JoystickConfig"]
-        # Joystick seems completely broken in 0.98.2, so let's force
-        # keyboad and use a pad2key
+        # Joystick configuration seems completely broken in 0.98.2 Linux
+        # so let's force keyboad and use a pad2key
         conf["KeyConfig"] = Keymapping
         conf["JoystickConfig"] = Joymapping
         conf["Fullscreen"] = True
