@@ -8,9 +8,19 @@ test -e "/boot/boot/overlay" && FIND_OVERLAY=1
 FIND_CUSTOMSH=
 test -e "/userdata/system/custom.sh" && FIND_CUSTOMSH=1
 
-EXTRA=
-test -n "${FIND_EXT}"      && EXTRA=${EXTRA}e
-test -n "${FIND_OVERLAY}"  && EXTRA=${EXTRA}o
-test -n "${FIND_CUSTOMSH}" && EXTRA=${EXTRA}c
+FIND_CUSTOMESSYSTEMS=
+test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTOMESSYSTEMS=1
 
-cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
+
+EXTRA=
+test -n "${FIND_EXT}"      	  && EXTRA=${EXTRA}e
+test -n "${FIND_OVERLAY}"  	  && EXTRA=${EXTRA}o
+test -n "${FIND_CUSTOMSH}" 	  && EXTRA=${EXTRA}c
+test -n "${FIND_CUSTOMESSYSTEMS}" && EXTRA=${EXTRA}s
+
+if test "${1}" = "--extra"
+then
+    echo "${EXTRA}"
+else
+    cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
+fi
