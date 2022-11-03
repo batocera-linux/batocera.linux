@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MELONDS_VERSION = 0.9.4
+MELONDS_VERSION = 0.9.5
 MELONDS_SITE = https://github.com/Arisotura/melonDS.git
 MELONDS_SITE_METHOD=git
 MELONDS_GIT_SUBMODULES=YES
