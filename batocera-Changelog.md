@@ -12,7 +12,8 @@
 - Light Gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
 - Mesa hadware codecs for supported Intel & AMD cards
 - Zink for OpenGL to Vulkan
-- patch to allow Switch clones controllers to work in some cases
+- patch to allow Switch clone controllers to work in some cases
+- Xenia a Microsoft Xbox 360 emulator (v1.0.2775) - requires x86_64+Vulkan card & Wine (Note: Limited compatibility)
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
