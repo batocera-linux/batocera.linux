@@ -627,6 +627,9 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_RETRO8   # ALL
 	select BR2_PACKAGE_LEXALOFFLE_PICO8  # ALL
 
+	# Fighting games engine
+	select BR2_PACKAGE_IKEMEN                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
 	bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
@@ -864,7 +867,6 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_RAZE                     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
     # ZMusic: standalone library used by gzdoom and raze source ports
     select BR2_PACKAGE_ZMUSIC                   if BR2_PACKAGE_GZDOOM || BR2_PACKAGE_RAZE
-    select BR2_PACKAGE_IKEMEN                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	help
 		Ports
