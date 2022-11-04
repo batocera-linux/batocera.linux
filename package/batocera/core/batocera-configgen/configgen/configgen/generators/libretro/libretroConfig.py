@@ -324,7 +324,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             retroarchConfig['input_libretro_device_p2'] = '769'
 
     ## Sega Saturn controller
-    if system.config['core'] == 'yabasanshiro' and system.name == 'saturn':
+    if system.config['core'] in ['yabasanshiro', 'beetle-saturn'] and system.name == 'saturn':
         if system.isOptSet('controller1_saturn'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_saturn']
         else:

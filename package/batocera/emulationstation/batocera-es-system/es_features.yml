@@ -367,6 +367,20 @@ libretro:
                     "Cross": "Cross"
                     "Dot": "Dot"
                     "Disabled": "Off"
+          controller1_saturn:
+                prompt:      CONTROLLER 1 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
+          controller2_saturn:
+                prompt:      CONTROLLER 2 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
     fmsx:
        features: [netplay, cheevos]
        shared: [rewind, autosave]
