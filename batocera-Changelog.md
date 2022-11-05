@@ -14,6 +14,7 @@
 - Zink for OpenGL to Vulkan
 - patch to allow Switch clone controllers to work in some cases
 - Xenia a Microsoft Xbox 360 emulator (v1.0.2775) - requires x86_64+Vulkan card & Wine (Note: Limited compatibility)
+- guns support for wii
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
@@ -22,6 +23,7 @@
     - *-ext512K.ram to *.bcr
     - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
 - cemu to native linux version (v2.0.10)
+- cemu fixes for controllers
 ### Updated
 - pcsx2 to v1.7.3292
 - alsa to 1.2.7.2
