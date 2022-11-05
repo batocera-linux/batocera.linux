@@ -321,6 +321,8 @@ def listing_dev_event(path, properties, adding):
     file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(devaddress, devname, devstatus, icon2basicname(devtype)));
 
 def icon2basicname(str):
+  if str is None:
+    return "unknown"
   if str == "input-gaming":
     return "joystick"
   if str.startswith("audio-"):
