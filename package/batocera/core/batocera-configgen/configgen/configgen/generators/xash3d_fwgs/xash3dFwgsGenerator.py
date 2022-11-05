@@ -122,7 +122,7 @@ class Xash3dFwgsGenerator(Generator):
             array=commandArray,
             env={
                 'XASH3D_BASEDIR': _ROMS_DIR,
-                'XASH3D_EXTRAS_PAK1': _ROMS_DIR + '/extras.pak',
+                'XASH3D_EXTRAS_PAK1': '/usr/share/xash3d/valve/extras.pk3',
                 'LD_LIBRARY_PATH': '/usr/lib/xash3d',
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
