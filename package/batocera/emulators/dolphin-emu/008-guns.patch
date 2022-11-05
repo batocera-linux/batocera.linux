@@ -1,0 +1,13 @@
+diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+index 6ba5b22..15d5fda 100644
+--- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
++++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+@@ -523,7 +523,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+     m_name = potential_new_name;
+ 
+   const bool is_motion_device = libevdev_has_property(dev, INPUT_PROP_ACCELEROMETER);
+-  const bool is_pointing_device = libevdev_has_property(dev, INPUT_PROP_BUTTONPAD);
++  const bool is_pointing_device = libevdev_has_property(dev, INPUT_PROP_BUTTONPAD) || libevdev_has_property(dev, INPUT_PROP_POINTER);
+ 
+   // If a device has BTN_JOYSTICK it probably uses event codes counting up from 0x120
+   // which have very useless and wrong names.

@@ -37,7 +37,7 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --output name="Sinden lightgun" >/dev/null 2>"/var/log/virtual-sindenlightgun-devices.${USBPATHHASH}.log" &
+    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Sinden lightgun" >/dev/null 2>"/var/log/virtual-sindenlightgun-devices.${USBPATHHASH}.log" &
     echo $! > "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.pid"
 
     # ttyACM
