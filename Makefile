@@ -10,6 +10,9 @@ BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DOCKER         ?= docker
 
+# Unset variables that are known to cause issues with Buildroot
+unexport CMAKE_GENERATOR CMAKE_GENERATOR_PLATFORM CMAKE_GENERATOR_TOOLSET CMAKE_GENERATOR_INSTANCE PERL_MM_OPT
+
 -include $(LOCAL_MK)
 
 ifdef PARALLEL_BUILD
