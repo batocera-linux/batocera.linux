@@ -20,7 +20,7 @@ class DolphinGenerator(Generator):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
         
         # Generate the controller config(s)
-        dolphinControllers.generateControllerConfig(system, playersControllers, rom)
+        dolphinControllers.generateControllerConfig(system, playersControllers, rom, guns)
 
         ## [ dolphin.ini ] ##
         dolphinSettings = configparser.ConfigParser(interpolation=None)
