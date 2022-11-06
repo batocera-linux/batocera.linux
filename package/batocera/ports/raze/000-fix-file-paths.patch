@@ -175,14 +175,6 @@ diff --git a/source/core/gameconfigfile.cpp b/source/core/gameconfigfile.cpp
  #endif
  	}
 
-@@ -161,6 +162,7 @@
- 		SetValueForKey("Path", "/usr/local/share/games/" GAME_DIR "/soundfonts", true);
- 		SetValueForKey("Path", "/usr/share/" GAME_DIR "/soundfonts", true);
- 		SetValueForKey("Path", "/usr/share/games/" GAME_DIR "/soundfonts", true);
-+		SetValueForKey("Path", "/usr/share/raze/soundfonts", true);
- #endif
- 	}
-
 Index: source/core/gamecontrol.cpp
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
