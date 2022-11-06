@@ -55,7 +55,7 @@
 - supermodel to Aug 19 2022 build
 - tsugaru to v20220702
 - vice to 3.6.1
-- linux kernel for x86_64 to 6.0.6
+- linux kernel for x86_64 to 6.0.7
 - daphne emulator hypseus-singe to v2.10.1 (now uses SDL controller)
 - amiberry to v5.4
 - mame to v0.248
