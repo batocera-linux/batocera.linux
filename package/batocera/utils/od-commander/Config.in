@@ -15,11 +15,11 @@ if BR2_PACKAGE_OD_COMMANDER
 
 config BR2_PACKAGE_OD_COMMANDER_FONTS
 	string "Font stack"
-	default "{\"/usr/share/fonts/dejavu/DejaVuSansCondensed.ttf\",24},{\"/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf\",24},{\"/usr/share/fonts/truetype/droid/DroidSansFallback.ttf\",20}"
+	default "{\"/usr/share/fonts/dejavu/DejaVuSansCondensed.ttf\",10},{\"/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf\",10},{\"/usr/share/fonts/truetype/droid/DroidSansFallback.ttf\",9}"
 
 config BR2_PACKAGE_OD_COMMANDER_FONTS_LOW_DPI
 	string "Font stack for low DPI displays"
-	default "{RES_DIR\"Fiery_Turk.ttf\",8},{\"/usr/share/fonts/dejavu/DejaVuSansCondensed.ttf\",10},{\"/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf\",10},{\"/usr/share/fonts/truetype/droid/DroidSansFallback.ttf\",8}"
+	default "{RES_DIR\"Fiery_Turk.ttf\",8},{\"/usr/share/fonts/dejavu/DejaVuSansCondensed.ttf\",10},{\"/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf\",10},{\"/usr/share/fonts/truetype/droid/DroidSansFallback.ttf\",9}"
 
 config BR2_PACKAGE_OD_COMMANDER_AUTOSCALE
 	bool "Enable automatic screen size and PPU detection"
