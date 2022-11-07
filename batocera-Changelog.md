@@ -98,6 +98,7 @@
 - rpi4 image renamed to bcm2711
 - ffmpeg updated to 5.1.2
 - libva updated to 2.16
+- rtl8192eu update to Nov 5, 2022
 
 # 2022/09/20 - batocera.linux 35 - Monarch Butterfly
 * add: gun support in emulationstation
