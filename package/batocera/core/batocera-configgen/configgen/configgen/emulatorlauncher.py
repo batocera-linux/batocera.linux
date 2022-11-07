@@ -352,12 +352,14 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize):
 
     # the ingame image and the bezel free space must feet
     ## the bezel top and bottom cover must be minimum
-    if "top" in infos and infos["top"] / bezel_height > max_cover:
-        eslog.debug("bezel top covers too much the game image : {} / {} > {}".format(infos["top"], bezel_height, max_cover))
-        return None
-    if "bottom" in infos and infos["bottom"] / bezel_height > max_cover:
-        eslog.debug("bezel bottom covers too much the game image : {} / {} > {}".format(infos["bottom"], bezel_height, max_cover))
-        return None
+    # in case there is a border, force it
+    if bordersSize is None:
+        if "top" in infos and infos["top"] / bezel_height > max_cover:
+            eslog.debug("bezel top covers too much the game image : {} / {} > {}".format(infos["top"], bezel_height, max_cover))
+            return None
+        if "bottom" in infos and infos["bottom"] / bezel_height > max_cover:
+            eslog.debug("bezel bottom covers too much the game image : {} / {} > {}".format(infos["bottom"], bezel_height, max_cover))
+            return None
 
     # if there is no information about top/bottom, assume default is 0
 
@@ -370,24 +372,27 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize):
         eslog.debug(f"bezel has no left info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
         infos_left = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-            eslog.debug(f"bezel left covers too much the game image : {infos_left  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
-            return None
+        if bordersSize is None:
+            if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+                eslog.debug(f"bezel left covers too much the game image : {infos_left  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
+                return None
         
     if "right" not in infos:
         eslog.debug(f"bezel has no right info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
         infos_right = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-            eslog.debug(f"bezel right covers too much the game image : {infos_right  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
+        if bordersSize is None:
+            if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+                eslog.debug(f"bezel right covers too much the game image : {infos_right  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
+                return None
+
+    if bordersSize is None:
+        if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            eslog.debug("bezel left covers too much the game image : {} / {} > {}".format(infos["left"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
             return None
-    
-    if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-        eslog.debug("bezel left covers too much the game image : {} / {} > {}".format(infos["left"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
-        return None
-    if "right" in infos and abs((infos["right"] - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-        eslog.debug("bezel right covers too much the game image : {} / {} > {}".format(infos["right"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
-        return None
+        if "right" in infos and abs((infos["right"] - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            eslog.debug("bezel right covers too much the game image : {} / {} > {}".format(infos["right"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+            return None
 
     # if screen and bezel sizes doesn't match, resize
     # stretch option
