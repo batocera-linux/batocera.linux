@@ -1,8 +1,11 @@
 config BR2_PACKAGE_ECWOLF
     bool "ecwolf"
+    select BR2_PACKAGE_HOST_ECWOLF
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_SDL2_NET
     select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_ZLIB
+    select BR2_PACKAGE_BZIP2
     select BR2_PACKAGE_LIBJPEG
     select BR2_PACKAGE_FLUIDSYNTH
     select BR2_PACKAGE_LIBMODPLUG
