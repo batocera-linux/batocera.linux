@@ -1,8 +1,6 @@
-diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 17e9c5e..30a52e0 100644
---- a/cmake/SearchForStuff.cmake
-+++ b/cmake/SearchForStuff.cmake
-@@ -48,22 +48,22 @@ else()
+--- pcsx2-v1.7.3527/cmake/SearchForStuff.cmake	2022-11-04 16:12:25.000000000 -0700
++++ pcsx2-lbrpdx/cmake/SearchForStuff.cmake	2022-11-06 14:18:46.686596704 -0800
+@@ -48,22 +48,22 @@
  		# Fedora uses an extra non-standard option ... Arch must be the first option.
  		# They do uname -m if missing so only fix for cross compilations.
  		# http://pkgs.fedoraproject.org/cgit/wxGTK.git/plain/wx-config
@@ -35,7 +33,7 @@ index 17e9c5e..30a52e0 100644
  
  		# wx2.8 => /usr/bin/wx-config-2.8
  		# lib32-wx2.8 => /usr/bin/wx-config32-2.8
-@@ -71,39 +71,39 @@ else()
+@@ -71,44 +71,44 @@
  		# I'm going to take a wild guess and predict this:
  		# lib32-wx3.0 => /usr/bin/wx-config32-3.0
  		# FindwxWidgets only searches for wx-config.
@@ -54,7 +52,12 @@ index 17e9c5e..30a52e0 100644
 -			endif()
 -		else()
 -			if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
--				set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.0-config")
+-				if(EXISTS "/usr/local/bin/wxgtk3u-3.1-config")
+-					set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.1-config")
+-				endif()
+-				if(EXISTS "/usr/local/bin/wxgtk3u-3.0-config")
+-					set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.0-config")
+-				endif()
 -			endif()
 -			if(EXISTS "/usr/bin/wx-config-3.2")
 -				set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config-3.2")
@@ -87,7 +90,12 @@ index 17e9c5e..30a52e0 100644
 +		#	endif()
 +		#else()
 +		#	if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-+		#		set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.0-config")
++		#		if(EXISTS "/usr/local/bin/wxgtk3u-3.1-config")
++		#			set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.1-config")
++		#		endif()
++		#		if(EXISTS "/usr/local/bin/wxgtk3u-3.0-config")
++		#			set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.0-config")
++		#		endif()
 +		#	endif()
 +		#	if(EXISTS "/usr/bin/wx-config-3.2")
 +		#		set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config-3.2")

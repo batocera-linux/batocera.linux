@@ -3,8 +3,8 @@
 # pcsx2-avx2
 #
 ################################################################################
-#Version: Commits on Oct 5, 2022
-PCSX2_AVX2_VERSION = v1.7.3371
+#Version: Commits on Nov 5, 2022
+PCSX2_AVX2_VERSION = v1.7.3527
 PCSX2_AVX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_AVX2_SITE_METHOD = git
 PCSX2_AVX2_GIT_SUBMODULES = YES
