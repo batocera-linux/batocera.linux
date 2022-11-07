@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-RCLONE_VERSION = v1.59.2
+# 21 Oct 2022
+RCLONE_VERSION = v1.60.0
 RCLONE_SITE = $(call github,rclone,rclone,$(RCLONE_VERSION))
 RCLONE_LICENSE = GPLv2
-RCLONE_DEPENDENCIES = 
+RCLONE_DEPENDENCIES =
 
 define RCLONE_BUILD_CMDS
 	cd $(@D) && $(HOST_GO_TARGET_ENV) $(GO_BIN) build
