@@ -2,19 +2,19 @@
 ### EmulationStation
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
 - brightness can go down to 1% (instead of 5%)
-- keep power pressed 3s to et the shutdown menu
+- holding power button 3s will show the shutdown menu
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator (October 25th build)
 - WASM4 - WebAssembly fantasy console (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
-- Light Gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
+- Light gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
 - Mesa hadware codecs for supported Intel & AMD cards
 - Zink for OpenGL to Vulkan
 - patch to allow Switch clone controllers to work in some cases
 - Xenia a Microsoft Xbox 360 emulator (v1.0.2775) - requires x86_64+Vulkan card & Wine (Note: Limited compatibility)
-- guns support for wii
+- Light gun support for Wii
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
@@ -37,7 +37,7 @@
 - xemu to 0.7.67
 - citra to nightly-1784
 - dolphin to 5.0-17316
-- rpcs3 to v0.0.24
+- rpcs3 to v0.0.25
 - flycast emulators to v2.0
 - dosbox to v0.78.1
 - dosbox-x to v0.84.3
