@@ -252,17 +252,17 @@ def generateControllerConfig_guns(filename, anyDefKey, guns):
 
             # fire
             if "right" in buttons:
-                f.write("Buttons/A = RIGHT\n")
+                f.write("Buttons/A = `RIGHT`\n")
             if "left" in buttons:
-                f.write("Buttons/B = LEFT\n")
+                f.write("Buttons/B = `LEFT`\n")
 
             # extra buttons
             mappings = {
-                "Home": "middle",
+                "Home": "4",
                 "-": "1",
                 "1": "2",
                 "2": "3",
-                "+": "4"
+                "+": "middle"
             }
 
             # for a button for + because it is an important button

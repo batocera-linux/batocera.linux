@@ -1,13 +1,60 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index 6ba5b22..15d5fda 100644
+index 6ba5b22..dd6f6fd 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -523,7 +523,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -523,7 +523,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
      m_name = potential_new_name;
  
    const bool is_motion_device = libevdev_has_property(dev, INPUT_PROP_ACCELEROMETER);
 -  const bool is_pointing_device = libevdev_has_property(dev, INPUT_PROP_BUTTONPAD);
-+  const bool is_pointing_device = libevdev_has_property(dev, INPUT_PROP_BUTTONPAD) || libevdev_has_property(dev, INPUT_PROP_POINTER);
  
    // If a device has BTN_JOYSTICK it probably uses event codes counting up from 0x120
    // which have very useless and wrong names.
+@@ -536,21 +535,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+   {
+     if (libevdev_has_event_code(dev, EV_KEY, key))
+     {
+-      if (is_pointing_device || is_motion_device)
+-      {
+-        // This node will probably be combined with another with regular buttons.
+-        // We don't want to match "Button 0" names here as it will name clash.
+-        AddInput(new NamedButtonWithNoBackwardsCompat(num_buttons, key, dev));
+-      }
+-      else if (has_sensible_button_names)
+-      {
+-        AddInput(new NamedButton(num_buttons, key, dev));
+-      }
+-      else
+-      {
+-        AddInput(new NumberedButton(num_buttons, key, dev));
+-      }
+-
++      AddInput(new NamedButtonWithNoBackwardsCompat(num_buttons, key, dev));
+       ++num_buttons;
+     }
+   }
+@@ -586,24 +571,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+     return true;
+   }
+ 
+-  if (is_pointing_device)
+-  {
+-    auto add_cursor_input = [&num_axis, dev, this](int code) {
+-      if (libevdev_has_event_code(dev, EV_ABS, code))
+-      {
+-        AddInput(new CursorInput(num_axis, code, false, dev));
+-        AddInput(new CursorInput(num_axis, code, true, dev));
+-
+-        ++num_axis;
+-      }
+-    };
+-
+-    add_cursor_input(ABS_X);
+-    add_cursor_input(ABS_Y);
+-
+-    return true;
+-  }
+-
+   // Axes beyond ABS_MISC have strange behavior (for multi-touch) which we do not handle.
+   const int abs_axis_code_count = ABS_MISC;
+ 
