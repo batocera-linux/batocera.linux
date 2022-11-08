@@ -252,9 +252,9 @@ def generateControllerConfig_guns(filename, anyDefKey, guns):
 
             # fire
             if "right" in buttons:
-                f.write("Buttons/A = `RIGHT`\n")
+                f.write("Buttons/A = `BTN_RIGHT`\n")
             if "left" in buttons:
-                f.write("Buttons/B = `LEFT`\n")
+                f.write("Buttons/B = `BTN_LEFT`\n")
 
             # extra buttons
             mappings = {
@@ -263,6 +263,10 @@ def generateControllerConfig_guns(filename, anyDefKey, guns):
                 "1": "2",
                 "2": "3",
                 "+": "middle"
+            }
+
+            mapping_words = {
+                "middle": "BTN_MIDDLE"
             }
 
             # for a button for + because it is an important button
@@ -275,7 +279,10 @@ def generateControllerConfig_guns(filename, anyDefKey, guns):
 
             for mapping in mappings:
                 if mappings[mapping] in buttons:
-                    f.write("Buttons/" + mapping + " = `" + mappings[mapping].upper() + "`\n")
+                    if mappings[mapping] in mapping_words:
+                        f.write("Buttons/" + mapping + " = `" + mapping_words[mappings[mapping]] + "`\n")
+                    else:
+                        f.write("Buttons/" + mapping + " = `" + mappings[mapping] + "`\n")
 
             # directions
             if "5" in buttons:
