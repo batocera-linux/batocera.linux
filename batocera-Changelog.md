@@ -75,7 +75,6 @@
 - mupen64plus-input-sdl to Sep 30, 2022
 - mupen64plus-audio-sdl to Oct 01, 2022
 - mupen64plus-core to Oct 01, 2022
-- mesa3d to 22.2.2 [Changelog](https://docs.mesa3d.org/relnotes/22.2.2.html)
 - moonlight embedded to 2.5.3
 - proton to v2.7
 - vulkan stack to v1.3.231
@@ -99,6 +98,7 @@
 - ffmpeg updated to 5.1.2
 - libva updated to 2.16
 - rtl8192eu update to Nov 5, 2022
+- mesa3d to 22.2.3
 
 # 2022/09/20 - batocera.linux 35 - Monarch Butterfly
 * add: gun support in emulationstation
