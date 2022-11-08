@@ -346,9 +346,10 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize):
     bezel_ratio  = bezel_width / bezel_height
 
     # the screen and bezel ratio must be approximatly the same
-    if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
-        eslog.debug(f"screen ratio ({screen_ratio}) is too far from the bezel one ({bezel_ratio}) : {screen_ratio} - {bezel_ratio} > {max_ratio_delta}")
-        return None
+    if bordersSize is None:
+        if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
+            eslog.debug(f"screen ratio ({screen_ratio}) is too far from the bezel one ({bezel_ratio}) : {screen_ratio} - {bezel_ratio} > {max_ratio_delta}")
+            return None
 
     # the ingame image and the bezel free space must feet
     ## the bezel top and bottom cover must be minimum
