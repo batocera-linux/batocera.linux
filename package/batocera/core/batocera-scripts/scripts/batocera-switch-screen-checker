@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# reuired for x
+# required for x
 export DISPLAY=:0
 
-if test "${1}" == "-- init"
+if test "${1}" == "--init"
 then
     batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
     exit 0
