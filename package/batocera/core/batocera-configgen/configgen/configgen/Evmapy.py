@@ -225,6 +225,7 @@ class Evmapy():
                     nplayer += 1
                 return True
         # otherwise, preparation did nothing
+        eslog.debug("no evmapy config file found for system={}, emulator={}".format(system, emulator))
         return False
     
     # remap evmapy trigger (aka up become HAT0Y:max)
