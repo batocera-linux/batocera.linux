@@ -121,6 +121,12 @@ class DolphinGenerator(Generator):
             else:
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
 
+        # HiResTextures for guns part 1/2 (see below the part 2)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and (system.isOptSet('dolphin-lightgun-hide-crosshair') == False or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):
+            dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
+        else:
+            dolphinSettings.remove_option("General", "CustomTexturesPath")
+
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
 
@@ -164,6 +170,12 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "HiresTextures",      "False")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
+
+        # HiResTextures for guns part 2/2 (see upper part1)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and (system.isOptSet('dolphin-lightgun-hide-crosshair') == False or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):
+            # erase what can be set by the option hires_textures
+            dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
 
         # Widescreen Hack
         if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
