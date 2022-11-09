@@ -341,6 +341,29 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
 
+    ## WII controller
+    if system.config['core'] == 'dolphin' or system.config['core'] == 'dolphin':
+        # Controller 1 Type
+        if system.isOptSet('controller1_wii'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_wii']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
+        # Controller 2 Type
+        if system.isOptSet('controller2_wii'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_wii']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1'
+        # Controller 3 Type
+        if system.isOptSet('controller3_wii'):
+            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_wii']
+        else:
+            retroarchConfig['input_libretro_device_p3'] = '1'
+        # Controller 4 Type
+        if system.isOptSet('controller4_wii'):
+            retroarchConfig['input_libretro_device_p4'] = system.config['controller4_wii']
+        else:
+            retroarchConfig['input_libretro_device_p4'] = '1'
+
     ## MS-DOS controller
     if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
         if system.isOptSet('controller1_dosbox_pure'):
