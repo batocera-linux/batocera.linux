@@ -1,0 +1,49 @@
+diff --git a/Source/Core/Core/Config/MainSettings.cpp b/Source/Core/Core/Config/MainSettings.cpp
+index 08b3d58..17c0e44 100644
+--- a/Source/Core/Core/Config/MainSettings.cpp
++++ b/Source/Core/Core/Config/MainSettings.cpp
+@@ -270,6 +270,7 @@ bool ShouldUseDPL2Decoder()
+ const Info<std::string> MAIN_DUMP_PATH{{System::Main, "General", "DumpPath"}, ""};
+ const Info<std::string> MAIN_LOAD_PATH{{System::Main, "General", "LoadPath"}, ""};
+ const Info<std::string> MAIN_RESOURCEPACK_PATH{{System::Main, "General", "ResourcePackPath"}, ""};
++const Info<std::string> MAIN_CUSTOMTEXTURES_PATH{{System::Main, "General", "CustomTexturesPath"}, ""};
+ const Info<std::string> MAIN_FS_PATH{{System::Main, "General", "NANDRootPath"}, ""};
+ const Info<std::string> MAIN_WII_SD_CARD_IMAGE_PATH{{System::Main, "General", "WiiSDCardPath"}, ""};
+ const Info<std::string> MAIN_WII_SD_CARD_SYNC_FOLDER_PATH{
+diff --git a/Source/Core/Core/Config/MainSettings.h b/Source/Core/Core/Config/MainSettings.h
+index 4aab4da..263f1a4 100644
+--- a/Source/Core/Core/Config/MainSettings.h
++++ b/Source/Core/Core/Config/MainSettings.h
+@@ -179,6 +179,7 @@ extern const Info<bool> MAIN_DISABLE_SCREENSAVER;
+ extern const Info<std::string> MAIN_DUMP_PATH;
+ extern const Info<std::string> MAIN_LOAD_PATH;
+ extern const Info<std::string> MAIN_RESOURCEPACK_PATH;
++extern const Info<std::string> MAIN_CUSTOMTEXTURES_PATH;
+ extern const Info<std::string> MAIN_FS_PATH;
+ extern const Info<std::string> MAIN_WII_SD_CARD_IMAGE_PATH;
+ extern const Info<std::string> MAIN_WII_SD_CARD_SYNC_FOLDER_PATH;
+diff --git a/Source/Core/UICommon/UICommon.cpp b/Source/Core/UICommon/UICommon.cpp
+index 8e4bbbf..6a05b66 100644
+--- a/Source/Core/UICommon/UICommon.cpp
++++ b/Source/Core/UICommon/UICommon.cpp
+@@ -86,6 +86,12 @@ static void CreateResourcePackPath(std::string path)
+     File::SetUserPath(D_RESOURCEPACK_IDX, std::move(path));
+ }
+ 
++static void CreateCustomTexturesPath(std::string path)
++{
++  if (!path.empty())
++    File::SetUserPath(D_HIRESTEXTURES_IDX, std::move(path));
++}
++
+ static void CreateWFSPath(const std::string& path)
+ {
+   if (!path.empty())
+@@ -98,6 +104,7 @@ static void InitCustomPaths()
+   CreateLoadPath(Config::Get(Config::MAIN_LOAD_PATH));
+   CreateDumpPath(Config::Get(Config::MAIN_DUMP_PATH));
+   CreateResourcePackPath(Config::Get(Config::MAIN_RESOURCEPACK_PATH));
++  CreateCustomTexturesPath(Config::Get(Config::MAIN_CUSTOMTEXTURES_PATH));
+   CreateWFSPath(Config::Get(Config::MAIN_WFS_PATH));
+   File::SetUserPath(F_WIISDCARDIMAGE_IDX, Config::Get(Config::MAIN_WII_SD_CARD_IMAGE_PATH));
+   File::SetUserPath(D_WIISDCARDSYNCFOLDER_IDX,
