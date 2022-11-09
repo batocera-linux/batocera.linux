@@ -82,6 +82,7 @@
 - moonlight embedded to 2.5.3
 - proton to v2.7
 - vulkan stack to v1.3.231
+- lr-yabasanshiro to 28th sept build
 ### Fixed
 - lr-mame save state file names
 - slow rpcs3 initial ppu compilation times
