@@ -697,7 +697,108 @@ libretro:
                     "Mouse":        Mouse
                     "Touch Screen": Touch
                     "Right Stick":  Joystick
-    #dolphin:
+    dolphin:
+      shared: [autosave]
+      systems:
+            wii:
+                cfeatures:
+                    wii_resolution:
+                        prompt:      INTERNAL RESOLUTION
+                        description: Wii Internal resolution.
+                        choices:
+                            "x1 (640 x 528)":    x1 (640 x 528)
+                            "x2 (1280 x 1056)":  x2 (1280 x 1056)
+                            "x3 (1920 x 1584)":  x3 (1920 x 1584)
+                            "x4 (2560 x 2112)":  x4 (2560 x 2112)
+                            "x5 (3200 x 2640)":  x5 (3200 x 2640)
+                            "x6 (3840 x 3168)":  x6 (3840 x 3168)
+                    wii_anisotropic:
+                        prompt:      ANISOTROPIC FILTERING
+                        description: Improves clarity of distant textures.
+                        choices:
+                            "1X":  1x
+                            "2X":  2x
+                            "4X":  4x
+                            "8X":  8x
+                            "16X": 16x
+                    wii_language:
+                        prompt:      LANGUAGES
+                        description: Wii System languages.
+                        choices:
+                            "English":             English
+                            "French":              French
+                            "German":              German
+                            "Spanish":             Spanish
+                            "Italian":             Italian
+                            "Dutch":               Dutch
+                            "Japanese":            Japanese
+                            "Simplified Chinese":  Simplified Chinese
+                            "Traditional Chinese": Traditional Chinese
+                            "Korean":              Korean
+                    wii_widescreen:
+                        prompt:      WII TV MODE
+                        description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
+                        choices:
+                            "16:9":  enabled
+                            "4:3":   disabled
+                    wii_widescreen_hack:
+                        prompt:      WII WIDESCREEN HACK
+                        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+                        choices:
+                            "on":  enabled
+                            "off":   disabled
+                    wii_shader_mode:
+                        prompt:      SHADER COMPILATION MODE
+                        description: Shader compilation mode, may not work well on all hardware.
+                        choices:
+                            "Sync":                   sync
+                            "A-Sync Skip Rendering":  a-sync Skip Rendering
+                            "Sync UberShaders":       sync UberShaders
+                            "A-Sync UberShaders":     a-sync UberShaders
+                    controller1_wii:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller2_wii:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller3_wii:
+                        prompt:      CONTROLLER 3 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller4_wii:
+                        prompt:      CONTROLLER 4 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
     dosbox:
       features: [padtokeyboard]
       cfeatures:

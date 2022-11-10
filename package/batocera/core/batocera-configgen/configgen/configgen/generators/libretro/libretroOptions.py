@@ -606,6 +606,39 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 coreSettings.save('puae_cd32pad_options', '"disabled"')
 
+    # Dolpin Wii
+    if (system.config['core'] == 'dolphin'):
+        # Wii System Languages
+            if system.isOptSet('wii_language'):
+                coreSettings.save('dolphin_language', system.config['wii_language'])
+            else:
+                coreSettings.save('dolphin_language', '"French"')
+        # Wii Resolution Scale
+            if system.isOptSet('wii_resolution'):
+                coreSettings.save('dolphin_efb_scale', system.config['wii_resolution'])
+            else:
+                coreSettings.save('dolphin_efb_scale', '"x1 (640 x 528)"')
+        # Anisotropic Filtering
+            if system.isOptSet('wii_anisotropic'):
+                coreSettings.save('dolphin_max_anisotropy', system.config['wii_anisotropic'])
+            else:
+                coreSettings.save('dolphin_max_anisotropy', '"x1"')
+        # Wii Tv Mode
+            if system.isOptSet('wii_widescreen'):
+                coreSettings.save('dolphin_widescreen', system.config['wii_widescreen'])
+            else:
+                coreSettings.save('dolphin_widescreen', '"enabled"')
+        # Widescreen Hack
+            if system.isOptSet('wii_widescreen_hack'):
+                coreSettings.save('dolphin_widescreen_hack', system.config['wii_widescreen_hack'])
+            else:
+                coreSettings.save('dolphin_widescreen_hack', '"disabled"')
+        # Shader Compilation Mode
+            if system.isOptSet('wii_shader_mode'):
+                coreSettings.save('dolphin_shader_compilation_mode', system.config['wii_shader_mode'])
+            else:
+                coreSettings.save('dolphin_shader_compilation_mode', '"sync"')
+
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
