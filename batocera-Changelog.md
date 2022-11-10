@@ -69,7 +69,7 @@
 - retroarch-assets to Aug 06 2022 build
 - common-shaders to Apr 16 2022 build
 - glsl-shaders to Sep 23 2022 build
-- alllinuxfirmwares to 20221012
+- alllinuxfirmwares to 20221109
 - mupen64plus-video-rice to Sep 30, 2022
 - mupen64plus-video-glide64mk2 to Sep 30, 2022
 - mupen64plus-ui-console to Oct 01, 2022
