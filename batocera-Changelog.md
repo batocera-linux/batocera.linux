@@ -3,10 +3,12 @@
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
 - brightness can go down to 1% (instead of 5%)
 - holding power button 3s will show the shutdown menu
+- new enhanced UI for themes management (from Content Downloader)
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator (October 25th build)
 - WASM4 - WebAssembly fantasy console (x86_64)
+- Ikemen-Go fighting engine (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
 - Light gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
@@ -88,6 +90,7 @@
 - mesa vaapi for additional cards
 - long start times with vulkan in some cases
 - Sony touchpad for Mame
+- od-commander fixed for several screen resolutions
 ### Dev  
 - buildroot upgrade to 2022.08.1
 - raspberrypi upgrade linux to 1.20221104 (5.15.76)
