@@ -101,6 +101,7 @@
 - ffmpeg updated to 5.1.2
 - libva updated to 2.16
 - rtl8192eu update to Nov 5, 2022
+- rtl8723ds update to Nov 4, 2022
 - mesa3d to 22.2.3
 - uinput-joystick update to Feb 11, 2022
 
