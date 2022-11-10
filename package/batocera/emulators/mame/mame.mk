@@ -14,7 +14,8 @@ MAME_CROSS_OPTS =
 MAME_CFLAGS =
 
 # Limit number of jobs not to eat too much RAM....
-MAME_JOBS = 17
+MAME_MAX_JOBS = 17
+MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(MAME_MAX_JOBS) ]; then echo $(MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)
 
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
@@ -165,7 +166,7 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy blank disk image(s)
 	mkdir -p $(TARGET_DIR)/usr/share/mame
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
-  
+
 	# Copy coin drop plugin
 	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
 
