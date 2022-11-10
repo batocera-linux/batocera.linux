@@ -10,7 +10,8 @@ LIBRETRO_MAME_LICENSE = MAME
 LIBRETRO_MAME_DEPENDENCIES = retroarch
 
 # Limit number of jobs not to eat too much RAM....
-LIBRETRO_MAME_JOBS=16
+LIBRETRO_MAME_MAX_JOBS = 16
+LIBRETRO_MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(LIBRETRO_MAME_MAX_JOBS) ]; then echo $(LIBRETRO_MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)
 
 ifeq ($(BR2_x86_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
@@ -50,11 +51,11 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 
 	mkdir -p $(TARGET_DIR)/usr/share/mame
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
-	
+
 	# Copy coin drop plugin
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/
 	cp -R -u $(@D)/plugins $(TARGET_DIR)/usr/bin/mame/
-	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins  
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
