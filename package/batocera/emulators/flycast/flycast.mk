@@ -33,6 +33,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_RPI_VCORE),y)
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+    FLYCAST_DEPENDENCIES += libmali
     FLYCAST_CONF_OPTS += -DUSE_MALI=ON
 endif
 

@@ -32,7 +32,7 @@ endef
 
 define LIBRETRO_81_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/81_libretro.so $(TARGET_DIR)/usr/lib/libretro/81_libretro.so
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-81/zx81.keys $(TARGET_DIR)/usr/share/evmapy/
+	$(INSTALL) -D -t $(TARGET_DIR)/usr/share/evmapy/ $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-81/zx81.keys
 endef
 
 $(eval $(generic-package))
