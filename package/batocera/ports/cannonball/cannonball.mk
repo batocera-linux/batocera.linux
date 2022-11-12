@@ -42,6 +42,7 @@ CANNONBALL_CONF_OPTS += -Droms_directory=/userdata/roms/cannonball/ -Dxml_direct
 # Cannonball cmake files are hopelessly broken.
 # Link libmali manually. Ideally we should fix cannonball to use pkg-config instead.
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+CANNONBALL_DEPENDENCIES += libmali
 CANNONBALL_EXE_LINKER_FLAGS += -lmali
 CANNONBALL_SHARED_LINKER_FLAGS += -lmali
 endif
