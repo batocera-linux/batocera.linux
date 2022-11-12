@@ -1,5 +1,7 @@
 config BR2_PACKAGE_UBOOT_COMMON
   bool "uboot common package"
+  select BR2_PACKAGE_UBOOT_RK3288 \
+    if BR2_PACKAGE_BATOCERA_TARGET_RK3288
   select BR2_PACKAGE_UBOOT_RK3399 \
     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
   help
@@ -13,3 +15,4 @@ config BR2_PACKAGE_UBOOT_COMMON_VERSION
     Default U-Boot version to use (can be overridden in sub-configs)
 
 source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3288/Config.in"

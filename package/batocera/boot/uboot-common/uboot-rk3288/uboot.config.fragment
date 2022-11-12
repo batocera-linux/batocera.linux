@@ -1,0 +1,5 @@
+# SoC common configs
+# Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y
+# which slows down boot because enumeratin usb is slow. Empty preboot
+# makes it faster.
+CONFIG_PREBOOT=""

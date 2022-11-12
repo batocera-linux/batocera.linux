@@ -1,0 +1,10 @@
+config BR2_PACKAGE_UBOOT_TINKERBOARD
+  bool "rk3288/tinkerboard u-boot"
+  help
+    U-Boot for rk3288/tinkerboard board
+
+config BR2_PACKAGE_UBOOT_TINKERBOARD_VERSION
+  string "rk3288/tinkerboard u-boot version"
+  default BR2_PACKAGE_UBOOT_RK3288_VERSION
+  help
+    U-Boot version to use for rk3288/tinkerboard board

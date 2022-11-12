@@ -1,0 +1,22 @@
+if BR2_PACKAGE_BATOCERA_TARGET_RK3288
+
+config BR2_PACKAGE_UBOOT_RK3288
+  bool "rk3288 u-boot"
+  select BR2_PACKAGE_UBOOT_MIQI
+  select BR2_PACKAGE_UBOOT_TINKERBOARD
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_LATEST_VERSION
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL32
+  help
+    U-Boot for rk3288 boards
+
+config BR2_PACKAGE_UBOOT_RK3288_VERSION
+  string "rk3288 u-boot version"
+  default BR2_PACKAGE_UBOOT_COMMON_VERSION
+  help
+    Default U-Boot version to use for rk3288 boards (can be overridden in sub-configs)
+
+endif # BR2_PACKAGE_BATOCERA_TARGET_RK3288
+
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3288/uboot-miqi/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3288/uboot-tinkerboard/Config.in"
