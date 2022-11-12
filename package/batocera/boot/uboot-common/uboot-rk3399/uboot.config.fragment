@@ -1,0 +1,7 @@
+# SoC common configs
+# Having HDMI in rk3399 U-Boot seems to break HDMI audio in Linux
+CONFIG_DISPLAY_ROCKCHIP_HDMI=n
+# Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y
+# which slows down boot because enumeratin usb is slow. Empty preboot
+# makes it faster.
+CONFIG_PREBOOT=""

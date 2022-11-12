@@ -1,0 +1,27 @@
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+
+config BR2_PACKAGE_UBOOT_RK3399
+  bool "rk3399 u-boot"
+  select BR2_PACKAGE_UBOOT_ORANGEPI
+  select BR2_PACKAGE_UBOOT_ROCK_PI_4
+  select BR2_PACKAGE_UBOOT_ROCK960
+  select BR2_PACKAGE_UBOOT_ROCKPRO64
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_LATEST_VERSION
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL31
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_NEEDS_ARM32_TOOLCHAIN
+  help
+    U-Boot for rk3399 boards
+
+config BR2_PACKAGE_UBOOT_RK3399_VERSION
+  string "rk3399 u-boot version"
+  default BR2_PACKAGE_UBOOT_COMMON_VERSION
+  help
+    Default U-Boot version to use for rk3399 boards (can be overridden in sub-configs)
+
+endif # BR2_PACKAGE_BATOCERA_TARGET_RK3399
+
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/uboot-orangepi/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/uboot-rock-pi-4/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/uboot-rock960/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/uboot-rockpro64/Config.in"

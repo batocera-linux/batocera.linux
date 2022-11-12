@@ -1,0 +1,15 @@
+config BR2_PACKAGE_UBOOT_COMMON
+  bool "uboot common package"
+  select BR2_PACKAGE_UBOOT_RK3399 \
+    if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+  help
+    uboot common package selects correct uboots to build
+    based on BR2_PACKAGE_BATOCERA_TARGET_XXX variables.
+
+config BR2_PACKAGE_UBOOT_COMMON_VERSION
+  string "u-boot version"
+  default "2022.10"
+  help
+    Default U-Boot version to use (can be overridden in sub-configs)
+
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-common/uboot-rk3399/Config.in"

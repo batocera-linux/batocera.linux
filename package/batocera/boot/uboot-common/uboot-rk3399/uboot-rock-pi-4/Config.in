@@ -1,0 +1,10 @@
+config BR2_PACKAGE_UBOOT_ROCK_PI_4
+  bool "rk3399/rock pi 4 u-boot"
+  help
+    U-Boot for rk3399/rock pi 4 board
+
+config BR2_PACKAGE_UBOOT_ROCK_PI_4_VERSION
+  string "rk3399/rock pi 4 u-boot version"
+  default BR2_PACKAGE_UBOOT_RK3399_VERSION
+  help
+    U-Boot version to use for rk3399/rock pi 4 board

@@ -1,0 +1,10 @@
+config BR2_PACKAGE_UBOOT_ORANGEPI
+  bool "rk3399/orangepi u-boot"
+  help
+    U-Boot for rk3399/orangepi board
+
+config BR2_PACKAGE_UBOOT_ORANGEPI_VERSION
+  string "rk3399/orangepi u-boot version"
+  default BR2_PACKAGE_UBOOT_RK3399_VERSION
+  help
+    U-Boot version to use for rk3399/orangepi board

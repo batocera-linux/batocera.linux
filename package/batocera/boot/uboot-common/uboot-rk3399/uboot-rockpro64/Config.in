@@ -1,0 +1,10 @@
+config BR2_PACKAGE_UBOOT_ROCKPRO64
+  bool "rk3399/rockpro64 u-boot"
+  help
+    U-Boot for rk3399/rockpro64 board
+
+config BR2_PACKAGE_UBOOT_ROCKPRO64_VERSION
+  string "rk3399/rockpro64 u-boot version"
+  default BR2_PACKAGE_UBOOT_RK3399_VERSION
+  help
+    U-Boot version to use for rk3399/rockpro64 board
