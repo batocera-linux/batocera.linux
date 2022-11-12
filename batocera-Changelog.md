@@ -17,6 +17,7 @@
 - patch to allow Switch clone controllers to work in some cases
 - Xenia a Microsoft Xbox 360 emulator (v1.0.2775) - requires x86_64+Vulkan card & Wine (Note: Limited compatibility)
 - Light gun support for Wii
+- Light gun support for PS3
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
