@@ -12,6 +12,17 @@ IKEMEN_DEPENDENCIES = libgtk3 mesa3d openal libglfw
 IKEMEN_SITE_METHOD = git
 IKEMEN_GIT_SUBMODULES = YES
 
+HOST_GO_COMMON_ENV = GOFLAGS=-mod=mod \
+		     GO111MODULE=on \
+		     GOROOT="$(HOST_GO_ROOT)" \
+		     GOPATH="$(HOST_GO_GOPATH)" \
+		     GOCACHE="$(HOST_GO_TARGET_CACHE)" \
+		     GOMODCACHE="$(@D)" \
+		     GOFLAGS="-modcacherw" \
+		     PATH=$(BR_PATH) \
+		     GOBIN= \
+		     CGO_ENABLED=$(HOST_GO_CGO_ENABLED)
+
 define IKEMEN_BUILD_CMDS
 	$(HOST_GO_TARGET_ENV) $(MAKE) -C $(@D) -f Makefile Ikemen_GO_Linux
 endef
