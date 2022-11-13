@@ -168,7 +168,7 @@ class Rpcs3Generator(Generator):
             romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], romName]
 
-        if system.isOptSet("gui") and system.getOptBoolean("gui"):
+        if not (system.isOptSet("gui") and system.getOptBoolean("gui")):
             commandArray.append("--no-gui")
 
         # firmware not installed and available : instead of starting the game, install it
