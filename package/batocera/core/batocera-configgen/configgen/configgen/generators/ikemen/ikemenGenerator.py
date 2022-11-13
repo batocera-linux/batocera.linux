@@ -3,6 +3,7 @@ from generators.Generator import Generator
 from utils.logger import get_logger
 import controllersConfig
 import json
+import os
 
 eslog = get_logger(__name__)
 
@@ -179,6 +180,8 @@ class IkemenGenerator(Generator):
         conf["Fullscreen"] = True
 
         js_out = json.dumps(conf, indent=2)
+        if not os.path.isdir(rom+"/save"):
+            os.mkdir(rom+"/save")
         with open(rom+"/save/config.json", "w") as jout:
             jout.write(js_out)
 
