@@ -24,6 +24,10 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
   BATOCERA_SCRIPT_SCREENSHOT_TYPE=xorg
 endif
 
+ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=wayland
+endif
+
 # doesn't work on odroidgoa with mali g31_gbm
 ifeq ($(BR2_PACKAGE_MALI_G31_GBM),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
