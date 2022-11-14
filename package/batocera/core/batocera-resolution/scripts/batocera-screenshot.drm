@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mkdir -p /userdata/screenshots || exit 1
+
+FILE=/userdata/screenshots/screenshot-$(date +%Y-%m-%d_%Hh%M%S).pbm
+fbdump > "${FILE}" 2>/dev/null || exit 1
+echo "${FILE}"

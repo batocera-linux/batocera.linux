@@ -1,0 +1,167 @@
+#!/bin/sh
+
+f_usage() {
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
+    echo "${0} setOutput <output>" >&2
+    echo "${0} minTomaxResolution" >&2
+    echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} forceMode <horizontal>x<vertical>:<refresh>" >&2
+    echo "${0} getDisplayMode" >&2
+}
+
+f_minTomaxResolution() {
+    # minimize resolution because of 4K tv
+    MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
+    MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+    if test -n "$MWIDTH" -a -n "$MHEIGHT" -a "$MWIDTH" != 0 -a "$MHEIGHT" != 0; then
+	MAXWIDTH="$MWIDTH"
+	MAXHEIGHT="$MHEIGHT"
+    else
+	MAXWIDTH=1920
+	MAXHEIGHT=1080
+    fi
+    CURRENT_RESOLUTION=$(xrandr --currentResolution)
+    CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+    CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+    if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
+    then
+	exit 0
+    fi
+
+    # select a new one
+    # select the first one valid
+    # is it the best ? or should we loop to search the first with the same ratio ?
+    xrandr --listModes | grep -vE "\*$" |
+	while read SUGGRESOLUTIONRATE SUGGMODE
+	do
+	    SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
+	    SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+	    SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+	    if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+	    then
+		OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+		xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
+		exit 0
+	    fi
+	done
+}
+
+if [ $# -eq 0 ]; then
+	f_usage
+	exit 1
+fi
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "listModes")
+	echo "max-1920x1080:maximum 1920x1080"
+	echo "max-640x480:maximum 640x480"
+	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
+	;;
+    "setMode")
+	MODE=$1
+
+	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
+	then
+	    SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
+	    f_minTomaxResolution "${SPMODE}"
+	else # normal mode
+	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+
+	    # let the old format widthxheight and the new one widthxheight.hz
+	    if echo "${MODE}" | grep "\."
+	    then
+		PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
+		PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
+		xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
+	    else
+		xrandr --output "${OUTPUT}" --mode "${MODE}"
+	    fi
+	fi
+	;;
+    "currentMode")
+	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
+	;;
+    "currentResolution")
+	xrandr --currentResolution | tail -n1
+	;;
+    "listOutputs")
+	xrandr --listConnectedOutputs | sed -e s+"*$"++
+	;;
+    "currentOutput")
+	xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+"*$"++
+	;;
+    "setOutput")
+	MODE=$1
+	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE}$"
+	then
+	    # disable all other outputs
+	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE}$" |
+		while read OUTP
+		do
+		    echo "set ${OUTP} off" >&2
+		    xrandr --output "${OUTP}" --off
+		done
+	    # enable (in case of reboot of es)
+	    echo "set ${MODE} as primary" >&2
+	    xrandr --output "${MODE}" --auto
+	else
+	    # disable all except the first one
+	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
+		(
+		    read FIRSTOUTPUT
+		    while read OUTP
+		    do
+			echo "set ${OUTP} off" >&2
+			xrandr --output "${OUTP}" --off
+		    done
+
+		    # enable (in case of reboot of es)
+		    echo "set ${FIRSTOUTPUT} as primary" >&2
+		    xrandr --output "${FIRSTOUTPUT}" --auto
+		)
+	fi
+	;;
+    "minTomaxResolution" | "minTomaxResolution-secure")
+	f_minTomaxResolution "$1"
+	;;
+    "setDPI")
+        xrandr --dpi $1
+        ;;
+    "forceMode")
+        REQUESTED=$1
+	H=$(echo "$REQUESTED" | sed "s/\([0-9]*\)x.*/\1/")
+	V=$(echo "$REQUESTED" | sed "s/.*x\([0-9]*\).*/\1/")
+	R=$(echo "$REQUESTED" | grep : | sed "s/.*:\([0-9]*\)/\1/")
+	if [ z"$H" != z  ] && [ z"$V" != z ]; then
+            if [ z"$R" != z ]; then
+                MODELINE=$(cvt "$H" "$V" "$R")
+	    else
+                MODELINE=$(cvt "$H" "$V")
+	    fi
+	else
+            >&2 echo "error: invalid mode ${REQUESTED}"
+	fi
+        MODE=$(echo "$MODELINE" | egrep -v "^#" | tail -n 1 | sed "s/^Modeline //")
+        MNAME=$(echo "$MODE" | cut -d' ' -f1)
+        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        xrandr --newmode ${MODE}
+        xrandr --addmode "${OUTPUT}" "${MNAME}"
+	xrandr --output "${OUTPUT}" --mode "${MNAME}"
+	;;
+    "getDisplayMode")
+        echo "xorg"
+    ;;
+    *)
+		f_usage
+		>&2 echo "error: invalid command ${ACTION}"
+		exit 1
+esac
+exit 0

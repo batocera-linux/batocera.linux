@@ -1,0 +1,8 @@
+config BR2_PACKAGE_BATOCERA_RESOLUTION
+	bool "batocera-resolution"
+
+	select BR2_PACKAGE_BASH
+	select BR2_PACKAGE_PCIUTILS
+
+	help
+	  Batocera resolution
