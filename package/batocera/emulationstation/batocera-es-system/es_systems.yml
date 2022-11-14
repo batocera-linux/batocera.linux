@@ -1662,6 +1662,7 @@ o2em:
   hardware: console
   extensions: [bin, zip, 7z]
   path:       o2em
+  theme:      odyssey2
   emulators:
     libretro:
       o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
