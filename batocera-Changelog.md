@@ -94,6 +94,7 @@
 - od-commander fixed for several screen resolutions
 ### Dev  
 - buildroot upgrade to 2022.08.1
+- odroidxu4 upgrade kernel to 5.19.17
 - rpi1 image renamed to bcm2835
 - rpi2 image renamed to bcm2836
 - rpi3 image renamed to bcm2837
