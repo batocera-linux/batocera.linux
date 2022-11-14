@@ -80,7 +80,7 @@ case "${ACTION}" in
         fi
     ;;
     "currentMode")
-        swaymsg -t get_outputs | jq -r '.[] | "\(.rect.x).\(.rect.y).\(.current_mode.width)x\(.current_mode.height).\(.current_mode.refresh)Hz"'
+        swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height).\(.refresh)"'
     ;;
     "currentResolution")
         swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height)"'
