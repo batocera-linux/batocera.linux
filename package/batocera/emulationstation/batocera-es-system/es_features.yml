@@ -8915,6 +8915,20 @@ wine:
             choices:
                 "Off": 1
                 "On":  0
+        dxvk_reset_cache:
+            group: ADVANCED OPTIONS
+            prompt:      DXVK RESET CACHE
+            description: Reset the cache can fix some crashes if your game was running under Batocera 29.
+            choices:
+                "Off": 0
+                "On":  1
+        wine_ntfs:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE NTFS MODE
+            description: Enable this mode if you have issue for run your game on NTFS storage (by default is better to use LinuxFS).
+            choices:
+                "Off": 0
+                "On":  1
         wine_debug:
             group: ADVANCED OPTIONS
             prompt:      ENABLE DEBUG
