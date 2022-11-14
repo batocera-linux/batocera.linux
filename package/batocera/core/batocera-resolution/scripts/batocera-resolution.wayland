@@ -8,6 +8,8 @@ f_usage() {
     echo "${0} currentOutput" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} getRotation" >&2
+    echo "${0} setRotation (normal|90|180|270)" >&2
     echo "${0} getDisplayMode" >&2
 }
 
@@ -90,6 +92,20 @@ case "${ACTION}" in
     ;;
     "minTomaxResolution" | "minTomaxResolution-secure")
         f_minTomaxResolution "$1"
+    ;;
+    "getRotation")
+        swaymsg -t get_outputs | jq -r '.[].transform'
+    ;;
+    "setRotation")
+        ROTATE=$1
+        OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
+        if test "${ROTATE}" = "normal" -o "${ROTATE}" = "90" -o "${ROTATE}" = "180" -o "${ROTATE}" = "270"; then
+            swaymsg output "${OUTPUT}" transform "${ROTATE}"
+        else
+            f_usage
+            >&2 echo "error: invalid value ${ROTATE}"
+            exit 1
+        fi
     ;;
     "getDisplayMode")
         echo "wayland"
