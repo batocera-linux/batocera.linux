@@ -94,7 +94,6 @@
 - od-commander fixed for several screen resolutions
 ### Dev  
 - buildroot upgrade to 2022.08.1
-- raspberrypi upgrade linux to 1.20221104 (5.15.76)
 - rpi1 image renamed to bcm2835
 - rpi2 image renamed to bcm2836
 - rpi3 image renamed to bcm2837
