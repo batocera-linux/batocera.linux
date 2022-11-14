@@ -34,7 +34,7 @@
 - lightspark to August 18th release
 - btop to 1.2.8
 - ryzenadj to 0.11.1
-- pipewire to 0.3.57
+- pipewire to 0.3.60
 - rust to 1.63
 - bluez to 5.65
 - xemu to 0.7.67
