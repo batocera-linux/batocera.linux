@@ -3,8 +3,8 @@
 # ecwolf
 #
 ################################################################################
-# Version.: Commits on Sep 24, 2022
-ECWOLF_VERSION = db154c482943e89c16b8d4de23120e66f5312042
+# Version.: Commits on Nov 11, 2022
+ECWOLF_VERSION = 8b64784e33f35d96f8a57a41a4658e5dedf20289
 ECWOLF_SITE = https://bitbucket.org/ecwolf/ecwolf.git
 ECWOLF_SITE_METHOD=git
 ECWOLF_GIT_SUBMODULES=YES
@@ -16,6 +16,10 @@ ECWOLF_SUPPORTS_IN_SOURCE_BUILD = NO
 HOST_ECWOLF_DEPENDENCIES = zlib bzip2
 HOST_ECWOLF_CONF_OPTS += -DTOOLS_ONLY=ON
 HOST_ECWOLF_SUPPORTS_IN_SOURCE_BUILD = NO
+
+define HOST_ECWOLF_INSTALL_CMDS
+	# Skipping install, the tools are used directly via `ImportExecutables.cmake` from the build directory.
+endef
 
 ECWOLF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DGPL=ON -DFORCE_CROSSCOMPILE=ON \
   -DINTERNAL_SDL_MIXER=ON \
