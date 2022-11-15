@@ -42,15 +42,35 @@ endef
 GZDOOM_PRE_CONFIGURE_HOOKS += GZDOOM_COPY_GENERATED_HEADERS
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
+GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
 else
-    GZDOOM_CONF_OPTS += -DHAVE_VULKAN=OFF
+GZDOOM_CONF_OPTS += -DHAVE_VULKAN=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
-    GZDOOM_CONF_OPTS += -DHAVE_GLES2=ON
+# This applies the patches to actually use GLES2.
+# By default, gzdoom attempts to use GLES2 with an OpenGL context.
+# This only works if the system has both OpenGL and GLES2.
+#
+# To fix this, we need to make 2 changes:
+# 1. Set `USE_GLES2` to 1 in gles_system.h
+# 2. Define `__ANDROID__` in gles_system.cpp so that gzdoom loads the gles2 `.so`.
+#
+# Then, at runtime, we set `gl_es = 1` and `vid_preferbackend = 3`.
+#
+# See https://github.com/ZDoom/gzdoom/issues/1485
+define GZDOOM_PATCH_USE_GLES2
+	$(SED) 's%#define USE_GLES2 0%#define USE_GLES2 1%' $(@D)/src/common/rendering/gles/gles_system.h
+	$(SED) '1i #define __ANDROID__' $(@D)/src/common/rendering/gles/gles_system.cpp
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
+GZDOOM_CONF_OPTS += -DHAVE_GLES2=ON
+GZDOOM_POST_PATCH_HOOKS += GZDOOM_PATCH_USE_GLES2
+else ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
+GZDOOM_CONF_OPTS += -DHAVE_GLES2=ON
+GZDOOM_POST_PATCH_HOOKS += GZDOOM_PATCH_USE_GLES2
 else
-    GZDOOM_CONF_OPTS += -DHAVE_GLES2=OFF
+GZDOOM_CONF_OPTS += -DHAVE_GLES2=OFF
 endif
 
 define GZDOOM_INSTALL_TARGET_CMDS
