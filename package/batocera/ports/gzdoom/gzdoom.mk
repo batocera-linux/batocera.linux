@@ -8,7 +8,7 @@ GZDOOM_SITE = https://github.com/coelckers/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES
 GZDOOM_LICENSE = GPLv3
-GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth libgtk3 openal mesa3d libglu libglew zmusic
+GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic
 GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # We need the tools from the host package to build the target package
