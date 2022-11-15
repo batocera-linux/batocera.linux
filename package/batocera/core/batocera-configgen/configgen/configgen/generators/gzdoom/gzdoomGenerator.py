@@ -11,6 +11,20 @@ class GZDoomGenerator(Generator):
         config_dir = f"{batoceraFiles.CONF}/gzdoom"
         if not os.path.exists(config_dir):
             os.mkdir(config_dir)
+
+        have_gles = os.path.exists('/usr/lib/libGLESv2_CM.so') or os.path.exists('/usr/lib/libGLESv2.so')
+        have_opengl = os.path.exists('/usr/lib/libGL.so')
+
+        extra_config = ''
+        if have_gles and not have_opengl:
+            extra_config += (
+                # Use the actual GLES context, not an OpenGL one:
+                "gl_es 1\n"
+                "vid_preferbackend 3\n"
+                # This setting greatly improves performance:
+                "gles_use_mapped_buffer true\n"
+            )
+
         # A script file with console commands that are always ran when a game starts
         script_file = f"{config_dir}/gzdoom.cfg"
         with open(script_file, "w") as script:
@@ -19,6 +33,7 @@ class GZDoomGenerator(Generator):
                 # In the code, logfile does not appear to be created unless done so explicitly
                 f"logfile {batoceraFiles.logdir}/gzdoom.log\n"
                 f"vid_fps {'true' if system.getOptBoolean('showFPS') else 'false'}\n"
+                f"{extra_config}"
                 "echo BATOCERA\n"  # easy check that script ran in console
             )
         return Command.Command(
