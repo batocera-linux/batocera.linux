@@ -1,0 +1,8 @@
+config BR2_PACKAGE_GRIM
+    bool "grim"
+    depends on BR2_PACKAGE_WAYLAND
+
+    help
+        Grab images from a Wayland compositor.
+
+	    https://git.sr.ht/~emersion/grim
