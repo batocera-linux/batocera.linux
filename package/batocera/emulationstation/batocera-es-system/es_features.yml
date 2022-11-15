@@ -699,31 +699,20 @@ libretro:
                     "Right Stick":  Joystick
     dolphin:
       shared: [autosave]
-      systems:
-            wii:
-                cfeatures:
+      cfeatures:
                     wii_resolution:
-                        prompt:      INTERNAL RESOLUTION
-                        description: Wii Internal resolution.
+                        prompt:      RENDERING RESOLUTION
+                        description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                         choices:
-                            "x1 (640 x 528)":    x1 (640 x 528)
-                            "x2 (1280 x 1056)":  x2 (1280 x 1056)
-                            "x3 (1920 x 1584)":  x3 (1920 x 1584)
-                            "x4 (2560 x 2112)":  x4 (2560 x 2112)
-                            "x5 (3200 x 2640)":  x5 (3200 x 2640)
-                            "x6 (3840 x 3168)":  x6 (3840 x 3168)
-                    wii_anisotropic:
-                        prompt:      ANISOTROPIC FILTERING
-                        description: Improves clarity of distant textures.
-                        choices:
-                            "1X":  1x
-                            "2X":  2x
-                            "4X":  4x
-                            "8X":  8x
-                            "16X": 16x
+                            "1x native (640x528)":  x1 (640 x 528)
+                            "2x 720p (1280x1056)":  x2 (1280 x 1056)
+                            "3x 1080p (1920x1584)": x3 (1920 x 1584)
+                            "4x 1440p (2560x2112)": x4 (2560 x 2112)
+                            "5x (3200x2640)":       x5 (3200 x 2640)
+                            "6x 4K (3840x3168)":    x6 (3840 x 3168)
                     wii_language:
-                        prompt:      LANGUAGES
-                        description: Wii System languages.
+                        prompt:      LANGUAGE
+                        description: Wii NAND's language setting.
                         choices:
                             "English":             English
                             "French":              French
@@ -735,26 +724,40 @@ libretro:
                             "Simplified Chinese":  Simplified Chinese
                             "Traditional Chinese": Traditional Chinese
                             "Korean":              Korean
+                    wii_widescreen_hack:
+                        prompt:      WIDESCREEN HACK (GLITCHY)
+                        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+                        choices:
+                            "Off":   disabled
+                            "On":  enabled
+                    wii_shader_mode:
+                        group: ADVANCED OPTIONS
+                        prompt:      UBERSHADERS
+                        description: May not work well on all hardware. Hybrid is preferred, where supported.
+                        choices:
+                            "No Ubershaders":        sync
+                            "Exclusive Ubershaders": sync UberShaders
+                            "Hybrid Ubershaders":    a-sync UberShaders
+                            "Skip Drawing":          a-sync Skip Rendering
+                    wii_anisotropic:
+                        group: ADVANCED OPTIONS
+                        prompt:      ANISOTROPIC FILTERING
+                        description: Improves clarity of distant textures.
+                        choices:
+                            "Off":  1x
+                            "2x":   2x
+                            "4x":   4x
+                            "8x":   8x
+                            "16x":  16x
+      systems:
+            wii:
+                cfeatures:
                     wii_widescreen:
                         prompt:      WII TV MODE
                         description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
                         choices:
                             "16:9":  enabled
                             "4:3":   disabled
-                    wii_widescreen_hack:
-                        prompt:      WII WIDESCREEN HACK
-                        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
-                        choices:
-                            "on":  enabled
-                            "off":   disabled
-                    wii_shader_mode:
-                        prompt:      SHADER COMPILATION MODE
-                        description: Shader compilation mode, may not work well on all hardware.
-                        choices:
-                            "Sync":                   sync
-                            "A-Sync Skip Rendering":  a-sync Skip Rendering
-                            "Sync UberShaders":       sync UberShaders
-                            "A-Sync UberShaders":     a-sync UberShaders
                     controller1_wii:
                         prompt:      CONTROLLER 1 TYPE
                         description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
