@@ -27,9 +27,16 @@ GZDOOM_CONF_OPTS += -DIMPORT_EXECUTABLES="$(HOST_GZDOOM_BUILDDIR)/ImportExecutab
 
 # Copy the headers that are usually generated on the target machine
 # but must be provided when cross-compiling.
+ifeq ($(BR2_ARCH_IS_64),y)
+GZDOOM_GENERATED_HEADER_SUFFIX = 64
+else
+GZDOOM_GENERATED_HEADER_SUFFIX = 32
+endif
+
 define GZDOOM_COPY_GENERATED_HEADERS
 	mkdir -p $(GZDOOM_BUILDDIR)/libraries/gdtoa/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/*.h $(GZDOOM_BUILDDIR)/libraries/gdtoa/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/arith_$(GZDOOM_GENERATED_HEADER_SUFFIX).h $(GZDOOM_BUILDDIR)/libraries/gdtoa/arith.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gd_qnan_$(GZDOOM_GENERATED_HEADER_SUFFIX).h $(GZDOOM_BUILDDIR)/libraries/gdtoa/gd_qnan.h
 endef
 
 GZDOOM_PRE_CONFIGURE_HOOKS += GZDOOM_COPY_GENERATED_HEADERS

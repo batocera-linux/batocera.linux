@@ -23,8 +23,15 @@ ECWOLF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DGPL=ON -DFORCE_CROSSCOMPILE=ON 
 
 # Copy the headers that are usually generated on the target machine
 # but must be provided when cross-compiling.
+ifeq ($(BR2_ARCH_IS_64),y)
+ECWOLF_GENERATED_HEADER_SUFFIX = 64
+else
+ECWOLF_GENERATED_HEADER_SUFFIX = 32
+endif
+
 define ECWOLF_COPY_GENERATED_HEADERS
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/*.h $(ECWOLF_BUILDDIR)/deps/gdtoa/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/arith_$(ECWOLF_GENERATED_HEADER_SUFFIX).h $(ECWOLF_BUILDDIR)/deps/gdtoa/arith.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/gd_qnan_$(ECWOLF_GENERATED_HEADER_SUFFIX).h $(ECWOLF_BUILDDIR)/deps/gdtoa/gd_qnan.h
 endef
 
 ECWOLF_POST_CONFIGURE_HOOKS += ECWOLF_COPY_GENERATED_HEADERS
