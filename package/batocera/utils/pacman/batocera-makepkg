@@ -8,7 +8,7 @@
 # 20210113 - Update groups with Batocera v30
 # 20210322 - Switched to zstd (instead of xz)
 # 20210521 - Updated for multiple .BATOEXEC1, .BATOEXEC2... (and v31 systems)
-# 
+#
 INFO=.PKGINFO
 BATOEXEC=.BATOEXEC
 BATOEXEC_PATH=./userdata/system/pacman/batoexec/
@@ -29,7 +29,7 @@ FORCE=0
 # builddate = 1590539371 # epoch of creation
 
 ##### Valid "groups" for Batocera packages #####
-GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne devilutionx dos dreamcast easyrpg fbneo fds flash flatpak fmtowns fpinball gamecube gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ msxturbor n64 n64dd naomi nds neogeo neogeocd nes ngp ngpc o2em odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8 pokemini ports prboom ps2 ps3 psp psx pygame satellaview saturn scummvm sdlpop sega32x segacd sg1000 snes snes-msu1 solarus sufami supergrafx supervision thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x1 x68000 xash3d_fwgs xbox zx81 zxspectrum)
+GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne devilutionx dos dreamcast easyrpg fbneo fds flash flatpak fmtowns fpinball gamecube gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ msxturbor n64 n64dd naomi nds neogeo neogeocd nes ngp ngpc o2em openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8 pokemini ports prboom ps2 ps3 psp psx pygame satellaview saturn scummvm sdlpop sega32x segacd sg1000 snes snes-msu1 solarus sufami supergrafx supervision thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x1 x68000 xash3d_fwgs xbox zx81 zxspectrum)
 
 ##### Valid archs for Batocera packages #####
 ARCH_ARRAY=(any x86_64 x86 armv7l aarch64)
