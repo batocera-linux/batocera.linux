@@ -496,7 +496,7 @@ msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
 msgstr "Usa uma resolução alternativa. Alguns jogos precisam disso."
 
-#. TRANSLATION: libretro/atari800, libretro/dolphin
+#. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
 msgstr "RESOLUÇÃO INTERNA"
@@ -957,7 +957,7 @@ msgctxt "game_options"
 msgid "Random Values"
 msgstr "Valores Aleatórios"
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/same_cdi, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -965,7 +965,7 @@ msgstr ""
 "Aprimoramento. Aumenta a resolução de renderização. Torna os objetos 3D mais "
 "nítidos."
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/same_cdi, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "RESOLUÇÃO DE RENDERIZAÇÃO"
@@ -1123,87 +1123,27 @@ msgctxt "game_options"
 msgid "Right Stick"
 msgstr "Analógico Direito"
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce
 msgctxt "game_options"
-msgid "Wii Internal resolution."
-msgstr ""
+msgid "1x native (640x528)"
+msgstr "1x nativo (640x528)"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "6x 4K (3840x3168)"
+msgstr "6x 4K (3840x3168)"
 
 #. TRANSLATION: libretro/dolphin
 msgctxt "game_options"
-msgid "x1 (640 x 528)"
+msgid "Wii NAND's language setting."
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, hatari, redream, sonic2013, soniccd, ...
 msgctxt "game_options"
-msgid "x2 (1280 x 1056)"
-msgstr ""
+msgid "LANGUAGE"
+msgstr "IDIOMA"
 
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x3 (1920 x 1584)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x4 (2560 x 2112)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x5 (3200 x 2640)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x6 (3840 x 3168)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
-msgctxt "game_options"
-msgid "Improves clarity of distant textures."
-msgstr "Melhora a clareza de texturas distantes."
-
-#. TRANSLATION: libretro/dolphin, libretro/flycast, dolphin, dolphin_triforce, flycast, ...
-msgctxt "game_options"
-msgid "ANISOTROPIC FILTERING"
-msgstr "FILTRO ANISOTRÓPICA"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "1X"
-msgstr "1X"
-
-#. TRANSLATION: libretro/dolphin, mupen64plus, tsugaru
-msgctxt "game_options"
-msgid "2X"
-msgstr "2X"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "4X"
-msgstr "4X"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "8X"
-msgstr "8X"
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "16X"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Wii System languages."
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "LANGUAGES"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "Inglês"
@@ -1228,7 +1168,7 @@ msgctxt "game_options"
 msgid "Italian"
 msgstr "Italiano"
 
-#. TRANSLATION: libretro/dolphin, cemu, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "Holandês"
@@ -1238,20 +1178,74 @@ msgctxt "game_options"
 msgid "Japanese"
 msgstr "Japonês"
 
-#. TRANSLATION: libretro/dolphin, ryujinx
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Simplified Chinese"
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, ryujinx
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Traditional Chinese"
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, yuzu, ...
 msgctxt "game_options"
 msgid "Korean"
 msgstr "Coreano"
+
+#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "Enhancement. Only works with a 16/9 ratio and bezels disabled."
+msgstr ""
+"Aprimoramento. Funciona apenas com proporção 16/9 e molduras desativadas."
+
+#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, ...
+msgctxt "game_options"
+msgid "WIDESCREEN HACK (GLITCHY)"
+msgstr "TRUQUE DE TELA PLANA (PROPENSO A FALHAS)"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"May not work well on all hardware. Hybrid is preferred, where supported."
+msgstr ""
+"Pode não funcionar bem em todos os hardwares. Híbrido é preferível, quando "
+"suportado."
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "UBERSHADERS"
+msgstr "SOMBREAMENTO PRÉ-PROCESSADO"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "No Ubershaders"
+msgstr "Sem Sombreamento Pré-Processado"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Exclusive Ubershaders"
+msgstr "Sombreamento Pré-Processado Exclusivo"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Hybrid Ubershaders"
+msgstr "Sombreamento Pré-Processado Híbrido"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Skip Drawing"
+msgstr "Pular renderização de desenho"
+
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
+msgctxt "game_options"
+msgid "Improves clarity of distant textures."
+msgstr "Melhora a clareza de texturas distantes."
+
+#. TRANSLATION: libretro/dolphin, libretro/flycast, dolphin, dolphin_triforce, flycast, ...
+msgctxt "game_options"
+msgid "ANISOTROPIC FILTERING"
+msgstr "FILTRO ANISOTRÓPICA"
 
 #. TRANSLATION: libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
@@ -1265,57 +1259,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "WII TV MODE"
 msgstr "MODO DE TV Wii"
-
-#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/flycast, ...
-msgctxt "game_options"
-msgid "Enhancement. Only works with a 16/9 ratio and bezels disabled."
-msgstr ""
-"Aprimoramento. Funciona apenas com proporção 16/9 e molduras desativadas."
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "WII WIDESCREEN HACK"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin, moonlight, moonlight
-msgctxt "game_options"
-msgid "on"
-msgstr "ligado"
-
-#. TRANSLATION: libretro/dolphin, moonlight, moonlight
-msgctxt "game_options"
-msgid "off"
-msgstr "desligado"
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Shader compilation mode, may not work well on all hardware."
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "SHADER COMPILATION MODE"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Sync"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "A-Sync Skip Rendering"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Sync UberShaders"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "A-Sync UberShaders"
-msgstr ""
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
@@ -1718,7 +1661,7 @@ msgctxt "game_options"
 msgid "Hungary"
 msgstr "Hungria"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Iceland"
 msgstr "Islândia"
@@ -1738,12 +1681,12 @@ msgctxt "game_options"
 msgid "Norway"
 msgstr "Noruega"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Poland"
 msgstr "Polônia"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Portugal"
 msgstr "Portugal"
@@ -1783,7 +1726,7 @@ msgctxt "game_options"
 msgid "Switzerland (French)"
 msgstr "Suíça (francês)"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Turkey"
 msgstr "Turquia"
@@ -1975,7 +1918,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth/upscale textures."
 msgstr "Aprimoramento. Texturas suaves/de alto padrão."
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation, ...
 msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTRO DE TEXTURA"
@@ -1989,11 +1932,6 @@ msgstr "Mais próximo"
 msgctxt "game_options"
 msgid "Bilinear"
 msgstr "Bilinear"
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, libretro/mupen64plus-next, ...
-msgctxt "game_options"
-msgid "WIDESCREEN HACK (GLITCHY)"
-msgstr "TRUQUE DE TELA PLANA (PROPENSO A FALHAS)"
 
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/fceumm, libretro/nestopia, duckstation
 msgctxt "game_options"
@@ -2351,7 +2289,7 @@ msgctxt "game_options"
 msgid "SCREEN ORIENTATION"
 msgstr "ORIENTAÇÃO DA TELA"
 
-#. TRANSLATION: libretro/fuse, hatari
+#. TRANSLATION: libretro/fuse, libretro/mame, hatari, mame/uzem
 msgctxt "game_options"
 msgid "MODEL"
 msgstr "MODELO"
@@ -3096,6 +3034,51 @@ msgstr "Cassete"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
+msgid "Type of joystick connected to the game port."
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "JOYSTICK TYPE"
+msgstr "TIPO DE CONTROLE ANALÓGICO"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple (2x 2-button Analog)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Sirius/Atari (2x 1-button Digital, II+ Only)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Gizmo (1-Button Digital)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Model of emulated Apple II."
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e Enhanced (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple ][ Plus"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
 msgid "Apple IIgs cleanly cracked disks"
 msgstr "Discos craqueados do Apple IIgs"
 
@@ -3213,11 +3196,6 @@ msgstr "Carregamento rápido"
 msgctxt "game_options"
 msgid "Select which joystick to emulate."
 msgstr "Selecione qual controle analógico emular."
-
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "JOYSTICK TYPE"
-msgstr "TIPO DE CONTROLE ANALÓGICO"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -3773,7 +3751,7 @@ msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive"
 msgstr "Disco Rígido"
@@ -4187,7 +4165,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
 msgstr "Aprimoramento. Suavize bordas irregulares em polígonos de objetos 3D."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, yuzu
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
 msgstr "Texturas suaves em objetos 3D."
@@ -4362,17 +4340,17 @@ msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "Pode mudar o idioma de alguns jogos."
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, yuzu, ...
 msgctxt "game_options"
 msgid "Japan"
 msgstr "Japão"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "USA"
 msgstr "EUA"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Europe"
 msgstr "Europa"
@@ -6577,7 +6555,7 @@ msgctxt "game_options"
 msgid "Vulkan (Default)"
 msgstr "Vulkan (Padrão)"
 
-#. TRANSLATION: cemu
+#. TRANSLATION: cemu, yuzu
 msgctxt "game_options"
 msgid "Speed up shader compilation."
 msgstr "Acelera a compilação de sombreamentos."
@@ -6643,22 +6621,22 @@ msgctxt "game_options"
 msgid "Current language"
 msgstr "Idioma atual"
 
-#. TRANSLATION: cemu, sonic2013, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Chinese"
 msgstr "Chinês"
 
-#. TRANSLATION: cemu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr "Português"
 
-#. TRANSLATION: cemu, sonic2013, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Russian"
 msgstr "Russo"
 
-#. TRANSLATION: cemu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Taiwanese"
 msgstr "Taiwanês"
@@ -6678,7 +6656,7 @@ msgctxt "game_options"
 msgid "Stereo (Default)"
 msgstr "Estéreo (Padrão)"
 
-#. TRANSLATION: cemu
+#. TRANSLATION: cemu, yuzu
 msgctxt "game_options"
 msgid "Surround"
 msgstr "Som ambiente (Surround)"
@@ -6704,7 +6682,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera define o primeiro dispositivo de áudio (padrão)"
 
-#. TRANSLATION: cemu, sonic2013, demul, vita3k
+#. TRANSLATION: cemu, sonic2013, yuzu, demul, vita3k
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "Corrige a falta de sincronização da taxa de atualização da tela."
@@ -6734,7 +6712,7 @@ msgctxt "game_options"
 msgid "UPSCALE FILTER"
 msgstr "UPSCALE FILTER"
 
-#. TRANSLATION: cemu, cemu
+#. TRANSLATION: cemu, cemu, yuzu
 msgctxt "game_options"
 msgid "Bicubic"
 msgstr "Bicúbico"
@@ -6744,7 +6722,7 @@ msgctxt "game_options"
 msgid "Hermite (Default)"
 msgstr "Hermite (Padrão)"
 
-#. TRANSLATION: cemu, cemu, sonic2013, soniccd
+#. TRANSLATION: cemu, cemu, sonic2013, soniccd, yuzu
 msgctxt "game_options"
 msgid "Nearest Neighbour"
 msgstr "Vizinho mais próximo"
@@ -6892,7 +6870,7 @@ msgstr ""
 "Nem todos os jogos suportam a proporção Esticado, dependem dos arquivos de "
 "vídeo."
 
-#. TRANSLATION: daphne, dolphin, dolphin_triforce
+#. TRANSLATION: daphne, dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Forçar 4:3"
@@ -7061,16 +7039,6 @@ msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote de lado + Nunchuk"
 
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "1x native (640x528)"
-msgstr "1x nativo (640x528)"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "6x 4K (3840x3168)"
-msgstr "6x 4K (3840x3168)"
-
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "8x 5K (5120x4224)"
@@ -7087,43 +7055,10 @@ msgctxt "game_options"
 msgid "Force 16:9"
 msgstr "Forçar 16:9"
 
-#. TRANSLATION: dolphin, dolphin_triforce
+#. TRANSLATION: dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Stretch to window"
 msgstr "Esticar a janela"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid ""
-"May not work well on all hardware. Hybrid is preferred, where supported."
-msgstr ""
-"Pode não funcionar bem em todos os hardwares. Híbrido é preferível, quando "
-"suportado."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "UBERSHADERS"
-msgstr "SOMBREAMENTO PRÉ-PROCESSADO"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "No Ubershaders"
-msgstr "Sem Sombreamento Pré-Processado"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Exclusive Ubershaders"
-msgstr "Sombreamento Pré-Processado Exclusivo"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Hybrid Ubershaders"
-msgstr "Sombreamento Pré-Processado Híbrido"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Skip Drawing"
-msgstr "Pular renderização de desenho"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7240,7 +7175,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "ANTI SERRILHADO"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, yuzu
 msgctxt "game_options"
 msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
 msgstr "Alterna MSAA/SSAA. Depende da ativação do anti serrilhado."
@@ -7574,7 +7509,7 @@ msgctxt "game_options"
 msgid "CHOOSE DREAMCAST LANGUAGE"
 msgstr "ESCOLHA O IDIOMA DO DREAMCAST"
 
-#. TRANSLATION: flycast/uzem, ryujinx
+#. TRANSLATION: flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Choose your console region."
 msgstr "Escolha a região do videogame."
@@ -7737,11 +7672,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "TOS languages."
 msgstr "Abreviação de Localização."
-
-#. TRANSLATION: hatari, redream, sonic2013, soniccd, ryujinx
-msgctxt "game_options"
-msgid "LANGUAGE"
-msgstr "IDIOMA"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -8027,6 +7957,16 @@ msgctxt "game_options"
 msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
 msgstr "CALCULAR AJUSTES IDEAIS DINAMICAMENTE"
 
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "on"
+msgstr "ligado"
+
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "off"
+msgstr "desligado"
+
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
@@ -8118,6 +8058,11 @@ msgstr "Aumenta a escala de texturas em objetos 3D."
 msgctxt "game_options"
 msgid "TEXTURE UPSCALING (RICE ONLY)"
 msgstr "AUMENTAR ESCALA DE TEXTURA (RICE APENAS)"
+
+#. TRANSLATION: mupen64plus, tsugaru
+msgctxt "game_options"
+msgid "2X"
+msgstr "2X"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9066,6 +9011,21 @@ msgstr "AUTOMÁTICO (PADRÃO)"
 
 #. TRANSLATION: tsugaru
 msgctxt "game_options"
+msgid "1X"
+msgstr "1X"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
+msgid "4X"
+msgstr "4X"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
+msgid "8X"
+msgstr "8X"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
 msgid "FORCE 386DX CPU"
 msgstr "FORÇAR PROCESSADOR 386DX"
 
@@ -9398,6 +9358,30 @@ msgstr "ENTRADA BRUTA DE CONTROLE BRUTA"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
+msgid ""
+"Reset the cache can fix some crashes if your game was running under Batocera "
+"29."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "DXVK RESET CACHE"
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Enable this mode if you have issue for run your game on NTFS storage (by "
+"default is better to use LinuxFS)."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NTFS MODE"
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
 msgid "ENABLE DEBUG"
 msgstr "ATIVAR DEPURAÇÃO"
 
@@ -9545,7 +9529,7 @@ msgctxt "game_options"
 msgid "USE DSP AUDIO"
 msgstr "USAR PROCESSADOR DE ÁUDIO DIGITAL (DSP)"
 
-#. TRANSLATION: sonic2013, soniccd, ryujinx
+#. TRANSLATION: sonic2013, soniccd, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "Altera o idioma do jogo."
@@ -9731,29 +9715,344 @@ msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "ATIVAR ENTRADA BRUTA"
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "Native (720p/1080p)"
 msgstr ""
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "2x (1440p/2160p)"
 msgstr ""
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "3x (2160p/3240p)"
 msgstr ""
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "4x (2880p/4320p)"
 msgstr ""
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "5x (3600p/5400p)"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "6x (4320p/6480p)"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "16:9 (Default)"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 21:9"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 16:10"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "British English"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Canadian French"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Latin American Spanish"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Brazilian Portuguese"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE REGION"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Australia"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "China"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Korea"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Taiwan"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Choose your console timezone."
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE TIMEZONE"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CST6CDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Cuba"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Egypt"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Eire"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST5EDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB-Eire"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT+0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT-0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Greenwich"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Hong Kong"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "HST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Iran"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Israel"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Jamaica"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Kwajalein"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Libya"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST7MDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Navajo"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ-CHAT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PRC"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PST8PDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROC"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROK"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Singapore"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "UCT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Univarsal"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "UTC"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "W-SU"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "WET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Zulu"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CHOOSE SOUND OUTPUT MODE"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Mono"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Stereo"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ASYNC SHADER COMPILE"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ANTI-ALIASING METHOD"
+msgstr ""
+
+#. TRANSLATION: yuzu, vita3k
+msgctxt "game_options"
+msgid "FXAA"
+msgstr "ANTI SERRILHADO DE RÁPIDA APROXIMAÇÃO (FXAA)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Gaussian"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ScaleForce"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "AMD FidelityFX (Vulkan Only)"
 msgstr ""
 
 #. TRANSLATION: ryujinx
@@ -9768,57 +10067,7 @@ msgstr ""
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
-msgid "British English"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Canadian French"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Latin American Spanish"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Brazilian Portuguese"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "CHOOSE CONSOLE REGION"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Australia"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "China"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Korea"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Taiwan"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
 msgid "Choose your console UTC timezone."
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "CHOOSE CONSOLE TIMEZONE"
 msgstr ""
 
 #. TRANSLATION: ryujinx
@@ -9879,11 +10128,6 @@ msgstr ""
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-1"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "UTC"
 msgstr ""
 
 #. TRANSLATION: ryujinx
@@ -9960,11 +10204,6 @@ msgstr "Mostrar (Padrão)"
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr "Anti serrilhado é uma técnica para suavizar bordas irregulares."
-
-#. TRANSLATION: vita3k
-msgctxt "game_options"
-msgid "FXAA"
-msgstr "ANTI SERRILHADO DE RÁPIDA APROXIMAÇÃO (FXAA)"
 
 #~ msgctxt "game_options"
 #~ msgid "Match emulated display (Experimental)"

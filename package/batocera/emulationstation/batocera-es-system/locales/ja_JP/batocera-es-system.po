@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v36beta(2022/10/20)\n"
+"Project-Id-Version: batocera-es v36beta(2022/11/14)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-10-21 20:44+0900\n"
+"PO-Revision-Date: 2022-11-15 20:39+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -482,7 +482,7 @@ msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
 msgstr "一部のゲームの代替解像度を有効にします"
 
-#. TRANSLATION: libretro/atari800, libretro/dolphin
+#. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
 msgstr "内部解像度"
@@ -908,7 +908,7 @@ msgstr "精度を犠牲にして読込時間を短縮します"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "(FDS) FAST FORWARD DISK LOADING"
-msgstr "(FDS) ディスク読み込みを早送りする"
+msgstr "(FDS) ディスク読み込みを早める"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -935,13 +935,13 @@ msgctxt "game_options"
 msgid "Random Values"
 msgstr "ランダム値"
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/same_cdi, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
 msgstr "強化：レンダリング解像度を上げ、3Dオブジェクトをより明確にします"
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/same_cdi, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "レンダリング解像度"
@@ -1096,87 +1096,27 @@ msgctxt "game_options"
 msgid "Right Stick"
 msgstr "Rスティック"
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce
 msgctxt "game_options"
-msgid "Wii Internal resolution."
-msgstr ""
+msgid "1x native (640x528)"
+msgstr "1x 通常 (640x528)"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "6x 4K (3840x3168)"
+msgstr "6x 4K (3840x3168)"
 
 #. TRANSLATION: libretro/dolphin
 msgctxt "game_options"
-msgid "x1 (640 x 528)"
+msgid "Wii NAND's language setting."
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, hatari, redream, sonic2013, soniccd, ...
 msgctxt "game_options"
-msgid "x2 (1280 x 1056)"
-msgstr ""
+msgid "LANGUAGE"
+msgstr "言語"
 
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x3 (1920 x 1584)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x4 (2560 x 2112)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x5 (3200 x 2640)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "x6 (3840 x 3168)"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
-msgctxt "game_options"
-msgid "Improves clarity of distant textures."
-msgstr "離れたテクスチャの鮮明度を向上させます"
-
-#. TRANSLATION: libretro/dolphin, libretro/flycast, dolphin, dolphin_triforce, flycast, ...
-msgctxt "game_options"
-msgid "ANISOTROPIC FILTERING"
-msgstr "異方性フィルタリング"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "1X"
-msgstr "1X"
-
-#. TRANSLATION: libretro/dolphin, mupen64plus, tsugaru
-msgctxt "game_options"
-msgid "2X"
-msgstr "2X"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "4X"
-msgstr "4x"
-
-#. TRANSLATION: libretro/dolphin, tsugaru
-msgctxt "game_options"
-msgid "8X"
-msgstr "8X"
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "16X"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Wii System languages."
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "LANGUAGES"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "英語"
@@ -1201,7 +1141,7 @@ msgctxt "game_options"
 msgid "Italian"
 msgstr "イタリア語"
 
-#. TRANSLATION: libretro/dolphin, cemu, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "オランダ語"
@@ -1211,81 +1151,84 @@ msgctxt "game_options"
 msgid "Japanese"
 msgstr "日本語"
 
-#. TRANSLATION: libretro/dolphin, ryujinx
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "簡体字中国語"
 
-#. TRANSLATION: libretro/dolphin, ryujinx
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "繁体字中国語"
 
-#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, yuzu, ...
 msgctxt "game_options"
 msgid "Korean"
 msgstr "韓国語"
-
-#. TRANSLATION: libretro/dolphin, dolphin/uzem
-msgctxt "game_options"
-msgid ""
-"Wii NAND's aspect ratio setting. Most games support both ratios natively."
-msgstr "WiiNANDのアスペクト比設定。ほとんどのゲームは、両比率に対応しています"
-
-#. TRANSLATION: libretro/dolphin, dolphin/uzem
-msgctxt "game_options"
-msgid "WII TV MODE"
-msgstr "Wii テレビモード"
 
 #. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Enhancement. Only works with a 16/9 ratio and bezels disabled."
 msgstr "強化：16/9の比率で、ベゼルが無効になっている場合にのみ機能します"
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, ...
 msgctxt "game_options"
-msgid "WII WIDESCREEN HACK"
+msgid "WIDESCREEN HACK (GLITCHY)"
+msgstr "ワイドスクリーン ハック（グリッチ）"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"May not work well on all hardware. Hybrid is preferred, where supported."
 msgstr ""
+"うまく機能しない場合があります。対応している場合は、ハイブリッドを推奨します"
 
-#. TRANSLATION: libretro/dolphin, moonlight, moonlight
+#. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
-msgid "on"
-msgstr "有効"
+msgid "UBERSHADERS"
+msgstr "ウーバーシェーダー"
 
-#. TRANSLATION: libretro/dolphin, moonlight, moonlight
+#. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
-msgid "off"
-msgstr "無効"
+msgid "No Ubershaders"
+msgstr "使用しない"
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
-msgid "Shader compilation mode, may not work well on all hardware."
+msgid "Exclusive Ubershaders"
+msgstr "排他的ウーバーシェーダー"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Hybrid Ubershaders"
+msgstr "ハイブリッドウーバーシェーダー"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Skip Drawing"
+msgstr "描画をスキップ(スキップドロー)"
+
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
+msgctxt "game_options"
+msgid "Improves clarity of distant textures."
+msgstr "離れたテクスチャの鮮明度を向上させます"
+
+#. TRANSLATION: libretro/dolphin, libretro/flycast, dolphin, dolphin_triforce, flycast, ...
+msgctxt "game_options"
+msgid "ANISOTROPIC FILTERING"
+msgstr "異方性フィルタリング"
+
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
+msgctxt "game_options"
+msgid ""
+"Wii NAND's aspect ratio setting. Most games support both ratios natively."
 msgstr ""
+"Wii NAND のアスペクト比設定。ほとんどのゲームは、両比率に対応しています"
 
-#. TRANSLATION: libretro/dolphin
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
-msgid "SHADER COMPILATION MODE"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Sync"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "A-Sync Skip Rendering"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "Sync UberShaders"
-msgstr ""
-
-#. TRANSLATION: libretro/dolphin
-msgctxt "game_options"
-msgid "A-Sync UberShaders"
-msgstr ""
+msgid "WII TV MODE"
+msgstr "Wii テレビモード"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
@@ -1296,37 +1239,37 @@ msgstr ""
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "WiiMote"
-msgstr ""
+msgstr "Wii リモコン"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "WiiMote Sideways"
-msgstr ""
+msgstr "Wii リモコン 横向き"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "WiiMote + Nunchuk"
-msgstr ""
+msgstr "Wii リモコン + ヌンチャク"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "WiiMote + Classic Controller"
-msgstr ""
+msgstr "Wii リモコン + クラシックコントローラ"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "WiiMote + Classic Controller Pro"
-msgstr ""
+msgstr "Wii リモコン + クラシックコントローラー Pro"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "Real Wiimote"
-msgstr ""
+msgstr "Wiiリモコン"
 
 #. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "GameCube Controller"
-msgstr ""
+msgstr "ゲームキューブ コントローラ"
 
 #. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
 msgctxt "game_options"
@@ -1688,7 +1631,7 @@ msgctxt "game_options"
 msgid "Hungary"
 msgstr "ハンガリー"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Iceland"
 msgstr "アイスランド"
@@ -1708,12 +1651,12 @@ msgctxt "game_options"
 msgid "Norway"
 msgstr "ノルウェー"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Poland"
 msgstr "ポーランド"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Portugal"
 msgstr "ポルトガル"
@@ -1753,7 +1696,7 @@ msgctxt "game_options"
 msgid "Switzerland (French)"
 msgstr "スイス（フランス語）"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Turkey"
 msgstr "Turkey"
@@ -1776,7 +1719,7 @@ msgstr "巻き戻し使用"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Apply a joy2key profile for the current game."
-msgstr "現在のゲームにjoy2keyプロファイルを適用します"
+msgstr "現在のゲームに joy2key プロファイルを適用します"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1943,7 +1886,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth/upscale textures."
 msgstr "強化：アップスケール/滑らかにします"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation, ...
 msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "テクスチャフィルタリング"
@@ -1957,11 +1900,6 @@ msgstr "最近傍"
 msgctxt "game_options"
 msgid "Bilinear"
 msgstr "バイリニア"
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, libretro/mupen64plus-next, ...
-msgctxt "game_options"
-msgid "WIDESCREEN HACK (GLITCHY)"
-msgstr "ワイドスクリーン ハック（グリッチ）"
 
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/fceumm, libretro/nestopia, duckstation
 msgctxt "game_options"
@@ -2176,7 +2114,7 @@ msgstr "画面の点滅の問題を回避できます。かなり動作が向上
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
-msgstr "同期レンダリング"
+msgstr "同期 レンダリング"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
@@ -2313,7 +2251,7 @@ msgctxt "game_options"
 msgid "SCREEN ORIENTATION"
 msgstr "画面の向き"
 
-#. TRANSLATION: libretro/fuse, hatari
+#. TRANSLATION: libretro/fuse, libretro/mame, hatari, mame/uzem
 msgctxt "game_options"
 msgid "MODEL"
 msgstr "モデル"
@@ -3051,6 +2989,51 @@ msgstr "カセット"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
+msgid "Type of joystick connected to the game port."
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "JOYSTICK TYPE"
+msgstr "ジョイスティック　タイプ"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple (2x 2-button Analog)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Sirius/Atari (2x 1-button Digital, II+ Only)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Gizmo (1-Button Digital)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Model of emulated Apple II."
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e Enhanced (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple ][ Plus"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
 msgid "Apple IIgs cleanly cracked disks"
 msgstr "Apple IIgs クラック ディスク"
 
@@ -3168,11 +3151,6 @@ msgstr "クイックロード"
 msgctxt "game_options"
 msgid "Select which joystick to emulate."
 msgstr "エミュレートするジョイスティックを選択します"
-
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "JOYSTICK TYPE"
-msgstr "ジョイスティック　タイプ"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -3720,7 +3698,7 @@ msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive"
 msgstr "ハードディスク"
@@ -4134,7 +4112,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
 msgstr "強化：3Dオブジェクトポリゴンのギザギザのエッジを滑らかにします"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, yuzu
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
 msgstr "3Dオブジェクトのテクスチャを滑らかにします"
@@ -4309,17 +4287,17 @@ msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "一部のゲームの言語を変更します"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, yuzu, ...
 msgctxt "game_options"
 msgid "Japan"
 msgstr "日本"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "USA"
 msgstr "USA"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, ryujinx
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Europe"
 msgstr "ヨーロッパ"
@@ -4587,7 +4565,7 @@ msgstr "ゲームパッドを入れ替える"
 #. TRANSLATION: libretro/o2em, libretro/picodrive
 msgctxt "game_options"
 msgid "Zooms in to hide black borders."
-msgstr "ズームインして黒い境界線を非表示にします"
+msgstr "拡大して黒い境界線を非表示にします"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
@@ -6509,7 +6487,7 @@ msgctxt "game_options"
 msgid "Vulkan (Default)"
 msgstr "Vulkan (標準)"
 
-#. TRANSLATION: cemu
+#. TRANSLATION: cemu, yuzu
 msgctxt "game_options"
 msgid "Speed up shader compilation."
 msgstr "シェーダーのコンパイルを高速化します"
@@ -6574,22 +6552,22 @@ msgctxt "game_options"
 msgid "Current language"
 msgstr "現在の言語"
 
-#. TRANSLATION: cemu, sonic2013, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Chinese"
 msgstr "中国語"
 
-#. TRANSLATION: cemu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr "ポルトガル語"
 
-#. TRANSLATION: cemu, sonic2013, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Russian"
 msgstr "ロシア語"
 
-#. TRANSLATION: cemu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Taiwanese"
 msgstr "台湾語"
@@ -6609,7 +6587,7 @@ msgctxt "game_options"
 msgid "Stereo (Default)"
 msgstr "ステレオ (標準)"
 
-#. TRANSLATION: cemu
+#. TRANSLATION: cemu, yuzu
 msgctxt "game_options"
 msgid "Surround"
 msgstr "サラウンド"
@@ -6634,7 +6612,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera で最初の音声デバイスに設定 (標準)"
 
-#. TRANSLATION: cemu, sonic2013, demul, vita3k
+#. TRANSLATION: cemu, sonic2013, yuzu, demul, vita3k
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -6664,7 +6642,7 @@ msgctxt "game_options"
 msgid "UPSCALE FILTER"
 msgstr "アップスケールフィルター"
 
-#. TRANSLATION: cemu, cemu
+#. TRANSLATION: cemu, cemu, yuzu
 msgctxt "game_options"
 msgid "Bicubic"
 msgstr "バイキュービック"
@@ -6674,7 +6652,7 @@ msgctxt "game_options"
 msgid "Hermite (Default)"
 msgstr "エルミート (標準)"
 
-#. TRANSLATION: cemu, cemu, sonic2013, soniccd
+#. TRANSLATION: cemu, cemu, sonic2013, soniccd, yuzu
 msgctxt "game_options"
 msgid "Nearest Neighbour"
 msgstr "最近傍"
@@ -6816,7 +6794,7 @@ msgctxt "game_options"
 msgid "Not all games support Stretch, depending on the video files."
 msgstr "引き伸ばしは、すべてのゲームに対応しているわけではありません"
 
-#. TRANSLATION: daphne, dolphin, dolphin_triforce
+#. TRANSLATION: daphne, dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "強制的に 4:3 にする"
@@ -6930,12 +6908,12 @@ msgstr "SDL テクスチャ アクセス ストリーミング"
 msgctxt "game_options"
 msgid ""
 "Allows you to set the controller settings in the custom.ini file manually."
-msgstr ""
+msgstr "custom.ini ファイルを使い、コントローラー設定のカスタマイズができます"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
-msgstr ""
+msgstr "カスタム コントローラー"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -6960,32 +6938,22 @@ msgstr "クラシックコントローラ"
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway"
-msgstr "Wiiリモコン横向き"
+msgstr "Wii リモコン横向き"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Swing"
-msgstr "Wiiリモコン横向き + 振る動作"
+msgstr "Wii リモコン横向き + 振る動作"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Tilt"
-msgstr "Wiiリモコン横向き + 傾き動作"
+msgstr "Wii リモコン横向き + 傾き動作"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
-msgstr "Wiiリモコン横向き + ヌンチャク"
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "1x native (640x528)"
-msgstr "1x 通常 (640x528)"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "6x 4K (3840x3168)"
-msgstr "6x 4K (3840x3168)"
+msgstr "Wii リモコン横向き + ヌンチャク"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7002,42 +6970,10 @@ msgctxt "game_options"
 msgid "Force 16:9"
 msgstr "強制的に 16:9 にする"
 
-#. TRANSLATION: dolphin, dolphin_triforce
+#. TRANSLATION: dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Stretch to window"
 msgstr "ウィンドウに合わせる"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid ""
-"May not work well on all hardware. Hybrid is preferred, where supported."
-msgstr ""
-"うまく機能しない場合があります。対応している場合は、ハイブリッドを推奨します"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "UBERSHADERS"
-msgstr "ウーバーシェーダー"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "No Ubershaders"
-msgstr "使用しない"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Exclusive Ubershaders"
-msgstr "排他的ウーバーシェーダー"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Hybrid Ubershaders"
-msgstr "ハイブリッドウーバーシェーダー"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Skip Drawing"
-msgstr "描画をスキップ(スキップドロー)"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7152,7 +7088,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "アンチエイリアシング"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, yuzu
 msgctxt "game_options"
 msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
 msgstr ""
@@ -7483,7 +7419,7 @@ msgctxt "game_options"
 msgid "CHOOSE DREAMCAST LANGUAGE"
 msgstr "ドリームキャストの言語の選択"
 
-#. TRANSLATION: flycast/uzem, ryujinx
+#. TRANSLATION: flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Choose your console region."
 msgstr "ドリームキャストのコンソールリージョンを選択します"
@@ -7642,11 +7578,6 @@ msgstr "値を大きくすると、斜めの角度で表示されたテクスチ
 msgctxt "game_options"
 msgid "TOS languages."
 msgstr "TOS言語"
-
-#. TRANSLATION: hatari, redream, sonic2013, soniccd, ryujinx
-msgctxt "game_options"
-msgid "LANGUAGE"
-msgstr "言語"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7927,6 +7858,16 @@ msgctxt "game_options"
 msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
 msgstr "最適な設定を動的に計算します"
 
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "on"
+msgstr "有効"
+
+#. TRANSLATION: moonlight, moonlight
+msgctxt "game_options"
+msgid "off"
+msgstr "無効"
+
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
@@ -8013,6 +7954,11 @@ msgstr "3Dオブジェクトのテクスチャをアップスケールします"
 msgctxt "game_options"
 msgid "TEXTURE UPSCALING (RICE ONLY)"
 msgstr "テクスチャアップスケーリング [RICE]"
+
+#. TRANSLATION: mupen64plus, tsugaru
+msgctxt "game_options"
+msgid "2X"
+msgstr "2X"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -8419,7 +8365,7 @@ msgstr "テクスチャ デポスタライズ"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
-msgstr "[Alt+Tab]でRPCS3のメニューを表示します。ディスク交換などに​便利です"
+msgstr "[Alt+Tab]でRPCS3のメニューを表示します(ディスク交換などに​便利)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8936,6 +8882,21 @@ msgstr "自動 (標準)"
 
 #. TRANSLATION: tsugaru
 msgctxt "game_options"
+msgid "1X"
+msgstr "1X"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
+msgid "4X"
+msgstr "4x"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
+msgid "8X"
+msgstr "8X"
+
+#. TRANSLATION: tsugaru
+msgctxt "game_options"
 msgid "FORCE 386DX CPU"
 msgstr "386DX CPUに固定"
 
@@ -9007,7 +8968,7 @@ msgstr ""
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "BGFX for post-processing, accel/opengl for raw image."
-msgstr "BGFX(後処理用)、accel/opengl(画像用)を設定できます"
+msgstr "BGFX(後処理用)、accel/opengl(画像用)を設定します"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -9065,7 +9026,7 @@ msgstr "CRT Geom Deluxe (コンポジット)"
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "Allows the use of switchres profiles if present."
-msgstr "switchresプロファイルがあれば使用可能にします"
+msgstr "switchres プロファイルがあれば使用可能にします"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -9258,6 +9219,30 @@ msgstr "RAWコントローラー入力"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
+msgid ""
+"Reset the cache can fix some crashes if your game was running under Batocera "
+"29."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "DXVK RESET CACHE"
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Enable this mode if you have issue for run your game on NTFS storage (by "
+"default is better to use LinuxFS)."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NTFS MODE"
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
 msgid "ENABLE DEBUG"
 msgstr "デバッグを有効"
 
@@ -9404,7 +9389,7 @@ msgctxt "game_options"
 msgid "USE DSP AUDIO"
 msgstr "DSP オーディオを使用する"
 
-#. TRANSLATION: sonic2013, soniccd, ryujinx
+#. TRANSLATION: sonic2013, soniccd, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "ゲーム言語を変更します"
@@ -9587,220 +9572,480 @@ msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "RAW入力を有効"
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "Native (720p/1080p)"
-msgstr ""
+msgstr "通常 (720p/1080p)"
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "2x (1440p/2160p)"
-msgstr ""
+msgstr "2x (1440p/2160p)"
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "3x (2160p/3240p)"
-msgstr ""
+msgstr "3x (2160p/3240p)"
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "4x (2880p/4320p)"
+msgstr "4x (2880p/4320p)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "5x (3600p/5400p)"
 msgstr ""
 
-#. TRANSLATION: ryujinx
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "6x (4320p/6480p)"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "16:9 (Default)"
+msgstr "16:9 (基本)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 21:9"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 16:10"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "British English"
+msgstr "イギリス英語"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Canadian French"
+msgstr "カナダフランス語"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Latin American Spanish"
+msgstr "ラテンアメリカ・スペイン語"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Brazilian Portuguese"
+msgstr "ブラジルポルトガル語"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE REGION"
+msgstr "コンソール リージョンの選択"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Australia"
+msgstr "オーストラリア語"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "China"
+msgstr "中国"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Korea"
+msgstr "韓国"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Taiwan"
+msgstr "台湾"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Choose your console timezone."
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE TIMEZONE"
+msgstr "コンソール タイムゾーンの選択"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CST6CDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Cuba"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Egypt"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Eire"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST5EDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB-Eire"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT+0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT-0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT0"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Greenwich"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Hong Kong"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "HST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Iran"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Israel"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Jamaica"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Kwajalein"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Libya"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST7MDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Navajo"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ-CHAT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PRC"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PST8PDT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROC"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROK"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Singapore"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "UCT"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Univarsal"
+msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "UTC"
+msgstr "UTC"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "W-SU"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "WET"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Zulu"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CHOOSE SOUND OUTPUT MODE"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Mono"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Stereo"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ASYNC SHADER COMPILE"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ANTI-ALIASING METHOD"
+msgstr ""
+
+#. TRANSLATION: yuzu, vita3k
+msgctxt "game_options"
+msgid "FXAA"
+msgstr "FXAA"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Gaussian"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ScaleForce"
+msgstr ""
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "AMD FidelityFX (Vulkan Only)"
 msgstr ""
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "Stretch to fit window"
-msgstr ""
+msgstr "ウィンドウに合わせる"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "American English"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "British English"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Canadian French"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Latin American Spanish"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Brazilian Portuguese"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "CHOOSE CONSOLE REGION"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Australia"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "China"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Korea"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "Taiwan"
-msgstr ""
+msgstr "アメリカ英語"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "Choose your console UTC timezone."
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "CHOOSE CONSOLE TIMEZONE"
-msgstr ""
+msgstr "コンソールの UTC タイムゾーンを選択します"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-12"
-msgstr ""
+msgstr "UTC-12"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-11"
-msgstr ""
+msgstr "UTC-11"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-10"
-msgstr ""
+msgstr "UTC-10"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-9"
-msgstr ""
+msgstr "UTC-9"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-8"
-msgstr ""
+msgstr "UTC-8"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-7"
-msgstr ""
+msgstr "UTC-7"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-6"
-msgstr ""
+msgstr "UTC-6"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-5"
-msgstr ""
+msgstr "UTC-5"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-4"
-msgstr ""
+msgstr "UTC-4"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-3"
-msgstr ""
+msgstr "UTC-3"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-2"
-msgstr ""
+msgstr "UTC-2"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC-1"
-msgstr ""
-
-#. TRANSLATION: ryujinx
-msgctxt "game_options"
-msgid "UTC"
-msgstr ""
+msgstr "UTC-1"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+1"
-msgstr ""
+msgstr "UTC+1"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+2"
-msgstr ""
+msgstr "UTC+2"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+3"
-msgstr ""
+msgstr "UTC+3"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+4"
-msgstr ""
+msgstr "UTC+4"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+5"
-msgstr ""
+msgstr "UTC+5"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+6"
-msgstr ""
+msgstr "UTC+6"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+7"
-msgstr ""
+msgstr "UTC+7"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+8"
-msgstr ""
+msgstr "UTC+8"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+9"
-msgstr ""
+msgstr "UTC+9"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+10"
-msgstr ""
+msgstr "UTC+10"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+11"
-msgstr ""
+msgstr "UTC+11"
 
 #. TRANSLATION: ryujinx
 msgctxt "game_options"
 msgid "UTC+12"
-msgstr ""
+msgstr "UTC+12"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
@@ -9818,40 +10063,75 @@ msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr ""
 "高速近似アンチエイリアシング(FXAA)は、ギザギザのエッジを滑らかにする技術です"
 
-#. TRANSLATION: vita3k
-msgctxt "game_options"
-msgid "FXAA"
-msgstr "FXAA"
+#~ msgctxt "game_options"
+#~ msgid "Wii Internal resolution."
+#~ msgstr "Wii 内部解像度"
+
+#~ msgctxt "game_options"
+#~ msgid "x1 (640 x 528)"
+#~ msgstr "x1 (640 x 528)"
+
+#~ msgctxt "game_options"
+#~ msgid "x2 (1280 x 1056)"
+#~ msgstr "x2 (1280 x 1056)"
+
+#~ msgctxt "game_options"
+#~ msgid "x3 (1920 x 1584)"
+#~ msgstr "x3 (1920 x 1584)"
+
+#~ msgctxt "game_options"
+#~ msgid "x4 (2560 x 2112)"
+#~ msgstr "x4 (2560 x 2112)"
+
+#~ msgctxt "game_options"
+#~ msgid "x5 (3200 x 2640)"
+#~ msgstr "x5 (3200 x 2640)"
+
+#~ msgctxt "game_options"
+#~ msgid "x6 (3840 x 3168)"
+#~ msgstr "x6 (3840 x 3168)"
+
+#~ msgctxt "game_options"
+#~ msgid "16X"
+#~ msgstr "16X"
+
+#~ msgctxt "game_options"
+#~ msgid "Wii System languages."
+#~ msgstr "Wii システム言語"
+
+#~ msgctxt "game_options"
+#~ msgid "LANGUAGES"
+#~ msgstr "言語"
+
+#~ msgctxt "game_options"
+#~ msgid "WII WIDESCREEN HACK"
+#~ msgstr "WII ワイドスクリーンハック"
+
+#~ msgctxt "game_options"
+#~ msgid "Shader compilation mode, may not work well on all hardware."
+#~ msgstr ""
+#~ "シェーダー コンパイル モードは、機種により、正常に機能しない場合があります"
+
+#~ msgctxt "game_options"
+#~ msgid "SHADER COMPILATION MODE"
+#~ msgstr "シェーダー コンパイル モード"
+
+#~ msgctxt "game_options"
+#~ msgid "Sync"
+#~ msgstr "同期"
+
+#~ msgctxt "game_options"
+#~ msgid "A-Sync Skip Rendering"
+#~ msgstr "非同期 スキップ レンダリング"
+
+#~ msgctxt "game_options"
+#~ msgid "Sync UberShaders"
+#~ msgstr "同期 ウーバーシェーダー"
+
+#~ msgctxt "game_options"
+#~ msgid "A-Sync UberShaders"
+#~ msgstr "非同期 ウーバーシェーダー"
 
 #~ msgctxt "game_options"
 #~ msgid "Speed up. Causes visual glitches on first load."
 #~ msgstr "速度増加。最初の読込時に視覚的な不具合が発生します"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "Double the rendering resolution."
-#~ msgctxt "game_options"
-#~ msgid "Double the rendering resolution. No effect on 64-bit machines."
-#~ msgstr "レンダリング解像度を 2 倍にします"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "ENHANCED RENDERING RESOLUTION"
-#~ msgctxt "game_options"
-#~ msgid "ENHANCED RENDERING RESOLUTION (32-BIT ONLY)"
-#~ msgstr "レンダリング解像度を強化"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "ASYNC SHADER COMPILE (VULKAN ONLY)"
-#~ msgctxt "game_options"
-#~ msgid "ASYNC SHADER (VULKAN ONLY)"
-#~ msgstr "非同期シェーダーのコンパイル (VULKAN のみ)"
-
-#~ msgctxt "game_options"
-#~ msgid "Match emulated display (Experimental)"
-#~ msgstr "エミュレートされたディスプレイと一致させる (実験的)"
-
-#~ msgctxt "game_options"
-#~ msgid "Force the emulator to run at this resolution."
-#~ msgstr "指定した解像度でエミュレーターを強制的に実行します"
