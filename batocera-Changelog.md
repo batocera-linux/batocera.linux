@@ -27,6 +27,7 @@
     - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
 - cemu to native linux version (v2.0.10)
 - cemu fixes for controllers
+- new Apple 2 MAME options - joystick & alternate models, (LR-MAME & Standalone), hard drive images (Standalone)
 ### Updated
 - pcsx2 to v1.7.3292
 - alsa to 1.2.7.2
