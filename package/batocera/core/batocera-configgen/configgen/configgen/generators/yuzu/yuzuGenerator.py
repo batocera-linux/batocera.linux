@@ -75,8 +75,8 @@ class YuzuGenerator(Generator):
         yuzuConfig.set("UI", "calloutFlags\\default", "false")
 
         # Single Window Mode
-        if system.isOptSet('single_window'):
-            yuzuConfig.set("UI", "singleWindowMode", system.config["single_window"])
+        if system.isOptSet('yuzu_single_window'):
+            yuzuConfig.set("UI", "singleWindowMode", system.config["yuzu_single_window"])
         else:
             yuzuConfig.set("UI", "singleWindowMode", "true")
         yuzuConfig.set("UI", "singleWindowMode\\default", "false")
@@ -123,8 +123,8 @@ class YuzuGenerator(Generator):
             yuzuConfig.add_section("Core")
 
         # Multicore
-        if system.isOptSet('multicore'):
-            yuzuConfig.set("Core", "use_multi_core", system.config["multicore"])
+        if system.isOptSet('yuzu_multicore'):
+            yuzuConfig.set("Core", "use_multi_core", system.config["yuzu_multicore"])
         else:
             yuzuConfig.set("Core", "use_multi_core", "true")
         yuzuConfig.set("Core", "use_multi_core\\default", "false")
@@ -148,78 +148,78 @@ class YuzuGenerator(Generator):
         yuzuConfig.set("Renderer", "backend\\default", "false")
 
         # Async Shader compilation
-        if system.isOptSet('async_shaders'):
-            yuzuConfig.set("Renderer", "use_asynchronous_shaders", system.config["async_shaders"])
+        if system.isOptSet('yuzu_async_shaders'):
+            yuzuConfig.set("Renderer", "use_asynchronous_shaders", system.config["yuzu_async_shaders"])
         else:
             yuzuConfig.set("Renderer", "use_asynchronous_shaders", "true")
         yuzuConfig.set("Renderer", "use_asynchronous_shaders\\default", "false")
 
         # Assembly shaders
-        if system.isOptSet('shaderbackend'):
-            yuzuConfig.set("Renderer", "shader_backend", system.config["shaderbackend"])
+        if system.isOptSet('yuzu_shaderbackend'):
+            yuzuConfig.set("Renderer", "shader_backend", system.config["yuzu_shaderbackend"])
         else:
             yuzuConfig.set("Renderer", "shader_backend", "0")
         yuzuConfig.set("Renderer", "shader_backend\\default", "false")
 
         # Async Gpu Emulation
-        if system.isOptSet('async_gpu'):
-            yuzuConfig.set("Renderer", "use_asynchronous_gpu_emulation", system.config["async_gpu"])
+        if system.isOptSet('yuzu_async_gpu'):
+            yuzuConfig.set("Renderer", "use_asynchronous_gpu_emulation", system.config["yuzu_async_gpu"])
         else:
             yuzuConfig.set("Renderer", "use_asynchronous_gpu_emulation", "true")
         yuzuConfig.set("Renderer", "use_asynchronous_gpu_emulation\\default", "false")
 
         # NVDEC Emulation
-        if system.isOptSet('nvdec_emu'):
-            yuzuConfig.set("Renderer", "nvdec_emulation", system.config["nvdec_emu"])
+        if system.isOptSet('yuzu_nvdec_emu'):
+            yuzuConfig.set("Renderer", "nvdec_emulation", system.config["yuzu_nvdec_emu"])
         else:
             yuzuConfig.set("Renderer", "nvdec_emulation", "2")
         yuzuConfig.set("Renderer", "nvdec_emulation\\default", "false")
 
         # Gpu Accuracy
-        if system.isOptSet('gpuaccuracy'):
-            yuzuConfig.set("Renderer", "gpu_accuracy", system.config["gpuaccuracy"])
+        if system.isOptSet('yuzu_gpuaccuracy'):
+            yuzuConfig.set("Renderer", "gpu_accuracy", system.config["yuzu_gpuaccuracy"])
         else:
             yuzuConfig.set("Renderer", "gpu_accuracy", "0")
         yuzuConfig.set("Renderer", "gpu_accuracy\\default", "false")
 
         # Vsync
-        if system.isOptSet('vsync'):
-            yuzuConfig.set("Renderer", "use_vsync", system.config["vsync"])
+        if system.isOptSet('yuzu_vsync'):
+            yuzuConfig.set("Renderer", "use_vsync", system.config["yuzu_vsync"])
         else:
             yuzuConfig.set("Renderer", "use_vsync", "false")
         yuzuConfig.set("Renderer", "use_vsync\\default", "false")
 
         # Gpu cache garbage collection
-        if system.isOptSet('gpu_cache_gc'):
-            yuzuConfig.set("Renderer", "use_caches_gc", system.config["gpu_cache_gc"])
+        if system.isOptSet('yuzu_gpu_cache_gc'):
+            yuzuConfig.set("Renderer", "use_caches_gc", system.config["yuzu_gpu_cache_gc"])
         else:
             yuzuConfig.set("Renderer", "use_caches_gc", "false")
         yuzuConfig.set("Renderer", "use_caches_gc\\default", "false")
 
         # Max anisotropy
-        if system.isOptSet('anisotropy'):
-            yuzuConfig.set("Renderer", "max_anisotropy", system.config["anisotropy"])
+        if system.isOptSet('yuzu_anisotropy'):
+            yuzuConfig.set("Renderer", "max_anisotropy", system.config["yuzu_anisotropy"])
         else:
             yuzuConfig.set("Renderer", "max_anisotropy", "0")
         yuzuConfig.set("Renderer", "max_anisotropy\\default", "false")
 
         # Resolution scaler
-        if system.isOptSet('resolution_scale'):
-            yuzuConfig.set("Renderer", "resolution_setup", system.config["resolution_scale"])
+        if system.isOptSet('yuzu_scale'):
+            yuzuConfig.set("Renderer", "resolution_setup", system.config["yuzu_scale"])
         else:
             yuzuConfig.set("Renderer", "resolution_setup", "2")
         yuzuConfig.set("Renderer", "resolution_setup\\default", "false")
 
         # Scaling filter
-        if system.isOptSet('scale_filter'):
-            yuzuConfig.set("Renderer", "scaling_filter", system.config["scale_filter"])
+        if system.isOptSet('yuzu_scale_filter'):
+            yuzuConfig.set("Renderer", "scaling_filter", system.config["yuzu_scale_filter"])
         else:
             yuzuConfig.set("Renderer", "scaling_filter", "1")
         yuzuConfig.set("Renderer", "scaling_filter\\default", "false")
 
         # Anti aliasing method
-        if system.isOptSet('aliasing_method'):
-            yuzuConfig.set("Renderer", "anti_aliasing", system.config["aliasing_method"])
+        if system.isOptSet('yuzu_aliasing_method'):
+            yuzuConfig.set("Renderer", "anti_aliasing", system.config["yuzu_aliasing_method"])
         else:
             yuzuConfig.set("Renderer", "anti_aliasing", "0")
         yuzuConfig.set("Renderer", "anti_aliasing\\default", "false")
@@ -229,8 +229,8 @@ class YuzuGenerator(Generator):
             yuzuConfig.add_section("Cpu")
 
         # Cpu Accuracy
-        if system.isOptSet('cpuaccuracy'):
-            yuzuConfig.set("Cpu", "cpu_accuracy", system.config["cpuaccuracy"])
+        if system.isOptSet('yuzu_cpuaccuracy'):
+            yuzuConfig.set("Cpu", "cpu_accuracy", system.config["yuzu_cpuaccuracy"])
         else:
             yuzuConfig.set("Cpu", "cpu_accuracy", "0")
         yuzuConfig.set("Cpu", "cpu_accuracy\\default", "false")
@@ -240,15 +240,15 @@ class YuzuGenerator(Generator):
             yuzuConfig.add_section("System")
 
         # Language
-        if system.isOptSet('language'):
-            yuzuConfig.set("System", "language_index", system.config["language"])
+        if system.isOptSet('yuzu_language'):
+            yuzuConfig.set("System", "language_index", system.config["yuzu_language"])
         else:
             yuzuConfig.set("System", "language_index", YuzuGenerator.getYuzuLangFromEnvironment())
         yuzuConfig.set("System", "language_index\\default", "false")
 
         # Region
-        if system.isOptSet('region'):
-            yuzuConfig.set("System", "region_index", system.config["region"])
+        if system.isOptSet('yuzu_region'):
+            yuzuConfig.set("System", "region_index", system.config["yuzu_region"])
         else:
             yuzuConfig.set("System", "region_index", YuzuGenerator.getYuzuRegionFromEnvironment())
         yuzuConfig.set("System", "region_index\\default", "false")
@@ -258,11 +258,25 @@ class YuzuGenerator(Generator):
             yuzuConfig.add_section("Controls")
 
         # Dock Mode
-        if system.isOptSet('dock_mode'):
-            yuzuConfig.set("Controls", "use_docked_mode", system.config["dock_mode"])
+        if system.isOptSet('yuzu_dock_mode'):
+            yuzuConfig.set("Controls", "use_docked_mode", system.config["yuzu_dock_mode"])
         else:
             yuzuConfig.set("Controls", "use_docked_mode", "true")
         yuzuConfig.set("Controls", "use_docked_mode\\default", "false")
+
+        # Sound Mode
+        if system.isOptSet('yuzu_sound_mode'):
+            yuzuConfig.set("Controls", "sound_index", system.config["yuzu_sound_mode"])
+        else:
+            yuzuConfig.set("Controls", "sound_index", "1")
+        yuzuConfig.set("Controls", "sound_index\\default", "false")
+
+        # Timezone
+        if system.isOptSet('yuzu_timezone'):
+            yuzuConfig.set("Controls", "time_zone_index", system.config["yuzu_timezone"])
+        else:
+            yuzuConfig.set("Controls", "time_zone_index", "0")
+        yuzuConfig.set("Controls", "time_zone_index\\default", "false")        
 
         # controllers
         nplayer = 1
