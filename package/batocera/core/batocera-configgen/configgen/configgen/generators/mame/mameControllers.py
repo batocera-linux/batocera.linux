@@ -83,12 +83,19 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
             useControls = "bbc"
         else:
             useControls = f"bbc-{specialController}"
+    elif sysName in [ "apple2p", "apple2e", "apple2ee" ]:
+        if specialController == 'none':
+            useControls = "apple2"
+        else:
+            useControls = f"apple2-{specialController}"
     else:
         useControls = sysName
+    eslog.debug(f"Using {useControls} for controller config.")
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
+        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if sysName in specialControlList:
         # Load mess controls from csv
         messControlFile = '/usr/share/batocera/configgen/data/mame/messControls.csv'
@@ -239,12 +246,14 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
     #mameXml = open(configFile, "w")
     # TODO: python 3 - workawround to encode files in utf-8
     if overwriteMAME:
+        eslog.debug(f"Saving {configFile}")
         mameXml = codecs.open(configFile, "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         mameXml.write(dom_string)
 
     # Write alt config (if used, custom config is turned off or file doesn't exist yet)
     if sysName in specialControlList and overwriteSystem:
+        eslog.debug(f"Saving {configFile_alt}")
         mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
         dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         mameXml_alt.write(dom_string_alt)
@@ -340,12 +349,12 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
-    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0))
+    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0, True))
     xml_newseq_inc.appendChild(incvalue)
     xml_newseq_dec = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_dec)
     xml_newseq_dec.setAttribute("type", "decrement")
-    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0))
+    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0, True))
     xml_newseq_dec.appendChild(decvalue)
     xml_newseq_std = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_std)
@@ -357,7 +366,7 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad, key, input, joycode, reversed, altButtons):
+def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
     if input.type == "button":
         return f"JOYCODE_{joycode}_BUTTON{int(input.id)+1}"
     elif input.type == "hat":
@@ -397,6 +406,16 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
                 if pad.inputs[direction].type == 'button':
                     buttonDirections[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
 
+        if ignoreAxis and dpadInputs['up'] != '' and dpadInputs['down'] != '' \
+            and dpadInputs['left'] != '' and dpadInputs['right'] != '':
+            if key == "joystick1up" or key == "up":
+                return dpadInputs['up']
+            if key == "joystick1down" or key == "down":
+                return dpadInputs['down']
+            if key == "joystick1left" or key == "left":
+                return dpadInputs['left']
+            if key == "joystick1right" or key == "right":
+                return dpadInputs['right']
         if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
                 return f"JOYCODE_{joycode}_YAXIS_UP_SWITCH JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH OR {dpadInputs['up']} {dpadInputs['right']}"

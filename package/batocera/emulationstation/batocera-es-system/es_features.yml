@@ -2122,6 +2122,23 @@ libretro:
                           "Cassette":       cass
                           "Disk (Drive 1)": flop1
                           "Disk (Drive 2)": flop2
+                  gameio:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Type of joystick connected to the game port.
+                      choices:
+                          "None":                                         none
+                          "Apple (2x 2-button Analog)":                   joy
+                          "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                          "Gizmo (1-Button Digital)":                     gizmo
+                  altmodel:
+                      group: ADVANCED OPTIONS
+                      prompt:      MODEL
+                      description: Model of emulated Apple II.
+                      choices:
+                          "Apple //e Enhanced (Default)": apple2ee
+                          "Apple //e":                    apple2e
+                          "Apple ][ Plus":                apple2p
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -7816,6 +7833,24 @@ mame:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
+                        "Hard Drive":     hard1
+                gameio:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Type of joystick connected to the game port.
+                    choices:
+                        "None":                                         none
+                        "Apple (2x 2-button Analog)":                   joy
+                        "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                        "Gizmo (1-Button Digital)":                     gizmo
+                altmodel:
+                    group: ADVANCED OPTIONS
+                    prompt:      MODEL
+                    description: Model of emulated Apple II.
+                    choices:
+                        "Apple //e Enhanced (Default)": apple2ee
+                        "Apple //e":                    apple2e
+                        "Apple ][ Plus":                apple2p
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS

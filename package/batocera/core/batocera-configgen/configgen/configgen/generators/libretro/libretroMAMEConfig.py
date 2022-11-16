@@ -150,6 +150,16 @@ def generateMAMEConfigs(playersControllers, system, rom):
                     commandLine += ["-analogue", system.config['sticktype']]
                     specialController = system.config['sticktype']
 
+            # Apple II
+            if system.name == "apple2":
+                commandLine += ["-sl7", "cffa202"]
+                if system.isOptSet('gameio') and system.config['gameio'] != 'none':
+                    if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
+                        eslog.debug("Joyport is only compatible with Apple II +")
+                    else:
+                        commandLine += ["-gameio", system.config['gameio']]
+                        specialController = system.config['gameio']
+
             # Mac RAM & Image Reader (if applicable)
             if system.name == "macintosh":
                 if system.isOptSet("ramsize"):
@@ -209,7 +219,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         else:
                             commandLine += [ "-" + messRomType[messMode] ]
                 # Use the full filename for MESS non-softlist ROMs
-                commandLine += [ '"' + rom + '"' ]
+                commandLine += [ f'"{rom}"' ]
                 commandLine += [ "-rompath", romDirname + ";/userdata/bios/" ]
 
                 # Boot disk for Macintosh
@@ -513,12 +523,18 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             useControls = "bbc"
         else:
             useControls = f"bbc-{specialController}"
+    elif messSysName in [ "apple2p", "apple2e", "apple2ee" ]:
+        if specialController == 'none':
+            useControls = "apple2"
+        else:
+            useControls = f"apple2-{specialController}"
     else:
         useControls = messSysName
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
+        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if messSysName in specialControlList:
         # Load mess controls from csv
         messControlFile = '/usr/share/batocera/configgen/data/mame/messControls.csv'
@@ -728,12 +744,12 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
-    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0))
+    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0, True))
     xml_newseq_inc.appendChild(incvalue)
     xml_newseq_dec = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_dec)
     xml_newseq_dec.setAttribute("type", "decrement")
-    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0))
+    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0, True))
     xml_newseq_dec.appendChild(decvalue)
     xml_newseq_std = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_std)
@@ -745,7 +761,7 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad, key, input, joycode, reversed, altButtons):
+def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
     if input.find("BUTTON") != -1 or input.find("HAT") != -1 or input == "START" or input == "SELECT":
         return f"JOYCODE_{joycode}_{input}"
     elif input.find("AXIS") != -1:
@@ -764,6 +780,15 @@ def input2definition(pad, key, input, joycode, reversed, altButtons):
                     JOYCODE_{joycode}_{retroPad['right']} JOYCODE_{joycode}_{retroPad['down']}"
             else:
                 return f"JOYCODE_{joycode}_{input}"
+        elif ignoreAxis:
+            if key == "joystick1up" or key == "up":
+                return f"JOYCODE_{joycode}_{retroPad['up']}"
+            elif key == "joystick1down" or key == "down":
+                return f"JOYCODE_{joycode}_{retroPad['down']}"
+            elif key == "joystick1left" or key == "left":
+                return f"JOYCODE_{joycode}_{retroPad['left']}"
+            elif key == "joystick1right" or key == "right":
+                return f"JOYCODE_{joycode}_{retroPad['right']}"
         else:
             if key == "joystick1up" or key == "up":
                 return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up']}"
