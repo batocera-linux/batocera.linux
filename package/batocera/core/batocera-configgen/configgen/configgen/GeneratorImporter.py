@@ -247,7 +247,7 @@ def getGenerator(emulator):
         from generators.demul.demulGenerator import DemulGenerator
         return DemulGenerator()
 
-    if emulator == 'xenia':
+    if emulator == 'xenia' or emulator == 'xenia-canary':
         from generators.xenia.xeniaGenerator import XeniaGenerator
         return XeniaGenerator()
 
