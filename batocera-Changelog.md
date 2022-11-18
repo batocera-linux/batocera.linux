@@ -56,7 +56,7 @@
 - fsuae to July 30 build
 - scummvm to v2.6.1
 - simcoupe to v1.2.11
-- supermodel to Aug 19 2022 build
+- supermodel to Nov 14, 2022 build
 - tsugaru to v20220702
 - vice to 3.6.1
 - linux kernel for x86_64 to 6.0.7
