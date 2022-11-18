@@ -38,12 +38,12 @@ ifeq ($(BR2_PACKAGE_MALI_G31_GBM),y)
 endif
 
 define BATOCERA_RESOLUTION_INSTALL_TARGET_CMDS
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/batocera-resolution.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/batocera-screenshot.$(BATOCERA_SCRIPT_SCREENSHOT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-screenshot.$(BATOCERA_SCRIPT_SCREENSHOT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
 endef
 
 define BATOCERA_RESOLUTION_INSTALL_RG552
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/batocera-resolution-post-rg552 $(TARGET_DIR)/usr/bin/batocera-resolution-post
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution-post-rg552 $(TARGET_DIR)/usr/bin/batocera-resolution-post
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RG552),y)
@@ -51,7 +51,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RG552),y)
 endif
 
 define BATOCERA_RESOLUTION_INSTALL_RK3128
-        install -m 0755 $(BATOCERA_RESOLUTION_PATH)/batocera-resolution-post-rk3128 $(TARGET_DIR)/usr/bin/batocera-resolution-post
+        install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution-post-rk3128 $(TARGET_DIR)/usr/bin/batocera-resolution-post
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
@@ -61,7 +61,7 @@ endif
 define BATOCERA_RESOLUTION_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/x86/fsoverlay/etc/X11/xorg.conf.d/20-amdgpu.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/20-amdgpu.conf
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/batocera-record $(TARGET_DIR)/usr/bin/
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/recorder/batocera-record.xorg $(TARGET_DIR)/usr/bin/batocera-record
 endef
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
