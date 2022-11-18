@@ -3948,6 +3948,8 @@ xbox360:
   emulators:
     xenia:
       xenia: { requireAnyOf: [BR2_PACKAGE_XENIA] }
+    xenia-canary:
+      xenia-canary: { requireAnyOf: [BR2_PACKAGE_XENIA_CANARY] }
   comment_en: |
     Currently Xenia runs under Wine and therefore is currently restricted to run using Vulkan only.
     Unfortunately the Vulkan implementation for Xenia is somewhat behind D3D12 in terms on graphics compatibility.
