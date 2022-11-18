@@ -33,6 +33,10 @@ define SWAY_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/build/sway/sway         $(TARGET_DIR)/usr/bin
     $(INSTALL) -D $(@D)/build/swaymsg/swaymsg   $(TARGET_DIR)/usr/bin
 
+    # Rotation
+    $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/display/sway/config/sway-orientation \
+        $(TARGET_DIR)/usr/bin/sway-orientation
+
     mkdir -p $(TARGET_DIR)/etc/sway
     $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/display/sway/config/config \
         $(TARGET_DIR)/etc/sway
