@@ -1,0 +1,25 @@
+From 2ba031af902dc2bae6322b319136ab93ebd27eb4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jari=20H=C3=A4m=C3=A4l=C3=A4inen?= <nuumiofi@gmail.com>
+Date: Mon, 17 Oct 2022 17:24:43 +0300
+Subject: [PATCH 2/3] rk3288/tinker-s: add rockchip,rk3288-tinker compatible
+
+---
+ arch/arm/dts/rk3288-tinker-s.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/rk3288-tinker-s.dts b/arch/arm/dts/rk3288-tinker-s.dts
+index cc7ac5f881..f0b9998c7d 100644
+--- a/arch/arm/dts/rk3288-tinker-s.dts
++++ b/arch/arm/dts/rk3288-tinker-s.dts
+@@ -9,7 +9,7 @@
+ 
+ / {
+ 	model = "Rockchip RK3288 Asus Tinker Board S";
+-	compatible = "asus,rk3288-tinker-s", "rockchip,rk3288";
++	compatible = "asus,rk3288-tinker-s", "rockchip,rk3288-tinker", "rockchip,rk3288";
+ 
+ 	chosen {
+ 		stdout-path = &uart2;
+-- 
+2.38.0
+
