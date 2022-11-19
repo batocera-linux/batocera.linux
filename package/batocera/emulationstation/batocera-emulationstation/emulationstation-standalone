@@ -52,39 +52,9 @@ do
     if test -z "${display_rotate}"
     then
 	display_rotate="$(/usr/bin/batocera-settings-get-master display.rotate)"
+    batocera-resolution setRotation "${display_rotate}"
     fi
     ###
-
-    EXTRA_OPTS=
-    if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
-    then
-        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
-        TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
-
-    case "${display_rotate}" in
-	    "1")
-		xrandr --output "${OUTPUT}" --rotate right
-		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
-		;;
-	    "2")
-		xrandr --output "${OUTPUT}" --rotate inverted
-		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
-		;;
-	    "3")
-		xrandr --output "${OUTPUT}" --rotate left
-		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
-		;;
-	    *)
-		# in case of reboot of es
-		xrandr --output "${OUTPUT}" --rotate normal
-		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
-	esac
-    else
-	if test -n "${display_rotate}"; then
-	    EXTRA_OPTS="--screenrotate ${display_rotate}"
-	fi
-    fi
 
     ### resolution ###
     bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
