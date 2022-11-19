@@ -217,7 +217,7 @@ then
     ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
     ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
     ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
-    for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
 
 elif [[ "${MODE}" == *"legacy"* ]]
 then
@@ -399,7 +399,7 @@ then
         ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
         ln -sf /usr/share/nvidia/modules/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
-        for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+        for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
     fi
 
 elif test "${MODE}" = "nouveau"
