@@ -25,6 +25,9 @@ UBOOT_MULTIBOARD_MAKE_OPTS = \
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3288),y)
 UBOOT_MULTIBOARD_MAKE_OPTS += BL32=$(BINARIES_DIR)/bl32.elf
 UBOOT_MULTIBOARD_SOC_DIR = common-rk3288
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
+UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.elf
+UBOOT_MULTIBOARD_SOC_DIR = common-rk3399
 else
 # Dummy SoC dir prevents adding common level patches twice
 # in case a new target SoC starts using this package and
