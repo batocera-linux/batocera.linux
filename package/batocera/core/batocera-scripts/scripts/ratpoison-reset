@@ -1,0 +1,11 @@
+#!/bin/sh
+
+LC_ALL=C ratpoison -c remhook deletewindow "execa ratpoison-reset"
+LC_ALL=C ratpoison -c remhook newwindow next
+LC_ALL=C ratpoison -c "fselect 1"
+LC_ALL=C ratpoison -c delete
+LC_ALL=C ratpoison -c removedown
+LC_ALL=C ratpoison -c removeleft
+LC_ALL=C ratpoison -c removeup
+LC_ALL=C ratpoison -c removeright
+LC_ALL=C ratpoison -c switchtodesktop0

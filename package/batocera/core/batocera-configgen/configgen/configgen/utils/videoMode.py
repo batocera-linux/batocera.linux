@@ -132,3 +132,43 @@ def getAltDecoration(systemName, rom, emulator):
                 return str(row[1])
 
     return "0"
+
+def setupRatpoisonFrames(orientation, splitSize, subFrames):
+    ratpoisonCommands = []
+
+    # Switch away from ES
+    ratpoisonCommands += [ 'switchtodesktop1' ]
+    # Start slicing the screen into frames
+    # Large window on left, vertical stack on right
+    if orientation == "vert":
+        ratpoisonCommands += [ f'hsplit {splitSize}' ]
+        if subFrames > 1:
+            ratpoisonCommands += [ 'next' ]
+            for frame in range(subFrames, 1, -1):
+                ratpoisonCommands += [ f'vsplit 1/{str(f)}', 'next' ]
+    # Large window on top, horizontal row on the bottom
+    elif orientation == "horiz":
+        ratpoisonCommands += [ f'vsplit {splitSize}' ]
+        if subFrames > 1:
+            ratpoisonCommands += [ 'next' ]
+            for frame in range(subFrames, 1, -1):
+                ratpoisonCommands += [ f'hsplit 1/{str(f)}', 'next' ]
+    # Classic split screen - 2P = P1 top, P2 bottom, 3/4P = P1/P2 top, P3/P4 bottom
+    # 3P will be centered on the bottom if only 3 players
+    elif orientation == "even":
+        if subFrames == 1:
+            ratpoisonCommands += [ 'vsplit 1/2' ]
+        elif subFrames > 1:
+            ratpoisonCommands += [ 'vsplit 1/2', 'hsplit 1/2', 'number 2 3' ]
+            if subframes == 3:
+                ratpoisonCommands += [ 'fselect 3', 'hsplit 1/2' ]
+
+    # Reselect the first frame and set hooks for events
+    ratpoisonCommands += [ 'fselect 1', 'addhook newwindow next', 'addhook deletewindow "execa ratpoison-reset"' ]
+
+    # Run the commands (split into another function so it can be called from elsewhere if needed)
+    runRatpoisonCommands(ratpoisonCommands)
+
+def runRatpoisonCommands(commandList):
+    for command in commandList:
+        subprocess.call(f'LC_ALL=C ratpoison -c "{command}"', shell=True)

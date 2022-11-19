@@ -5893,6 +5893,15 @@ cemu:
             choices:
                "Disabled (Default)": false
                "Enabled":            true
+        cemu_dualview:
+            prompt: ENABLE DUAL VIEW
+            description: Show the TV and gamepad views together
+            choices:
+               "Disabled (Default)":         none
+               "Vertical (Even)":            vert1
+               "Vertical (Small Gamepad)":   vert2
+               "Horizontal (Even)":          horiz1
+               "Horizontal (Small Gamepad)": horiz2
 
 citra:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6134,6 +6143,9 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA (Internal)":             13
+            choiceArch:
+                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_2_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 2 TYPE
@@ -6146,6 +6158,9 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA (Internal)":             13
+            choiceArch:
+                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_3_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 3 TYPE
@@ -6158,6 +6173,9 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA (Internal)":             13
+            choiceArch:
+                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_4_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 4 TYPE
@@ -6170,6 +6188,9 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+                "GBA (Internal)":             13
+            choiceArch:
+                "GBA (Internal)":             [x86, x86_64]
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6274,6 +6295,13 @@ dolphin:
   systems:
     gamecube:
         cfeatures:
+            gbalayout:
+                archs_include: [x86, x86_64]
+                prompt:      GBA LAYOUT
+                description: Arrangement of GameCube and GBA screens.
+                choices:
+                    "Vertical":   vert
+                    "Horizontal": horiz
             widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
