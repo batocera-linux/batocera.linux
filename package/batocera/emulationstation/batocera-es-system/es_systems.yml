@@ -1811,14 +1811,14 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json, gbl]
   platform:   gc
   theme:      gc
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
     libretro:
-      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN], incompatible_extensions: [gbl] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gamecube
   comment_fr: |

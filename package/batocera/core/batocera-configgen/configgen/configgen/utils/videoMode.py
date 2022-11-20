@@ -133,42 +133,99 @@ def getAltDecoration(systemName, rom, emulator):
 
     return "0"
 
-def setupRatpoisonFrames(orientation, splitSize, subFrames):
+def setupRatpoisonFrames(orientation, splitSize, subCount):
     ratpoisonCommands = []
+    mainRes = {}
+    subRes = []
+    splitFrames = []
 
-    # Switch away from ES
-    ratpoisonCommands += [ 'switchtodesktop1' ]
-    # Start slicing the screen into frames
-    # Large window on left, vertical stack on right
-    if orientation == "vert":
-        ratpoisonCommands += [ f'hsplit {splitSize}' ]
-        if subFrames > 1:
-            ratpoisonCommands += [ 'next' ]
-            for frame in range(subFrames, 1, -1):
-                ratpoisonCommands += [ f'vsplit 1/{str(f)}', 'next' ]
-    # Large window on top, horizontal row on the bottom
-    elif orientation == "horiz":
-        ratpoisonCommands += [ f'vsplit {splitSize}' ]
-        if subFrames > 1:
-            ratpoisonCommands += [ 'next' ]
-            for frame in range(subFrames, 1, -1):
-                ratpoisonCommands += [ f'hsplit 1/{str(f)}', 'next' ]
-    # Classic split screen - 2P = P1 top, P2 bottom, 3/4P = P1/P2 top, P3/P4 bottom
-    # 3P will be centered on the bottom if only 3 players
-    elif orientation == "even":
-        if subFrames == 1:
-            ratpoisonCommands += [ 'vsplit 1/2' ]
-        elif subFrames > 1:
-            ratpoisonCommands += [ 'vsplit 1/2', 'hsplit 1/2', 'number 2 3' ]
-            if subframes == 3:
-                ratpoisonCommands += [ 'fselect 3', 'hsplit 1/2' ]
+    screenRes = getCurrentResolution()
+    if orientation == 'vert':
+        mainRes['width'] = screenRes['width'] * splitSize
+        mainRes['height'] = screenRes['height']
+        currentFrame = 1
+        for app in range(0, subCount):
+            subRes.append({})
+            subRes[app]['width'] = screenRes['width'] - mainRes['width']
+            subRes[app]['height'] = screenRes['height'] / subCount
+            subRes[app]['x'] = mainRes['width']
+            subRes[app]['y'] = subRes[app]['height'] * (currentFrame - 1)
+            subRes[app]['frame'] = currentFrame
+            currentFrame = currentFrame + 1
+    elif orientation == 'horiz':
+        mainRes['width'] = screenRes['width']
+        mainRes['height'] = screenRes['height'] * splitSize
+        currentFrame = 1
+        for app in range(0, subCount):
+            subRes.append({})
+            subRes[app]['width'] = screenRes['width'] / subCount
+            subRes[app]['height'] = screenRes['height'] - mainRes['height']
+            subRes[app]['x'] = subRes[app]['width'] * (currentFrame - 1)
+            subRes[app]['y'] = mainRes['height']
+            subRes[app]['frame'] = currentFrame
+            currentFrame = currentFrame + 1
+    elif orientation == 'even':
+        if subCount == 2:
+            mainRes['width'] = screenRes['width']
+            mainRes['height'] = screenRes['height'] / 2
+            subRes[0]['width'] = screenRes['width']
+            subRes[0]['height'] = screenRes['height'] / 2
+            subRes[0]['x'] = 0
+            subRes[0]['y'] = subRes[subApp[0]]['height']
+            subRes[0]['frame'] = 1
+        elif subCount == 2:
+            mainRes['width'] = screenRes['width'] / 2
+            mainRes['height'] = screenRes['height'] / 2
+            subRes[0]['width'] = screenRes['width'] / 2
+            subRes[0]['height'] = screenRes['height'] / 2
+            subRes[0]['x'] = screenRes['width'] / 2
+            subRes[0]['y'] = 0
+            subRes[0]['frame'] = 1
+            subRes[1]['width'] = screenRes['width']
+            subRes[1]['height'] = screenRes['height'] / 2
+            subRes[1]['x'] = 0
+            subRes[1]['y'] = subRes[subApp[1]]['height']
+            subRes[1]['frame'] = 2
+        elif subCount == 3:
+            mainRes['width'] = screenRes['width'] / 2
+            mainRes['height'] = screenRes['height'] / 2
+            subRes[0]['width'] = screenRes['width'] / 2
+            subRes[0]['height'] = screenRes['height'] / 2
+            subRes[0]['x'] = screenRes['width'] / 2
+            subRes[0]['y'] = 0
+            subRes[0]['frame'] = 1
+            subRes[1]['width'] = screenRes['width'] / 2
+            subRes[1]['height'] = screenRes['height'] / 2
+            subRes[1]['x'] = 0
+            subRes[1]['y'] = subRes[subApp[0]]['height']
+            subRes[1]['frame'] = 2
+            subRes[2]['width'] = screenRes['width'] / 2
+            subRes[2]['height'] = screenRes['height'] / 2
+            subRes[2]['x'] = subRes[subApp[2]]['width']
+            subRes[2]['y'] = subRes[subApp[2]]['height']
+            subRes[2]['frame'] = 3
 
-    # Reselect the first frame and set hooks for events
-    ratpoisonCommands += [ 'fselect 1', 'addhook newwindow next', 'addhook deletewindow "execa ratpoison-reset"' ]
+    splitFrames.append({})
+    splitFrames[0] = f"(frame :number 0 :x 0 :y 0 :width {mainRes['width']} :height {mainRes['height']} :screenw {screenRes['width']} :screenh {screenRes['height']} :window 0 :last-access 0 :dedicated 1)"
+    currentFrame = 1
+    for subFrame in subRes:
+        splitFrames.append({})
+        splitFrames[currentFrame] = f"(frame :number {subFrame['frame']} :x {subFrame['x']} :y {subFrame['y']} :width {subFrame['width']} :height {subFrame['height']} :screenw {screenRes['width']} :screenh {screenRes['height']} :window 0 :last-access {subFrame['frame']} :dedicated 1)"
+        currentFrame = currentFrame + 1
+    # Dummy frame
+    splitFrames.append({})
+    splitFrames[currentFrame] = f"(frame :number {currentFrame} :x {screenRes['width'] + 1} :y {screenRes['height'] + 1} :width 1 :height 1 :screenw {screenRes['width']} :screenh {screenRes['height']} :window 0 :last-access {currentFrame} :dedicated 0)"
+    newFrameset = ",".join(splitFrames)
 
-    # Run the commands (split into another function so it can be called from elsewhere if needed)
+    ratpoisonCommands += [ f'set frameset {getFrameset()}', 'addhook deletewindow exec batocera-ratpoison reset', 'addhook newwindow focus' ]
+    ratpoisonCommands += [ f'frestore {newFrameset}', 'fselect 0' ]
+
     runRatpoisonCommands(ratpoisonCommands)
 
 def runRatpoisonCommands(commandList):
     for command in commandList:
+        eslog.debug(f'Running: ratpoison -c "{command}"')
         subprocess.call(f'LC_ALL=C ratpoison -c "{command}"', shell=True)
+
+def getFrameset():
+    return subprocess.check_output('LC_ALL=C ratpoison -c fdump', shell=True).decode(sys.stdout.encoding)

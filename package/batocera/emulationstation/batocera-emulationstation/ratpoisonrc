@@ -1,11 +1,11 @@
 set startupmessage 0
 set border 0
 set framemsgwait -1
+set msgwait -1
 set wingravity c
 set maxsizegravity c
 set transgravity c
+set winname name
 definekey top A-tab next
 banish
-setenv desktops default frameview
-exec dnumb=0;for dname in `ratpoison -c "getenv desktops"`;do ratpoison -c 'alias selectgroup'$dnumb' exec ratpoison -c "gselect '$dnumb'" -c "echo []'$dname'"' -c 'alias switchtodesktop'$dnumb' exec tod='$dnumb';todname='$dname';fromd=`ratpoison -c "getenv desktop_cur"`; ratpoison -c "setenv desktop_$fromd `ratpoison -c fdump`" -c "setenv desktop_cur $tod" -c "gselect $tod"; restd=`ratpoison -c "getenv desktop_$tod"`; if [ -z "$restd" ]; then ratpoison -c "select -" -c only -c next; else ratpoison -c "frestore $restd"; fi; ratpoison -c "echo *$todname"' -c 'alias movetogroup'$dnumb' exec ratpoison -c "gmove '$dnumb'" -c "echo ->'$dname'"'; if [ "$dnumb" == 0 ]; then ratpoison -c "setenv desktop_cur $dnumb" -c "setenv desktop_$dnumb `ratpoison -c fdump`" -c "grename $dname"; else ratpoison -c "gnewbg $dname" -c "unsetenv desktop_$dnumb"; fi; dnumb=$(($dnumb+1));done
 exec emulationstation-standalone
