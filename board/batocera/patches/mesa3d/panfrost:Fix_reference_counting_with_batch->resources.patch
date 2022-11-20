@@ -1,0 +1,208 @@
+From 42212a9bfdab8381beb9206b5d2551344c71d584 Mon Sep 17 00:00:00 2001
+From: Alyssa Rosenzweig <alyssa@collabora.com>
+Date: Tue, 15 Nov 2022 11:16:15 -0500
+Subject: [PATCH] panfrost: Fix reference counting with batch->resources
+
+Refactor accesses to batch->resources to happen through safe helpers
+that update the appropriate bookkeeping. This makes it obvious that (in
+particular) reference counts are updated when they should be.
+
+The functional change is that we are now correctly unreferencing
+resources during shadowing, fixing a leak of shadowed resources.
+
+Closes: #7362
+Fixes: 2d8f28df731 ("panfrost: Replace resource shadowing flush")
+Signed-off-by: Alyssa Rosenzweig <alyssa@collabora.com>
+Reported-by: Mastodon, apparently
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/19753>
+---
+ src/gallium/drivers/panfrost/pan_job.c | 116 ++++++++++++++++---------
+ src/gallium/drivers/panfrost/pan_job.h |   2 +-
+ 2 files changed, 74 insertions(+), 44 deletions(-)
+
+diff --git a/src/gallium/drivers/panfrost/pan_job.c b/src/gallium/drivers/panfrost/pan_job.c
+index 5e8176469369..27be0ee10ed6 100644
+--- a/src/gallium/drivers/panfrost/pan_job.c
++++ b/src/gallium/drivers/panfrost/pan_job.c
+@@ -99,6 +99,74 @@ panfrost_batch_init(struct panfrost_context *ctx,
+         screen->vtbl.init_batch(batch);
+ }
+ 
++/*
++ * Safe helpers for manipulating batch->resources follow. In addition to
++ * wrapping the underlying set operations, these update the required
++ * bookkeeping for resource tracking and reference counting.
++ */
++static bool
++panfrost_batch_uses_resource(struct panfrost_batch *batch,
++                             struct panfrost_resource *rsrc)
++{
++        return _mesa_set_search(batch->resources, rsrc) != NULL;
++}
++
++static void
++panfrost_batch_add_resource(struct panfrost_batch *batch,
++                            struct panfrost_resource *rsrc)
++{
++        bool found = false;
++        _mesa_set_search_or_add(batch->resources, rsrc, &found);
++
++        if (!found) {
++                /* Cache number of batches accessing a resource */
++                rsrc->track.nr_users++;
++
++                /* Reference the resource on the batch */
++                pipe_reference(NULL, &rsrc->base.reference);
++        }
++}
++
++static void
++panfrost_batch_remove_resource_internal(struct panfrost_context *ctx,
++                                        struct panfrost_resource *rsrc)
++{
++        struct hash_entry *writer = _mesa_hash_table_search(ctx->writers, rsrc);
++        if (writer) {
++                _mesa_hash_table_remove(ctx->writers, writer);
++                rsrc->track.nr_writers--;
++        }
++
++        rsrc->track.nr_users--;
++        pipe_resource_reference((struct pipe_resource **) &rsrc, NULL);
++}
++
++static void
++panfrost_batch_remove_resource_if_present(struct panfrost_context *ctx,
++                                          struct panfrost_batch *batch,
++                                          struct panfrost_resource *rsrc)
++{
++        struct set_entry *ent = _mesa_set_search(batch->resources, rsrc);
++
++        if (ent != NULL) {
++                panfrost_batch_remove_resource_internal(ctx, rsrc);
++                _mesa_set_remove(batch->resources, ent);
++        }
++}
++
++static void
++panfrost_batch_destroy_resources(struct panfrost_context *ctx,
++                                 struct panfrost_batch *batch)
++{
++        set_foreach(batch->resources, entry) {
++                struct panfrost_resource *rsrc = (void *) entry->key;
++
++                panfrost_batch_remove_resource_internal(ctx, rsrc);
++        }
++
++        _mesa_set_destroy(batch->resources, NULL);
++}
++
+ static void
+ panfrost_batch_cleanup(struct panfrost_context *ctx, struct panfrost_batch *batch)
+ {
+@@ -122,20 +190,7 @@ panfrost_batch_cleanup(struct panfrost_context *ctx, struct panfrost_batch *batc
+                 panfrost_bo_unreference(bo);
+         }
+ 
+-        set_foreach(batch->resources, entry) {
+-                struct panfrost_resource *rsrc = (void *) entry->key;
+-
+-                if (_mesa_hash_table_search(ctx->writers, rsrc)) {
+-                        _mesa_hash_table_remove_key(ctx->writers, rsrc);
+-                        rsrc->track.nr_writers--;
+-                }
+-
+-                rsrc->track.nr_users--;
+-
+-                pipe_resource_reference((struct pipe_resource **) &rsrc, NULL);
+-        }
+-
+-        _mesa_set_destroy(batch->resources, NULL);
++        panfrost_batch_destroy_resources(ctx, batch);
+         panfrost_pool_cleanup(&batch->pool);
+         panfrost_pool_cleanup(&batch->invisible_pool);
+ 
+@@ -239,17 +294,8 @@ panfrost_batch_update_access(struct panfrost_batch *batch,
+         uint32_t batch_idx = panfrost_batch_idx(batch);
+         struct hash_entry *entry = _mesa_hash_table_search(ctx->writers, rsrc);
+         struct panfrost_batch *writer = entry ? entry->data : NULL;
+-        bool found = false;
+ 
+-        _mesa_set_search_or_add(batch->resources, rsrc, &found);
+-
+-        if (!found) {
+-                /* Cache number of batches accessing a resource */
+-                rsrc->track.nr_users++;
+-
+-                /* Reference the resource on the batch */
+-                pipe_reference(NULL, &rsrc->base.reference);
+-        }
++        panfrost_batch_add_resource(batch, rsrc);
+ 
+         /* Flush users if required */
+         if (writes || ((writer != NULL) && (writer != batch))) {
+@@ -262,7 +308,7 @@ panfrost_batch_update_access(struct panfrost_batch *batch,
+                                 continue;
+ 
+                         /* Submit if it's a user */
+-                        if (_mesa_set_search(batch->resources, rsrc))
++                        if (panfrost_batch_uses_resource(batch, rsrc))
+                                 panfrost_batch_submit(ctx, batch);
+                 }
+         }
+@@ -363,30 +409,14 @@ panfrost_resource_swap_bo(struct panfrost_context *ctx,
+                           struct panfrost_resource *rsrc,
+                           struct panfrost_bo *newbo)
+ {
+-        /* Any batch writing this resource is writing to the old BO, not the
+-         * new BO. After swapping the resource's backing BO, there will be no
+-         * writers of the updated resource. Existing writers still hold a
+-         * reference to the old BO for reference counting.
+-         */
+-        struct hash_entry *writer = _mesa_hash_table_search(ctx->writers, rsrc);
+-        if (writer) {
+-                _mesa_hash_table_remove(ctx->writers, writer);
+-                rsrc->track.nr_writers--;
+-        }
+-
+         /* Likewise, any batch reading this resource is reading the old BO, and
+          * after swapping will not be reading this resource.
+          */
+         unsigned i;
+         foreach_batch(ctx, i) {
+                 struct panfrost_batch *batch = &ctx->batches.slots[i];
+-                struct set_entry *ent = _mesa_set_search(batch->resources, rsrc);
+-
+-                if (!ent)
+-                        continue;
+ 
+-                _mesa_set_remove(batch->resources, ent);
+-                rsrc->track.nr_users--;
++                panfrost_batch_remove_resource_if_present(ctx, batch, rsrc);
+         }
+ 
+         /* Swap the pointers, dropping a reference to the old BO which is no
+@@ -891,7 +921,7 @@ panfrost_flush_batches_accessing_rsrc(struct panfrost_context *ctx,
+         foreach_batch(ctx, i) {
+                 struct panfrost_batch *batch = &ctx->batches.slots[i];
+ 
+-                if (!_mesa_set_search(batch->resources, rsrc))
++                if (!panfrost_batch_uses_resource(batch, rsrc))
+                         continue;
+ 
+                 perf_debug_ctx(ctx, "Flushing user due to: %s", reason);
+diff --git a/src/gallium/drivers/panfrost/pan_job.h b/src/gallium/drivers/panfrost/pan_job.h
+index 52eac4e0b17f..23263c54e071 100644
+--- a/src/gallium/drivers/panfrost/pan_job.h
++++ b/src/gallium/drivers/panfrost/pan_job.h
+@@ -192,7 +192,7 @@ struct panfrost_batch {
+         struct pan_tristate sprite_coord_origin;
+         struct pan_tristate first_provoking_vertex;
+ 
+-        /* Referenced resources */
++        /* Referenced resources, holds a pipe_reference. */
+         struct set *resources;
+ };
+ 
+-- 
+GitLab
+
