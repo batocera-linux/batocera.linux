@@ -7161,6 +7161,15 @@ pcsx2:
             choices:
                 "Off":      0
                 "On":       1
+        VsyncQueueSize:
+            group: ADVANCED OPTIONS
+            prompt:      VSYNCS IN MTGS QUEUE
+            description: Render this many frames ahead to improve performance at the cost of input lag.
+            choices:
+                "0":  0
+                "1":  1
+                "2":  2
+                "3":  3
         micro_vu:
             group: ADVANCED OPTIONS
             prompt:     "MICRO VU SPEED HACKS"
@@ -9461,7 +9470,7 @@ yuzu:
           description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
           choices:
             "None": 0
-            "FXAA": 1  
+            "FXAA": 1
         yuzu_scale_filter:
           group: ADVANCED OPTIONS
           prompt:      TEXTURE FILTERING
@@ -9472,7 +9481,7 @@ yuzu:
             "Bicubic":                      2
             "Gaussian":                     3
             "ScaleForce":                   4
-            "AMD FidelityFX (Vulkan Only)": 5                          
+            "AMD FidelityFX (Vulkan Only)": 5
 
 ryujinx:
   features: [padtokeyboard]
