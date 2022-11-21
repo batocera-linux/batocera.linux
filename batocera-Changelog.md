@@ -45,6 +45,7 @@
 - flycast emulators to v2.0
 - dosbox to v0.78.1
 - dosbox-x to v0.84.3
+- dosbox-staging to v0.79.1
 - PPSSPP & lr-PPSSPP to v1.13.2
 - nvidia production driver to 520.56.06
 - nvidia legacy driver to 470.141.03
