@@ -9,8 +9,5 @@ input * {
     xkb_layout "us"
 }
 
-# Batocera custom keybindings
-bindsym Print   exec /usr/bin/batocera-screenshot
-
 # Starts EmulationStation when loading sway
-exec_always /usr/bin/emulationstation-standalone
+exec /usr/bin/emulationstation-standalone
