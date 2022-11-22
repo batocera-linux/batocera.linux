@@ -52,7 +52,14 @@ do
     if test -z "${display_rotate}"
     then
 	display_rotate="$(/usr/bin/batocera-settings-get-master display.rotate)"
-    batocera-resolution setRotation "${display_rotate}"
+    fi
+    if test -n "${effective_output}"
+    then
+        if ! batocera-resolution setRotation "${display_rotate}"
+	then
+	    # when no rotation is available by the system, apply it
+	    EXTRA_OPTS="--screenrotate ${display_rotate}"
+	fi
     fi
     ###
 
