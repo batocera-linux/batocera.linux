@@ -118,6 +118,19 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     if (system.isOptSet("audio_volume")):
         retroarchConfig['audio_volume'] = system.config['audio_volume']
 
+    if (system.isOptSet("display.rotate") and videoMode.getDisplayMode() not in ['xorg', 'wayland']):
+        # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
+        if system.config["display.rotate"] == "0":
+            retroarchConfig['video_rotation'] = "0"
+        elif system.config["display.rotate"] == "1":
+            retroarchConfig['video_rotation'] = "3"
+        elif system.config["display.rotate"] == "2":
+            retroarchConfig['video_rotation'] = "2"
+        elif system.config["display.rotate"] == "3":
+            retroarchConfig['video_rotation'] = "1"
+    else:
+        retroarchConfig['video_rotation'] = '0'
+
     if system.isOptSet('video_threaded') and system.getOptBoolean('video_threaded') == True:
         retroarchConfig['video_threaded'] = 'true'
     else:
