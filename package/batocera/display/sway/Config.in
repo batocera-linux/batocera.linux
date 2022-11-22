@@ -8,6 +8,7 @@ config BR2_PACKAGE_SWAY
     select BR2_PACKAGE_PANGO
     select BR2_PACKAGE_LIBGLIB2
     select BR2_PACKAGE_GRIM
+    select BR2_PACKAGE_WF_RECORDER
 
     help
         Sway is a tiling Wayland compositor and a drop-in
