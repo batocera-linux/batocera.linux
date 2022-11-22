@@ -42,17 +42,24 @@ do
     ###################
 
     ### rotation ###
-    display_mode=$(batocera-resolution getDisplayMode)
-    display_rotate=$(/usr/bin/batocera-settings-get-master display.rotate)
-    EXTRA_OPTS=
-    if [ "${display_mode}" != "xorg" -a "${display_mode}" != "wayland" ]
+    display_rotate=
+    # try to find a rotation for the custom output
+    effective_output=$(batocera-resolution currentOutput)
+    if test -n "${effective_output}"
     then
-        if test -n "${display_rotate}"
-        then
-        EXTRA_OPTS="--screenrotate ${display_rotate}"
-        fi
-    else
-    batocera-resolution setRotation "${display_rotate}"
+	display_rotate=$(/usr/bin/batocera-settings-get-master "display.rotate.${effective_output}")
+    fi
+    if test -z "${display_rotate}"
+    then
+	display_rotate="$(/usr/bin/batocera-settings-get-master display.rotate)"
+    fi
+    if test -n "${effective_output}"
+    then
+        if ! batocera-resolution setRotation "${display_rotate}"
+	then
+	    # when no rotation is available by the system, apply it
+	    EXTRA_OPTS="--screenrotate ${display_rotate}"
+	fi
     fi
     ###
 
