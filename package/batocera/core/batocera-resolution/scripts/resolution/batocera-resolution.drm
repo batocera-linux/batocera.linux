@@ -166,6 +166,10 @@ case "${ACTION}" in
 	f_checkVals
 	f_minTomaxResolution "$1"
         ;;
+    "setRotation")
+	# no possible rotation
+	exit 1
+	;;
     "getDisplayMode")
         echo "drm"
         ;;
