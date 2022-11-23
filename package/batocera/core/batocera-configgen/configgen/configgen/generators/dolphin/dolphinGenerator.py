@@ -27,6 +27,7 @@ class DolphinGenerator(Generator):
             fileInput = openFile.readlines()
             lineCount = 0
             for line in fileInput:
+                eslog.debug(f"Loading gbl file: {line}")
                 if lineCount == 0:
                     gcROM = line.strip()
                     if os.path.exists(gcROM):
@@ -154,6 +155,7 @@ class DolphinGenerator(Generator):
                     gbaMode = True
                     gbaSlots = gbaSlots + 1
                     if len(gbaROMs) <= assignedROM and len(gbaROMs) > 0:
+                        eslog.debug(f'Assigning ROM {gbaROMs[assignedROM]} to GBA {str(i)}')
                         dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[assignedROM], i))
                         assignedROM = assignedROM + 1
                     else:
@@ -161,13 +163,19 @@ class DolphinGenerator(Generator):
                             dolphinSettings.set("GBA", f"Rom{str(i)}", "")
                         else:
                             dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[len(gbaROMs)-1], i))
+            elif i == 2 and system.isOptSet('auto_ereader') and system.config['auto_ereader'] != 'none':
+                eslog.debug(f"Setting GBA on Port 2 with /userdata/bios/{system.config['auto_ereader']}.bin")
+                gbaMode = True
+                gbaSlots = gbaSlots + 1
+                dolphinSettings.set("Core", "SIDevice" + str(i - 1), "13")
+                dolphinSettings.set("GBA", f"Rom{str(i)}", f"/userdata/bios/{system.config['auto_ereader']}.bin")
             else:
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
 
         # GBA
         dolphinSettings.set("GBA", "BIOS", "/userdata/bios/gba_bios.bin")
         dolphinSettings.set("GBA", "SavesInRomPath", "False")
-        gbaSavePath = "/userdata/saves/gamecube/gba/"
+        gbaSavePath = "/userdata/saves/dolphin-emu/GBA/Saves/"
         if not os.path.exists(gbaSavePath):
             os.makedirs(gbaSavePath)
         dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
@@ -332,7 +340,7 @@ class DolphinGenerator(Generator):
                     gbaLayout = "horiz"
                 else:
                     gbaLayout = "vert"
-            videoMode.setupRatpoisonFrames(gbaLayout, .75, gbaSlots)
+            videoMode.setupRatpoisonFrames(gbaLayout, .75, gbaSlots, False)
         # Check what version we've got
         if os.path.isfile("/usr/bin/dolphin-emu"):
             commandArray = ["dolphin-emu", "-e", rom]
@@ -369,6 +377,10 @@ class DolphinGenerator(Generator):
                 eslog.debug("Decorations disabled - GBA Mode")
                 return 16/9
 
+        if "auto_ereader" in config and config["auto_ereader"] != "none":
+            eslog.debug("Decorations disabled - e-Reader Mode")
+            return 16/9
+
         # Auto
         if dolphin_aspect_ratio == "0":
             if wii_tv_mode == 1:
@@ -394,22 +406,26 @@ def prepGBAROM(rom, slot):
     baseFilePath = os.path.dirname(rom)
 
     # By default, we symlink the save file if it doesn't exist.
-    if os.path.exists(f"/userdata/saves/gba/{baseFileName}.sav"):
-        if not os.path.exists(f"/userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav"):
+    eslog.debug(f"Looking for /userdata/saves/gba/{baseFileName}.srm")
+    if os.path.exists(f"/userdata/saves/gba/{baseFileName}.srm"):
+        if not os.path.exists(f"/userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav"):
             try:
-                os.symlink(f"/userdata/saves/gba/{baseFileName}.sav", f"/userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
-                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.sav to /userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav")
+                os.symlink(f"/userdata/saves/gba/{baseFileName}.srm", f"/userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav")
+                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.srm to /userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav")
             except:
-                eslog.error(f"Unable to symlink {basefilename}.sav, may not be supported on this filesystem.")
+                eslog.error(f"Unable to symlink {basefilename}.srm, may not be supported on this filesystem.")
         else:
-            eslog.debug(f"Save file /userdata/saves/gamecube/gba/{baseFileName}-{slot}.sav exists, not overwriting.")
+            eslog.debug(f"Save file /userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav exists, not overwriting.")
     else:
         eslog.debug(f"No save file found, no link created.")
     if os.path.exists(rom):
+        eslog.debug(f"Found {rom}")
         return rom
     elif os.path.exists(f"/userdata/roms/gba/{rom}"):
+        eslog.debug(f"Found /userdata/roms/gba/{rom}")
         return f"/userdata/roms/gba/{rom}"
     elif os.path.exists(f"/userdata/roms/gba{rom}"):
+        eslog.debug(f"Found /userdata/roms/gba{rom}")
         return f"/userdata/roms/gba{rom}"
     else:
         eslog.error(f"GBA ROM {rom} not found, check path or filename")
@@ -424,3 +440,10 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages[lang]
     else:
         return availableLanguages["en_US"]
+
+# Show mouse for e-Reader menu
+def getMouseMode(self, config):
+    if "auto_ereader" in config and config["auto_ereader"] != 'none':
+        return True
+    else:
+        return False

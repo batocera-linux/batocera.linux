@@ -5,14 +5,6 @@ import re
 import time
 import subprocess
 
-def closeMainApp():
-	# Select Frame 0, close app if open
-	try:
-		frameReturn = getRatpoisonCommand('fselect 0')
-	except:
-		return False
-	runRatpoisonCommand('delete')
-
 def restoreFrameset():
 	# Load saved ES frame info from env variable
 	savedFrameset = getRatpoisonCommand('getenv frameset')
@@ -22,9 +14,11 @@ def clearHooks():
 	# Clear window management hooks
 	runRatpoisonCommand('remhook deletewindow exec batocera-ratpoison reset')
 	runRatpoisonCommand('remhook newwindow focus')
+	runRatpoisonCommand('remhook newwindow focusprev')
 
 def redrawWindow():
 	# Just in case ES isn't displaying
+	runRatpoisonCommand('clrunmanaged')
 	runRatpoisonCommand('only')
 	runRatpoisonCommand('redisplay')
 
@@ -33,21 +27,23 @@ def runRatpoisonCommand(command):
 	try:
 		subprocess.call(f'LC_ALL=C ratpoison -c "{command}"', shell=True)
 	except:
+		print('Command returned an error.')
 		return False
 
 def getRatpoisonCommand(command):
-	print(f'Running ratpoison command {command}')
+	print(f'Running ratpoison command {command} (Expecting output)')
 	try:
-		return subprocess.check_output(f'LC_ALL=C ratpoison -c "{command}"', shell=True).decode(sys.stdout.encoding)
+		tempVar = subprocess.check_output(f'LC_ALL=C ratpoison -c "{command}"', shell=True).decode(sys.stdout.encoding)
 	except:
 		return False
+	print(f'Ratpoison Output = {tempVar}')
+	return tempVar
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
 		print('Error, command needed.')
 	if sys.argv[1] == 'reset':
 		clearHooks()
-		# closeMainApp()
 		restoreFrameset()
 		redrawWindow()
 

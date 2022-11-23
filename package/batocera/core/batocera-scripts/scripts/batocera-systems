@@ -712,6 +712,11 @@ systems = {
     "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
                                                 { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
                                                 { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    # ---------- Nintendo Gamecube ---------- #
+    # e-Reader BIOS ROMs for Dolphin GBA Connectivity
+    "gamecube":  { "name": "Nintendo Gamecube", "emulator": "dolphin", "core": "dolphin", "biosFiles":  [ { "md5": "b44aacbfe0a64d73b466f8f7bcca4577", "file": "bios/Card e-Reader (J).bin"  },
+                                                { "md5": "7b17e51d5a61780f9823203c6254ed8f", "file": "bios/Card e-Reader (U).bin"  },
+                                                {  "md5": "32cbd7b3468b5f595876161a47f15895", "file": "bios/Card e-Reader+ (J).bin"  } ] },
 }
 
 class BiosStatus:
@@ -818,6 +823,7 @@ def checkBios(systems, prefix, filterROMs):
                                 if md5 != file["md5"] and file["md5"] != "":
                                     if system not in missingBios:
                                         missingBios[system] = {}
+                                    print('Mismatch: File {} has MD5 {} (expected {})'.format(file['file'], md5, file['md5']))
                                     missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
                             else:
                                 if 'altmd5' in file:
