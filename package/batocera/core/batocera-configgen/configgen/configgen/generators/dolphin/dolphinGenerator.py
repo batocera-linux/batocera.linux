@@ -20,6 +20,7 @@ class DolphinGenerator(Generator):
         gbaMode = False
         gbaSlots = 0
         gbaROMs = []
+        gbaSavePath = '/var/run/dolphin-gba/'
 
         # Parse gbl (Game Boy Link) file for GBA ROM(s)
         if os.path.splitext(rom)[1] == ".gbl":
@@ -156,13 +157,13 @@ class DolphinGenerator(Generator):
                     gbaSlots = gbaSlots + 1
                     if len(gbaROMs) <= assignedROM and len(gbaROMs) > 0:
                         eslog.debug(f'Assigning ROM {gbaROMs[assignedROM]} to GBA {str(i)}')
-                        dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[assignedROM], i))
+                        dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[assignedROM], i, gbaSavePath))
                         assignedROM = assignedROM + 1
                     else:
                         if len(gbaROMs) == 0:
                             dolphinSettings.set("GBA", f"Rom{str(i)}", "")
                         else:
-                            dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[len(gbaROMs)-1], i))
+                            dolphinSettings.set("GBA", f"Rom{str(i)}", prepGBAROM(gbaROMs[len(gbaROMs)-1], i, gbaSavePath))
             elif i == 2 and system.isOptSet('auto_ereader') and system.config['auto_ereader'] != 'none':
                 eslog.debug(f"Setting GBA on Port 2 with /userdata/bios/{system.config['auto_ereader']}.bin")
                 gbaMode = True
@@ -175,7 +176,6 @@ class DolphinGenerator(Generator):
         # GBA
         dolphinSettings.set("GBA", "BIOS", "/userdata/bios/gba_bios.bin")
         dolphinSettings.set("GBA", "SavesInRomPath", "False")
-        gbaSavePath = "/userdata/saves/dolphin-emu/GBA/Saves/"
         if not os.path.exists(gbaSavePath):
             os.makedirs(gbaSavePath)
         dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
@@ -352,6 +352,13 @@ class DolphinGenerator(Generator):
             "XDG_DATA_HOME":batoceraFiles.SAVES, \
             "QT_QPA_PLATFORM":"xcb"})
 
+    # Show mouse for e-Reader menu
+    def getMouseMode(self, config):
+        if "auto_ereader" in config and config["auto_ereader"] != 'none':
+            return True
+        else:
+            return False
+
     def getInGameRatio(self, config, gameResolution, rom):
 
         dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
@@ -401,21 +408,21 @@ class DolphinGenerator(Generator):
 
         return 4/3
 
-def prepGBAROM(rom, slot):
+def prepGBAROM(rom, slot, gbaSavePath):
     baseFileName = os.path.splitext(os.path.basename(rom))[0]
     baseFilePath = os.path.dirname(rom)
 
     # By default, we symlink the save file if it doesn't exist.
     eslog.debug(f"Looking for /userdata/saves/gba/{baseFileName}.srm")
     if os.path.exists(f"/userdata/saves/gba/{baseFileName}.srm"):
-        if not os.path.exists(f"/userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav"):
+        if not os.path.exists(f"{gbaSavePath}{baseFileName}-{slot}.sav"):
             try:
-                os.symlink(f"/userdata/saves/gba/{baseFileName}.srm", f"/userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav")
-                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.srm to /userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav")
+                os.symlink(f"/userdata/saves/gba/{baseFileName}.srm", f"{gbaSavePath}{baseFileName}-{slot}.sav")
+                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.srm to {gbaSavePath}{baseFileName}-{slot}.sav")
             except:
                 eslog.error(f"Unable to symlink {basefilename}.srm, may not be supported on this filesystem.")
         else:
-            eslog.debug(f"Save file /userdata/saves/dolphin-emu/GBA/Saves/{baseFileName}-{slot}.sav exists, not overwriting.")
+            eslog.debug(f"Save file {gbaSavePath}{baseFileName}-{slot}.sav exists, not overwriting.")
     else:
         eslog.debug(f"No save file found, no link created.")
     if os.path.exists(rom):
@@ -440,10 +447,3 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages[lang]
     else:
         return availableLanguages["en_US"]
-
-# Show mouse for e-Reader menu
-def getMouseMode(self, config):
-    if "auto_ereader" in config and config["auto_ereader"] != 'none':
-        return True
-    else:
-        return False
