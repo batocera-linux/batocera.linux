@@ -66,10 +66,10 @@
 - mame to v0.248
 - switchres to sep 25th 2022 build
 - lr-mame to v0.248
-- retroarch to v1.12.0 [Changelog](https://github.com/libretro/RetroArch/blob/master/CHANGES.md#1120)
+- retroarch to v1.13.0
 - libretro cores synced with retroarch v1.11.1 [#7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
 - libretro-core-info to Oct 04 2022 build
-- retroarch-assets to Aug 06 2022 build
+- retroarch-assets to Oct 24 2022 build
 - common-shaders to Apr 16 2022 build
 - glsl-shaders to Sep 23 2022 build
 - alllinuxfirmwares to 20221109
