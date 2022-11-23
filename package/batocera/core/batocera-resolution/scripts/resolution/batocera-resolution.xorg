@@ -6,9 +6,11 @@ f_usage() {
     echo "${0} currentMode" >&2
     echo "${0} currentResolution" >&2
     echo "${0} listOutputs" >&2
+    echo "${0} currentOutput" >&2
     echo "${0} setOutput <output>" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} setDPI" >&2
     echo "${0} forceMode <horizontal>x<vertical>:<refresh>" >&2
     echo "${0} setRotation (0|1|2|3)" >&2
     echo "${0} getDisplayMode" >&2
