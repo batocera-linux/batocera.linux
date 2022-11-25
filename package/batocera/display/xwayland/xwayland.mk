@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XWAYLAND_VERSION = 22.1.4
+XWAYLAND_VERSION = 22.1.5
 XWAYLAND_SOURCE = xwayland-$(XWAYLAND_VERSION).tar.xz
 XWAYLAND_SITE = https://www.x.org/releases/individual/xserver
 XWAYLAND_LICENSE = MIT
