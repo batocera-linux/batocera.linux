@@ -90,6 +90,7 @@ do
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
 sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
+cp "/var/run/sinden/p"*"/sinden-"*".log" "${DJOYS}" 2>/dev/null
 
 # lirc
 DLIRC="${TMPDIR}/lirc"
