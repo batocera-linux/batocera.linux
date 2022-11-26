@@ -5,9 +5,6 @@ import batoceraFiles
 import os
 from Emulator import Emulator
 import configparser
-from utils.logger import get_logger
-
-eslog = get_logger(__name__)
 
 viceJoystick = {
             "up":               "0 1 # 1 1 1",
@@ -62,7 +59,6 @@ def generateControllerConfig(viceConfigFile, playersControllers):
             input = pad.inputs[x]
             for indexName, indexValue in viceJoystick.items():
                 if indexName == input.name:
-                    eslog.debug(f"*** indexName = {indexName}, input.name = {input.name} ***")
                     listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
         nplayer += 1
 
