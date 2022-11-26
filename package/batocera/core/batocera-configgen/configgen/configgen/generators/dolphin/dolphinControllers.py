@@ -9,6 +9,7 @@ from utils.logger import get_logger
 import glob
 import configparser
 import re
+import controllersConfig
 
 eslog = get_logger(__name__)
 
@@ -18,7 +19,7 @@ def generateControllerConfig(system, playersControllers, rom, guns):
     generateHotkeys(playersControllers)
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
-            generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns)
+            generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns, system, rom)
             generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             # Generate if hardcoded
@@ -218,12 +219,16 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
     f.write
     f.close()
 
-def generateControllerConfig_guns(filename, anyDefKey, guns):
+def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
     configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     # In case of two pads having the same name, dolphin wants a number to handle this
     double_pads = dict()
+
+    gunsmetadata = {}
+    if len(guns) > 0:
+        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
 
     nplayer = 1
     while nplayer <= 4:
@@ -298,6 +303,16 @@ def generateControllerConfig_guns(filename, anyDefKey, guns):
             f.write("IR/Down = `Axis 1+`\n")
             f.write("IR/Left = `Axis 0-`\n")
             f.write("IR/Right = `Axis 0+`\n")
+
+            # specific games configurations
+            specifics = {
+                "vertical_offset": "IR/Vertical Offset",
+                "yaw":             "IR/Total Yaw",
+                "pitch":           "IR/Total Pitch"
+            }
+            for spe in specifics:
+                if spe in gunsmetadata:
+                    f.write("{} = {}\n".format(specifics[spe], gunsmetadata[spe]))
         nplayer += 1
     f.write
     f.close()
