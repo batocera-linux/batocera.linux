@@ -5,6 +5,9 @@ import batoceraFiles
 import os
 from Emulator import Emulator
 import configparser
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 viceJoystick = {
             "up":               "0 1 # 1 1 1",
