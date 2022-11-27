@@ -321,6 +321,21 @@ WINEPREFIX=$1
     return 0
 }
 
+fonts_install() {
+WINEPREFIX=$1
+    if test -e "${USER_DIR}/fonts"; then
+
+        for file in "${USER_DIR}/fonts/"{*.ttf,*.ttc}; do
+            echo "Installing fonts $file"
+            cp -a "${USER_DIR}/fonts/"{*.ttf,*.ttc} "${WINEPREFIX}/drive_c/windows/Fonts" || return 1
+        done
+
+        mv "${USER_DIR}/fonts" "${USER_DIR}/fonts.bak" || return 1
+    fi
+
+    return 0
+}
+
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
@@ -444,6 +459,7 @@ play_wine() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -467,6 +483,7 @@ play_pc() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -514,6 +531,7 @@ play_exe() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -536,6 +554,7 @@ play_winetgz() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -582,6 +601,7 @@ play_squashfs() {
     fi
 
     mf_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
