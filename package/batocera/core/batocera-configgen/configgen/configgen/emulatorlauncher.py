@@ -241,10 +241,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         try:
             from Evmapy import Evmapy
             # Special handling for auto ereader (P2 joystick as mouse)
-            if systemName == 'gamecube' and 'auto_ereader' in system.config and system.config['auto_ereader'] != "none":
-                Evmapy.start('gamecube-ereader', system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers)
-            else:
-                Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers)
+            Evmapy.start(systemName, system.config, effectiveCore, effectiveRomConfiguration, playersControllers)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
             if executionDirectory is not None:

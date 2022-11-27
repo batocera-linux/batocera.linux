@@ -6144,8 +6144,6 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
                 "GBA (Internal)":             13
-            choiceArch:
-                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_2_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 2 TYPE
@@ -6159,8 +6157,6 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
                 "GBA (Internal)":             13
-            choiceArch:
-                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_3_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 3 TYPE
@@ -6174,8 +6170,6 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
                 "GBA (Internal)":             13
-            choiceArch:
-                "GBA (Internal)":             [x86, x86_64]
         dolphin_port_4_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 4 TYPE
@@ -6189,8 +6183,6 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
                 "GBA (Internal)":             13
-            choiceArch:
-                "GBA (Internal)":             [x86, x86_64]
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6297,12 +6289,11 @@ dolphin:
         cfeatures:
             gbalayout:
                 group: ADVANCED OPTIONS
-                archs_include: [x86, x86_64]
                 prompt:      GBA LAYOUT
                 description: Arrangement of GameCube and GBA screens.
                 choices:
-                    "Vertical":   vert
-                    "Horizontal": horiz
+                    "Vertical - GBAs on Right":   vert
+                    "Horizontal - GBAs on Bottom": horiz
             auto_ereader:
                 group: ADVANCED OPTIONS
                 archs_include: [x86, x86_64]

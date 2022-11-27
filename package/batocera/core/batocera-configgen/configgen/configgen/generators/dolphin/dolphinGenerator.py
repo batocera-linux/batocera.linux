@@ -412,6 +412,9 @@ def prepGBAROM(rom, slot, gbaSavePath):
     baseFileName = os.path.splitext(os.path.basename(rom))[0]
     baseFilePath = os.path.dirname(rom)
 
+    if not os.path.exists(gbaSavePath):
+        os.makedirs(gbaSavePath)
+
     # By default, we symlink the save file if it doesn't exist.
     eslog.debug(f"Looking for /userdata/saves/gba/{baseFileName}.srm")
     if os.path.exists(f"/userdata/saves/gba/{baseFileName}.srm"):
