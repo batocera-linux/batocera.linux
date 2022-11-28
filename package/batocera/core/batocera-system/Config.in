@@ -1488,7 +1488,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	# vendor neutral GL dispatch library
 	# already set by nvidia for x86_64, but required on x86 for pcsx2
 	# required for RPi4 OpenGL stack
-	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND
+	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
 
 config BR2_PACKAGE_BATOCERA_GPU_X86
 	bool "batocera.linux GPU support for x86 platform"
