@@ -1008,8 +1008,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 														!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 	# Gamecube / Wii
-	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY	|| \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X
+	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_LIBRETRO_DOLPHIN             if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY	|| \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X
 
