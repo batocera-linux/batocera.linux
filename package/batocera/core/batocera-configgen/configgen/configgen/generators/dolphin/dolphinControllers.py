@@ -310,16 +310,24 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             if "8" in buttons:
                 f.write("D-Pad/Right = `8`\n")
 
-            f.write("IR/Up = `Axis 1-`\n")
-            f.write("IR/Down = `Axis 1+`\n")
-            f.write("IR/Left = `Axis 0-`\n")
-            f.write("IR/Right = `Axis 0+`\n")
+            if "ir_up" not in gunsmetadata:
+                f.write("IR/Up = `Axis 1-`\n")
+            if "ir_down" not in gunsmetadata:
+                f.write("IR/Down = `Axis 1+`\n")
+            if "ir_left" not in gunsmetadata:
+                f.write("IR/Left = `Axis 0-`\n")
+            if "ir_right" not in gunsmetadata:
+                f.write("IR/Right = `Axis 0+`\n")
 
             # specific games configurations
             specifics = {
                 "vertical_offset": "IR/Vertical Offset",
                 "yaw":             "IR/Total Yaw",
-                "pitch":           "IR/Total Pitch"
+                "pitch":           "IR/Total Pitch",
+                "ir_up":           "IR/Up",
+                "ir_down":         "IR/Down",
+                "ir_left":         "IR/Left",
+                "ir_right":        "IR/Right",
             }
             for spe in specifics:
                 if spe in gunsmetadata:
