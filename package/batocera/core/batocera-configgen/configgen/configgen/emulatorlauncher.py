@@ -240,7 +240,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         # run the emulator
         try:
             from Evmapy import Evmapy
-            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers)
+            # Special handling for auto ereader (P2 joystick as mouse)
+            Evmapy.start(systemName, system.config, effectiveCore, effectiveRomConfiguration, playersControllers)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
             if executionDirectory is not None:
