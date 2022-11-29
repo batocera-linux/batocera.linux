@@ -110,6 +110,7 @@
 - rtl8192eu update to Nov 5, 2022
 - rtl8723ds update to Nov 4, 2022
 - rtl8812au update to Nov 16, 2022
+- rtl8188fu update to Nov 1, 2022
 - mesa3d to 22.2.4
 - uinput-joystick update to Feb 11, 2022
 
