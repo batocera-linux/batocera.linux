@@ -188,6 +188,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
         'l2':             'pageup',
         'r2':             'pagedown'
     }
+    gbaMapping = {
+        'b':        'Buttons/B',        'a':        'Buttons/A',
+        'pageup':   'Buttons/L',        'pagedown': 'Buttons/R',
+        'select':   'Buttons/SELECT',   'start':    'Buttons/START',
+        'up':       'D-Pad/Up',         'down':     'D-Pad/Down',
+        'left':     'D-Pad/Left',       'right':    'D-Pad/Right'
+    }
 
     # This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"       # Define ROM configuration name
@@ -202,9 +209,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 line = cconfig.readline()
 
     generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "GBA.ini", "GBA", gbaMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
+    if os.path.isfile(configFileName):
+        os.remove(configFileName)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GBA.ini")
     if os.path.isfile(configFileName):
         os.remove(configFileName)
 
@@ -299,16 +310,24 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             if "8" in buttons:
                 f.write("D-Pad/Right = `8`\n")
 
-            f.write("IR/Up = `Axis 1-`\n")
-            f.write("IR/Down = `Axis 1+`\n")
-            f.write("IR/Left = `Axis 0-`\n")
-            f.write("IR/Right = `Axis 0+`\n")
+            if "ir_up" not in gunsmetadata:
+                f.write("IR/Up = `Axis 1-`\n")
+            if "ir_down" not in gunsmetadata:
+                f.write("IR/Down = `Axis 1+`\n")
+            if "ir_left" not in gunsmetadata:
+                f.write("IR/Left = `Axis 0-`\n")
+            if "ir_right" not in gunsmetadata:
+                f.write("IR/Right = `Axis 0+`\n")
 
             # specific games configurations
             specifics = {
                 "vertical_offset": "IR/Vertical Offset",
                 "yaw":             "IR/Total Yaw",
-                "pitch":           "IR/Total Pitch"
+                "pitch":           "IR/Total Pitch",
+                "ir_up":           "IR/Up",
+                "ir_down":         "IR/Down",
+                "ir_left":         "IR/Left",
+                "ir_right":        "IR/Right",
             }
             for spe in specifics:
                 if spe in gunsmetadata:

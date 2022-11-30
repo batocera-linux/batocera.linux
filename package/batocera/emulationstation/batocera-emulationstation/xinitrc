@@ -2,6 +2,7 @@
 
 # hide mouse cursor
 unclutter --noevents -b
+xsetroot -cursor_name left_ptr
 
 # disable dpms to prevent screen from blanking
 xset -dpms
@@ -31,4 +32,4 @@ then
     export DRI_PRIME=1
 fi
 
-openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
+LC_ALL=C ratpoison --file /etc/ratpoisonrc

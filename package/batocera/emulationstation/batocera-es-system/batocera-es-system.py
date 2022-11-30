@@ -326,7 +326,7 @@ class EsSystemConf:
         dictvar[dictval].append(comment)
 
     @staticmethod
-    def getXmlFeature(nfspaces, key, infos, toTranslate, emulator, core):
+    def getXmlFeature(nfspaces, key, infos, toTranslate, emulator, core, arch):
         fspaces = " " * nfspaces
         featuresTxt = ""
         description = ""
@@ -349,8 +349,9 @@ class EsSystemConf:
         EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
         if "preset" not in infos:
             for choice in infos["choices"]:
-                featuresTxt += fspaces + "  <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(infos["choices"][choice]))
-                EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
+                if EsSystemConf.checkChoiceArch(arch, infos, choice):
+                    featuresTxt += fspaces + "  <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(infos["choices"][choice]))
+                    EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
         featuresTxt += fspaces + "</feature>\n"
         return featuresTxt
 
@@ -367,6 +368,17 @@ class EsSystemConf:
         if "archs_exclude" in obj and arch in obj["archs_exclude"]:
             return false
         return "archs_include" not in obj or arch in obj["archs_include"]
+
+    @staticmethod
+    def checkChoiceArch(arch, obj, choice):
+        if "choiceArch" not in obj:
+            return True
+        else:
+            if choice not in obj['choiceArch']:
+                return True
+            if arch in obj['choiceArch'][choice]:
+                return True
+        return False
 
     # Write the information in the es_features.cfg file
     @staticmethod
@@ -404,7 +416,7 @@ class EsSystemConf:
                             if "cfeatures" in features[emulator]["cores"][core]:
                                for cfeature in features[emulator]["cores"][core]["cfeatures"]:
                                    if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["cfeatures"][cfeature]):
-                                       featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["cores"][core]["cfeatures"][cfeature], toTranslate, emulator, core)
+                                       featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["cores"][core]["cfeatures"][cfeature], toTranslate, emulator, core, arch)
                                    else:
                                        print("skipping core " + emulator + "/" + core + " cfeature " + cfeature)
                             # #############
@@ -426,7 +438,7 @@ class EsSystemConf:
                                    if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
                                        for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
                                            if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]):
-                                               featuresTxt += EsSystemConf.getXmlFeature(12, cfeature, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
+                                               featuresTxt += EsSystemConf.getXmlFeature(12, cfeature, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core, arch)
                                            else:
                                                print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
                                    featuresTxt += "          </system>\n"
@@ -452,7 +464,7 @@ class EsSystemConf:
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
                                 if EsSystemConf.archValid(arch, features[emulator]["systems"][system]["cfeatures"][cfeature]):
-                                    featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
+                                    featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core, arch)
                                 else:
                                     print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
                         featuresTxt += "      </system>\n"
@@ -467,7 +479,7 @@ class EsSystemConf:
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
                         if EsSystemConf.archValid(arch, features[emulator]["cfeatures"][cfeature]):
-                            featuresTxt += EsSystemConf.getXmlFeature(4, cfeature, features[emulator]["cfeatures"][cfeature], toTranslate, emulator, None)
+                            featuresTxt += EsSystemConf.getXmlFeature(4, cfeature, features[emulator]["cfeatures"][cfeature], toTranslate, emulator, None, arch)
                         else:
                             print("skipping emulator " + emulator + " cfeature " + cfeature)
 

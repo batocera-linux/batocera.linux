@@ -804,8 +804,14 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        # dos
 
-	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3399 \
-	                                                && !BR2_PACKAGE_BATOCERA_TARGET_RG552 && !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RK3399     && \
+	                                                !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_XU4        && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 	select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE     # ALL
 
@@ -1478,7 +1484,8 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_GVFS                         if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
 	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
 	select BR2_PACKAGE_XTERM                        # terminal
-	select BR2_PACKAGE_OPENBOX                      # window manager
+	select BR2_PACKAGE_RATPOISON                    # window manager
+	select BR2_PACKAGE_XAPP_XSETROOT                # cursors etc
 	select BR2_PACKAGE_UNCLUTTER                    # hide mouse
 	select BR2_PACKAGE_TOUCHEGG                     # touchscreen extended gestures
 

@@ -348,12 +348,14 @@ def getGameGunsMetaData(system, rom):
     root = tree.getroot()
     game = gunNameFromPath(rom)
     res = {}
+    eslog.info("looking for gun metadata ({}, {})".format(system, game))
     for nodesystem in root.findall(".//system"):
         if nodesystem.get("name") == system:
             for nodegame in nodesystem:
                 if nodegame.text in game:
                     for attribute in nodegame.attrib:
                         res[attribute] = nodegame.get(attribute)
+                        eslog.info("found gun metadata {}={}".format(attribute, res[attribute]))
                     return res
     return res
 
