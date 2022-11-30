@@ -73,6 +73,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Analytics")
         if not dolphinSettings.has_section("Display"):
             dolphinSettings.add_section("Display")
+        if not dolphinSettings.has_section("GBA"):
+            dolphinSettings.add_section("GBA")
 
         # Define default games path
         if "ISOPaths" not in dolphinSettings["General"]:
