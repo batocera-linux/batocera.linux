@@ -1,8 +1,0 @@
-#!/bin/bash
-
-test "$1" != "start" && exit 0
-
-# wifi is very unstable to load if loaded too early
-# reload it lately. this is a workaround. this is only for rg552.
-rmmod 8188fu
-modprobe 8188fu
