@@ -1,0 +1,125 @@
+#!/usr/bin/env python
+import sys
+import os, os.path
+import subprocess
+
+def checkLastRun(thisRun):
+    statusFile = '/var/run/corecontrol'
+    # If the file does not exist, assume script has not run & all cores are active
+    if not os.path.exists(statusFile) and thisRun == 'all':
+        return True
+    elif not os.path.exists(statusFile) and thisRun != 'all':
+        return False
+    else:
+        # Otherwise read the file and see if it matches the command line (or 'all' for blank)
+        checkFile = open(statusFile, 'r')
+        checkString = checkFile.read()
+        checkFile.close()
+        if checkString == thisRun:
+            return True
+        else:
+            return False
+
+def getCoreCount():
+    cores = 0
+    for filename in os.listdir('/sys/devices/system/cpu'):
+        # Count CPU?? items, discard others (ie. cpuidle)
+        if filename.startswith('cpu') and len(filename) <= 5:
+            cores = cores + 1
+    print(f'{str(cores)} CPU cores detected')
+    return cores
+
+def enableAll():
+    coreCount = getCoreCount()
+    # Core 0 will always be untouched.
+    for core in range(1, coreCount):
+        setCore(core, True)
+
+def disableVirtual():
+    # Disable odd numbered cores (even = physical cores)
+    coreCount = getCoreCount()
+    for core in range(1, coreCount, 2):
+        setCore(core, False)
+
+def disableCores(coresEnabled):
+    coreCount = getCoreCount()
+    # Do nothing if # of cores is the same or lower than requested
+    if coreCount <= coresEnabled:
+        print(f'Wants {str(coresEnabled)} cores enabled, {str(coreCount)} cores available')
+        return False
+
+    coresToDisable = coreCount - coresEnabled
+    disableList = []
+    disabledCores = 0
+
+    # Start with disabling virtual cores, highest first.
+    for core in range(coreCount - 1, 0, -2):
+        if disabledCores < coresToDisable:
+            disableList.append(core)
+            disabledCores = disabledCores + 1
+
+    # If that wasn't enough, start disabling physical cores.
+    if disabledCores < coresToDisable:
+        for core in range(coreCount - 2, 0, -2):
+            if disabledCores < coresToDisable:
+                disableList.append(core)
+                disabledCores = disabledCores + 1
+
+    print(f'Will disable cores {disableList}')
+    for core in disableList:
+        setCore(core, False)
+
+def setCore(core, enabled):
+    # Never touch Core 0. The script should not, this is just in case.
+    if core == '0':
+        print('Unable to change Core 0 status')
+        return False
+
+    # 0 to disable core, 1 to enable.
+    if enabled:
+        coreVal = '1'
+    else:
+        coreVal = '0'
+
+    # Write the file directly
+    try:
+        subprocess.call(f'echo {coreVal} > /sys/devices/system/cpu/cpu{str(core)}/online', shell=True)
+        return True
+    except:
+        print(f'Error changing core {str(core)} status')
+        return False
+
+def saveRun(thisRun):
+    # Save this run's config to prevent running the same settings twice in a row
+    # (saves startup/exit time)
+    statusFile = '/var/run/corecontrol'
+    checkFile = open(statusFile, 'w')
+    checkFile.write(thisRun)
+    checkFile.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        # Enable all cores if script is called with no switches
+        if not checkLastRun('all'):
+            enableAll()
+            saveRun('all')
+            print('Enabled all cores')
+        else:
+            print('All cores currently enabled')
+    else:
+        if not checkLastRun(sys.argv[1]):
+            # Disable virtual (odd numbered) cores if called with virtual
+            if sys.argv[1] == 'virtual':
+                disableVirtual()
+                print('Disabled virtual cores')
+                saveRun('virtual')
+            # Disable all but x cores if called with a number
+            # Number must be 2 or higher, we do not want to drop to single core
+            elif int(sys.argv[1]) > 1:
+                disableCores(int(sys.argv[1]))
+                print(f'Disabled all but {sys.argv[1]} cores')
+                saveRun(sys.argv[1])
+            else:
+                print('Unknown command line option. Use none, virtual, or a number 2 or higher')
+        else:
+            print(f'Last run was also {sys.argv[1]}, no changes')

@@ -164,6 +164,10 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     mouseChanged = False
     exitCode = -1
     try:
+        # Change CPU cores if requested
+        if system.isOptSet('cpucores') and system.config['cpucores'] != 'none':
+            subprocess.call(f"/usr/bin/batocera-corecontrol {system.config['cpucores']} &", shell=True)
+
         # lower the resolution if mode is auto
         newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
         if system.config["videomode"] == "" or system.config["videomode"] == "default":
@@ -268,6 +272,10 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                 profiler.enable()
         finally:
             Evmapy.stop()
+
+        # Restore CPU cores if changed
+        if system.isOptSet('cpucores') and system.config['cpucores'] != 'none':
+            subprocess.call('/usr/bin/batocera-corecontrol &', shell=True)
 
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
