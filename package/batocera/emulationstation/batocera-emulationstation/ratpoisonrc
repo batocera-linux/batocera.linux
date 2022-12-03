@@ -5,9 +5,9 @@ set msgwait 2
 set wingravity c
 set maxsizegravity c
 set transgravity c
-set bargravity s
-set winname name
-definekey top M-Tab next
+set bargravity c
+set winname title
+definekey top M-Tab exec batocera-ratpoison switchapp
 definekey top M-F4 delete
 definekey top C-M-Tab swap 0 1
 banish
