@@ -22,6 +22,13 @@ def redrawWindow():
 	runRatpoisonCommand('only')
 	runRatpoisonCommand('redisplay')
 
+def altTab():
+	runRatpoisonCommand('next')
+	showMessage(getRatpoisonCommand('windows %s %n:%t (%a)'))
+
+def showMessage(message):
+	runRatpoisonCommand(f'echo {message}')
+
 def runRatpoisonCommand(command):
 	print(f'Running ratpoison command {command}')
 	try:
@@ -37,7 +44,7 @@ def getRatpoisonCommand(command):
 	except:
 		return False
 	print(f'Ratpoison Output = {tempVar}')
-	return tempVar
+	return tempVar.strip()
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
@@ -46,4 +53,7 @@ if __name__ == '__main__':
 		clearHooks()
 		restoreFrameset()
 		redrawWindow()
-
+	elif sys.argv[1] == 'switchapp':
+		altTab()
+	elif sys.argv[1] == 'message':
+		showMessage(sys.argv[2])
