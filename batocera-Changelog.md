@@ -78,7 +78,7 @@
 - glsl-shaders to Sep 23 2022 build
 - alllinuxfirmwares to 20221109
 - mupen64plus-video-rice to Sep 30, 2022
-- mupen64plus-video-glide64mk2 to Sep 30, 2022
+- mupen64plus-video-glide64mk2 to Nov 17, 2022
 - mupen64plus-ui-console to Oct 01, 2022
 - mupen64plus-rsp-hle to Sep 30, 2022
 - mupen64plus-input-sdl to Sep 30, 2022
