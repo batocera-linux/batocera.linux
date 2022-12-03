@@ -5,6 +5,12 @@
             "type": "key",
             "target": ["KEY_LEFTALT", "KEY_F4"],
             "description": "Exit emulator"
+    },
+    {
+        "trigger": ["hotkey", "r2"],
+         "type": "key",
+         "target": ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_TAB"],
+         "description": "Swap GBA and GC frames"
     }
     ]
 }
