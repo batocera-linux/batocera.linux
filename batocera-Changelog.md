@@ -78,12 +78,12 @@
 - glsl-shaders to Sep 23 2022 build
 - alllinuxfirmwares to 20221109
 - mupen64plus-video-rice to Sep 30, 2022
-- mupen64plus-video-glide64mk2 to Sep 30, 2022
+- mupen64plus-video-glide64mk2 to Nov 17, 2022
 - mupen64plus-ui-console to Oct 01, 2022
 - mupen64plus-rsp-hle to Sep 30, 2022
 - mupen64plus-input-sdl to Sep 30, 2022
-- mupen64plus-audio-sdl to Oct 01, 2022
-- mupen64plus-core to Oct 01, 2022
+- mupen64plus-audio-sdl to Nov 30, 2022
+- mupen64plus-core to Dec 3, 2022
 - moonlight embedded to 2.5.3
 - proton to v2.7
 - vulkan stack to v1.3.231
