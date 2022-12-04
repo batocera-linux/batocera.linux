@@ -6859,6 +6859,12 @@ hatari:
 melonds:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, cpucores]
   cfeatures:
+        melonds_renderer:
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use.
+            choices:
+                "Software": 0
+                "OpenGL":   1
         melonds_framerate:
             group: ADVANCED OPTIONS
             prompt: LIMIT FRAME RATE
@@ -6890,8 +6896,8 @@ melonds:
             prompt: ENABLE POLYGON SPLITTING
             description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off":           0
-                "On":            1
+                "Off": 0
+                "On":  1
         melonds_rotation:
             prompt: SCREEN ROTATION
             description: Rotates the screens, to simulate holding the DS sideways.
