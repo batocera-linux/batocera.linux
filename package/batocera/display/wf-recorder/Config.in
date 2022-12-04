@@ -10,6 +10,7 @@ config BR2_PACKAGE_WF_RECORDER
 	select BR2_PACKAGE_FFMPEG_POSTPROC
     select BR2_PACKAGE_X264
 	select BR2_PACKAGE_X265
+    select BR2_PACKAGE_PULSEAUDIO_UTILS
 
     help
         wf-recorder is a utility program for screenrecording
