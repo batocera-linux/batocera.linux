@@ -237,8 +237,14 @@ def setupRatpoisonFrames(orientation, splitSize, subCount, reverseScreens):
     splitFrames[currentFrame] = f"(frame :number {currentFrame} :x {screenRes['width'] + 1} :y {screenRes['height'] + 1} :width 1 :height 1 :screenw {screenRes['width']} :screenh {screenRes['height']} :window 0 :last-access {currentFrame} :dedicated 0)"
     newFrameset = ",".join(splitFrames)
 
-    ratpoisonCommands += [ f'setenv frameset {getFrameset()}', 'unmanage emulationstation', \
-        'addhook deletewindow exec batocera-ratpoison reset', 'set winname title', 'unmanage Select e-Reader Cards' ]
+    ratpoisonCommands += [ f'setenv frameset {getFrameset()}', 'unmanage emulationstation', 'addhook deletewindow exec batocera-ratpoison reset', 'set winname title' ]
+
+    windowsToUnmanage = [ "e-Reader 카드 선택", "Sélectionner les cartes e-Reader", "Seleziona Carte e-Reader", "Elegir tarjetas e-Reader", "选择 e-Reader 卡", "Välj e-Readerkort", "Selecteer e-Reader Kaarten", \
+        "Select e-Reader Cards", "Selecione os Cartões do e-Reader", "Выбрать e-карточки" ]
+
+    for window in windowsToUnmanage:
+        ratpoisonCommands += [ f'unmanage {window}' ]
+
     if reverseScreens:
         ratpoisonCommands += [ 'addhook newwindow focusprev' ]
     else:
