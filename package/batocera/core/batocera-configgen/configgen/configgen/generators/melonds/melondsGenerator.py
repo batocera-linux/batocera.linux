@@ -160,6 +160,6 @@ class MelonDSGenerator(Generator):
         # Now write the ini file
         f.close()
 
-        commandArray = ["/usr/bin/melonDS", rom]
+        commandArray = ["/usr/bin/melonDS", "-f", rom]
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, \
             "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
