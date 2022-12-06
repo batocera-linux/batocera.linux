@@ -1,0 +1,156 @@
+diff --git a/xpad.c b/xpad.c
+index 3d19dca..6fe1212 100644
+--- a/xpad.c
++++ b/xpad.c
+@@ -101,6 +101,12 @@ * seconds
+  */
+ #define XPAD360W_POWEROFF_TIMEOUT 5
+ 
++#define QUIRK_360_START_PKT_1	(1 << 0)
++#define QUIRK_360_START_PKT_2	(1 << 1)
++#define QUIRK_360_START_PKT_3	(1 << 2)
++#define QUIRK_360_START (QUIRK_360_START_PKT_1 |			\
++				QUIRK_360_START_PKT_2 | QUIRK_360_START_PKT_3)
++
+ static bool dpad_to_buttons;
+ module_param(dpad_to_buttons, bool, S_IRUGO);
+ MODULE_PARM_DESC(dpad_to_buttons, "Map D-PAD to buttons rather than axes for unknown pads");
+@@ -123,6 +129,7 @@ static const struct xpad_device {
+ 	char *name;
+ 	u8 mapping;
+ 	u8 xtype;
++	u8 quirks;
+ } xpad_device[] = {
+ 	{ 0x0079, 0x18d4, "GPD Win 2 X-Box Controller", 0, XTYPE_XBOX360 },
+ 	{ 0x03eb, 0xff01, "Wooting One (Legacy)", 0, XTYPE_XBOX360 },
+@@ -157,6 +163,7 @@ static const struct xpad_device {
+ 	{ 0x046d, 0xca8a, "Logitech Precision Vibration Feedback Wheel", 0, XTYPE_XBOX },
+ 	{ 0x046d, 0xcaa3, "Logitech DriveFx Racing Wheel", 0, XTYPE_XBOX360 },
+ 	{ 0x056e, 0x2004, "Elecom JC-U3613M", 0, XTYPE_XBOX360 },
++	{ 0x05ac, 0x055b, "Gamesir-G3w", 0, XTYPE_XBOX360, QUIRK_360_START },
+ 	{ 0x05fd, 0x1007, "Mad Catz Controller (unverified)", 0, XTYPE_XBOX },
+ 	{ 0x05fd, 0x107a, "InterAct 'PowerPad Pro' X-Box pad (Germany)", 0, XTYPE_XBOX },
+ 	{ 0x05fe, 0x3030, "Chic Controller", 0, XTYPE_XBOX },
+@@ -261,6 +268,7 @@ { 0x0f0d, 0x000c, "Hori PadEX Turbo", 0, XTYPE_XBOX360 },
+	{ 0x0f0d, 0x000d, "Hori Fighting Stick EX2", MAP_TRIGGERS_TO_BUTTONS, XTYPE_XBOX360 },
+	{ 0x0f0d, 0x0016, "Hori Real Arcade Pro.EX", MAP_TRIGGERS_TO_BUTTONS, XTYPE_XBOX360 },
+	{ 0x0f0d, 0x001b, "Hori Real Arcade Pro VX", MAP_TRIGGERS_TO_BUTTONS, XTYPE_XBOX360 },
++	{ 0x0f0d, 0x00dc, "HORIPAD FPS for Nintendo Switch", MAP_TRIGGERS_TO_BUTTONS, XTYPE_XBOX360, QUIRK_360_START_PKT_1 },
+ 	{ 0x0f30, 0x010b, "Philips Recoil", 0, XTYPE_XBOX },
+ 	{ 0x0f30, 0x0202, "Joytech Advanced Controller", 0, XTYPE_XBOX },
+ 	{ 0x0f30, 0x8888, "BigBen XBMiniPad Controller", 0, XTYPE_XBOX },
+@@ -660,6 +668,7 @@ struct usb_xpad {
+ 	int xtype;			/* type of xbox device */
+ 	int packet_type;		/* type of the extended packet */
+ 	int pad_nr;			/* the order x360 pads were attached */
++	int quirks;
+ 	const char *name;		/* name of the device */
+ 	struct work_struct work;	/* init/remove device from callback */
+ 	time64_t mode_btn_down_ts;
+@@ -948,6 +948,98 @@ static int xpad_inquiry_pad_presence(struct usb_xpad *xpad)
+ 	return retval;
+ }
+ 
++static int xpad_start_xbox_360(struct usb_xpad *xpad)
++{
++	int status;
++
++	char *data = kzalloc(20, GFP_KERNEL);
++
++	int TIMEOUT = 100;
++
++	/*
++	this init sequence is needed for the gamesir g3w controller
++	and for shanwan controllers in xpad mode.
++	Unfortunately, in this mode they identify as 0x045e, 0x028e, so we
++	have to inspect the manufacturer string.
++	Sending this sequence to other controllers will break initialization.
++	*/
++	bool is_shanwan = xpad->udev->manufacturer && strcasecmp("shanwan", xpad->udev->manufacturer) == 0;
++	if (!(xpad->quirks & QUIRK_360_START) && !is_shanwan) {
++		status = 0;
++		goto err_free_ctrl_data;
++	}
++
++	if ((xpad->quirks & QUIRK_360_START_PKT_1) || is_shanwan) {
++	    status = usb_control_msg(xpad->udev,
++		    usb_rcvctrlpipe(xpad->udev, 0),
++		    0x1, 0xc1,
++		    cpu_to_le16(0x100), cpu_to_le16(0x0), data, cpu_to_le16(20),
++		    TIMEOUT);
++
++#ifdef DEBUG
++	    dev_dbg(&xpad->intf->dev,
++		    "%s - control message 1 returned %d\n", __func__, status);
++#endif
++
++	    if (status < 0) {
++		    goto err_free_ctrl_data;
++	    }
++#ifdef DEBUG
++	    else {
++		    print_hex_dump(KERN_DEBUG, "xpad-dbg: ", DUMP_PREFIX_OFFSET, 32, 1, data, 20, 0);
++	    }
++#endif
++	}
++
++	if ((xpad->quirks & QUIRK_360_START_PKT_2) || is_shanwan) {
++	    status = usb_control_msg(xpad->udev,
++		    usb_rcvctrlpipe(xpad->udev, 0),
++		    0x1, 0xc1,
++		    cpu_to_le16(0x0), cpu_to_le16(0x0), data, cpu_to_le16(8),
++		    TIMEOUT);
++#ifdef DEBUG
++	    dev_dbg(&xpad->intf->dev,
++		    "%s - control message 2 returned %d\n", __func__, status);
++#endif
++
++	    if (status < 0) {
++		    goto err_free_ctrl_data;
++	    }
++#ifdef DEBUG
++	    else {
++		    print_hex_dump(KERN_DEBUG, "xpad-dbg: ", DUMP_PREFIX_OFFSET, 32, 1, data, 8, 0);
++	    }
++#endif
++	}
++
++	if ((xpad->quirks & QUIRK_360_START_PKT_3) || is_shanwan) {
++	    status = usb_control_msg(xpad->udev,
++		    usb_rcvctrlpipe(xpad->udev, 0),
++		    0x1, 0xc0,
++		    cpu_to_le16(0x0), cpu_to_le16(0x0), data, cpu_to_le16(4),
++		    TIMEOUT);
++#ifdef DEBUG
++	    dev_dbg(&xpad->intf->dev,
++		    "%s - control message 3 returned %d\n", __func__, status);
++#endif
++
++	    if (status < 0) {
++		    goto err_free_ctrl_data;
++	    }
++#ifdef DEBUG
++	    else {
++		    print_hex_dump(KERN_DEBUG, "xpad-dbg: ", DUMP_PREFIX_OFFSET, 32, 1, data, 4, 0);
++	    }
++#endif
++	}
++
++	status = 0;
++
++err_free_ctrl_data:
++	kfree(data);
++	return status;
++}
++
+ #ifdef CONFIG_JOYSTICK_XPAD_FF
+ static int xpad_play_effect(struct input_dev *dev, void *data, struct ff_effect *effect)
+ {
+@@ -1928,6 +2035,7 @@ xpad->intf = intf;
+ 	xpad->mapping = xpad_device[i].mapping;
+ 	xpad->xtype = xpad_device[i].xtype;
+ 	xpad->name = xpad_device[i].name;
++	xpad->quirks = xpad_device[i].quirks;
+ 	INIT_WORK(&xpad->work, xpad_presence_work);
+ 
+	if (xpad->xtype == XTYPE_UNKNOWN) {
