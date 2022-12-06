@@ -55,7 +55,8 @@ do
     fi
     if test -n "${effective_output}"
     then
-        if ! batocera-resolution setRotation "${display_rotate}"
+	res=$(batocera-resolution setRotation "${display_rotate}")
+	if test -n "$(res)"
 	then
 	    # when no rotation is available by the system, apply it
 	    EXTRA_OPTS="--screenrotate ${display_rotate}"
