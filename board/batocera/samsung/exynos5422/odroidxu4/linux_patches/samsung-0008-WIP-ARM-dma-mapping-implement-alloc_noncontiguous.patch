@@ -16,7 +16,7 @@ index 059cce018570..8f867cb9fe75 100644
 --- a/arch/arm/mm/dma-mapping.c
 +++ b/arch/arm/mm/dma-mapping.c
 @@ -1759,6 +1759,63 @@ static void arm_iommu_unmap_sg(struct device *dev,
- 	__iommu_unmap_sg(dev, sg, nents, dir, attrs, false);
+ 	}
  }
  
 +static struct sg_table *arm_iommu_alloc_noncontiguous(struct device *dev,
@@ -50,8 +50,8 @@ index 059cce018570..8f867cb9fe75 100644
 +	    GFP_KERNEL))
 +		goto err_buffer;
 +
-+	if (__iommu_map_sg(dev, sh->sgt.sgl, sh->sgt.orig_nents, dir, attrs,
-+	    false) < 1)
++	if (arm_iommu_map_sg(dev, sh->sgt.sgl, sh->sgt.orig_nents, dir, attrs
++	    ) < 1)
 +		goto err_free_sg;
 +
 +	return &sh->sgt;
@@ -70,7 +70,7 @@ index 059cce018570..8f867cb9fe75 100644
 +{
 +	struct dma_sgt_handle *sh = sgt_handle(sgt);
 +
-+	__iommu_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir, 0, false);
++	arm_iommu_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir, 0);
 +	__iommu_free_buffer(dev, sh->pages, PAGE_ALIGN(size), 0);
 +	sg_free_table(&sh->sgt);
 +	kfree(sh);
