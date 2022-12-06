@@ -45,7 +45,7 @@
 - citra to nightly-1784
 - dolphin to 5.0-17316
 - rpcs3 to v0.0.25
-- flycast emulators to v2.0
+- flycast emulators to Dec 5, 2022 build
 - dosbox to v0.78.1
 - dosbox-x to v0.84.3
 - dosbox-staging to v0.79.1
