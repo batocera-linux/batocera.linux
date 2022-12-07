@@ -137,12 +137,12 @@ class FlycastGenerator(Generator):
             cfgfile.close()
             
         # internal config
+        if not isdir(batoceraFiles.flycastSaves):
+            os.mkdir(batoceraFiles.flycastSaves)
+        if not isdir(batoceraFiles.flycastSaves + "/flycast"):
+            os.mkdir(batoceraFiles.flycastSaves + "/flycast")
         # vmuA1
         if not isfile(batoceraFiles.flycastVMUA1):
-            if not isdir(dirname(batoceraFiles.flycastSaves)):
-                os.mkdir(batoceraFiles.flycastSaves)
-            if not isdir(dirname(batoceraFiles.flycastSaves) + "/flycast"):
-                os.mkdir((batoceraFiles.flycastSaves) + "/flycast")
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA1)
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
