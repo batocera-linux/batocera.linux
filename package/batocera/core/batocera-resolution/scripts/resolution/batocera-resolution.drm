@@ -166,6 +166,9 @@ case "${ACTION}" in
 	f_checkVals
 	f_minTomaxResolution "$1"
         ;;
+    "supportSystemRotation")
+	exit 1
+	;;
     "setRotation")
 	# no possible rotation
 	exit 1
