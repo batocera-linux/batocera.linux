@@ -649,10 +649,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_S922X          && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY   && \
-												!BR2_PACKAGE_BATOCERA_TARGET_ODIN           && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY  && \
 												!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
