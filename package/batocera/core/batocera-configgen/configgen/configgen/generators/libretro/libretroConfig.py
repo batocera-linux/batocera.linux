@@ -118,7 +118,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     if (system.isOptSet("audio_volume")):
         retroarchConfig['audio_volume'] = system.config['audio_volume']
 
-    if (system.isOptSet("display.rotate") and videoMode.getDisplayMode() not in ['xorg', 'wayland']):
+    if system.isOptSet("display.rotate") and not videoMode.supportSystemRotation(): # only for systems that don't support global rotation (xorg, wayland, ...)
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
         if system.config["display.rotate"] == "0":
             retroarchConfig['video_rotation'] = "0"

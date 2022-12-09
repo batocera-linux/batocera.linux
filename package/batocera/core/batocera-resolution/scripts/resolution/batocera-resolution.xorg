@@ -165,6 +165,9 @@ case "${ACTION}" in
 	xrandr --output "${OUTPUT}" --mode "${MNAME}"
 	batocera-ratpoison reset
 	;;
+    "supportSystemRotation")
+	exit 0
+	;;
     "setRotation")
         ROTATE=$1
         OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)

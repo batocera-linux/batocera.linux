@@ -16,6 +16,9 @@ ACTION=$1
 shift
 
 case "${ACTION}" in
+    "supportSystemRotation")
+	exit 1
+    ;;
     "listModes")
     ;;
     "setMode")
