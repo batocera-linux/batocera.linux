@@ -1,0 +1,19 @@
+diff --git a/input/drivers/udev_input.c b/input/drivers/udev_input.c
+index 5e127f9..3ac9768 100644
+--- a/input/drivers/udev_input.c
++++ b/input/drivers/udev_input.c
+@@ -612,11 +612,9 @@ static int udev_input_add_device(udev_input_t *udev,
+    if (type == UDEV_INPUT_MOUSE || type == UDEV_INPUT_TOUCHPAD )
+    {
+       bool mouse = 0;
+-      /* gotta have some buttons!  return -1 to skip error logging for this:)  */
+-      if (ioctl(fd, EVIOCGBIT(EV_KEY, sizeof (keycaps)), keycaps) == -1)
+-      {
+-         ret = -1;
+-         goto end;
++
++      if (type == UDEV_INPUT_MOUSE) {
++	mouse = 1; // if it's a mouse, it is a mouse ; otherwise, guessing the mouse index to configure is a hell. (case of configurable keyboard which can have left/right mouse button settable)
+       }
+ 
+       if (ioctl(fd, EVIOCGBIT(EV_REL, sizeof (relcaps)), relcaps) != -1)

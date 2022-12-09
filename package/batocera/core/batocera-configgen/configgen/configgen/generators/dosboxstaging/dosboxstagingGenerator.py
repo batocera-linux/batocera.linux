@@ -10,7 +10,7 @@ class DosBoxStagingGenerator(Generator):
 
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Find rom path
         gameDir = rom
         batFile = gameDir + "/dosbox.bat"
@@ -20,13 +20,13 @@ class DosBoxStagingGenerator(Generator):
 			"-fullscreen",
 			"-userconf", 
 			"-exit", 
-			"""{}""".format(batFile),
-			"-c", """set ROOT={}""".format(gameDir)]
+			f"""{batFile}""",
+			"-c", f"""set ROOT={gameDir}"""]
         if os.path.isfile(gameConfFile):
             commandArray.append("-conf")
-            commandArray.append("""{}""".format(gameConfFile))
+            commandArray.append(f"""{gameConfFile}""")
         else:
             commandArray.append("-conf")
-            commandArray.append("""{}""".format(batoceraFiles.dosboxStagingConfig))
+            commandArray.append(f"""{batoceraFiles.dosboxStagingConfig}""")
 
         return Command.Command(array=commandArray)

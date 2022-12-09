@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <add key="SerialPortWrite" value="/dev/ttyACM0" />
+    <add key="SerialPortSecondary" value="" />
+    <add key="VideoDevice" value="" />
+    <add key="CalibrateX" value="" />
+    <add key="CalibrateY" value="" />
+    <add key="OffsetX" value="0" />
+    <add key="OffsetY" value="0" />
+    <add key="OffsetXRatio" value="01" />
+    <add key="OffsetYRatio" value="01" />
+    <add key="ColourMatchRGB" value="255,255,255" />
+    <add key="ColourMatchRange" value="220" />
+    <add key="GangstaSetting" value="3" />
+    <add key="CameraRes" value="640,480" />
+    <add key="SaveEachFrameToFile" value="0" />
+    <add key="OffscreenReload" value="0" />
+    <add key="CameraExposureAuto" value="1" />
+    <add key="CameraExposure" value="" />
+    <add key="CameraBrightness" value="100" />
+    <add key="CameraZoom" value="0" />
+    <add key="CameraContrast" value="50" />
+    <add key="CameraSaturation" value="40" />
+    <add key="CameraHue" value="0" />
+    <add key="CameraWhiteBalanceAuto" value="0" />
+    <add key="CameraWhiteBalance" value="4500" />
+    <add key="MinimumBlobSize" value="20" />
+    <add key="EnableAntiJitter" value="0" />
+    <add key="AntiJitterPercentage" value="1" />
+    <add key="MatchOnlyWherePointing" value="0" />
+    <add key="ConsoleOutputVerbose0to2" value="0" />
+    
+    <add key="ButtonTrigger" value="1" />
+    <add key="ButtonPumpAction" value="3" />
+    <add key="ButtonFrontLeft" value="3" />
+    <add key="ButtonRearLeft" value="2" />
+    <add key="ButtonFrontRight" value="10" />
+    <add key="ButtonRearRight" value="9" />
+    <add key="ButtonUp" value="74" />
+    <add key="ButtonDown" value="75" />
+    <add key="ButtonLeft" value="76" />
+    <add key="ButtonRight" value="77" />
+
+    <add key="TriggerMod" value="0" />
+    <add key="PumpActionMod" value="0" />
+    <add key="FrontLeftMod" value="0" />
+    <add key="RearLeftMod" value="0" />
+    <add key="FrontRightMod" value="0" />
+    <add key="RearRightMod" value="0" />
+    <add key="UpMod" value="0" />
+    <add key="DownMod" value="0" />
+    <add key="LeftMod" value="0" />
+    <add key="RightMod" value="0" />
+
+    <add key="ButtonTriggerOffscreen" value="3" />
+    <add key="ButtonPumpActionOffscreen" value="3" />
+    <add key="ButtonFrontLeftOffscreen" value="3" />
+    <add key="ButtonRearLeftOffscreen" value="2" />
+    <add key="ButtonFrontRightOffscreen" value="13" />
+    <add key="ButtonRearRightOffscreen" value="7" />
+    <add key="ButtonUpOffscreen" value="74" />
+    <add key="ButtonDownOffscreen" value="75" />
+    <add key="ButtonLeftOffscreen" value="76" />
+    <add key="ButtonRightOffscreen" value="77" />
+
+    <add key="TriggerOffscreenMod" value="0" />
+    <add key="PumpActionOffscreenMod" value="0" />
+    <add key="FrontLeftOffscreenMod" value="0" />
+    <add key="RearLeftOffscreenMod" value="0" />
+    <add key="FrontRightOffscreenMod" value="0" />
+    <add key="RearRightOffscreenMod" value="0" />
+    <add key="UpOffscreenMod" value="0" />
+    <add key="DownOffscreenMod" value="0" />
+    <add key="LeftOffscreenMod" value="0" />
+    <add key="RightOffscreenMod" value="0" />
+
+    <add key="IAgreeRecoilTermsInLicense" value="1"/>
+    <add key="EnableRecoil" value="0"/>
+    <add key="RecoilTrigger" value="1"/>
+    <add key="RecoilTriggerOffscreen" value="0"/>
+    <add key="RecoilPumpActionOnEvent" value="0"/>
+    <add key="RecoilPumpActionOffEvent" value="0"/>
+    <add key="RecoilFrontLeft" value="0"/>
+    <add key="RecoilFrontRight" value="0"/>
+    <add key="RecoilBackLeft" value="0"/>
+    <add key="RecoilBackRight" value="0"/>
+    <add key="RecoilStrength" value="80"/>
+    <add key="TriggerRecoilNormalOrRepeat" value="1"/>
+    <add key="AutoRecoilStrength" value="80"/>
+    <add key="AutoRecoilStartDelay" value="5"/>
+    <add key="AutoRecoilDelayBetweenPulses" value="13"/>
+
+    <add key="EnableCalibration" value="1"/>
+    <add key="AutoSaveCalibrationInLightgun" value="1"/>
+
+  </appSettings>
+</configuration>

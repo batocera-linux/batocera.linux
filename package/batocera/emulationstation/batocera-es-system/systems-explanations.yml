@@ -3,12 +3,12 @@ default:
     libretro:
       opera:
         explanation: |
-          only available on selected boards: requires a powerfull one
+          Only available on selected boards; requires a powerful one.
   3ds:
     citra:
       citra: &citra_standalone_core
         explanation: |
-          Standalone citra works better, but it lacks  mouse and bezels features which libretro/citra has.
+          Standalone citra works better, but lacks mouse and bezels support which libretro/citra has.
     libretro:
       citra: *citra_standalone_core
 
@@ -67,7 +67,7 @@ default:
     libretro:
       bsnes:
         explanation: |
-          bsnes is included because of the HD mode 7. Bsnes is very resource intensive. So, only x86_64.
+          bsnes is included because of the HD mode 7. Bsnes is very resource intensive.
   saturn:
     libretro:
       yabasanshiro:
@@ -87,27 +87,54 @@ default:
     libretro:
       genesisplusgx: *genesisplusgx_and_picodrive
       picodrive:     *genesisplusgx_and_picodrive
-rpi1:
+bcm2835:
   snes:
     libretro:
       pocketsnes:
         explanation: |
-          pocketsnes is the best emulator for rpi1. However it is not perfect. Some games, like Mario Kart, have glitches.
+          pocketsnes is the best emulator for bcm2835. However it is not perfect. Some games, like Mario Kart, have glitches.
   gba:
     libretro:
       gpsp:
         explanation: |
-          libretro/gpsp is the only option for gba on rpi1
-rpi2:
+          libretro/gpsp is the only option for gba on bcm2835
+bcm2836:
   n64:
     mupen64plus:
       gliden64:
         flags: [slow_games, overclocking]
-rpi3:
+bcm2837:
   n64:
     mupen64plus:
       gliden64:
         flags: [slow_games]
+rpizero2:
+  n64:
+    mupen64plus:
+      glide64mk2:
+        explanation: |
+          Too slow to run.
+  saturn:
+    libretro:
+      yabasanshiro:
+        explanation: |
+          Too slow to run.
+  psp:
+    ppsspp:
+      ppsspp:
+        explanation: |
+          Too slow to run.
+  dreamcast:
+    flycast:
+      flycast:
+        explanation: |
+          Too slow to run.
+rg552:
+  saturn:
+    libretro:
+      yabasanshiro:
+        explanation: |
+          Too slow to run.
 s922x:
   megadrive:
     libretro:

@@ -38,7 +38,7 @@ case "${ACTION}" in
 			auto)
 			    ARCH=$(cat /usr/share/batocera/batocera.arch)
 			    case "${ARCH}" in
-				"rk3399") # defaults to HDMI
+				"rk3399|rk3288") # defaults to HDMI
 				    MODE=alsa_output.platform-hdmi-sound.stereo-fallback
 				    pactl set-default-sink "${MODE}" || exit 1
 				    ;;

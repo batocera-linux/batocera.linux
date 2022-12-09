@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FAUDIO_VERSION = 22.04
+FAUDIO_VERSION = 22.10
 FAUDIO_SITE = $(call github,FNA-XNA,FAudio,$(FAUDIO_VERSION))
 
 FAUDIO_LICENSE = ZLIB

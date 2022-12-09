@@ -5,6 +5,6 @@ from generators.Generator import Generator
 
 class PygameGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["batocera-pygame", rom]
         return Command.Command(array=commandArray)

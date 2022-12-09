@@ -1,0 +1,133 @@
+From 7ae587b17cc4fe6f5f3dd2bc4cb74284d38031ce Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 3 May 2021 08:36:16 +0200
+Subject: [PATCH 017/122] ARM: meson: platsmp: Add support for SoCs running on
+ TrustZone firmware
+
+When the SoC is running on the TrustZone firmware we cannot modify the
+SMP related registers. Add two firmware calls to set the startup
+(function) address and core control (on/off) while turning off all
+direct register access.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/mach-meson/platsmp.c | 52 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/mach-meson/platsmp.c b/arch/arm/mach-meson/platsmp.c
+index 4b8ad728bb42..a8c9eb9567f0 100644
+--- a/arch/arm/mach-meson/platsmp.c
++++ b/arch/arm/mach-meson/platsmp.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <linux/delay.h>
++#include <linux/firmware/meson/meson_mx_trustzone.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
+@@ -63,6 +64,9 @@ static void __init meson_smp_prepare_cpus(const char *scu_compatible,
+ {
+ 	static struct device_node *node;
+ 
++	if (meson_mx_trustzone_firmware_available())
++		return;
++
+ 	/* SMP SRAM */
+ 	node = of_find_compatible_node(NULL, NULL, sram_compatible);
+ 	if (!node) {
+@@ -111,6 +115,30 @@ static void __init meson8_smp_prepare_cpus(unsigned int max_cpus)
+ 			       "amlogic,meson8-smp-sram");
+ }
+ 
++static int meson_trustzone_firmware_smp_boot_secondary(unsigned int cpu)
++{
++	unsigned int addr = __pa_symbol(secondary_startup);
++	int ret;
++
++	ret = meson_mx_trustzone_firmware_auxcoreboot_addr(cpu, addr);
++	if (ret) {
++		pr_err("Failed to set aux core boot address for CPU%u using TrustZone secure firmware\n",
++			cpu);
++		return ret;
++	}
++
++	ret = meson_mx_trustzone_firmware_modify_corectrl(cpu, true);
++	if (ret) {
++		pr_err("Failed to modify core control for CPU%u using TrustZone secure firmware\n",
++			cpu);
++		return ret;
++	}
++
++	udelay(10);
++
++	return 0;
++}
++
+ static void meson_smp_begin_secondary_boot(unsigned int cpu)
+ {
+ 	/*
+@@ -156,6 +184,9 @@ static int meson8_smp_boot_secondary(unsigned int cpu,
+ 	struct reset_control *rstc;
+ 	int ret;
+ 
++	if (meson_mx_trustzone_firmware_available())
++		return meson_trustzone_firmware_smp_boot_secondary(cpu);
++
+ 	rstc = meson_smp_get_core_reset(cpu);
+ 	if (IS_ERR(rstc)) {
+ 		pr_err("Couldn't get the reset controller for CPU%d\n", cpu);
+@@ -213,6 +244,9 @@ static int meson8b_smp_boot_secondary(unsigned int cpu,
+ 	int ret;
+ 	u32 val;
+ 
++	if (meson_mx_trustzone_firmware_available())
++		return meson_trustzone_firmware_smp_boot_secondary(cpu);
++
+ 	rstc = meson_smp_get_core_reset(cpu);
+ 	if (IS_ERR(rstc)) {
+ 		pr_err("Couldn't get the reset controller for CPU%d\n", cpu);
+@@ -292,11 +326,17 @@ static int meson8b_smp_boot_secondary(unsigned int cpu,
+ #ifdef CONFIG_HOTPLUG_CPU
+ static void meson8_smp_cpu_die(unsigned int cpu)
+ {
+-	meson_smp_set_cpu_ctrl(cpu, false);
++	if (meson_mx_trustzone_firmware_available()) {
++		meson_mx_trustzone_firmware_modify_corectrl(cpu, false);
++
++		v7_exit_coherency_flush(louis);
++	} else {
++		meson_smp_set_cpu_ctrl(cpu, false);
+ 
+-	v7_exit_coherency_flush(louis);
++		v7_exit_coherency_flush(louis);
+ 
+-	scu_power_mode(scu_base, SCU_PM_POWEROFF);
++		scu_power_mode(scu_base, SCU_PM_POWEROFF);
++	}
+ 
+ 	dsb();
+ 	wfi();
+@@ -310,6 +350,9 @@ static int meson8_smp_cpu_kill(unsigned int cpu)
+ 	int ret, power_mode;
+ 	unsigned long timeout;
+ 
++	if (meson_mx_trustzone_firmware_available())
++		return 1;
++
+ 	timeout = jiffies + (50 * HZ);
+ 	do {
+ 		power_mode = scu_get_cpu_power_mode(scu_base, cpu);
+@@ -353,6 +396,9 @@ static int meson8b_smp_cpu_kill(unsigned int cpu)
+ {
+ 	int ret, power_mode, count = 5000;
+ 
++	if (meson_mx_trustzone_firmware_available())
++		return 1;
++
+ 	do {
+ 		power_mode = scu_get_cpu_power_mode(scu_base, cpu);
+ 
+-- 
+2.25.1
+

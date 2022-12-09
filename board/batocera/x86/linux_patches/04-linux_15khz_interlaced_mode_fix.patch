@@ -1,8 +1,7 @@
-diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
-index b701cda86d0c..855012e83fa4 100644
---- a/drivers/gpu/drm/drm_vblank.c
-+++ b/drivers/gpu/drm/drm_vblank.c
-@@ -285,6 +285,7 @@ static void drm_update_vblank_count(struct drm_device *dev, unsigned int pipe,
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_vblank.c linux-6.0_15kHz/drivers/gpu/drm/drm_vblank.c
+--- linux-6.0_stock/drivers/gpu/drm/drm_vblank.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_vblank.c	1970-01-01 01:00:00.000000000 +0100
+@@ -285,6 +285,7 @@
  	int count = DRM_TIMESTAMP_MAXRETRIES;
  	int framedur_ns = vblank->framedur_ns;
  	u32 max_vblank_count = drm_max_vblank_count(dev, pipe);
@@ -10,7 +9,7 @@ index b701cda86d0c..855012e83fa4 100644
  
  	/*
  	 * Interrupts were disabled prior to this call, so deal with counter
-@@ -303,12 +304,17 @@ static void drm_update_vblank_count(struct drm_device *dev, unsigned int pipe,
+@@ -303,12 +304,17 @@
  		rc = drm_get_last_vbltimestamp(dev, pipe, &t_vblank, in_vblank_irq);
  	} while (cur_vblank != __get_vblank_counter(dev, pipe) && --count > 0);
  

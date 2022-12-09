@@ -1,0 +1,19 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+    # left     /
+    # right    /
+    # middle   /
+    # button_1 / select
+    # button_2 / a
+    # button_3 / b
+    # button_4 / c
+    # button_5 / up
+    # button_6 / down
+    # button_7 / left
+    # button_8 / right
+
+DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
+evsieve --input "${DEVNAME}" persist=exit --map btn:right btn:2 --map btn:middle btn:3 --map btn:c btn:right --map btn:select btn:1 --map btn:start btn:middle --map abs:hat0y:-1 btn:5:1 --map abs:hat0y:-1..0~ btn:5:0 --map abs:hat0y:1 btn:6:1 --map abs:hat0y:1..0~ btn:6:0 --map abs:hat0x:-1 btn:7:1 --map abs:hat0x:-1..0~ btn:7:0 --map abs:hat0x:1 btn:8:1 --map abs:hat0x:1..0~ btn:8:0 --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+which batocera-brightness >/dev/null || exit 0
+
+case $1 in
+    start)
+        # don't set if under 5%, while it can cause false positive issues
+        BRI=$(batocera-settings-get display.brightness)
+        if test $? = 0
+        then
+            test "${BRI}" -lt 5 && BRI=5
+            batocera-brightness "${BRI}"
+        fi
+        ;;
+    stop)
+        if [ "$(batocera-settings-get display.brightness)" != "$(batocera-brightness)" ]; then
+            batocera-settings-set display.brightness $(batocera-brightness)
+        fi
+        ;;
+esac
+
+exit 0

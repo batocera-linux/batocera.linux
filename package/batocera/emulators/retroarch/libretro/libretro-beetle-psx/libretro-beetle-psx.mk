@@ -3,17 +3,17 @@
 # libretro-beetle-psx
 #
 ################################################################################
-# Version.: Commits on Feb 11, 2022
-LIBRETRO_BEETLE_PSX_VERSION = 88929ae90b4807a41b1b240377ab440e39ecf2cc
+# Version.: Commits on Sep 12, 2022
+LIBRETRO_BEETLE_PSX_VERSION = bd6b9ef3049fe3f70a18ee6f752a935ae83c2f2b
 LIBRETRO_BEETLE_PSX_SITE = $(call github,libretro,beetle-psx-libretro,$(LIBRETRO_BEETLE_PSX_VERSION))
 LIBRETRO_BEETLE_PSX_LICENSE = GPLv2
 
 LIBRETRO_BEETLE_PSX_EXTRAOPT=
 LIBRETRO_BEETLE_PSX_OUTFILE=mednafen_psx_libretro.so
 
-ifeq ($(BR2_PACKAGE_XORG7),y)
-# Batocera - RPi4 required_hw_api = "OpenGL Core >= 3.3 | Vulkan >= 1.0"
-  ifneq ($(BR2_PACKAGE_BATOCERA_RPI4_WITH_XORG),y)
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+# Batocera - SBC required_hw_api = "OpenGL Core >= 3.3 | Vulkan >= 1.0"
+  ifneq ($(BR2_PACKAGE_BATOCERA_SBC_XORG)$(BR2_PACKAGE_XWAYLAND),y)
     LIBRETRO_BEETLE_PSX_EXTRAOPT += HAVE_HW=1
     LIBRETRO_BEETLE_PSX_OUTFILE=mednafen_psx_hw_libretro.so
   endif

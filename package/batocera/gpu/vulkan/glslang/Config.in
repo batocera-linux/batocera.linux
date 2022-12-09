@@ -10,11 +10,3 @@ config BR2_PACKAGE_GLSLANG
 
 config BR2_PACKAGE_HOST_GLSLANG
   bool "host-glslang"
-  depends on BR2_PACKAGE_WAYLAND
-  select BR2_PACKAGE_VULKAN_HEADERS
-  select BR2_PACKAGE_VULKAN_LOADER
-
-  help
-    glslang from Khronos
-
-    https://github.com/KhronosGroup/glslang

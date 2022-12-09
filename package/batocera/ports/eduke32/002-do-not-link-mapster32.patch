@@ -1,0 +1,17 @@
+Index: GNUmakefile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GNUmakefile b/GNUmakefile
+--- a/GNUmakefile	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/GNUmakefile	(date 1655347953303)
+@@ -859,7 +859,7 @@
+
+ roles := \
+     game \
+-    editor \
++#    editor \
+
+
+ ifeq ($(PRETTY_OUTPUT),1)

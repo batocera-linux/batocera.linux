@@ -87,7 +87,7 @@ def defineControllerKeys(controller, systemconfig):
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]
                 if input.name in mupenmapping and mupenmapping[input.name] != "":
-                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name])
+                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name], controller.inputs)
                         # Handle multiple inputs for a single N64 Pad input
                         if value != "":
                             if mupenmapping[input.name] not in config :
@@ -96,18 +96,35 @@ def defineControllerKeys(controller, systemconfig):
                                 config[mupenmapping[input.name]] += " " + value
         return config
 
-
-def setControllerLine(mupenmapping, input, mupenSettingName):
+def setControllerLine(mupenmapping, input, mupenSettingName, allinputs):
         value = ''
         inputType = input.type
         if inputType == 'button':
-                value = "button({})".format(input.id)
+            if mupenSettingName in ["X Axis", "Y Axis"]: # special case for these 2 axis...
+                # hum, a button is mapped on an axis, find the reverse button
+                if input.name == "up":
+                    if "down" in allinputs:
+                        reverseInput = allinputs["down"]
+                        value = f"button({input.id}, {reverseInput.id})"
+                    else:
+                        value = f"button({input.id})"
+                elif input.name == "left":
+                    if "right" in allinputs:
+                        reverseInput = allinputs["right"]
+                        value = f"button({input.id}, {reverseInput.id})"
+                    else:
+                        value = f"button({input.id})"
+                else:
+                    return "" # skip down and right
+            else:
+                # normal button
+                value = f"button({input.id})"
         elif inputType == 'hat':
                 if mupenSettingName in ["X Axis", "Y Axis"]: # special case for these 2 axis...
                     if input.value == "1" or input.value == "8": # only for the lower value to avoid duplicate
-                        value = "hat({} {} {})".format(input.id, mupenHatToAxis[input.value], mupenHatToReverseAxis[input.value])
+                        value = f"hat({input.id} {mupenHatToAxis[input.value]} {mupenHatToReverseAxis[input.value]})"
                 else:
-                    value = "hat({} {})".format(input.id, mupenHatToAxis[input.value])
+                    value = f"hat({input.id} {mupenHatToAxis[input.value]})"
         elif inputType == 'axis':
                 # Generic case for joystick1up and joystick1left
                 if mupenSettingName in mupenDoubleAxis.values():
@@ -116,14 +133,14 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                         # we configure only left and down to not configure 2 times each axis
                         if input.name in [ "left", "up", "joystick1left", "joystick1up", "joystick2left", "joystick2up" ]:
                             if input.value == "-1":
-                                value = "axis({}-,{}+)".format(input.id, input.id)
+                                value = f"axis({input.id}-,{input.id}+)"
                             else:
-                                value = "axis({}+,{}-)".format(input.id, input.id)
+                                value = f"axis({input.id}+,{input.id}-)"
                 else:
                         if input.value == "1":
-                                value = "axis({}+)".format(input.id)
+                                value = f"axis({input.id}+)"
                         else:
-                                value = "axis({}-)".format(input.id)
+                                value = f"axis({input.id}-)"
         return value
 
 def fillIniPlayer(nplayer, iniConfig, controller, config):

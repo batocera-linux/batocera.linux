@@ -1,0 +1,41 @@
+From 65f06562fba95682a12a289afb91e569df5df092 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Wed, 1 Dec 2021 00:17:57 +0200
+Subject: [PATCH] S812/S802: remote audio routing
+
+---
+ arch/arm/boot/dts/meson8-tronsmart-s82.dts | 3 ---
+ arch/arm/boot/dts/meson8m2-mxiii.dtsi      | 3 ---
+ 2 files changed, 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/meson8-tronsmart-s82.dts b/arch/arm/boot/dts/meson8-tronsmart-s82.dts
+index b762638b1..48fcbfa0a 100644
+--- a/arch/arm/boot/dts/meson8-tronsmart-s82.dts
++++ b/arch/arm/boot/dts/meson8-tronsmart-s82.dts
+@@ -65,9 +65,6 @@ TODO:
+ 	sound {
+ 		compatible = "amlogic,gx-sound-card";
+ 		model = "M8M2-S82";
+-		audio-routing = "I2S Encoder Playback", "I2S FIFO Playback",
+-				"SPDIF Encoder Playback", "I2S FIFO Playback",
+-				"SPDIF Encoder Playback", "SPDIF FIFO Playback";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL0>,
+ 				  <&clkc CLKID_MPLL1>,
+diff --git a/arch/arm/boot/dts/meson8m2-mxiii.dtsi b/arch/arm/boot/dts/meson8m2-mxiii.dtsi
+index 5d08f7fe4..6048fc504 100644
+--- a/arch/arm/boot/dts/meson8m2-mxiii.dtsi
++++ b/arch/arm/boot/dts/meson8m2-mxiii.dtsi
+@@ -67,9 +67,6 @@ sdio_pwrseq: sdio-pwrseq {
+ 	sound {
+ 		compatible = "amlogic,gx-sound-card";
+ 		model = "M8M2-MXIII";
+-		audio-routing = "I2S Encoder Playback", "I2S FIFO Playback",
+-				"SPDIF Encoder Playback", "I2S FIFO Playback",
+-				"SPDIF Encoder Playback", "SPDIF FIFO Playback";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL0>,
+ 				  <&clkc CLKID_MPLL1>;
+-- 
+2.25.1
+

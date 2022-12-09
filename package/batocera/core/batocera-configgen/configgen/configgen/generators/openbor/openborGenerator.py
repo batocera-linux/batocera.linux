@@ -14,7 +14,7 @@ eslog = get_logger(__name__)
 class OpenborGenerator(Generator):
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         configDir = batoceraFiles.CONF + '/openbor'
         if not os.path.exists(configDir):
             os.makedirs(configDir)
@@ -27,7 +27,7 @@ class OpenborGenerator(Generator):
         core = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
-        eslog.debug("core taken is {}".format(core))
+        eslog.debug(f"core taken is {core}")
 
         # config file
         configfilename = "config7142.ini"

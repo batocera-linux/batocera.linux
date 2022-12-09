@@ -18,7 +18,7 @@ class UnixSettings():
         self.comment = defaultComment
 
         # use ConfigParser as backend.
-        eslog.debug("Creating parser for {0}".format(self.settingsFile))
+        eslog.debug(f"Creating parser for {self.settingsFile}")
         self.config = configparser.ConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
         # To prevent ConfigParser from converting to lower case
         self.config.optionxform = str
@@ -28,7 +28,7 @@ class UnixSettings():
             # pretend where have a [DEFAULT] section
             file = io.StringIO()
             file.write('[DEFAULT]\n')
-            file.write(io.open(self.settingsFile, encoding='utf_8_sig').read())
+            file.write(open(self.settingsFile, encoding='utf_8_sig').read())
             file.seek(0, os.SEEK_SET)
 
             self.config.readfp(file)
@@ -48,15 +48,14 @@ class UnixSettings():
         fp.close()
 
     def save(self, name, value):
-        eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
+        eslog.debug(f"Writing {name} = {value} to {self.settingsFile}")
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
 
     def disableAll(self, name):
-        eslog.debug("Disabling {0} from {1}".format(name, self.settingsFile))
+        eslog.debug(f"Disabling {name} from {self.settingsFile}")
         for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + name, key)
-            if m:
+            if key[0:len(name)] == name:
                 self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
@@ -64,14 +63,17 @@ class UnixSettings():
 
     @staticmethod
     def protectString(str):
-        return re.sub('[^A-Za-z0-9-\.]+', '_', str)
+        return re.sub(r'[^A-Za-z0-9-\.]+', '_', str)
 
-    def loadAll(self, name):
-        eslog.debug("Looking for {0}.* in {1}".format(name, self.settingsFile))
+    def loadAll(self, name, includeName = False):
+        eslog.debug(f"Looking for {name}.* in {self.settingsFile}")
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + UnixSettings.protectString(name) + "\.(.+)", UnixSettings.protectString(key))
+            m = re.match(r"^" + UnixSettings.protectString(name) + r"\.(.+)", UnixSettings.protectString(key))
             if m:
-                res[m.group(1)] = value;
+                if includeName:
+                    res[name + "." + m.group(1)] = value;
+                else:
+                    res[m.group(1)] = value;
 
         return res

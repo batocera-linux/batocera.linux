@@ -22,7 +22,9 @@ printf "Starting share: "
 # INTERNAL     => /dev/mmcblk0p2
 # RAM          => tmpfs
 # ANYEXTERNAL  => any device found not starting by /dev/mmcblk0p (use it when you've several usb keys, but plug only one at a time)
+# NETWORK      => use the NAS specified by sharenetwork_[smb-or-nfs][0-9] options
 # DEV [FSUUID] => a device having the FSUID uuid
+# DEVICES      => use local storage devices specified by sharedevice_part[1-9]
 ###
 
 SHARECONFFILE="/boot/batocera-boot.conf"
@@ -307,24 +309,24 @@ case "${MODE}" in
     ;;
 esac
 
-# fs compression
+# filesystem compression
 compressenabled="$(/usr/bin/batocera-settings-get system.fscompression.enabled)"
 if [ "$compressenabled" = "1" ]
 then
     if grep -qE "^/dev/[^ ]* /userdata btrfs.*$" /proc/mounts
     then
+        # compress-force used here to have the zstd-compressor check the total file size instead of btrfs before committing to compressing
+        # btrfs's algorithm can be innaccurate when compared with zstd-compressor
         mount -o remount,compress-force=zstd,autodefrag /userdata || exit 1
     fi
 fi
 
-
-# share upgrade, just unzip share.zip from upgrade, no need to reboot
-if [ -e "/userdata/system/upgrade/share.zip" ]
-then
-    (cd /userdata && unzip -o /userdata/system/upgrade/share.zip) > /userdata/system/upgrade/upgrade.share.out.log 2> /userdata/system/upgrade/upgrade.share.err.log
-    # always remove to not apply indefinitly
-    rm -f /userdata/system/upgrade/share.zip
-fi
+# some custom files, like extension_strace.tar.gz or gdb.
+find /userdata/system -name "extension_*.tar.gz" -maxdepth 1 |
+    while read FILE
+    do
+	(cd / && gunzip -c "${FILE}" | tar xf -)
+    done
 
 # now, let mount delayed usbmount devices
 ls /var/run/usbmount.delay |

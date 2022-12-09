@@ -3,8 +3,8 @@
 # mupen64plus-core
 #
 ################################################################################
-# Version.: Commits on Feb 19, 2022
-MUPEN64PLUS_CORE_VERSION = 49dd0bfc8f48afd04ddd1762ea9d9e89a85fc8a2
+# Version.: Commits on Dec 3, 2022
+MUPEN64PLUS_CORE_VERSION = f63e1b35063241738d848f73311496b76c8aa918
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -61,7 +61,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 	MUPEN64PLUS_HOST_CPU = i586
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	MUPEN64PLUS_HOST_CPU = x86_64
 endif
 

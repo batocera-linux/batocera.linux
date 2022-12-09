@@ -1,0 +1,14 @@
+config BR2_PACKAGE_SWAYBG
+    bool "swaybg"
+
+    select BR2_PACKAGE_WAYLAND
+    select BR2_PACKAGE_WAYLAND_PROTOCOLS
+    select BR2_PACKAGE_CAIRO
+    select BR2_PACKAGE_CAIRO_PNG
+
+    help
+        swaybg is a wallpaper utility for Wayland compositors.
+        It is compatible with any Wayland compositor which implements
+        the wlr-layer-shell protocol and wl_output version 4.
+
+	    https://swaywm.org/

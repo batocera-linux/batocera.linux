@@ -1,8 +1,0 @@
-config BR2_PACKAGE_LIBRETRO_DUCKSTATION
-    bool "libretro-duckstation"
-    depends on BR2_PACKAGE_RETROARCH
-    help
-      LR-Duckstation - PlayStation1 PSX Emulator
-
-	    https://github.com/stenzek/duckstation#libretro-core
-	    binaries from https://www.duckstation.org/libretro/ as they can't be build from GitHub

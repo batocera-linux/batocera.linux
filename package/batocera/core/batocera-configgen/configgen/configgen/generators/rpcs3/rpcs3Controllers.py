@@ -15,26 +15,26 @@ def generateControllerConfig(system, controllers, rom):
     nplayer = 1
     for controller, pad in sorted(controllers.items()):
         if nplayer <= 7:
-            f.write("Player {} Input:\n".format(nplayer))
+            f.write(f"Player {nplayer} Input:\n")
             f.write("  Handler: Evdev\n")
-            f.write("  Device: {}\n".format(pad.dev))
+            f.write(f"  Device: {pad.dev}\n")
             f.write("  Config:\n")
             for inputIdx in pad.inputs:
                 input = pad.inputs[inputIdx]
                 key = rpcs3_mappingKey(input.name)
                 if key is not None:
-                    f.write("    {}: {}\n".format(key, rpcs3_mappingValue(input.name, input.type, input.code, int(input.value))))
+                    f.write(f"    {key}: {rpcs3_mappingValue(input.name, input.type, input.code, int(input.value))}\n")
                 else:
-                    eslog.warning("no rpcs3 mapping found for {}".format(input.name))
+                    eslog.warning(f"no rpcs3 mapping found for {input.name}")
 
                 # write the reverse
                 if input.name == "joystick1up" or input.name == "joystick1left" or input.name == "joystick2up" or input.name == "joystick2left":
                     reversedName = rpcs3_reverseMapping(input.name)
                     key = rpcs3_mappingKey(reversedName)
                     if key is not None:
-                        f.write("    {}: {}\n".format(key, rpcs3_mappingValue(reversedName, input.type, input.code, int(input.value)*-1)))
+                        f.write(f"    {key}: {rpcs3_mappingValue(reversedName, input.type, input.code, int(input.value)*-1)}\n")
                     else:
-                        eslog.warning("no rpcs3 mapping found for {}".format(input.name))
+                        eslog.warning(f"no rpcs3 mapping found for {input.name}")
                     
             rpcs3_otherKeys(f, controller)
         nplayer += 1
@@ -94,13 +94,13 @@ def rpcs3_mappingValue(name, type, code, value):
             return 1017
         if value == 8:
             return -1016
-        raise Exception("invalid hat value {}".format(value))
+        raise Exception(f"invalid hat value {value}")
     elif type == "axis":
         if code is None:
             return ""
         res = int(code)+1000
         if value < 0:
-            eslog.debug("name = {} and value = {}".format(name, value))
+            eslog.debug(f"name = {name} and value = {value}")
             res = res * -1
         return res
     return None

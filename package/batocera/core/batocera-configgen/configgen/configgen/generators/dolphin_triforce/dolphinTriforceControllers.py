@@ -114,7 +114,7 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, filename)
+    configFileName = f"{batoceraFiles.dolphinTriforceConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8")
     nplayer = 1
     nsamepad = 0
@@ -185,13 +185,13 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
 def generateControllerConfig_any_from_profiles(f, pad):
     for profileFile in glob.glob("/userdata/system/configs/dolphin-triforce/Config/Profiles/GCPad/*.ini"):
         try:
-            eslog.debug("Looking profile : {}".format(profileFile))
+            eslog.debug(f"Looking profile : {profileFile}")
             profileConfig = configparser.ConfigParser(interpolation=None)
             # To prevent ConfigParser from converting to lower case
             profileConfig.optionxform = str
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug("Profile device : {}".format(profileDevice))
+            eslog.debug(f"Profile device : {profileDevice}")
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
@@ -199,10 +199,10 @@ def generateControllerConfig_any_from_profiles(f, pad):
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
-                            f.write("{} = {}\n".format(key, val))
+                            f.write(f"{key} = {val}\n")
                     return True
         except:
-            eslog.error("profile {} : FAILED".format(profileFile))
+            eslog.error(f"profile {profileFile} : FAILED")
 
     return False
 

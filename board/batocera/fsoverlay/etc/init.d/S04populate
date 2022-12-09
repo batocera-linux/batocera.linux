@@ -12,7 +12,7 @@ cp /etc/sixad.profile /var/lib/sixad/profiles/default
 # custom network config
 mkdir -p "/var/lib/connman"
 ln -sf "/userdata/system/network-connman.config" "/var/lib/connman/batocera-custom.config"
-ln -sf "/boot/network-connman.config"                  "/var/lib/connman/batocera-boot-custom.config"
+ln -sf "/boot/network-connman.config" "/var/lib/connman/batocera-boot-custom.config"
 
 # bluetooth
 mkdir -p /var/lib/bluetooth
@@ -36,14 +36,3 @@ mkdir -p /var/log
 
 # flatpak and probably more
 mkdir -p /var/tmp
-
-# nvidia-driver
-if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
-then
-	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
-	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
-	for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
-else
-	[ -f /etc/modprobe.d/blacklist-nouveau.conf ] && rm /etc/modprobe.d/blacklist-nouveau.conf;
-	[ -f /etc/modprobe.d/nvidia-drm.conf ] && rm /etc/modprobe.d/nvidia-drm.conf;
-fi

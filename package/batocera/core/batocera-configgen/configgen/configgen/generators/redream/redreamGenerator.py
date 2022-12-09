@@ -17,7 +17,7 @@ redreamConfig = batoceraFiles.CONF + "/redream"
 
 class RedreamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         redream_exec = redreamConfig + "/redream"
 
         if not os.path.exists(redreamConfig):
@@ -70,17 +70,17 @@ class RedreamGenerator(Generator):
             controller = playersControllers[index]
             if nplayer <= 4:
                 # dev = ? seems to be 4+
-                ctrlport = "port{}=dev:{},desc:{},type:controller".format(controller.index, 4 + controller.index, controller.guid)
+                ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
                 f.write((ctrlport)+ "\n")
                 
                 ctrlprofile = "profile{}=name:{},type:controller,deadzone:12,crosshair:1,".format(controller.index, controller.guid)
                 fullprofile = ctrlprofile
                 
-                eslog.debug("CONTROLLER: {} - {}".format(controller.index, controller.guid))
+                eslog.debug(f"CONTROLLER: {controller.index} - {controller.guid}")
                 
                 for index in controller.inputs:
                     input = controller.inputs[index]
-                    eslog.debug("Name: {}, Type: {}, ID: {}, Code: {}".format(input.name, input.type, input.id, input.code))
+                    eslog.debug(f"Name: {input.name}, Type: {input.type}, ID: {input.id}, Code: {input.code}")
                     
                     # [buttons]
                     if input.type == "button" and input.name in ButtonMap:

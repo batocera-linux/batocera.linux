@@ -1,15 +1,26 @@
 #!/bin/bash
 
+# Detect battery
+BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+if ! test -n "${BATT}"
+then
+    NOW=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
+    MAX=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
+    if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]
+    then
+        BATT=$((200*$NOW/$MAX % 2 + 100*$NOW/$MAX))
+    fi
+fi
+
 ### short version (for osd)
 if test "$1" = "--short"
 then
-    BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
     DT=$(date +%H:%M)
     if test -n "${BATT}"
     then
-	echo "Battery: ${BATT}% - ${DT}"
+        echo "Battery: ${BATT}% - ${DT}"
     else
-	echo "${DT}"
+        echo "${DT}"
     fi
     exit 0
 fi
@@ -52,7 +63,6 @@ echo "Disk format: ${INTERNALDEVICETYPE}"
 
 
 # battery
-BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
 if test -n "${BATT}"
 then
     echo "Battery: ${BATT}%"
@@ -85,10 +95,15 @@ then
 fi
 
 echo "Architecture: ${V_BOARD}"
-if test -e /sys/firmware/devicetree/base/model
+V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+if test -z "${V_BOARD_MODEL}"
 then
-    DTMODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
-    echo "Model: ${DTMODEL}"
+    # give an other chance with dmi
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+if test -n "${V_BOARD_MODEL}"
+then
+    echo "Model: ${V_BOARD_MODEL}"
 fi
 
 if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"

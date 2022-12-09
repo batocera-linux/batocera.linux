@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.1
+BATOCERA_AUDIO_VERSION = 6.2
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
@@ -13,10 +13,8 @@ BATOCERA_AUDIO_DEPENDENCIES = pipewire
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 ALSA_SUFFIX = "-rk3326"
-PIPEWIRECONF_SUFFIX = "-rk3326"
 else
 ALSA_SUFFIX =
-PIPEWIRECONF_SUFFIX =
 endif
 
 define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
@@ -35,6 +33,11 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/share/batocera/alsa/
 	# sample audio files
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
+
+	# extra ucm files
+	mkdir -p $(TARGET_DIR)/usr/share/alsa/ucm2
+	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/ucm2/* $(TARGET_DIR)/usr/share/alsa/ucm2/
+
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Saudio \
 		$(TARGET_DIR)/etc/init.d/S06audio
@@ -57,20 +60,14 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# pipewire-alsa
 	ln -sft $(TARGET_DIR)/etc/alsa/conf.d \
 		/usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf
-	install -Dm644 /dev/null $(TARGET_DIR)/usr/share/pipewire/media-session.d/with-alsa
 
 	# pipewire-media-session config: disable dbus device reservation
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
-		$(TARGET_DIR)/usr/share/pipewire/media-session.d
+    mkdir -p $(TARGET_DIR)/usr/share/wireplumber/main.lua.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/50-alsa-config.lua \
+		$(TARGET_DIR)/usr/share/wireplumber/main.lua.d/50-alsa-config.lua
 
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf$(PIPEWIRECONF_SUFFIX) \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf \
 		$(TARGET_DIR)/usr/share/pipewire/pipewire.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/client-rt.conf \
-		$(TARGET_DIR)/usr/share/pipewire/client-rt.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
-		$(TARGET_DIR)/usr/share/pipewire/pipewire-pulse.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
-		$(TARGET_DIR)/usr/share/pipewire/media-session.d/media-session.conf
 endef
 
 $(eval $(generic-package))

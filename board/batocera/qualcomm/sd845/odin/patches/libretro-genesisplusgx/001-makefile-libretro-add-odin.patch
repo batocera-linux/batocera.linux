@@ -1,0 +1,16 @@
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -77,6 +77,13 @@
+       PLATFORM_DEFINES += -DARM -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
+    endif
+ 
++   # Odroid-N2
++   ifneq (,$(findstring odin,$(platform)))
++      ENDIANNESS_DEFINES += -DALIGN_LONG
++      CFLAGS += -fomit-frame-pointer -ffast-math
++      PLATFORM_DEFINES += -DARM -march=armv8-a+crc -mcpu=cortex-a75 -mtune=cortex-a75.cortex-a55
++   endif
++
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
+       ENDIANNESS_DEFINES += -DALIGN_LONG

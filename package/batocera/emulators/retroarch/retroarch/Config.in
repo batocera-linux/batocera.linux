@@ -10,12 +10,5 @@ config BR2_PACKAGE_RETROARCH
 
 	  http://www.libretro.com
 
-#if BR2_PACKAGE_RETROARCH
-#config BR2_PACKAGE_RETROARCH_RPI1
-#        bool "Compile for RPI1"
-#        help
-#		Compile for rpi1
-#endif
-
 comment "Retroarch depends on EGL or OpenGLES"
 	depends on !(BR2_PACKAGE_HAS_LIBEGL || BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBGL)

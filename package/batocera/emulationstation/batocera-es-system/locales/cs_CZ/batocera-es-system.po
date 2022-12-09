@@ -3,27 +3,41 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-05-03 20:51+0200\n"
+"PO-Revision-Date: 2022-12-02 18:59+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cz\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.2\n"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Set the display's resolution. Does not affect the rendering resolution."
+msgstr "Nastavení rozlišení displeje. Nemá vliv na rozlišení vykreslování."
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
 msgid "VIDEO MODE"
 msgstr "REŽIM VIDEA"
 
-#. TRANSLATION: shared, dolphin, mupen64plus, demul
+#. TRANSLATION: shared, pcsx2
+msgctxt "game_options"
+msgid ""
+"Force the game to render in this aspect ratio. Not all systems support all "
+"ratios."
+msgstr ""
+"Vynutí vykreslování hry v tomto poměru stran. Ne všechny systémy podporují "
+"všechny poměry."
+
+#. TRANSLATION: shared, dolphin, mupen64plus, pcsx2, demul
 msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
 msgstr "HERNÍ POMĚR STRAN"
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, pcsx2
 msgctxt "game_options"
 msgid "Full"
 msgstr "Plný"
@@ -41,12 +55,19 @@ msgstr "Čtvercový pixel"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Core provided"
-msgstr "Poskytnuté jádro"
+msgstr "Poskytnutý jádrem"
 
 #. TRANSLATION: shared, shared, libretro/mesen, libretro/gambatte
 msgctxt "game_options"
 msgid "Custom"
 msgstr "Vlastní"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr ""
+"Uložení minulých pozic pro přetáčení v reálném čase, pokud to jádro "
+"podporuje."
 
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
@@ -56,22 +77,29 @@ msgstr "PŘETOČIT"
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "On"
-msgstr "Zapnuto"
+msgstr "Zapnout"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "Off"
-msgstr "Vypnuto"
+msgstr "Vypnout"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "AUTO SAVE/LOAD"
-msgstr "AUTOMAT. ULOŽIT/NAČÍST"
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr ""
+"Načtení poslední uložené pozice při spuštění hry a uložení pozice při "
+"ukončení hry."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
+msgstr "AUTOMATICKÉ UKLÁDÁNÍ/NAČÍTÁNÍ PŘI SPUŠTĚNÍ HRY"
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
-msgid "GAME RENDERING"
-msgstr "RENDERING HRY"
+msgid "GAME RENDERING & SHADERS"
+msgstr "VYKRESLOVÁNÍ HER A SHADERY"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -80,8 +108,22 @@ msgstr "SET SHADERU"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid ""
+"Disabled if using a shader set or the output display matches the game's "
+"resolution."
+msgstr ""
+"Zakázáno, pokud se používá sada shaderů nebo výstupní zobrazení odpovídá "
+"rozlišení hry."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
 msgstr "VYHLAZENÍ HER (BILINEÁRNÍ FILTROVÁNÍ)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Only increase the image size in integer multiples."
+msgstr "Velikost obrázku zvětšujte pouze v celočíselných násobcích."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -130,13 +172,38 @@ msgstr "VÝKON"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "HEADS UP DISPLAY CORNER"
+msgstr "ROH HEADS-UP DISPLEJE"
+
+#. TRANSLATION: shared, shared
+msgctxt "game_options"
+msgid "TOP LEFT (NW)"
+msgstr "VLEVO NAHOŘE (SZ)"
+
+#. TRANSLATION: shared, shared
+msgctxt "game_options"
+msgid "TOP RIGHT (NE)"
+msgstr "VPRAVO NAHOŘE (SV)"
+
+#. TRANSLATION: shared, shared
+msgctxt "game_options"
+msgid "BOTTOM RIGHT (SE)"
+msgstr "VPRAVO DOLE (JV)"
+
+#. TRANSLATION: shared, shared
+msgctxt "game_options"
+msgid "BOTTOM LEFT (SW)"
+msgstr "VLEVO DOLE (JZ)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "Show an image overlaid on top of the bezel."
-msgstr "Zobrazení obrázku překrytého rámečkem."
+msgstr "Zobrazení obrázku/obrazce překrytého rámečkem."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SHOW TATTOO OVER BEZEL"
-msgstr "ZOBRAZIT TETOVÁNÍ NAD RÁMEČKEM"
+msgstr "OBRAZEC V OBRAZE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -146,7 +213,7 @@ msgstr "NE"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SYSTEM CONTROLLERS"
-msgstr "OVLADAČE SYSTÉMU"
+msgstr "HERNÍ OVLADAČE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -156,27 +223,7 @@ msgstr "VLASTNÍ OBRÁZEK"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TATTOO CORNER"
-msgstr "TETOVACÍ KOUTEK"
-
-#. TRANSLATION: shared
-msgctxt "game_options"
-msgid "NORTH WEST"
-msgstr "SEVEROZÁPAD"
-
-#. TRANSLATION: shared
-msgctxt "game_options"
-msgid "NORTH EAST"
-msgstr "SEVEROVÝCHOD"
-
-#. TRANSLATION: shared
-msgctxt "game_options"
-msgid "SOUTH EAST"
-msgstr "JIHOVÝCHOD"
-
-#. TRANSLATION: shared
-msgctxt "game_options"
-msgid "SOUTH WEST"
-msgstr "JIHOZÁPAD"
+msgstr "UMÍSTĚNÍ OBRAZCE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -186,12 +233,21 @@ msgstr "VLASTNÍ CESTA K OBRÁZKU .PNG"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Shrink/expand tattoo to fit within the bezel's border."
-msgstr "Zmenšit/rozšířit tetování tak, aby se vešlo do rámečku."
+msgstr "Zmenšit/rozšířit obrazec/obrázek tak, aby se vešel do rámu."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RESIZE TATTOO"
-msgstr "ZMĚNIT VELIKOST TETOVÁNÍ"
+msgstr "ZMĚNIT VELIKOST OBRAZCE"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
+"libretro cores."
+msgstr ""
+"Během hry můžete stisknutím klávesové zkratky + R1 přeložit text na "
+"obrazovce. Pouze na jádrech libretro."
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -205,8 +261,18 @@ msgstr "POVOLIT PŘEKLADATELSKOU SLUŽBU AI"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "The language to translate into."
+msgstr "Jazyk, do kterého se překládá."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "TARGET LANGUAGE"
 msgstr "CÍLOVÝ JAZYK"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "If nothing is specified, will use ZTranslate by default."
+msgstr "Pokud není zadáno nic, použije se ve výchozím nastavení ZPřekladač."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -224,8 +290,8 @@ msgid ""
 "Enables run-ahead. Doubles CPU requirements. High numbers can result in "
 "visible jitter."
 msgstr ""
-"Povoluje RUN-AHEAD. Zdvojnásobuje nároky na CPU. Vysoká čísla mohou mít za "
-"následek viditelný jitter."
+"Povoluje RUN-AHEAD. Zdvojené nároky na CPU. Vyšší čísla mohou mít viditelný "
+"jitter."
 
 #. TRANSLATION: shared, shared, shared, shared, shared
 msgctxt "game_options"
@@ -254,8 +320,8 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
-"Automaticky dočasně sníží zpoždění snímků, aby se zabránilo jejich výpadkům. "
-"Může způsobit zadrhávání."
+"Dočasně sníží zpoždění snímků, aby se zabránilo jejich výpadkům. Může se "
+"objevit sekání."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -267,8 +333,7 @@ msgctxt "game_options"
 msgid ""
 "Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR."
 msgstr ""
-"Neodchylujte se od požadovaného základního načasování. G-Sync, FreeSync, "
-"HDMI 2.1 VRR."
+"Neodchyluje se od požadovaného načasování. G-Sync, FreeSync, HDMI 2.1 VRR."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -278,12 +343,109 @@ msgstr "PROMĚNLIVÁ OBNOVOVACÍ FREKVENCE"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Improves performance at the cost of latency and more video stuttering."
-msgstr "Zvyšuje výkon za cenu zpoždění a většího zadrhávání videa."
+msgstr "Zvýšení výkonu za cenu zpoždění a většího zadrhávání videa."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "THREADED VIDEO"
 msgstr "THREADED VIDEO"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use light guns instead of pads if light guns are connected."
+msgstr ""
+"Pokud jsou připojeny světelné zbraně, použijí se místo gamepadu světelné "
+"zbraně."
+
+#. TRANSLATION: shared, shared, libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, ...
+msgctxt "game_options"
+msgid "LIGHT GUN"
+msgstr "SVĚTELNÁ ZBRAŇ"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "USE LIGHT GUNS"
+msgstr "POUŽÍT SVĚTELNÉ ZBRANĚ"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "For emulators and controllers supporting force feedback."
+msgstr "Pro emulátory a ovladače podporující silovou zpětnou vazbu."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "RUMBLE LEVEL"
+msgstr "LEVEL VYBRACE"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Set game audio level gain in dB."
+msgstr "Nastavení zesílení úrovně zvuku hry v dB."
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "AUDIO VOLUME GAIN"
+msgstr "ZESÍLENÍ HLASITOSTI ZVUKU"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "0 (No gain)"
+msgstr "0 (Bez zisku)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Show/Hide guns borders for specific systems"
+msgstr "Zobrazit/Skrýt okraje děl pro konkrétní systémy"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "BORDER MODE"
+msgstr "HRANIČNÍ REŽIM"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "normal"
+msgstr "normální"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "hidden"
+msgstr "skrytý"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Change the number of enabled cores, increasing per-core performance"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "CPU CORES"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use All Cores"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use Physical Cores Only"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Dual Core"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Triple Core"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Quad Core"
+msgstr ""
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -308,7 +470,7 @@ msgstr "Autodetekce"
 #. TRANSLATION: libretro/81, libretro/81, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "On (forced)"
-msgstr "Zapnuto (vynucené)"
+msgstr "Zapnout (vynucené)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -325,17 +487,17 @@ msgctxt "game_options"
 msgid "ATARI SYSTEM"
 msgstr "ATARI SYSTEM"
 
-#. TRANSLATION: libretro/atari800, libretro/puae
+#. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "VIDEO FORMAT STANDARD"
 msgstr "STANDARD FORMÁTU VIDEA"
 
-#. TRANSLATION: libretro/atari800, libretro/puae
+#. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "NTSC 240x480px 60Hz"
 msgstr "NTSC 240x480px 60Hz"
 
-#. TRANSLATION: libretro/atari800, libretro/puae
+#. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "PAL 288x576px 50Hz"
 msgstr "PAL 288x576px 50Hz"
@@ -380,6 +542,71 @@ msgstr "Zachází s pravou analogovou páčkou jako s druhým joystickem."
 msgctxt "game_options"
 msgid "JOYSTICK HACK (FOR ROBOTRON 2084)"
 msgstr "HACK JOYSTICKU (PRO ROBOTRON 2084)"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, libretro/snes9x, ...
+msgctxt "game_options"
+msgid "Show crosshairs in game"
+msgstr "Zobrazení zaměřovacího kříže ve hře"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, ...
+msgctxt "game_options"
+msgid "SHOW LIGHT GUN CROSSHAIRS"
+msgstr "ZOBRAZIT ZAMĚŘOVACÍ KŘÍŽ SVĚTELNÉ ZBRANĚ"
+
+#. TRANSLATION: libretro/beetle-saturn
+msgctxt "game_options"
+msgid "Cross"
+msgstr "Kříž"
+
+#. TRANSLATION: libretro/beetle-saturn
+msgctxt "game_options"
+msgid "Dot"
+msgstr "Tečka"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "Disabled"
+msgstr "Zakázáno"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Not all games support 3D pad."
+msgstr "Ne všechny hry podporují 3D ovladač."
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/dolphin, libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, ...
+msgctxt "game_options"
+msgid "CONTROLLER 1 TYPE"
+msgstr "TYP OVLADAČE 1"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Saturn Pad"
+msgstr "Saturn Pad"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
+msgctxt "game_options"
+msgid "Saturn 3D Pad"
+msgstr "Saturn 3D Pad"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/dolphin, libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, ...
+msgctxt "game_options"
+msgid "CONTROLLER 2 TYPE"
+msgstr "TYP OVLADAČE 2"
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+msgctxt "game_options"
+msgid "Hides borders on many games. Some games used the borders."
+msgstr "Skrývá hranice mnoha her. U některých her se okraje používají."
+
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, vice
+msgctxt "game_options"
+msgid "ZOOM (HIDE BORDERS)"
+msgstr "ZOOM (SKRÝT OKRAJE)"
+
+#. TRANSLATION: libretro/bluemsx
+msgctxt "game_options"
+msgid "MSX2"
+msgstr "MSX2"
 
 #. TRANSLATION: libretro/bluemsx
 msgctxt "game_options"
@@ -435,11 +662,6 @@ msgstr "Video filtr poháněný jádrem."
 msgctxt "game_options"
 msgid "BLARGG NTSC FILTER"
 msgstr "BLARGG NTSC FILTR"
-
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/mame, libretro/mess, libretro/mess, ...
-msgctxt "game_options"
-msgid "Disabled"
-msgstr "Zakázáno"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
@@ -524,13 +746,13 @@ msgctxt "game_options"
 msgid "SUPER GAME BOY 2"
 msgstr "SUPER GAME BOY 2"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/same_cdi, libretro/mame, ...
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
 msgstr ""
 "Vylepšení. Snižuje zpomalení systému. Způsobuje problémy v některých hrách."
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/mame, libretro/mess, ...
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/same_cdi, libretro/mame, ...
 msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
 msgstr "PŘETAKTOVÁNÍ (NESTABILNÍ)"
@@ -605,7 +827,9 @@ msgstr "Dendy"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Rotate the screen, useful for certain vertical gameplay homebrews."
-msgstr "Otáčení obrazovky, užitečné pro vertikální hraní, některých domácích produktů."
+msgstr ""
+"Otáčení obrazovky, užitečné pro vertikální hraní, některých domácích "
+"produktů."
 
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
 msgctxt "game_options"
@@ -662,7 +886,7 @@ msgctxt "game_options"
 msgid "COLOR PALETTE"
 msgstr "PALETA BAREV"
 
-#. TRANSLATION: libretro/mesen, libretro/puae, flycast/uzem, flycast/uzem, flycast
+#. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, flycast/uzem, flycast/uzem, ...
 msgctxt "game_options"
 msgid "Default"
 msgstr "Výchozí"
@@ -762,14 +986,14 @@ msgctxt "game_options"
 msgid "Random Values"
 msgstr "Náhodné Hodnoty"
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mame, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
 msgstr ""
 "Vylepšení. Zvyšuje rozlišení vykreslování. 3D objekty jsou zřetelnější."
 
-#. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mame, ...
+#. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "ROZLIŠENÍ VYKRESLOVÁNÍ"
@@ -899,6 +1123,216 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 3"
 msgstr "hybridní spodní poměr 3"
 
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Select the input type to navigate the touch screen"
+msgstr "Výběr typu vstupu pro navigaci na dotykové obrazovce"
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "TOUCH SCREEN MODE"
+msgstr "REŽIM DOTYKOVÉ OBRAZOVKY"
+
+#. TRANSLATION: libretro/melonds, libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "Mouse"
+msgstr "Myš"
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Touch Screen"
+msgstr "Dotyková Obrazovka"
+
+#. TRANSLATION: libretro/melonds
+msgctxt "game_options"
+msgid "Right Stick"
+msgstr "Pravá Tyč"
+
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce
+msgctxt "game_options"
+msgid "1x native (640x528)"
+msgstr "1x nativní (640x528)"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "6x 4K (3840x3168)"
+msgstr "6x 4K (3840x3168)"
+
+#. TRANSLATION: libretro/dolphin
+msgctxt "game_options"
+msgid "Wii NAND's language setting."
+msgstr "Nastavení jazyka Wii NAND."
+
+#. TRANSLATION: libretro/dolphin, hatari, redream, sonic2013, soniccd, ...
+msgctxt "game_options"
+msgid "LANGUAGE"
+msgstr "JAZYK"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
+msgctxt "game_options"
+msgid "English"
+msgstr "Angličtina"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "French"
+msgstr "Francouzština"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "German"
+msgstr "Němčina"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "Spanish"
+msgstr "Španělština"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "Italian"
+msgstr "Italština"
+
+#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Dutch"
+msgstr "Holandsky"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "Japanese"
+msgstr "Japonština"
+
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Simplified Chinese"
+msgstr "Zjednodušená Ćínština"
+
+#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Traditional Chinese"
+msgstr "Tradiční Čínština"
+
+#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, yuzu, ...
+msgctxt "game_options"
+msgid "Korean"
+msgstr "Korejština"
+
+#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/flycast, ...
+msgctxt "game_options"
+msgid "Enhancement. Only works with a 16/9 ratio and bezels disabled."
+msgstr "Vylepšení. Funguje pouze s poměrem 16/9 a vypnutými rámečky."
+
+#. TRANSLATION: libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, ...
+msgctxt "game_options"
+msgid "WIDESCREEN HACK (GLITCHY)"
+msgstr "ŠIROKOÚHLÝ HACK (PORUCHOVÝ)"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"May not work well on all hardware. Hybrid is preferred, where supported."
+msgstr ""
+"Nemusí fungovat dobře na veškerém hardwaru. Pokud je podporován, "
+"upřednostňuje se hybridní systém."
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "UBERSHADERS"
+msgstr "UBERSHADERY"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "No Ubershaders"
+msgstr "Žádné Ubershadery"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Exclusive Ubershaders"
+msgstr "Exkluzivní Ubershadery"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Hybrid Ubershaders"
+msgstr "Hybridní Ubershadery"
+
+#. TRANSLATION: libretro/dolphin, dolphin
+msgctxt "game_options"
+msgid "Skip Drawing"
+msgstr "Přeskočit Kresbu"
+
+#. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
+msgctxt "game_options"
+msgid "Improves clarity of distant textures."
+msgstr "Zlepšuje zřetelnost vzdálených textur."
+
+#. TRANSLATION: libretro/dolphin, libretro/flycast, dolphin, dolphin_triforce, flycast, ...
+msgctxt "game_options"
+msgid "ANISOTROPIC FILTERING"
+msgstr "ANIZOTROPNÍ FILTROVÁNÍ"
+
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
+msgctxt "game_options"
+msgid ""
+"Wii NAND's aspect ratio setting. Most games support both ratios natively."
+msgstr ""
+"Nastavení poměru stran Wii NAND. Většina her podporuje oba poměry nativně."
+
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
+msgctxt "game_options"
+msgid "WII TV MODE"
+msgstr "REŽIM WII TV"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick."
+msgstr "Emuluje Wiimote Sideway pomocí L2 pro Shake and Nunchuk na R-sticku."
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "WiiMote"
+msgstr "WiiMote"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "WiiMote Sideways"
+msgstr "WiiMote do strany"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "WiiMote + Nunchuk"
+msgstr "WiiMote + Nunchuk"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "WiiMote + Classic Controller"
+msgstr "WiiMote + Klasický ovladač"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "WiiMote + Classic Controller Pro"
+msgstr "WiiMote + Pro Klasický ovladač"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "Real Wiimote"
+msgstr "Skutečný Wiimote"
+
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+msgctxt "game_options"
+msgid "GameCube Controller"
+msgstr "Ovladač GameCube"
+
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
+msgctxt "game_options"
+msgid "CONTROLLER 3 TYPE"
+msgstr "TYP OVLADAČE 3"
+
+#. TRANSLATION: libretro/dolphin, libretro/flycast
+msgctxt "game_options"
+msgid "CONTROLLER 4 TYPE"
+msgstr "TYP OVLADAČE 4"
+
 #. TRANSLATION: libretro/dosbox
 msgctxt "game_options"
 msgid "CPU TIMING MODE (FPS)"
@@ -929,11 +1363,6 @@ msgctxt "game_options"
 msgid "VIDEO FILTER"
 msgstr "FILTR VIDEA"
 
-#. TRANSLATION: libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, libretro/duckstation, libretro/fceumm, ...
-msgctxt "game_options"
-msgid "CONTROLLER 1 TYPE"
-msgstr "TYP OVLADAČE 1"
-
 #. TRANSLATION: libretro/dosbox, libretro/dosbox
 msgctxt "game_options"
 msgid "Gamepad (D-pad, 2 Buttons)"
@@ -953,11 +1382,6 @@ msgstr "Joystick (Analog, 2 Tlačítka)"
 msgctxt "game_options"
 msgid "Select Keyboard, Joystick or Gamepad mode"
 msgstr "Výběr režimu Klávesnice, Joysticku nebo Gamepadu"
-
-#. TRANSLATION: libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, libretro/duckstation, libretro/fceumm, ...
-msgctxt "game_options"
-msgid "CONTROLLER 2 TYPE"
-msgstr "TYP OVLADAČE 2"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1099,17 +1523,17 @@ msgctxt "game_options"
 msgid "No EMS/XMS"
 msgstr "No EMS/XMS"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/px68k, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/px68k, mame/uzem
 msgctxt "game_options"
 msgid "4MB"
 msgstr "4MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/px68k, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/px68k, mame/uzem
 msgctxt "game_options"
 msgid "8MB"
 msgstr "8MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "16MB"
 msgstr "16MB"
@@ -1119,27 +1543,27 @@ msgctxt "game_options"
 msgid "24MB"
 msgstr "24MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "32MB"
 msgstr "32MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "48MB"
 msgstr "48MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, libretro/np2kai, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/np2kai, mame/uzem
 msgctxt "game_options"
 msgid "64MB"
 msgstr "64MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "96MB"
 msgstr "96MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mess, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "128MB"
 msgstr "128MB"
@@ -1259,7 +1683,7 @@ msgctxt "game_options"
 msgid "Hungary"
 msgstr "Maďarsko"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Iceland"
 msgstr "Island"
@@ -1279,12 +1703,12 @@ msgctxt "game_options"
 msgid "Norway"
 msgstr "Norsko"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Poland"
 msgstr "Polsko"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Portugal"
 msgstr "Portugalsko"
@@ -1324,7 +1748,7 @@ msgctxt "game_options"
 msgid "Switzerland (French)"
 msgstr "Švýcarsko (Francouzština)"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, yuzu
 msgctxt "game_options"
 msgid "Turkey"
 msgstr "Turecko"
@@ -1342,7 +1766,7 @@ msgstr "ULOŽENÍ STAVU/PŘETOČIT"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with rewind support"
-msgstr "Zapnuto s podporou přetáčení"
+msgstr "Zapnout s podporou přetáčení"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1357,7 +1781,7 @@ msgstr "AUTOMATICKÉ MAPOVÁNÍ GAMEPADU"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with game detection message"
-msgstr "Zapnuto se zprávou o detekci hry"
+msgstr "Zapnout se zprávou o detekci hry"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1454,16 +1878,6 @@ msgctxt "game_options"
 msgid "USE SOFTWARE RENDERING"
 msgstr "POUŽÍT VYKRESLOVACÍ SOFTWARE"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, pcsx2
-msgctxt "game_options"
-msgid "1x (native)"
-msgstr "1x (nativní)"
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, ppsspp
-msgctxt "game_options"
-msgid "3x (720p)"
-msgstr "3x (720p)"
-
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA/SSAA)"
@@ -1524,7 +1938,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth/upscale textures."
 msgstr "Vylepšení. Vyhlazení/zvětšení měřítka textur."
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/mupen64plus-next, libretro/parallel_n64, duckstation, ...
 msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTROVÁNÍ TEXTUR"
@@ -1534,20 +1948,10 @@ msgctxt "game_options"
 msgid "Nearest"
 msgstr "Nejbližší"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, duckstation, openbor, ...
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, cemu, duckstation, ...
 msgctxt "game_options"
 msgid "Bilinear"
 msgstr "Bilinearní"
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/flycast, libretro/mednafen_psx, ...
-msgctxt "game_options"
-msgid "Enhancement. Only works with a 16/9 ratio and bezels disabled."
-msgstr "Vylepšení. Funguje pouze s poměrem 16/9 a vypnutými rámečky."
-
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/flycast, libretro/mednafen_psx, libretro/mupen64plus-next, ...
-msgctxt "game_options"
-msgid "WIDESCREEN HACK (GLITCHY)"
-msgstr "ŠIROKOÚHLÝ HACK (PORUCHOVÝ)"
 
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/fceumm, libretro/nestopia, duckstation
 msgctxt "game_options"
@@ -1610,7 +2014,7 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Může opravit zpomalení. Funguje pouze u některých ovladačů."
 
-#. TRANSLATION: libretro/fbneo, libretro/puae, libretro/px68k, libretro/quasi88
+#. TRANSLATION: libretro/fbneo, libretro/puae, libretro/puae2021, libretro/px68k, libretro/quasi88
 msgctxt "game_options"
 msgid "CPU CLOCK"
 msgstr "TAKT CPU"
@@ -1619,16 +2023,6 @@ msgstr "TAKT CPU"
 msgctxt "game_options"
 msgid "No skipping"
 msgstr "Žádné přeskakování"
-
-#. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx
-msgctxt "game_options"
-msgid "Lightgun device must be selected on at least one port."
-msgstr "Zařízení Světelná Zbraň musí být vybrána alespoň na jednom portu."
-
-#. TRANSLATION: libretro/fbneo, libretro/genesisplusgx, libretro/genesisplusgx, supermodel
-msgctxt "game_options"
-msgid "SHOW LIGHTGUN CROSSHAIRS"
-msgstr "ZOBRAZIT ZAMĚŘOVACÍ KŘÍŽ SVĚTELNÉ ZBRANĚ"
 
 #. TRANSLATION: libretro/fbneo, libretro/mame078plus
 msgctxt "game_options"
@@ -1685,12 +2079,12 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprites per line limit."
 msgstr "Vylepšení. Odstranění limitu osmi spritů na řádek."
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Horizontal"
 msgstr "Horizontální"
 
-#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, melonds, ...
+#. TRANSLATION: libretro/fceumm, libretro/flycast, libretro/flycast, libretro/nestopia, drastic
 msgctxt "game_options"
 msgid "Vertical"
 msgstr "Vertikální"
@@ -1776,6 +2170,71 @@ msgctxt "game_options"
 msgid "SYNCHRONOUS RENDERING"
 msgstr "SYNCHRONNÍ VYKRESLOVÁNÍ"
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "1.25x (800x600)"
+msgstr "1.25x (800x600)"
+
+#. TRANSLATION: libretro/flycast, flycast
+msgctxt "game_options"
+msgid "1.5x (960x720)"
+msgstr "1.5x (960x720)"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "1.6x (1024x768)"
+msgstr "1.6x (1024x768)"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "2.25x (1440x1080)"
+msgstr "2.25x (1440x1080)"
+
+#. TRANSLATION: libretro/flycast, flycast
+msgctxt "game_options"
+msgid "2.5x (1600x1200)"
+msgstr "2.5x (1600x1200)"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 1."
+msgstr "Cílová barva pro hráče 1."
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Red"
+msgstr "Červená"
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Blue"
+msgstr "Modrá"
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "Green"
+msgstr "Zelená"
+
+#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
+msgctxt "game_options"
+msgid "White"
+msgstr "Bílá"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 2."
+msgstr "Cílová barva pro hráče 2."
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 3."
+msgstr "Cílová barva pro hráče 3."
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Target color for player 4."
+msgstr "Cílová barva pro hráče 4."
+
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
 msgid "Smooth textures on distant 3D objects based on angle."
@@ -1790,11 +2249,6 @@ msgstr "MIP-MAPOVÁNÍ TEXTUR (ROZMAZÁNÍ)"
 msgctxt "game_options"
 msgid "Improves clarity of distant textures when mip-mapping is enabled."
 msgstr "Zlepšuje zřetelnost vzdálených textur při zapnutém mip-mapování."
-
-#. TRANSLATION: libretro/flycast, dolphin, dolphin_triforce, mupen64plus, pcsx2, ...
-msgctxt "game_options"
-msgid "ANISOTROPIC FILTERING"
-msgstr "ANIZOTROPNÍ FILTROVÁNÍ"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
@@ -1836,25 +2290,10 @@ msgctxt "game_options"
 msgid "Keyboard"
 msgstr "Klávesnice"
 
-#. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast, libretro/genesisplusgx, ...
-msgctxt "game_options"
-msgid "Mouse"
-msgstr "Myš"
-
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
 msgid "Light Gun"
 msgstr "Světelná Zbraň"
-
-#. TRANSLATION: libretro/flycast, libretro/snes9x
-msgctxt "game_options"
-msgid "CONTROLLER 3 TYPE"
-msgstr "TYP OVLADAČE 3"
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "CONTROLLER 4 TYPE"
-msgstr "TYP OVLADAČE 4"
 
 #. TRANSLATION: libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -1866,15 +2305,85 @@ msgctxt "game_options"
 msgid "SCREEN ORIENTATION"
 msgstr "ORIENTACE OBRAZOVKY"
 
-#. TRANSLATION: libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/fuse, libretro/mame, hatari, mame/uzem
 msgctxt "game_options"
-msgid "Hides borders on many games. Some games used the borders."
-msgstr "Skrývá hranice mnoha her. U některých her se okraje používají."
+msgid "MODEL"
+msgstr "MODEL"
 
-#. TRANSLATION: libretro/fuse, libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/fuse
 msgctxt "game_options"
-msgid "ZOOM (HIDE BORDERS)"
-msgstr "ZOOM (SKRÝT OKRAJE)"
+msgid "Spectrum 48K"
+msgstr "Spectrum 48K"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 48K (NTSC)"
+msgstr "Spectrum 48K (NTSC)"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 128K"
+msgstr "Spectrum 128K"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +2"
+msgstr "Spectrum +2"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +2A"
+msgstr "Spectrum +2A"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +3"
+msgstr "Spectrum +3"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum +3e"
+msgstr "Spectrum +3e"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum SE"
+msgstr "Spectrum SE"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Timex TC2048"
+msgstr "Timex TC2048"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Timex TS2068"
+msgstr "Timex TS2068"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Spectrum 16K"
+msgstr "Spectrum 16K"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 128K"
+msgstr "Pentagon 128K"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 512K"
+msgstr "Pentagon 512K"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Pentagon 1024"
+msgstr "Pentagon 1024"
+
+#. TRANSLATION: libretro/fuse
+msgctxt "game_options"
+msgid "Scorpion 256K"
+msgstr "Scorpion 256K"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2102,6 +2611,29 @@ msgctxt "game_options"
 msgid "TWB64 - Pack 2"
 msgstr "TWB64 - Balíček 2"
 
+#. TRANSLATION: libretro/genesisplusgx
+msgctxt "game_options"
+msgid ""
+"Games may run faster/slower than normal if the incorrect region is selected."
+msgstr ""
+"Pokud je vybrán nesprávný region, mohou hry běžet rychleji nebo pomaleji než "
+"obvykle."
+
+#. TRANSLATION: libretro/genesisplusgx, redream
+msgctxt "game_options"
+msgid "REGION"
+msgstr "REGION"
+
+#. TRANSLATION: libretro/genesisplusgx
+msgctxt "game_options"
+msgid "NTSC-U"
+msgstr "NTSC-U"
+
+#. TRANSLATION: libretro/genesisplusgx, duckstation
+msgctxt "game_options"
+msgid "NTSC-J"
+msgstr "NTSC-J"
+
 #. TRANSLATION: libretro/genesisplusgx, libretro/picodrive
 msgctxt "game_options"
 msgid "Enhancement. Remove the eighty sprites per line limit."
@@ -2144,8 +2676,8 @@ msgstr "Tlačítko Joypad 6 + Týmový Hráč"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
-msgid "Lightguns can only be used in port 2."
-msgstr "Lehké zbraně lze používat pouze v portu 2."
+msgid "Light guns can only be used in port 2."
+msgstr "Světelné zbraně lze používat pouze v portu 2."
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -2156,6 +2688,34 @@ msgstr "Lehká zbraň Menacer"
 msgctxt "game_options"
 msgid "Konami Justifiers"
 msgstr "Oprávnění Konami"
+
+#. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
+msgctxt "game_options"
+msgid "CD ADD-ON"
+msgstr "CD ADD-ON"
+
+#. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
+msgctxt "game_options"
+msgid "Sega/Mega CD"
+msgstr "Sega/Mega CD"
+
+#. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
+msgctxt "game_options"
+msgid "MegaSD"
+msgstr "MegaSD"
+
+#. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
+msgctxt "game_options"
+msgid ""
+"Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are "
+"not affected."
+msgstr ""
+"Úprava míchání zvuku CD. V MSU-MD nejsou zvukové efekty z kazet ovlivněny."
+
+#. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
+msgctxt "game_options"
+msgid "CD-DA VOLUME"
+msgstr "HLASITOST CD-DA"
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -2196,6 +2756,17 @@ msgstr "Rozšíření herní plochy podobně jako u systému Master System."
 msgctxt "game_options"
 msgid "EXTENDED SCREEN"
 msgstr "ROZŠÍŘENÁ OBRAZOVKA"
+
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+msgctxt "game_options"
+msgid "Set system-wide controls via MAME menu"
+msgstr ""
+"Nastavení ovládacích prvků pro celý systém prostřednictvím nabídky MAME"
+
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+msgctxt "game_options"
+msgid "CUSTOM MAME CONFIG"
+msgstr "VLASTNÍ KONFIGURACE MAME"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
@@ -2257,7 +2828,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "PLUGIN PRO VYSOKÉ SKÓRE"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, mame/uzem, mame/uzem, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, mame/uzem, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Povoleno (Výchozí)"
@@ -2265,24 +2836,25 @@ msgstr "Povoleno (Výchozí)"
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Play a coin drop sound effect when an insert coin button is pressed"
-msgstr "Přehrát zvukový efekt pádu mince po stisknutí tlačítka pro vložení mince"
+msgstr ""
+"Přehrát zvukový efekt pádu mince po stisknutí tlačítka pro vložení mince"
 
 #. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "ZVUKOVÝ PLUGIN PRO MINCE"
 
-#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Povoleno"
 
-#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Zakázáno (Výchozí)"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
+#. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
 msgid ""
 "Use the same art paths as standalone MAME - not recommended if using "
@@ -2291,17 +2863,17 @@ msgstr ""
 "Použítí stejných cest k obrázkům jako samostatný MAME - nedoporučuje se, "
 "pokud používáte dekorace nebo shadery."
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
+#. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
 msgid "SHARE MAME ARTWORK"
 msgstr "SDÍLET UMĚLECKÁ DÍLA MAME"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, cemu
 msgctxt "game_options"
 msgid "On (Default)"
-msgstr "Zapnuto (Výchozí)"
+msgstr "Zapnout (Výchozí)"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
+#. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
 msgid ""
 "Crop MAME artwork to maximize the game screen and only fill unused space."
@@ -2309,585 +2881,639 @@ msgstr ""
 "Ořízne grafiku MAME tak, aby se maximalizovala herní obrazovka a vyplnilo se "
 "pouze nevyužité místo."
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual
+#. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
 msgid "CROP ARTWORK"
 msgstr "UMĚLECKÁ DÍLA CROP"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
-msgid "Set system-wide controls via MAME menu"
-msgstr ""
-"Nastavení ovládacích prvků pro celý systém prostřednictvím nabídky MAME"
+msgid "Set gun button 2 to reload."
+msgstr "Nastavte tlačítko zbraně 2 na nabíjení."
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
-msgid "CUSTOM MAME CONFIG"
-msgstr "VLASTNÍ KONFIGURACE MAME"
+msgid "OFF-SCREEN RELOAD BUTTON"
+msgstr "TLAČÍTKO PRO NABÍJENÍ MIMO OBRAZOVKU"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
-msgctxt "game_options"
-msgid "If the D-Pad is oriented incorrectly for your controller."
-msgstr "Pokud je D-Pad orientován nesprávně pro váš ovladač."
-
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
-msgctxt "game_options"
-msgid "ALT DPAD MODE"
-msgstr "ALT DPAD MODE"
-
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mess, libretro/mamevirtual, libretro/mamevirtual, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, ...
 msgctxt "game_options"
 msgid "Off (Default)"
-msgstr "Vypnuto (Výchozí)"
+msgstr "Vypnout (Výchozí)"
 
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
-msgctxt "game_options"
-msgid "DS3 Orientation"
-msgstr "Orientace DS3"
-
-#. TRANSLATION: libretro/mame, libretro/mess, libretro/mamevirtual, mame
-msgctxt "game_options"
-msgid "X360 Orientation"
-msgstr "Orientace X360"
-
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
 msgstr "Použití seznamů softwaru MAME k identifikaci ROM"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "SOFTWARE LIST"
 msgstr "SEZNAM SOFTWARU"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Don't Use (Default)"
 msgstr "Nepoužívat (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam cartridges"
 msgstr "Kazety Coleco Adam"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam Digital Data Packs"
 msgstr "Digitální Datové Balíčky Coleco Adam"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ADAM diskettes"
 msgstr "Diskety Coleco ADAM"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ColecoVision cartridges"
 msgstr "Kazety Coleco ColecoVision"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Type of ROM file to load."
 msgstr "Typ souboru ROM, který se má načíst."
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "MEDIA TYPE"
 msgstr "TYP MÉDIA"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 1"
 msgstr "Kazeta 1"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cassette 2"
 msgstr "Kazeta 2"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Disk (Drive 1)"
 msgstr "Disk (Jednotka 1)"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Disk (Drive 2)"
 msgstr "Disk (Jednotka 2)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 1)"
 msgstr "Kartuše (Slot 1)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 2)"
 msgstr "Kartuše (Slot 2)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 3)"
 msgstr "Kartuše (Slot 3)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 4)"
 msgstr "Kartuše (Slot 4)"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Toggle with hotkey + D-pad up or Scroll Lock in-game."
 msgstr ""
 "Přepínání pomocí klávesové zkratky + D-pad nahoru nebo Scroll Lock ve hře."
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "UI KEYS"
 msgstr "KLÁVESY UI"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Off at Start"
-msgstr "Vypnuto při Startu"
+msgstr "Vypnout při Startu"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "On at Start"
-msgstr "Zapnuto při Startu"
+msgstr "Zapnout při Startu"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Enable per-game custom configuration via MAME menu."
 msgstr ""
 "Povolení vlastní konfigurace pro každou hru prostřednictvím nabídky MAME."
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "CUSTOM GAME CONFIG"
 msgstr "VLASTNÍ KONFIGURACE HRY"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Entex AdventureVision cartridges"
 msgstr "Kazety Entex AdventureVision"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "APF M-1000 cartridges"
 msgstr "Kazety APF M-1000"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Apple II cleanly cracked disks"
 msgstr "Čistě crackle disky Apple II"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Apple II miscellaneous disks"
 msgstr "Různé disky Apple II"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Apple II original disks"
 msgstr "Originální disky Apple II"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Kazeta"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Type of joystick connected to the game port."
+msgstr "Typ joysticku připojeného k hernímu portu."
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "JOYSTICK TYPE"
+msgstr "TYP JOYSTICKU"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple (2x 2-button Analog)"
+msgstr "Apple (2x 2-tlačítkový analogový)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Sirius/Atari (2x 1-button Digital, II+ Only)"
+msgstr "Sirius/Atari (2x 1-tlačítko Digital, pouze II+)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Gizmo (1-Button Digital)"
+msgstr "Gizmo (digitální s 1 tlačítkem)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Model of emulated Apple II."
+msgstr "Model emulovaného počítače Apple II."
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e Enhanced (Default)"
+msgstr "Apple //e Vylepšené (Výchozí)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple //e"
+msgstr "Apple //e"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Apple ][ Plus"
+msgstr "Apple ][ Plus"
+
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Apple IIgs cleanly cracked disks"
 msgstr "Čistě crackle disky Apple IIgs"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Apple IIgs miscellaneous disks"
 msgstr "Různé disky Apple IIgs"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Apple IIgs original disks"
 msgstr "Originální disky Apple IIgs"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "5 1/4 Disk (Drive 1)"
 msgstr "5 1/4 Disk (Jednotka 1)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "5 1/4 Disk (Drive 2)"
 msgstr "5 1/4 Disk (Jednotka 2)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "3 1/2 Disk (Drive 3)"
 msgstr "3 1/2 Disk (Jednotka 3)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "3 1/2 Disk (Drive 4)"
 msgstr "3 1/2 Disk (Jednotka 4)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Emerson Arcadia 2001 cartridges"
 msgstr "Kazety Emerson Arcadia 2001"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Archimedes floppy images"
 msgstr "Obrazy disket Acorn Archimedes"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Archimedes hard disks"
 msgstr "Pevné disky Acorn Archimedes"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Archimedes ROM images"
 msgstr "Obrazy ROM Acorn Archimedes"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, mame/uzem, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, mame/uzem, ...
 msgctxt "game_options"
 msgid "Select model to emulate"
 msgstr "Vyberte model, který chcete napodobit"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "ARCHIMEDES MODEL"
 msgstr "ARCHIMEDES MODEL"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 310"
 msgstr "Archimedes 310"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "BBC A3000"
 msgstr "BBC A3000"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 440/1 (Default)"
 msgstr "Archimedes 440/1 (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Archimedes 540"
 msgstr "Archimedes 540"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Bally Professional Arcade cartridges"
 msgstr "Profesionální arkádové kazety Bally"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom cassettes"
 msgstr "Kazety Acorn Atom"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom disk images"
 msgstr "Obrazy disku Acorn Atom"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Atom Utility ROMs"
 msgstr "Acorn Atom Utility ROMy"
 
-#. TRANSLATION: libretro/mess, libretro/mess, libretro/mess, libretro/mess, libretro/mess, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Cartridge"
 msgstr "Kazeta"
 
-#. TRANSLATION: libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Quickload"
 msgstr "Rychlonačtení"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Select which joystick to emulate."
+msgstr "Vyberte, který joystick chcete emulovat."
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "None (Default)"
+msgstr "Žádný (Výchozí)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Acorn Analogue Joysticks"
+msgstr "Analogové Joysticky Acorn"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Acorn Bitstik"
+msgstr "Acorn Bitstik"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Robo Bitstik 2"
+msgstr "Robo Bitstik 2"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Voltmace Delta 3b Twin Joysticks"
+msgstr "Voltmace Delta 3b Dvojité Joysticky"
+
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC MODEL"
 msgstr "BBC MODEL"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro Model B (Default)"
 msgstr "BBC Micro Model B (Výchozí)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Master 128"
 msgstr "BBC Master 128"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Master 512"
 msgstr "BBC Master 512"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Master Compact"
 msgstr "BBC Master Compact"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro cassettes"
 msgstr "Kazety Acorn BBC Micro"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro hard disks"
 msgstr "Pevné disky Acorn BBC Micro"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro ROMs"
 msgstr "Acorn BBC Micro ROMy"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro Model B disks"
 msgstr "Disky Acorn BBC Micro Model B"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn BBC Micro Model B Original disks"
 msgstr "Acorn BBC Micro Model B Originální disky"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Acorn BBC Master cartridges"
 msgstr "Kazety Acorn BBC Master"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Acorn BBC Master disks"
 msgstr "Disky Acorn BBC Master"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Acorn BBC Master Compact disks"
 msgstr "Kompaktní disky Acorn BBC Master"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Olivetti Prodest PC 128S disks (BBC Master Compact)"
 msgstr "Disky Olivetti Prodest PC 128S (BBC Master Compact)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro/Master Cassette"
 msgstr "Kazeta BBC Micro/Master"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro/Master ROM (Slot 1)"
 msgstr "BBC Micro/Master ROM (Slot 1)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro ROM (Slot 2)"
 msgstr "BBC Micro ROM (Slot 2)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro ROM (Slot 3)"
 msgstr "BBC Micro ROM (Slot 3)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro ROM (Slot 4)"
 msgstr "BBC Micro ROM (Slot 4)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro/Master Disk (Drive 1)"
 msgstr "BBC Micro/Master Disk (Jednotka 1)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro/Master Disk (Drive 2)"
 msgstr "BBC Micro/Master Disk (Jednotka 2)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 1)"
 msgstr "Kazeta BBC Master (Slot 1)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 2)"
 msgstr "Kazeta BBC Master (Slot 2)"
 
-#. TRANSLATION: libretro/mess, libretro/mess, mame/uzem, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, mame/uzem, mame/uzem, ...
 msgctxt "game_options"
 msgid "CUSTOM CONFIG"
 msgstr "CUSTOM CONFIG"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Camputers Lynx cassettes"
 msgstr "Kazety Camputers Lynx"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "LYNX MODEL"
 msgstr "MODEL LYNX"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 128k (Default)"
 msgstr "Lynx 128k (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 96k"
 msgstr "Lynx 96k"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Lynx 48k"
 msgstr "Lynx 48k"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Philips CD-i CD-ROMs"
 msgstr "CD-ROMy Philips CD-i"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer cartridges"
 msgstr "Kazety Tandy Radio Shack Color Computer"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer disk images"
 msgstr "Obrazy disků Tandy Radio Shack Color Computer"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Select the model of Color Computer to emulate"
 msgstr "Vyberte model barevného počítače, který chcete napodobit"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "COLOR COMPUTER MODEL"
 msgstr "BAREVNÝ MODEL POČÍTAČE"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer"
 msgstr "Barevný Počítač"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2"
 msgstr "Barevný Počítač 2"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 2B"
 msgstr "Barevný Počítač 2B"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (NTSC) (Default)"
 msgstr "Barevný Počítač 3 (NTSC) (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Color Computer 3 (PAL)"
 msgstr "Barevný Počítač 3 (PAL)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "V-Tech Creativision cartridges"
 msgstr "Kazety V-Tech Creativision"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Disks"
 msgstr "Disky Acorn Electron"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Cassettes"
 msgstr "Kazety Acorn Electron"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acorn Electron Cartridges"
 msgstr "Kazety Acorn Electron"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Acron Electron ROMs"
 msgstr "ROMy Acorn Electron"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "ELECTRON MODEL"
 msgstr "MODEL ELECTRON"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Electron w/64k Master RAM Board (default)"
 msgstr "Electron w/64k Master RAM Board (výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Electron"
 msgstr "Electron"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-77AV disk images"
 msgstr "Obrazy disku Fujitsu FM-77AV"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-7 cassettes"
 msgstr "Kazety Fujitsu FM-7"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-7 disk images"
 msgstr "Obrazy disku Fujitsu FM-7"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM-7 MODEL"
 msgstr "MODEL FM-7"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM TOWNS MODEL"
 msgstr "MODEL FM TOWNS"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM Towns Marty (Default)"
 msgstr "FM Towns Marty (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM Towns (Model 1/2)"
 msgstr "FM Towns (Model 1/2)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM Towns II UX"
 msgstr "FM Towns II UX"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid ""
 "Insert a disk into the floppy drive, a blank will be used if one doesn't "
@@ -2895,87 +3521,127 @@ msgid ""
 msgstr ""
 "Vložte disketu do disketové jednotky, pokud neexistuje, použije se prázdná"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "ADD USER DISK"
 msgstr "PŘIDAT UŽIVATELSKÝ DISK"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM Towns CD-ROMs"
 msgstr "Fujitsu FM Towns CD-ROMy"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM Towns cracked floppy disk images"
 msgstr "Fujitsu FM Towns crackle obrazy disket"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM Towns miscellaneous floppy disk images"
 msgstr "Fujitsu FM Towns různé obrazy disket"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM Towns original floppy disk images"
 msgstr "Fujitsu FM Towns originální obrazy disket"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Floppy Disk (Drive 1)"
 msgstr "Disketa (Jednotka 1)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Floppy Disk (Drive 2 - Model 1/2 & II UX)"
 msgstr "Disketa (Jednotka 2 - Model 1/2 a II UX)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "CD-ROM"
 msgstr "CD-ROM"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive (II UX)"
 msgstr "Pevný Disk (II UX)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Bit Corp Gamate cartridges"
 msgstr "Bit Corp Gamate kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Tiger Game.com cartridges"
 msgstr "Tiger Game.com kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Epoch Game Pocket Computer cartridges"
 msgstr "Epoch Game Pocket Computer kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Hartung Game Master cartridges"
 msgstr "Hartung Game Master kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "GamePark GP32 SmartMedia cards"
+msgstr "Karty GamePark GP32 SmartMedia"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Dick Smith Electronics VZ-200/300 cassettes"
+msgstr "Kazety Dick Smith Electronics VZ-200/300"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Dick Smith Electronics VZ-200/300 snapshots"
+msgstr "Snímky Dick Smith Electronics VZ-200/300"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Choose hardware for the memory expansion slot"
+msgstr "Výběr hardwaru pro rozšiřující paměťový slot"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "MEMORY SLOT"
+msgstr "PAMĚŤOVÝ SLOT"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Laser 310/VZ-300 16k Memory"
+msgstr "Laser 310/VZ-300 Paměť 16k"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Laser/VZ 64k Memory (Default)"
+msgstr "Laser/VZ Paměť 64K (Výchozí)"
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "Snapshot"
+msgstr "Snímek"
+
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Macintosh 400K/800K Disk images"
 msgstr "Macintosh 400K/800K obrazy disků"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Macintosh High Density Disk images"
 msgstr "Macintosh High Density obrazy disků"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac Harddisks"
 msgstr "Pevné disky Mac"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid ""
 "Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for "
@@ -2984,254 +3650,257 @@ msgstr ""
 "Vyberte model Mac (doporučujeme Mac Plus pro černobílý tisk, Mac LC 3 pro "
 "barevný tisk)."
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "MAC MODEL"
 msgstr "MODEL MAC"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac 128k (128kb RAM, 2 LD Floppies)"
 msgstr "Mac 128k (128 kb RAM, 2 LD Diskety)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac 512k (512kb RAM, 2 LD Floppies)"
 msgstr "Mac 512k (512 kb RAM, 2 LD Diskety)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac Plus (4Mb RAM, 2 LD Floppies/HDD)"
 msgstr "Mac Plus (4 MB RAM, 2 LD Diskety/HDD)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac SE (4Mb RAM, 2 LD Floppies/HDD)"
 msgstr "Mac SE (4 MB RAM, 2 LD Diskety/HDD)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac Classic (4Mb RAM, 2 HD Floppies/HDD)"
 msgstr "Mac Classic (4 MB RAM, 2 HD Diskety/HDD)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr "Mac II (2Mb RAM, Barevný, 2 HD Diskety/CD/HDD)"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD/Image Reader)"
 msgstr "Mac IIx (2Mb RAM, Barevný, 2 HD Diskety/CD/HDD/Čtečka Obrazu)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr "Mac LC 3 (Výchozí) (4Mb RAM, Barevný, 2 HD Diskety/CD/HDD)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Install the image reader card to read idks image files (Mac IIx only)"
-msgstr "Instalace karty čtečky obrazů pro čtení obrazových souborů idks (pouze Mac IIx)"
+msgstr ""
+"Instalace karty čtečky obrazů pro čtení obrazových souborů idks (pouze Mac "
+"IIx)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "IMAGE READER"
 msgstr "ČTEČKA OBRAZŮ"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Slot A (Default)"
 msgstr "Slot A (Výchozí)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Slot B"
 msgstr "Slot B"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Slot C"
 msgstr "Slot C"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Slot D"
 msgstr "Slot D"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Slot E"
 msgstr "Slot E"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid ""
 "How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
 msgstr ""
-"Kolik paměti RAM bude na emulovaný Mac nainstalováno (pouze Mac IIx a Mac LC 3)"
+"Kolik paměti RAM bude na emulovaný Mac nainstalováno (pouze Mac IIx a Mac LC "
+"3)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "RAM SIZE"
 msgstr "VELIKOST RAM"
 
-#. TRANSLATION: libretro/mess, libretro/px68k, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/px68k, mame/uzem
 msgctxt "game_options"
 msgid "2MB"
 msgstr "2MB"
 
-#. TRANSLATION: libretro/mess
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Type of ROM file to load"
 msgstr "Typ souboru ROM, který se má načíst"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Floppy Disk"
 msgstr "Disketa"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Hard Drive"
 msgstr "Pevný Disk"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
 msgstr "V případě potřeby vyberte spouštěcí disk nebo pevný disk"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "BOOT DISK"
 msgstr "BOOT DISK"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 3.0 (LD Floppy)"
 msgstr "Systém 3.0 (LD Disketovka)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (LD Floppy)"
 msgstr "Systém 6.0.8 (LD Disketovka)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (HD Floppy)"
 msgstr "Systém 7.0.1 (HD Disketovka)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 7.5 (HD Floppy)"
 msgstr "Systém 7.5 (HD Disketovka)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 6.0.8 (Hard Drive)"
 msgstr "Systém 6.0.8 (Pevný Disk)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 7.0.1 (Hard Drive)"
 msgstr "Systém 7.0.1 (Pevný Disk)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "System 7.5.5 (Hard Drive)"
 msgstr "Systém 7.5.5 (Pevný Disk)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Creatronic Mega Duck cartridges"
 msgstr "Creatronic Mega Duck kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "PDP-1 Paper Tape Reader Images"
 msgstr "PDP-1 Čtečka Papírových Pásek"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Casio PV-1000 cartridges"
 msgstr "Casio PV-1000 kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Video Technology Socrates cartridges"
 msgstr "Video Technology Socrates kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Funtech Super A'Can cartridges"
 msgstr "Funtech Super A'Can kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "TI-99/4A Cartridges"
 msgstr "TI-99/4A Kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "32k RAM expansion card installed"
 msgstr "Nainstalovaná rozšiřující karta 32k RAM"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "32K RAM EXPANSION"
 msgstr "ROZŠÍŘENÍ 32K RAM"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Speech module installed"
 msgstr "Nainstalovaný řečový modul"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "SPEECH MODULE"
 msgstr "MODUL ŘEČI"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Tomy Tutor & Pyuuta cartridge"
 msgstr "Tomy Tutor & Pyuuta kazeta"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "GCE Vectrex cartridges"
 msgstr "GCE Vectrex kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "VTech V.Smile cartridges"
 msgstr "VTech V.Smile kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "VTech V.Smile Motion cartridges"
 msgstr "VTech V.Smile Motion kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
 msgstr "Atari XE Game System kazety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Atari 400 / 800 floppy disks"
 msgstr "Atari 400 / 800 diskety"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 3)"
 msgstr "Disk (Jednotka 3)"
 
-#. TRANSLATION: libretro/mess, mame/uzem
+#. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Disk (Drive 4)"
 msgstr "Disk (Jednotka 4)"
@@ -3290,11 +3959,6 @@ msgstr "VERTIKÁLNÍ ROTACE (TATE)"
 msgctxt "game_options"
 msgid "100%(native)"
 msgstr "100%(nativní)"
-
-#. TRANSLATION: libretro/mednafen_psx, duckstation
-msgctxt "game_options"
-msgid "1x(native)"
-msgstr "1x(nativní)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -3396,7 +4060,7 @@ msgctxt "game_options"
 msgid "Enhancement. Remove the sixteen sprites per line limit."
 msgstr "Vylepšení. Odstranění limitu šestnácti spritů na řádek."
 
-#. TRANSLATION: libretro/mednafen_wswan
+#. TRANSLATION: libretro/mednafen_wswan, drastic
 msgctxt "game_options"
 msgid "Manual"
 msgstr "Manuál"
@@ -3515,7 +4179,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
 msgstr "Vylepšení. Vyhlazení zubatých hran na polygonech 3D objektů."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, yuzu
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
 msgstr "Hladké textury na 3D objektech."
@@ -3570,6 +4234,66 @@ msgctxt "game_options"
 msgid "X2"
 msgstr "X2"
 
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RDP PLUGIN"
+msgstr "PLUGIN RDP"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "GLideN64 (Fastest)"
+msgstr "GLideN64 (Rychlejší)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl-RDP"
+msgstr "ParaLLEl-RDP"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Angrylion (Most Compatible)"
+msgstr "Angrylion (Více Kompatibilní)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "RSP PLUGIN"
+msgstr "PLUGIN RSP"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "HLE (Fastest)"
+msgstr "HLE (Rychlejší)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "ParaLLEl (Best LLE)"
+msgstr "ParaLLEl (Nejlepší LLE)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CXD4 (LLE Fallback)"
+msgstr "CXD4 (LLE Fallback)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CPU CORE"
+msgstr "JÁDRO CPU"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Dynarec (Fastest)"
+msgstr "Dynarec (Rychlejší)"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Cached Interpreter"
+msgstr "Tlumočník Mezipaměťový"
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "Pure Interpreter (Most Accurate)"
+msgstr "Čistý Tlumočník (Více Přesný)"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
@@ -3605,22 +4329,42 @@ msgctxt "game_options"
 msgid "CONTROLLER PAK 4"
 msgstr "OVLADAČ PAK 4"
 
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "Full speed can break some games."
+msgstr "Plná rychlost může některé hry přerušit."
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "FRAME RATE"
+msgstr "SNÍMKOVÁ FREKVENCE"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, daphne
+msgctxt "game_options"
+msgid "Original"
+msgstr "Originál"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "Full speed"
+msgstr "Plná rychlost"
+
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "Může změnit jazyk některých her."
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, yuzu, ...
 msgctxt "game_options"
 msgid "Japan"
 msgstr "Japonsko"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem
+#. TRANSLATION: libretro/neocd, flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "USA"
 msgstr "USA"
 
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream
+#. TRANSLATION: libretro/neocd, flycast/uzem, redream, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Europe"
 msgstr "Evropa"
@@ -3642,8 +4386,13 @@ msgstr "CDZ"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
-msgid "CDZ (MAME)"
-msgstr "CDZ (MAME)"
+msgid "CDZ MAME"
+msgstr "CDZ MAME"
+
+#. TRANSLATION: libretro/neocd
+msgctxt "game_options"
+msgid "CDZ Universe 3.3"
+msgstr "CDZ Universe 3.3"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -3863,6 +4612,16 @@ msgstr "Videopac+ G7400 (Francie)"
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
+msgid "NTSC 60Hz"
+msgstr "NTSC 60Hz"
+
+#. TRANSLATION: libretro/o2em
+msgctxt "game_options"
+msgid "PAL 50Hz"
+msgstr "PAL 50Hz"
+
+#. TRANSLATION: libretro/o2em
+msgctxt "game_options"
 msgid "Some games accept input from port 2 instead of port 1."
 msgstr "Některé hry přijímají vstup z portu 2 namísto portu 1."
 
@@ -3996,7 +4755,12 @@ msgctxt "game_options"
 msgid "Per Game"
 msgstr "Na Hru"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, ppsspp, rpcs3
+#. TRANSLATION: libretro/parallel_n64
+msgctxt "game_options"
+msgid "4.5x (1440x1080)"
+msgstr "4.5x (1440x1080)"
+
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automaticky"
@@ -4005,26 +4769,6 @@ msgstr "Automaticky"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-bodový"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "Fullspeed can break some games."
-msgstr "Plná rychlost může některé hry přerušit."
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "FRAMERATE"
-msgstr "SÍMKOVÁ FREKVENCE"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "fullspeed"
-msgstr "plná rychlost"
-
-#. TRANSLATION: libretro/parallel_n64, libretro/puae, libretro/vb, libretro/yabasanshiro
-msgctxt "game_options"
-msgid "original"
-msgstr "originální"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -4039,23 +4783,22 @@ msgstr "Myš PCE"
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
-msgstr "Vypnuto je bezpečnější, zapnuto pro konkrétní hry."
+msgstr "Vypnout je bezpečnější, Zapnout pro konkrétní hry."
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
-msgid "Double the rendering resolution. No effect on 64-bit machines."
-msgstr ""
-"Zdvojnásobte rozlišení vykreslování. Na 64bitových počítačích nemá vliv."
+msgid "Double the rendering resolution."
+msgstr "Zdvojnásobte rozlišení vykreslování."
 
-#. TRANSLATION: libretro/pcsx_rearmed
+#. TRANSLATION: libretro/pcsx_rearmed, drastic
 msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION (32-BIT ONLY)"
-msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ (POUZE 32BITOVÉ)"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "On (Speed hack)"
-msgstr "Zapnuto (Rychlostní hack)"
+msgstr "Zapnout (Rychlostní hack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
@@ -4312,326 +5055,336 @@ msgctxt "game_options"
 msgid "Gamepad Modern"
 msgstr "Moderní Gamepad"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Force a specific model and prevent tags detection."
 msgstr "Vynucení konkrétního modelu a zabránění detekci značek."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "AMIGA MODEL"
 msgstr "MODEL AMIGY"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Autodetect (by game name tag)"
 msgstr "Automatická detekce (podle jmenovky ve hře)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "A500 (512KB Chip + 512KB Slow)"
 msgstr "A500 (512KB Chip + 512KB Slow"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "A500+ (1MB Chip)"
 msgstr "A500+ (1MB Chip)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "A600 (2MB Chip + 8MB Fast)"
 msgstr "A600 (2MB Chip + 8MB Fast)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "A1200 (2MB Chip + 8MB Fast)"
 msgstr "A1200 (2MB Chip + 8MB Fast)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "A4000/040 (2MB Chip + 8MB Fast)"
 msgstr "A4000/040 (2MB Chip + 8MB Fast)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "CDTV (1MB Chip)"
 msgstr "CDTV (1MB Chip)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "CD32 Default (2MB Chip)"
 msgstr "CD32 Výchozí (2MB Chip)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "CD32 (2MB Chip + 8MB Fast)"
 msgstr "CD32 (2MB Chip + 8MB Fast)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Help games which are too quick or that have bugs."
 msgstr "Nápověda k příliš rychlým hrám nebo hrám s chybami."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "CPU COMPATIBILITY"
 msgstr "KOMPATIBILITA CPU"
 
-#. TRANSLATION: libretro/puae, duckstation, flycast, openbor
+#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, flycast, openbor
 msgctxt "game_options"
 msgid "Normal"
 msgstr "Normál"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "More compatible"
 msgstr "Více kompatibilní"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
 msgstr "Přesný-cyklus"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Works with 'Cycle-exact' mode and for a few games."
 msgstr "Funguje v režimu Přesný-cyklus a v několika hrách."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Default by model"
 msgstr "Výchozí nastavení podle modelu"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid " 3.54 MHz"
 msgstr " 3.54 MHz"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid " 7.09 MHz (A500 speed)"
 msgstr " 7,09 MHz (rychlost A500)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "14.18 MHz (A1200 speed)"
 msgstr "14,18 MHz (rychlost A1200)"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "28.37 MHz"
 msgstr "28.37 MHz"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "35.46 MHz"
 msgstr "35.46 MHz"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "42.56 MHz"
 msgstr "42.56 MHz"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "56.75 MHz"
 msgstr "56.75 MHz"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Ignored with 'Cycle-exact'."
 msgstr "Ignorováno pomocí 'Přesný-cyklus'."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "CPU SPEED"
 msgstr "RYCHLOST CPU"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid ""
 "Manually define which resolution to use.&#x0a;Auto defaults to High and "
 "switches to Super-High when needed."
 msgstr ""
-"Ruční definice rozlišení, které se použije.&#x0a;Auto. výchozí nastavení je "
-"Vysoké a v případě potřeby se přepne na Super-Vysoké."
+"Ruční Rozlišení vyberete.&#x0a;Auto Výchozí je Vysoké a dle potřeby se "
+"přepne na Super-Vysoké."
 
-#. TRANSLATION: libretro/puae, amiberry
+#. TRANSLATION: libretro/puae, libretro/puae2021, amiberry
 msgctxt "game_options"
 msgid "VIDEO RESOLUTION"
 msgstr "ROZLIŠENÍ VIDEA"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Low 360p"
 msgstr "Nízké 360p"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "High 720p"
 msgstr "Vysoké 720p"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Super-high 1440p"
 msgstr "Super-Vysoké 1440p"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games use the borders."
 msgstr "Skrývá hranice mnoha her. U některých her se okraje používají."
 
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+msgctxt "game_options"
+msgid "ZOOM/CROP (HIDE BORDERS)"
+msgstr "ZVĚTŠENÍ/OMEZENÍ (SKRYTÍ OKRAJŮ)"
+
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "Auto zoom"
 msgstr "Auto. zoom"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "minimum"
 msgstr "minimální"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "smaller"
 msgstr "menší"
 
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "small"
 msgstr "malý"
 
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "medium"
 msgstr "střední"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "large"
 msgstr "velký"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "larger"
 msgstr "větší"
 
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "maximum"
 msgstr "maximální"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Affects mouse speed globally."
 msgstr "Globálně ovlivňuje rychlost myši."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "MOUSE SPEED"
 msgstr "RYCHLOST MYŠI"
 
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vb
+msgctxt "game_options"
+msgid "original"
+msgstr "originální"
+
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021, libretro/vice_x64, ...
 msgctxt "game_options"
 msgid "Makes second fire button press up instead."
 msgstr "Místo druhého tlačítka střelby stiskne nahoru."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "JUMP ON B"
 msgstr "TLAČÍTKO B = NAHORU"
 
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "Removes loading but can add possible glitches/crashes."
 msgstr "Odstraní načítání, ale může přidat možné závady/pády."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "FLOPPY TURBO SPEED"
 msgstr "TURBO RYCHLOST DISKETY"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Keypad to joyport mappings for 2 players."
 msgstr "Mapování klávesnice na joyport pro 2 hráče."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "2P GAMEPAD MAPPING (KEYRAH)"
 msgstr "MAPOVÁNÍ 2P GAMEPADU (KEYRAH)"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Enable launching pre-installed WHDLoad installs."
 msgstr "Povolení spouštění předinstalovaných instalací WHDLoad."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "WHDLOAD LAUNCHER"
 msgstr "SPOUŠTĚČ WHDLOAD"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Passes all physical keyboard events for Pad2Key."
 msgstr "Povoluje všechny události fyzické klávesnice pro Pad2Key."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "DISABLE EMULATOR JOYSTICK"
 msgstr "ZAKÁZAT JOYSTICK EMULÁTORU"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Select controller type for Amiga P1."
 msgstr "Vyberte typ ovladače pro Amigu P1."
 
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "CD32 Pad"
 msgstr "CD32 Pad"
 
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "Analog Joystick"
 msgstr "Analog Joystick"
 
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/vice_x64, ...
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "Joystick"
 msgstr "Joystick"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Select controller type for Amiga P2."
 msgstr "Vyberte typ ovladače pro Amigu P2."
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Inserts CD during boot animation to prevent loading fail."
 msgstr "Vloží CD během zaváděcí animace, aby se zabránilo selhání načítání."
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "BOOT ANIMATION FIRST"
 msgstr "NEJPRVE SPOUŠTĚT ANIMACE"
 
-#. TRANSLATION: libretro/puae, libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "CD TURBO SPEED"
 msgstr "TURBO RYCHLOST CD"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Makes the blue button press up instead."
 msgstr "Místo toho stiskne modré tlačítko nahoru."
 
-#. TRANSLATION: libretro/puae, libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc
 msgctxt "game_options"
 msgid "JUMP ON A"
 msgstr "TLAČÍTKO A = NAHORU"
 
-#. TRANSLATION: libretro/puae
+#. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Inserts CD during boot animation prevent loading fail."
 msgstr "Vložení disku CD během zavádění animace zabrání selhání načítání."
@@ -5016,7 +5769,7 @@ msgstr "40 MHz"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
-msgid "Lightguns/multitap."
+msgid "Light guns/multitap."
 msgstr "Světelné zbraně/multitap."
 
 #. TRANSLATION: libretro/snes9x_next
@@ -5039,7 +5792,7 @@ msgstr "SYNCHRONIZACE ULOŽENÝCH SOUBORŮ"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
-msgid "FRAMERATE LIMIT"
+msgid "FRAME RATE LIMIT"
 msgstr "OMEZENÍ SNÍMKOVÉ FREKVENCE"
 
 #. TRANSLATION: libretro/tyrquake
@@ -5582,6 +6335,46 @@ msgctxt "game_options"
 msgid "DOOM RES HACK"
 msgstr "DOOM RES HACK"
 
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "Remove the padding on the sides of the screen."
+msgstr "Odstraňte polstrování po stranách obrazovky."
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "CROP BORDER"
+msgstr "HRANICE PLODINY"
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "Always have 6 bullets, 6 dynamite, 6 lives."
+msgstr "Vždy máš 6 nábojů, 6 dynamitu a 6 životů."
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "TRAINER MODE"
+msgstr "TRÉNINKOVÝ REŽIM"
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "Nothing can kill Rick, may break the game."
+msgstr "Nic nemůže zabít Ricka, může přerušit hru."
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "INVULNERABILITY MODE"
+msgstr "REŽIM NEZRANITELNOSTI"
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "Highlight all entities on the game map."
+msgstr "Zvýrazněte všechny entity na herní mapě."
+
+#. TRANSLATION: libretro/xrick
+msgctxt "game_options"
+msgid "EXPOSE MODE"
+msgstr "REŽIM EXPOZICE"
+
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
 msgid "720p"
@@ -5589,8 +6382,8 @@ msgstr "720p"
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
-msgid "4k"
-msgstr "4k"
+msgid "4K"
+msgstr "4K"
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
@@ -5602,8 +6395,8 @@ msgctxt "game_options"
 msgid ""
 "Choose which graphics API library to use. Vulkan may not work for every core."
 msgstr ""
-"Zvolte, kterou knihovnu grafického rozhraní API chcete použít. Vulkan nemusí "
-"fungovat pro každé jádro."
+"Zvolte, kterou graf. knihovnu API použít. Vulkan nemusí fungovat pro každé "
+"jádro."
 
 #. TRANSLATION: libretro, cemu, dolphin, duckstation, flycast, ...
 msgctxt "game_options"
@@ -5620,7 +6413,7 @@ msgctxt "game_options"
 msgid "GLCore"
 msgstr "GLCore"
 
-#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
+#. TRANSLATION: libretro, daphne, dolphin, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -5647,13 +6440,13 @@ msgstr "POVOLIT ROTACI"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "Map controller inputs to lightgun inputs"
-msgstr "Mapování vstupů ovladače na vstupy světelné zbraně"
+msgid "Map controller inputs to light gun inputs."
+msgstr "Mapování vstupů ovladače na vstupy světelné zbraně."
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
-msgid "CONTROLLER TO LIGHTGUN"
-msgstr "OVLADAČ KE SVĚTELNÉ PISTOLI"
+msgid "CONTROLLER TO LIGHT GUN"
+msgstr "OVLADAČ KE SVĚTELNÉ ZBRANI"
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -5762,13 +6555,23 @@ msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
-msgid "Speed up. Causes visual glitches on first load."
-msgstr "Zrychlení. Způsobuje vizuální závady při prvním načtení."
+msgid "Vulkan (Default)"
+msgstr "Vulkan (Výchozí)"
+
+#. TRANSLATION: cemu, yuzu
+msgctxt "game_options"
+msgid "Speed up shader compilation."
+msgstr "Zrychlení kompilace shaderů."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
-msgid "ASYNC SHADER (VULKAN ONLY)"
-msgstr "ASYNCHRONNÍ SHADER (POUZE VULKAN)"
+msgid "ASYNC SHADER COMPILE (VULKAN ONLY)"
+msgstr "ASYNCHRONNÍ KOMPILACE SHADERŮ (POUZE VULKAN)"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Set the controller rumble strength if supported."
+msgstr "Nastavte sílu vybrací ovladače, pokud je podporována."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -5805,6 +6608,235 @@ msgctxt "game_options"
 msgid "Wii U Classic Controller"
 msgstr "Klasický Ovladač pro Wii U"
 
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Not all games support all languages."
+msgstr "Ne všechny hry podporují všechny jazyky."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "CONSOLE LANGUAGE"
+msgstr "JAZYK KONZOLY"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Current language"
+msgstr "Současný jazyk"
+
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Chinese"
+msgstr "Čínsky"
+
+#. TRANSLATION: cemu, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Portuguese"
+msgstr "Portugalsky"
+
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Russian"
+msgstr "Rusky"
+
+#. TRANSLATION: cemu, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Taiwanese"
+msgstr "Tchaj-wan"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose the audio output type."
+msgstr "Vyberte typ zvukového výstupu."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "AUDIO CHANNELS"
+msgstr "AUDIO KANÁLY"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Stereo (Default)"
+msgstr "Stereo (Výchozí)"
+
+#. TRANSLATION: cemu, yuzu
+msgctxt "game_options"
+msgid "Surround"
+msgstr "Surround"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Have Batocera set the first audio output device."
+msgstr "Nastavte první výstupní zvukové zařízení Batocera."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "AUDIO OUTPUT"
+msgstr "AUDIO VÝSTUP"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Set in Config - choose if no audio output"
+msgstr ""
+"Nastavení v nástroji Config - vyberte, pokud není k dispozici žádný zvukový "
+"výstup"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Batocera sets first audio device (Default)"
+msgstr "Batocera nastaví první zvukové zařízení (Výchozí)"
+
+#. TRANSLATION: cemu, sonic2013, yuzu, demul, vita3k
+msgctxt "game_options"
+msgid "Fix screen tearing."
+msgstr "Oprava trhání obrazovky."
+
+#. TRANSLATION: cemu, citra, dolphin, dolphin_triforce, duckstation, ...
+msgctxt "game_options"
+msgid "VSYNC"
+msgstr "VSYNC"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Double buffering"
+msgstr "Dvojitá vyrovnávací paměť"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Triple buffering"
+msgstr "Trojitá vyrovnávací paměť"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose upscaling method."
+msgstr "Zvolte metodu upscalingu."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "UPSCALE FILTER"
+msgstr "FILTR UPSCALINGU"
+
+#. TRANSLATION: cemu, cemu, yuzu
+msgctxt "game_options"
+msgid "Bicubic"
+msgstr "Bikubický"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Hermite (Default)"
+msgstr "Hermitní (Výchozí)"
+
+#. TRANSLATION: cemu, cemu, sonic2013, soniccd, yuzu
+msgctxt "game_options"
+msgid "Nearest Neighbour"
+msgstr "Nejbližší Soused"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Choose downscaling method."
+msgstr "Zvolte metodu snižování měřítka."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "DOWNSCALE FILTER"
+msgstr "FILTR DOWNSCALINGU"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Bilinear (Default)"
+msgstr "Bilineární (Výchozí)"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Hermite"
+msgstr "Hermitní"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Keep Aspect Ration (Default)"
+msgstr "Zachovat Poměr Stran (Výchozí)"
+
+#. TRANSLATION: cemu, daphne, openbor, redream, demul
+msgctxt "game_options"
+msgid "Stretch"
+msgstr "Roztáhnout"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Enable mouse input to simulate touchscreen."
+msgstr "Povolení vstupu myší pro simulaci dotykové obrazovky."
+
+#. TRANSLATION: cemu, mame/uzem, wine
+msgctxt "game_options"
+msgid "ENABLE MOUSE"
+msgstr "POVOLIT MYŠ"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Enable Cemu's performance overlay."
+msgstr "Povolte překrytí výkonu Cemu."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "ENABLE PERFORMANCE OVERLAY"
+msgstr "POVOLIT PŘEKRYTÍ VÝKONU"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Enable notifications of cache, controller events etc."
+msgstr "Povolení oznámení o událostech mezipaměti, řadiče atd."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "ENABLE NOTIFICATIONS"
+msgstr "POVOLIT OZNÁMENÍ"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid ""
+"Enable gamepad view for games that have interaction across two screens. Use "
+"Hotkey+R2 to switch screens."
+msgstr ""
+"Povoluje zobrazení gamepadu pro hry, které mají interakci na dvou "
+"obrazovkách. Pro přepínání obrazovek použijte klávesovou zkratku + R2."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "ENABLE GAMEPAD VIEW"
+msgstr "POVOLIT ZOBRAZENÍ NA GAMEPADU"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid ""
+"Show the TV and gamepad views together. Use Hotkey+R2 to switch screens."
+msgstr ""
+"Zobrazte zobrazení televizoru a gamepadu společně. Pro přepínání obrazovek "
+"použijte klávesovou zkratku+R2."
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "ENABLE DUAL VIEW"
+msgstr "POVOLIT DUÁLNÍ ZOBRAZENÍ"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Side by Side (Even)"
+msgstr "Vedle sebe (Sudá)"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Side by Side (Small Gamepad)"
+msgstr "Vedle sebe (Malý Gamepad)"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Stack-ed (Even)"
+msgstr "Stohováno (Sudá)"
+
+#. TRANSLATION: cemu
+msgctxt "game_options"
+msgid "Stacked (Small Gamepad)"
+msgstr "Stohovaný (Malý Gamepad)"
+
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "hybrid top ratio 4"
@@ -5815,20 +6847,10 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 4"
 msgstr "hybridní dolní poměr 4"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Native (400x240)"
-msgstr "Nativní (400x240)"
-
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Oprava trhání obrazovky. Zatížení CPU."
-
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2, ...
-msgctxt "game_options"
-msgid "VSYNC"
-msgstr "VSYNC"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -5881,22 +6903,12 @@ msgid "Not all games support Stretch, depending on the video files."
 msgstr ""
 "Ne všechny hry podporují funkci Roztáhnout v závislosti na video souborech."
 
-#. TRANSLATION: daphne
-msgctxt "game_options"
-msgid "Original"
-msgstr "Originál"
-
-#. TRANSLATION: daphne, openbor, pcsx2, redream, demul
-msgctxt "game_options"
-msgid "Stretch"
-msgstr "Roztáhnout"
-
-#. TRANSLATION: daphne, dolphin, dolphin_triforce
+#. TRANSLATION: daphne, dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Vynucení 4:3"
 
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Rotate the screen with the emulator."
 msgstr "Otáčet obrazovkou pomocí emulátoru."
@@ -5906,7 +6918,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "OTÁČENÍ OBRAZOVKY"
 
-#. TRANSLATION: daphne
+#. TRANSLATION: daphne, melonds
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 stupňů"
@@ -5926,7 +6938,8 @@ msgctxt "game_options"
 msgid ""
 "Use with Stretch aspect ratio and adjust joystick sensitivity as required."
 msgstr ""
-"Používejte s Roztaženým poměrem stran a nastavte citlivost joysticku podle potřeby."
+"Používejte s Roztaženým poměrem stran a nastavte citlivost joysticku podle "
+"potřeby."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5940,13 +6953,24 @@ msgstr "SMÍCHAT SPRITY (SINGE)"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Use with Singe HD lightgun games."
-msgstr "Použít Singe HD s hrami světelné zbraně."
+msgid "Use with Singe HD light gun games."
+msgstr "Použití s hrami se světelnou zbrani Singe HD."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "OVERSIZE OVERLAY (SINGE)"
 msgstr "PŘEKRYTÍ NADMĚRNÝCH ROZMĚRŮ (SINGE)"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "This option is required for some gun games when playing with the mouse"
+msgstr ""
+"Tato možnost je vyžadována u některých her se zbraněmi při hraní s myší"
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "ABSOLUTE MOUSE INPUT"
+msgstr "ABSOLUTNÍ VSTUP MYŠI"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -5962,9 +6986,9 @@ msgstr "INVERTNÍ OSA"
 msgctxt "game_options"
 msgid ""
 "Singe automatically interprets joystick axis change as mouse movement, "
-"useful for lightgun games."
+"useful for light gun games."
 msgstr ""
-"Jediný automaticky interpretuje změnu osy joysticku jako pohyb myši, "
+"Singe automaticky interpretuje změnu osy joysticku jako pohyb myši, což je "
 "užitečné pro hry s lehkými zbraněmi."
 
 #. TRANSLATION: daphne
@@ -5979,7 +7003,7 @@ msgstr "Skrýt zaměřovací kříž v podporovaných hrách, např. ActionMax."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "HIDE LIGHTGUN CROSSHAIRS"
+msgid "HIDE LIGHT GUN CROSSHAIRS"
 msgstr "SKRÝT ZAMĚŘOVACÍ KŘÍŽ SVĚTELNÉ PISTOLE"
 
 #. TRANSLATION: daphne
@@ -5987,24 +7011,69 @@ msgctxt "game_options"
 msgid ""
 "Can improve video performance. Do not use with ActionMax games or scanlines."
 msgstr ""
-"Může zlepšit výkon videa. Nepoužívejte s hrami ActionMax nebo se skenovacími linkami."
+"Může zlepšit výkon videa. Nepoužívejte s hrami ActionMax nebo se skenovacími "
+"linkami."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "SDL TEXTUREACCESS STREAMING"
 msgstr "SDL TEXTUREACCESS STREAMOVÁNÍ"
 
-#. TRANSLATION: dolphin/uzem
+#. TRANSLATION: daphne
 msgctxt "game_options"
 msgid ""
-"Wii NAND's aspect ratio setting. Most games support both ratios natively."
-msgstr ""
-"Nastavení poměru stran Wii NAND. Většina her podporuje oba poměry nativně."
+"Allows you to set the controller settings in the custom.ini file manually."
+msgstr "Umožňuje ručně nastavit nastavení řadiče v souboru custom.ini."
+
+#. TRANSLATION: daphne
+msgctxt "game_options"
+msgid "CUSTOM CONTROLLER"
+msgstr "VLASTNÍ OVLADAČ"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
-msgid "WII TV MODE"
-msgstr "REŽIM WII TV"
+msgid "Arrangement of GameCube and GBA screens."
+msgstr "Uspořádání obrazovek GameCube a GBA."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "GBA LAYOUT"
+msgstr "ROZLOŽENÍ GBA"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Vertical - GBAs on Right"
+msgstr "Vertikální - GBA vpravo"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Horizontal - GBAs on Bottom"
+msgstr "Horizontální - GBA na spodní straně"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Make controller 2 a GBA with e-Reader"
+msgstr "Vytvořit ovladač 2 a GBA s e-čtečkou"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "AUTO E-READER"
+msgstr "AUTO E-Čtečka"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "e-Reader (US)"
+msgstr "e-Čtečka (US)"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "e-Reader (JP)"
+msgstr "e-Čtečka (JP)"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "e-Reader+ (JP)"
+msgstr "e-Čtečka+ (JP)"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -6015,11 +7084,6 @@ msgstr "Namapujte svůj ovladač na emulovaný Wiimote."
 msgctxt "game_options"
 msgid "EMULATE WIIMOTE"
 msgstr "EMULOVAT WIIMOTE"
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick."
-msgstr "Emuluje Wiimote Sideway pomocí L2 pro Shake and Nunchuk na R-sticku."
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -6051,16 +7115,6 @@ msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote Sideway + Nunchuk"
 
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "1x native (640x528)"
-msgstr "1x nativní (640x528)"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "6x 4K (3840x3168)"
-msgstr "6x 4K (3840x3168)"
-
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "8x 5K (5120x4224)"
@@ -6076,43 +7130,10 @@ msgctxt "game_options"
 msgid "Force 16:9"
 msgstr "Vynucení 16:9"
 
-#. TRANSLATION: dolphin, dolphin_triforce
+#. TRANSLATION: dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Stretch to window"
 msgstr "Roztáhnout na okno"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid ""
-"May not work well on all hardware. Hybrid is preferred, where supported."
-msgstr ""
-"Nemusí fungovat dobře na veškerém hardwaru. Pokud je podporován, "
-"upřednostňuje se hybridní systém."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "UBERSHADERS"
-msgstr "UBERSHADERY"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "No Ubershaders"
-msgstr "Žádné Ubershadery"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Exclusive Ubershaders"
-msgstr "Exkluzivní Ubershadery"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Hybrid Ubershaders"
-msgstr "Hybridní Ubershadery"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Skip Drawing"
-msgstr "Přeskočit Kresbu"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -6130,7 +7151,7 @@ msgstr "PŘED-MEZIPAMĚŤ SHADERU"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Off (default)"
-msgstr "Vypnuto (výchozí)"
+msgstr "Vypnout (výchozí)"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -6152,10 +7173,60 @@ msgctxt "game_options"
 msgid "USE PAD PROFILES"
 msgstr "POUŽITÍ PROFILŮ JoyPADU"
 
-#. TRANSLATION: dolphin, dolphin_triforce, pcsx2, ppsspp
+#. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Improves clarity of distant textures."
-msgstr "Zlepšuje zřetelnost vzdálených textur."
+msgid "Change what's plugged into the virtual GameCube ports."
+msgstr "Změnit, co je připojeno k virtuálním portům GameCube."
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 1 TYPE"
+msgstr "TYP PORTU GAMECUBE 1"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Standard Controller"
+msgstr "Standardní Ovladač"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GameCube Adapter for Wii U"
+msgstr "Adaptér GameCube pro Wii U"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Steering Wheel"
+msgstr "Volant"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Dance Mat"
+msgstr "Taneční Podložka"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "DK Bongos"
+msgstr "DK Bongos"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GBA (Internal)"
+msgstr "GBA (Interní)"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 2 TYPE"
+msgstr "TYP PORTU GAMECUBE 2"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 3 TYPE"
+msgstr "TYP PORTU GAMECUBE 3"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 4 TYPE"
+msgstr "TYP PORTU GAMECUBE 4"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -6182,7 +7253,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "VYHLAZOVÁNÍ"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, yuzu
 msgctxt "game_options"
 msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
 msgstr "Přepínání MSAA/SSAA. Závisí na zapnutém vyhlazování."
@@ -6294,13 +7365,8 @@ msgstr "4x (SSAA)"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
-msgid "Disable status messages displayed by the emulator."
-msgstr "Zakázat stavové zprávy zobrazované emulátorem."
-
-#. TRANSLATION: dolphin_triforce
-msgctxt "game_options"
-msgid "DISABLE OSD MESSAGES"
-msgstr "ZAKÁZAT ZPRÁVY OSD"
+msgid "DISABLE ON-SCREEN DISPLAY MESSAGES"
+msgstr "ZAKÁZAT ZOBRAZOVÁNÍ ZPRÁV NA OBRAZOVCE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6341,6 +7407,11 @@ msgstr "Za 1s, 90s celkem (990MB|180MB)"
 msgctxt "game_options"
 msgid "Per 1s, 120s total (1320MB|240MB)"
 msgstr "Za 1s, celkem 120s (1320MB|240MB)"
+
+#. TRANSLATION: duckstation, melonds
+msgctxt "game_options"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr "ZOBRAZIT ZPRÁVY NA DISPLEJI"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6384,23 +7455,13 @@ msgstr "Jeho vynechání může některé hry zničit."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "3x/720p"
-msgstr "3x/720p"
+msgid "1x native (320x240)"
+msgstr "1x nativní (320x240)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "5x/1080p"
-msgstr "5x/1080p"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "6x/1440p"
-msgstr "6x/1440p"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "9x/4K"
-msgstr "9x/4K"
+msgid "9x 4K (2880x2160)"
+msgstr "9x 4K (2880x2160)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6431,11 +7492,6 @@ msgstr "xBR (bez prolínání hran)"
 msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "NTSC-J"
-msgstr "NTSC-J"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6497,6 +7553,26 @@ msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (Vibrace)"
 
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygongs & warping textures."
+msgstr "Omezuje viklavé polygony a deformační textury."
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr "POVOLIT OPRAVY PGXP"
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "Allows loading protected games without subchannel information."
+msgstr "Umožňuje načítání chráněných her bez informací o dílčím kanálu."
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "ALLOW BOOTING WITHOUT SBI FILE"
+msgstr "POVOLIT SPOUŠTĚNÍ BEZ SOUBORU SBI"
+
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "Choose the emulator language."
@@ -6507,37 +7583,7 @@ msgctxt "game_options"
 msgid "CHOOSE DREAMCAST LANGUAGE"
 msgstr "VYBRAT JAZYK DREAMCASTU"
 
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Japanese"
-msgstr "Japonština"
-
-#. TRANSLATION: flycast/uzem, sonic2013, soniccd
-msgctxt "game_options"
-msgid "English"
-msgstr "Angličtina"
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "German"
-msgstr "Němčina"
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "French"
-msgstr "Francouzština"
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Spanish"
-msgstr "Španělština"
-
-#. TRANSLATION: flycast/uzem, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "Italian"
-msgstr "Italština"
-
-#. TRANSLATION: flycast/uzem
+#. TRANSLATION: flycast/uzem, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Choose your console region."
 msgstr "Vyberte oblast konzole."
@@ -6577,6 +7623,56 @@ msgctxt "game_options"
 msgid "FORCE WINDOWS CE"
 msgstr "VYNUTIT WINDOWS CE"
 
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "Choose second feature pack for the controller."
+msgstr "Zvolte druhý balíček funkcí pro ovladač."
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 1 FEATURE PACK"
+msgstr "BALÍČEK FUNKCÍ OVLADAČE 1"
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "2nd VMU (Default)"
+msgstr "2. VMU (Výchozí)"
+
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
+msgctxt "game_options"
+msgid "Purupuru (Rumble)"
+msgstr "Purupuru (Vibrace)"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 2 FEATURE PACK"
+msgstr "BALÍČEK FUNKCÍ OVLADAČE 2"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 3 FEATURE PACK"
+msgstr "BALÍČEK FUNKCÍ OVLADAČE 3"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "CONTROLLER 4 FEATURE PACK"
+msgstr "BALÍČEK FUNKCÍ OVLADAČE 4"
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "Enable the Dreamcast DSP. Only recommended for fast systems."
+msgstr "Povolit DSP Dreamcast. Doporučeno pouze pro rychlé systémy."
+
+#. TRANSLATION: flycast/uzem
+msgctxt "game_options"
+msgid "DIGITAL SOUND PROCESSOR"
+msgstr "DIGITÁLNÍ ZVUKOVÝ PROCESOR"
+
+#. TRANSLATION: flycast/uzem, flycast
+msgctxt "game_options"
+msgid "Disbaled (Default)"
+msgstr "Vyvážený (Výchozí)"
+
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Choose which screen ratio you want to use."
@@ -6604,43 +7700,13 @@ msgstr "ROZLIŠENÍ VYKRESLOVÁNÍ"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "320x240 (Half)"
-msgstr "320x240 (Polovina)"
+msgid "0.5x (320x240)"
+msgstr "0.5x (320x240)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "640x480 (Native)"
-msgstr "640x480 (Nativní)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "960x720 (x1.5)"
-msgstr "960x720 (x1.5)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1280x960 (x2)"
-msgstr "1280x960 (x2)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1600x1200 (x2.5)"
-msgstr "1600x1200 (x2.5)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "1920x1440 (x3)"
-msgstr "1920x1440 (x3)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "2560x1920 (x4)"
-msgstr "2560x1920 (x4)"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "2880x2160 (x4.5)"
-msgstr "2880x2160 (x4.5)"
+msgid "4.5x (2880x2160)"
+msgstr "4.5x (2880x2160)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -6667,20 +7733,16 @@ msgctxt "game_options"
 msgid "Rotate"
 msgstr "Otáčení"
 
-#. TRANSLATION: hatari
+#. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "MODEL"
-msgstr "MODEL"
+msgid "Higher values make textures viewed at oblique angles look sharper."
+msgstr ""
+"Při vyšších hodnotách vypadají textury při pohledu pod šikmým úhlem ostřeji."
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "TOS languages."
 msgstr "Jazyky TOS."
-
-#. TRANSLATION: hatari, redream, sonic2013, soniccd
-msgctxt "game_options"
-msgid "LANGUAGE"
-msgstr "JAZYK"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -6739,113 +7801,33 @@ msgstr "4M"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose whether or not to limit the framerate."
-msgstr "Zvolte, zda chcete omezit snímkovou frekvenci, nebo ne."
+msgid "Choose which graphics API library to use."
+msgstr ""
+
+#. TRANSLATION: melonds, pcsx2
+msgctxt "game_options"
+msgid "Software"
+msgstr "Software"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "LIMIT FRAMERATE"
-msgstr "OMEZIT SNÍMKOVOU FREKVENCI"
+msgid "LIMIT FRAME RATE"
+msgstr "OMEZENÍ SNÍMKOVÉ FREKVENCE"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "No Limitation"
-msgstr "Bez omezení"
+msgid "No Limit"
+msgstr "Bez Limitu"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Standard (Default)"
-msgstr "Standardní (Výchozí)"
+msgid "As game specifies"
+msgstr "Jak je uvedeno ve hře"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Enhancement. Increase the rendering resolution."
-msgstr "Vylepšení. Zvyšte rozlišení vykreslování."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "1x native (256x192) (Default)"
-msgstr "1x nativní (256x192) (Výchozí)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "2x native (512x384)"
-msgstr "2x nativní (512x384)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "3x native (768x576)"
-msgstr "3x nativní (768x576)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "4x native (1024x768)"
-msgstr "4x nativní (1024x768)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "5x native (1280x960)"
-msgstr "5x nativní (1280x960)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "6x native (1536x1152)"
-msgstr "6x nativní (1536x1152)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "7x native (1792x1344)"
-msgstr "7x nativní (1792x1344)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "8x native (2048x1536)"
-msgstr "8x nativní (2048x1536)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "9x native (2304x1728)"
-msgstr "9x nativní (2304x1728)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "10x native (2560x1920)"
-msgstr "10x nativní (2560x1920)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "11x native (2816x2112)"
-msgstr "11x nativní (2816x2112)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "12x native (3072x2304)"
-msgstr "12x nativní (3072x2304)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "13x native (3328x2496)"
-msgstr "13x nativní (3328x2496)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "14x native (3584x2688)"
-msgstr "14x nativní (3584x2688)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "15x native (3840x2880)"
-msgstr "15x nativní (3840x2880)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "16x native (4096x3072)"
-msgstr "16x nativní (4096x3072)"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enables improved polygon splitting."
-msgstr "Umožňuje vylepšené dělení polygonů."
+msgid "Enhancement. Enables improved polygon splitting."
+msgstr "Vylepšení. Umožňuje vylepšené dělení polygonů."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6854,13 +7836,13 @@ msgstr "POVOLIT DĚLENÍ POLYGONŮ"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "0 degrees (Default)"
-msgstr "0 stupňů (Výchozí)"
+msgid "Rotates the screens, to simulate holding the DS sideways."
+msgstr "Otáčí obrazovky a simuluje tak držení DS na stranu."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Swap the Nintendo DS Displays."
-msgstr "Výměna displeje Nintenda DS."
+msgid "Swap the position of the dual displays."
+msgstr "Vyměnit polohu dvou displejů."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6869,8 +7851,8 @@ msgstr "VÝMĚNA OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the screen size."
-msgstr "Zvolte velikost obrazovky."
+msgid "Sets the window size to an integer size."
+msgstr "Nastaví velikost okna na celočíselnou velikost."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6879,18 +7861,23 @@ msgstr "VELIKOST OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "1x (Default)"
-msgstr "1x (Výchozí)"
+msgid "Adjusts the positions of the screens."
+msgstr "Upravuje polohu obrazovek."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the preferred screen layout."
-msgstr "Vyberte upřednostňované rozložení obrazovky."
+msgid "Original screen positions"
+msgstr "Původní pozice obrazovky"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Natural (Default)"
-msgstr "Přírodní (Výchozí)"
+msgid "Always enforce vertical"
+msgstr "Vždy prosazovat vertikální"
+
+#. TRANSLATION: melonds
+msgctxt "game_options"
+msgid "Always enforce horizontal"
+msgstr "Vždy prosazovat horizontální"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6899,8 +7886,8 @@ msgstr "Hybridní"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Choose the NDS screen sizings."
-msgstr "Zvolte velikosti obrazovky NDS."
+msgid "How the window space is distributed between the screens."
+msgstr "Jak je prostor okna rozdělen mezi obrazovky."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6909,8 +7896,8 @@ msgstr "DIMENZOVÁNÍ OBRAZOVKY"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Even (Default)"
-msgstr "Sudá (Výchozí)"
+msgid "Even"
+msgstr "Dokonce"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6919,13 +7906,8 @@ msgstr "Zdůraznění vrcholu"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Emphasize botton"
-msgstr "Zdůraznění dna"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Auto"
-msgstr "Auto"
+msgid "Emphasize bottom"
+msgstr "Zdůraznění spodní části"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6939,33 +7921,8 @@ msgstr "Pouze spodní"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "Force integer scaling for pixels on larger displays."
-msgstr "Vynucení celočíselného škálování pixelů na větších displejích."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "CELOČÍSELNÉ ŠKÁLOVÁNÍ"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable cheats for MelonDS."
-msgstr "Povolit cheaty pro MelonDS."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Enable the on screen display."
-msgstr "Povolte zobrazení na obrazovce."
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "ENABLE OSD"
-msgstr "POVOLIT OSD"
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Choose console type."
-msgstr "Vyberte typ konzole."
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -6974,13 +7931,13 @@ msgstr "TYP KONZOLE"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DS (default)"
-msgstr "DS (výchozí)"
+msgid "DS"
+msgstr "DS"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
-msgid "DSi (Experiemental)"
-msgstr "DSi (Experimentální)"
+msgid "DSi (experiemental)"
+msgstr "DSi (experimentální)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -6988,8 +7945,8 @@ msgid ""
 "h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth "
 "efficient."
 msgstr ""
-"h265 (HEVC) je CPU zatížené a zvyšuje latenci, ale je efektivnější "
-"z hlediska šířky pásma."
+"h265 (HEVC) je CPU zatížené a zvyšuje latenci, ale je efektivnější z "
+"hlediska šířky pásma."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7018,7 +7975,7 @@ msgstr "4K (3840x2160)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
-msgid "VIDEO STREAM FRAMERATE"
+msgid "VIDEO STREAM FRAME RATE"
 msgstr "SNÍMKOVÁ FREKVENCE VIDEOSTREAMU"
 
 #. TRANSLATION: moonlight
@@ -7039,7 +7996,8 @@ msgstr "120FPS"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Higher number for higher picture quality, but requires more bandwidth."
-msgstr "Vyšší číslo znamená vyšší kvalitu obrazu, ale vyžaduje větší šířku pásma."
+msgstr ""
+"Vyšší číslo znamená vyšší kvalitu obrazu, ale vyžaduje větší šířku pásma."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7082,17 +8040,18 @@ msgstr "DYNAMICKY VYPOČÍTAT OPTIMÁLNÍ NASTAVENÍ"
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "on"
-msgstr "zapnuto"
+msgstr "zapnout"
 
 #. TRANSLATION: moonlight, moonlight
 msgctxt "game_options"
 msgid "off"
-msgstr "vypnto"
+msgstr "vypnout"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
-msgstr "Zavření aplikace na vzdáleném hostiteli při ukončení aplikace Moonlight."
+msgstr ""
+"Zavření aplikace na vzdáleném hostiteli při ukončení aplikace Moonlight."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7124,8 +8083,7 @@ msgctxt "game_options"
 msgid ""
 "Enable second audio limiter. Improves audio quality at the cost of "
 "performance."
-msgstr ""
-"Povolit druhý omezovač zvuku. Zlepšuje kvalitu zvuku na úkor výkonu."
+msgstr "Povolit druhý omezovač zvuku. Zlepšuje kvalitu zvuku na úkor výkonu."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7215,8 +8173,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vyžadováno pro některé efekty ve hře (přechody Banjo Kazooie a DK64), "
-"může způsobit zpomalení."
+"Vyžadováno pro některé efekty ve hře (přechody Banjo Kazooie a DK64), může "
+"způsobit zpomalení."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -7250,21 +8208,6 @@ msgstr "Jednoduché 2x"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "Software"
-msgstr "Software"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "PS2's internal ratio setting. Some games only support 4/3."
-msgstr "Interní nastavení poměru v PS2. Některé hry podporují pouze 4/3."
-
-#. TRANSLATION: pcsx2, rpcs3
-msgctxt "game_options"
-msgid "TV MODE"
-msgstr "TV REŽIM"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
 msgid "Some games have issues when the animation is shown, others require it."
 msgstr "Některé hry mají problémy, když se zobrazí animace, jiné ji vyžadují."
 
@@ -7277,16 +8220,6 @@ msgstr "Zobrazit (konkrétní hry)"
 msgctxt "game_options"
 msgid "Skip (safer)"
 msgstr "Přeskočit (bezpečnější)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "2x (720p)"
-msgstr "2x (720p)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "6x (2160p 4K)"
-msgstr "6x (2160p 4K)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -7332,6 +8265,19 @@ msgstr "Odstranění čar ve vnitřním rozlišení (opravuje Soul Calibur)."
 msgctxt "game_options"
 msgid "ALIGN SPRITE (HACK)"
 msgstr "ZAROVNÁNÍ SPRITU (HACK)"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Render this many frames ahead to improve performance at the cost of input "
+"lag."
+msgstr ""
+"Vykreslování o mnoho snímků dopředu zvýší výkon za cenu vstupního zpoždění."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "VSYNCS IN MTGS QUEUE"
+msgstr "VSYNCS VE FRONTĚ MTGS"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -7491,6 +8437,25 @@ msgctxt "game_options"
 msgid "VU0 Kickstart to avoid sync problems with VU1"
 msgstr "VU0 Kickstart pro zamezení problémů se synchronizací s VU1"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Automatically use hardware hacks as appropriate. Refer to pcsx2-config for "
+"individual hacks."
+msgstr ""
+"Automaticky používat hardwarové hacky podle potřeby. Jednotlivé hacky "
+"naleznete v části pcsx2-config."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
+msgstr "AUTOMATICKÉ HACKOVÁNÍ GRAFICKÉHO HARDWARU"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "On (default)"
+msgstr "Zapnuto (výchozí)"
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
@@ -7516,8 +8481,8 @@ msgstr "Přeskočení účinků vyrovnávací paměti"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "8x (2160p 4K)"
-msgstr "8x (2160p 4K)"
+msgid "8x 4K (3840x2176)"
+msgstr "8x 4K (3840x2176)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -7619,6 +8584,37 @@ msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "TV MODE"
+msgstr "TV REŽIM"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "LLVM is fastest, use the Interpreter settings if there are issues."
+msgstr ""
+"LLVM je nejrychlejší, v případě problémů použijte nastavení Překladače."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PPU DECODER"
+msgstr "PPU DEKODÉR"
+
+#. TRANSLATION: rpcs3, rpcs3
+msgctxt "game_options"
+msgid "LLVM Recompiler"
+msgstr "Překompilátor LLVM"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Dynamic Interpreter"
+msgstr "Dynamický Překladač"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Static Interpreter"
+msgstr "Statický Překladač"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
 msgstr ""
 "Pokud hra spadne, zkuste ASMJIT. Pokud stále padá, zkuste Rychlého "
@@ -7628,11 +8624,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "SPU DECODER"
 msgstr "SPU DECODER"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "LLVM Recompiler"
-msgstr "Překompilátor LLVM"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7662,7 +8653,7 @@ msgstr "DODATEČNÝ LIMIT SNÍMKU"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Off (faster, unstable)"
-msgstr "Vypnuto (rychlejší, nestabilní)"
+msgstr "Vypnout (rychlejší, nestabilní)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7706,14 +8697,13 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "On (slower)"
-msgstr "Zapnuto (pomalé)"
+msgstr "Zapnout (pomalé)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
 "May fix missing graphics and broken lighting at the cost of performance."
-msgstr ""
-"Může opravit chybějící grafiku a nefunkční osvětlení na úkor výkonu."
+msgstr "Může opravit chybějící grafiku a nefunkční osvětlení na úkor výkonu."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7723,11 +8713,35 @@ msgstr "ZÁPIS BAREVNÝCH VYROVNÁVACÍCH PAMĚTÍ"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid ""
+"Disables the vertex cache. Might resolve missing or flickering graphics "
+"output but degrade performance."
+msgstr ""
+"Zakáže vrchol cache. Může vyřešit chybějící nebo blikající grafický výstup, "
+"ale sníží výkon."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "DISABLE VERTEX CACHE"
+msgstr "ZAKÁZAT VRCHOLY CACHE"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "May fix broken graphics in some games."
+msgstr "Může opravit nefunkční grafiku v některých hrách."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE DEPTH BUFFER"
+msgstr "HLOUBKOVÁ VYROVNÁVACÍ PAMĚŤ PRO ZÁPIS"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
 "Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
 "Leave on automatic if slowdown occurs."
 msgstr ""
-"Omezení na 1 nebo 2 může v některých hrách vyřešit zadrhávání zvuku u slabších CPU. "
-"Pokud dojde ke zpomalení, ponechte automatický režim."
+"Omezení na 1 nebo 2 může v některých hrách vyřešit zadrhávání zvuku u "
+"slabších CPU. Pokud dojde ke zpomalení, ponechte automatický režim."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7763,16 +8777,6 @@ msgstr "5 vláken"
 msgctxt "game_options"
 msgid "6 threads"
 msgstr "6 vláken"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May fix broken graphics in some games."
-msgstr "Může opravit nefunkční grafiku v některých hrách."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "HLOUBKOVÁ VYROVNÁVACÍ PAMĚŤ PRO ZÁPIS"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -7819,11 +8823,6 @@ msgctxt "game_options"
 msgid "Cyrillic [Windows-1251]"
 msgstr "Cyrilice [Windows-1251]"
 
-#. TRANSLATION: easyrpg, sonic2013
-msgctxt "game_options"
-msgid "Korean"
-msgstr "Korejština"
-
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
 msgid "Chinese (Simplified)"
@@ -7856,8 +8855,8 @@ msgstr "Zvolte rozlišení vykreslování (Vyžaduje osobní soubor redream.key)
 
 #. TRANSLATION: redream
 msgctxt "game_options"
-msgid "1280x960 (Default)"
-msgstr "1280x960 (Výchozí)"
+msgid "2x (1280x960) (Default)"
+msgstr "2x (1280x960) (Výchozí)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -7912,11 +8911,6 @@ msgstr "Na pixel (64 vrstev)"
 msgctxt "game_options"
 msgid "Choose the Dreamcast console region."
 msgstr "Vyberte oblast konzole Dreamcast."
-
-#. TRANSLATION: redream
-msgctxt "game_options"
-msgid "REGION"
-msgstr "REGION"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -8145,7 +9139,9 @@ msgstr "Mac IIx (2Mb RAM, Barevný, 2 HD Diskety/CD/HDD, Čtečka Obrazu)"
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Type of ROM file to load. Disk Image requires Mac IIx and Image Reader"
-msgstr "Typ souboru ROM, který se má načíst. Obraz Disku vyžaduje Mac IIx a Čtečku Obrazu"
+msgstr ""
+"Typ souboru ROM, který se má načíst. Obraz Disku vyžaduje Mac IIx a Čtečku "
+"Obrazu"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
@@ -8162,6 +9158,15 @@ msgctxt "game_options"
 msgid "Enable or disable high score saving"
 msgstr "Povolení nebo zakázání ukládání vysokého skóre"
 
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
+msgid ""
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
+msgstr ""
+"Povolení vstupu myši pro trackbally, spinnery, světelné zbraně (pokud není "
+"připojena zbraň) a podobné ovládací prvky"
+
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "BGFX for post-processing, accel/opengl for raw image."
@@ -8176,6 +9181,11 @@ msgstr "BGFX"
 msgctxt "game_options"
 msgid "Accel"
 msgstr "Accel"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "Fix screen tearing, but may drop frames."
+msgstr "Oprava trhání obrazovky, ale může dojít k poklesu snímků."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -8240,12 +9250,26 @@ msgctxt "game_options"
 msgid ""
 "Crop artwork to only unused space, keeping the game as large as possible."
 msgstr ""
-"Ořízne umělecké dílo pouze na nevyužité místo a zachová co největší velikost hry."
+"Ořízne umělecké dílo pouze na nevyužité místo a zachová co největší velikost "
+"hry."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "UMĚLECKÉ DÍLO CROP"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid ""
+"Make game history, setup instructions, and special moves viewable in the menu"
+msgstr ""
+"Vytvoří herní historii, nastavení instrukcí a speciální pohyby zobrazitelné "
+"v menu"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "DATA PLUGIN"
+msgstr "DATOVÝ PLUGIN"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -8339,11 +9363,6 @@ msgstr "Vynucení myši ve hrách."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
-msgid "ENABLE MOUSE"
-msgstr "POVOLIT MYŠ"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
 msgid "Enable XIM support."
 msgstr "Povolení podpory XIM."
 
@@ -8394,6 +9413,46 @@ msgstr "SKRÝT GPU NVIDIA"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
+msgid ""
+"Disabling this may help compatibility with certain controllers and games."
+msgstr ""
+"Vypnutí této funkce může pomoci kompatibilitě s některými ovladači a hrami."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "RAW CONTROLLER INPUT"
+msgstr "SUROVÝ VSTUP REGULÁTORU"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Reset the cache can fix some crashes if your game was running under Batocera "
+"29."
+msgstr ""
+"Obnovení mezipaměti může opravit některé pády, pokud hra běžela pod systémem "
+"Batocera 29."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "DXVK RESET CACHE"
+msgstr "DXVK RESET CACHE"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Enable this mode if you have issue for run your game on NTFS storage (by "
+"default is better to use LinuxFS)."
+msgstr ""
+"Tento režim povolte, pokud máte problém se spuštěním hry na úložišti NTFS "
+"(ve výchozím nastavení je lepší použít LinuxFS)."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NTFS MODE"
+msgstr "POVOLIT REŽIM NTFS"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
 msgid "ENABLE DEBUG"
 msgstr "POVOLIT ODBUGOVAT"
 
@@ -8435,8 +9494,31 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ"
+msgid ""
+"Skip frames to improve performance, at the cost of choppy motion. Can cause "
+"visual glitches."
+msgstr ""
+"Přeskakování snímků pro zvýšení výkonu za cenu trhavého pohybu. Může "
+"způsobit vizuální závady."
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid "FRAMESKIP TYPE"
+msgstr "TYP PŘESKOČENÍ SNÍMKU"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid ""
+"When frameskip type is on automatic or manual, skip up to this many frames "
+"consecutively."
+msgstr ""
+"Pokud je typ přeskakování snímků nastaven na automatický nebo manuální, "
+"přeskočí se až tento počet snímků za sebou."
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
+msgid "FRAMESKIP VALUE"
+msgstr "HODNOTA PŘESKOČENÍ SNÍMKU"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -8450,13 +9532,17 @@ msgstr "THREADED 3D"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "Fix main 2D screen to follow action."
-msgstr "Oprava hlavní obrazovky 2D tak, aby sledovala akci."
+msgid ""
+"Force 3D geometry to always render on the top screen. Useful for single-"
+"screen devices/games."
+msgstr ""
+"Vynucení vykreslování 3D geometrie vždy na horní obrazovku. Užitečné pro "
+"zařízení/hry s jednou obrazovkou."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
-msgid "FIX 2D SCREEN"
-msgstr "OPRAVA 2D OBRAZU"
+msgid "KEEP MAIN SCREEN ON TOP"
+msgstr "PONECHÁNÍ HLAVNÍ OBRAZOVKY NAHOŘE"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -8495,10 +9581,25 @@ msgstr "Roztažení na 16:9"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
+msgid "Stretch to 4:3"
+msgstr "Roztažení na 4:3"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
 msgid "Enhancement."
 msgstr "Vylepšení."
 
-#. TRANSLATION: sonic2013, soniccd
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "Improve audio accuracy (experimental)."
+msgstr "Zlepšení přesnosti zvuku (experimentální)."
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "USE DSP AUDIO"
+msgstr "POUŽITÍ ZVUK DSP"
+
+#. TRANSLATION: sonic2013, soniccd, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "Změňte jazyk hry."
@@ -8508,30 +9609,10 @@ msgctxt "game_options"
 msgid "Portugese"
 msgstr "Portugalsky"
 
-#. TRANSLATION: sonic2013
-msgctxt "game_options"
-msgid "Russian"
-msgstr "Rusky"
-
-#. TRANSLATION: sonic2013
-msgctxt "game_options"
-msgid "Chinese"
-msgstr "Čínsky"
-
-#. TRANSLATION: sonic2013, demul
-msgctxt "game_options"
-msgid "Fix screen tearing."
-msgstr "Oprava trhání obrazovky."
-
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "Can smooth the image."
 msgstr "Dokáže vyhladit obraz."
-
-#. TRANSLATION: sonic2013, soniccd
-msgctxt "game_options"
-msgid "Nearest Neighbour"
-msgstr "Nejbližší Soused"
 
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
@@ -8553,7 +9634,7 @@ msgctxt "game_options"
 msgid "Enable high quality effects for special stages."
 msgstr "Povolení vysoce kvalitních efektů pro speciální fáze."
 
-#. TRANSLATION: sonic2013
+#. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "HQ MODE"
 msgstr "VYSOCE KVALITNÍ REŽIM"
@@ -8577,11 +9658,6 @@ msgstr "Přístup k modifikacím a dalším pokročilým možnostem."
 msgctxt "game_options"
 msgid "DEV MENU"
 msgstr "DEV MENU"
-
-#. TRANSLATION: soniccd
-msgctxt "game_options"
-msgid "HQ Mode"
-msgstr "Vysoce Kvalitní Režim"
 
 #. TRANSLATION: soniccd
 msgctxt "game_options"
@@ -8706,6 +9782,1003 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE RAW INPUT"
 msgstr "POVOLIT VSTUP RAW"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Native (720p/1080p)"
+msgstr "Nativní (720p/1080p)"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "2x (1440p/2160p)"
+msgstr "2x (1440p/2160p)"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "3x (2160p/3240p)"
+msgstr "3x (2160p/3240p)"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "4x (2880p/4320p)"
+msgstr "4x (2880p/4320p)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "5x (3600p/5400p)"
+msgstr "5x (3600p/5400p)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "6x (4320p/6480p)"
+msgstr "6x (4320p/6480p)"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "16:9 (Default)"
+msgstr "16:9 (Výchozí)"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 21:9"
+msgstr "Force 21:9"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Force 16:10"
+msgstr "Force 16:10"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "British English"
+msgstr "Britská angličtina"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Canadian French"
+msgstr "Kanadská francouzština"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Latin American Spanish"
+msgstr "Latinskoamerická španělština"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Brazilian Portuguese"
+msgstr "Brazilská portugalština"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE REGION"
+msgstr "VYBRAT OBLAST KONZOLE"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Australia"
+msgstr "Austrálie"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "China"
+msgstr "Čína"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Korea"
+msgstr "Korea"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Taiwan"
+msgstr "Tchaj-wan"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Choose your console timezone."
+msgstr "Zvolte časové pásmo konzoly."
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "CHOOSE CONSOLE TIMEZONE"
+msgstr "VYBRAT ČASOVÉ PÁSMO KONZOLY"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CET"
+msgstr "CET"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CST6CDT"
+msgstr "CST6CDT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Cuba"
+msgstr "Kuba"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EET"
+msgstr "EET"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Egypt"
+msgstr "Egypt"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Eire"
+msgstr "Irsko"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST"
+msgstr "EST"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "EST5EDT"
+msgstr "EST5EDT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB"
+msgstr "GB"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GB-Eire"
+msgstr "GB-Irsko"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT"
+msgstr "GMT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT+0"
+msgstr "GMT+0"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT-0"
+msgstr "GMT-0"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "GMT0"
+msgstr "GMT0"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Greenwich"
+msgstr "Greenwich"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "HST"
+msgstr "HST"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Iran"
+msgstr "Irán"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Israel"
+msgstr "Israel"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Jamaica"
+msgstr "Jamajka"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Kwajalein"
+msgstr "Kwajalein"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Libya"
+msgstr "Libye"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MET"
+msgstr "MET"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST"
+msgstr "MST"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "MST7MDT"
+msgstr "MST7MDT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Navajo"
+msgstr "Navajo"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ"
+msgstr "NZ"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "NZ-CHAT"
+msgstr "NZ-CHAT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PRC"
+msgstr "PRC"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "PST8PDT"
+msgstr "PST8PDT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROC"
+msgstr "ROC"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ROK"
+msgstr "ROK"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Singapore"
+msgstr "Singapur"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "UCT"
+msgstr "UCT"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Univarsal"
+msgstr "Univarsal"
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "UTC"
+msgstr "UTC"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "W-SU"
+msgstr "W-SU"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "WET"
+msgstr "WET"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Zulu"
+msgstr "Zulu"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "CHOOSE SOUND OUTPUT MODE"
+msgstr "VÝBĚR REŽIMU ZVUKOVÉHO VÝSTUPU"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Mono"
+msgstr "Mono"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Stereo"
+msgstr "Stereo"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ASYNC SHADER COMPILE"
+msgstr "ASYNCHRONNÍ KOMPILACE SHADERU"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ANTI-ALIASING METHOD"
+msgstr "METODA ANTI-ALIASINGU"
+
+#. TRANSLATION: yuzu, vita3k
+msgctxt "game_options"
+msgid "FXAA"
+msgstr "FXAA"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "Gaussian"
+msgstr "Gaussian"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "ScaleForce"
+msgstr "ScaleForce"
+
+#. TRANSLATION: yuzu
+msgctxt "game_options"
+msgid "AMD FidelityFX (Vulkan Only)"
+msgstr "AMD FidelityFX (pouze Vulkan)"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "Stretch to fit window"
+msgstr "Roztáhnout na okno"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "American English"
+msgstr "Americká angličtina"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "Choose your console UTC timezone."
+msgstr "Zvolte časové pásmo UTC konzoly."
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-12"
+msgstr "UTC-12"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-11"
+msgstr "UTC-11"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-10"
+msgstr "UTC-10"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-9"
+msgstr "UTC-9"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-8"
+msgstr "UTC-8"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-7"
+msgstr "UTC-7"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-6"
+msgstr "UTC-6"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-5"
+msgstr "UTC-5"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-4"
+msgstr "UTC-4"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-3"
+msgstr "UTC-3"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-2"
+msgstr "UTC-2"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC-1"
+msgstr "UTC-1"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+1"
+msgstr "UTC+1"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+2"
+msgstr "UTC+2"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+3"
+msgstr "UTC+3"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+4"
+msgstr "UTC+4"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+5"
+msgstr "UTC+5"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+6"
+msgstr "UTC+6"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+7"
+msgstr "UTC+7"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+8"
+msgstr "UTC+8"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+9"
+msgstr "UTC+9"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+10"
+msgstr "UTC+10"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+11"
+msgstr "UTC+11"
+
+#. TRANSLATION: ryujinx
+msgctxt "game_options"
+msgid "UTC+12"
+msgstr "UTC+12"
+
+#. TRANSLATION: eduke32, fury, raze
+msgctxt "game_options"
+msgid "SKIP INTRO VIDEOS"
+msgstr "PŘESKOČIT ÚVODNÍ VIDEA"
+
+#. TRANSLATION: eduke32, fury, raze
+msgctxt "game_options"
+msgid "Show (Default)"
+msgstr "Zobrazit (výchozí)"
+
+#. TRANSLATION: vita3k
+msgctxt "game_options"
+msgid "Anti-aliasing is a technique for smoothing out jagged edges."
+msgstr "Anti-aliasing je technika vyhlazování zubatých hran."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable gamepad view for games that have interaction across two screens. "
+#~ "Use L1+R1 to switch screens."
+#~ msgstr ""
+#~ "Povolí zobrazení gamepadu pro hry, které mají interakci na dvou "
+#~ "obrazovkách. K přepínání obrazovek použijte klávesy L1+R1."
+
+#~ msgctxt "game_options"
+#~ msgid "Wii Internal resolution."
+#~ msgstr "Wii Interní rozlišení."
+
+#~ msgctxt "game_options"
+#~ msgid "x1 (640 x 528)"
+#~ msgstr "x1 (640 x 528)"
+
+#~ msgctxt "game_options"
+#~ msgid "x2 (1280 x 1056)"
+#~ msgstr "x2 (1280 x 1056)"
+
+#~ msgctxt "game_options"
+#~ msgid "x3 (1920 x 1584)"
+#~ msgstr "x3 (1920 x 1584)"
+
+#~ msgctxt "game_options"
+#~ msgid "x4 (2560 x 2112)"
+#~ msgstr "x4 (2560 x 2112)"
+
+#~ msgctxt "game_options"
+#~ msgid "x5 (3200 x 2640)"
+#~ msgstr "x5 (3200 x 2640)"
+
+#~ msgctxt "game_options"
+#~ msgid "x6 (3840 x 3168)"
+#~ msgstr "x6 (3840 x 3168)"
+
+#~ msgctxt "game_options"
+#~ msgid "16X"
+#~ msgstr "16X"
+
+#~ msgctxt "game_options"
+#~ msgid "Wii System languages."
+#~ msgstr "Wii Systémové jazyky."
+
+#~ msgctxt "game_options"
+#~ msgid "LANGUAGES"
+#~ msgstr "JAZYKY"
+
+#~ msgctxt "game_options"
+#~ msgid "WII WIDESCREEN HACK"
+#~ msgstr "HACK PRO ŠIROKOÚHLOU OBRAZOVKU WII"
+
+#~ msgctxt "game_options"
+#~ msgid "Shader compilation mode, may not work well on all hardware."
+#~ msgstr ""
+#~ "Režim kompilace shaderů, nemusí dobře fungovat na veškerém hardwaru."
+
+#~ msgctxt "game_options"
+#~ msgid "SHADER COMPILATION MODE"
+#~ msgstr "REŽIM KOMPILACE SHADERŮ"
+
+#~ msgctxt "game_options"
+#~ msgid "Sync"
+#~ msgstr "Sync"
+
+#~ msgctxt "game_options"
+#~ msgid "A-Sync Skip Rendering"
+#~ msgstr "Přeskočení vykreslování A-Sync"
+
+#~ msgctxt "game_options"
+#~ msgid "Sync UberShaders"
+#~ msgstr "Sync UberShaders"
+
+#~ msgctxt "game_options"
+#~ msgid "A-Sync UberShaders"
+#~ msgstr "A-Sync UberShaders"
+
+#~ msgctxt "game_options"
+#~ msgid "Match emulated display (Experimental)"
+#~ msgstr "Shodný emulovaný displej (Experimentální)"
+
+#~ msgctxt "game_options"
+#~ msgid "Double the rendering resolution. No effect on 64-bit machines."
+#~ msgstr ""
+#~ "Zdvojnásobte rozlišení vykreslování. Na 64bitových počítačích nemá vliv."
+
+#~ msgctxt "game_options"
+#~ msgid "ENHANCED RENDERING RESOLUTION (32-BIT ONLY)"
+#~ msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ (POUZE 32BITOVÉ)"
+
+#~ msgctxt "game_options"
+#~ msgid "Speed up. Causes visual glitches on first load."
+#~ msgstr "Zrychlení. Způsobuje vizuální závady při prvním načtení."
+
+#~ msgctxt "game_options"
+#~ msgid "ASYNC SHADER (VULKAN ONLY)"
+#~ msgstr "ASYNCHRONNÍ SHADER (POUZE VULKAN)"
+
+#~ msgctxt "game_options"
+#~ msgid "Force the emulator to run at this resolution."
+#~ msgstr "Vynutí spuštění emulátoru v tomto rozlišení."
+
+#~ msgctxt "game_options"
+#~ msgid "Disable status messages displayed by the emulator."
+#~ msgstr "Zakázat stavové zprávy zobrazované emulátorem."
+
+#~ msgctxt "game_options"
+#~ msgid "DISABLE OSD MESSAGES"
+#~ msgstr "ZAKÁZAT ZPRÁVY OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether to show on the display, configuration messages."
+#~ msgstr "Zvolte, zda se mají na displeji zobrazovat konfigurační zprávy."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW OSD MESSAGES"
+#~ msgstr "ZOBRAZIT ZPRÁVY OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose whether or not to limit the framerate."
+#~ msgstr "Zvolte, zda chcete omezit snímkovou frekvenci, nebo ne."
+
+#~ msgctxt "game_options"
+#~ msgid "No Limitation"
+#~ msgstr "Bez omezení"
+
+#~ msgctxt "game_options"
+#~ msgid "Standard (Default)"
+#~ msgstr "Standardní (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enhancement. Increase the rendering resolution."
+#~ msgstr "Vylepšení. Zvyšte rozlišení vykreslování."
+
+#~ msgctxt "game_options"
+#~ msgid "Enables improved polygon splitting."
+#~ msgstr "Umožňuje vylepšené dělení polygonů."
+
+#~ msgctxt "game_options"
+#~ msgid "0 degrees (Default)"
+#~ msgstr "0 stupňů (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Swap the Nintendo DS Displays."
+#~ msgstr "Výměna displeje Nintenda DS."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the screen size."
+#~ msgstr "Zvolte velikost obrazovky."
+
+#~ msgctxt "game_options"
+#~ msgid "1x (Default)"
+#~ msgstr "1x (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the preferred screen layout."
+#~ msgstr "Vyberte upřednostňované rozložení obrazovky."
+
+#~ msgctxt "game_options"
+#~ msgid "Natural (Default)"
+#~ msgstr "Přírodní (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the NDS screen sizings."
+#~ msgstr "Zvolte velikosti obrazovky NDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Even (Default)"
+#~ msgstr "Sudá (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "Emphasize botton"
+#~ msgstr "Zdůraznění dna"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto"
+#~ msgstr "Auto"
+
+#~ msgctxt "game_options"
+#~ msgid "Force integer scaling for pixels on larger displays."
+#~ msgstr "Vynucení celočíselného škálování pixelů na větších displejích."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable cheats for MelonDS."
+#~ msgstr "Povolit cheaty pro MelonDS."
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the on screen display."
+#~ msgstr "Povolte zobrazení na obrazovce."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE OSD"
+#~ msgstr "POVOLIT OSD"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose console type."
+#~ msgstr "Vyberte typ konzole."
+
+#~ msgctxt "game_options"
+#~ msgid "DS (default)"
+#~ msgstr "DS (výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "DSi (Experiemental)"
+#~ msgstr "DSi (Experimentální)"
+
+#~ msgctxt "game_options"
+#~ msgid "PS2's internal ratio setting. Some games only support 4/3."
+#~ msgstr "Interní nastavení poměru v PS2. Některé hry podporují pouze 4/3."
+
+#~ msgctxt "game_options"
+#~ msgid "Fullspeed can break some games."
+#~ msgstr "Plná rychlost může některé hry přerušit."
+
+#~ msgctxt "game_options"
+#~ msgid "FRAMERATE"
+#~ msgstr "SÍMKOVÁ FREKVENCE"
+
+#~ msgctxt "game_options"
+#~ msgid "fullspeed"
+#~ msgstr "plná rychlost"
+
+#~ msgctxt "game_options"
+#~ msgid "FRAMERATE LIMIT"
+#~ msgstr "OMEZENÍ SNÍMKOVÉ FREKVENCE"
+
+#~ msgctxt "game_options"
+#~ msgid "LIMIT FRAMERATE"
+#~ msgstr "OMEZIT SNÍMKOVOU FREKVENCI"
+
+#~ msgctxt "game_options"
+#~ msgid "VIDEO STREAM FRAMERATE"
+#~ msgstr "SNÍMKOVÁ FREKVENCE VIDEOSTREAMU"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Force the game to render in this aspect ratio. Decorations override this "
+#~ "setting."
+#~ msgstr ""
+#~ "Vynutí vykreslování hry v tomto poměru stran. Dekorace toto nastavení "
+#~ "potlačí."
+
+#~ msgctxt "game_options"
+#~ msgid "HQ Mode"
+#~ msgstr "Vysoce Kvalitní Režim"
+
+#~ msgctxt "game_options"
+#~ msgid "1x (native)"
+#~ msgstr "1x (nativní)"
+
+#~ msgctxt "game_options"
+#~ msgid "3x (720p)"
+#~ msgstr "3x (720p)"
+
+#~ msgctxt "game_options"
+#~ msgid "1x(native)"
+#~ msgstr "1x(nativní)"
+
+#~ msgctxt "game_options"
+#~ msgid "4k"
+#~ msgstr "4k"
+
+#~ msgctxt "game_options"
+#~ msgid "Native (400x240)"
+#~ msgstr "Nativní (400x240)"
+
+#~ msgctxt "game_options"
+#~ msgid "3x/720p"
+#~ msgstr "3x/720p"
+
+#~ msgctxt "game_options"
+#~ msgid "5x/1080p"
+#~ msgstr "5x/1080p"
+
+#~ msgctxt "game_options"
+#~ msgid "6x/1440p"
+#~ msgstr "6x/1440p"
+
+#~ msgctxt "game_options"
+#~ msgid "9x/4K"
+#~ msgstr "9x/4K"
+
+#~ msgctxt "game_options"
+#~ msgid "320x240 (Half)"
+#~ msgstr "320x240 (Polovina)"
+
+#~ msgctxt "game_options"
+#~ msgid "640x480 (Native)"
+#~ msgstr "640x480 (Nativní)"
+
+#~ msgctxt "game_options"
+#~ msgid "960x720 (x1.5)"
+#~ msgstr "960x720 (x1.5)"
+
+#~ msgctxt "game_options"
+#~ msgid "1280x960 (x2)"
+#~ msgstr "1280x960 (x2)"
+
+#~ msgctxt "game_options"
+#~ msgid "1600x1200 (x2.5)"
+#~ msgstr "1600x1200 (x2.5)"
+
+#~ msgctxt "game_options"
+#~ msgid "1920x1440 (x3)"
+#~ msgstr "1920x1440 (x3)"
+
+#~ msgctxt "game_options"
+#~ msgid "2560x1920 (x4)"
+#~ msgstr "2560x1920 (x4)"
+
+#~ msgctxt "game_options"
+#~ msgid "2880x2160 (x4.5)"
+#~ msgstr "2880x2160 (x4.5)"
+
+#~ msgctxt "game_options"
+#~ msgid "1x native (256x192) (Default)"
+#~ msgstr "1x nativní (256x192) (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "2x native (512x384)"
+#~ msgstr "2x nativní (512x384)"
+
+#~ msgctxt "game_options"
+#~ msgid "3x native (768x576)"
+#~ msgstr "3x nativní (768x576)"
+
+#~ msgctxt "game_options"
+#~ msgid "4x native (1024x768)"
+#~ msgstr "4x nativní (1024x768)"
+
+#~ msgctxt "game_options"
+#~ msgid "5x native (1280x960)"
+#~ msgstr "5x nativní (1280x960)"
+
+#~ msgctxt "game_options"
+#~ msgid "6x native (1536x1152)"
+#~ msgstr "6x nativní (1536x1152)"
+
+#~ msgctxt "game_options"
+#~ msgid "7x native (1792x1344)"
+#~ msgstr "7x nativní (1792x1344)"
+
+#~ msgctxt "game_options"
+#~ msgid "8x native (2048x1536)"
+#~ msgstr "8x nativní (2048x1536)"
+
+#~ msgctxt "game_options"
+#~ msgid "9x native (2304x1728)"
+#~ msgstr "9x nativní (2304x1728)"
+
+#~ msgctxt "game_options"
+#~ msgid "10x native (2560x1920)"
+#~ msgstr "10x nativní (2560x1920)"
+
+#~ msgctxt "game_options"
+#~ msgid "11x native (2816x2112)"
+#~ msgstr "11x nativní (2816x2112)"
+
+#~ msgctxt "game_options"
+#~ msgid "12x native (3072x2304)"
+#~ msgstr "12x nativní (3072x2304)"
+
+#~ msgctxt "game_options"
+#~ msgid "13x native (3328x2496)"
+#~ msgstr "13x nativní (3328x2496)"
+
+#~ msgctxt "game_options"
+#~ msgid "14x native (3584x2688)"
+#~ msgstr "14x nativní (3584x2688)"
+
+#~ msgctxt "game_options"
+#~ msgid "15x native (3840x2880)"
+#~ msgstr "15x nativní (3840x2880)"
+
+#~ msgctxt "game_options"
+#~ msgid "16x native (4096x3072)"
+#~ msgstr "16x nativní (4096x3072)"
+
+#~ msgctxt "game_options"
+#~ msgid "2x (720p)"
+#~ msgstr "2x (720p)"
+
+#~ msgctxt "game_options"
+#~ msgid "6x (2160p 4K)"
+#~ msgstr "6x (2160p 4K)"
+
+#~ msgctxt "game_options"
+#~ msgid "8x (2160p 4K)"
+#~ msgstr "8x (2160p 4K)"
+
+#~ msgctxt "game_options"
+#~ msgid "1280x960 (Default)"
+#~ msgstr "1280x960 (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "LIGHTGUN"
+#~ msgstr "SVĚTELNÁ ZBRAŇ"
+
+#~ msgctxt "game_options"
+#~ msgid "Light gun device must be selected on at least one port."
+#~ msgstr "Zařízení Světelná Zbraň musí být vybráno alespoň na jednom portu."
+
+#~ msgctxt "game_options"
+#~ msgid "If the D-Pad is oriented incorrectly for your controller."
+#~ msgstr "Pokud je D-Pad orientován nesprávně pro váš ovladač."
+
+#~ msgctxt "game_options"
+#~ msgid "ALT DPAD MODE"
+#~ msgstr "ALT DPAD MODE"
+
+#~ msgctxt "game_options"
+#~ msgid "DS3 Orientation"
+#~ msgstr "Orientace DS3"
+
+#~ msgctxt "game_options"
+#~ msgid "X360 Orientation"
+#~ msgstr "Orientace X360"
+
+#~ msgctxt "game_options"
+#~ msgid "Fix main 2D screen to follow action."
+#~ msgstr "Oprava hlavní obrazovky 2D tak, aby sledovala akci."
+
+#~ msgctxt "game_options"
+#~ msgid "FIX 2D SCREEN"
+#~ msgstr "OPRAVA 2D OBRAZU"
+
+#~ msgctxt "game_options"
+#~ msgid "AUTO SAVE/LOAD"
+#~ msgstr "AUTOMATATICKY ULOŽIT/NAČÍST"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME RENDERING"
+#~ msgstr "RENDERING HRY"
+
+#~ msgctxt "game_options"
+#~ msgid "NORTH WEST"
+#~ msgstr "SEVEROZÁPAD"
+
+#~ msgctxt "game_options"
+#~ msgid "NORTH EAST"
+#~ msgstr "SEVEROVÝCHOD"
+
+#~ msgctxt "game_options"
+#~ msgid "SOUTH EAST"
+#~ msgstr "JIHOVÝCHOD"
+
+#~ msgctxt "game_options"
+#~ msgid "SOUTH WEST"
+#~ msgstr "JIHOZÁPAD"
+
+#~ msgctxt "game_options"
+#~ msgid "Use guns instead of pads if guns are detected on the system"
+#~ msgstr ""
+#~ "Pokud jsou v systému detekovány zbraně, použijí se místo ovládačů zbraně"
+
+#~ msgctxt "game_options"
+#~ msgid "Use guns"
+#~ msgstr "Použití zbraní"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightgun device must be selected on at least one port."
+#~ msgstr "Zařízení Světelná Zbraň musí být vybrána alespoň na jednom portu."
+
+#~ msgctxt "game_options"
+#~ msgid "SHOW LIGHTGUN CROSSHAIRS"
+#~ msgstr "ZOBRAZIT ZAMĚŘOVACÍ KŘÍŽ SVĚTELNÉ ZBRANĚ"
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 1"
+#~ msgstr "Barva cíle pro hráče 1"
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns can only be used in port 2."
+#~ msgstr "Lehké zbraně lze používat pouze v portu 2."
+
+#~ msgctxt "game_options"
+#~ msgid "Lightguns/multitap."
+#~ msgstr "Světelné zbraně/multitap."
+
+#~ msgctxt "game_options"
+#~ msgid "Map controller inputs to lightgun inputs"
+#~ msgstr "Mapování vstupů ovladače na vstupy světelné zbraně"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER TO LIGHTGUN"
+#~ msgstr "OVLADAČ KE SVĚTELNÉ PISTOLI"
+
+#~ msgctxt "game_options"
+#~ msgid "Use with Singe HD lightgun games."
+#~ msgstr "Použít Singe HD s hrami světelné zbraně."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Singe automatically interprets joystick axis change as mouse movement, "
+#~ "useful for lightgun games."
+#~ msgstr ""
+#~ "Jediný automaticky interpretuje změnu osy joysticku jako pohyb myši, "
+#~ "užitečné pro hry s lehkými zbraněmi."
+
+#~ msgctxt "game_options"
+#~ msgid "HIDE LIGHTGUN CROSSHAIRS"
+#~ msgstr "SKRÝT ZAMĚŘOVACÍ KŘÍŽ SVĚTELNÉ PISTOLE"
+
+#~ msgctxt "game_options"
+#~ msgid "CDZ (MAME)"
+#~ msgstr "CDZ (MAME)"
 
 #~ msgctxt "game_options"
 #~ msgid "CUSTOM TEXTURES"

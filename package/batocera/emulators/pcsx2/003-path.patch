@@ -1,8 +1,8 @@
 diff --git a/pcsx2/gui/AppConfig.cpp b/pcsx2/gui/AppConfig.cpp
-index db789f2587..e4e4ecb068 100644
+index 507348e73..71cd04d64 100644
 --- a/pcsx2/gui/AppConfig.cpp
 +++ b/pcsx2/gui/AppConfig.cpp
-@@ -196,12 +196,12 @@ namespace PathDefs
+@@ -202,22 +202,22 @@ namespace PathDefs
  
  	wxDirName GetSnapshots()
  	{
@@ -17,7 +17,19 @@ index db789f2587..e4e4ecb068 100644
  	}
  
  	wxDirName GetCheats()
-@@ -225,7 +225,7 @@ namespace PathDefs
+ 	{
+-		return GetDocuments() + Base::Cheats();
++		return wxDirName("/userdata/cheats/ps2/cheats");
+ 	}
+ 
+ 	wxDirName GetCheatsWS()
+ 	{
+-		return GetDocuments() + Base::CheatsWS();
++		return wxDirName("/userdata/cheats/ps2/cheats_ws");
+ 	}
+ 
+ 	wxDirName GetDocs()
+@@ -231,12 +231,12 @@ namespace PathDefs
  
  	wxDirName GetSavestates()
  	{
@@ -26,3 +38,36 @@ index db789f2587..e4e4ecb068 100644
  	}
  
  	wxDirName GetMemoryCards()
+ 	{
+-		return GetDocuments() + Base::MemoryCards();
++		return wxDirName("/userdata/saves/ps2");
+ 	}
+ 
+ 	wxDirName GetSettings()
+@@ -246,7 +246,7 @@ namespace PathDefs
+ 
+ 	wxDirName GetLogs()
+ 	{
+-		return GetDocuments() + Base::Logs();
++		return wxDirName("/userdata/system/logs");
+ 	}
+ 
+ 	wxDirName GetResources()
+@@ -266,7 +266,7 @@ namespace PathDefs
+ 
+ 	wxDirName GetCache()
+ 	{
+-		return GetDocuments() + Base::Cache();
++		return wxDirName("/userdata/system/cache/ps2");
+ 	}
+ 
+ 	wxDirName GetTextures()
+@@ -1092,7 +1092,7 @@ void RelocateLogfile()
+ {
+ 	g_Conf->Folders.Logs.Mkdir();
+ 
+-	std::string newlogname(StringUtil::wxStringToUTF8String(Path::CombineWx(g_Conf->Folders.Logs.ToString(), L"emuLog.txt")));
++	std::string newlogname(StringUtil::wxStringToUTF8String(Path::CombineWx(g_Conf->Folders.Logs.ToString(), L"PCSX2-emuLog.txt")));
+ 
+ 	if ((emuLog != NULL) && (emuLogName != newlogname))
+ 	{

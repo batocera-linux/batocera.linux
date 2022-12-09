@@ -1,0 +1,13 @@
+diff --git a/src/config/CemuConfig.cpp b/src/config/CemuConfig.cpp
+index b257ead350..70a57cfc13 100644
+--- a/src/config/CemuConfig.cpp
++++ b/src/config/CemuConfig.cpp
+@@ -8,7 +8,7 @@
+ #include "PermanentConfig.h"
+ #include "ActiveSettings.h"
+ 
+-XMLCemuConfig_t g_config(L"settings.xml");
++XMLCemuConfig_t g_config(L"/userdata/system/configs/cemu/settings.xml");
+ 
+ void CemuConfig::SetMLCPath(std::wstring_view path, bool save)
+ {

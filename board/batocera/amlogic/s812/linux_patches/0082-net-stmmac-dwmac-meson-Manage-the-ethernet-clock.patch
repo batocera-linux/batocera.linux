@@ -1,0 +1,112 @@
+From 2ce1eb4b34aa92b06b860ec925413b98bed475c3 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Fri, 1 May 2020 23:43:15 +0200
+Subject: [PATCH 082/122] net: stmmac: dwmac-meson: Manage the "ethernet" clock
+
+Meson6 and Meson8 (both use the same glue registers on top of the DWMAC
+IP) have a dedicated Ethernet clock. For RMII mode the SoC has an input
+for an external RMII reference clock signal (which can be provided by
+either the PHY or an external oscillator). This clock needs to run at
+50MHz because the additional glue registers can divide by 2 - to achieve
+25MHz for 100Mbit/s line speed, or 20 - to achieve 2.5MHz for 10Mbit/s
+line speed.
+
+Set the correct frequency for this clock and enable it during init. Also
+enable the ETHMAC_DIV_EN bit which enables the divider in the glue
+registers, based on the Ethernet clock input.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-meson.c | 42 ++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c
+index 16fb66a0ca72..4561b6229cf9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/device.h>
+ #include <linux/ethtool.h>
+ #include <linux/io.h>
+@@ -15,11 +16,14 @@
+ 
+ #include "stmmac_platform.h"
+ 
++#define ETHMAC_DIV_EN		BIT(0)
++/* divides the input clock by 20 (= 0x0) or 2 (= 0x1) */
+ #define ETHMAC_SPEED_100	BIT(1)
+ 
+ struct meson_dwmac {
+ 	struct device	*dev;
+ 	void __iomem	*reg;
++	struct clk	*ethernet_clk;
+ };
+ 
+ static void meson6_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+@@ -41,6 +45,30 @@ static void meson6_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+ 	writel(val, dwmac->reg);
+ }
+ 
++static int meson6_dwmac_init(struct meson_dwmac *dwmac)
++{
++	int ret;
++
++	ret = clk_set_rate(dwmac->ethernet_clk, 50 * 1000 * 1000);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(dwmac->ethernet_clk);
++	if (ret)
++		return ret;
++
++	writel(readl(dwmac->reg) | ETHMAC_DIV_EN, dwmac->reg);
++
++	return 0;
++}
++
++static void meson6_dwmac_exit(struct meson_dwmac *dwmac)
++{
++	writel(readl(dwmac->reg) & ~ETHMAC_DIV_EN, dwmac->reg);
++
++	clk_disable_unprepare(dwmac->ethernet_clk);
++}
++
+ static int meson6_dwmac_probe(struct platform_device *pdev)
+ {
+ 	struct plat_stmmacenet_data *plat_dat;
+@@ -68,15 +96,27 @@ static int meson6_dwmac_probe(struct platform_device *pdev)
+ 		goto err_remove_config_dt;
+ 	}
+ 
++	dwmac->ethernet_clk = devm_clk_get_optional(&pdev->dev, "ethernet");
++	if (IS_ERR(dwmac->ethernet_clk)) {
++		ret = PTR_ERR(dwmac->ethernet_clk);
++		goto err_remove_config_dt;
++	}
++
+ 	plat_dat->bsp_priv = dwmac;
+ 	plat_dat->fix_mac_speed = meson6_dwmac_fix_mac_speed;
+ 
++	ret = meson6_dwmac_init(dwmac);
++	if (ret)
++		return ret;
++
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret)
+-		goto err_remove_config_dt;
++		goto err_exit_dwmac;
+ 
+ 	return 0;
+ 
++err_exit_dwmac:
++	meson6_dwmac_exit(dwmac);
+ err_remove_config_dt:
+ 	stmmac_remove_config_dt(pdev, plat_dat);
+ 
+-- 
+2.25.1
+

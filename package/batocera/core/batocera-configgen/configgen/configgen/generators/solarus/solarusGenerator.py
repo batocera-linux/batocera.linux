@@ -10,7 +10,7 @@ import zipfile
 
 class SolarusGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         # basis
         commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
@@ -21,7 +21,7 @@ class SolarusGenerator(Generator):
             if nplayer == 1:
                 if "hotkey" in pad.inputs and "start" in pad.inputs:
                     commandArray.append("-quit-combo={}+{}".format(pad.inputs["hotkey"].id, pad.inputs["start"].id))
-                    commandArray.append("-joypad-num={}".format(pad.index))
+                    commandArray.append(f"-joypad-num={pad.index}")
             nplayer += 1
 
         # player pad
@@ -75,16 +75,16 @@ class SolarusGenerator(Generator):
             if nplayer == 1:
                 for key in keymapping:
                     if keymapping[key] in pad.inputs:
-                        f.write("{}={}\n".format(key, SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)))
+                        f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
                     if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
-                        f.write("{}={}\n".format(reverseAxis[key], SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)))
+                        f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
 
             nplayer += 1
 
     @staticmethod
     def key2val(input, reverse):
         if input.type == "button":
-            return "button {}".format(input.id)
+            return f"button {input.id}"
         if input.type == "hat":
             if input.value == "1":
                 return "hat 0 up"
@@ -96,7 +96,7 @@ class SolarusGenerator(Generator):
                 return "hat 0 left"
         if input.type == "axis":
             if (reverse and input.value == "-1") or (not reverse and input.value == "1"):
-                return "axis {} +".format(str(input.id))
+                return f"axis {str(input.id)} +"
             else:
-                return "axis {} -".format(str(input.id))
+                return f"axis {str(input.id)} -"
         return None

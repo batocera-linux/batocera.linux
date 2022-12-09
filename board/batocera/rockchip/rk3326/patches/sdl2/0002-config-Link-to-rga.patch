@@ -1,0 +1,37 @@
+From b4443cadf619039e838ae0e3ae67af91f88094a3 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Sat, 5 Nov 2022 15:39:41 +0000
+Subject: [PATCH] config: Link to rga
+
+---
+ sdl2-config.in | 2 +-
+ sdl2.pc.in     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sdl2-config.in b/sdl2-config.in
+index f7e5cd059..b2ee0744b 100644
+--- a/sdl2-config.in
++++ b/sdl2-config.in
+@@ -59,7 +59,7 @@ while test $# -gt 0; do
+ @ENABLE_STATIC_TRUE@@ENABLE_SHARED_TRUE@    --static-libs)
+ @ENABLE_STATIC_TRUE@@ENABLE_SHARED_FALSE@    --libs|--static-libs)
+ @ENABLE_STATIC_TRUE@      sdl_static_libs=$(echo "@SDL_LIBS@ @SDL_STATIC_LIBS@" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
+-@ENABLE_STATIC_TRUE@      echo -L@libdir@ $sdl_static_libs
++@ENABLE_STATIC_TRUE@      echo -L@libdir@ $sdl_static_libs -lrga
+ @ENABLE_STATIC_TRUE@      ;;
+     *)
+       echo "${usage}" 1>&2
+diff --git a/sdl2.pc.in b/sdl2.pc.in
+index ad1a9574f..d42b5fae2 100644
+--- a/sdl2.pc.in
++++ b/sdl2.pc.in
+@@ -10,5 +10,5 @@ Description: Simple DirectMedia Layer is a cross-platform multimedia library des
+ Version: @SDL_VERSION@
+ Requires:
+ Conflicts:
+-Libs: -L${libdir} @SDL_RLD_FLAGS@ @SDL_LIBS@ @PKGCONFIG_LIBS_PRIV@ @SDL_STATIC_LIBS@
++Libs: -L${libdir} @SDL_RLD_FLAGS@ @SDL_LIBS@ @PKGCONFIG_LIBS_PRIV@ @SDL_STATIC_LIBS@ -lrga
+ Cflags: -I${includedir} -I${includedir}/SDL2 @SDL_CFLAGS@
+-- 
+2.34.1
+

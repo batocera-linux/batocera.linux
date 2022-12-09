@@ -1,0 +1,42 @@
+From fe9382b214ada1d03c2948b2e05472d96778f569 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 24 May 2021 13:10:42 +0200
+Subject: [PATCH 005/122] clk: meson: meson8b: Use CLK_SET_RATE_NO_REPARENT for
+ vclk{,2}_in_sel
+
+Use CLK_SET_RATE_NO_REPARENT for the vclk{,2}_in_sel clocks. The only
+parent which is actually used is vid_pll_final_div. This should be set
+using assigned-clock-parents in the .dts rather than removing some
+"unwanted" clock parents from the clock driver.
+
+Suggested-by: Jerome Brunet <jbrunet@baylibre.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/clk/meson/meson8b.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/meson/meson8b.c b/drivers/clk/meson/meson8b.c
+index a844d35b553a..0f8bd707217a 100644
+--- a/drivers/clk/meson/meson8b.c
++++ b/drivers/clk/meson/meson8b.c
+@@ -1175,7 +1175,7 @@ static struct clk_regmap meson8b_vclk_in_sel = {
+ 		.ops = &clk_regmap_mux_ro_ops,
+ 		.parent_hws = meson8b_vclk_mux_parent_hws,
+ 		.num_parents = ARRAY_SIZE(meson8b_vclk_mux_parent_hws),
+-		.flags = CLK_SET_RATE_PARENT,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
+ 	},
+ };
+ 
+@@ -1358,7 +1358,7 @@ static struct clk_regmap meson8b_vclk2_in_sel = {
+ 		.ops = &clk_regmap_mux_ro_ops,
+ 		.parent_hws = meson8b_vclk_mux_parent_hws,
+ 		.num_parents = ARRAY_SIZE(meson8b_vclk_mux_parent_hws),
+-		.flags = CLK_SET_RATE_PARENT,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
+ 	},
+ };
+ 
+-- 
+2.25.1
+

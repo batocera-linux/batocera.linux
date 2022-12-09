@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits from Oct, 2021
-MANGOHUD_VERSION = v0.6.6-1
+MANGOHUD_VERSION = a8a0a245e69fbbca5263d2436fd1c04289375498
 MANGOHUD_SITE =  $(call github,flightlessmango,MangoHud,$(MANGOHUD_VERSION))
 
 MANGOHUD_DEPENDENCIES = host-libcurl host-python-mako host-glslang
@@ -26,12 +26,6 @@ ifeq ($(BR2_PACKAGE_VULKAN_HEADERS),y)
 	MANGOHUD_CONF_OPTS += -Duse_vulkan=true -Duse_system_vulkan=enabled -Dvulkan_datadir=$(STAGING_DIR)/usr/share
 else
 	MANGOHUD_CONF_OPTS += -Duse_vulkan=false -Duse_system_vulkan=disabled
-endif
-
-ifeq ($(BR2_PACKAGE_LIBDRM_AMDGPU),y)
-	MANGOHUD_CONF_OPTS += -Dwith_libdrm_amdgpu=enabled
-else
-	MANGOHUD_CONF_OPTS += -Dwith_libdrm_amdgpu=disabled
 endif
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)

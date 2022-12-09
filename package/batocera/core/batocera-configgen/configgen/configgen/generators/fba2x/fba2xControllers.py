@@ -58,9 +58,9 @@ def updateControllersConfig(iniConfig, rom, controllers):
 
     # indexes
     for player in range(1, 5):
-        iniConfig.set("Joystick", "SDLID_{}".format(player), "-1")
+        iniConfig.set("Joystick", f"SDLID_{player}", "-1")
     for player in controllers:
-        iniConfig.set("Joystick", "SDLID_{}".format(player), str(controllers[player].index))
+        iniConfig.set("Joystick", f"SDLID_{player}", str(controllers[player].index))
 
     for controller in controllers:
         updateControllerConfig(iniConfig, controller, controllers[controller], is6btn(rom))
@@ -76,26 +76,26 @@ def updateControllerConfig(iniConfig, player, controller, special6=False):
         if dirkey in controller.inputs:
             input = controller.inputs[dirkey]
             if input.type == 'button':
-                iniConfig.set("Joystick", '{}_{}'.format(dirvalue, player), input.id)
+                iniConfig.set("Joystick", f'{dirvalue}_{player}', input.id)
 
     for axis in fbaaxis:
         axisvalue = fbaaxis[axis]
         if axis in controller.inputs:
             input = controller.inputs[axis]
-            iniConfig.set("Joystick", '{}_{}'.format(axisvalue, player), input.id)
+            iniConfig.set("Joystick", f'{axisvalue}_{player}', input.id)
 
     for btnkey in fbaBtns:
         btnvalue = fbaBtns[btnkey]
         if btnkey in controller.inputs:
             input = controller.inputs[btnkey]
-            iniConfig.set("Joystick", '{}_{}'.format(btnvalue, player), input.id)
+            iniConfig.set("Joystick", f'{btnvalue}_{player}', input.id)
 
     if player == '1':
         for btnkey in fbaspecials:
             btnvalue = fbaspecials[btnkey]
             if btnkey in controller.inputs:
                 input = controller.inputs[btnkey]
-                iniConfig.set("Joystick", '{}'.format(btnvalue), input.id)
+                iniConfig.set("Joystick", f'{btnvalue}', input.id)
 
 def is6btn(rom):
     sixBtnGames = ['sfa', 'sfz', 'sf2', 'dstlk', 'hsf2', 'msh', 'mshvsf', 'mvsc', 'nwarr', 'ssf2', 'vsav', 'vhunt', 'xmvsf', 'xmcota']

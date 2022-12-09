@@ -8,6 +8,7 @@ config BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER
 #batocera nvidia dropped x86 support
 	depends on BR2_x86_64
 	depends on BR2_TOOLCHAIN_USES_GLIBC
+	select BR2_PACKAGE_BATOCERA_NVIDIA_LEGACY_DRIVER
 	help
 	  The binary-only driver blob for NVidia cards.
 	  This is the userland part only.

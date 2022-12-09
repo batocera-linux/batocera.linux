@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /batocera/archs/common || exit 1
+cd /batocera/batocera.linux || exit 1
 
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
@@ -41,7 +41,7 @@ do_push() {
 		# pushing beta
 		echo_msg "${arch}" "pushing ${board} on beta*..."
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
-		
+
 		# pushing rc
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/stable/rc/"
@@ -107,6 +107,11 @@ buildAll() {
 	fi
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
+	# cleaning system and splash package for timestamp regeneration
+	if ! rm -rf "output/${arch}/build/batocera-system-"* "output/${arch}/build/batocera-splash-"* 2>/dev/null
+	then
+	    return 1
+	fi
 	echo_msg "${NEXTITEM}" "building..."
 	if make "${NEXTITEM}-build" > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
@@ -224,8 +229,8 @@ case "${1}" in
 	echo "${PROGNAME} log"
 	echo "${PROGNAME} log x86"
 	echo "${PROGNAME} logpkg x86"
-	echo "${PROGNAME} push beta x86 rpi3 rpi1"
-	echo "${PROGNAME} push rc x86 rpi3 rpi1"
+	echo "${PROGNAME} push beta x86 bcm2837 bcm2835"
+	echo "${PROGNAME} push rc x86 bcm2837 bcm2835"
 	echo "${PROGNAME} suspend"
 esac
 

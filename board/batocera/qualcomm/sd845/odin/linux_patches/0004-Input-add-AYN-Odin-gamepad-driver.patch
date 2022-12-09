@@ -1,0 +1,911 @@
+From 6ccf93c7fa566cb2d8ea0370b7067aa3faab79e3 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Fri, 1 Jul 2022 01:34:03 +0700
+Subject: [PATCH 4/5] Input: add AYN Odin gamepad driver
+
+---
+ drivers/input/joystick/Kconfig        |   8 +
+ drivers/input/joystick/Makefile       |   1 +
+ drivers/input/joystick/odin-gamepad.c | 859 ++++++++++++++++++++++++++
+ 3 files changed, 868 insertions(+)
+ create mode 100644 drivers/input/joystick/odin-gamepad.c
+
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 3b23078bc7b5..558db560bd65 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -343,6 +343,14 @@ config JOYSTICK_MAPLE
+ 	  To compile this as a module choose M here: the module will be called
+ 	  maplecontrol.
+ 
++config JOYSTICK_ODIN_GAMEPAD
++	tristate "AYN Odin Gamepad driver"
++	depends on ARCH_QCOM
++	help
++	  Say Y here if you wish to enable AYN Odin internal gamepad unit.
++	  To compile this as a module choose M here: the module will be called
++	  odin-gamepad.
++
+ config JOYSTICK_PSXPAD_SPI
+ 	tristate "PlayStation 1/2 joypads via SPI interface"
+ 	depends on SPI
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 5174b8aba2dd..97918839334c 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -25,6 +25,7 @@ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
+ obj-$(CONFIG_JOYSTICK_MAGELLAN)		+= magellan.o
+ obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
+ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
++obj-$(CONFIG_JOYSTICK_ODIN_GAMEPAD)	+= odin-gamepad.o
+ obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
+ obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
+ obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
+diff --git a/drivers/input/joystick/odin-gamepad.c b/drivers/input/joystick/odin-gamepad.c
+new file mode 100644
+index 000000000000..fd66ee9120fc
+--- /dev/null
++++ b/drivers/input/joystick/odin-gamepad.c
+@@ -0,0 +1,859 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * AYN Odin ADC joysticks and GPIO buttons driver.
++ * Copyright (c) 2022 Teguh Sobirin <teguh@sobir.in>
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/input.h>
++#include <linux/ioport.h>
++#include <linux/platform_device.h>
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
++#include <linux/gpio_keys.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/types.h>
++#include <linux/property.h>
++#include <linux/of_gpio.h>
++#include <linux/delay.h>
++
++#define DRIVER_NAME "odin-gamepad"
++
++enum adc_channel_id {
++	ADC_ABS_X = 0,
++	ADC_ABS_Y,
++	ADC_ABS_RX,
++	ADC_ABS_RY,
++	ADC_ABS_Z,
++	ADC_ABS_RZ,
++	ADC_CHAN_MAX
++};
++
++struct adc {
++	struct iio_channel *channel;
++	int value;
++	int report_type;
++	int max, min;
++	int cal;
++	bool invert;
++};
++
++struct btn {
++	const char *label;
++	int num;
++	int report_type;
++	int linux_code;
++	bool value;
++	bool active_level;
++};
++
++struct gamepad {
++	struct device *dev;
++	struct input_dev *input;
++
++	struct adc *adcs;
++	bool invert_x, invert_y;
++	bool invert_rx, invert_ry;
++	bool invert_z, invert_rz;
++	int adc_fuzz, adc_flat;
++	int adc_x_range, adc_y_range;
++	int adc_rx_range, adc_ry_range;
++	int adc_z_range, adc_rz_range;
++	int adc_deadzone;
++	int adc_count;
++
++	struct btn *btns;
++	int poll_interval;
++	int btn_count;
++	int auto_repeat;
++
++    bool enable;
++	struct mutex lock;
++};
++
++static unsigned int g_adc_x_range = 0;
++static unsigned int g_adc_y_range = 0;
++static unsigned int g_adc_rx_range = 0;
++static unsigned int g_adc_ry_range = 0;
++static unsigned int g_adc_z_range = 0;
++static unsigned int g_adc_rz_range = 0;
++static unsigned int g_adc_fuzz = 0;
++static unsigned int g_adc_flat = 0;
++static unsigned int g_adc_deadzone = 0;
++
++static int __init adcx_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_x_range = simple_strtoul(str, NULL, 10);
++
++	return 0;
++}
++__setup("adc-x-range=", adcx_range_setup);
++
++static int __init adcy_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_y_range = simple_strtoul(str, NULL, 10);
++
++        return 0;
++}
++__setup("adc-y-range=", adcy_range_setup);
++
++static int __init adcrx_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_rx_range = simple_strtoul(str, NULL, 10);
++
++	return 0;
++}
++__setup("adc-rx-range=", adcrx_range_setup);
++
++static int __init adcry_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_ry_range = simple_strtoul(str, NULL, 10);
++
++        return 0;
++}
++__setup("adc-ry-range=", adcry_range_setup);
++
++static int __init adcz_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_z_range = simple_strtoul(str, NULL, 10);
++
++        return 0;
++}
++__setup("adc-z-range=", adcz_range_setup);
++
++static int __init adcrz_range_setup(char *str)
++{
++	if (!str)
++		return -EINVAL;
++
++	g_adc_rz_range = simple_strtoul(str, NULL, 10);
++
++        return 0;
++}
++__setup("adc-rz-range=", adcrz_range_setup);
++
++static int adc_fuzz(char *str)
++{
++	if (!str)
++		return -EINVAL;
++	g_adc_fuzz = simple_strtoul(str, NULL, 10);
++	return 0;
++}
++__setup("adc-fuzz=", adc_fuzz);
++
++static int adc_flat(char *str)
++{
++	if (!str)
++		return -EINVAL;
++	g_adc_flat = simple_strtoul(str, NULL, 10);
++	return 0;
++}
++__setup("adc-flat=", adc_flat);
++
++static int adc_deadzone(char *str)
++{
++	if (!str)
++		return -EINVAL;
++	g_adc_deadzone = simple_strtoul(str, NULL, 10);
++	return 0;
++}
++__setup("adc-deadzone=", adc_deadzone);
++
++static int gamepad_adc_read(struct adc *adc)
++{
++	int ret, value, value_mv;
++
++    ret=iio_read_channel_processed(adc->channel, &value_mv);
++	if (unlikely( ret < 0))
++		return 0;
++
++	value = value_mv / 100;
++
++	return (adc->invert ? (adc->max - value) : value);
++}
++
++static ssize_t gamepad_store_poll_interval(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t count)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	mutex_lock(&gamepad->lock);
++	gamepad->poll_interval = simple_strtoul(buf, NULL, 10);
++	mutex_unlock(&gamepad->lock);
++
++	return count;
++}
++
++static ssize_t gamepad_show_poll_interval(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	return sprintf(buf, "%d\n", gamepad->poll_interval);
++}
++
++static ssize_t gamepad_store_enable(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t count)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	mutex_lock(&gamepad->lock);
++	gamepad->enable = simple_strtoul(buf, NULL, 10);
++	mutex_unlock(&gamepad->lock);
++
++	return count;
++}
++
++static ssize_t gamepad_show_enable(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	return sprintf(buf, "%d\n", gamepad->enable);
++}
++
++static ssize_t gamepad_show_adc_fuzz(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	return sprintf(buf, "%d\n", gamepad->adc_fuzz);
++}
++
++static ssize_t gamepad_show_adc_flat(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++
++	return sprintf(buf, "%d\n", gamepad->adc_flat);
++}
++
++static ssize_t gamepad_store_adc_cal(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t count)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++	bool calibration;
++
++	calibration = simple_strtoul(buf, NULL, 10);
++
++	if (calibration) {
++		int nbtn;
++
++		mutex_lock(&gamepad->lock);
++		for (nbtn = 0; nbtn < gamepad->adc_count; nbtn++) {
++			struct adc *adc = &gamepad->adcs[nbtn];
++
++			adc->cal = gamepad_adc_read(adc);
++			if (!adc->cal) {
++				dev_err(gamepad->dev, "%s : adc channels[%d]!\n",
++					__func__, nbtn);
++				continue;
++			}
++			adc->value = adc->cal;
++		}
++		mutex_unlock(&gamepad->lock);
++	}
++	return count;
++}
++
++static ssize_t gamepad_show_adc_cal(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct platform_device *pdev  = to_platform_device(dev);
++	struct gamepad *gamepad = platform_get_drvdata(pdev);
++	int nbtn;
++	ssize_t pos;
++
++	for (nbtn = 0, pos = 0; nbtn < gamepad->adc_count; nbtn++) {
++		struct adc *adc = &gamepad->adcs[nbtn];
++		pos += sprintf(&buf[pos], "adc[%d]->cal = %d ",
++				nbtn, adc->cal);
++	}
++	pos += sprintf(&buf[pos], "\n");
++	return pos;
++}
++
++static DEVICE_ATTR(poll_interval, S_IWUSR | S_IRUGO,
++	gamepad_show_poll_interval,
++	gamepad_store_poll_interval);
++
++static DEVICE_ATTR(enable, S_IWUSR | S_IRUGO,
++	gamepad_show_enable,
++	gamepad_store_enable);
++
++static DEVICE_ATTR(adc_fuzz, S_IWUSR | S_IRUGO,
++	gamepad_show_adc_fuzz,
++	NULL);
++
++static DEVICE_ATTR(adc_flat, S_IWUSR | S_IRUGO,
++	gamepad_show_adc_flat,
++	NULL);
++
++static DEVICE_ATTR(adc_cal, S_IWUSR | S_IRUGO,
++	gamepad_show_adc_cal,
++	gamepad_store_adc_cal);
++
++static struct attribute *gamepad_attrs[] = {
++	&dev_attr_poll_interval.attr,
++	&dev_attr_adc_fuzz.attr,
++	&dev_attr_adc_flat.attr,
++	&dev_attr_enable.attr,
++	&dev_attr_adc_cal.attr,
++	NULL,
++};
++
++static struct attribute_group gamepad_attr_group = {
++	.attrs = gamepad_attrs,
++};
++
++static void gamepad_get(struct input_dev *input)
++{
++	struct gamepad *gamepad = input_get_drvdata(input);
++	int nbtn, value;
++
++	for (nbtn = 0; nbtn < gamepad->adc_count; nbtn++) {
++		struct adc *adc = &gamepad->adcs[nbtn];
++
++		value = gamepad_adc_read(adc);
++		if (!value) {
++			dev_err(gamepad->dev, "%s : adc channels[%d]!\n",
++				__func__, nbtn);
++			continue;
++		}
++
++		if (gamepad->adc_deadzone) {
++			if ((value < adc->cal + gamepad->adc_deadzone) &&
++			    (value > adc->cal - gamepad->adc_deadzone))
++				value = adc->cal;
++		}
++		value = value - adc->cal;
++		value = value > adc->max ? adc->max : value;
++		value = value < adc->min ? adc->min : value;
++
++		input_report_abs(input, adc->report_type, value);
++		adc->value = value;
++	}
++		
++	for (nbtn = 0; nbtn < gamepad->btn_count; nbtn++) {
++		struct btn *btn = &gamepad->btns[nbtn];
++
++		if (gpio_get_value_cansleep(btn->num) < 0) {
++			dev_err(gamepad->dev, "failed to get gpio state\n");
++			continue;
++		}
++		value = gpio_get_value(btn->num);
++		if (value != btn->value) {
++			input_event(input,
++				btn->report_type,
++				btn->linux_code,
++				(value == btn->active_level) ? 1 : 0);
++			btn->value = value;
++		}
++	}
++	input_sync(input);
++}
++
++static void gamepad_poll(struct input_dev *input)
++{
++	struct gamepad *gamepad = input_get_drvdata(input);
++
++	if (gamepad->enable) {
++		gamepad_get(input);
++	}
++	if (input_get_poll_interval(input) != gamepad->poll_interval) {
++		mutex_lock(&gamepad->lock);
++		input_set_poll_interval(input, gamepad->poll_interval);
++		mutex_unlock(&gamepad->lock);
++	}
++}
++
++static int gamepad_open(struct input_dev *input)
++{
++	struct gamepad *gamepad = input_get_drvdata(input);
++	int nbtn;
++
++	for (nbtn = 0; nbtn < gamepad->adc_count; nbtn++) {
++		struct adc *adc = &gamepad->adcs[nbtn];
++
++		adc->value = gamepad_adc_read(adc);
++		if (!adc->value) {
++			dev_err(gamepad->dev, "%s : adc channels[%d]!\n",
++				__func__, nbtn);
++			continue;
++		}
++		adc->cal = adc->value;
++		dev_info(gamepad->dev, "%s : adc[%d] adc->cal = %d\n",
++			__func__, nbtn, adc->cal);
++	}
++	for (nbtn = 0; nbtn < gamepad->btn_count; nbtn++) {
++		struct btn *btn = &gamepad->btns[nbtn];
++		btn->value = btn->active_level ? 0 : 1;
++	}
++
++	gamepad_get(input);
++
++	mutex_lock(&gamepad->lock);
++	gamepad->enable = true;
++	mutex_unlock(&gamepad->lock);
++
++	dev_info(gamepad->dev, "%s : opened\n", __func__);
++	return	0;
++}
++
++static void gamepad_close(struct input_dev *input)
++{
++	struct gamepad *gamepad = input_get_drvdata(input);
++
++	mutex_lock(&gamepad->lock);
++	gamepad->enable = false;
++	mutex_unlock(&gamepad->lock);
++
++	dev_info(gamepad->dev, "%s : closed\n", __func__);
++}
++
++static int gamepad_adc_setup(struct device *dev, struct gamepad *gamepad)
++{
++	int nbtn = 0;
++
++	gamepad->adcs = devm_kzalloc(dev, gamepad->adc_count *
++				sizeof(struct adc), GFP_KERNEL);
++
++	if (!gamepad->adcs) {
++		dev_err(dev, "%s devm_kzmalloc error!", __func__);
++		return -ENOMEM;
++	}
++
++	for (nbtn = 0; nbtn < gamepad->adc_count; nbtn++) {
++		struct adc *adc = &gamepad->adcs[nbtn];
++		enum iio_chan_type type;
++
++		switch (nbtn) {
++			case ADC_ABS_X:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_x");
++				adc->report_type = ABS_X;
++				if (gamepad->invert_x)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_x_range / 2) - 1;
++				adc->min = -(gamepad->adc_x_range / 2);
++			break;
++			case ADC_ABS_Y:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_y");
++				adc->report_type = ABS_Y;
++				if (gamepad->invert_y)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_y_range / 2) - 1;
++				adc->min = -(gamepad->adc_y_range / 2);
++				break;
++			case ADC_ABS_RX:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_rx");
++				adc->report_type = ABS_RX;
++				if (gamepad->invert_rx)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_rx_range / 2) - 1;
++				adc->min = -(gamepad->adc_rx_range / 2);
++			break;
++			case ADC_ABS_RY:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_ry");
++				adc->report_type = ABS_RY;
++				if (gamepad->invert_ry)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_ry_range / 2) - 1;
++				adc->min = -(gamepad->adc_ry_range / 2);
++				break;
++			case ADC_ABS_Z:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_z");
++				adc->report_type = ABS_Z;
++				if (gamepad->invert_z)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_z_range / 2) - 1;
++				adc->min = -(gamepad->adc_z_range / 2);
++				break;
++			case ADC_ABS_RZ:
++				adc->channel =
++					devm_iio_channel_get(dev, "abs_rz");
++				adc->report_type = ABS_RZ;
++				if (gamepad->invert_rz)
++					adc->invert = true;
++
++				adc->max =  (gamepad->adc_rz_range / 2) - 1;
++				adc->min = -(gamepad->adc_rz_range / 2);
++				break;
++			default:
++				break;
++		}
++
++		if (IS_ERR(adc->channel)) {
++			dev_err(dev, "iio channel[%d] get error\n", nbtn);
++			return -EINVAL;
++		}
++		if (!adc->channel->indio_dev)
++			return -ENXIO;
++
++		if (iio_get_channel_type(adc->channel, &type))
++			return -EINVAL;
++
++		if (type != IIO_VOLTAGE) {
++			dev_err(dev, "Incompatible channel %d type %d\n",
++				nbtn, type);
++			return -EINVAL;
++		}
++	}
++	if (nbtn == 0)
++		return -EINVAL;
++
++	return	0;
++}
++
++static int gamepad_btn_setup(struct device *dev, struct gamepad *gamepad)
++{
++	struct device_node *node, *pp;
++	int nbtn;
++
++	node = dev->of_node;
++	if (!node)
++		return -ENODEV;
++
++	gamepad->btns = devm_kzalloc(dev, gamepad->btn_count *
++				sizeof(struct btn), GFP_KERNEL);
++
++	if (!gamepad->btns) {
++		dev_err(dev, "%s devm_kzmalloc error!", __func__);
++		return -ENOMEM;
++	}
++
++	nbtn = 0;
++	for_each_child_of_node(node, pp) {
++		enum of_gpio_flags flags;
++		struct btn *btn = &gamepad->btns[nbtn++];
++		int error;
++
++		btn->num = of_get_gpio_flags(pp, 0, &flags);
++		if (btn->num < 0) {
++			error = btn->num;
++			dev_err(dev, "Failed to get GPIO flags, error: %d\n",
++				error);
++			return error;
++		}
++
++		btn->active_level = (flags & OF_GPIO_ACTIVE_LOW) ? 0 : 1;
++		btn->label = of_get_property(pp, "label", NULL);
++
++		if (gpio_is_valid(btn->num)) {
++			error = devm_gpio_request_one(dev, btn->num,
++						      GPIOF_IN, btn->label);
++			if (error < 0) {
++				dev_err(dev,
++					"Failed to request GPIO %d, error %d\n",
++					btn->num, error);
++				return error;
++			}
++		}
++
++		if (of_property_read_u32(pp, "linux,code", &btn->linux_code)) {
++			dev_err(dev, "Button without keycode: 0x%x\n",
++				btn->num);
++			return -EINVAL;
++		}
++
++		btn->report_type = EV_KEY;
++	}
++	if (nbtn == 0)
++		return -EINVAL;
++
++	return	0;
++}
++
++static int gamepad_input_setup(struct device *dev, struct gamepad *gamepad)
++{
++	struct input_dev *input;
++	int nbtn, error;
++	u32 gamepad_vendor = 0;
++	u32 gamepad_product = 0;
++	u32 gamepad_revision = 0;
++
++	input = devm_input_allocate_device(dev);
++	if (!input) {
++		dev_err(dev, "failed to allocate input device\n");
++		return -ENOMEM;
++	}
++
++	gamepad->input = input;
++	input_set_drvdata(input, gamepad);
++
++	input->open = gamepad_open;
++	input->close = gamepad_close;
++	input->phys = DRIVER_NAME"/input0";
++
++	device_property_read_string(dev, "gamepad-name", &input->name);
++
++	device_property_read_u32(dev, "gamepad-vendor", &gamepad_vendor);
++	device_property_read_u32(dev, "gamepad-product", &gamepad_product);
++	device_property_read_u32(dev, "gamepad-revision", &gamepad_revision);
++
++	input->id.bustype = BUS_HOST;
++	input->id.vendor  = (u16)gamepad_vendor;
++	input->id.product = (u16)gamepad_product;
++	input->id.version = (u16)gamepad_revision;
++
++	__set_bit(EV_ABS, input->evbit);
++	for(nbtn = 0; nbtn < gamepad->adc_count; nbtn++) {
++		struct adc *adc = &gamepad->adcs[nbtn];
++			input_set_abs_params(input, adc->report_type,
++								adc->min, adc->max,
++								gamepad->adc_fuzz,
++								gamepad->adc_flat);
++		dev_info(dev,
++			"%s : ABS min = %d, max = %d,"
++			" fuzz = %d, flat = %d, deadzone = %d\n",
++			__func__, adc->min, adc->max,
++			gamepad->adc_fuzz, gamepad->adc_flat,
++			gamepad->adc_deadzone);
++	}
++
++	__set_bit(EV_KEY, input->evbit);
++	for(nbtn = 0; nbtn < gamepad->btn_count; nbtn++) {
++		struct btn *btn = &gamepad->btns[nbtn];
++		input_set_capability(input, btn->report_type,
++				btn->linux_code);
++	}
++
++	if (gamepad->auto_repeat)
++		__set_bit(EV_REP, input->evbit);
++
++	gamepad->dev = dev;
++
++	error = input_setup_polling(input, gamepad_poll);
++	if (error) {
++		dev_err(dev, "could not set up polling mode, %d\n", error);
++		return error;
++	}
++
++	input_set_poll_interval(input, gamepad->poll_interval);
++
++	error = input_register_device(input);
++	if (error) {
++		dev_err(dev, "unable to register polled device, err=%d\n",
++			error);
++		return error;
++	}
++	return 0;
++}
++
++static void gamepad_setup_value(struct device *dev, struct gamepad *gamepad)
++{
++	if (g_adc_fuzz)
++		gamepad->adc_fuzz = g_adc_fuzz;
++	else
++		device_property_read_u32(dev, "adc-fuzz",
++					&gamepad->adc_fuzz);
++
++	if (g_adc_flat)
++		gamepad->adc_flat = g_adc_flat;
++	else
++		device_property_read_u32(dev, "adc-flat",
++					&gamepad->adc_flat);
++
++	if (g_adc_deadzone)
++		gamepad->adc_deadzone = g_adc_deadzone;
++	else
++		device_property_read_u32(dev, "adc-deadzone",
++					&gamepad->adc_deadzone);
++
++	if (g_adc_x_range)
++		gamepad->adc_x_range = g_adc_x_range;
++	else
++		device_property_read_u32(dev, "adc-x-range",
++					&gamepad->adc_x_range);
++
++	if (g_adc_y_range)
++		gamepad->adc_y_range = g_adc_y_range;
++	else
++		device_property_read_u32(dev, "adc-y-range",
++					&gamepad->adc_y_range);
++
++	if (g_adc_rx_range)
++		gamepad->adc_rx_range = g_adc_rx_range;
++	else
++		device_property_read_u32(dev, "adc-rx-range",
++					&gamepad->adc_rx_range);
++
++	if (g_adc_ry_range)
++		gamepad->adc_ry_range = g_adc_ry_range;
++	else
++		device_property_read_u32(dev, "adc-ry-range",
++					&gamepad->adc_ry_range);
++
++	if (g_adc_z_range)
++		gamepad->adc_z_range = g_adc_z_range;
++	else
++		device_property_read_u32(dev, "adc-z-range",
++					&gamepad->adc_z_range);
++
++	if (g_adc_rz_range)
++		gamepad->adc_rz_range = g_adc_rz_range;
++	else
++		device_property_read_u32(dev, "adc-rz-range",
++					&gamepad->adc_rz_range);
++}
++
++static int gamepad_parse_dt(struct device *dev, struct gamepad *gamepad)
++{
++	int error = 0;
++
++	gamepad_setup_value(dev, gamepad);
++
++	device_property_read_u32(dev, "poll-interval", &gamepad->poll_interval);
++
++	device_property_read_u32(dev, "adc-count", &gamepad->adc_count);
++
++	gamepad->invert_x = device_property_present(dev, "invert-x");
++	gamepad->invert_y = device_property_present(dev, "invert-y");
++	gamepad->invert_rx = device_property_present(dev, "invert-rx");
++	gamepad->invert_ry = device_property_present(dev, "invert-ry");
++	gamepad->invert_z = device_property_present(dev, "invert-z");
++	gamepad->invert_rz = device_property_present(dev, "invert-rz");
++	dev_info(dev,
++			"%s : invert-x = %d, invert-y = %d, "
++				 "invert-rx = %d, invert-ry = %d, "
++			 	 "invert-z = %d, invert-rz = %d\n",
++		__func__, gamepad->invert_x, gamepad->invert_y,
++				  gamepad->invert_rx, gamepad->invert_ry, 
++				  gamepad->invert_z, gamepad->invert_rz);
++
++	gamepad->btn_count = device_get_child_node_count(dev);
++	gamepad->auto_repeat = device_property_present(dev, "autorepeat");
++
++	if ((gamepad->adc_count == 0) || (gamepad->btn_count == 0)) {
++		dev_err(dev, "adc = %d, btn = %d error!",
++			gamepad->adc_count, gamepad->btn_count);
++		return -EINVAL;
++	}
++
++	error = gamepad_adc_setup(dev, gamepad);
++	if (error)
++		return error;
++
++	error = gamepad_btn_setup(dev, gamepad);
++	if (error)
++		return error;
++
++	dev_info(dev, "%s : adcs cnt = %d btns cnt = %d\n",
++			__func__, gamepad->adc_count, gamepad->btn_count);
++
++	return error;
++}
++
++static int gamepad_probe(struct platform_device *pdev)
++{
++	struct gamepad *gamepad;
++	struct device *dev = &pdev->dev;
++	int error;
++
++	gamepad = devm_kzalloc(dev, sizeof(struct gamepad), GFP_KERNEL);
++	if (!gamepad) {
++		dev_err(dev, "gamepad devm_kzmalloc error!");
++		return -ENOMEM;
++	}
++
++	error = gamepad_parse_dt(dev, gamepad);
++	if (error) {
++		dev_err(dev, "dt parse error!(err = %d)\n", error);
++		return error;
++	}
++
++	mutex_init(&gamepad->lock);
++	platform_set_drvdata(pdev, gamepad);
++
++	error = sysfs_create_group(&pdev->dev.kobj, &gamepad_attr_group);
++	if (error) {
++		dev_err(dev, "create sysfs group fail, error: %d\n",
++			error);
++		return error;
++	}
++
++	error = gamepad_input_setup(dev, gamepad);
++	if (error) {
++		dev_err(dev, "input setup failed!(err = %d)\n", error);
++		return error;
++	}
++	dev_info(dev, "%s : probe success\n", __func__);
++	return 0;
++}
++
++static const struct of_device_id gamepad_of_match[] = {
++	{ .compatible = "odin-gamepad", },
++	{ /* sentinel */ },
++};
++
++MODULE_DEVICE_TABLE(of, gamepad_of_match);
++
++static struct platform_driver gamepad_driver = {
++	.probe = gamepad_probe,
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = of_match_ptr(gamepad_of_match),
++	},
++};
++
++static int __init gamepad_init(void)
++{
++	return platform_driver_register(&gamepad_driver);
++}
++
++static void __exit gamepad_exit(void)
++{
++	platform_driver_unregister(&gamepad_driver);
++}
++
++late_initcall(gamepad_init);
++module_exit(gamepad_exit);
++
++MODULE_DESCRIPTION("AYN Odin ADC joysticks and GPIO buttons driver");
++MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:" DRIVER_NAME);
+-- 
+2.34.1
+

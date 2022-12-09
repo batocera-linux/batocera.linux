@@ -1,0 +1,138 @@
+From 76a96cef5094c695d3623be4d2ecdf2d84a9103e Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Tue, 22 Dec 2020 18:44:16 +0100
+Subject: [PATCH 105/122] ASoC: rt5640: switch to GPIO descriptor to honor the
+ polarity
+
+Use devm_gpiod_request_optional() instead of manually parsing the OF
+GPIO line. This gives a struct gpio_desc which is preferred over raw
+GPIO numbers.
+
+Get rid of the custom GPIO parsing as all of this is done by
+devm_gpiod_get_optional(). This changes the behavior in two places:
+- the polarity which is passed using device-tree is now honored instead
+  of assuming "active high" is correct for all boards
+- debugfs shows the GPIO name as "realtek,ldo1-en" instead of
+  "RT5640 LDO1_EN"
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ sound/soc/codecs/rt5640.c | 50 ++++++++++-----------------------------
+ sound/soc/codecs/rt5640.h |  2 +-
+ 2 files changed, 14 insertions(+), 38 deletions(-)
+
+diff --git a/sound/soc/codecs/rt5640.c b/sound/soc/codecs/rt5640.c
+index cd1db5caabad..65ef0bcbf0dd 100644
+--- a/sound/soc/codecs/rt5640.c
++++ b/sound/soc/codecs/rt5640.c
+@@ -12,11 +12,10 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/pm.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/regmap.h>
+ #include <linux/of.h>
+-#include <linux/of_gpio.h>
+ #include <linux/platform_device.h>
+ #include <linux/spi/spi.h>
+ #include <linux/acpi.h>
+@@ -2636,8 +2635,7 @@ static int rt5640_suspend(struct snd_soc_component *component)
+ 	rt5640_reset(component);
+ 	regcache_cache_only(rt5640->regmap, true);
+ 	regcache_mark_dirty(rt5640->regmap);
+-	if (gpio_is_valid(rt5640->ldo1_en))
+-		gpio_set_value_cansleep(rt5640->ldo1_en, 0);
++	gpiod_set_value_cansleep(rt5640->ldo1_en, 0);
+ 
+ 	return 0;
+ }
+@@ -2646,8 +2644,8 @@ static int rt5640_resume(struct snd_soc_component *component)
+ {
+ 	struct rt5640_priv *rt5640 = snd_soc_component_get_drvdata(component);
+ 
+-	if (gpio_is_valid(rt5640->ldo1_en)) {
+-		gpio_set_value_cansleep(rt5640->ldo1_en, 1);
++	if (rt5640->ldo1_en) {
++		gpiod_set_value_cansleep(rt5640->ldo1_en, 1);
+ 		msleep(400);
+ 	}
+ 
+@@ -2779,22 +2777,6 @@ static const struct acpi_device_id rt5640_acpi_match[] = {
+ MODULE_DEVICE_TABLE(acpi, rt5640_acpi_match);
+ #endif
+ 
+-static int rt5640_parse_dt(struct rt5640_priv *rt5640, struct device_node *np)
+-{
+-	rt5640->ldo1_en = of_get_named_gpio(np, "realtek,ldo1-en-gpios", 0);
+-	/*
+-	 * LDO1_EN is optional (it may be statically tied on the board).
+-	 * -ENOENT means that the property doesn't exist, i.e. there is no
+-	 * GPIO, so is not an error. Any other error code means the property
+-	 * exists, but could not be parsed.
+-	 */
+-	if (!gpio_is_valid(rt5640->ldo1_en) &&
+-			(rt5640->ldo1_en != -ENOENT))
+-		return rt5640->ldo1_en;
+-
+-	return 0;
+-}
+-
+ static int rt5640_i2c_probe(struct i2c_client *i2c,
+ 		    const struct i2c_device_id *id)
+ {
+@@ -2809,12 +2791,13 @@ static int rt5640_i2c_probe(struct i2c_client *i2c,
+ 		return -ENOMEM;
+ 	i2c_set_clientdata(i2c, rt5640);
+ 
+-	if (i2c->dev.of_node) {
+-		ret = rt5640_parse_dt(rt5640, i2c->dev.of_node);
+-		if (ret)
+-			return ret;
+-	} else
+-		rt5640->ldo1_en = -EINVAL;
++	rt5640->ldo1_en = devm_gpiod_get_optional(&i2c->dev, "realtek,ldo1-en",
++						  0);
++	if (IS_ERR(rt5640->ldo1_en)) {
++		ret = PTR_ERR(rt5640->ldo1_en);
++		dev_err(&i2c->dev, "Failed to request LDO1_EN: %d\n", ret);
++		return ret;
++	}
+ 
+ 	rt5640->regmap = devm_regmap_init_i2c(i2c, &rt5640_regmap);
+ 	if (IS_ERR(rt5640->regmap)) {
+@@ -2824,15 +2807,8 @@ static int rt5640_i2c_probe(struct i2c_client *i2c,
+ 		return ret;
+ 	}
+ 
+-	if (gpio_is_valid(rt5640->ldo1_en)) {
+-		ret = devm_gpio_request_one(&i2c->dev, rt5640->ldo1_en,
+-					    GPIOF_OUT_INIT_HIGH,
+-					    "RT5640 LDO1_EN");
+-		if (ret < 0) {
+-			dev_err(&i2c->dev, "Failed to request LDO1_EN %d: %d\n",
+-				rt5640->ldo1_en, ret);
+-			return ret;
+-		}
++	if (rt5640->ldo1_en) {
++		gpiod_set_value_cansleep(rt5640->ldo1_en, 1);
+ 		msleep(400);
+ 	}
+ 
+diff --git a/sound/soc/codecs/rt5640.h b/sound/soc/codecs/rt5640.h
+index 2c28f83e338a..af139f2bd407 100644
+--- a/sound/soc/codecs/rt5640.h
++++ b/sound/soc/codecs/rt5640.h
+@@ -2122,7 +2122,7 @@ struct rt5640_priv {
+ 	struct regmap *regmap;
+ 	struct clk *mclk;
+ 
+-	int ldo1_en; /* GPIO for LDO1_EN */
++	struct gpio_desc *ldo1_en;
+ 	int irq;
+ 	int sysclk;
+ 	int sysclk_src;
+-- 
+2.25.1
+

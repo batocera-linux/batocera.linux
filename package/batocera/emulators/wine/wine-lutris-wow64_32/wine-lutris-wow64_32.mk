@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version.: 7.2
-WINE_LUTRIS_WOW64_32_VERSION = lutris-wine-7.2
+# Version.: 7.2-2
+WINE_LUTRIS_WOW64_32_VERSION = lutris-wine-7.2-2
 WINE_LUTRIS_WOW64_32_SITE = $(call github,lutris,wine,$(WINE_LUTRIS_WOW64_32_VERSION))
 WINE_LUTRIS_WOW64_32_LICENSE = LGPL-2.1+
 WINE_LUTRIS_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-lutris

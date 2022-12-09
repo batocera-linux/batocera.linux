@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index e15473b..cbef6f1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -36,7 +36,7 @@ AC_MSG_CHECKING([for SDL version being 2.0.x])
+ AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+ #include "SDL.h"
+ void blah(){
+-#if !((SDL_MAJOR_VERSION == 2) && (SDL_MINOR_VERSION == 0))
++#if !((SDL_MAJOR_VERSION == 2))
+ #error "Only SDL 2.0 supported"
+ #endif
+ ;

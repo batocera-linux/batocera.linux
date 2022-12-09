@@ -11,14 +11,14 @@ from shutil import copyfile
 
 class SupermodelGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["supermodel", "-fullscreen"]
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
+        commandArray = ["supermodel", "-fullscreen", "-channels=2"]
         
         # legacy3d
-        if system.isOptSet("engine3D") and system.config["engine3D"] == "legacy3d":
-            commandArray.append("-legacy3d")
-        else:
+        if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
             commandArray.append("-new3d")
+        else:
+             commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
         
         # widescreen
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
@@ -59,7 +59,7 @@ class SupermodelGenerator(Generator):
         # config
         configPadsIni(playersControllers, drivingGame)
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
 
 def copy_nvram_files():
     sourceDir = "/usr/share/supermodel/NVRAM"
@@ -93,7 +93,11 @@ def configPadsIni(playersControllers, altControl):
             "axisZ": "l2",
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": "r2"
+            "axisRZ": "r2",
+            "left": "joystick1left",
+            "right": "joystick1right",
+            "up": "joystick1up",
+            "down": "joystick1down"
         }
     else:
         templateFile = "/usr/share/supermodel/Supermodel.ini.template"
@@ -113,13 +117,21 @@ def configPadsIni(playersControllers, altControl):
             "axisZ": None,
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": None
+            "axisRZ": None,
+            "left": "joystick1left",
+            "right": "joystick1right",
+            "up": "joystick1up",
+            "down": "joystick1down"
         }
     targetFile = "/userdata/system/configs/supermodel/Supermodel.ini"
 
     mapping_fallback = {
         "axisX": "left",
-        "axisY": "up"
+        "axisY": "up",
+        "right": "right",
+        "down": "down",
+        "left": "left",
+        "up": "up"
     }
 
     # template
@@ -177,20 +189,43 @@ def transformElement(elt, playersControllers, mapping, mapping_fallback):
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        # check joystick type if it's hat or axis 
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_up = "up"
+        else:
+            key_up = "axisY"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_up, mapping, mapping_fallback)
+        print(mp)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_down = "down"
+        else:
+            key_down = "axisY"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_down, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_left = "left"
+        else:
+            key_left = "axisX"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_left, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
-        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        joy_type = hatOrAxis(playersControllers, matches.group(1))
+        if joy_type == "hat":
+            key_right = "right"
+        else:
+            key_right = "axisX"
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_right, mapping, mapping_fallback)
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
+
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axis" + matches.group(2)])
@@ -216,22 +251,35 @@ def joy2realjoyid(playersControllers, joy):
         return playersControllers[joy].index
     return None
 
+def hatOrAxis(playersControllers, player):
+    #default to axis
+    type = "axis"
+    if (player) in playersControllers:
+        pad = playersControllers[(player)]
+        for button in pad.inputs:
+            input = pad.inputs[button]
+            if input.type == "hat":
+                type = "hat"
+            elif input.type == "axis":
+                type = "axis"
+    return type
+
 def input2input(playersControllers, player, joynum, button, axisside = None):
     if (player) in playersControllers:
         pad = playersControllers[(player)]
         if button in pad.inputs:
             input = pad.inputs[button]
             if input.type == "button":
-                return "JOY{}_BUTTON{}".format(joynum+1, int(input.id)+1)
+                return f"JOY{joynum+1}_BUTTON{int(input.id)+1}"
             elif input.type == "hat":
                 if input.value == "1":
-                    return "JOY{}_UP".format(joynum+1)
+                    return f"JOY{joynum+1}_UP,JOY{joynum+1}_POV1_UP"
                 elif input.value == "2":
-                    return "JOY{}_RIGHT".format(joynum+1)
+                    return f"JOY{joynum+1}_RIGHT,JOY{joynum+1}_POV1_RIGHT"
                 elif input.value == "4":
-                    return "JOY{}_DOWN".format(joynum+1)
+                    return f"JOY{joynum+1}_DOWN,JOY{joynum+1}_POV1_DOWN"
                 elif input.value == "8":
-                    return "JOY{}_LEFT".format(joynum+1)
+                    return f"JOY{joynum+1}_LEFT,JOY{joynum+1}_POV1_LEFT"
             elif input.type == "axis":
                 sidestr = ""
                 if axisside is not None:
@@ -247,16 +295,16 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                             sidestr = "_NEG"
 
                 if button == "joystick1left" or button == "left":
-                    return "JOY{}_XAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_XAXIS{sidestr}"
                 elif button == "joystick1up" or button == "up":
-                    return "JOY{}_YAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_YAXIS{sidestr}"
                 elif button == "joystick2left":
-                    return "JOY{}_RXAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RXAXIS{sidestr}"
                 elif button == "joystick2up":
-                    return "JOY{}_RYAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RYAXIS{sidestr}"
                 elif button == "l2":
-                    return "JOY{}_ZAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_ZAXIS{sidestr}"
                 elif button == "r2":
-                    return "JOY{}_RZAXIS{}".format(joynum+1, sidestr)
+                    return f"JOY{joynum+1}_RZAXIS{sidestr}"
 
     return None

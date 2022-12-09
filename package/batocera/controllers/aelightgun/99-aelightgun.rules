@@ -1,0 +1,3 @@
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Arduino LLC Arduino Micro Mouse", MODE="0666", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-aelightgun-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Arduino LLC Arduino Micro Keyboard", MODE="0666", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-aelightgun-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="AE lightgun", MODE="0666", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1"

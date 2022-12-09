@@ -1,0 +1,110 @@
+From 329100316a84330f35b05b63fa82cac95ce57604 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 11 Apr 2020 23:19:13 +0200
+Subject: [PATCH 006/122] clk: meson: meson8b: Add the vid_pll_lvds_en gate
+ clock
+
+HHI_VID_DIVIDER_CNTL[11] must be enabled for the video clock tree to
+work. This bit is described as "LVDS_CLK_EN". It is not 100% clear where
+this bit has to be placed in the hierarchy. But since the "LVDS_OUT" of
+the HDMI PLL uses it's own set of registers it's more likely that this
+"LVDS_CLK_EN" bit actually enables the input of the "hdmi_pll_lvds_out"
+clock to the "vid_pll_in_sel" tree.
+
+Add a gate definition for this bit (which will not be exported) so that
+the kernel can manage all required bits to enable and disable the video
+clocks.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/clk/meson/meson8b.c | 23 ++++++++++++++++++++++-
+ drivers/clk/meson/meson8b.h |  3 ++-
+ 2 files changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/meson/meson8b.c b/drivers/clk/meson/meson8b.c
+index 0f8bd707217a..9ccffbfe44e5 100644
+--- a/drivers/clk/meson/meson8b.c
++++ b/drivers/clk/meson/meson8b.c
+@@ -1045,6 +1045,23 @@ static struct clk_regmap meson8b_l2_dram_clk_gate = {
+ 	},
+ };
+ 
++/* also called LVDS_CLK_EN */
++static struct clk_regmap meson8b_vid_pll_lvds_en = {
++	.data = &(struct clk_regmap_gate_data){
++		.offset = HHI_VID_DIVIDER_CNTL,
++		.bit_idx = 11,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "vid_pll_lvds_en",
++		.ops = &clk_regmap_gate_ro_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&meson8b_hdmi_pll_lvds_out.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
+ static struct clk_regmap meson8b_vid_pll_in_sel = {
+ 	.data = &(struct clk_regmap_mux_data){
+ 		.offset = HHI_VID_DIVIDER_CNTL,
+@@ -1061,7 +1078,7 @@ static struct clk_regmap meson8b_vid_pll_in_sel = {
+ 		 * Meson8m2: vid2_pll
+ 		 */
+ 		.parent_hws = (const struct clk_hw *[]) {
+-			&meson8b_hdmi_pll_lvds_out.hw
++			&meson8b_vid_pll_lvds_en.hw
+ 		},
+ 		.num_parents = 1,
+ 		.flags = CLK_SET_RATE_PARENT,
+@@ -2905,6 +2922,7 @@ static struct clk_hw_onecell_data meson8_hw_onecell_data = {
+ 		[CLKID_CTS_MCLK_I958_DIV]   = &meson8b_cts_mclk_i958_div.hw,
+ 		[CLKID_CTS_MCLK_I958]	    = &meson8b_cts_mclk_i958.hw,
+ 		[CLKID_CTS_I958]	    = &meson8b_cts_i958.hw,
++		[CLKID_VID_PLL_LVDS_EN]	    = &meson8b_vid_pll_lvds_en.hw,
+ 		[CLK_NR_CLKS]		    = NULL,
+ 	},
+ 	.num = CLK_NR_CLKS,
+@@ -3122,6 +3140,7 @@ static struct clk_hw_onecell_data meson8b_hw_onecell_data = {
+ 		[CLKID_CTS_MCLK_I958_DIV]   = &meson8b_cts_mclk_i958_div.hw,
+ 		[CLKID_CTS_MCLK_I958]	    = &meson8b_cts_mclk_i958.hw,
+ 		[CLKID_CTS_I958]	    = &meson8b_cts_i958.hw,
++		[CLKID_VID_PLL_LVDS_EN]	    = &meson8b_vid_pll_lvds_en.hw,
+ 		[CLK_NR_CLKS]		    = NULL,
+ 	},
+ 	.num = CLK_NR_CLKS,
+@@ -3341,6 +3360,7 @@ static struct clk_hw_onecell_data meson8m2_hw_onecell_data = {
+ 		[CLKID_CTS_MCLK_I958_DIV]   = &meson8b_cts_mclk_i958_div.hw,
+ 		[CLKID_CTS_MCLK_I958]	    = &meson8b_cts_mclk_i958.hw,
+ 		[CLKID_CTS_I958]	    = &meson8b_cts_i958.hw,
++		[CLKID_VID_PLL_LVDS_EN]	    = &meson8b_vid_pll_lvds_en.hw,
+ 		[CLK_NR_CLKS]		    = NULL,
+ 	},
+ 	.num = CLK_NR_CLKS,
+@@ -3539,6 +3559,7 @@ static struct clk_regmap *const meson8b_clk_regmaps[] = {
+ 	&meson8b_cts_mclk_i958_div,
+ 	&meson8b_cts_mclk_i958,
+ 	&meson8b_cts_i958,
++	&meson8b_vid_pll_lvds_en,
+ };
+ 
+ static const struct meson8b_clk_reset_line {
+diff --git a/drivers/clk/meson/meson8b.h b/drivers/clk/meson/meson8b.h
+index b1a5074cf148..954d97cf6c5a 100644
+--- a/drivers/clk/meson/meson8b.h
++++ b/drivers/clk/meson/meson8b.h
+@@ -182,8 +182,9 @@
+ #define CLKID_CTS_MCLK_I958_DIV	211
+ #define CLKID_VCLK_EN		214
+ #define CLKID_VCLK2_EN		215
++#define CLKID_VID_PLL_LVDS_EN	216
+ 
+-#define CLK_NR_CLKS		216
++#define CLK_NR_CLKS		217
+ 
+ /*
+  * include the CLKID and RESETID that have
+-- 
+2.25.1
+

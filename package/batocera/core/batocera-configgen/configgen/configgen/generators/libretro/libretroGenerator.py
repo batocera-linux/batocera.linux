@@ -24,7 +24,43 @@ class LibretroGenerator(Generator):
 
     # Main entry of the module
     # Configure retroarch and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
+        # Fix for the removed MESS/MAMEVirtual cores
+        if system.config['core'] in [ 'mess', 'mamevirtual' ]:
+            system.config['core'] = 'mame'
+
+        # Get the graphics backend first
+        gfxBackend = getGFXBackend(system)
+
+        # Get the shader before writing the config, we may need to disable bezels based on the shader.
+        renderConfig = system.renderconfig
+        altDecoration = videoMode.getAltDecoration(system.name, rom, 'retroarch')
+        gameShader = None
+        shaderBezel = False
+        if altDecoration == "0":
+            if 'shader' in renderConfig:
+                gameShader = renderConfig['shader']
+        else:
+            if ('shader-' + str(altDecoration)) in renderConfig:
+                gameShader = renderConfig['shader-' + str(altDecoration)]
+            else:
+                gameShader = renderConfig['shader']
+        if 'shader' in renderConfig and gameShader != None:
+            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
+                shaderFilename = gameShader + ".slangp"
+            else:
+                shaderFilename = gameShader + ".glslp"
+            eslog.debug("searching shader {}".format(shaderFilename))
+            if os.path.exists("/userdata/shaders/" + shaderFilename):
+                video_shader_dir = "/userdata/shaders"
+                eslog.debug("shader {} found in /userdata/shaders".format(shaderFilename))
+            else:
+                video_shader_dir = "/usr/share/batocera/shaders"
+            video_shader = video_shader_dir + "/" + shaderFilename
+            # If the shader filename contains noBezel, activate Shader Bezel mode.
+            if "noBezel" in video_shader:
+                shaderBezel = True
+
         # Settings batocera default config file if no user defined one
         if not 'configfile' in system.config:
             # Using batocera config file
@@ -39,7 +75,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi', 'mame078plus' ]:
                     lightgun = False
                 else:
                     lightgun = True
@@ -55,10 +91,7 @@ class LibretroGenerator(Generator):
             if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
                 bezel = None
 
-            # Get the graphics backend prior to writing the config
-            gfxBackend = getGFXBackend(system)
-
-            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution, gfxBackend)
+            libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend)
             retroconfig.write()
 
             # duplicate config to mapping files while ra now split in 2 parts
@@ -180,10 +213,21 @@ class LibretroGenerator(Generator):
                 os.chmod(scriptFile, fileStat.st_mode | 0o111)
         # PURE zip games uses the same commandarray of all cores. .pc and .rom  uses owns
         elif system.name == 'dos':
-            romDOSName = os.path.splitext(romName)[0]
             romDOSName, romExtension = os.path.splitext(romName)
-            if romExtension == '.dos' or romExtension == '.pc':
-                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
+            if (romExtension == '.dos' or romExtension == '.pc'):
+                if os.path.exists(os.path.join(rom, romDOSName + ".bat")):
+                    exe = os.path.join(rom, romDOSName + ".bat")
+                elif os.path.exists(os.path.join(rom, "dosbox.bat")):
+                    exe = os.path.join(rom, "dosbox.bat")
+                else:
+                    exe = '/tmp/'+ romDOSName # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
+                    try:
+                        os.remove(exe)
+                    except OSError:
+                        pass
+                    os.symlink(rom, exe)
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
+                dontAppendROM = True
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         # Pico-8 multi-carts (might work only with official Lexaloffe engine right now)
@@ -202,44 +246,22 @@ class LibretroGenerator(Generator):
 
 
         # Custom configs - per core
-        customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
+        customCfg = f"{batoceraFiles.retroarchRoot}/{system.name}.cfg"
         if os.path.isfile(customCfg):
             configToAppend.append(customCfg)
 
         # Custom configs - per game
-        customGameCfg = "{}/{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name, romName)
+        customGameCfg = f"{batoceraFiles.retroarchRoot}/{system.name}/{romName}.cfg"
         if os.path.isfile(customGameCfg):
             configToAppend.append(customGameCfg)
 
         # Overlay management
-        overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
+        overlayFile = f"{batoceraFiles.OVERLAYS}/{system.name}/{romName}.cfg"
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
 
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
-        renderConfig = system.renderconfig
-        gameSpecial = videoMode.getGameSpecial(system.name, rom)
-        gameShader = None
-        if gameSpecial == "0":
-            if 'shader' in renderConfig:
-                gameShader = renderConfig['shader']
-        else:
-            if ('shader-' + str(gameSpecial)) in renderConfig:
-                gameShader = renderConfig['shader-' + str(gameSpecial)]
-            else:
-                gameShader = renderConfig['shader']
         if 'shader' in renderConfig and gameShader != None:
-            if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
-                shaderFilename = gameShader + ".slangp"
-            else:
-                shaderFilename = gameShader + ".glslp"
-            eslog.debug("searching shader {}".format(shaderFilename))
-            if os.path.exists("/userdata/shaders/" + shaderFilename):
-                video_shader_dir = "/userdata/shaders"
-                eslog.debug("shader {} found in /userdata/shaders".format(shaderFilename))
-            else:
-                video_shader_dir = "/usr/share/batocera/shaders"
-            video_shader = video_shader_dir + "/" + shaderFilename
             commandArray.extend(["--set-shader", video_shader])
 
         # Generate the append
@@ -269,9 +291,13 @@ class LibretroGenerator(Generator):
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
         # Use command line instead of ROM file for MAME variants
-        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+        if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
-            commandArray.append("/var/run/lr-mame.cmd")
+            if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
+                corePath = 'lr-' + system.config['core']
+            else:
+                corePath = system.config['core']
+            commandArray.append(f'/var/run/cmdfiles/{os.path.splitext(os.path.basename(rom))[0]}.cmd')
 
         if dontAppendROM == False:
             commandArray.append(rom)
@@ -286,7 +312,8 @@ def getGFXBackend(system):
             setManually = True
         else:
             setManually = False
-            if videoMode.getGLVersion() >= 3.1 and videoMode.getGLVendor() in ["nvidia", "amd"]:
+            # glvendor check first, to avoid a 2nd testing on intel boards
+            if videoMode.getGLVendor() in ["nvidia", "amd"] and videoMode.getGLVersion() >= 3.1:
                 backend = "glcore"
             else:
                 backend = "gl"

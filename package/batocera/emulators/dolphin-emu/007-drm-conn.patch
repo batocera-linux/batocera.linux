@@ -10,7 +10,7 @@ index 55efc47..b96768f 100644
  
    /* Enumerate all connectors. */
  
-   INFO_LOG(VIDEO, "[DRM]: Found %d connectors.\n", drm->drm_resources->count_connectors);
+   INFO_LOG_FMT(VIDEO, "[DRM]: Found {} connectors.\n", drm->drm_resources->count_connectors);
  
 +  // batocera
 +  {

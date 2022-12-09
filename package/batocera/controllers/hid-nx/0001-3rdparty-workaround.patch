@@ -1,0 +1,14 @@
+diff --git a/hid-nx.c b/hid-nx.c
+index 0010fb8882..8069f41fd7 100644
+--- a/hid-nx.c
++++ b/hid-nx.c
+@@ -2570,8 +2570,7 @@ static int nx_hid_probe(struct hid_device *hdev,
+ 		goto err_mutex;
+ 
+ 	if ((ret = nx_con_set_report_mode(con))) {
+-		hid_err(hdev, "Failed to set report mode; ret=%d\n", ret);
+-		goto err_mutex;
++		hid_warn(hdev, "Failed to set report mode, ignoring; ret=%d\n", ret);
+ 	}
+ 
+ 	/* needed for `con->type` */

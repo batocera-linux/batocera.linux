@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# joycond is a service that pairs Nintendo Switch joy-cons together into a virtual controller
+
+#########
+# USAGE #
+#########
+
+# Joycons #
+# ======= #
+
+# With the joy-cons, to use a single contoller alone:
+# Once paired via bluetooth you will have the four indicator lights flashing.
+# Hold ZL and L at the same time (ZR and R for the right joy-con).
+# Alternatively, hold both S triggers at once (when held horizontally).
+
+# To combine two joy-cons into a virtual input device:
+# Ensure both joycons are on & all four indicator lights are flashing on both joycons. 
+# Press a *single* trigger (L2 & R2 or ZL & ZR) on both of them at the same time.
+# A new input device will be created called "Nintendo Switch Combined Joy-Cons".
+
+# Note: When using a virtual combined controller, Batocera will see three controllers (Left, Right & Virtual)
+#       You may need to manually assign the controller number in EmulationStation for emulator compatibility.
+
+if test "$1" = "start"
+then
+    # joycond: force daemon to start if not already started
+    if [$(pgrep joycond) == ""]; then
+        # ensure module ledtrig-timer is loaded
+        modprobe ledtrig-timer
+        nohup /usr/bin/joycond &
+    fi
+fi

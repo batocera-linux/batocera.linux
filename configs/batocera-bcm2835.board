@@ -1,0 +1,46 @@
+include batocera-board.common
+
+# Target definiton
+BR2_arm=y
+BR2_arm1176jzf_s=y
+BR2_ARM_EABIHF=y
+BR2_PACKAGE_BATOCERA_TARGET_BCM2835=y
+
+# Toolchain definition
+BR2_GCC_VERSION_12_X=y
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=arm1176jzf-s -mtune=arm1176jzf-s"
+#BR2_TARGET_GENERIC_GETTY_PORT="tty1"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2835/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2835/fsoverlay"
+BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
+
+# Linux headers same as kernel, a 5.15 series
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_15=y
+
+# Kernel - Version: 5.15.61
+BR2_LINUX_KERNEL=y
+BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,1.20220830)/1.20220830.tar.gz"
+BR2_LINUX_KERNEL_DEFCONFIG="bcmrpi"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/linux_patches"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
+
+# Build the DTB from the kernel sources
+BR2_LINUX_KERNEL_DTS_SUPPORT=y
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="bcm2708-rpi-b bcm2708-rpi-b-plus bcm2708-rpi-cm bcm2708-rpi-zero bcm2708-rpi-zero-w"
+
+# # rpi firmware
+BR2_PACKAGE_RPI_FIRMWARE=y
+BR2_PACKAGE_RPI_FIRMWARE_BOOTCODE_BIN=y
+BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI=y
+
+# gpu
+BR2_PACKAGE_BATOCERA_RPI_VCORE=y
+
+# batocera splash screen
+BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER=y
+
+# Batocera system
+BR2_PACKAGE_BATOCERA_KODI19=n

@@ -1,0 +1,20 @@
+diff --git a/Makefile b/Makefile.new
+index 57c13e9a67..db3870f20d 100644
+--- a/Makefile
++++ b/Makefile.new
+@@ -19,11 +19,11 @@ export SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
+ 
+ CPPFLAGS = -MD -MT $@ -MF $(@:%.o=%.d) $(SDL_CFLAGS) -Iexternal/libguisan/include -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers -Isrc/floppybridge -DAMIBERRY -D_FILE_OFFSET_BITS=64
+ CFLAGS=-pipe -Wno-shift-overflow -Wno-narrowing
+-USE_LD ?= gold
++#USE_LD ?= gold
+ LDFLAGS = $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/lib
+-ifneq ($(strip $(USE_LD)),)
+-	LDFLAGS += -fuse-ld=$(USE_LD)
+-endif
++#ifneq ($(strip $(USE_LD)),)
++#	LDFLAGS += -fuse-ld=$(USE_LD)
++#endif
+ LDFLAGS += -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -lpthread -lz -lpng -lrt -lFLAC -lmpg123 -ldl -lmpeg2convert -lmpeg2 -lstdc++fs
+ 
+ # Use libgpiod to control GPIO LEDs?

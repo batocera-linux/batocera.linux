@@ -1,0 +1,13 @@
+diff --git a/src/Glide64/Main.cpp b/src/Glide64/Main.cpp
+index 40dfe2c..1370110 100644
+--- a/src/Glide64/Main.cpp
++++ b/src/Glide64/Main.cpp
+@@ -2336,7 +2336,7 @@ void newSwapBuffers()
+         }
+         hotkey_info.hk_filtering--;
+       }
+-      output (120.0f, (float)settings.res_y, 0, "%s", message);
++      //output (120.0f, (float)settings.res_y, 0, "%s", message);
+     }
+   }
+ 

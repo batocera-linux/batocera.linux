@@ -4,8 +4,9 @@ import batoceraFiles
 import os
 from Emulator import Emulator
 import configparser
+import controllersConfig
 
-def setViceConfig(viceConfigFile, system):
+def setViceConfig(viceConfigFile, system, guns, rom):
     
     # Path
     viceController = viceConfigFile + "/sdl-joymap.vjm"
@@ -51,6 +52,14 @@ def setViceConfig(viceConfigFile, system):
     viceConfig.set(systemCore, "VICIIFullscreen",        "1")
     viceConfig.set(systemCore, "VICIISDLFullscreenMode", "0")
     viceConfig.set(systemCore, "WarpMode",               "0")
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+        if "gun" in gunsmetadata and gunsmetadata["gun"] == "stack_light_rifle":
+            viceConfig.set(systemCore, "JoyPort1Device",             "15")
+        else:
+            viceConfig.set(systemCore, "JoyPort1Device",             "14")
+    else:
+        viceConfig.set(systemCore, "JoyPort1Device",             "1")
     viceConfig.set(systemCore, "JoyDevice1",             "4")
     viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  viceController)

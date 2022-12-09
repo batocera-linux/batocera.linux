@@ -7,7 +7,7 @@ import controllersConfig
 
 class SamcoupeGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["simcoupe", "autoboot", "-disk1", rom]
         return Command.Command(
             array=commandArray,

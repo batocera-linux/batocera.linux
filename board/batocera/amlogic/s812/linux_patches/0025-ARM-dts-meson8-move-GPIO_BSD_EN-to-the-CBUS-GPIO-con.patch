@@ -1,0 +1,39 @@
+From c825f05f4e811dc556c92130e47dd37644c0ce7b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Tue, 22 Dec 2020 14:37:42 +0100
+Subject: [PATCH 025/122] ARM: dts: meson8: move GPIO_BSD_EN to the CBUS GPIO
+ controller
+
+The GPIO_BSD_EN pin is configured through the CBUS GPIO controller and
+update the gpio-ranges accordingly.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+index 3aee8a5a3901..343c599192b8 100644
+--- a/arch/arm/boot/dts/meson8.dtsi
++++ b/arch/arm/boot/dts/meson8.dtsi
+@@ -360,7 +360,7 @@ gpio_ao: ao-bank@14 {
+ 			reg-names = "mux", "pull", "gpio";
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&pinctrl_aobus 0 0 16>;
++			gpio-ranges = <&pinctrl_aobus 0 0 15>;
+ 		};
+ 
+ 		i2s_am_clk_pins: i2s-am-clk-out {
+@@ -476,7 +476,7 @@ gpio: banks@80b0 {
+ 			reg-names = "mux", "pull", "pull-enable", "gpio";
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&pinctrl_cbus 0 0 120>;
++			gpio-ranges = <&pinctrl_cbus 0 0 121>;
+ 		};
+ 
+ 		pwm_c_dv9_pins: pwm-c-dv9 {
+-- 
+2.25.1
+

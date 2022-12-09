@@ -53,9 +53,13 @@ def generateControllerConfig(viceConfigFile, playersControllers):
             listVice.append("0 2 2 1 1 4")
             # hat 1 up
             listVice.append("0 2 3 1 1 8")
-            
-        for indexName, indexValue in viceJoystick.items():
-            listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
+        
+        # more logic for controllers with fewer configured buttons
+        for x in pad.inputs:
+            input = pad.inputs[x]
+            for indexName, indexValue in viceJoystick.items():
+                if indexName == input.name:
+                    listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
         nplayer += 1
 
     f = open(viceFile, 'w')

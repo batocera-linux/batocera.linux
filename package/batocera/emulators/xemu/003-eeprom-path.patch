@@ -1,14 +1,14 @@
-diff --git a/ui/xemu-settings.c b/ui/xemu-settings.c
-index 6fe65ab..f459e90 100644
---- a/ui/xemu-settings.c
-+++ b/ui/xemu-settings.c
-@@ -255,6 +255,9 @@ const char *xemu_settings_get_path(void)
+diff --git a/ui/xemu-settings.cc b/ui/xemu-settings.cc
+index ae380fb..3962ed1 100644
+--- a/ui/xemu-settings.cc
++++ b/ui/xemu-settings.cc
+@@ -88,6 +88,9 @@ const char *xemu_settings_get_path(void)
  const char *xemu_settings_get_default_eeprom_path(void)
  {
- 	static char *eeprom_path = NULL;
+     static char *eeprom_path = NULL;
 +
 +        return "/userdata/saves/xbox/xemu_eeprom.bin";
 +
- 	if (eeprom_path != NULL) {
- 		return eeprom_path;
- 	}
+     if (eeprom_path != NULL) {
+         return eeprom_path;
+     }

@@ -1,0 +1,4 @@
+LINUX=/boot/linux
+INITRD=/boot/initrd.gz
+FDT=/boot/meson-g12b-gtking.dtb
+APPEND=label=BATOCERA rootwait quiet loglevel=0 console=ttyAML0,115200n8 console=tty3 vt.global_cursor_default=0 video=Composite-1:d

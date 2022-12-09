@@ -1,8 +1,7 @@
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
-index 4eaec446b49d..0e6832a8c487 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
-@@ -88,9 +88,9 @@ static void amdgpu_pll_get_fb_ref_div(struct amdgpu_device *adev, unsigned int n
+diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c linux-6.0_15kHz/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+--- linux-6.0_stock/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c	1970-01-01 01:00:00.000000000 +0100
+@@ -89,9 +89,9 @@
  
  	/* limit reference * post divider to a maximum */
  	if (adev->family == AMDGPU_FAMILY_SI)

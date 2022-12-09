@@ -1,0 +1,41 @@
+From fe904040e1b9e69ef8d2b1067fa5bcedd8e5e0f9 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 4 Jul 2020 21:04:29 +0200
+Subject: [PATCH 087/122] usb: dwc2: register child (USB connector) devices
+
+Populate the child devices/nodes of the dwc2 controller. Typically these
+are USB connectors with a compatible string (and additional properties)
+like "gpio-usb-b-connector".
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/usb/dwc2/platform.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/usb/dwc2/platform.c b/drivers/usb/dwc2/platform.c
+index c8f18f3ba9e3..ccfd914271e7 100644
+--- a/drivers/usb/dwc2/platform.c
++++ b/drivers/usb/dwc2/platform.c
+@@ -639,6 +639,19 @@ static int dwc2_driver_probe(struct platform_device *dev)
+ 		}
+ 	}
+ #endif /* CONFIG_USB_DWC2_PERIPHERAL || CONFIG_USB_DWC2_DUAL_ROLE */
++
++	retval = devm_of_platform_populate(&dev->dev);
++	if (retval) {
++		dev_err(hsotg->dev,
++			"Failed to create child devices/connectors for %p\n",
++			dev->dev.of_node);
++
++		if (hsotg->gadget_enabled)
++			dwc2_hsotg_remove(hsotg);
++
++		goto error_debugfs;
++	}
++
+ 	return 0;
+ 
+ #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
+-- 
+2.25.1
+

@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 65ff559..7f70a00 100644
+--- a/meson.build
++++ b/meson.build
+@@ -4,7 +4,7 @@ project(
+ 	version: '1.4.0',
+ 	license: 'MIT',
+ 	meson_version: '>=0.59.0',
+-	default_options: ['c_std=c11', 'warning_level=3', 'werror=true'],
++	default_options: ['c_std=c11', 'warning_level=3', 'werror=false'],
+ )
+ 
+ add_project_arguments('-Wno-unused-parameter', language: 'c')

@@ -1,0 +1,111 @@
+From 623876d8a07a7e4bf3562fa091e5525eb16ae808 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 16 May 2021 19:48:54 +0200
+Subject: [PATCH 018/122] soc: amlogic: meson-mx-socinfo: Add support for the
+ TrustZone firmware
+
+When the TrustZone firmware is enabled the SoC is configured so the boot
+ROM cannot be read from the (untrusted) Linux kernel. Instead a firmware
+call needs to be used to get the SoC's "misc" version.
+Add support for the firmware call to retrieve the SoC's misc version if
+the TrustZone firmware is loaded.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/mach-meson/firmware.c         |  5 +++++
+ drivers/soc/amlogic/meson-mx-socinfo.c | 23 +++++++++++++++--------
+ 2 files changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/mach-meson/firmware.c b/arch/arm/mach-meson/firmware.c
+index 35b21bd40cd7..30bbd62d5c49 100644
+--- a/arch/arm/mach-meson/firmware.c
++++ b/arch/arm/mach-meson/firmware.c
+@@ -141,12 +141,14 @@ bool meson_mx_trustzone_firmware_available(void)
+ {
+ 	return meson_has_secure_firmware;
+ }
++EXPORT_SYMBOL_GPL(meson_mx_trustzone_firmware_available);
+ 
+ int meson_mx_trustzone_firmware_auxcoreboot_addr(unsigned int cpu, unsigned int addr)
+ {
+ 	return meson_mx_trustzone_firmware_mon(MESON_TRUSTZONE_MON_CORE_BOOTADDR_INDEX,
+ 					       cpu, addr);
+ }
++EXPORT_SYMBOL_GPL(meson_mx_trustzone_firmware_auxcoreboot_addr);
+ 
+ int meson_mx_trustzone_firmware_modify_corectrl(unsigned int cpu, bool power_on)
+ {
+@@ -167,6 +169,7 @@ int meson_mx_trustzone_firmware_modify_corectrl(unsigned int cpu, bool power_on)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(meson_mx_trustzone_firmware_modify_corectrl);
+ 
+ int meson_mx_trustzone_firmware_efuse_read(unsigned int offset,
+ 					   unsigned int bytes, void *buf)
+@@ -191,12 +194,14 @@ int meson_mx_trustzone_firmware_efuse_read(unsigned int offset,
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(meson_mx_trustzone_firmware_efuse_read);
+ 
+ unsigned int meson_mx_trustzone_read_soc_rev1(void)
+ {
+ 	return meson_mx_trustzone_firmware_mon(MESON_TRUSTZONE_MON_CORE_RD_SOC_REV1,
+ 					       0, 0);
+ }
++EXPORT_SYMBOL_GPL(meson_mx_trustzone_read_soc_rev1);
+ 
+ void __init meson_mx_trustzone_firmware_init(void)
+ {
+diff --git a/drivers/soc/amlogic/meson-mx-socinfo.c b/drivers/soc/amlogic/meson-mx-socinfo.c
+index 78f0f1aeca57..3f63af320d1d 100644
+--- a/drivers/soc/amlogic/meson-mx-socinfo.c
++++ b/drivers/soc/amlogic/meson-mx-socinfo.c
+@@ -4,6 +4,7 @@
+  * SPDX-License-Identifier: GPL-2.0+
+  */
+ 
++#include <linux/firmware/meson/meson_mx_trustzone.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -118,10 +119,12 @@ static int __init meson_mx_socinfo_init(void)
+ 	if (IS_ERR(assist_regmap))
+ 		return PTR_ERR(assist_regmap);
+ 
+-	bootrom_regmap =
+-		syscon_regmap_lookup_by_compatible("amlogic,meson-mx-bootrom");
+-	if (IS_ERR(bootrom_regmap))
+-		return PTR_ERR(bootrom_regmap);
++	if (!meson_mx_trustzone_firmware_available()) {
++		bootrom_regmap =
++			syscon_regmap_lookup_by_compatible("amlogic,meson-mx-bootrom");
++		if (IS_ERR(bootrom_regmap))
++			return PTR_ERR(bootrom_regmap);
++	}
+ 
+ 	np = of_find_matching_node(NULL, meson_mx_socinfo_analog_top_ids);
+ 	if (np) {
+@@ -140,10 +143,14 @@ static int __init meson_mx_socinfo_init(void)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = regmap_read(bootrom_regmap, MESON_MX_BOOTROM_MISC_VER,
+-			  &misc_ver);
+-	if (ret < 0)
+-		return ret;
++	if (meson_mx_trustzone_firmware_available()) {
++		misc_ver = meson_mx_trustzone_read_soc_rev1();
++	} else {
++		ret = regmap_read(bootrom_regmap, MESON_MX_BOOTROM_MISC_VER,
++				  &misc_ver);
++		if (ret < 0)
++			return ret;
++	}
+ 
+ 	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
+ 	if (!soc_dev_attr)
+-- 
+2.25.1
+

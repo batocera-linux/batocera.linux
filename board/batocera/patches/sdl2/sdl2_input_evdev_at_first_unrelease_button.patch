@@ -1,17 +1,17 @@
 diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
-index 3a0f44f..7f5933f 100644
+index cfb8353..832bcd7 100644
 --- a/src/joystick/SDL_joystick.c
 +++ b/src/joystick/SDL_joystick.c
-@@ -28,6 +28,8 @@
+@@ -27,6 +27,8 @@
+ #include "SDL_events.h"
  #include "SDL_sysjoystick.h"
- #include "SDL_assert.h"
  #include "SDL_hints.h"
 +#include <sys/stat.h>
 +#include <sys/types.h>
+ #include "../SDL_hints_c.h"
  
  #if !SDL_EVENTS_DISABLED
- #include "../events/SDL_events_c.h"
-@@ -86,6 +88,70 @@ static SDL_atomic_t SDL_next_joystick_instance_id;
+@@ -114,6 +116,70 @@ static SDL_atomic_t SDL_next_joystick_instance_id;
  static int SDL_joystick_player_count = 0;
  static SDL_JoystickID *SDL_joystick_players = NULL;
  
@@ -82,9 +82,9 @@ index 3a0f44f..7f5933f 100644
  void
  SDL_LockJoysticks(void)
  {
-@@ -411,6 +477,9 @@ SDL_JoystickOpen(int device_index)
-     joystick->attached = SDL_TRUE;
+@@ -450,6 +516,9 @@ SDL_JoystickOpen(int device_index)
      joystick->epowerlevel = SDL_JOYSTICK_POWER_UNKNOWN;
+     joystick->led_expiration = SDL_GetTicks();
  
 +    joystick->initial_state_is_valid = SDL_FALSE;
 +    joystick->initial_state_initialized = SDL_FALSE;
@@ -92,7 +92,7 @@ index 3a0f44f..7f5933f 100644
      if (driver->Open(joystick, device_index) < 0) {
          SDL_free(joystick);
          SDL_UnlockJoysticks();
-@@ -457,6 +526,8 @@ SDL_JoystickOpen(int device_index)
+@@ -503,6 +572,8 @@ SDL_JoystickOpen(int device_index)
          }
      }
  
@@ -101,7 +101,7 @@ index 3a0f44f..7f5933f 100644
      joystick->is_game_controller = SDL_IsGameController(device_index);
  
      /* Add joystick to list */
-@@ -1025,6 +1096,11 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
+@@ -1464,6 +1535,11 @@ SDL_PrivateJoystickAxis(SDL_Joystick *joystick, Uint8 axis, Sint16 value)
      int posted;
      SDL_JoystickAxisInfo *info;
  
@@ -113,7 +113,7 @@ index 3a0f44f..7f5933f 100644
      /* Make sure we're not getting garbage or duplicate events */
      if (axis >= joystick->naxes) {
          return 0;
-@@ -1116,6 +1192,14 @@ SDL_PrivateJoystickHat(SDL_Joystick * joystick, Uint8 hat, Uint8 value)
+@@ -1556,6 +1632,14 @@ SDL_PrivateJoystickHat(SDL_Joystick *joystick, Uint8 hat, Uint8 value)
          event.jhat.which = joystick->instance_id;
          event.jhat.hat = hat;
          event.jhat.value = value;
@@ -128,7 +128,7 @@ index 3a0f44f..7f5933f 100644
          posted = SDL_PushEvent(&event) == 1;
      }
  #endif /* !SDL_EVENTS_DISABLED */
-@@ -1170,6 +1254,12 @@ SDL_PrivateJoystickButton(SDL_Joystick * joystick, Uint8 button, Uint8 state)
+@@ -1610,6 +1694,12 @@ SDL_PrivateJoystickButton(SDL_Joystick *joystick, Uint8 button, Uint8 state)
          event.type = SDL_JOYBUTTONDOWN;
          break;
      case SDL_RELEASED:
@@ -142,10 +142,10 @@ index 3a0f44f..7f5933f 100644
          break;
      default:
 diff --git a/src/joystick/SDL_sysjoystick.h b/src/joystick/SDL_sysjoystick.h
-index d791dd0..9d44958 100644
+index d673ddd..9c7da51 100644
 --- a/src/joystick/SDL_sysjoystick.h
 +++ b/src/joystick/SDL_sysjoystick.h
-@@ -75,6 +75,9 @@ struct _SDL_Joystick
+@@ -121,6 +121,9 @@ struct _SDL_Joystick
  
      int ref_count;              /* Reference count for multiple opens */
  
@@ -156,15 +156,15 @@ index d791dd0..9d44958 100644
  };
  
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index b88d3d4..3d27dce 100644
+index 134fa72..0c7f787 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -977,7 +977,7 @@ HandleInputEvents(SDL_Joystick * joystick)
-     int i, len;
-     int code;
+@@ -1482,7 +1482,7 @@ HandleInputEvents(SDL_Joystick *joystick)
+     struct input_event events[32];
+     int i, len, code, hat_index;
  
 -    if (joystick->hwdata->fresh) {
 +    if (joystick->hwdata->fresh || (joystick->initial_state_is_valid == SDL_TRUE && joystick->initial_state_initialized == SDL_FALSE)) {
          PollAllValues(joystick);
-         joystick->hwdata->fresh = 0;
+         joystick->hwdata->fresh = SDL_FALSE;
      }

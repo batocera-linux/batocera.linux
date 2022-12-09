@@ -1,0 +1,230 @@
+diff --git a/configuration.c b/configuration.c
+index 90e4bf0..5f5e6a0 100644
+--- a/configuration.c
++++ b/configuration.c
+@@ -4352,12 +4352,33 @@ static void save_keybind_mbutton(config_file_t *conf,
+       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
+          config_set_uint64(conf, key, 3);
+          break;
+-      case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
+          config_set_uint64(conf, key, 4);
+          break;
+-      case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
+          config_set_uint64(conf, key, 5);
+          break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
++         config_set_uint64(conf, key, 6);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
++         config_set_uint64(conf, key, 7);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
++         config_set_uint64(conf, key, 8);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
++         config_set_uint64(conf, key, 9);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
++         config_set_uint64(conf, key, 10);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
++         config_set_uint64(conf, key, 11);
++         break;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
++         config_set_uint64(conf, key, 12);
++         break;
+       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
+          config_set_string(conf, key, "wu");
+          break;
+@@ -5680,11 +5701,32 @@ void input_config_parse_mouse_button(
+                bind->mbutton = RETRO_DEVICE_ID_MOUSE_MIDDLE;
+                break;
+             case 4:
+-               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_4;
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_1;
+                break;
+             case 5:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_2;
++               break;
++            case 6:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_3;
++               break;
++            case 7:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_4;
++               break;
++            case 8:
+                bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_5;
+                break;
++            case 9:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_6;
++               break;
++            case 10:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_7;
++               break;
++            case 11:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_8;
++               break;
++            case 12:
++               bind->mbutton = RETRO_DEVICE_ID_MOUSE_BUTTON_9;
++               break;
+          }
+       }
+    }
+diff --git a/input/drivers/udev_input.c b/input/drivers/udev_input.c
+index 334a844..c2a967a 100644
+--- a/input/drivers/udev_input.c
++++ b/input/drivers/udev_input.c
+@@ -117,7 +117,7 @@ typedef struct
+    int32_t x_min, y_min;
+    int32_t x_max, y_max;
+    int32_t x_rel, y_rel;
+-   bool l, r, m, b4, b5;
++   bool l, r, m, b1, b2, b3, b4, b5, b6, b7, b8, b9;
+    bool wu, wd, whu, whd;
+    bool pp;
+    int32_t abs;
+@@ -487,6 +487,34 @@ static void udev_handle_mouse(void *data,
+             case BTN_TOUCH:
+                mouse->pp = event->value;
+                break;
++	    case BTN_1:
++               mouse->b1 = event->value;
++               break;
++	    case BTN_2:
++               mouse->b2 = event->value;
++               break;
++	    case BTN_3:
++               mouse->b3 = event->value;
++               break;
++	    case BTN_4:
++               mouse->b4 = event->value;
++               break;
++	    case BTN_5:
++               mouse->b5 = event->value;
++               break;
++	    case BTN_6:
++               mouse->b6 = event->value;
++               break;
++	    case BTN_7:
++               mouse->b7 = event->value;
++               break;
++	    case BTN_8:
++               mouse->b8 = event->value;
++               break;
++	    case BTN_9:
++               mouse->b9 = event->value;
++               break;
++	       
+             /*case BTN_??:
+                mouse->b4 = event->value;
+                break;*/
+@@ -1002,10 +1030,24 @@ static int16_t udev_mouse_state(udev_input_t *udev,
+          return mouse->r;
+       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
+          return mouse->m;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
++         return mouse->b1;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
++         return mouse->b2;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
++         return mouse->b3;
+       case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
+          return mouse->b4;
+       case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
+          return mouse->b5;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
++         return mouse->b6;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
++         return mouse->b7;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
++         return mouse->b8;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
++         return mouse->b9;
+       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
+          return mouse->wu;
+       case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
+@@ -1041,10 +1083,24 @@ static bool udev_mouse_button_pressed(
+          return mouse->r;
+       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
+          return mouse->m;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
++         return mouse->b1;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
++         return mouse->b2;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
++         return mouse->b3;
+       case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
+          return mouse->b4;
+       case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
+          return mouse->b5;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
++         return mouse->b6;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
++         return mouse->b7;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
++         return mouse->b8;
++      case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
++         return mouse->b9;
+       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
+          return mouse->wu;
+       case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
+diff --git a/libretro-common/include/libretro.h b/libretro-common/include/libretro.h
+index e8a03e5..f56092c 100644
+--- a/libretro-common/include/libretro.h
++++ b/libretro-common/include/libretro.h
+@@ -221,8 +221,15 @@ extern "C" {
+ #define RETRO_DEVICE_ID_MOUSE_MIDDLE           6
+ #define RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP    7
+ #define RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN  8
+-#define RETRO_DEVICE_ID_MOUSE_BUTTON_4         9
+-#define RETRO_DEVICE_ID_MOUSE_BUTTON_5         10
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_1         9
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_2         10
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_3         11
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_4         12
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_5         13
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_6         14
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_7         15
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_8         16
++#define RETRO_DEVICE_ID_MOUSE_BUTTON_9         17
+ 
+ /* Id values for LIGHTGUN. */
+ #define RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X        13 /*Absolute Position*/
+diff --git a/menu/menu_driver.c b/menu/menu_driver.c
+index 6e1fa15..f737ba6 100644
+--- a/menu/menu_driver.c
++++ b/menu/menu_driver.c
+@@ -1526,8 +1526,15 @@ bool menu_input_key_bind_poll_find_hold_pad(
+          case RETRO_DEVICE_ID_MOUSE_LEFT:
+          case RETRO_DEVICE_ID_MOUSE_RIGHT:
+          case RETRO_DEVICE_ID_MOUSE_MIDDLE:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
+          case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
+          case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
+          case RETRO_DEVICE_ID_MOUSE_WHEELUP:
+          case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
+          case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
+@@ -1633,8 +1640,15 @@ bool menu_input_key_bind_poll_find_trigger_pad(
+          case RETRO_DEVICE_ID_MOUSE_LEFT:
+          case RETRO_DEVICE_ID_MOUSE_RIGHT:
+          case RETRO_DEVICE_ID_MOUSE_MIDDLE:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
+          case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
+          case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
++         case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
+          case RETRO_DEVICE_ID_MOUSE_WHEELUP:
+          case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
+          case RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:

@@ -1,13 +1,29 @@
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index 98a48f1..8c4b930 100644
+index d41ed68..6cd9f08 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -721,7 +721,7 @@ void InputManager::updateBatteryLevel(int id, std::string device, int level)
- 		InputConfig* config = getInputConfigByDevice(joy.first);
- 		if (config != NULL && config->isConfigured())
+@@ -944,7 +944,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
  		{
--			if (Utils::String::compareIgnoreCase(config->getDeviceGUIDString(), device) == 0)
-+			if (device == SDL_JoystickDevicePathById(config->getDeviceId()))
+ 			if (!devicePath.empty())
  			{
- 				config->updateBatteryLevel(level);
- 				changed = true;
+-				if (Utils::String::compareIgnoreCase(config->getDevicePath(), devicePath) == 0)
++				if (device == SDL_JoystickDevicePathById(config->getDeviceId()))
+ 				{
+ 					config->updateBatteryLevel(level);
+ 					changed = true;
+@@ -952,7 +952,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
+ 			}
+ 			else
+ 			{
+-				if (Utils::String::compareIgnoreCase(config->getDeviceGUIDString(), device) == 0)
++				if (device == SDL_JoystickDevicePathById(config->getDeviceId()))
+ 				{
+ 					config->updateBatteryLevel(level);
+ 					changed = true;
+@@ -993,4 +993,4 @@ void InputManager::sendMouseClick(Window* window, int button)
+ {
+ 	window->input(getInputConfigByDevice(DEVICE_MOUSE), Input(DEVICE_MOUSE, TYPE_BUTTON, button, true, false));
+ 	window->input(getInputConfigByDevice(DEVICE_MOUSE), Input(DEVICE_MOUSE, TYPE_BUTTON, button, false, false));
+-}
+\ No newline at end of file
++}

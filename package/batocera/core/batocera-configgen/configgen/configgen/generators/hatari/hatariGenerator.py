@@ -12,7 +12,7 @@ eslog = get_logger(__name__)
 
 class HatariGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         model_mapping = {
             "520st_auto":   { "machine": "st",      "tos": "auto" },
@@ -49,7 +49,7 @@ class HatariGenerator(Generator):
         commandArray += ["--machine", machine]
         biosdir = "/userdata/bios"
         tos = HatariGenerator.findBestTos(biosdir, machine, tosversion, toslang)
-        commandArray += [ "--tos", "{}/{}".format(biosdir, tos)]
+        commandArray += [ "--tos", f"{biosdir}/{tos}"]
 
 	# RAM (ST Ram) options (0 for 512k, 1 for 1MB)
         memorysize = 0
@@ -157,11 +157,11 @@ class HatariGenerator(Generator):
                     l_lang = [language]
                 l_lang.extend(all_languages)
                 for v_language in l_lang:
-                    filename = "tos{}{}.img".format(v_tos_version, v_language)
-                    if os.path.exists("{}/{}".format(biosdir, filename)):
-                        eslog.debug("tos filename: {}".format(filename))
+                    filename = f"tos{v_tos_version}{v_language}.img"
+                    if os.path.exists(f"{biosdir}/{filename}"):
+                        eslog.debug(f"tos filename: {filename}")
                         return filename
                     else:
-                        eslog.warning("tos filename {} not found".format(filename))
+                        eslog.warning(f"tos filename {filename} not found")
 
-        raise Exception("no bios found for machine {}".format(machine))
+        raise Exception(f"no bios found for machine {machine}")

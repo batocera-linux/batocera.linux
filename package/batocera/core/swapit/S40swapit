@@ -1,0 +1,32 @@
+#!/bin/sh
+
+test "${1}" != start && exit 0
+
+SWAPFILE="/userdata/system/swapfile"
+
+if ! test -e "${SWAPFILE}"
+then
+    if ! fallocate -l 512M "${SWAPFILE}"
+    then
+	rm -f "${SWAPFILE}"
+	exit 1
+    fi
+    if ! chmod 600 "${SWAPFILE}"
+    then
+	rm -f "${SWAPFILE}"
+	exit 1
+    fi
+    if ! mkswap "${SWAPFILE}"
+    then
+	rm -f "${SWAPFILE}"
+	exit 1
+    fi
+fi
+
+if ! swapon "${SWAPFILE}"
+then
+    echo "swapon failed." >&2
+    exit 1
+fi
+
+exit 0

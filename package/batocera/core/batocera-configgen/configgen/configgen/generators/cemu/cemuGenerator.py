@@ -11,20 +11,25 @@ import codecs
 import controllersConfig
 import shutil
 import filecmp
+import subprocess
 from . import cemuControllers
+import utils.videoMode as videoMode
+
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 cemuConfig  = batoceraFiles.CONF + '/cemu'
-cemuHomedir = 'Z:\\userdata\\roms\\wiiu'
-cemuMLC = 'C:\\cemu'
-cemuDatadir = '/usr/cemu'
-cemuSaves   = batoceraFiles.SAVES + '/cemu'
+cemuRomdir = '/userdata/roms/wiiu'
+cemuSaves = '/userdata/saves/wiiu'
+cemuDatadir = '/usr/bin/cemu'
 
 class CemuGenerator(Generator):
 
+    # disable hud & bezels for now - causes game issues
     def hasInternalMangoHUDCall(self):
         return True
-
-    def generate(self, system, rom, playersControllers, gameResolution):
+    
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
@@ -35,65 +40,53 @@ class CemuGenerator(Generator):
                 if extension == ".rpx":
                     rpxrom = rom + "/code/" + basename + extension
 
-        game_dir = cemuConfig + "/gameProfiles"
-        resources_dir = cemuConfig + "/resources"
-        cemu_exe = cemuConfig + "/Cemu.exe"
-        cemu_hook = cemuConfig + "/cemuhook.ini"
-        keystone_dll = cemuConfig + "/keystone.dll"
-        cemuhook_dll = cemuConfig + "/cemuhook.dll"
+        cemu_exe = cemuConfig + "/cemu"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
         if not path.isdir(cemuConfig):
             os.mkdir(cemuConfig)
-        if not os.path.exists(game_dir):
-            shutil.copytree(cemuDatadir + "/gameProfiles", game_dir)
-        if not os.path.exists(resources_dir):
-            shutil.copytree(cemuDatadir + "/resources", resources_dir)
+        #graphic packs
+        if not path.isdir(cemuSaves + "/graphicPacks"):
+            os.mkdir(cemuSaves + "/graphicPacks")         
+        if not path.isdir(cemuConfig + "/controllerProfiles"):
+            os.mkdir(cemuConfig + "/controllerProfiles")
 
-        for folder in ["controllerProfiles", "graphicPacks"]:
-            if not path.isdir(cemuConfig + "/" + folder):
-                os.mkdir(cemuConfig + "/" + folder)
-
-        # Create save folder
-        if not path.isdir(batoceraFiles.SAVES + "/cemu"):
-            os.mkdir(batoceraFiles.SAVES + "/cemu")
-
-        # Check & Create mlc folders
-        if not path.isdir(batoceraFiles.SAVES + "/cemu/drive_c/cemu"):
-            os.makedirs(batoceraFiles.SAVES + "/cemu/drive_c/cemu/sys")
-            os.makedirs(batoceraFiles.SAVES + "/cemu/drive_c/cemu/usr")
-
+        # Create the settings file
         CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
-        # Copy the file from where cemu reads it
+        
+        # Copy the keys.txt file from where cemu reads it
         shutil.copyfile(batoceraFiles.BIOS + "/cemu/keys.txt", cemuConfig + "/keys.txt")
-        if not os.path.exists(cemu_exe) or not filecmp.cmp(cemuDatadir + "/Cemu.exe", cemu_exe):
-            shutil.copyfile(cemuDatadir + "/Cemu.exe", cemu_exe)
-        # Copy cemuhook for secure upgrade
-        if not os.path.exists(cemu_hook) or not filecmp.cmp(cemuDatadir + "/cemuhook.ini", cemu_hook):
-            shutil.copyfile(cemuDatadir + "/cemuhook.ini", cemu_hook)
-        if not os.path.exists(keystone_dll) or not filecmp.cmp(cemuDatadir + "/keystone.dll", keystone_dll):
-            shutil.copyfile(cemuDatadir + "/keystone.dll", keystone_dll)
-        if not os.path.exists(cemuhook_dll) or not filecmp.cmp(cemuDatadir + "/cemuhook.dll", cemuhook_dll):
-            shutil.copyfile(cemuDatadir + "/cemuhook.dll", cemuhook_dll)
-
+        
+        # Set-up the controllers
         cemuControllers.generateControllerConfig(system, playersControllers)
 
         if rom == "config":
-            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe"]
+            commandArray = ["/usr/bin/cemu/cemu"]
         else:
-            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rpxrom, "-f"]
-            if system.isOptSet('hud') and system.config["hud"] != "":
-               commandArray.insert(0, "mangohud")
+            commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rpxrom]
+            # force no menubar
+            commandArray.append("--force-no-menubar")
+
+        # Dual view option
+        if system.isOptSet("cemu_dualview") and system.config["cemu_dualview"] != "none":
+            if system.config["cemu_dualview"].startswith('vert'):
+                dualviewOrientation = 'vert'
+            else:
+                dualviewOrientation = 'horiz'
+            if system.config["cemu_dualview"].endswith('1'):
+                dualviewSize = .5
+            else:
+                dualviewSize = .67
+            videoMode.setupRatpoisonFrames(dualviewOrientation, dualviewSize, 1, True)
+        elif system.isOptSet("cemu_gamepad") and system.config["cemu_gamepad"] == "True":
+            videoMode.setupRatpoisonFrames("offscreen", 1, 1, True)
 
         return Command.Command(
             array=commandArray,
-            env={
-                "WINEPREFIX": batoceraFiles.SAVES + "/cemu",
-                "vblank_mode": "0",
-                "mesa_glthread": "true",
+            env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.CACHE,
+                "XDG_DATA_HOME":batoceraFiles.SAVES,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-                "WINEDLLOVERRIDES": "mscoree=;mshtml=;cemuhook.dll=n,b",
-                "__GL_THREADED_OPTIMIZATIONS": "1"
+                "SDL_JOYSTICK_HIDAPI": "0"
             })
 
     @staticmethod
@@ -108,10 +101,8 @@ class CemuGenerator(Generator):
 
         ## [ROOT]
         xml_root = CemuGenerator.getRoot(config, "content")
-
         # Default mlc path
-        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuMLC)
-
+        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuSaves)
         # Remove auto updates
         CemuGenerator.setSectionConfig(config, xml_root, "check_update", "false")
         # Avoid the welcome window
@@ -121,91 +112,167 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, xml_root, "advanced_ppc_logging", "false")
         CemuGenerator.setSectionConfig(config, xml_root, "use_discord_presence", "false")
         CemuGenerator.setSectionConfig(config, xml_root, "fullscreen_menubar", "false")
-        CemuGenerator.setSectionConfig(config, xml_root, "cpu_mode", "1")
         CemuGenerator.setSectionConfig(config, xml_root, "vk_warning", "false")
-        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen", "true")
-
+        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen", "false")
         # Language
-        CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLangFromEnvironment()))
+        if not system.isOptSet("cemu_console_language") or system.config["cemu_console_language"] == "ui":
+            lang = getLangFromEnvironment()
+        else:
+            lang = system.config["cemu_console_language"]
+        CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLang(lang)))
 
-        ## [WINDOW POSITION]
+        ## [WINDOWS]
+        # Position
         CemuGenerator.setSectionConfig(config, xml_root, "window_position", "")
         window_position = CemuGenerator.getRoot(config, "window_position")
-
-        # Default window position
-        CemuGenerator.setSectionConfig(config, window_position, "x", "-4")
-        # Default games path
-        CemuGenerator.setSectionConfig(config, window_position, "y", "-23")
-
-        ## [WINDOW POSITION]
+        CemuGenerator.setSectionConfig(config, window_position, "x", "0")
+        CemuGenerator.setSectionConfig(config, window_position, "y", "0")
+        # Size
         CemuGenerator.setSectionConfig(config, xml_root, "window_size", "")
         window_size = CemuGenerator.getRoot(config, "window_size")
+        CemuGenerator.setSectionConfig(config, window_size, "x", "640")
+        CemuGenerator.setSectionConfig(config, window_size, "y", "480")
 
-        # Default window size
-        CemuGenerator.setSectionConfig(config, window_size, "x", "1")
-        # Default games path
-        CemuGenerator.setSectionConfig(config, window_size, "y", "1")
-
+        ## [GAMEPAD]
+        if (system.isOptSet("cemu_dualview") and system.config["cemu_dualview"] != "none") or \
+            (system.isOptSet("cemu_gamepad") and system.config["cemu_gamepad"] == "True"):
+            CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "true")
+        else:
+            CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "false")
+        CemuGenerator.setSectionConfig(config, xml_root, "pad_position", "")
+        pad_position = CemuGenerator.getRoot(config, "pad_position")
+        CemuGenerator.setSectionConfig(config, pad_position, "x", "0")
+        CemuGenerator.setSectionConfig(config, pad_position, "y", "0")
+        # Size
+        CemuGenerator.setSectionConfig(config, xml_root, "pad_size", "")
+        pad_size = CemuGenerator.getRoot(config, "pad_size")
+        CemuGenerator.setSectionConfig(config, pad_size, "x", "640")
+        CemuGenerator.setSectionConfig(config, pad_size, "y", "480")
         ## [GAME PATH]
         CemuGenerator.setSectionConfig(config, xml_root, "GamePaths", "")
         game_root = CemuGenerator.getRoot(config, "GamePaths")
-
         # Default games path
-        CemuGenerator.setSectionConfig(config, game_root, "Entry", cemuHomedir)
+        CemuGenerator.setSectionConfig(config, game_root, "Entry", cemuRomdir)
+     
+        ## [GRAPHICS]
+        CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
+        graphic_root = CemuGenerator.getRoot(config, "Graphic")
+        # Graphical backend
+        if system.isOptSet("cemu_gfxbackend"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "api", system.config["cemu_gfxbackend"])
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") # Vulkan
+        # Async VULKAN Shader compilation
+        if system.isOptSet("cemu_async"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", system.config["cemu_async"]) 
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "true")
+        # Vsync
+        if system.isOptSet("cemu_vsync"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "VSync", system.config["cemu_vsync"])
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "VSync", "0") # Off
+        # Upscale Filter
+        if system.isOptSet("cemu_upscale"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "UpscaleFilter", system.config["cemu_upscale"])
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "UpscaleFilter", "2") # Hermite
+        # Downscale Filter
+        if system.isOptSet("cemu_downscale"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "DownscaleFilter", system.config["cemu_downscale"])
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "DownscaleFilter", "0") # Bilinear
+        # Aspect Ratio
+        if system.isOptSet("cemu_aspect"):
+            CemuGenerator.setSectionConfig(config, graphic_root, "FullscreenScaling", system.config["cemu_aspect"])
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "FullscreenScaling", "0") # Bilinear
+
+        ## [GRAPHICS OVERLAYS] - Currently disbaled! Causes crash
+        # Performance - alternative to MongHud
+        CemuGenerator.setSectionConfig(config, graphic_root, "Overlay", "")
+        overlay_root = CemuGenerator.getRoot(config, "Overlay")
+        # Display FPS / CPU / GPU / RAM
+        if system.isOptSet("cemu_overlay") and system.config["cemu_overlay"] == "True":
+            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "3")
+            CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
+            CemuGenerator.setSectionConfig(config, overlay_root, "TextScale",       "100")
+            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",             "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "true")
+        else:
+            CemuGenerator.setSectionConfig(config, overlay_root, "Position",        "3")
+            CemuGenerator.setSectionConfig(config, overlay_root, "TextColor",       "4294967295")
+            CemuGenerator.setSectionConfig(config, overlay_root, "TextScale",       "100")
+            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",             "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "DrawCalls",       "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",        "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUPerCoreUsage", "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",        "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage",       "false")
+        # Notifications
+        CemuGenerator.setSectionConfig(config, graphic_root, "Notification", "")
+        notification_root = CemuGenerator.getRoot(config, "Notification")
+        if system.isOptSet("cemu_notifications") and system.config["cemu_notifications"] == "True":
+            CemuGenerator.setSectionConfig(config, notification_root, "Position", "1")
+            CemuGenerator.setSectionConfig(config, notification_root, "TextColor", "4294967295")
+            CemuGenerator.setSectionConfig(config, notification_root, "TextScale", "100")
+            CemuGenerator.setSectionConfig(config, notification_root, "ControllerProfiles", "true")
+            CemuGenerator.setSectionConfig(config, notification_root, "ControllerBattery",  "true")
+            CemuGenerator.setSectionConfig(config, notification_root, "ShaderCompiling",    "true")
+            CemuGenerator.setSectionConfig(config, notification_root, "FriendService",      "true")
+        else:
+            CemuGenerator.setSectionConfig(config, notification_root, "Position", "1")
+            CemuGenerator.setSectionConfig(config, notification_root, "TextColor", "4294967295")
+            CemuGenerator.setSectionConfig(config, notification_root, "TextScale", "100")
+            CemuGenerator.setSectionConfig(config, notification_root, "ControllerProfiles", "false")
+            CemuGenerator.setSectionConfig(config, notification_root, "ControllerBattery",  "false")
+            CemuGenerator.setSectionConfig(config, notification_root, "ShaderCompiling",    "false")
+            CemuGenerator.setSectionConfig(config, notification_root, "FriendService",      "false")
 
         ## [AUDIO]
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
         audio_root = CemuGenerator.getRoot(config, "Audio")
-
+        # Use cubeb (curently the only option for linux)
+        CemuGenerator.setSectionConfig(config, audio_root, "api", "3")
         # Turn audio ONLY on TV
-        CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", "default")
-        CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "90")
-
-
-        ## [GRAPHIC]
-        CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
-        graphic_root = CemuGenerator.getRoot(config, "Graphic")
-
-        # Graphical backend
-        if system.isOptSet("gfxbackend"):
-            if system.config["gfxbackend"] == "Vulkan":
-                CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") # Vulkan
-            else:
-                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") # OpenGL
+        if system.isOptSet("cemu_audio_channels"):
+            CemuGenerator.setSectionConfig(config, audio_root, "TVChannels", system.config["cemu_audio_channels"])
         else:
-            CemuGenerator.setSectionConfig(config, graphic_root, "api", "1")     # Vulkan
-
-        # Async VULKAN Shader compilation
-        if system.isOptSet("async") and system.config["async"] == "0":
-            CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "false") 
+            CemuGenerator.setSectionConfig(config, audio_root, "TVChannels", "1") # Stereo
+        # Set volume to the max
+        CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "100")
+        # Set the audio device - we choose the 1st device as this is more likely the answer
+        # pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .*"+"\1"+ | sed 1q | tr -d '\n'
+        proc = subprocess.run(["/usr/bin/cemu/get-audio-device"], stdout=subprocess.PIPE)
+        cemuAudioDevice = proc.stdout.decode('utf-8')
+        eslog.debug("*** audio device = {} ***".format(cemuAudioDevice))
+        if system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == True:
+            CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
+        elif system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == False:
+            # don't change the config setting
+            eslog.debug("*** use config audio device ***")
         else:
-            CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "true")
-
-        ## [GRAPHIC]
-        CemuGenerator.setSectionConfig(config, graphic_root, "Overlay", "")
-        overlay_root = CemuGenerator.getRoot(config, "Overlay")
-
-        # Display FPS / CPU / GPU / RAM
-        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
-            CemuGenerator.setSectionConfig(config, overlay_root, "Position", "1")
-            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",       "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",  "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",  "true")
-            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage", "true")
-        else:
-            CemuGenerator.setSectionConfig(config, overlay_root, "Position", "0")
-            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",       "false")
-            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",  "false")
-            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",  "false")
-            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage", "false")
-
+            CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
+        
         # Save the config file
         xml = open(configFile, "w")
 
-        # TODO: python 3 - workawround to encode files in utf-8
+        # TODO: python 3 - workaround to encode files in utf-8
         xml = codecs.open(configFile, "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         xml.write(dom_string)
+    
+    # Show mouse for touchscreen actions    
+    def getMouseMode(self, config):
+        if ("cemu_touchpad" in config and config["cemu_touchpad"] == "1") or \
+            ("cemu_dualview" in config and config["cemu_dualview"] != "none"):
+            return True
+        else:
+            return False
 
     @staticmethod
     def getRoot(config, name):
@@ -233,15 +300,15 @@ class CemuGenerator(Generator):
         else:
             xml_elt.appendChild(config.createTextNode(value))
 
-
-# Lauguage auto setting
-def getCemuLangFromEnvironment():
+# Language setting
+def getLangFromEnvironment():
     if 'LANG' in environ:
-        lang = environ['LANG'][:5]
+        return environ['LANG'][:5]
     else:
-        lang = "en_US"
+        return "en_US"
 
-    availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "hu_HU": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
+def getCemuLang(lang):
+    availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "nl_NL": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
         return availableLanguages[lang]
     else:

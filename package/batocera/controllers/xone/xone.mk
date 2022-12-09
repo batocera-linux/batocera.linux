@@ -3,7 +3,8 @@
 # xone
 #
 ################################################################################
-XONE_VERSION = 52eb2ff02fb6b21bd0815f4ea7460a76ad2b3c67
+
+XONE_VERSION = 8311a25f2b4e69b7a3f8133b884cede065b253cc
 XONE_SITE = $(call github,medusalix,xone,$(XONE_VERSION))
 XONE_DEPENDENCIES = host-libcurl host-cabextract libusb
 

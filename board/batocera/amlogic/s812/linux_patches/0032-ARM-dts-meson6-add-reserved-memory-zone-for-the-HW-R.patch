@@ -1,0 +1,46 @@
+From 32408f23fd5f7d619b541e1589f1d101a3dc97ea Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 14 Jan 2018 21:14:28 +0100
+Subject: [PATCH 032/122] ARM: dts: meson6: add reserved memory zone for the HW
+ ROM firmware - WiP
+
+The Amlogic vendor kernel reserved 1MiB of memory between 511 and
+512MiB. This can be seen in the boot-logs of the 3.10 vendor kernel. All
+of these print the following message during boot:
+reserved 511M-512M 1M memory for firmware
+
+Reserve this memory to prevent devices from haning randomly.
+
+WiP - not tested yet!
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson6.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/arch/arm/boot/dts/meson6.dtsi b/arch/arm/boot/dts/meson6.dtsi
+index 4716030a48d0..c63b769a23e9 100644
+--- a/arch/arm/boot/dts/meson6.dtsi
++++ b/arch/arm/boot/dts/meson6.dtsi
+@@ -28,6 +28,18 @@ cpu@201 {
+ 		};
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		/* 1 MiB reserved for Hardware ROM Firmware */
++		hwrom@0 {
++			reg = <0x1ff00000 0x100000>;
++			no-map;
++		};
++	};
++
+ 	apb2: bus@d0000000 {
+ 		compatible = "simple-bus";
+ 		reg = <0xd0000000 0x40000>;
+-- 
+2.25.1
+

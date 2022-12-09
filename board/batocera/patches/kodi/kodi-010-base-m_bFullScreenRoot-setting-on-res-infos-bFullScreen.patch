@@ -1,0 +1,61 @@
+From 81a2fb65100b88c31bb0168acc0c3b7bab09475a Mon Sep 17 00:00:00 2001
+From: Dominique Martinet <asmadeus@codewreck.org>
+Date: Sun, 5 Dec 2021 23:46:25 +0900
+Subject: [PATCH] windowing: base m_bFullScreenRoot setting on res info's
+ bFullScreen
+
+on wayland, the compositor can ignore fullscreen requests, so even if
+application's InitWindow created a window with res >= DESKTOP we have
+no guarantee that the actual window created is actually fullscreen.
+
+CreateNewWindow will fill GetResolutionInfo(res) so we can check that
+for bFullScreen and use this information... in theory.
+
+wayland was inconditionally setting it to the requested fullscreen
+state, so also make sure it's set based on the real state by keeping
+m_bFullScreen up to date and using that instead.
+
+Fixes: #20629
+---
+ xbmc/windowing/GraphicContext.cpp           | 2 +-
+ xbmc/windowing/wayland/WinSystemWayland.cpp | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+--- a/xbmc/windowing/GraphicContext.cpp
++++ b/xbmc/windowing/GraphicContext.cpp
+@@ -410,7 +410,7 @@ void CGraphicContext::SetVideoResolution
+     return;
+   }
+
+-  if (res >= RES_DESKTOP)
++  if (CDisplaySettings::GetInstance().GetResolutionInfo(res).bFullScreen)
+   {
+     CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreen = true;
+     m_bFullScreenRoot = true;
+--- a/xbmc/windowing/wayland/WinSystemWayland.cpp
++++ b/xbmc/windowing/wayland/WinSystemWayland.cpp
+@@ -343,7 +343,7 @@ bool CWinSystemWayland::CreateNewWindow(
+
+   // Update resolution with real size as it could have changed due to configure()
+   UpdateDesktopResolution(res, res.strOutput, m_bufferSize.Width(), m_bufferSize.Height(), res.fRefreshRate, 0);
+-  res.bFullScreen = fullScreen;
++  res.bFullScreen = m_bFullScreen;
+
+   // Now start processing events
+   //
+@@ -787,7 +787,7 @@ void CWinSystemWayland::OnConfigure(std:
+     CLog::LogF(LOGDEBUG, "Initial configure serial {}: size {}x{} state {}", serial, size.Width(),
+                size.Height(), IShellSurface::StateToString(state));
+     m_shellSurfaceState = state;
+-    if (!size.IsZero())
++    if (!size.IsZero() || state.test(IShellSurface::STATE_FULLSCREEN))
+     {
+       UpdateSizeVariables(size, m_scale, m_shellSurfaceState, true);
+     }
+@@ -1015,6 +1015,7 @@ CWinSystemWayland::SizeUpdateInformation
+   m_surfaceSize = sizes.surfaceSize;
+   m_bufferSize = sizes.bufferSize;
+   m_configuredSize = sizes.configuredSize;
++  m_bFullScreen = state.test(IShellSurface::STATE_FULLSCREEN);
+
+   SizeUpdateInformation changes{m_surfaceSize != oldSurfaceSize, m_bufferSize != oldBufferSize, m_configuredSize != oldConfiguredSize, m_scale != oldBufferScale};

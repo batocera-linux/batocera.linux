@@ -9,11 +9,22 @@ ARCH="$(cat /usr/share/batocera/batocera.arch)"
 GRPICONFFILE="/boot/config.txt"
 GODROIDCONFFILE="/boot/batocera-boot.conf"
 
-if test "${ARCH}" = "rpi3"
+if test "${ARCH}" = "bcm2836" || test "${ARCH}" = "bcm2837"
 then
-    if grep -q "^Raspberry Pi 3 Model [A-Z] Plus" "/proc/device-tree/model"
-    then
-	ARCH="rpi3+"
+	RPIMODEL="/proc/device-tree/model"
+
+	if grep -q "^Raspberry Pi 2" ${RPIMODEL}
+	then
+		ARCH="bcm2836"
+	elif grep -q "^Raspberry Pi 3 Model [A-Z] Plus" ${RPIMODEL}
+	then
+		ARCH="rpi3+"
+	elif grep -q "^Raspberry Pi 3" ${RPIMODEL}
+	then
+		ARCH="rpi3"
+	elif grep -q "^Raspberry Pi Zero 2" ${RPIMODEL}
+	then
+		ARCH="rpizero2"
     fi
 fi
 
@@ -27,13 +38,13 @@ postBootRWConfig() {
 
 doList() {
     case "${ARCH}" in
-    "rpi1")
+    "bcm2835")
 	    echo "none NONE"
 	    echo "high HIGH (950Mhz)"
 	    echo "turbo TURBO (1000Mhz)"
 	    echo "extreme EXTREME (1100Mhz)"
 	;;
-	"rpi2")
+	"bcm2836")
 	    echo "none NONE (900Mhz)"
 	    echo "high HIGH (1050Mhz)"
 	;;
@@ -49,7 +60,7 @@ doList() {
 	    echo "turbo TURBO (1450Mhz)"
 	    echo "extreme EXTREME (1500Mhz)"
 	    ;;
-	"rpi4")
+	"bcm2711")
 	    echo "none NONE (B0 - 1500Mhz or C0 - 1800MHz)"
 	    echo "high HIGH (B0 HEATSINK - 1700Mhz)"
 	    echo "turbo TURBO (B0 HEATSINK - 1800Mhz)"
@@ -191,7 +202,7 @@ setValue() {
     VALUE=$1
 
     case "${ARCH}" in
-    "rpi1")
+    "bcm2835")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpiNone
@@ -208,7 +219,7 @@ setValue() {
 		    ;;
 	    esac
 	    ;;
-	"rpi2")
+	"bcm2836")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpiNone
@@ -250,7 +261,7 @@ setValue() {
 		    ;;
 	    esac
 	    ;;
-	"rpi4")
+	"bcm2711")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpi4None

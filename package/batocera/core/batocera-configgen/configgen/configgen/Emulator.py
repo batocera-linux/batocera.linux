@@ -1,13 +1,11 @@
-import sys
 import os
 import batoceraFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
-import shlex
-from utils.logger import get_logger
 import yaml
 import collections
 
+from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 class Emulator():
@@ -26,6 +24,7 @@ class Emulator():
         # load configuration from batocera.conf
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
+        controllersSettings = recalSettings.loadAll('controllers', True)
         systemSettings = recalSettings.loadAll(self.name)
         folderSettings = recalSettings.loadAll(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
         gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]")
@@ -36,6 +35,7 @@ class Emulator():
             self.config["display." + opt] = displaySettings[opt]
 
         # update config
+        Emulator.updateConfiguration(self.config, controllersSettings)
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
         Emulator.updateConfiguration(self.config, folderSettings)
@@ -92,12 +92,12 @@ class Emulator():
     @staticmethod
     def get_generic_config(system, defaultyml, defaultarchyml):
         with open(defaultyml, 'r') as f:
-            systems_default = yaml.load(f, Loader=yaml.FullLoader)
+            systems_default = yaml.load(f, Loader=yaml.CLoader)
 
         systems_default_arch = {}
         if os.path.exists(defaultarchyml):
             with open(defaultarchyml, 'r') as f:
-                systems_default_arch = yaml.load(f, Loader=yaml.FullLoader)
+                systems_default_arch = yaml.load(f, Loader=yaml.CLoader)
                 if systems_default_arch is None:
                     systems_default_arch = {}
         dict_all = {}

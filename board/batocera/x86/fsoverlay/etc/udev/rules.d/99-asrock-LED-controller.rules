@@ -1,0 +1,3 @@
+# Ignore the ASRock LED Controller as a game controller so ES does not assign it as Player 1's controller.
+# More info about the issue: https://forum.batocera.org/d/7717-v34-no-controllers-work-in-libretto-emulatoes
+SUBSYSTEM=="usb", ATTRS{idVendor}=="26ce", ATTRS{idProduct}=="01a2", ATTR{authorized}="0"

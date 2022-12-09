@@ -18,7 +18,7 @@ class PPSSPPGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         ppssppConfig.writePPSSPPConfig(system)
         # For each pad detected
         for index in playersControllers :

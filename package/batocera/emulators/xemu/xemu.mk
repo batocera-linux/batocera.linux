@@ -4,13 +4,14 @@
 #
 ################################################################################
 
-# Mar 23, 2022
-XEMU_VERSION = 0.6.2-90-g6f507c80af
+# Aug 6, 2022
+# Version 0.7.67
+XEMU_VERSION = 940bee452cc34127ecf3f364c3c5f52e4e6a80a4
 XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES = sdl2
+XEMU_DEPENDENCIES = sdl2 libsamplerate
 
 XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 

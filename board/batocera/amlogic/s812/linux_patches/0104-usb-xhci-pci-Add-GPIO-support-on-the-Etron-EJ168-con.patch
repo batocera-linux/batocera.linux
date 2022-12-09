@@ -1,0 +1,419 @@
+From c2b841a1882b24f85171f575127382f6df3cf5b4 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Fri, 9 Oct 2020 22:03:13 +0200
+Subject: [PATCH 104/122] usb: xhci: pci: Add GPIO support on the Etron EJ168
+ controllers
+
+EJ168/EJ188/EJ198 are USB xHCI controllers. They also contain four GPIO
+lines which are used on some systems to toggle an LED based on whether a
+USB device is connected.
+
+There is no public datasheet available for this hardware. All
+information in this driver is taken from the
+"F9K1115v2.03.97-GPL-10.2.85-20140313" GPL code dump of the Belkin
+F9K1115v2. This board comes with an EJ168 USB xHCI controller and the
+USB 3.0 LED is connected to one of the GPIOs. Inside the GPL source
+archive the related code can be found in:
+  linux/kernels/mips-linux-2.6.31/drivers/usb/host/etxhci-pci.c
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/usb/host/Kconfig          |  10 ++
+ drivers/usb/host/Makefile         |   1 +
+ drivers/usb/host/xhci-pci-etron.c | 287 ++++++++++++++++++++++++++++++
+ drivers/usb/host/xhci-pci.c       |   9 +
+ drivers/usb/host/xhci-pci.h       |   9 +
+ drivers/usb/host/xhci.h           |   1 +
+ 6 files changed, 317 insertions(+)
+ create mode 100644 drivers/usb/host/xhci-pci-etron.c
+
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index c4736d1d020c..11d1b1bf200d 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -43,6 +43,16 @@ config USB_XHCI_PCI
+ 	depends on USB_XHCI_PCI_RENESAS || !USB_XHCI_PCI_RENESAS
+ 	default y
+ 
++config USB_XHCI_PCI_ETRON
++	tristate "Support for GPIOs in the Etron EJ168/EJ188/EJ198 controllers"
++	depends on USB_XHCI_PCI && OF_GPIO
++	default n
++	help
++	  Say 'Y' to enable the support for the GPIO controller inside the
++	  Etron EJ168/EJ188/EJ198 xHCI controllers.
++
++	  If unsure, say 'N'.
++
+ config USB_XHCI_PCI_RENESAS
+ 	tristate "Support for additional Renesas xHCI controller with firmware"
+ 	help
+diff --git a/drivers/usb/host/Makefile b/drivers/usb/host/Makefile
+index 171de4df50bd..604746c8d0a9 100644
+--- a/drivers/usb/host/Makefile
++++ b/drivers/usb/host/Makefile
+@@ -68,6 +68,7 @@ obj-$(CONFIG_USB_UHCI_HCD)	+= uhci-hcd.o
+ obj-$(CONFIG_USB_FHCI_HCD)	+= fhci.o
+ obj-$(CONFIG_USB_XHCI_HCD)	+= xhci-hcd.o
+ obj-$(CONFIG_USB_XHCI_PCI)	+= xhci-pci.o
++obj-$(CONFIG_USB_XHCI_PCI_ETRON)	+= xhci-pci-etron.o
+ obj-$(CONFIG_USB_XHCI_PCI_RENESAS)	+= xhci-pci-renesas.o
+ obj-$(CONFIG_USB_XHCI_PLATFORM) += xhci-plat-hcd.o
+ obj-$(CONFIG_USB_XHCI_HISTB)	+= xhci-histb.o
+diff --git a/drivers/usb/host/xhci-pci-etron.c b/drivers/usb/host/xhci-pci-etron.c
+new file mode 100644
+index 000000000000..fcb0a32a4768
+--- /dev/null
++++ b/drivers/usb/host/xhci-pci-etron.c
+@@ -0,0 +1,287 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com> */
++
++#include <linux/bitfield.h>
++#include <linux/delay.h>
++#include <linux/gpio/driver.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/property.h>
++#include <linux/spinlock.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++
++#include "xhci-pci.h"
++
++#define EJ1X8_GPIO_INIT					0x44
++#define EJ1X8_GPIO_WRITE				0x68
++#define EJ1X8_GPIO_READ					0x6c
++
++#define EJ1X8_GPIO_CTRL					0x18005020
++#define EJ1X8_GPIO_CTRL_READ_ALL_MASK			GENMASK(7, 0)
++#define EJ1X8_GPIO_CTRL_WRITE_ALL_MASK			GENMASK(23, 16)
++#define EJ1X8_GPIO_CTRL_OUT_LOW				0x0
++#define EJ1X8_GPIO_CTRL_OUT_HIGH			0x1
++#define EJ1X8_GPIO_CTRL_IN				0x2
++#define EJ1X8_GPIO_CTRL_MASK				0x3
++
++#define EJ1X8_GPIO_MODE					0x18005022
++#define EJ1X8_GPIO_MODE_READ_WRITE_ALL_MASK		GENMASK(23, 16)
++#define EJ1X8_GPIO_MODE_DISABLE				0x0
++#define EJ1X8_GPIO_MODE_ENABLE				0x1
++#define EJ1X8_GPIO_MODE_MASK				0x3
++
++struct etron_xhci_pci_priv {
++	spinlock_t			lock;
++	struct pci_dev			*pci_dev;
++	struct gpio_chip		chip;
++};
++
++static u8 etron_xhci_pci_gpio_shift(unsigned int gpio, u8 mask)
++{
++	return (gpio * fls(mask));
++}
++
++static u8 etron_xhci_pci_gpio_mask(unsigned int gpio, u8 mask)
++{
++	return mask << etron_xhci_pci_gpio_shift(gpio, mask);
++}
++
++static int etron_xhci_pci_gpio_read(struct gpio_chip *gc, u32 reg, u32 *value)
++{
++	struct etron_xhci_pci_priv *etron_priv = gpiochip_get_data(gc);
++	int err;
++
++	err = pci_write_config_dword(etron_priv->pci_dev, EJ1X8_GPIO_WRITE, reg);
++	if (err) {
++		dev_err(gc->parent, "Failed to select 0x%08x register\n", reg);
++		return err;
++	}
++
++	usleep_range(1000, 10000);
++
++	err = pci_read_config_dword(etron_priv->pci_dev, EJ1X8_GPIO_READ, value);
++	if (err) {
++		dev_err(gc->parent, "Failed to read 0x%08x register\n", reg);
++		return err;
++	}
++
++	return 0;
++}
++
++static int etron_xhci_pci_gpio_write(struct gpio_chip *gc, u32 reg, u32 value)
++{
++	struct etron_xhci_pci_priv *etron_priv = gpiochip_get_data(gc);
++	int err;
++
++	err = pci_write_config_dword(etron_priv->pci_dev, EJ1X8_GPIO_WRITE,
++				     reg | value | BIT(24));
++	if (err) {
++		dev_err(gc->parent, "Failed to write 0x%08x register\n", reg);
++		return err;
++	}
++
++	usleep_range(1000, 10000);
++
++	return 0;
++}
++
++static int etron_xhci_pci_gpio_config(struct gpio_chip *gc, unsigned int gpio,
++				      u8 mode, u8 ctrl)
++{
++	struct etron_xhci_pci_priv *etron_priv = gpiochip_get_data(gc);
++	u8 all_gpio_ctrl, all_gpio_mode;
++	u32 temp;
++	int err;
++
++	spin_lock(&etron_priv->lock);
++
++	err = pci_read_config_dword(etron_priv->pci_dev, EJ1X8_GPIO_INIT, &temp);
++	if (err) {
++		dev_err(gc->parent, "Failed to read INIT register\n");
++		return err;
++	}
++
++	err = pci_write_config_dword(etron_priv->pci_dev, EJ1X8_GPIO_INIT,
++				     temp | 0x1);
++	if (err) {
++		dev_err(gc->parent, "Failed to write INIT register\n");
++		return err;
++	}
++
++	err = etron_xhci_pci_gpio_read(gc, EJ1X8_GPIO_CTRL, &temp);
++	if (err)
++		goto err_unlock;
++
++	all_gpio_ctrl = FIELD_GET(EJ1X8_GPIO_CTRL_READ_ALL_MASK, temp);
++	all_gpio_ctrl &= ~etron_xhci_pci_gpio_mask(gpio, EJ1X8_GPIO_CTRL_MASK);
++	all_gpio_ctrl |= ctrl << etron_xhci_pci_gpio_shift(gpio,
++							   EJ1X8_GPIO_CTRL_MASK);
++
++	err = etron_xhci_pci_gpio_read(gc, EJ1X8_GPIO_MODE, &temp);
++	if (err)
++		goto err_unlock;
++
++	all_gpio_mode = FIELD_GET(EJ1X8_GPIO_MODE_READ_WRITE_ALL_MASK, temp);
++	all_gpio_mode &= ~etron_xhci_pci_gpio_mask(gpio, EJ1X8_GPIO_MODE_MASK);
++	all_gpio_mode |= mode << etron_xhci_pci_gpio_shift(gpio,
++							   EJ1X8_GPIO_MODE_MASK);
++
++	err = etron_xhci_pci_gpio_write(gc, EJ1X8_GPIO_CTRL,
++			       FIELD_PREP(EJ1X8_GPIO_CTRL_WRITE_ALL_MASK,
++					  all_gpio_ctrl));
++	if (err)
++		goto err_unlock;
++
++	err = etron_xhci_pci_gpio_write(gc, EJ1X8_GPIO_MODE,
++			       FIELD_PREP(EJ1X8_GPIO_MODE_READ_WRITE_ALL_MASK,
++					  all_gpio_mode));
++	if (err)
++		goto err_unlock;
++
++	spin_unlock(&etron_priv->lock);
++
++	return 0;
++
++err_unlock:
++	spin_unlock(&etron_priv->lock);
++	return err;
++}
++
++static int etron_xhci_pci_gpio_get_mode(struct gpio_chip *gc, unsigned int gpio,
++					u8 *mode)
++{
++	struct etron_xhci_pci_priv *etron_priv = gpiochip_get_data(gc);
++	u32 temp, all_gpio_mode;
++	int err;
++
++	spin_lock(&etron_priv->lock);
++	err = etron_xhci_pci_gpio_read(gc, EJ1X8_GPIO_MODE, &temp);
++	spin_unlock(&etron_priv->lock);
++
++	if (err)
++		return err;
++
++	all_gpio_mode = FIELD_GET(EJ1X8_GPIO_MODE_READ_WRITE_ALL_MASK, temp);
++	*mode = all_gpio_mode >> etron_xhci_pci_gpio_shift(gpio,
++							   EJ1X8_GPIO_MODE_MASK);
++	*mode &= EJ1X8_GPIO_MODE_MASK;
++
++	return 0;
++}
++
++static void etron_xhci_pci_gpio_free(struct gpio_chip *gc, unsigned int gpio)
++{
++	etron_xhci_pci_gpio_config(gc, gpio, EJ1X8_GPIO_MODE_DISABLE,
++				   EJ1X8_GPIO_CTRL_IN);
++}
++
++static int etron_xhci_pci_gpio_get_direction(struct gpio_chip *gc,
++					     unsigned int gpio)
++{
++	u8 mode;
++	int err;
++
++	err = etron_xhci_pci_gpio_get_mode(gc, gpio, &mode);
++	if (err)
++		return err;
++
++	switch (mode) {
++	case EJ1X8_GPIO_CTRL_IN:
++		return GPIO_LINE_DIRECTION_IN;
++
++	case EJ1X8_GPIO_CTRL_OUT_HIGH:
++	case EJ1X8_GPIO_CTRL_OUT_LOW:
++		return GPIO_LINE_DIRECTION_OUT;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int etron_xhci_pci_gpio_direction_output(struct gpio_chip *gc,
++						unsigned int gpio, int value)
++{
++	u8 gpio_ctrl;
++
++	if (value)
++		gpio_ctrl = EJ1X8_GPIO_CTRL_OUT_HIGH;
++	else
++		gpio_ctrl = EJ1X8_GPIO_CTRL_OUT_LOW;
++
++	return etron_xhci_pci_gpio_config(gc, gpio, EJ1X8_GPIO_MODE_ENABLE,
++					  gpio_ctrl);
++}
++
++static int etron_xhci_pci_gpio_get_value(struct gpio_chip *gc, unsigned int gpio)
++{
++	u8 mode;
++	int err;
++
++	err = etron_xhci_pci_gpio_get_mode(gc, gpio, &mode);
++	if (err)
++		return err;
++
++	switch (mode) {
++	case EJ1X8_GPIO_CTRL_OUT_HIGH:
++		return 1;
++
++	case EJ1X8_GPIO_CTRL_OUT_LOW:
++		return 0;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static void etron_xhci_pci_gpio_set_value(struct gpio_chip *gc,
++					  unsigned int gpio, int value)
++{
++	etron_xhci_pci_gpio_direction_output(gc, gpio, value);
++}
++
++int etron_xhci_pci_probe(struct pci_dev *pci_dev)
++{
++	struct etron_xhci_pci_priv *etron_priv;
++	struct device *dev = &pci_dev->dev;
++	int err;
++
++	if (!device_property_read_bool(dev, "gpio-controller"))
++		return 0;
++
++	etron_priv = devm_kzalloc(dev, sizeof(*etron_priv), GFP_KERNEL);
++	if (!etron_priv)
++		return -ENOMEM;
++
++	spin_lock_init(&etron_priv->lock);
++	etron_priv->pci_dev = pci_dev;
++
++	/* TODO: input mode is supported by the hardware but not the driver */
++	etron_priv->chip.label = dev_name(dev);
++	etron_priv->chip.owner = THIS_MODULE;
++	etron_priv->chip.parent = dev;
++	etron_priv->chip.of_node = dev->of_node;
++	etron_priv->chip.free = etron_xhci_pci_gpio_free;
++	etron_priv->chip.get_direction = etron_xhci_pci_gpio_get_direction;
++	etron_priv->chip.direction_output = etron_xhci_pci_gpio_direction_output;
++	etron_priv->chip.get = etron_xhci_pci_gpio_get_value;
++	etron_priv->chip.set = etron_xhci_pci_gpio_set_value;
++	etron_priv->chip.base = -1;
++	etron_priv->chip.ngpio = 4;
++
++	err = devm_gpiochip_add_data(dev, &etron_priv->chip, etron_priv);
++	if (err) {
++		dev_warn(dev, "Failed to register GPIO device: %d\n", err);
++		return err;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(etron_xhci_pci_probe);
++
++MODULE_SOFTDEP("pre: xhci-pci");
++MODULE_AUTHOR("Martin Blumenstingl <martin.blumenstingl@googlemail.com>");
++MODULE_DESCRIPTION("Etron Technology Inc. EJ168/EJ188/EJ198 GPIO driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+index 2484a9d38ce2..b87e199854d5 100644
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -262,6 +262,7 @@ static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
+ 		xhci->quirks |= XHCI_RESET_ON_RESUME;
+ 		xhci->quirks |= XHCI_TRUST_TX_LENGTH;
+ 		xhci->quirks |= XHCI_BROKEN_STREAMS;
++		xhci->quirks |= XHCI_ETRON_GPIO_QUIRK;
+ 	}
+ 	if (pdev->vendor == PCI_VENDOR_ID_RENESAS &&
+ 	    pdev->device == 0x0014) {
+@@ -437,8 +438,16 @@ static int xhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	if (xhci->quirks & XHCI_DEFAULT_PM_RUNTIME_ALLOW)
+ 		pm_runtime_allow(&dev->dev);
+ 
++	if (xhci->quirks & XHCI_ETRON_GPIO_QUIRK) {
++		retval = etron_xhci_pci_probe(dev);
++		if (retval)
++			goto remove_usb3_hcd;
++	}
++
+ 	return 0;
+ 
++remove_usb3_hcd:
++	usb_remove_hcd(xhci->shared_hcd);
+ put_usb3_hcd:
+ 	usb_put_hcd(xhci->shared_hcd);
+ dealloc_usb2_hcd:
+diff --git a/drivers/usb/host/xhci-pci.h b/drivers/usb/host/xhci-pci.h
+index cb9a8f331a44..ec435b5b5728 100644
+--- a/drivers/usb/host/xhci-pci.h
++++ b/drivers/usb/host/xhci-pci.h
+@@ -4,6 +4,15 @@
+ #ifndef XHCI_PCI_H
+ #define XHCI_PCI_H
+ 
++#if IS_REACHABLE(CONFIG_USB_XHCI_PCI_ETRON)
++int etron_xhci_pci_probe(struct pci_dev *pci_dev);
++#else
++static inline int etron_xhci_pci_probe(struct pci_dev *pci_dev)
++{
++	return 0;
++}
++#endif
++
+ #if IS_ENABLED(CONFIG_USB_XHCI_PCI_RENESAS)
+ int renesas_xhci_check_request_fw(struct pci_dev *dev,
+ 				  const struct pci_device_id *id);
+diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
+index 5a75fe563123..2d770f2505b3 100644
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -1900,6 +1900,7 @@ struct xhci_hcd {
+ #define XHCI_NO_SOFT_RETRY	BIT_ULL(40)
+ #define XHCI_BROKEN_D3COLD	BIT_ULL(41)
+ #define XHCI_EP_CTX_BROKEN_DCS	BIT_ULL(42)
++#define XHCI_ETRON_GPIO_QUIRK	BIT_ULL(43)
+ 
+ 	unsigned int		num_active_eps;
+ 	unsigned int		limit_active_eps;
+-- 
+2.25.1
+

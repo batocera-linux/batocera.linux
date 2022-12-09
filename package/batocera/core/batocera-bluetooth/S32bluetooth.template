@@ -3,6 +3,8 @@
 # Auto connect bluetooth controllers
 #
 
+BOARD=$(cat /boot/boot/batocera.board)
+
 case "$1" in
     start)
         # Restores old settings saved in userdata
@@ -24,7 +26,14 @@ case "$1" in
                     sleep 1
                 ;;
                 bcm150)
-                    /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
+                    # Bluetooth on the OrangePi 4-LTS board is handled by a Spreadtrum (sprd) chip
+                    # and requires a custom hciattach_opi binary
+                    if test "${BOARD}" = "orangepi4-lts"
+                    then                    
+                        /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
+                    else
+                        /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
+                    fi
                     sleep 2 # Give hciattach a few seconds to finish attaching firmware
                 ;;
                 rtk115)
@@ -38,25 +47,29 @@ case "$1" in
                     /usr/bin/hciconfig hci0 up piscan # specific rpi
                     sleep 2 # without the sleep, on rpi4, the agent fails on startup complaining the device is not here
                 ;;
+                sprd)
+                    /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
+                    sleep 2
+                ;;
             esac
         done
-
+        
         btaddr="$(/usr/bin/batocera-settings-get bluetooth.adapter)"
         settings_version="$(/usr/bin/batocera-settings-get controllers.ps3.driver)"
         if [ "$settings_version" != "bluez" ]
-	then
+        then
             BLUETOOTHD_ARGS="--noplugin=sixaxis"
         else
             BLUETOOTHD_ARGS="--noplugin=sixaxispair"
         fi
-
-	debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
-	if test "${debug}" = 1
-	then
-	    start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
-	else
-	    start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
-	fi
+        
+        debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
+        if test "${debug}" = 1
+        then
+            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
+        else
+            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+        fi
 
         if [ -n "${btaddr}" ]
         then
@@ -64,12 +77,19 @@ case "$1" in
         else
             start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
         fi
+        # for OrangePi LTS devices we need to power on the controller & put in pairable mode
+        if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-3-lts" ] || [ ${BOARD} = "orangepi-zero2" ]
+        then
+            bluetoothctl power on
+            bluetoothctl pairable on
+        fi
     ;;
 
     stop)
         start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
         start-stop-daemon -K -q -p /var/run/bluetoothd.pid
         killall hciattach >/dev/null 2>&1
+        killall hciattach_opi >/dev/null 2>&1
         batocera-bluetooth save
     ;;
 
@@ -84,5 +104,3 @@ case "$1" in
 esac
 
 exit $?
-
-

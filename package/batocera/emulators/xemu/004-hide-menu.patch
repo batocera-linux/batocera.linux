@@ -1,20 +1,8 @@
-diff --git a/ui/xemu-hud.cc b/ui/xemu-hud.cc
-index a88f420..6f969f5 100644
---- a/ui/xemu-hud.cc
-+++ b/ui/xemu-hud.cc
-@@ -1696,6 +1696,7 @@ static void process_keyboard_shortcuts(void)
- 
- static void ShowMainMenu()
- {
-+  return;
-     bool running = runstate_is_running();
- 
-     if (ImGui::BeginMainMenuBar())
 diff --git a/ui/xemu-input.c b/ui/xemu-input.c
-index 1c29507..69efe24 100644
+index b8ca2bd..d3b6653 100644
 --- a/ui/xemu-input.c
 +++ b/ui/xemu-input.c
-@@ -83,9 +83,9 @@ void xemu_input_init(void)
+@@ -161,9 +161,9 @@ void xemu_input_init(void)
      int port = xemu_input_get_controller_default_bind_port(new_con, 0);
      if (port >= 0) {
          xemu_input_bind(port, new_con, 0);
@@ -25,18 +13,18 @@ index 1c29507..69efe24 100644
 +        //snprintf(buf, sizeof(buf), "Connected '%s' to port %d", new_con->name, port+1);
 +        //xemu_queue_notification(buf);
      }
- 
+
      QTAILQ_INSERT_TAIL(&available_controllers, new_con, entry);
-@@ -167,9 +167,9 @@ void xemu_input_process_sdl_events(const SDL_Event *event)
-                 continue;
-             }
-             xemu_input_bind(port, new_con, 0);
+@@ -261,9 +261,9 @@ void xemu_input_process_sdl_events(const SDL_Event *event)
+         }
+
+         if (did_bind) {
 -            char buf[128];
 -            snprintf(buf, sizeof(buf), "Connected '%s' to port %d", new_con->name, port+1);
 -            xemu_queue_notification(buf);
 +            //char buf[128];
 +            //snprintf(buf, sizeof(buf), "Connected '%s' to port %d", new_con->name, port+1);
 +            //xemu_queue_notification(buf);
-             break;
          }
- 
+     } else if (event->type == SDL_CONTROLLERDEVICEREMOVED) {
+         DPRINTF("Controller Removed: %d\n", event->cdevice.which);

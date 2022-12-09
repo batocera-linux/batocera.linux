@@ -16,7 +16,7 @@ from os import environ
 
 class DrasticGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         drastic_root = "/userdata/system/configs/drastic"
         drastic_bin = "/userdata/system/configs/drastic/drastic"
@@ -52,6 +52,17 @@ class DrasticGenerator(Generator):
         else:
             esvaluedrasticscreenorientation = 0
 
+        # Default to none as auto seems to be bugged (just reduces framerate by half, even when the system is otherwise capable of running at 60fps, even the rpi3 can do this).
+        if system.isOptSet("drastic_frameskip_type"):
+            esvaluedrasticframeskiptype = system.config["drastic_frameskip_type"]
+        else:
+            esvaluedrasticframeskiptype = 0
+
+        if system.isOptSet("drastic_frameskip_value"):
+            esvaluedrasticframeskipvalue = system.config["drastic_frameskip_value"]
+        else:
+            esvaluedrasticframeskipvalue = 1
+
         textList = [                             # 0,1,2,3 ...
         "enable_sound"                 + " = 1",
         "compress_savestates"          + " = 1",
@@ -65,9 +76,9 @@ class DrasticGenerator(Generator):
         "rtc_system_time"              + " = 1",
         "use_rtc_custom_time"          + " = 0",
         "rtc_custom_time"              + " = 0",
-        "frameskip_type"               + " = 2",                                        #None/Manual/Auto
-        "frameskip_value"              + " = 1",                                        #50%/100%/200%/300%/400%/Unlimited
-        "safe_frameskip"               + " = 1",
+        "frameskip_type"               + " = " + str(esvaluedrasticframeskiptype),      #None/Manual/Auto
+        "frameskip_value"              + " = " + str(esvaluedrasticframeskipvalue),     #1-9
+        "safe_frameskip"               + " = 1",                                        #Needed for automatic frameskipping to actually work.
         "disable_edge_marking"         + " = 1",                                        #will prevent edge marking. It draws outlines around some 3D models to give a cel-shaded effect. Since DraStic doesn't emulate anti-aliasing, it'll cause edges to look harsher than they may on a real DS.
         "fix_main_2d_screen"           + " = " + str(esvaluedrasticfix2d),              #Top Screen will always be the Action Screen (for 2d games like Sonic)
         "hires_3d"                     + " = " + str(esvaluedrastichires),              #High Resolution 3D Rendering

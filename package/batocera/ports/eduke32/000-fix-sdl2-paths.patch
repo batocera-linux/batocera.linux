@@ -1,0 +1,28 @@
+Index: source/imgui/src/imgui_impl_sdl.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/imgui/src/imgui_impl_sdl.cpp b/source/imgui/src/imgui_impl_sdl.cpp
+--- a/source/imgui/src/imgui_impl_sdl.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/source/imgui/src/imgui_impl_sdl.cpp	(date 1656279954767)
+@@ -68,8 +68,8 @@
+
+ // SDL
+ // (the multi-viewports feature requires SDL features supported from SDL 2.0.4+. SDL 2.0.5+ is highly recommended)
+-#include <SDL.h>
+-#include <SDL_syswm.h>
++#include <SDL2/SDL.h>
++#include <SDL2/SDL_syswm.h>
+ #if defined(__APPLE__)
+ #include <TargetConditionals.h>
+ #endif
+@@ -878,7 +878,7 @@
+ // Vulkan support (the Vulkan renderer needs to call a platform-side support function to create the surface)
+ // SDL is graceful enough to _not_ need <vulkan/vulkan.h> so we can safely include this.
+ #if SDL_HAS_VULKAN
+-#include <SDL_vulkan.h>
++#include <SDL2/SDL_vulkan.h>
+ static int ImGui_ImplSDL2_CreateVkSurface(ImGuiViewport* viewport, ImU64 vk_instance, const void* vk_allocator, ImU64* out_vk_surface)
+ {
+     ImGui_ImplSDL2_ViewportData* vd = (ImGui_ImplSDL2_ViewportData*)viewport->PlatformUserData;

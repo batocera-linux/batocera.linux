@@ -10,6 +10,8 @@ MALI_G31_GBM_SOURCE = libmali-$(MALI_G31_GBM_VERSION).tar.gz
 MALI_G31_GBM_SITE = https://github.com/batocera-linux/rockchip-packages/releases/download/20220303
 #MALI_G31_GBM_SITE = $(call github,rockchip-linux,libmali,$(MALI_G31_GBM_VERSION))
 
+MALI_G31_GBM_DEPENDENCIES = libdrm
+
 MALI_G31_GBM_INSTALL_STAGING = YES
 MALI_G31_GBM_PROVIDES = libegl libgles libmali
 

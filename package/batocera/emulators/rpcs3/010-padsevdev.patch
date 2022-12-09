@@ -159,15 +159,15 @@ index b6dab60..bbc9d3b 100644
  		{
  			m_is_negative          = false;
  			m_is_button_or_trigger = true;
-@@ -598,7 +625,7 @@ std::vector<std::string> evdev_joystick_handler::ListDevices()
- 				libevdev_has_event_type(dev, EV_ABS))
- 			{
- 				// It's a joystick.
--				std::string name = get_device_name(dev);
-+				std::string name = "/dev/input/" + et.name;
+@@ -733,7 +733,7 @@
+ 				if (is_pad_device || is_motion_device)
+ 				{
+ 					// It's a joystick or motion device.
+-					std::string name = get_device_name(dev);
++					std::string name = "/dev/input/" + et.name;
  
- 				if (unique_names.find(name) == unique_names.end())
- 					unique_names.emplace(name, 1);
+ 					if (unique_names.find(name) == unique_names.end())
+ 						unique_names.emplace(name, 1);
 @@ -642,7 +669,7 @@ int evdev_joystick_handler::add_device(const std::string& device, const std::sha
  				continue;
  			}

@@ -1,0 +1,11 @@
+config BR2_PACKAGE_TOUCHEGG
+	bool "touchegg"
+	select BR2_PACKAGE_XINPUT
+	select BR2_PACKAGE_LIBINPUT
+	select BR2_PACKAGE_CAIRO
+	select BR2_PACKAGE_PUGIXML
+	select BR2_PACKAGE_XLIB_LIBXTST
+	help
+	  Extended support for touchscreens
+
+	  https://github.com/JoseExposito/touchegg

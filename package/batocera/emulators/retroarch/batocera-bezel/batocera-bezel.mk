@@ -3,26 +3,26 @@
 # batocera bezel
 #
 ################################################################################
-# Version.: Commits on April 21, 2022
-BATOCERA_BEZEL_VERSION = b18b18e8d7116b2f6bbf22a7da708f453e82771c
+# Version.: Commits on Nov 4, 2022
+BATOCERA_BEZEL_VERSION = 3e1b3d658fd9068526aa52c4e1accc8d0b156e57
 BATOCERA_BEZEL_SITE = $(call github,batocera-linux,batocera-bezel,$(BATOCERA_BEZEL_VERSION))
 
 define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/ambiance_broadcast 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/ambiance_gameroom 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/ambiance_monitor_1084s    $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/ambiance_night 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/ambiance_vintage_tv	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/arcade_1980s  	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/arcade_1980s_vertical     $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/arcade_vertical_default   $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/ambiance_broadcast	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/ambiance_gameroom 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/ambiance_monitor_1084s   $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/ambiance_night           $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/ambiance_vintage_tv      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/arcade_1980s             $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/arcade_1980s_vertical    $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -rf $(@D)/arcade_vertical_default  $(TARGET_DIR)/usr/share/batocera/datainit/decorations
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles
 	# we don't have all systems with no_curve_night yet, so we copy first the "classic" bezels
-	cp -r $(@D)/default_unglazed/*               $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
-	cp -r $(@D)/default_nocurve_night/default.*  $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
-	cp -r $(@D)/default_nocurve_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
-	cp -rf $(@D)/default_standalone_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
+	cp -rf --remove-destination $(@D)/default_unglazed/*               $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
+	cp -rf --remove-destination $(@D)/default_nocurve_night/default.*  $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
+	cp -rf --remove-destination $(@D)/default_nocurve_night/systems    $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
+	cp -rf --remove-destination $(@D)/default_standalone_night/systems $(TARGET_DIR)/usr/share/batocera/datainit/decorations/consoles/
 	(cd $(TARGET_DIR)/usr/share/batocera/datainit/decorations && ln -sf consoles default)
 
 	echo -e "You can find help on how to customize decorations: \n" \

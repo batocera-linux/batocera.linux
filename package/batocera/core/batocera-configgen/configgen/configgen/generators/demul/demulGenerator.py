@@ -17,7 +17,7 @@ eslog = get_logger(__name__)
 
 class DemulGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/demul"
         emupath = wineprefix + "/demul"
         bottlewinpath = wineprefix + "/drive_c/windows" 
@@ -101,20 +101,20 @@ class DemulGenerator(Generator):
             
         if not Config.has_section("files"):
             Config.add_section("files")
-        Config.set("files", "nvram", "Z:{}".format(nvram_path_on_windows))
-        Config.set("files", "roms0", "Z:{}".format(roms0_path_on_windows))
+        Config.set("files", "nvram", f"Z:{nvram_path_on_windows}")
+        Config.set("files", "roms0", f"Z:{roms0_path_on_windows}")
         Config.set("files", "romsPathsCount", "8")
-        Config.set("files", "roms1", "Z:{}".format(roms1_path_on_windows))
-        Config.set("files", "roms2", "Z:{}".format(roms2_path_on_windows))
-        Config.set("files", "roms3", "Z:{}".format(roms3_path_on_windows))
-        Config.set("files", "roms4", "Z:{}".format(roms4_path_on_windows))
-        Config.set("files", "roms5", "Z:{}".format(roms5_path_on_windows))
-        Config.set("files", "roms6", "Z:{}".format(roms6_path_on_windows))
-        Config.set("files", "roms7", "Z:{}".format(roms7_path_on_windows))
+        Config.set("files", "roms1", f"Z:{roms1_path_on_windows}")
+        Config.set("files", "roms2", f"Z:{roms2_path_on_windows}")
+        Config.set("files", "roms3", f"Z:{roms3_path_on_windows}")
+        Config.set("files", "roms4", f"Z:{roms4_path_on_windows}")
+        Config.set("files", "roms5", f"Z:{roms5_path_on_windows}")
+        Config.set("files", "roms6", f"Z:{roms6_path_on_windows}")
+        Config.set("files", "roms7", f"Z:{roms7_path_on_windows}")
 
         if not Config.has_section("plugins"):
             Config.add_section("plugins")
-        Config.set("plugins", "directory", "Z:{}".format(plugins_path_on_windows))
+        Config.set("plugins", "directory", f"Z:{plugins_path_on_windows}")
         Config.set("plugins", "spu", "spuDemul.dll")
         Config.set("plugins", "pad", "padDemul.dll")
         Config.set("plugins", "net", "netDemul.dll")
@@ -146,7 +146,7 @@ class DemulGenerator(Generator):
         if demulsystem == "dc":
             dcrom_windows = PureWindowsPath(rom)
             # add Z:
-            dcpath = "Z:{}".format(dcrom_windows)
+            dcpath = f"Z:{dcrom_windows}"
 
         # adjust fullscreen & resolution to gpuDX11.ini
         if demulsystem == "gaelco":
@@ -194,12 +194,12 @@ class DemulGenerator(Generator):
         # now setup the command array for the emulator
         commandArray = ["/usr/wine/proton/bin/wine", "/userdata/saves/demul/demul/demul.exe"]
         # add system to command array
-        commandArray.extend(["-run={}".format(demulsystem)])
+        commandArray.extend([f"-run={demulsystem}"])
         # add rom to the command array if not dreamcast
         if demulsystem == "dc":
-            commandArray.extend(["-image={}".format(dcpath)])
+            commandArray.extend([f"-image={dcpath}"])
         else:
-            commandArray.extend(["-rom={}".format(smplromname)])
+            commandArray.extend([f"-rom={smplromname}"])
 
         return Command.Command(
             array=commandArray,

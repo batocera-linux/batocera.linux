@@ -1,6 +1,8 @@
---- a/pc-bios/optionrom/Makefile	2021-03-03 23:50:42.960966174 +0100
-+++ b/pc-bios/optionrom/Makefile	2021-03-03 23:50:59.880525808 +0100
-@@ -47,7 +47,7 @@
+diff --git a/pc-bios/optionrom/Makefile b/pc-bios/optionrom/Makefile
+index 30771f8..1055073 100644
+--- a/pc-bios/optionrom/Makefile
++++ b/pc-bios/optionrom/Makefile
+@@ -47,7 +47,7 @@ all: multiboot.bin linuxboot.bin linuxboot_dma.bin kvmvapic.bin pvh.bin
  pvh.img: pvh.o pvh_main.o
  
  %.o: %.S

@@ -2,6 +2,7 @@
 
 # hide mouse cursor
 unclutter --noevents -b
+xsetroot -cursor_name left_ptr
 
 # disable dpms to prevent screen from blanking
 xset -dpms
@@ -14,27 +15,13 @@ ulimit -S -c unlimited emulationstation
 # dbus launch is required for the gio/gvfs/trash:///...
 eval `dbus-launch --sh-syntax --exit-with-session`
 
-### intel-iris-driver ###
-irisdriver="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" intel-i965-driver)"
-if test ! -z "${irisdriver}" -a "${irisdriver}" = true; then
-    # Force use i965 driver through global environment variable
-    export MESA_LOADER_DRIVER_OVERRIDE=i965
-fi
-###################
-
-
 ### nvidia ###
-# these are 3 variables used only by nvidia to take nvidia gpu over intel cards when such hybrid cards are available
-nvidia_driver="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-driver)"
-if test "${nvidia_driver}" = "true"
+nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
+if test "${nvidia_prime}" = "true"
 then
-    nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
-    if test "${nvidia_prime}" = "true"
-    then
-	export __NV_PRIME_RENDER_OFFLOAD=1
-	export __VK_LAYER_NV_optimus=NVIDIA_only
-	export __GLX_VENDOR_LIBRARY_NAME=nvidia
-    fi
+  export __NV_PRIME_RENDER_OFFLOAD=1
+  export __VK_LAYER_NV_optimus=NVIDIA_only
+  export __GLX_VENDOR_LIBRARY_NAME=nvidia
 fi
 
 ### radeon ###
@@ -45,4 +32,4 @@ then
     export DRI_PRIME=1
 fi
 
-openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
+LC_ALL=C ratpoison --file /etc/ratpoisonrc

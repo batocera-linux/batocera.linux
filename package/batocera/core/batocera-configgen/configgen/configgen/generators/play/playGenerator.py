@@ -13,7 +13,7 @@ playHome = batoceraFiles.CONF
 
 class PlayGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
 
         # Create config folder
         if not path.isdir(playConfig):

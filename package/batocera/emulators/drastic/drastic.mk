@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DRASTIC_VERSION = 1.0
+DRASTIC_VERSION = 1.1
 DRASTIC_SOURCE = drastic.tar.gz
 DRASTIC_SITE = https://github.com/liberodark/drastic/releases/download/$(DRASTIC_VERSION)
 
@@ -12,10 +12,14 @@ define DRASTIC_EXTRACT_CMDS
 	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DRASTIC_DL_SUBDIR)/$(DRASTIC_SOURCE)
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_RPI_MESA3D)$(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-DRASTIC_BINARYFILE=drastic_n2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
-DRASTIC_BINARYFILE=drastic_oga
+ifeq ($(BR2_arm),y)
+    DRASTIC_BINARYFILE=drastic_xu4
+else ifeq ($(BR2_aarch64),y)
+    ifeq ($(BR2_PACKAGE_MESA3D),y)
+        DRASTIC_BINARYFILE=drastic_n2
+    else
+        DRASTIC_BINARYFILE=drastic_oga
+    endif
 endif
 
 define DRASTIC_INSTALL_TARGET_CMDS

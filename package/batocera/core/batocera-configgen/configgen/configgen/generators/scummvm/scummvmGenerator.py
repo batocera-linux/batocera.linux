@@ -13,7 +13,11 @@ class ScummVMGenerator(Generator):
     
     # Main entry of the module
     # Configure mupen and return a command
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
+        # crete /userdata/roms/scummvm/extras folder if it doesn't exist
+        if not os.path.exists('/userdata/roms/scummvm/extras'):
+            os.makedirs('/userdata/roms/scummvm/extras')
+        
         # Find rom path
         if os.path.isdir(rom):
           # rom is a directory: must contains a <game name>.scummvm file
@@ -36,12 +40,12 @@ class ScummVMGenerator(Generator):
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                         "-f",
-                        "--joystick={}".format(id),
+                        f"--joystick={id}",
                         "--screenshotspath="+batoceraFiles.screenshotsDir, 
-                        "--extrapath=/usr/share/scummvm",
+                        "--extrapath=/userdata/roms/scummvm/extras",
                         "--savepath="+batoceraFiles.scummvmSaves,
                         "--path=""{}""".format(romPath)]
-        commandArray.append("""{}""".format(romName))
+        commandArray.append(f"""{romName}""")
 
         return Command.Command(array=commandArray,env={
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)

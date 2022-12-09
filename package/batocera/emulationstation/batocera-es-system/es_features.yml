@@ -5,9 +5,11 @@ shared:
   cfeatures:
     videomode:
       prompt: VIDEO MODE
+      description: Set the display's resolution. Does not affect the rendering resolution.
       preset: videomodes
     ratio:
       prompt: GAME ASPECT RATIO
+      description: Force the game to render in this aspect ratio. Not all systems support all ratios.
       choices:
         "4/3":           "4/3"
         "16/9":          "16/9"
@@ -36,27 +38,31 @@ shared:
         "Custom":        "custom"
     rewind:
       prompt: REWIND
+      description: Store past states to rewind to in realtime, if the core supports it.
       choices:
         "On":  1
         "Off": 0
     autosave:
-      prompt: AUTO SAVE/LOAD
+      prompt: AUTO SAVE/LOAD ON GAME LAUNCH
+      description: Load latest save state on game launch and save state when exiting game.
       choices:
         "On":  1
         "Off": 0
     shaderset:
       prompt: SHADER SET
-      submenu: GAME RENDERING
+      submenu: GAME RENDERING & SHADERS
       preset: shaderset
     smooth:
       prompt: SMOOTH GAMES (BILINEAR FILTERING)
-      submenu: GAME RENDERING
+      description: Disabled if using a shader set or the output display matches the game's resolution.
+      submenu: GAME RENDERING & SHADERS
       choices:
         "On":  1
         "Off": 0
     integerscale:
-      prompt:      INTEGER SCALING (PIXEL PERFECT)
-      submenu: GAME RENDERING
+      prompt:  INTEGER SCALING (PIXEL PERFECT)
+      description: Only increase the image size in integer multiples.
+      submenu: GAME RENDERING & SHADERS
       choices:
         "On": 1
         "Off": 0
@@ -71,7 +77,7 @@ shared:
         "On":  1
         "Off": 0
     hud:
-      archs_exclude: [s905 rpi1 rpi2 rpizero2]
+      archs_exclude: [s905 bcm2835 bcm2836 rpizero2]
       prompt:      HEADS UP DISPLAY
       description: Show context-sensitive info over the game.
       submenu: DECORATIONS
@@ -80,6 +86,15 @@ shared:
         "Game info/art": game
         "Performance": perf
         "Custom": custom
+    hud_corner:
+      archs_exclude: [s905 bcm2835 bcm2836 rpizero2]
+      prompt: HEADS UP DISPLAY CORNER
+      submenu: DECORATIONS
+      choices:
+        "TOP LEFT (NW)": "NW"
+        "TOP RIGHT (NE)": "NE"
+        "BOTTOM RIGHT (SE)": "SE"
+        "BOTTOM LEFT (SW)": "SW"
     bezel.tattoo:
       prompt: SHOW TATTOO OVER BEZEL
       submenu: DECORATIONS
@@ -92,14 +107,14 @@ shared:
       prompt: TATTOO CORNER
       submenu: DECORATIONS
       choices:
-        "NORTH WEST": "NW"
-        "NORTH EAST": "NE"
-        "SOUTH EAST": "SE"
-        "SOUTH WEST": "SW"
+        "TOP LEFT (NW)": "NW"
+        "TOP RIGHT (NE)": "NE"
+        "BOTTOM RIGHT (SE)": "SE"
+        "BOTTOM LEFT (SW)": "SW"
     bezel.tattoo_file:
       prompt: "CUSTOM .PNG IMAGE PATH"
       submenu: DECORATIONS
-      preset: folder
+      preset: image
     bezel.resize_tattoo:
       prompt: RESIZE TATTOO
       description: Shrink/expand tattoo to fit within the bezel's border.
@@ -107,15 +122,17 @@ shared:
       preset: switchon
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
+      description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     ai_target_lang:
       prompt: TARGET LANGUAGE
+      description: The language to translate into.
       submenu: AI GAME TRANSLATION
       choices:
         "ENGLISH":   "En"
         "FRANÇAIS":  "Fr"
-        "PORTUGUES": "Pt"
+        "PORTUGUÊS": "Pt"
         "DEUTSCH":   "De"
         "GREEK":     "El"
         "ESPAÑOL":   "Es"
@@ -136,12 +153,13 @@ shared:
         "简体中文":  "Zh"
     ai_service_url:
       prompt: AI TRANSLATION SERVICE URL
+      description: If nothing is specified, will use ZTranslate by default.
       submenu: AI GAME TRANSLATION
       preset: input
     ai_service_pause:
       prompt: PAUSE ON TRANSLATED SCREEN
       submenu: AI GAME TRANSLATION
-      preset: switchoff
+      preset: switch
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
@@ -182,15 +200,56 @@ shared:
       choices:
         "On": 1
         "Off": 0
+    use_guns:
+      group: LIGHT GUN
+      prompt: USE LIGHT GUNS
+      description: Use light guns instead of pads if light guns are connected.
+      choices:
+        "On":  1
+        "Off": 0
+    rumble_gain:
+      prompt:      RUMBLE LEVEL
+      description: For emulators and controllers supporting force feedback.
+      choices:
+        "disabled": 1
+        "20%": 20
+        "40%": 40
+        "60%": 60
+        "80%": 80
+        "100%": 100
+    audio_volume:
+      prompt:      AUDIO VOLUME GAIN
+      description: Set game audio level gain in dB.
+      choices:
+        "-12":         -12.000000
+        "-10":         -10.000000
+        "-8":          -8.000000
+        "-6":          -6.000000
+        "-4":          -4.000000
+        "-2":          -2.000000
+        "0 (No gain)": 0
+        "+2":          2.000000
+        "+4":          4.000000
+        "+6":          6.000000
+        "+8":          8.000000
+        "+10":         10.000000
+        "+12":         12.000000
+    bordersmode:
+      group: LIGHT GUN
+      prompt:      BORDER MODE
+      description: Show/Hide guns borders for specific systems
+      choices:
+        "normal": "normal"
+        "hidden": "hidden"
 
 global:
-  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
-  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded]
+  shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, rpi4, rk3326]
+      archs_include: [x86, x86_64, bcm2711, rk3326]
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan may not work for every core.
       choices:
@@ -218,8 +277,8 @@ libretro:
               "Off":  "false"
     lightgun_map:
         group: ADVANCED OPTIONS
-        prompt:      CONTROLLER TO LIGHTGUN
-        description: Map controller inputs to lightgun inputs
+        prompt:      CONTROLLER TO LIGHT GUN
+        description: Map controller inputs to light gun inputs.
         choices:
             "On":   "true"
             "Off":  "false"
@@ -299,7 +358,30 @@ libretro:
                             "On":      enabled
     beetle-saturn:
       features: [netplay, cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
+      cfeatures:
+          beetle-saturn_crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
+                choices:
+                    "Cross": "Cross"
+                    "Dot": "Dot"
+                    "Disabled": "Off"
+          controller1_saturn:
+                prompt:      CONTROLLER 1 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
+          controller2_saturn:
+                prompt:      CONTROLLER 2 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
     fmsx:
        features: [netplay, cheevos]
        shared: [rewind, autosave]
@@ -307,6 +389,13 @@ libretro:
       features: [padtokeyboard, cheevos]
       shared: [rewind, autosave]
       cfeatures:
+            bluemsx_overscan:
+                prompt:      ZOOM (HIDE BORDERS)
+                description: Hides borders on many games. Some games used the borders.
+                choices:
+                    "Off":  disabled
+                    "On":   enabled
+                    "MSX2": MSX2
             bluemsx_nospritelimits:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the four sprites per line limit.
@@ -315,7 +404,7 @@ libretro:
                     "On":  ON
     bsnes:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
     bsnes_hd:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
@@ -340,7 +429,7 @@ libretro:
                     "576+KB":  576
     mesen-s:
       features: [netplay, padtokeyboard]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             mesen-s_ntsc_filter:
                 group: ADVANCED OPTIONS
@@ -515,16 +604,16 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "256x192":   256x192
-                    "512x384":   512x384
-                    "768x576":   768x576
-                    "1024x768":  1024x768
-                    "1280x960":  1280x960
-                    "1536x1152": 1536x1152
-                    "1792x1344": 1792x1344
-                    "2048x1536": 2048x1536
-                    "2304x1728": 2304x1728
-                    "2560x1920": 2560x1920
+                    "1x (256x192)":   256x192
+                    "2x (512x384)":   512x384
+                    "3x (768x576)":   768x576
+                    "4x (1024x768)":  1024x768
+                    "5x (1280x960)":  1280x960
+                    "6x (1536x1152)": 1536x1152
+                    "7x (1792x1344)": 1792x1344
+                    "8x (2048x1536)": 2048x1536
+                    "9x (2304x1728)": 2304x1728
+                    "10x (2560x1920)": 2560x1920
             texture_scaling:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE UPSCALING (XBRZ)
@@ -601,7 +690,119 @@ libretro:
                     "hybrid top ratio 3":    Hybrid Top-Ratio3
                     "hybrid bottom ratio 2": Hybrid Bottom-Ratio2
                     "hybrid bottom ratio 3": Hybrid Bottom-Ratio3
-    #dolphin:
+            melonds_touch_mode:
+                prompt:      TOUCH SCREEN MODE
+                description: Select the input type to navigate the touch screen
+                choices:
+                    "None":         Disabled
+                    "Mouse":        Mouse
+                    "Touch Screen": Touch
+                    "Right Stick":  Joystick
+    dolphin:
+      shared: [autosave]
+      cfeatures:
+                    wii_resolution:
+                        prompt:      RENDERING RESOLUTION
+                        description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+                        choices:
+                            "1x native (640x528)":  x1 (640 x 528)
+                            "2x 720p (1280x1056)":  x2 (1280 x 1056)
+                            "3x 1080p (1920x1584)": x3 (1920 x 1584)
+                            "4x 1440p (2560x2112)": x4 (2560 x 2112)
+                            "5x (3200x2640)":       x5 (3200 x 2640)
+                            "6x 4K (3840x3168)":    x6 (3840 x 3168)
+                    wii_language:
+                        prompt:      LANGUAGE
+                        description: Wii NAND's language setting.
+                        choices:
+                            "English":             English
+                            "French":              French
+                            "German":              German
+                            "Spanish":             Spanish
+                            "Italian":             Italian
+                            "Dutch":               Dutch
+                            "Japanese":            Japanese
+                            "Simplified Chinese":  Simplified Chinese
+                            "Traditional Chinese": Traditional Chinese
+                            "Korean":              Korean
+                    wii_widescreen_hack:
+                        prompt:      WIDESCREEN HACK (GLITCHY)
+                        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+                        choices:
+                            "Off":   disabled
+                            "On":  enabled
+                    wii_shader_mode:
+                        group: ADVANCED OPTIONS
+                        prompt:      UBERSHADERS
+                        description: May not work well on all hardware. Hybrid is preferred, where supported.
+                        choices:
+                            "No Ubershaders":        sync
+                            "Exclusive Ubershaders": sync UberShaders
+                            "Hybrid Ubershaders":    a-sync UberShaders
+                            "Skip Drawing":          a-sync Skip Rendering
+                    wii_anisotropic:
+                        group: ADVANCED OPTIONS
+                        prompt:      ANISOTROPIC FILTERING
+                        description: Improves clarity of distant textures.
+                        choices:
+                            "Off":  1x
+                            "2x":   2x
+                            "4x":   4x
+                            "8x":   8x
+                            "16x":  16x
+      systems:
+            wii:
+                cfeatures:
+                    wii_widescreen:
+                        prompt:      WII TV MODE
+                        description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
+                        choices:
+                            "16:9":  enabled
+                            "4:3":   disabled
+                    controller1_wii:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller2_wii:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller3_wii:
+                        prompt:      CONTROLLER 3 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
+                    controller4_wii:
+                        prompt:      CONTROLLER 4 TYPE
+                        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+                        choices:
+                            "WiiMote":                           1
+                            "WiiMote Sideways":                  513
+                            "WiiMote + Nunchuk":                 769
+                            "WiiMote + Classic Controller":      1025
+                            "WiiMote + Classic Controller Pro":  1281
+                            "Real Wiimote":                      1536
+                            "GameCube Controller":               1281
     dosbox:
       features: [padtokeyboard]
       cfeatures:
@@ -803,7 +1004,7 @@ libretro:
                     "Custom Keyboard Binds (best for Pad2Key)":             3
     swanstation:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -821,15 +1022,15 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x (native)": 1
-                    "2x":          2
-                    "3x (720p)":   3
-                    "4x":          4
-                    "5x (1080p)":  5
-                    "6x (1440p)":  6
-                    "7x":          7
-                    "8x":          8
-                    "9x":          9
+                    "1x (320x240)":   1
+                    "2x (640x480)":   2
+                    "3x (960x720)":   3
+                    "4x (1280x960)":  4
+                    "5x (1600x1200)": 5
+                    "6x (1920x1440)": 6
+                    "7x (2240x1680)": 7
+                    "8x (2560x1920)": 8
+                    "9x (2880x2160)": 9
             duckstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -908,15 +1109,15 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x (native)": 1
-                    "2x":          2
-                    "3x (720p)":   3
-                    "4x":          4
-                    "5x (1080p)":  5
-                    "6x (1440p)":  6
-                    "7x":          7
-                    "8x":          8
-                    "9x":          9
+                    "1x (320x240)":   1
+                    "2x (640x480)":   2
+                    "3x (960x720)":   3
+                    "4x (1280x960)":  4
+                    "5x (1600x1200)": 5
+                    "6x (1920x1440)": 6
+                    "7x (2240x1680)": 7
+                    "8x (2560x1920)": 8
+                    "9x (2880x2160)": 9
             duckstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -980,7 +1181,7 @@ libretro:
     #easyrpg:
     fbneo:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 group: ADVANCED OPTIONS
@@ -1015,11 +1216,12 @@ libretro:
                     "3":           3
                     "4":           4
             fbneo-lightgun-hide-crosshair:
-                prompt:      SHOW LIGHTGUN CROSSHAIRS
-                description: Lightgun device must be selected on at least one port.
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
                 choices:
-                    "Off":                                enabled
-                    "On":                                 disabled
+                    "Off":                                disabled
+                    "On":                                 enabled
       systems:
             neogeo:
                 cfeatures:
@@ -1041,8 +1243,14 @@ libretro:
                             "Per-game":                           per-game
     fceumm:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
+            fceumm_show_crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
@@ -1122,7 +1330,7 @@ libretro:
                     "Arkanoid paddle":      514
     flycast:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
@@ -1135,23 +1343,59 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "640x480":    640x480
-                    "800x600":    800x600
-                    "960x720":    960x720
-                    "1024x768":   1024x768
-                    "1280x960":   1280x960
-                    "1440x1080":  1440x1080
-                    "1600x1200":  1600x1200
-                    "1920x1440":  1920x1440
-                    "2560x1920":  2560x1920
-                    "3200x2400":  3200x2400
-                    "3840x2880":  3840x2880
-                    "4480x3360":  4480x3360
-                    "5120x3840":  5120x3840
-                    "5760x4320":  5760x4320
-                    "6400x4800":  6400x4800
-                    "7040x5280":  7040x5280
-                    "7680x5760":  7680x5760
+                    "1x (640x480)":      640x480
+                    "1.25x (800x600)":   800x600
+                    "1.5x (960x720)":    960x720
+                    "1.6x (1024x768)":   1024x768
+                    "2x (1280x960)":     1280x960
+                    "2.25x (1440x1080)": 1440x1080
+                    "2.5x (1600x1200)":  1600x1200
+                    "3x (1920x1440)":    1920x1440
+                    "4x (2560x1920)":    2560x1920
+                    "5x (3200x2400)":    3200x2400
+                    "6x (3840x2880)":    3840x2880
+                    "7x (4480x3360)":    4480x3360
+                    "8x (5120x3840)":    5120x3840
+                    "9x (5760x4320)":    5760x4320
+                    "10x (6400x4800)":   6400x4800
+                    "11x (7040x5280)":   7040x5280
+                    "12x (7680x5760)":   7680x5760
+            reicast_lightgun1_crosshair:
+                group: LIGHT GUN
+                prompt:      Target color for player 1.
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun2_crosshair:
+                group: LIGHT GUN
+                prompt:      Target color for player 2.
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun3_crosshair:
+                group: LIGHT GUN
+                prompt:      Target color for player 3.
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
+            reicast_lightgun4_crosshair:
+                group: LIGHT GUN
+                prompt:      Target color for player 4.
+                choices:
+                    Red: Red
+                    Blue: Blue
+                    Green: Green
+                    White: White
+                    Disabled: disabled
             reicast_mipmapping:
                 group: ADVANCED OPTIONS
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
@@ -1267,11 +1511,30 @@ libretro:
       features: [padtokeyboard, cheevos]
       shared: [autosave]
     freechaf:
+      features: [cheevos]
       shared: [rewind]
     fuse:
       features: [padtokeyboard]
       shared: [autosave]
       cfeatures:
+            fuse_machine:
+                prompt:      MODEL
+                choices:
+                    "Spectrum 48K":        Spectrum 48K
+                    "Spectrum 48K (NTSC)": Spectrum 48K (NTSC)
+                    "Spectrum 128K":       Spectrum 128K
+                    "Spectrum +2":         Spectrum +2
+                    "Spectrum +2A":        Spectrum +2A
+                    "Spectrum +3":         Spectrum +3
+                    "Spectrum +3e":        Spectrum +3e
+                    "Spectrum SE":         Spectrum SE
+                    "Timex TC2048":        Timex TC2048
+                    "Timex TS2068":        Timex TS2068
+                    "Spectrum 16K":        Spectrum 16K
+                    "Pentagon 128K":       Pentagon 128K
+                    "Pentagon 512K":       Pentagon 512K
+                    "Pentagon 1024":       Pentagon 1024
+                    "Scorpion 256K":       Scorpion 256K
             fuse_hide_border:
                 prompt:      ZOOM (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
@@ -1407,6 +1670,13 @@ libretro:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
       cfeatures:
+            gpgx_region:
+                prompt:      REGION
+                description: Games may run faster/slower than normal if the incorrect region is selected.
+                choices:
+                    "NTSC-U":             ntsc-u
+                    "PAL":                pal
+                    "NTSC-J":             ntsc-j
             gpgx_no_sprite_limit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eighty sprites per line limit.
@@ -1415,6 +1685,7 @@ libretro:
                     "On":                 enabled
       systems:
             megadrive:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_md:
                         group: ADVANCED OPTIONS
@@ -1426,9 +1697,9 @@ libretro:
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        group: ADVANCED OPTIONS
-                        prompt:      SHOW LIGHTGUN CROSSHAIRS
-                        description: Lightgun device must be selected on at least one port.
+                        group: LIGHT GUN
+                        prompt:      SHOW LIGHT GUN CROSSHAIRS
+                        description: Show crosshairs in game
                         choices:
                             "Off":        disabled
                             "On":         enabled
@@ -1447,7 +1718,7 @@ libretro:
                             "Mouse":                         2
                     controller2_md:
                         prompt:      CONTROLLER 2 TYPE
-                        description: Lightguns can only be used in port 2.
+                        description: Light guns can only be used in port 2.
                         choices:
                             #"None":                          0
                             "Joypad Auto":                   1
@@ -1461,7 +1732,54 @@ libretro:
                             "Mouse":                         2
                             "Menacer Light Gun":             516
                             "Konami Justifiers":             772
+            megacd:
+                cfeatures:
+                    gpgx_cd_add_on:
+                        prompt:      CD ADD-ON
+                        choices:
+                            "Sega/Mega CD":       sega/mega cd
+                            "MegaSD":             megasd
+                            "None":               none
+                    gpgx_cdda_volume:
+                        prompt:      CD-DA VOLUME
+                        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+                        choices:
+                            "100":    100
+                            "90":     90
+                            "80":     80
+                            "70":     70
+                            "60":     60
+                            "50":     50
+                            "40":     40
+                            "30":     30
+                            "20":     20
+                            "10":     10
+                            "0":      0
+            msu-md:
+                cfeatures:
+                    gpgx_cd_add_on:
+                        prompt:      CD ADD-ON
+                        choices:
+                            "Sega/Mega CD":       sega/mega cd
+                            "MegaSD":             megasd
+                            "None":               none
+                    gpgx_cdda_volume:
+                        prompt:      CD-DA VOLUME
+                        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+                        choices:
+                            "100":    100
+                            "90":     90
+                            "80":     80
+                            "70":     70
+                            "60":     60
+                            "50":     50
+                            "40":     40
+                            "30":     30
+                            "20":     20
+                            "10":     10
+                            "0":      0
             mastersystem:
+                shared: [use_guns]
                 cfeatures:
                     gpgx_blargg_filter_ms:
                         group: ADVANCED OPTIONS
@@ -1481,9 +1799,9 @@ libretro:
                             "Off":         disabled
                             "On (forced)": enabled
                     gun_cursor_ms:
-                        group: ADVANCED OPTIONS
-                        prompt:      SHOW LIGHTGUN CROSSHAIRS
-                        description: Lightgun device must be selected on at least one port.
+                        group: LIGHT GUN
+                        prompt:      SHOW LIGHT GUN CROSSHAIRS
+                        description: Show crosshairs in game
                         choices:
                             "Off":        disabled
                             "On":         enabled
@@ -1540,7 +1858,71 @@ libretro:
     kronos:
       features: [cheevos]
       shared: [autosave]
+    lowresnx:
+      features: [padtokeyboard]
     #lutro:
+    same_cdi:
+      features: [netplay]
+      shared: [autosave]
+      cfeatures:
+            mame_cpu_overclock:
+                group: ADVANCED OPTIONS
+                prompt:      OVERCLOCK (UNSTABLE)
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
+                choices:
+                    "default":        default
+                    "30":             30
+                    "35":             35
+                    "40":             40
+                    "45":             45
+                    "50":             50
+                    "55":             55
+                    "60":             60
+                    "65":             65
+                    "70":             70
+                    "75":             75
+                    "80":             80
+                    "85":             85
+                    "90":             90
+                    "95":             95
+                    "100":            100
+                    "105":            105
+                    "110":            110
+                    "115":            115
+                    "120":            120
+                    "125":            125
+                    "130":            130
+                    "135":            135
+                    "140":            140
+                    "145":            145
+                    "150":            150
+            mame_altres:
+                prompt:      RENDERING RESOLUTION
+                description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+                choices:
+                    "640x480":        640x480
+                    "800x600":        800x600
+                    "960x720":        960x720
+                    "1024x768":       1024x768
+                    "1280x720":       1280x720
+                    "1600x800":       1600x800
+                    "1920x1080":      1920x1080
+                    "2560x1440":      2560x1440
+                    "3840x2160":      3840x2160
+            customcfg:
+                group: ADVANCED OPTIONS
+                prompt:      CUSTOM CONFIG
+                description: Use a custom MAME config, do not overwrite config on launch.
+                choices:
+                    "On":            1
+                    "Off (Default)": 0
+            customcfg:
+                group: ADVANCED OPTIONS
+                prompt:      CUSTOM MAME CONFIG
+                description: Set system-wide controls via MAME menu
+                choices:
+                    "On":  1
+                    "Off": 0
     mame:
       features: [netplay]
       shared: [autosave]
@@ -1636,14 +2018,6 @@ libretro:
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            altdpad:
-                group: ADVANCED OPTIONS
-                prompt:      ALT DPAD MODE
-                description: If the D-Pad is oriented incorrectly for your controller.
-                choices:
-                    "Off (Default)":    0
-                    "DS3 Orientation":  1
-                    "X360 Orientation": 2
             customcfg:
                 group: ADVANCED OPTIONS
                 prompt:      CUSTOM MAME CONFIG
@@ -1651,90 +2025,13 @@ libretro:
                 choices:
                     "On":  1
                     "Off": 0
-    mess:
-      features: [netplay, padtokeyboard]
-      shared: [autosave]
-      cfeatures:
-            mame_cpu_overclock:
-                group: ADVANCED OPTIONS
-                prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces system slowdown. Causes issues in some games.
-                choices:
-                    "default":        default
-                    "30":             30
-                    "35":             35
-                    "40":             40
-                    "45":             45
-                    "50":             50
-                    "55":             55
-                    "60":             60
-                    "65":             65
-                    "70":             70
-                    "75":             75
-                    "80":             80
-                    "85":             85
-                    "90":             90
-                    "95":             95
-                    "100":            100
-                    "105":            105
-                    "110":            110
-                    "115":            115
-                    "120":            120
-                    "125":            125
-                    "130":            130
-                    "135":            135
-                    "140":            140
-                    "145":            145
-                    "150":            150
-            mame_altres:
-                prompt:      RENDERING RESOLUTION
-                description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
-                choices:
-                    "640x480":        640x480
-                    "800x600":        800x600
-                    "960x720":        960x720
-                    "1024x768":       1024x768
-                    "1280x720":       1280x720
-                    "1600x800":       1600x800
-                    "1920x1080":      1920x1080
-                    "2560x1440":      2560x1440
-                    "3840x2160":      3840x2160
-            sharemameart:
-                group: ADVANCED OPTIONS
-                prompt:      SHARE MAME ARTWORK
-                description: Use the same art paths as standalone MAME - not recommended if using decorations or shaders.
-                choices:
-                    "On (Default)": 1
-                    "Off":          0
-            artworkcrop:
-                group: ADVANCED OPTIONS
-                prompt:      CROP ARTWORK
-                description: Crop MAME artwork to maximize the game screen and only fill unused space.
-                choices:
-                    "On (Default)": 1
-                    "Off":          0
-            customcfg:
-                group: ADVANCED OPTIONS
-                prompt:      CUSTOM CONFIG
-                description: Use a custom MAME config, do not overwrite config on launch.
+            offscreenreload:
+                group: LIGHT GUN
+                prompt:      OFF-SCREEN RELOAD BUTTON
+                description: Set gun button 2 to reload.
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            altdpad:
-                group: ADVANCED OPTIONS
-                prompt:      ALT DPAD MODE
-                description: If the D-Pad is oriented incorrectly for your controller.
-                choices:
-                    "Off (Default)":    0
-                    "DS3 Orientation":  1
-                    "X360 Orientation": 2
-            customcfg:
-                group: ADVANCED OPTIONS
-                prompt:      CUSTOM MAME CONFIG
-                description: Set system-wide controls via MAME menu
-                choices:
-                    "On":  1
-                    "Off": 0
       systems:
          adam:
               cfeatures:
@@ -1826,6 +2123,23 @@ libretro:
                           "Cassette":       cass
                           "Disk (Drive 1)": flop1
                           "Disk (Drive 2)": flop2
+                  gameio:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Type of joystick connected to the game port.
+                      choices:
+                          "None":                                         none
+                          "Apple (2x 2-button Analog)":                   joy
+                          "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                          "Gizmo (1-Button Digital)":                     gizmo
+                  altmodel:
+                      group: ADVANCED OPTIONS
+                      prompt:      MODEL
+                      description: Model of emulated Apple II.
+                      choices:
+                          "Apple //e Enhanced (Default)": apple2ee
+                          "Apple //e":                    apple2e
+                          "Apple ][ Plus":                apple2p
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -1980,6 +2294,16 @@ libretro:
                           "Off": 0
          bbc:
               cfeatures:
+                  sticktype:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Select which joystick to emulate.
+                      choices:
+                          "None (Default)":                   none
+                          "Acorn Analogue Joysticks":         acornjoy
+                          "Acorn Bitstik":                    bitstik1
+                          "Robo Bitstik 2":                   bitstik2
+                          "Voltmace Delta 3b Twin Joysticks": voltmace3b
                   altmodel:
                       group: ADVANCED OPTIONS
                       prompt:      BBC MODEL
@@ -2325,6 +2649,60 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+         gp32:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":            none
+                          "GamePark GP32 SmartMedia cards": gp32
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM GAME CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
+         laser310:
+              cfeatures:
+                  softList:
+                      group: ADVANCED OPTIONS
+                      prompt:      SOFTWARE LIST
+                      description: Use MAME software lists to identify ROM
+                      choices:
+                          "Don't Use (Default)":                         none
+                          "Dick Smith Electronics VZ-200/300 cassettes": vz_cass
+                          "Dick Smith Electronics VZ-200/300 snapshots": vz_snap
+                  memslot:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEMORY SLOT
+                      description: Choose hardware for the memory expansion slot
+                      choices:
+                          "Laser 310/VZ-300 16k Memory":   laser310_16k
+                          "Laser/VZ 64k Memory (Default)": laser_64k
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "Cassette": cass
+                          "Snapshot": snap
+                  enableui:
+                      group: ADVANCED OPTIONS
+                      prompt:      UI KEYS
+                      description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                      choices:
+                          "Off at Start": 0
+                          "On at Start":  1
+                  pergamecfg:
+                      group: ADVANCED OPTIONS
+                      prompt:      CUSTOM CONFIG
+                      description: Enable per-game custom configuration via MAME menu.
+                      choices:
+                          "On":  1
+                          "Off": 0
          macintosh:
               cfeatures:
                   softList:
@@ -2523,7 +2901,7 @@ libretro:
                       description: Speech module installed
                       choices:
                           "Enabled (Default)": 1
-                          "Disabled":          0    
+                          "Disabled":          0
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
@@ -2712,14 +3090,6 @@ libretro:
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            altdpad:
-                group: ADVANCED OPTIONS
-                prompt:      ALT DPAD MODE
-                description: If the D-Pad is oriented incorrectly for your controller.
-                choices:
-                    "Off (Default)":    0
-                    "DS3 Orientation":  1
-                    "X360 Orientation": 2
             customcfg:
                 group: ADVANCED OPTIONS
                 prompt:      CUSTOM MAME CONFIG
@@ -2744,9 +3114,13 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+
+    mame0139:
+      shared: [use_guns]
+
     mame078plus:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             mame2003-plus_analog:
                 prompt:      CONTROL MAPPING
@@ -2794,7 +3168,7 @@ libretro:
       shared: [rewind, autosave]
     mednafen_psx:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             beetle_psx_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -2838,11 +3212,11 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "1x(native)": 1x(native)
-                    "2x":         2x
-                    "4x":         4x
-                    "8x":         8x
-                    "16x":        16x
+                    "1x (320x240)":    1x(native)
+                    "2x (640x480)":    2x
+                    "4x (1280x960)":   4x
+                    "8x (2560x1920)":  8x
+                    "16x (5120x3840)": 16x
             beetle_psx_widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -3027,17 +3401,17 @@ libretro:
                 prompt:      4:3 RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":   320x240
-                    "640x480":   640x480
-                    "960x720":   960x720
-                    "1280x960":  1280x960
-                    "1600x1200": 1600x1200
-                    "1920x1440": 1920x1440
-                    "2240x1680": 2240x1680
-                    "2560x1920": 2560x1920
-                    "3200x2400": 3200x2400
-                    "3520x2640": 3520x2640
-                    "3840x2880": 3840x2880
+                    "1x (320x240)":   320x240
+                    "2x (640x480)":   640x480
+                    "3x (960x720)":   960x720
+                    "4x (1280x960)":  1280x960
+                    "5x (1600x1200)": 1600x1200
+                    "6x (1920x1440)": 1920x1440
+                    "7x (2240x1680)": 2240x1680
+                    "8x (2560x1920)": 2560x1920
+                    "10x (3200x2400)": 3200x2400
+                    "11x (3520x2640)": 3520x2640
+                    "12x (3840x2880)": 3840x2880
             mupen64plus-169screensize:
                 prompt:      16:9 RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D objects clearer.
@@ -3103,6 +3477,27 @@ libretro:
                     "4xBRZ":      4xBRZ
                     "5xBRZ":      5xBRZ
                     "6xBRZ":      6xBRZ
+            mupen64plus-rdpPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RDP PLUGIN
+                choices:
+                    "GLideN64 (Fastest)":          gliden64
+                    "ParaLLEl-RDP":                parallel
+                    "Angrylion (Most Compatible)": angrylion
+            mupen64plus-rspPlugin:
+                group: ADVANCED OPTIONS
+                prompt:      RSP PLUGIN
+                choices:
+                    "HLE (Fastest)":       hle
+                    "ParaLLEl (Best LLE)": parallel
+                    "CXD4 (LLE Fallback)": cxd4
+            mupen64plus-cpuCore:
+                group: ADVANCED OPTIONS
+                prompt:      CPU CORE
+                choices:
+                    "Dynarec (Fastest)":                dynamic_recompiler
+                    "Cached Interpreter":               cached_interpreter
+                    "Pure Interpreter (Most Accurate)": pure_interpreter
             mupen64plus-pak1:
                 prompt:      CONTROLLER PAK 1
                 description: Emulate a pak in the controller expansion port.
@@ -3131,6 +3526,13 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            mupen64plus-Framerate:
+                group: ADVANCED OPTIONS
+                prompt: FRAME RATE
+                description: Full speed can break some games.
+                choices:
+                    "Original":   Original
+                    "Full speed": Fullspeed
     neocd:
       shared: [rewind, autosave]
       cfeatures:
@@ -3145,9 +3547,9 @@ libretro:
                 prompt:      NEO GEO CD BIOS
                 description: Universe BIOS is not compatible with cheats.
                 choices:
-                    "CDZ":          CDZ
-                    "CDZ (MAME)":   CDZ (MAME)
-                    "Universe 3.2": Universe 3.2
+                    "CDZ":          neocd_z.rom (CDZ)
+                    "CDZ MAME":   neocd.bin (CDZ)
+                    "CDZ Universe 3.3": uni-bioscd.rom (CDZ, Universe 3.3)
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
                 description: Use one save file per game.
@@ -3156,8 +3558,14 @@ libretro:
                     "On":           On
     nestopia:
       features: [netplay]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
+            nestopia_show_crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
             nestopia_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the eight sprites per line limit.
@@ -3359,8 +3767,8 @@ libretro:
                 prompt:      CONSOLE REGION
                 choices:
                     "Autodetect":                  autodetect
-                    "NTSC":                        NTSC
-                    "PAL":                         PAL
+                    "NTSC 60Hz":                   NTSC
+                    "PAL 50Hz":                    PAL
             o2em_swap_gamepads:
                 prompt:      SWAP GAMEPADS
                 description: Some games accept input from port 2 instead of port 1.
@@ -3402,14 +3810,14 @@ libretro:
                     "90%":                         90
     opera:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             high_resolution:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":         disabled
-                    "640x480":         enabled
+                    "1x (320x240)":         disabled
+                    "2x (640x480)":         enabled
             cpu_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
                 description: Enhancement. Reduces system slowdown. Causes issues in some games.
@@ -3458,16 +3866,16 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "320x240":   320x240
-                    "640x480":   640x480
-                    "960x720":   960x720
-                    "1280x960":  1280x960
-                    "1440x1080": 1440x1080
-                    "1600x1200": 1600x1200
-                    "1920x1440": 1920x1440
-                    "2240x1680": 2240x1680
-                    "2880x2160": 2880x2160
-                    "5760x4320": 5760x4320
+                    "1x (320x240)":     320x240
+                    "2x (640x480)":     640x480
+                    "3x (960x720)":     960x720
+                    "4x (1280x960)":    1280x960
+                    "4.5x (1440x1080)": 1440x1080
+                    "5x (1600x1200)":   1600x1200
+                    "6x (1920x1440)":   1920x1440
+                    "7x (2240x1680)":   2240x1680
+                    "9x (2880x2160)":   2880x2160
+                    "18x (5760x4320)":  5760x4320
             parallel-n64-aspectratiohint:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -3485,11 +3893,11 @@ libretro:
                     "Nearest":     nearest
             parallel-n64-framerate:
                 group: ADVANCED OPTIONS
-                prompt:      FRAMERATE
-                description: Fullspeed can break some games.
+                prompt:      FRAME RATE
+                description: Full speed can break some games.
                 choices:
-                    "fullspeed":   fullspeed
-                    "original":    original
+                    "Original":   original
+                    "Full speed": fullspeed
             parallel-n64-pak1:
                 prompt:      CONTROLLER PAK 1
                 description: Emulate a pak in the controller expansion port.
@@ -3560,7 +3968,7 @@ libretro:
                     "On":         enabled
     pcsx_rearmed:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_guns]
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -3577,8 +3985,8 @@ libretro:
                     "2":                2
                     "3":                3
             neon_enhancement:
-                prompt:      ENHANCED RENDERING RESOLUTION (32-BIT ONLY)
-                description: Double the rendering resolution. No effect on 64-bit machines.
+                prompt:      ENHANCED RENDERING RESOLUTION
+                description: Double the rendering resolution.
                 choices:
                     "Off":              disabled
                     "On":               enabled
@@ -3824,7 +4232,261 @@ libretro:
                     "Super-high 1440p": superhires
             zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
+                description: Hides borders on many games. Some games use the borders.
+                choices:
+                    "Off":            none
+                    "Auto zoom":      automatic
+                    "minimum":        minimum
+                    "smaller":        smaller
+                    "small":          small
+                    "medium":         medium
+                    "large":          large
+                    "larger":         larger
+                    "maximum":        maximum
+            gfx_framerate:
+                prompt:      FRAMESKIP
+                description: Skip frames to improve performance, at the cost of choppy motion.
+                choices:
+                    "Off":        disabled
+                    "1":          1
+                    "2":          2
+            mouse_speed:
+                prompt:      MOUSE SPEED
+                description: Affects mouse speed globally.
+                choices:
+                    "original":   100
+                    "50%":        50
+                    "70%":        70
+                    "120%":       120
+                    "150%":       150
+                    "170%":       170
+                    "200%":       200
+            pad_options:
+                prompt:      JUMP ON B
+                description: Makes second fire button press up instead.
+                choices:
+                    "Off":    disabled
+                    "On":     jump
+      systems:
+            amiga500:
+                cfeatures:
+                    puae_floppy_speed:
+                        group: ADVANCED OPTIONS
+                        prompt:      FLOPPY TURBO SPEED
+                        description: Removes loading but can add possible glitches/crashes.
+                        choices:
+                            "Off":    100
+                            "On":     0
+                    keyrah_mapping:
+                        group: ADVANCED OPTIONS
+                        prompt:      2P GAMEPAD MAPPING (KEYRAH)
+                        description: Keypad to joyport mappings for 2 players.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    whdload:
+                        group: ADVANCED OPTIONS
+                        prompt:      WHDLOAD LAUNCHER
+                        description: Enable launching pre-installed WHDLoad installs.
+                        choices:
+                            "Off":    disabled
+                            "On":     config
+                    disable_joystick:
+                        group: ADVANCED OPTIONS
+                        prompt:      DISABLE EMULATOR JOYSTICK
+                        description: Passes all physical keyboard events for Pad2Key.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    controller1_puae:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select controller type for Amiga P1.
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+                    controller2_puae:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select controller type for Amiga P2.
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+            amiga1200:
+                cfeatures:
+                    puae_floppy_speed:
+                        group: ADVANCED OPTIONS
+                        prompt:      FLOPPY TURBO SPEED
+                        description: Removes loading but can add possible glitches/crashes.
+                        choices:
+                            "Off":    100
+                            "On":     0
+                    keyrah_mapping:
+                        group: ADVANCED OPTIONS
+                        prompt:      2P GAMEPAD MAPPING (KEYRAH)
+                        description: Keypad to joyport mappings for 2 players.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    whdload:
+                        group: ADVANCED OPTIONS
+                        prompt:      WHDLOAD LAUNCHER
+                        description: Enable launching pre-installed WHDLoad installs.
+                        choices:
+                            "Off":    disabled
+                            "On":     config
+                    pad_options:
+                        group: ADVANCED OPTIONS
+                        prompt:      JUMP ON B
+                        description: Makes second fire button press up instead.
+                        choices:
+                            "Off":    disabled
+                            "On":     jump
+                    disable_joystick:
+                        group: ADVANCED OPTIONS
+                        prompt:      DISABLE EMULATOR JOYSTICK
+                        description: Passes all physical keyboard events for Pad2Key.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    controller1_puae:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select controller type for Amiga P1.
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+                    controller2_puae:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select controller type for Amiga P2.
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+            amigacd32:
+                cfeatures:
+                    puae_cd_startup_delayed_insert:
+                        group: ADVANCED OPTIONS
+                        prompt:      BOOT ANIMATION FIRST
+                        description: Inserts CD during boot animation to prevent loading fail.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    puae_cd_speed:
+                        group: ADVANCED OPTIONS
+                        prompt:      CD TURBO SPEED
+                        description: Removes loading but can add possible glitches/crashes.
+                        choices:
+                            "Off":    100
+                            "On":     0
+                    puae_cd32pad_options:
+                        group: ADVANCED OPTIONS
+                        prompt:      JUMP ON A
+                        description: Makes the blue button press up instead.
+                        choices:
+                            "Off":    disabled
+                            "On":     jump
+            amigacdtv:
+                cfeatures:
+                    puae_cd_startup_delayed_insert:
+                        group: ADVANCED OPTIONS
+                        prompt:      BOOT ANIMATION FIRST
+                        description: Inserts CD during boot animation prevent loading fail.
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    puae_cd_speed:
+                        group: ADVANCED OPTIONS
+                        prompt:      CD TURBO SPEED
+                        description: Removes loading but can add possible glitches/crashes.
+                        choices:
+                            "Off":    100
+                            "On":     0
+
+    puae2021:
+      features: [padtokeyboard]
+      shared: [rewind, autosave]
+      cfeatures:
+            puae_model:
+                prompt:      AMIGA MODEL
+                description: Force a specific model and prevent tags detection.
+                choices:
+                    "Autodetect (by game name tag)":   automatic
+                    "A500 (512KB Chip + 512KB Slow)":  A500
+                    "A500+ (1MB Chip)":                A500PLUS
+                    "A600 (2MB Chip + 8MB Fast)":      A600
+                    "A1200 (2MB Chip + 8MB Fast)":     A1200
+                    "A4000/040 (2MB Chip + 8MB Fast)": A4040
+                    "CDTV (1MB Chip)":                 CDTV
+                    "CD32 Default (2MB Chip)":         CD32
+                    "CD32 (2MB Chip + 8MB Fast)":      CD32FR
+            cpu_compatibility:
+                prompt:      CPU COMPATIBILITY
+                description: Help games which are too quick or that have bugs.
+                choices:
+                    "Normal":          normal
+                    "More compatible": compatible
+                    "Cycle-exact":     exact
+            cpu_multiplier:
+                prompt:      CPU CLOCK
+                description: Works with 'Cycle-exact' mode and for a few games.
+                choices:
+                    "Default by model":        0
+                    " 3.54 MHz":               1
+                    " 7.09 MHz (A500 speed)":  2
+                    "14.18 MHz (A1200 speed)": 4
+                    "28.37 MHz":               8
+                    "35.46 MHz":               10
+                    "42.56 MHz":               12
+                    "56.75 MHz":               16
+            cpu_throttle:
+                prompt:      CPU SPEED
+                description: Ignored with 'Cycle-exact'.
+                choices:
+                    "-90%":    -900.0
+                    "-80%":    -800.0
+                    "-70%":    -700.0
+                    "-60%":    -600.0
+                    "-50%":    -500.0
+                    "-40%":    -400.0
+                    "-30%":    -300.0
+                    "-20%":    -200.0
+                    "-10%":    -100.0
+                    "Default": 0.0
+                    "+100%":   1000.0
+                    "+200%":   2000.0
+                    "+300%":   3000.0
+                    "+400%":   4000.0
+                    "+500%":   5000.0
+                    "+600%":   6000.0
+                    "+700%":   7000.0
+                    "+800%":   8000.0
+                    "+900%":   9000.0
+                    "+1000%":  10000.0
+            video_standard:
+                prompt:      VIDEO FORMAT STANDARD
+                choices:
+                    "PAL 288x576px 50Hz":  PAL
+                    "NTSC 240x480px 60Hz": NTSC
+            video_resolution:
+                prompt:      VIDEO RESOLUTION
+                description: Manually define which resolution to use.&#x0a;Auto defaults to High and switches to Super-High when needed.
+                choices:
+                    "Low 360p":         lores
+                    "High 720p":        hires
+                    "Super-high 1440p": superhires
+            zoom_mode:
+                group: ADVANCED OPTIONS
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games use the borders.
                 choices:
                     "Off":            none
@@ -4121,7 +4783,7 @@ libretro:
                     "On":         enabled
     snes9x:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             reduce_sprite_flicker:
                 group: ADVANCED OPTIONS
@@ -4173,7 +4835,7 @@ libretro:
                     "SNES Mouse":       2
             controller2_snes9x:
                 prompt:      CONTROLLER 2 TYPE
-                description: Lightguns can only be used in port 2.
+                description: Light guns can only be used in port 2.
                 choices:
                     "SNES Gamepad":     1
                     "SNES Mouse":       2
@@ -4187,9 +4849,16 @@ libretro:
                 choices:
                     "SNES Gamepad":          1
                     "Konami Justifier (P2)": 772
+            superscope_crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
+                choices:
+                    "Off":                                disabled
+                    "On":                                 enabled
     snes9x_next:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -4230,7 +4899,7 @@ libretro:
                     "SNES Mouse":             2
             controller2_snes9x_next:
                 prompt:      CONTROLLER 2 TYPE
-                description: Lightguns/multitap.
+                description: Light guns/multitap.
                 choices:
                     "SNES Gamepad":           1
                     "SNES Mouse":             2
@@ -4238,9 +4907,16 @@ libretro:
                     "Super Scope":            260
                     "Konami Justifier":       516
                     "Dual Konami Justifiers": 772
+            superscope_crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
+                choices:
+                    "Off":                                disabled
+                    "On":                                 enabled
     stella:
       features: [netplay, cheevos]
-      shared: [rewind, autosave]
+      shared: [rewind, autosave, use_guns]
     tgbdual:
       features: [netplay]
       shared: [rewind, autosave]
@@ -4272,7 +4948,7 @@ libretro:
                     "1280x720":   1280x720
                     "1920x1080":  1920x1080
             tyrquake_framerate:
-                prompt:      FRAMERATE LIMIT
+                prompt:      FRAME RATE LIMIT
                 choices:
                     "Automatic":  automatic
                     "10fps":      10fps
@@ -4514,7 +5190,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4607,7 +5283,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4689,7 +5365,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4762,7 +5438,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4835,7 +5511,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4913,7 +5589,7 @@ libretro:
                     "NTSC 492x262px":    ntsc
             vice_zoom_mode:
                 group: ADVANCED OPTIONS
-                prompt:      ZOOM (HIDE BORDERS)
+                prompt:      ZOOM/CROP (HIDE BORDERS)
                 description: Hides borders on many games. Some games used the borders.
                 choices:
                     "Auto-disable zoom":        auto_disable
@@ -4980,10 +5656,39 @@ libretro:
                 choices:
                     "Off":      disabled
                     "On":       enabled
+    wasm4:
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
     x1:
       features: [padtokeyboard]
       shared: [rewind, autosave]
     #xash3d_fwgs:
+    xrick:
+      cfeatures:
+            xrick_crop_borders:
+                prompt:      CROP BORDER
+                description: Remove the padding on the sides of the screen.
+                choices:
+                    "On (Default)": 1
+                    "Off":          0
+            xrick_cheat1:
+                prompt:      TRAINER MODE
+                description: Always have 6 bullets, 6 dynamite, 6 lives.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
+            xrick_cheat2:
+                prompt:      INVULNERABILITY MODE
+                description: Nothing can kill Rick, may break the game.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
+            xrick_cheat3:
+                prompt:      EXPOSE MODE
+                description: Highlight all entities on the game map.
+                choices:
+                    "Off (Default)": 0
+                    "On":            1
     yabasanshiro:
       shared: [autosave]
       cfeatures:
@@ -4991,12 +5696,12 @@ libretro:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
-                    "original": original
-                    "2x":       2x
-                    "4x":       4x
-                    "720p":     720p
-                    "1080p":    1080p
-                    "4k":       4k
+                    "1x (320x240)":  original
+                    "2x (640x480)":  2x
+                    "4x (1280x960)": 4x
+                    "720p":          720p
+                    "1080p":         1080p
+                    "4K":            4k
             multitap_yabasanshiro:
                 prompt:      MULTITAP
                 description: Allows up to 7 or 12 controllers in supported games.
@@ -5005,6 +5710,20 @@ libretro:
                     "Port1":    port1
                     "Port2":    port2
                     "Port1+2":  port12
+            controller1_saturn:
+                prompt:      CONTROLLER 1 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
+            controller2_saturn:
+                prompt:      CONTROLLER 2 TYPE
+                description: Not all games support 3D pad.
+                choices:
+                    #"None":          0
+                    "Saturn Pad":    1
+                    "Saturn 3D Pad": 5
 
     gong:
       shared: [autosave]
@@ -5025,7 +5744,7 @@ libretro:
 
 amiberry:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         amiberry_linemode:
             group: ADVANCED OPTIONS
@@ -5064,7 +5783,7 @@ amiberry:
                 "OFF":                         false
 
 cannonball:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         highResolution:
             prompt:      HIGH RESOLUTION MODE
@@ -5074,31 +5793,32 @@ cannonball:
                 "On":  1
 
 cemu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        gfxbackend:
+        cemu_gfxbackend:
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
-                "OpenGL":                      OpenGL
-                "Vulkan":                      Vulkan
-        async:
+                "OpenGL":           0
+                "Vulkan (Default)": 1
+        cemu_async:
             group: ADVANCED OPTIONS
-            prompt:      ASYNC SHADER (VULKAN ONLY)
-            description: Speed up. Causes visual glitches on first load.
+            prompt: ASYNC SHADER COMPILE (VULKAN ONLY)
+            description: Speed up shader compilation.
             choices:
-                "Off":                         0
-                "On":                          1
-        rumble:
-            prompt:      RUMBLE
+                "Off":          false
+                "On (Default)": true
+        cemu_rumble:
+            prompt: RUMBLE
+            description: Set the controller rumble strength if supported.
             choices:
-                "Off (Default)":               0
-                "25%":                         0.25
-                "50%":                         0.5
-                "75%":                         0.75
-                "100%":                        1
-        controller_combination:
-            prompt:      CONTROLLER COMBINATION
+                "Off (Default)": 0
+                "25%":           0.25
+                "50%":           0.5
+                "75%":           0.75
+                "100%":          1
+        cemu_controller_combination:
+            prompt: CONTROLLER COMBINATION
             description: Pro Controller required for games that require shake motions.
             choices:
                 "GamePad + 4 Pro Controller":  0
@@ -5106,9 +5826,106 @@ cemu:
                 "5 Pro Controller":            2
                 "5 Sideway Wiimote":           3
                 "Wii U Classic Controller":    4
+        cemu_console_language:
+            group: ADVANCED OPTIONS
+            prompt:      CONSOLE LANGUAGE
+            description: Not all games support all languages.
+            choices:
+                "Current language":            ui
+                "Japanese":                    ja_JP
+                "English":                     en_US
+                "French":                      fr_FR
+                "German":                      de_DE
+                "Italian":                     it_IT
+                "Spanish":                     es_ES
+                "Chinese":                     zh_CN
+                "Korean":                      ko_KR
+                "Dutch":                       nl_NL
+                "Portuguese":                  pt_PT
+                "Russian":                     ru_RU
+                "Taiwanese":                   zh_TW
+        cemu_audio_channels:
+            prompt: AUDIO CHANNELS
+            description: Choose the audio output type.
+            choices:
+                "Stereo (Default)": 1
+                "Surround":         2
+        cemu_audio_config:
+            group: ADVANCED OPTIONS
+            prompt: AUDIO OUTPUT
+            description: Have Batocera set the first audio output device.
+            choices:
+                "Set in Config - choose if no audio output":  false
+                "Batocera sets first audio device (Default)": true
+        cemu_vsync:
+            prompt: VSYNC
+            description: Fix screen tearing.
+            choices:
+                "Off (Default)":                         0
+                "Double buffering":                      1
+                "Triple buffering":                      2
+        cemu_upscale:
+            group: ADVANCED OPTIONS
+            prompt: UPSCALE FILTER
+            description: Choose upscaling method.
+            choices:
+                "Bilinear":          0
+                "Bicubic":           1
+                "Hermite (Default)": 2
+                "Nearest Neighbour": 3
+        cemu_downscale:
+            group: ADVANCED OPTIONS
+            prompt: DOWNSCALE FILTER
+            description: Choose downscaling method.
+            choices:
+                "Bilinear (Default)": 0
+                "Bicubic":            1
+                "Hermite":            2
+                "Nearest Neighbour":  3
+        cemu_aspect:
+            prompt: ASPECT RATIO
+            description: Change the output resolution ratio.
+            choices:
+                "Keep Aspect Ration (Default)": 0
+                "Stretch":                      1
+        cemu_touchpad:
+            prompt:      ENABLE MOUSE
+            description: Enable mouse input to simulate touchscreen.
+            choices:
+                "Disabled (Default)": 0
+                "Enabled":            1
+        cemu_overlay:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE PERFORMANCE OVERLAY
+            description: Enable Cemu's performance overlay.
+            choices:
+                "Disabled (Default)": false
+                "Enabled":            true
+        cemu_notifications:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE NOTIFICATIONS
+            description: Enable notifications of cache, controller events etc.
+            choices:
+               "Disabled (Default)": false
+               "Enabled":            true
+        cemu_gamepad:
+            prompt: ENABLE GAMEPAD VIEW
+            description: Enable gamepad view for games that have interaction across two screens. Use Hotkey+R2 to switch screens.
+            choices:
+               "Disabled (Default)": false
+               "Enabled":            true
+        cemu_dualview:
+            prompt: ENABLE DUAL VIEW
+            description: Show the TV and gamepad views together. Use Hotkey+R2 to switch screens.
+            choices:
+               "Disabled (Default)":           none
+               "Side by Side (Even)":          vert1
+               "Side by Side (Small Gamepad)": vert2
+               "Stack-ed (Even)":               horiz1
+               "Stacked (Small Gamepad)":      horiz2
 
 citra:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         citra_screen_layout:
             prompt:      SCREEN LAYOUT
@@ -5126,7 +5943,7 @@ citra:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "Native (400x240)":      1
+                "1x (400x240)":          1
                 "2x (800x480)":          2
                 "3x (1200x720)":         3
                 "4x (1600x960)":         4
@@ -5174,10 +5991,10 @@ citra:
 
 daphne:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326]
+            archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
@@ -5222,7 +6039,14 @@ daphne:
         lightgun_hd:
             group: ADVANCED OPTIONS
             prompt:      OVERSIZE OVERLAY (SINGE)
-            description: Use with Singe HD lightgun games.
+            description: Use with Singe HD light gun games.
+            choices:
+                "Off": 0
+                "On":  1
+        abs_mouse_input:
+            group: ADVANCED OPTIONS
+            prompt:      ABSOLUTE MOUSE INPUT
+            description: This option is required for some gun games when playing with the mouse
             choices:
                 "Off": 0
                 "On":  1
@@ -5236,7 +6060,7 @@ daphne:
         singe_joystick_range:
             group: ADVANCED OPTIONS
             prompt:      JOYSTICK TO CURSOR SENSITIVITY
-            description: Singe automatically interprets joystick axis change as mouse movement, useful for lightgun games.
+            description: Singe automatically interprets joystick axis change as mouse movement, useful for light gun games.
             choices:
                 "5":  5
                 "10": 10
@@ -5244,7 +6068,7 @@ daphne:
                 "20": 20
         singe_crosshair:
             group: ADVANCED OPTIONS
-            prompt:      HIDE LIGHTGUN CROSSHAIRS
+            prompt:      HIDE LIGHT GUN CROSSHAIRS
             description: Hide crosshairs in supported games e.g. ActionMax.
             choices:
                 "Off":                          0
@@ -5256,16 +6080,23 @@ daphne:
             choices:
                 "Off":                          0
                 "On":                           1
+        daphne_joy:
+            group: ADVANCED OPTIONS
+            prompt:      CUSTOM CONTROLLER
+            description: Allows you to set the controller settings in the custom.ini file manually.
+            choices:
+                "Off":                          0
+                "On":                           1
 
 devilutionx:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dolphin:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326]
+            archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
@@ -5320,6 +6151,59 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        dolphin_port_1_type:
+            group: ADVANCED OPTIONS
+            prompt:      GAMECUBE PORT 1 TYPE
+            description: Change what's plugged into the virtual GameCube ports.
+            choices:
+                "None":                       0
+                "Standard Controller":        6
+                "GameCube Adapter for Wii U": 12
+                "Steering Wheel":             8
+                "Dance Mat":                  9
+                "DK Bongos":                  10
+                #"GBA (TCP)":                  5
+                "Keyboard":                   7
+                "GBA (Internal)":             13
+        dolphin_port_2_type:
+            group: ADVANCED OPTIONS
+            prompt:      GAMECUBE PORT 2 TYPE
+            choices:
+                "None":                       0
+                "Standard Controller":        6
+                "GameCube Adapter for Wii U": 12
+                "Steering Wheel":             8
+                "Dance Mat":                  9
+                "DK Bongos":                  10
+                #"GBA (TCP)":                  5
+                "Keyboard":                   7
+                "GBA (Internal)":             13
+        dolphin_port_3_type:
+            group: ADVANCED OPTIONS
+            prompt:      GAMECUBE PORT 3 TYPE
+            choices:
+                "None":                       0
+                "Standard Controller":        6
+                "GameCube Adapter for Wii U": 12
+                "Steering Wheel":             8
+                "Dance Mat":                  9
+                "DK Bongos":                  10
+                #"GBA (TCP)":                  5
+                "Keyboard":                   7
+                "GBA (Internal)":             13
+        dolphin_port_4_type:
+            group: ADVANCED OPTIONS
+            prompt:      GAMECUBE PORT 4 TYPE
+            choices:
+                "None":                       0
+                "Standard Controller":        6
+                "GameCube Adapter for Wii U": 12
+                "Steering Wheel":             8
+                "Dance Mat":                  9
+                "DK Bongos":                  10
+                #"GBA (TCP)":                  5
+                "Keyboard":                   7
+                "GBA (Internal)":             13
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -5417,6 +6301,23 @@ dolphin:
   systems:
     gamecube:
         cfeatures:
+            gbalayout:
+                group: ADVANCED OPTIONS
+                prompt:      GBA LAYOUT
+                description: Arrangement of GameCube and GBA screens.
+                choices:
+                    "Vertical - GBAs on Right":   vert
+                    "Horizontal - GBAs on Bottom": horiz
+            auto_ereader:
+                group: ADVANCED OPTIONS
+                archs_include: [x86, x86_64]
+                prompt:      AUTO E-READER
+                description: Make controller 2 a GBA with e-Reader
+                choices:
+                    "Disabled":       none
+                    "e-Reader (US)":  Card e-Reader (U)
+                    "e-Reader (JP)":  Card e-Reader (J)
+                    "e-Reader+ (JP)": Card e-Reader+ (J)
             widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -5424,6 +6325,7 @@ dolphin:
                     "Off": 0
                     "On":  1
     wii:
+        shared: [use_guns]
         cfeatures:
             tv_mode:
                 prompt:      WII TV MODE
@@ -5447,10 +6349,16 @@ dolphin:
                     "Wiimote Sideway + Swing":   is
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
+            dolphin-lightgun-hide-crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
+                choices:
+                    "Off": 0
+                    "On":  1
 
 dolphin_triforce:
-  features: [decoration]
-  shared: [hud]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         internal_resolution:
             prompt:      RENDERING RESOLUTION
@@ -5550,8 +6458,7 @@ dolphin_triforce:
                 "On":  1
         disable_osd_messages:
             group: ADVANCED OPTIONS
-            prompt:      DISABLE OSD MESSAGES
-            description: Disable status messages displayed by the emulator.
+            prompt:      DISABLE ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off": 0
                 "On":  1
@@ -5563,18 +6470,18 @@ dolphin_triforce:
 
 dosbox:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dosbox_staging:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dosbox-x:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 duckstation:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         duckstation_rewind:
             prompt:      REWIND
@@ -5589,12 +6496,17 @@ duckstation:
                 "Per 1s, 90s total (990MB|180MB)":    90
                 "Per 1s, 120s total (1320MB|240MB)":  120
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326]
+            archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
+        duckstation_osd:
+            prompt:      SHOW ON-SCREEN DISPLAY MESSAGES
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_executionmode:
             group: ADVANCED OPTIONS
             prompt:      CPU EXECUTION MODE
@@ -5633,22 +6545,22 @@ duckstation:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x(native)":                    1
-                "2x":                            2
-                "3x/720p":                       3
-                "4x":                            4
-                "5x/1080p":                      5
-                "6x/1440p":                      6
-                "7x":                            7
-                "8x":                            8
-                "9x/4K":                         9
-                "10x":                           10
-                "11x":                           11
-                "12x":                           12
-                "13x":                           13
-                "14x":                           14
-                "15x":                           15
-                "16x":                           16
+                "1x native (320x240)":                       1
+                "2x (640x480)":                              2
+                "3x 720p (960x720)":                         3
+                "4x (1280x960)":                             4
+                "5x 1080p (1600x1200)":                      5
+                "6x 1440p (1920x1440)":                      6
+                "7x (2240x1680)":                            7
+                "8x (2560x1920)":                            8
+                "9x 4K (2880x2160)":                         9
+                "10x (3200x2400)":                           10
+                "11x (3520x2640)":                           11
+                "12x (3840x2880)":                           12
+                "13x (4160x3120)":                           13
+                "14x (4480x3360)":                           14
+                "15x (4800x3600)":                           15
+                "16x (5120x3840)":                           16
         duckstation_antialiasing:
             group: ADVANCED OPTIONS
             prompt:      ANTI-ALIASING (MSAA/SSAA)
@@ -5754,9 +6666,23 @@ duckstation:
                 "Namco GunCon (Rumble)":         NamcoGunCon
                 "PlayStation Mouse":             PlayStationMouse
                 "NeGcon (Rumble)":               NeGcon
+        duckstation_pgxp:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE PGXP CORRECTIONS
+            description: Reduces wobbly polygongs & warping textures.
+            choices:
+                "Disabled":          "false"
+                "Enabled (Default)": "true"
+        duckstation_boot_without_sbi:
+            group: ADVANCED OPTIONS
+            prompt:      ALLOW BOOTING WITHOUT SBI FILE
+            description: Allows loading protected games without subchannel information.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
 
 flycast:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
     flycast_ratio:
       prompt:      SCREEN RATIO
@@ -5768,14 +6694,14 @@ flycast:
       prompt:      RENDER RESOLUTION
       description: Choose which internal rendering resolution you want to use.
       choices:
-        "320x240 (Half)":   240
-        "640x480 (Native)": 480
-        "960x720 (x1.5)":   720
-        "1280x960 (x2)":    960
-        "1600x1200 (x2.5)": 1200
-        "1920x1440 (x3)":   1440
-        "2560x1920 (x4)":   1920
-        "2880x2160 (x4.5)": 2160
+        "0.5x (320x240)":   240
+        "1x (640x480)":     480
+        "1.5x (960x720)":   720
+        "2x (1280x960)":    960
+        "2.5x (1600x1200)": 1200
+        "3x (1920x1440)":   1440
+        "4x (2560x1920)":   1920
+        "4.5x (2880x2160)": 2160
     flycast_renderer:
       prompt:      GRAPHICS API
       description: Choose your graphics renderer.
@@ -5788,6 +6714,16 @@ flycast:
       choices:
         "Normal": no
         "Rotate": yes
+    flycast_anisotropic:
+      group: ADVANCED OPTIONS
+      prompt:      ANISOTROPIC FILTERING
+      description: Higher values make textures viewed at oblique angles look sharper.
+      choices:
+        "Disbaled (Default)": 1
+        "2x"                : 2
+        "4x"                : 4
+        "8x"                : 8
+        "16x"               : 16
   systems:
     dreamcast:
       cfeatures:
@@ -5831,17 +6767,51 @@ flycast:
           choices:
             "Off (Default)": no
             "On"           : yes
+        flycast_ctrl1_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 1 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl2_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 2 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl3_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 3 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_ctrl4_pack:
+          group: ADVANCED OPTIONS
+          prompt:      CONTROLLER 4 FEATURE PACK
+          description: Choose second feature pack for the controller.
+          choices:
+            "2nd VMU (Default)": 1
+            "Purupuru (Rumble)": 3
+        flycast_DSP:
+          prompt:      DIGITAL SOUND PROCESSOR
+          description: Enable the Dreamcast DSP. Only recommended for fast systems.
+          choices:
+            "Disbaled (Default)": "no"
+            "Enabled"           : "yes"
 
 fpinball:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 fsuae:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 hatari:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         model:
             prompt:      MODEL
@@ -5877,114 +6847,111 @@ hatari:
                 2M:                  2
                 4M:                  4
 
-linapple:
-  features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
-
 melonds:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        melonds_renderer:
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use.
+            choices:
+                "Software": 0
+                "OpenGL":   1
         melonds_framerate:
             group: ADVANCED OPTIONS
-            prompt: LIMIT FRAMERATE
-            description: Choose whether or not to limit the framerate.
+            prompt: LIMIT FRAME RATE
             choices:
-                "No Limitation":      0
-                "Standard (Default)": 1
+                "No Limit":          0
+                "As game specifies": 1
         melonds_resolution:
             prompt: RENDERING RESOLUTION
-            description: Enhancement. Increase the rendering resolution.
+            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x native (256x192) (Default)": 1
-                "2x native (512x384)":           2
-                "3x native (768x576)":           3
-                "4x native (1024x768)":          4
-                "5x native (1280x960)":          5
-                "6x native (1536x1152)":         6
-                "7x native (1792x1344)":         7
-                "8x native (2048x1536)":         8
-                "9x native (2304x1728)":         9
-                "10x native (2560x1920)":        10
-                "11x native (2816x2112)":        11
-                "12x native (3072x2304)":        12
-                "13x native (3328x2496)":        13
-                "14x native (3584x2688)":        14
-                "15x native (3840x2880)":        15
-                "16x native (4096x3072)":        16
+                "1x (256x192)":           1
+                "2x (512x384)":           2
+                "3x (768x576)":           3
+                "4x (1024x768)":          4
+                "5x (1280x960)":          5
+                "6x (1536x1152)":         6
+                "7x (1792x1344)":         7
+                "8x (2048x1536)":         8
+                "9x (2304x1728)":         9
+                "10x (2560x1920)":        10
+                "11x (2816x2112)":        11
+                "12x (3072x2304)":        12
+                "13x (3328x2496)":        13
+                "14x (3584x2688)":        14
+                "15x (3840x2880)":        15
+                "16x (4096x3072)":        16
         melonds_polygons:
             group: ADVANCED OPTIONS
             prompt: ENABLE POLYGON SPLITTING
-            description: Enables improved polygon splitting.
+            description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off (Default)": 0
-                "On":            1
+                "Off": 0
+                "On":  1
         melonds_rotation:
             prompt: SCREEN ROTATION
-            description: Rotate the screen with the emulator.
+            description: Rotates the screens, to simulate holding the DS sideways.
             choices:
-                "0 degrees (Default)": 0
+                "0 degrees":           0
                 "90 degrees":          1
                 "180 degrees":         2
                 "270 degrees":         3
         melonds_screenswap:
             prompt: SCREEN SWAP
-            description: Swap the Nintendo DS Displays.
+            description: Swap the position of the dual displays.
             choices:
-                "Off (Default)": 0
+                "Off":           0
                 "On":            1
         melonds_screensize:
             prompt: SCREEN SIZE
-            description: Choose the screen size.
+            description: Sets the window size to an integer size.
             choices:
-                "1x (Default)": 0
+                "1x":           0
                 "2x":           1
                 "3x":           2
                 "4x":           3
         melonds_layout:
             prompt: SCREEN LAYOUT
-            description: Choose the preferred screen layout.
+            description: Adjusts the positions of the screens.
             choices:
-                "Natural (Default)": 0
-                "Vertical":          1
-                "Horizontal":        2
-                "Hybrid":            3
+                "Original screen positions": 0
+                "Always enforce vertical":   1
+                "Always enforce horizontal": 2
+                "Hybrid":                    3
         melonds_screensizing:
             prompt: SCREEN SIZING
-            description: Choose the NDS screen sizings.
+            description: How the window space is distributed between the screens.
             choices:
-                "Even (Default)":   0
+                "Even":             0
                 "Emphasize top":    1
-                "Emphasize botton": 2
-                "Auto":             3
+                "Emphasize bottom": 2
+                "Automatic":        3
                 "Top only":         4
                 "Bottom only":      5
         melonds_scaling:
             prompt: INTEGER SCALING
-            description: Force integer scaling for pixels on larger displays.
             choices:
-                "Off (Default)":   0
+                "Off":             0
                 "On":              1
         melonds_cheats:
             prompt: ENABLE CHEATS
-            description: Enable cheats for MelonDS.
             choices:
                 "Off (Default)":   0
-                "On":              1    
+                "On":              1
         melonds_osd:
-            prompt: ENABLE OSD
-            description: Enable the on screen display.
+            prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
                 "Off":          0
-                "On (Default)": 1
+                "On":           1
         melonds_console:
             prompt: CONSOLE TYPE
-            description: Choose console type.
             choices:
-                "DS (default)":        0
-                "DSi (Experiemental)": 1
+                "DS":                  0
+                "DSi (experiemental)": 1
 
 moonlight:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         moonlight_codec:
             group: ADVANCED OPTIONS
@@ -6000,7 +6967,7 @@ moonlight:
                 "1080p (1920x1080)":     1
                 "4K (3840x2160)":        2
         moonlight_framerate:
-            prompt:      VIDEO STREAM FRAMERATE
+            prompt:      VIDEO STREAM FRAME RATE
             choices:
                 "30FPS":                    0
                 "60FPS":                    1
@@ -6036,7 +7003,7 @@ moonlight:
                 "SDL":                   "sdl"
 
 mupen64plus:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         mupen64plus_ratio:
             prompt:      GAME ASPECT RATIO
@@ -6067,7 +7034,7 @@ mupen64plus:
             prompt:      AUDIO BUFFER (SAMPLES)
             description: Lower values reduce audio latency and improve performance, but can cause audio issues.
             choices:
-                "Very High":     Very High 
+                "Very High":     Very High
                 "High":          High
                 "Medium":        Medium
                 "Low":           Low
@@ -6138,7 +7105,7 @@ mupen64plus:
                 "Enable":       1
 
 openbor:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         ratio:
             prompt:      SCREEN RATIO
@@ -6164,8 +7131,15 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        ratio:
+            prompt:      GAME ASPECT RATIO
+            description: Force the game to render in this aspect ratio. Not all systems support all ratios.
+            choices:
+                "4:3":     4/3
+                "16:9":    16/9
+                "Full":    full
         gfxbackend:
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
@@ -6173,13 +7147,6 @@ pcsx2:
                 "OpenGL":      12
                 "Software":    13
                 "Vulkan":      14
-        pcsx2_tv_mode:
-            prompt:      TV MODE
-            description: PS2's internal ratio setting. Some games only support 4/3.
-            choices:
-                "4:3":     4/3
-                "16:9":    16/9
-                "Stretch": Stretch
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
@@ -6190,13 +7157,13 @@ pcsx2:
             prompt:      RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x (native)":   1
-                "2x (720p)":     2
-                "3x (1080p)":    3
-                "4x (1440p)":    4
-                "5x (1620p)":    5
-                "6x (2160p 4K)": 6
-                "7x (2880p)":    7
+                "1x (640x480)":      1
+                "2x (1280x960)":     2
+                "3x (1920x1440)":    3
+                "4x (2560x1920)":    4
+                "5x (3200x2400)":    5
+                "6x (3840x2880)":    6
+                "7x (4480x3360)":    7
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6232,6 +7199,15 @@ pcsx2:
             choices:
                 "Off":      0
                 "On":       1
+        VsyncQueueSize:
+            group: ADVANCED OPTIONS
+            prompt:      VSYNCS IN MTGS QUEUE
+            description: Render this many frames ahead to improve performance at the cost of input lag.
+            choices:
+                "0":  0
+                "1":  1
+                "2":  2
+                "3":  3
         micro_vu:
             group: ADVANCED OPTIONS
             prompt:     "MICRO VU SPEED HACKS"
@@ -6288,6 +7264,13 @@ pcsx2:
                 "VU I bit hack - Scarface The World is Yours":       ScarfaceIbit
                 "VU I bit hack - Crash Tag Team Racing":             CrashTagTeamRacingIbit
                 "VU0 Kickstart to avoid sync problems with VU1":     VU0KickstartHack
+        ManualHWHacks:
+            group: ADVANCED OPTIONS
+            prompt:      AUTOMATIC GRAPHICS HARDWARE HACKS
+            description: Automatically use hardware hacks as appropriate. Refer to pcsx2-config for individual hacks.
+            choices:
+                "Off":          1
+                "On (default)": 0
         multitap:
             prompt:      MULTITAP
             description: Allows up to 5 or 8 controllers in supported games.
@@ -6298,10 +7281,10 @@ pcsx2:
                 "Port1+2":  port12
 
 ppsspp:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326]
+            archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
@@ -6321,12 +7304,12 @@ ppsspp:
                 #"Automatic (1:1)":        0
                 "1x (480x272)":           1
                 "2x (960x544)":           2
-                "3x (720p)":              3
-                "4x (1080p)":             4
+                "3x 720p (1440x816)":     3
+                "4x 1080p (1920x1088)":   4
                 "5x (2400x1360)":         5
-                "6x (1620p)":             6
+                "6x (2880x1632)":         6
                 "7x (3360x1904)":         7
-                "8x (2160p 4K)":          8
+                "8x 4K (3840x2176)":      8
                 "9x (4320x2448)":         9
                 "10x (4800x2720)":        10
         frameskip:
@@ -6399,13 +7382,13 @@ ppsspp:
 
 pygame:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 reicast:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 rpcs3:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
         gui:
             group: ADVANCED OPTIONS
@@ -6432,6 +7415,14 @@ rpcs3:
             choices:
                 "16:9":  16/9
                 "4:3":   4/3
+        ppudecoder:
+            group: ADVANCED OPTIONS
+            prompt:      PPU DECODER
+            description: LLVM is fastest, use the Interpreter settings if there are issues.
+            choices:
+                "LLVM Recompiler":     Recompiler (LLVM)
+                "Dynamic Interpreter": Interpreter (dynamic)
+                "Static Interpreter":  Interpreter (static)
         spudecoder:
             group: ADVANCED OPTIONS
             prompt:      SPU DECODER
@@ -6474,6 +7465,20 @@ rpcs3:
             choices:
                 "Off (Default)": False
                 "On":            True
+        vertexcache:
+            group: ADVANCED OPTIONS
+            prompt: DISABLE VERTEX CACHE
+            description: Disables the vertex cache. Might resolve missing or flickering graphics output but degrade performance.
+            choices:
+                "Off (Default)": False
+                "On":            True
+        depthbuffer:
+            group: ADVANCED OPTIONS
+            prompt: WRITE DEPTH BUFFER
+            description: May fix broken graphics in some games.
+            choices:
+                "Off (Default)": False
+                "On":            True
         sputhreads:
             group: ADVANCED OPTIONS
             prompt: PREFERRED SPU THREADS
@@ -6486,20 +7491,13 @@ rpcs3:
                 "4 threads": 4
                 "5 threads": 5
                 "6 threads": 6
-        depthbuffer:
-            group: ADVANCED OPTIONS
-            prompt: WRITE DEPTH BUFFER
-            description: May fix broken graphics in some games.
-            choices:
-                "Off (Default)": False
-                "On":            True
 
 scummvm:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 easyrpg:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         testplay:
             prompt:      TEST PLAY
@@ -6524,18 +7522,18 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
       redreamResolution:
           prompt:      RENDERING RESOLUTION
           description: Choose your render resolution (Requires personal redream.key file).
           choices:
-              "640x480":            1
-              "1280x960 (Default)": 2
-              "1920x1440":          3
-              "2560x1920":          4
-              "3200x2400":          5
-              "3840x2880":          6
+              "1x (640x480)":            1
+              "2x (1280x960) (Default)": 2
+              "3x (1920x1440)":          3
+              "4x (2560x1920)":          4
+              "5x (3200x2400)":          5
+              "6x (3840x2880)":          6
       redreamRatio:
           prompt:      ASPECT RATIO
           description: Choose your preferred aspect ratio.
@@ -6599,14 +7597,14 @@ redream:
 
 sdlpop:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, hud]
 
 superbroswar:
   features: []
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 supermodel:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         engine3D:
             group: ADVANCED OPTIONS
@@ -6629,7 +7627,8 @@ supermodel:
                 "Off":      0
                 "On":       1
         crosshairs:
-            prompt:      SHOW LIGHTGUN CROSSHAIRS
+            group:       LIGHT GUN
+            prompt:      SHOW LIGHT GUN CROSSHAIRS
             description: Enable crosshairs in shooting games for the selected players.
             choices:
                 "None":     0
@@ -6654,19 +7653,28 @@ supermodel:
             prompt:      ADJUST POWERPC FREQUENCY
             description: Change the speed of the emulated PowerPC chip (fixes some issues).
             choices:
-                "25":           25
+                "10":           10
+                "20":           20
+                "50":           30
+                "40":           40
                 "50 (Default)": 50
-                "75":           75
+                "60":           60
+                "70":           70
+                "80":           80
+                "90":           90
                 "100":          100
-                "125":          125
+                "110":          110
+                "120":          120
+                "130":          130
+                "140":          140
                 "150":          150
 
 cgenius:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 vice:
   features: [padtokeyboard]
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         noborder:
             group: ADVANCED OPTIONS
@@ -6678,7 +7686,7 @@ vice:
 
 tsugaru:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         cdrom_speed:
             group: ADVANCED OPTIONS
@@ -6699,7 +7707,7 @@ tsugaru:
 
 mame:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
         video:
             prompt:      VIDEO MODE
@@ -6708,8 +7716,14 @@ mame:
                 "BGFX":            bgfx
                 "Accel":           accel
                 "OpenGL":          opengl
+        vsync:
+            prompt:      VSYNC
+            description: Fix screen tearing, but may drop frames.
+            choices:
+                "Off (Default)": 0
+                "On":            1
         bgfxbackend:
-            archs_include: [x86, x86_64, rpi4, rk3326]
+            archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      BGFX GRAPHICS API
             description: Depends on video mode being set to BGFX. Vulkan is better, when supported.
             choices:
@@ -6754,14 +7768,6 @@ mame:
             choices:
                 "Off (Default)": 0
                 "On":            1
-        altdpad:
-            group: ADVANCED OPTIONS
-            prompt:      ALT DPAD MODE
-            description: If the D-Pad is oriented incorrectly for your controller.
-            choices:
-                "Off (Default)":    0
-                "DS3 Orientation":  1
-                "X360 Orientation": 2      
         customcfg:
             group: ADVANCED OPTIONS
             prompt:      CUSTOM MAME CONFIG
@@ -6769,6 +7775,20 @@ mame:
             choices:
                 "On":  1
                 "Off": 0
+        dataplugin:
+            group: ADVANCED OPTIONS
+            prompt:      DATA PLUGIN
+            description: Make game history, setup instructions, and special moves viewable in the menu
+            choices:
+                "Enabled":            1
+                "Disabled (Default)": 0
+        offscreenreload:
+            group: LIGHT GUN
+            prompt:      OFF-SCREEN RELOAD BUTTON
+            description: Set gun button 2 to reload.
+            choices:
+                "On":            1
+                "Off (Default)": 0
   systems:
        adam:
             cfeatures:
@@ -6860,6 +7880,24 @@ mame:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
+                        "Hard Drive":     hard1
+                gameio:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Type of joystick connected to the game port.
+                    choices:
+                        "None":                                         none
+                        "Apple (2x 2-button Analog)":                   joy
+                        "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                        "Gizmo (1-Button Digital)":                     gizmo
+                altmodel:
+                    group: ADVANCED OPTIONS
+                    prompt:      MODEL
+                    description: Model of emulated Apple II.
+                    choices:
+                        "Apple //e Enhanced (Default)": apple2ee
+                        "Apple //e":                    apple2e
+                        "Apple ][ Plus":                apple2p
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS
@@ -7014,6 +8052,16 @@ mame:
                         "Off": 0
        bbc:
             cfeatures:
+                sticktype:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Select which joystick to emulate.
+                    choices:
+                        "None (Default)":                   none
+                        "Acorn Analogue Joysticks":         acornjoy
+                        "Acorn Bitstik":                    bitstik1
+                        "Robo Bitstik 2":                   bitstik2
+                        "Voltmace Delta 3b Twin Joysticks": voltmace3b
                 softList:
                     group: ADVANCED OPTIONS
                     prompt:      SOFTWARE LIST
@@ -7352,6 +8400,60 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
+       gp32:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":            none
+                        "GamePark GP32 SmartMedia cards": gp32
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
+       laser310:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":                         none
+                        "Dick Smith Electronics VZ-200/300 cassettes": vz_cass
+                        "Dick Smith Electronics VZ-200/300 snapshots": vz_snap
+                memslot:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEMORY SLOT
+                    description: Choose hardware for the memory expansion slot
+                    choices:
+                        "Laser 310/VZ-300 16k Memory":   laser310_16k
+                        "Laser/VZ 64k Memory (Default)": laser_64k
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Cassette": cass
+                        "Snapshot": snap
+                enableui:
+                    group: ADVANCED OPTIONS
+                    prompt:      UI KEYS
+                    description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0
        macintosh:
             cfeatures:
                 softList:
@@ -7551,7 +8653,7 @@ mame:
                     description: Speech module installed
                     choices:
                         "Enabled (Default)": 1
-                        "Disabled":          0    
+                        "Disabled":          0
                 altromtype:
                     group: ADVANCED OPTIONS
                     prompt:      MEDIA TYPE
@@ -7710,7 +8812,7 @@ mame:
                     choices:
                         "On":  1
                         "Off": 0
-       mame: 
+       mame:
             features: [netplay, padtokeyboard]
             cfeatures:
                 altlayout:
@@ -7739,7 +8841,22 @@ mame:
                     choices:
                         "Enabled":            1
                         "Disabled (Default)": 0
-       neogeo: 
+                use_mouse:
+                    group: ADVANCED OPTIONS
+                    prompt:      ENABLE MOUSE
+                    description: Enable mouse input for trackballs, spinners, lightguns (if no gun connected), and similar controls
+                    choices:
+                        "Enabled":            1
+                        "Disabled (Default)": 0
+#                Placeholder for ManyMouse integration or SDL2 multi mouse support
+#                multimouse:
+#                    group: ADVANCED OPTIONS
+#                    prompt:      MULTI MOUSE
+#                    description: Separate inputs for multiple trackballs, spinners, or other mice (may require manual mapping)
+#                    choices:
+#                        "Enabled":            1
+#                        "Disabled (Default)": 0
+       neogeo:
             cfeatures:
                 altlayout:
                     prompt:      SPECIAL CONTROL LAYOUTS
@@ -7770,7 +8887,7 @@ mame:
 
 wine:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         dxvk:
             group: ADVANCED OPTIONS
@@ -7876,6 +8993,27 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        raw_input:
+            group: ADVANCED OPTIONS
+            prompt:      RAW CONTROLLER INPUT
+            description: Disabling this may help compatibility with certain controllers and games.
+            choices:
+                "Off": 1
+                "On":  0
+        dxvk_reset_cache:
+            group: ADVANCED OPTIONS
+            prompt:      DXVK RESET CACHE
+            description: Reset the cache can fix some crashes if your game was running under Batocera 29.
+            choices:
+                "Off": 0
+                "On":  1
+        wine_ntfs:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE NTFS MODE
+            description: Enable this mode if you have issue for run your game on NTFS storage (by default is better to use LinuxFS).
+            choices:
+                "Off": 0
+                "On":  1
         wine_debug:
             group: ADVANCED OPTIONS
             prompt:      ENABLE DEBUG
@@ -7884,7 +9022,7 @@ wine:
                 "On":  1
 
 solarus:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         joystick:
             prompt:      CONTROL CHOICE
@@ -7896,7 +9034,7 @@ solarus:
 
 mugen:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         esync:
             group: ADVANCED OPTIONS
@@ -7926,17 +9064,20 @@ mugen:
             choices:
                 "Off": 0
                 "On":  1
+ikemen:
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 ruffle:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
 
 lightspark:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 drastic:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         drastic_hires:
             prompt:      ENHANCED RENDERING RESOLUTION
@@ -7944,6 +9085,26 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
+        drastic_frameskip_type:
+            prompt:      FRAMESKIP TYPE
+            description: Skip frames to improve performance, at the cost of choppy motion. Can cause visual glitches.
+            choices:
+                "None":      0
+                "Manual":    1
+                "Automatic": 2
+        drastic_frameskip_value:
+            prompt:      FRAMESKIP VALUE
+            description: When frameskip type is on automatic or manual, skip up to this many frames consecutively.
+            choices:
+                "1": 1
+                "2": 2
+                "3": 3
+                "4": 4
+                "5": 5
+                "6": 6
+                "7": 7
+                "8": 8
+                "9": 9
         drastic_threaded:
             group: ADVANCED OPTIONS
             prompt:      THREADED 3D
@@ -7953,8 +9114,8 @@ drastic:
                 "On":  1
         drastic_fix2d:
             group: ADVANCED OPTIONS
-            prompt:      FIX 2D SCREEN
-            description: Fix main 2D screen to follow action.
+            prompt:      KEEP MAIN SCREEN ON TOP
+            description: Force 3D geometry to always render on the top screen. Useful for single-screen devices/games.
             choices:
                 "Off": 0
                 "On":  1
@@ -7967,7 +9128,7 @@ drastic:
                 "Single": 3
 
 xemu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         scaling:
             prompt:      SCALING MODE
@@ -7976,7 +9137,8 @@ xemu:
                 "Original resolution": center
                 "Scale to best fit":   scale
                 "Stretch to full":     stretch
-                "Stretch to 16:9":     scale_ws169
+                "Stretch to 16:9":     scale_16_9
+                "Stretch to 4:3":      scale_4_3
         render:
             prompt:       RENDERING RESOLUTION
             choices:
@@ -7988,23 +9150,32 @@ xemu:
                 "6x (3840x2880)":   6
                 "7x (4480x3360)":   7
                 "8x (5120x3840)":   8
+                "9x (5760x4320)":   9
+                "10x (6400x4800)":  10
         xemu_bootanim:
             prompt:      SHOW BIOS BOOTLOGO
             description: Enhancement.
             choices:
                 "Show":        "false"
                 "Skip":        "true"
+        use_dsp:
+            prompt:      USE DSP AUDIO
+            description: Improve audio accuracy (experimental).
+            choices:
+                "Enabled":      "true"
+                "Disabled":     "false"
 
 lexaloffle:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 ecwolf:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 sonic2013:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -8058,7 +9229,8 @@ sonic2013:
                 "On":     1
 
 soniccd:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -8088,7 +9260,7 @@ soniccd:
                 "Regular Bilnear":      3
         hqmode:
             group: ADVANCED OPTIONS
-            prompt:      HQ Mode
+            prompt:      HQ MODE
             description: Enable high quality effects for special stages.
             choices:
                 "Off":    0
@@ -8110,7 +9282,7 @@ soniccd:
                 "On":     1
 
 model2emu:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         fakeGouraud:
             group: ADVANCED OPTIONS
@@ -8178,61 +9350,310 @@ model2emu:
 
 gsplus:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 play:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 flatpak:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 steam:
   features: [padtokeyboard]
-  shared: [videomode, hud]
+  shared: [videomode]
 
 yuzu:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        yuzu_backend:
+          prompt: GRAPHICS API
+          description: Choose which graphics API library to use. Vulkan is better, when supported.
+          choices:
+            "OpenGL": 0
+            "Vulkan": 1
+        yuzu_scale:
+          prompt: RENDERING RESOLUTION
+          description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+          choices:
+            "Native (720p/1080p)": 2
+            "2x (1440p/2160p)":    3
+            "3x (2160p/3240p)":    4
+            "4x (2880p/4320p)":    5
+            "5x (3600p/5400p)":    6
+            "6x (4320p/6480p)":    7
+        yuzu_ratio:
+          prompt: ASPECT RATIO
+          description: Change the output resolution ratio.
+          choices:
+            "16:9 (Default)":    0
+            "Force 4:3":         1
+            "Force 21:9":        2
+            "Force 16:10":       3
+            "Stretch to window": 4
+        yuzu_anisotropy:
+          prompt: ANISOTROPIC FILTERING
+          description: Improves clarity of distant textures.
+          choices:
+            "Default": 1
+            "2x":      2
+            "4x":      3
+            "8x":      4
+            "16x":     5
+        yuzu_language:
+          prompt: LANGUAGE
+          description: Change the game's language.
+          choices:
+            "Japanese":               0
+            "English":                1
+            "French":                 2
+            "German":                 3
+            "Italian":                4
+            "Spanish":                5
+            "Chinese":                6
+            "Korean":                 7
+            "Dutch":                  8
+            "Portuguese":             9
+            "Russian":                10
+            "Taiwanese":              11
+            "British English":        12
+            "Canadian French":        13
+            "Latin American Spanish": 14
+            "Simplified Chinese":     15
+            "Traditional Chinese":    16
+            "Brazilian Portuguese":   17
+        yuzu_region:
+          prompt: CHOOSE CONSOLE REGION
+          description: Choose your console region.
+          choices:
+            "Japan":     0
+            "USA":       1
+            "Europe":    2
+            "Australia": 3
+            "China":     4
+            "Korea":     5
+            "Taiwan":    6
+        ryujinx_timezone:
+          prompt: CHOOSE CONSOLE TIMEZONE
+          description: Choose your console timezone.
+          choices:
+            "Default":   1
+            "CET":       2
+            "CST6CDT":   3
+            "Cuba":      4
+            "EET":       5
+            "Egypt":     6
+            "Eire":      7
+            "EST":       8
+            "EST5EDT":   9
+            "GB":        10
+            "GB-Eire":   11
+            "GMT":       12
+            "GMT+0":     13
+            "GMT-0":     14
+            "GMT0":      15
+            "Greenwich": 16
+            "Hong Kong": 17
+            "HST":       18
+            "Iceland":   19
+            "Iran":      20
+            "Israel":    21
+            "Jamaica":   22
+            "Japan":     23
+            "Kwajalein": 24
+            "Libya":     25
+            "MET":       26
+            "MST":       27
+            "MST7MDT":   28
+            "Navajo":    29
+            "NZ":        30
+            "NZ-CHAT":   31
+            "Poland":    32
+            "Portugal":  33
+            "PRC":       34
+            "PST8PDT":   35
+            "ROC":       36
+            "ROK":       37
+            "Singapore": 38
+            "Turkey":    39
+            "UCT":       40
+            "Univarsal": 41
+            "UTC":       42
+            "W-SU":      43
+            "WET":       44
+            "Zulu":      45
+        yuzu_sound_mode:
+          prompt: CHOOSE SOUND OUTPUT MODE
+          choices:
+            "Mono":     0
+            "Stereo":   1
+            "Surround": 2
+        yuzu_vsync:
+          prompt: VSYNC
+          description: Fix screen tearing.
+          choices:
+            "Disabled": "false"
+            "Enabled":  "true"
+        yuzu_async_shaders:
+          group: ADVANCED OPTIONS
+          prompt: ASYNC SHADER COMPILE
+          description: Speed up shader compilation.
+          choices:
+            "Disabled": "false"
+            "Enabled":  "true"
+        yuzu_aliasing_method:
+          group: ADVANCED OPTIONS
+          prompt:      ANTI-ALIASING METHOD
+          description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
+          choices:
+            "None": 0
+            "FXAA": 1
+        yuzu_scale_filter:
+          group: ADVANCED OPTIONS
+          prompt:      TEXTURE FILTERING
+          description: Smooth textures on 3D objects.
+          choices:
+            "Nearest Neighbour":            0
+            "Bilinear":                     1
+            "Bicubic":                      2
+            "Gaussian":                     3
+            "ScaleForce":                   4
+            "AMD FidelityFX (Vulkan Only)": 5
 
 ryujinx:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        ryujinx_api:
+          prompt: GRAPHICS API
+          description: Choose which graphics API library to use. Vulkan is better, when supported.
+          choices:
+            "OpenGL": "OpenGL"
+            "Vulkan": "Vulkan"
+        ryujinx_scale:
+          prompt: RENDERING RESOLUTION
+          description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+          choices:
+            "Native (720p/1080p)": 1
+            "2x (1440p/2160p)":    2
+            "3x (2160p/3240p)":    3
+            "4x (2880p/4320p)":    4
+        ryujinx_ratio:
+          prompt: ASPECT RATIO
+          description: Change the output resolution ratio.
+          choices:
+            "4:3":                   "Fixed4x3"
+            "16:9 (Default)":        "Fixed16x9"
+            "16:10":                 "Fixed16x10"
+            "21:9":                  "Fixed21x9"
+            "32:9":                  "Fixed32x9"
+            "Stretch to fit window": "Stretched"
+        ryujinx_filtering:
+          prompt: ANISOTROPIC FILTERING
+          description: Improves clarity of distant textures.
+          choices:
+            "2x":   2
+            "4x":   4
+            "8x":   8
+            "16x":  16
+        ryujinx_language:
+          prompt: LANGUAGE
+          description: Change the game's language.
+          choices:
+            "American English":       "AmericanEnglish"
+            "British English":        "BritishEnglish"
+            "Canadian French":        "CanadianFrench"
+            "Chinese":                "Chinese"
+            "Dutch":                  "Dutch"
+            "French":                 "French"
+            "German":                 "German"
+            "Italian":                "Italian"
+            "Japanese":               "Japanese"
+            "Korean":                 "Korean"
+            "Latin American Spanish": "LatinAmericanSpanish"
+            "Portuguese":             "Portuguese"
+            "Russian":                "Russian"
+            "Simplified Chinese":     "SimplifiedChinese"
+            "Spanish":                "Spanish"
+            "Taiwanese":              "Taiwanese"
+            "Traditional Chinese":    "TraditionalChinese"
+            "Brazilian Portuguese":   "BrazilianPortuguese"
+        ryujinx_region:
+          prompt: CHOOSE CONSOLE REGION
+          description: Choose your console region.
+          choices:
+            "Japan":     "Japan"
+            "USA":       "USA"
+            "Europe":    "Europe"
+            "Australia": "Australia"
+            "China":     "China"
+            "Korea":     "Korea"
+            "Taiwan":    "Taiwan"
+        ryujinx_timeoffset:
+          prompt: CHOOSE CONSOLE TIMEZONE
+          description: Choose your console UTC timezone.
+          choices:
+            "UTC-12": -12
+            "UTC-11": -11
+            "UTC-10": -10
+            "UTC-9":  -9
+            "UTC-8":  -8
+            "UTC-7":  -7
+            "UTC-6":  -6
+            "UTC-5":  -5
+            "UTC-4":  -4
+            "UTC-3":  -3
+            "UTC-2":  -2
+            "UTC-1":  -1
+            "UTC":    0
+            "UTC+1":  1
+            "UTC+2":  2
+            "UTC+3":  3
+            "UTC+4":  4
+            "UTC+5":  5
+            "UTC+6":  6
+            "UTC+7":  7
+            "UTC+8":  8
+            "UTC+9":  9
+            "UTC+10": 10
+            "UTC+11": 11
+            "UTC+12": 12
 
-simcoupe:
+samcoupe:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, hud, hud_corner]
 
 hcl:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 hurrican:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 openjazz:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 etekwar:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 abuse:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 cdogs:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 openmsx:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 demul:
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
@@ -8250,12 +9671,95 @@ demul:
 
 sh:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 xenia:
   features: []
   shared: [videomode]
 
+xenia-canary:
+  features: []
+  shared: [videomode]
+
 odcommander:
   features: [padtokeyboard]
+  shared: [videomode, ratio, hud]
+
+gzdoom:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+
+eduke32:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: []
+  cfeatures:
+    nologo:
+      prompt: SKIP INTRO VIDEOS
+      choices:
+        "Skip": 1
+        "Show (Default)": 0
+
+fury:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: []
+  cfeatures:
+    nologo:
+      prompt: SKIP INTRO VIDEOS
+      choices:
+        "Skip": 1
+        "Show (Default)": 0
+
+raze:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  cfeatures:
+    nologo:
+      prompt: SKIP INTRO VIDEOS
+      choices:
+        "Skip": 1
+        "Show (Default)": 0
+
+# vita3k doesn't handle the hud - so no deocrations etc
+vita3k:
   shared: [videomode]
+  features: []
+  cfeatures:
+    vita3k_gfxbackend:
+      prompt:      GRAPHICS API
+      description: Choose which graphics API library to use. Vulkan is better, when supported.
+      choices:
+        "OpenGL": "OpenGL"
+        "Vulkan": "Vulkan"
+    vita3k_resolution:
+      prompt:      RENDERING RESOLUTION
+      description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+      choices:
+        "1x (960x544)":   1
+        "2x (1920x1088)": 2
+        "3x (2880x1632)": 3
+        "4x (3840x2176)": 4
+        "5x (4800x2720)": 5
+        "6x (5760x3264)": 6
+        "7x (6720x3808)": 7
+        "8x (7680x4352)": 8
+    vita3k_fxaa:
+      prompt:      FXAA
+      description: Anti-aliasing is a technique for smoothing out jagged edges.
+      choices:
+        "Disabled (Default)": False
+        "Enabled":            True
+    vita3k_vsync:
+      prompt: VSYNC
+      description: Fix screen tearing.
+      choices:
+        "Disabled":          False
+        "Enabled (Default)": True
+    vita3k_anisotropic:
+      prompt:      ANISOTROPIC FILTERING
+      description: Improves clarity of distant textures.
+      choices:
+        "1x":  1
+        "2x":  2
+        "4x":  4
+        "8x":  8
+        "16x": 16

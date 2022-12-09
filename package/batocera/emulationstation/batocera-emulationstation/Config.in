@@ -24,14 +24,8 @@ config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
 	select BR2_PACKAGE_PULSEAUDIO_ENABLE_ATOMIC
 	select BR2_PACKAGE_PULSEAUDIO_UTILS
 	select BR2_PACKAGE_BATOCERA_ES_SYSTEM
-
-	# when kodi is not enable, es needs some videos players
-	# not sure about which packages exactly are required
-	select BR2_PACKAGE_X264               # decoder for video for vlc
-	select BR2_PACKAGE_X265               # decoder for video for vlc
-	select BR2_PACKAGE_GSTREAMER1         # decoder for video for vlc
-	select BR2_PACKAGE_GST1_PLUGINS_BASE  # decoder for video for vlc
-	select BR2_PACKAGE_FFMPEG_GPL
+    select BR2_PACKAGE_FFMPEG
+    select BR2_PACKAGE_FFMPEG_GPL
 	select BR2_PACKAGE_FFMPEG_FFPROBE
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE
 	select BR2_PACKAGE_FFMPEG_SWSCALE

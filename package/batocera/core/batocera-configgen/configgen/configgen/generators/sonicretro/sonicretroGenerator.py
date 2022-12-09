@@ -9,7 +9,7 @@ import shutil
 
 class SonicRetroGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         
         # Determine the emulator to use
         if (rom.lower()).endswith("son"):
@@ -65,7 +65,7 @@ class SonicRetroGenerator(Generator):
         # [Dev]
         if not sonicConfig.has_section("Dev"):
             sonicConfig.add_section("Dev")
-        if system.isOptSet('devmenu') and system.config["devmenu"] == 1:
+        if system.isOptSet('devmenu') and system.config["devmenu"] == '1':
             sonicConfig.set("Dev", "DevMenu", "true")
         else:
             sonicConfig.set("Dev", "DevMenu", "false")
@@ -80,7 +80,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.set("Dev", "StartingScene", "0")
             sonicConfig.set("Dev", "UseSteamDir", "false")
         sonicConfig.set("Dev", "FastForwardSpeed", "8")
-        if system.isOptSet('hqmode') and system.config["hqmode"] == 0:
+        if system.isOptSet('hqmode') and system.config["hqmode"] == '0':
             sonicConfig.set("Dev", "UseHQModes", "false")
         else:
             sonicConfig.set("Dev", "UseHQModes", "true")
@@ -91,7 +91,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.add_section("Game")
         
         if (emu == "sonic2013"):
-            if system.isOptSet('skipstart') and system.config["skipstart"] == 1:
+            if system.isOptSet('skipstart') and system.config["skipstart"] == '1':
                 sonicConfig.set("Game", "SkipStartMenu", "true")
             else:
                 sonicConfig.set("Game", "SkipStartMenu", "false")
@@ -137,7 +137,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.add_section("Keyboard 1")
         
         for x in sonicKeys:
-            sonicConfig.set("Keyboard 1", "{}".format(x), "{}".format(sonicKeys[x]))
+            sonicConfig.set("Keyboard 1", f"{x}", f"{sonicKeys[x]}")
         
         # [Controller 1]
         if not sonicConfig.has_section("Controller 1"):
@@ -148,7 +148,7 @@ class SonicRetroGenerator(Generator):
             if controller.player != "1":
                 continue
             for x in sonicButtons:
-                sonicConfig.set("Controller 1", "{}".format(x), "{}".format(sonicButtons[x]))
+                sonicConfig.set("Controller 1", f"{x}", f"{sonicButtons[x]}")
             break
         
         with open(iniFile, 'w') as configfile:

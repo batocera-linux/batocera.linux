@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROSHAMBO_CASE_VERSION = 81c04334a3049f301294743e9e15806aa086221a
+ROSHAMBO_CASE_VERSION = 986a7db7a6ffcbd3a78e65f1669cfe7dd81e9fa7
 ROSHAMBO_CASE_SITE = $(call github,mrfixit2001,Rock64-R64.GPIO,$(ROSHAMBO_CASE_VERSION))
 ROSHAMBO_CASE_LICENSE = GPL-3.0+, others
 ROSHAMBO_CASE_DEPENDENCIES = python3 host-python3

@@ -1,7 +1,7 @@
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes.c linux-5.14_15kHz/drivers/gpu/drm/drm_modes.c
---- linux-5.14_stock/drivers/gpu/drm/drm_modes.c	2021-08-30 00:04:50.000000000 +0200
-+++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes.c	2021-09-01 01:14:53.653622968 +0200
-@@ -44,6 +44,7 @@
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c
+--- linux-6.0_stock/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
+@@ -47,6 +47,7 @@
  #include <drm/drm_print.h>
  
  #include "drm_crtc_internal.h"
@@ -9,7 +9,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  
  /**
   * drm_mode_debug_printmodeline - print a mode to dmesg
-@@ -1477,7 +1478,7 @@
+@@ -1551,7 +1552,7 @@
  					   struct drm_cmdline_mode *mode)
  {
  	const char *str_start = str;
@@ -18,7 +18,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  	int xres = 0, yres = 0;
  	int remaining, i;
  	char *end_ptr;
-@@ -1507,6 +1508,12 @@
+@@ -1581,6 +1582,12 @@
  		case 'R':
  			rb = true;
  			break;
@@ -31,7 +31,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  		default:
  			/*
  			 * Try to pass that to our extras parsing
-@@ -1531,6 +1538,7 @@
+@@ -1605,6 +1612,7 @@
  	mode->yres = yres;
  	mode->cvt = cvt;
  	mode->rb = rb;
@@ -39,7 +39,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  
  	return 0;
  }
-@@ -1863,7 +1871,11 @@
+@@ -1937,7 +1945,11 @@
  	if (cmd->xres == 0 || cmd->yres == 0)
  		return NULL;
  
@@ -52,9 +52,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
---- linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	2021-09-01 01:14:53.659622881 +0200
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
+--- linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
 @@ -0,0 +1,136 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -86,68 +86,68 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
 + * 2 duplicate modes that vary with H freq : 320x240 and 1024x768
 + */
 +static struct drm_display_mode drm_low_dotclock_modes[] = {
-+	/* 320x240@60.00 15.660 Khz */
++	/* 320x240@60.00 15.660 kHz */
 +	{ DRM_MODE("320x240", DRM_MODE_TYPE_DRIVER, 6640, 320, 336,
 +			368, 424, 0, 240, 242, 245, 261, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 384x288@50.00 15 Khz */
++	/* 384x288@60.00 15 kHz */
 +	{ DRM_MODE("384x288", DRM_MODE_TYPE_DRIVER, 7887, 384, 400,
 +			440, 504, 0, 288, 292, 295, 313, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x240@60.00 15 Khz */
++	/* 640x240@60.00 15 kHz */
 +	{ DRM_MODE("640x240", DRM_MODE_TYPE_DRIVER, 13220, 640, 672,
 +			736, 832, 0, 240, 243, 246, 265, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x480@60.00 15.750 Khz */
++	/* 640x480@60.00 15.750 kHz */
 +	{ DRM_MODE("640x480i", DRM_MODE_TYPE_DRIVER, 13104, 640, 664,
-+			728, 832, 0, 480, 484, 490, 526, 0,
++			728, 832, 0, 480, 484, 490, 525, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +                       DRM_MODE_FLAG_INTERLACE) },
-+	/* 648x480@60.00 13.129 Khz */
++	/* 648x480@60.00 13.129 kHz */
 +	{ DRM_MODE("648x480i", DRM_MODE_TYPE_DRIVER, 13129, 648, 672,
-+			736, 840, 0, 480, 482, 488, 522, 0,
++			736, 840, 0, 480, 482, 488, 521, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +                       DRM_MODE_FLAG_INTERLACE) },
-+	/* 720x480@59.95 15.7369 Khz */
++	/* 720x480@59.95 15.7369 kHz */
 +	{ DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER, 14856, 720, 752,
-+			824, 944, 0, 480, 484, 490, 526, 0,
++			824, 944, 0, 480, 484, 490, 525, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 768x576 15.6250 Khz */
++	/* 768x576 15.6250 kHz */
 +	{ DRM_MODE("768x576i", DRM_MODE_TYPE_DRIVER, 15625, 768, 800,
-+			872, 1000, 0, 576, 582, 588, 626, 0,
++			872, 1000, 0, 576, 582, 588, 625, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 800x576@50.00 15.725 Khz */
++	/* 800x576@50.00 15.725 kHz */
 +	{ DRM_MODE("800x576i", DRM_MODE_TYPE_DRIVER, 16354, 800, 832,
-+			912, 1040, 0, 576, 584, 590, 630, 0,
++			912, 1040, 0, 576, 584, 590, 629, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1280x480@60.00 15.690 Khz - 25MHz dotclock for i915+nouveau*/
++	/* 1280x480@60.00 15.690 kHz - 25MHz dotclock for i915+nouveau*/
 +	{ DRM_MODE("1280x480i", DRM_MODE_TYPE_DRIVER, 25983, 1280, 1328,
-+			1448, 1656, 0, 480, 483, 489, 524, 0,
++			1448, 1656, 0, 480, 483, 489, 523, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 512x384@58.59 24.960 Khz */
++	/* 512x384@58.59 24.960 kHz */
 +	{ DRM_MODE("512x384", DRM_MODE_TYPE_DRIVER, 16972, 512, 560,
 +			608, 680, 0, 384, 395, 399, 426, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 800x600@60.00 24.990 Khz */
++	/* 800x600@60.00 24.990 kHz */
 +	{ DRM_MODE("800x600i", DRM_MODE_TYPE_DRIVER, 26989, 800, 880,
 +			960, 1080, 0, 600, 697, 705, 833, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1024x768@50.00 24.975 Khz */
++	/* 1024x768@50.00 24.975 kHz */
 +	{ DRM_MODE("1024x768i", DRM_MODE_TYPE_DRIVER, 34165, 1024, 1120,
-+			1216, 1368, 0, 768, 864, 872, 1000, 0,
++			1216, 1368, 0, 768, 864, 872, 999, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
 +			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1280x240@60.00 24.900 Khz */
++	/* 1280x240@60.00 24.900 kHz */
 +	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 39790, 1280, 1312,
 +			1471, 1598, 0, 240, 314, 319, 415, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x480@60.00 31 Khz */
-+	{ DRM_MODE("640x480", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
++	/* 640x480@60.00 31 kHz */
++	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
 +	 752, 800, 0, 480, 489, 492, 525, 0,
 +	 DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) }
 +};
@@ -192,9 +192,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
---- linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	2021-09-01 01:14:53.661622852 +0200
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
+--- linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -219,33 +219,10 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_probe_helper.c linux-5.14_15kHz/drivers/gpu/drm/drm_probe_helper.c
---- linux-5.14_stock/drivers/gpu/drm/drm_probe_helper.c	2021-08-30 00:04:50.000000000 +0200
-+++ linux-5.14_15kHz/drivers/gpu/drm/drm_probe_helper.c	2021-09-01 01:14:53.664622808 +0200
-@@ -418,6 +418,7 @@
- {
- 	struct drm_device *dev = connector->dev;
- 	struct drm_display_mode *mode;
-+	struct drm_cmdline_mode *cmdline_mode;
- 	const struct drm_connector_helper_funcs *connector_funcs =
- 		connector->helper_private;
- 	int count = 0, ret;
-@@ -512,11 +513,13 @@
- 	 * Fallback for when DDC probe failed in drm_get_edid() and thus skipped
- 	 * override/firmware EDID.
- 	 */
-+	cmdline_mode = &connector->cmdline_mode;
- 	if (count == 0 && connector->status == connector_status_connected)
- 		count = drm_add_override_edid_modes(connector);
- 
- 	if (count == 0 && (connector->status == connector_status_connected ||
--			   connector->status == connector_status_unknown))
-+			   connector->status == connector_status_unknown) &&
-+			   ! cmdline_mode->low_dotclock)
- 		count = drm_add_modes_noedid(connector, 1024, 768);
- 	count += drm_helper_probe_add_cmdline_mode(connector);
- 	if (count == 0)
-@@ -532,21 +535,27 @@
+diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c
+--- linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
+@@ -391,21 +391,26 @@
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -268,13 +245,12 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
  		if (mode->status != MODE_OK)
  			continue;
  
-+
 +		DRM_DEBUG_KMS("[CONNECTOR:%d:%s] before drm_mode_validate_pipeline mode is : %d\n", connector->base.id, connector->name, mode->status);
- 		ret = drm_mode_validate_pipeline(mode, connector, &ctx,
+ 		ret = drm_mode_validate_pipeline(mode, connector, ctx,
  						 &mode->status);
  		if (ret) {
-@@ -562,9 +571,11 @@
- 			}
+@@ -419,9 +424,11 @@
+ 				return -EDEADLK;
  		}
  
 +		DRM_DEBUG_KMS("[CONNECTOR:%d:%s] before drm_mode_validate_ycbcr420 mode is : %d\n", connector->base.id, connector->name, mode->status);
@@ -284,23 +260,46 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_st
 +		DRM_DEBUG_KMS("[CONNECTOR:%d:%s] in the end mode is : %d\n", connector->base.id, connector->name, mode->status);
  	}
  
- prune:
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/Makefile linux-5.14_15kHz/drivers/gpu/drm/Makefile
---- linux-5.14_stock/drivers/gpu/drm/Makefile	2021-08-30 00:04:50.000000000 +0200
-+++ linux-5.14_15kHz/drivers/gpu/drm/Makefile	2021-09-01 01:14:53.668622750 +0200
-@@ -18,7 +18,7 @@
+ 	return 0;
+@@ -491,6 +498,7 @@
+ {
+ 	struct drm_device *dev = connector->dev;
+ 	struct drm_display_mode *mode;
++	struct drm_cmdline_mode *cmdline_mode;
+ 	int count = 0, ret;
+ 	enum drm_connector_status old_status;
+ 	struct drm_modeset_acquire_ctx ctx;
+@@ -575,10 +583,13 @@
+ 		goto exit;
+ 	}
+ 
++	cmdline_mode = &connector->cmdline_mode;
++
+ 	count = drm_helper_probe_get_modes(connector);
+ 
+ 	if (count == 0 && (connector->status == connector_status_connected ||
+-			   connector->status == connector_status_unknown)) {
++			   connector->status == connector_status_unknown) && 
++			   ! cmdline_mode->low_dotclock) {
+ 		count = drm_add_modes_noedid(connector, 1024, 768);
+ 
+ 		/*
+diff -Naur linux-6.0_stock/drivers/gpu/drm/Makefile linux-6.0_15kHz/drivers/gpu/drm/Makefile
+--- linux-6.0_stock/drivers/gpu/drm/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/drivers/gpu/drm/Makefile	1970-01-01 01:00:00.000000000 +0100
+@@ -17,7 +17,7 @@
  		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
  		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
  		drm_client_modeset.o drm_atomic_uapi.o \
 -		drm_managed.o drm_vblank_work.o
 +		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
- 
  drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
- 			    drm_legacy_misc.o drm_lock.o drm_memory.o drm_scatter.o \
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/include/drm/drm_connector.h linux-5.14_15kHz/include/drm/drm_connector.h
---- linux-5.14_stock/include/drm/drm_connector.h	2021-08-30 00:04:50.000000000 +0200
-+++ linux-5.14_15kHz/include/drm/drm_connector.h	2021-09-01 01:14:53.675622649 +0200
-@@ -1206,6 +1206,13 @@
+ 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
+ 			    drm_memory.o drm_scatter.o drm_vm.o
+diff -Naur linux-6.0_stock/include/drm/drm_connector.h linux-6.0_15kHz/include/drm/drm_connector.h
+--- linux-6.0_stock/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-6.0_15kHz/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1277,6 +1277,13 @@
  	 * @tv_margins: TV margins to apply to the mode.
  	 */
  	struct drm_connector_tv_margins tv_margins;

@@ -6,8 +6,9 @@ from settings.unixSettings import UnixSettings
 import batoceraFiles
 import csv
 from pathlib import Path
+import controllersConfig
 
-def generateCoreSettings(coreSettings, system, rom):
+def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Amstrad CPC / GX4000
     if (system.config['core'] == 'cap32'):
@@ -152,11 +153,12 @@ def generateCoreSettings(coreSettings, system, rom):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -173,10 +175,14 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('vice_joyport', '"2"')
         # Select Controller Type
-        if system.isOptSet('vice_joyport_type'):
-            coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('vice_joyport_type', '"14"')
         else:
-            coreSettings.save('vice_joyport_type', '"1"')
+            if system.isOptSet('vice_joyport_type'):
+                coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+            else:
+                coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])
@@ -212,11 +218,12 @@ def generateCoreSettings(coreSettings, system, rom):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_external_palette'):
             coreSettings.save('vice_external_palette', system.config['vice_external_palette'])
@@ -270,11 +277,12 @@ def generateCoreSettings(coreSettings, system, rom):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_plus4_external_palette'):
             coreSettings.save('vice_plus4_external_palette', system.config['vice_plus4_external_palette'])
@@ -328,11 +336,12 @@ def generateCoreSettings(coreSettings, system, rom):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_vic20_external_palette'):
             coreSettings.save('vice_vic20_external_palette', system.config['vice_vic20_external_palette'])
@@ -386,11 +395,12 @@ def generateCoreSettings(coreSettings, system, rom):
         # Zoom Mode
         if system.isOptSet('vice_zoom_mode'):
             if system.config['vice_zoom_mode'] == 'automatic':
-                coreSettings.save('vice_zoom_mode', '"auto"')
+                coreSettings.save('vice_crop', '"auto"')
             else:
-                coreSettings.save('vice_zoom_mode', system.config['vice_zoom_mode'])
+                coreSettings.save('vice_crop', system.config['vice_zoom_mode'])
         else:
-            coreSettings.save('vice_zoom_mode', '"auto_disable"')
+            coreSettings.save('vice_crop', '"auto_disable"')
+        coreSettings.save('vice_zoom_mode', '"deprecated"')
         # External palette
         if system.isOptSet('vice_pet_external_palette'):
             coreSettings.save('vice_pet_external_palette', system.config['vice_pet_external_palette'])
@@ -418,7 +428,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
     # Commodore AMIGA
-    if (system.config['core'] == 'puae'):
+    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021'):
         # Functional mapping for Amiga system
         # If you want to change them, you can add
         # some strings to batocera.conf by using
@@ -430,7 +440,8 @@ def generateCoreSettings(coreSettings, system, rom):
                 'statusbar': "RETROK_F11",
                 'vkbd': "---",
                 'reset': "---",
-                'zoom_mode_toggle': "RETROK_F12",
+                'crop_toggle': "RETROK_F12",
+                'zoom_mode_toggle': "---",
                 'a': "---",
                 'b': "---",
                 'x': "RETROK_LALT",
@@ -460,7 +471,8 @@ def generateCoreSettings(coreSettings, system, rom):
                 'statusbar': "RETROK_F11",
                 'vkbd': "---",
                 'reset': "---",
-                'zoom_mode_toggle': "RETROK_F12",
+                'crop_toggle': "RETROK_F12",
+                'zoom_mode_toggle': "---",
                 'a': "---",
                 'b': "---",
                 'x': "---",
@@ -484,7 +496,7 @@ def generateCoreSettings(coreSettings, system, rom):
             for key in uae_mapping:
                 coreSettings.save('puae_mapper_' + key, uae_mapping[key])
         # Show Video Options
-        coreSettings.save('puae_video_options_display ', '"enabled"')
+        coreSettings.save('puae_video_options_display', '"enabled"')
         # Amiga Model
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
@@ -531,9 +543,10 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_video_resolution', '"hires"')
         # Zoom Mode
         if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
-            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+            coreSettings.save('puae_crop', system.config['zoom_mode'])
         else:
-            coreSettings.save('puae_zoom_mode', '"auto"')
+            coreSettings.save('puae_crop', '"auto"')
+        coreSettings.save('puae_zoom_mode', '"deprecated"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -593,13 +606,48 @@ def generateCoreSettings(coreSettings, system, rom):
             else:
                 coreSettings.save('puae_cd32pad_options', '"disabled"')
 
+    # Dolpin Wii
+    if (system.config['core'] == 'dolphin'):
+        # Wii System Languages
+            if system.isOptSet('wii_language'):
+                coreSettings.save('dolphin_language', system.config['wii_language'])
+            else:
+                coreSettings.save('dolphin_language', '"French"')
+        # Wii Resolution Scale
+            if system.isOptSet('wii_resolution'):
+                coreSettings.save('dolphin_efb_scale', system.config['wii_resolution'])
+            else:
+                coreSettings.save('dolphin_efb_scale', '"x1 (640 x 528)"')
+        # Anisotropic Filtering
+            if system.isOptSet('wii_anisotropic'):
+                coreSettings.save('dolphin_max_anisotropy', system.config['wii_anisotropic'])
+            else:
+                coreSettings.save('dolphin_max_anisotropy', '"x1"')
+        # Wii Tv Mode
+            if system.isOptSet('wii_widescreen'):
+                coreSettings.save('dolphin_widescreen', system.config['wii_widescreen'])
+            else:
+                coreSettings.save('dolphin_widescreen', '"enabled"')
+        # Widescreen Hack
+            if system.isOptSet('wii_widescreen_hack'):
+                coreSettings.save('dolphin_widescreen_hack', system.config['wii_widescreen_hack'])
+            else:
+                coreSettings.save('dolphin_widescreen_hack', '"disabled"')
+        # Shader Compilation Mode
+            if system.isOptSet('wii_shader_mode'):
+                coreSettings.save('dolphin_shader_compilation_mode', system.config['wii_shader_mode'])
+            else:
+                coreSettings.save('dolphin_shader_compilation_mode', '"sync"')
+
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        coreSettings.save('o2em_vkbd_transparency', '"25"')
         # Emulated Hardware
         if system.isOptSet('o2em_bios'):
             coreSettings.save('o2em_bios', system.config['o2em_bios'])
+        elif system.name == 'videopacplus':
+            coreSettings.save('o2em_bios', '"g7400.bin"')
         else:
             coreSettings.save('o2em_bios', '"o2rom.bin"')
         # Emulated Hardware
@@ -661,6 +709,33 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('mame_mouse_enable', '"disabled"')
 
+    # SAME_CDI
+    if (system.config['core'] == 'same_cdi'):
+        # Lightgun mode
+        coreSettings.save('same_cdi_lightgun_mode', '"lightgun"')
+        # Enable cheats
+        coreSettings.save('same_cdi_cheats_enable', '"enabled"')
+        # CPU Overclock
+        if system.isOptSet('same_cdi_cpu_overclock'):
+            coreSettings.save('same_cdi_cpu_overclock', system.config['same_cdi_cpu_overclock'])
+        else:
+            coreSettings.save('same_cdi_cpu_overclock', '"default"')
+        # Video Resolution
+        if system.isOptSet('same_cdi_altres'):
+            coreSettings.save('same_cdi_altres', system.config['same_cdi_altres'])
+        else:
+            coreSettings.save('same_cdi_altres', '"640x480"')
+        # Disable controller profiling
+        coreSettings.save('same_cdi_buttons_profiles', '"disabled"')
+        # Software Lists (MESS)
+        coreSettings.save('same_cdi_softlists_enable', '"disabled"')
+        coreSettings.save('same_cdi_softlists_auto_media', '"disabled"')
+        # Enable config reading (for controls)
+        coreSettings.save('same_cdi_read_config', '"enabled"')
+        # Use CLI (via CMD file) to boot
+        coreSettings.save('same_cdi_boot_from_cli', '"enabled"')
+        # Activate mouse
+        coreSettings.save('same_cdi_mouse_enable', '"enabled"')
 
     # MAME 2003 Plus
     if (system.config['core'] == 'mame078plus'):
@@ -801,6 +876,11 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('bluemsx_nospritelimits', '"OFF"')
         else:
             coreSettings.save('bluemsx_nospritelimits', '"ON"')
+        # Zoom, Hide Video Border
+        if system.isOptSet('bluemsx_overscan'):
+            coreSettings.save('bluemsx_overscan', system.config['bluemsx_overscan'])
+        else:
+            coreSettings.save('bluemsx_overscan', '"MSX2"')
 
     # Nec PC Engine / CD
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
@@ -979,6 +1059,26 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
+        # RDP Plugin
+        if system.isOptSet('mupen64plus-rdpPlugin'):
+            coreSettings.save('mupen64plus-rdp-plugin', '"' + system.config['mupen64plus-rdpPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rdp-plugin', '"gliden64"')
+        # RSP Plugin
+        if system.isOptSet('mupen64plus-rspPlugin'):
+            coreSettings.save('mupen64plus-rsp-plugin', '"' + system.config['mupen64plus-rspPlugin'] + '"')
+        else:
+            coreSettings.save('mupen64plus-rsp-plugin', '"hle"')
+        # CPU Core
+        if system.isOptSet('mupen64plus-cpuCore'):
+            coreSettings.save('mupen64plus-cpucore', '"' + system.config['mupen64plus-cpuCore'] + '"')
+        else:
+            coreSettings.save('mupen64plus-cpucore', '"dynamic_recompiler"')
+        # Framerate
+        if system.isOptSet('mupen64plus-Framerate'):
+            coreSettings.save('mupen64plus-Framerate', system.config['mupen64plus-Framerate'])
+        else:
+            coreSettings.save('mupen64plus-Framerate', '"Original"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
@@ -1073,7 +1173,10 @@ def generateCoreSettings(coreSettings, system, rom):
         # Enable threaded rendering
         coreSettings.save('melonds_threaded_renderer', '"enabled"')
         # Emulate Stylus on Right Stick
-        coreSettings.save('melonds_touch_mode',        '"Joystick"')
+        if system.isOptSet('melonds_touch_mode'):
+            coreSettings.save('melonds_touch_mode',  '"' + system.config['melonds_touch_mode'] + '"')
+        else:
+            coreSettings.save('melonds_touch_mode','"Joystick"')
         # Boot game directly
         if system.isOptSet('melonds_boot_directly'):
             coreSettings.save('melonds_boot_directly', system.config['melonds_boot_directly'])
@@ -1149,7 +1252,7 @@ def generateCoreSettings(coreSettings, system, rom):
                     coreSettings.save('gambatte_gb_colorization',     '"custom"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 else:                                                                    #User Selection
-                    coreSettings.save('gambatte_gb_colorization',     '"internal"')           
+                    coreSettings.save('gambatte_gb_colorization',     '"internal"')
                     coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
             else:
                 coreSettings.save('gambatte_gb_colorization',         '"internal"')      #It's an empty file, set to Classic Green
@@ -1253,8 +1356,23 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):
-        # Nestopia Mouse mode for Zapper
-        coreSettings.save('nestopia_zapper_device', '"mouse"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('nestopia_zapper_device', '"lightgun"')
+        else:
+            # Mouse mode for Zapper
+            coreSettings.save('nestopia_zapper_device', '"mouse"')
+
+        # gun cross
+        if system.isOptSet('nestopia_show_crosshair'):
+            coreSettings.save('nestopia_show_crosshair', system.config['nestopia_show_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('nestopia_show_crosshair', status)
+
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
@@ -1295,8 +1413,23 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('nestopia_select_adapter', '"auto"')
 
     if (system.config['core'] == 'fceumm'):
-        # FCEumm Mouse mode for Zapper
-        coreSettings.save('fceumm_zapper_mode', '"mouse"')
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('fceumm_zapper_mode', '"lightgun"')
+        else:
+            # FCEumm Mouse mode for Zapper
+            coreSettings.save('fceumm_zapper_mode', '"mouse"')
+
+        # gun cross
+        if system.isOptSet('fceumm_show_crosshair'):
+            coreSettings.save('fceumm_show_crosshair', system.config['fceumm_show_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('fceumm_show_crosshair', status)
+
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
@@ -1427,6 +1560,16 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_hires_blend', system.config['hires_blend'])
         else:
             coreSettings.save('snes9x_hires_blend', '"disabled"')
+        if system.isOptSet('superscope_crosshair'):
+            coreSettings.save('snes9x_superscope_crosshair', system.config['superscope_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"2"'
+            else:
+                status = '"0"'
+            coreSettings.save('snes9x_superscope_crosshair', status)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('snes9x_superscope_reverse_buttons', '"disabled"')
 
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
@@ -1444,8 +1587,19 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_2010_overclock', '"' + system.config['2010_overclock_superfx'] + '"')
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
+        if system.isOptSet('superscope_crosshair'):
+            coreSettings.save('snes9x_2010_superscope_crosshair', system.config['superscope_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"2"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('snes9x_2010_superscope_crosshair', status)
 
     # TODO: Add CORE options for BSnes and PocketSNES
+    if (system.config['core'] == 'bsnes'):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('bsnes_touchscreen_lightgun_superscope_reverse', '"OFF"')
 
     # Nintendo SNES/GB/GBC/SGB
     if (system.config['core'] == 'mesen-s'):
@@ -1551,6 +1705,29 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('opera_nvram_storage', '"per game"')
 
+    # Rick Dangerous
+    if (system.config['core'] == 'xrick'):
+        # Crop Borders
+        if system.isOptSet('xrick_crop_borders') and system.getOptBoolean('xrick_crop_borders') == False:
+            coreSettings.save('xrick_crop_borders', '"disabled"')
+        else:
+            coreSettings.save('xrick_crop_borders', '"enabled"')
+        # Cheat 1 (Trainer Mode)
+        if system.isOptSet('xrick_cheat1') and system.getOptBoolean('xrick_cheat1'):
+            coreSettings.save('xrick_cheat1', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat1', '"disabled"')
+        # Cheat 2 (Invulnerablilty Mode)
+        if system.isOptSet('xrick_cheat2') and system.getOptBoolean('xrick_cheat2'):
+            coreSettings.save('xrick_cheat2', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat2', '"disabled"')
+        # Cheat 3 (Expose Mode)
+        if system.isOptSet('xrick_cheat3') and system.getOptBoolean('xrick_cheat3'):
+            coreSettings.save('xrick_cheat3', '"enabled"')
+        else:
+            coreSettings.save('xrick_cheat3', '"disabled"')
+
     # ScummVM CORE Options
     if (system.config['core'] == 'scummvm'):
         # Analog Deadzone
@@ -1581,10 +1758,38 @@ def generateCoreSettings(coreSettings, system, rom):
         # Enable controller force feedback
         coreSettings.save('reicast_enable_purupuru',  '"enabled"')
         # Crossbar Colors
-        coreSettings.save('reicast_lightgun1_crosshair', '"Red"')
-        coreSettings.save('reicast_lightgun2_crosshair', '"Blue"')
-        coreSettings.save('reicast_lightgun3_crosshair', '"Green"')
-        coreSettings.save('reicast_lightgun4_crosshair', '"White"')
+        if system.isOptSet('reicast_lightgun1_crosshair'):
+            coreSettings.save('reicast_lightgun1_crosshair', system.config['reicast_lightgun1_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Red"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun1_crosshair', status)
+        if system.isOptSet('reicast_lightgun2_crosshair'):
+            coreSettings.save('reicast_lightgun2_crosshair', system.config['reicast_lightgun2_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Blue"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun2_crosshair', status)
+        if system.isOptSet('reicast_lightgun3_crosshair'):
+            coreSettings.save('reicast_lightgun3_crosshair', system.config['reicast_lightgun3_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Green"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun3_crosshair', status)
+        if system.isOptSet('reicast_lightgun4_crosshair'):
+            coreSettings.save('reicast_lightgun4_crosshair', system.config['reicast_lightgun4_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"White"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('reicast_lightgun4_crosshair', status)
         # Video resolution
         if system.isOptSet('reicast_internal_resolution'):
             coreSettings.save('reicast_internal_resolution', system.config['reicast_internal_resolution'])
@@ -1645,11 +1850,17 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'genesisplusgx'):
         # Allows each game to have its own one brm file for save without lack of space
         coreSettings.save('genesis_plus_gx_bram', '"per game"')
+        # Sometimes needs to be forced to NTSC-U for MSU-MD to work (this is to avoid an intentionally coded lock-out screen):
+        # https://arcadetv.github.io/msu-md-patches/wiki/Lockout-screen.html
+        if system.isOptSet('gpgx_region'):
+            coreSettings.save('genesis_plus_region_detect', system.config['gpgx_region'])
+        else:
+            coreSettings.save('genesis_plus_region_detect', '"auto"')
         # Reduce sprite flickering
         if system.isOptSet('gpgx_no_sprite_limit'):
             coreSettings.save('genesis_plus_gx_no_sprite_limit', system.config['gpgx_no_sprite_limit'])
         else:
-            coreSettings.save('genesis_plus_gx_no_sprite_limit', '"enabled"')
+            coreSettings.save('genesis_plus_gx_no_sprite_limit', '"disabled"')
         # Blargg NTSC filter
         if system.isOptSet('gpgx_blargg_filter_md') and system.name == 'megadrive':
             coreSettings.save('genesis_plus_gx_blargg_ntsc_filter', system.config['gpgx_blargg_filter_md'])
@@ -1663,7 +1874,11 @@ def generateCoreSettings(coreSettings, system, rom):
         elif system.isOptSet('gun_cursor_ms') and system.name == 'mastersystem':
             coreSettings.save('genesis_plus_gx_gun_cursor', system.config['gun_cursor_ms'])
         else:
-            coreSettings.save('genesis_plus_gx_gun_cursor', '"disabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('genesis_plus_gx_gun_cursor', status)
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
@@ -1683,6 +1898,30 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('genesis_plus_gx_gg_extra', system.config['gg_extra'])
         else:
             coreSettings.save('genesis_plus_gx_gg_extra', '"disabled"')
+
+        # system.name == 'msu-md'
+        # MSU-MD/MegaCD
+
+        # Needs to be forced to sega/mega cd for MSU-MD to work.
+        if system.isOptSet('gpgx_cd_add_on'):
+            coreSettings.save('genesis_plus_gx_add_on', system.config['gpgx_cd_add_on'])
+        elif system.name == 'msu-md':
+            coreSettings.save('genesis_plus_gx_add_on', '"sega/mega cd"')
+        else:
+            coreSettings.save('genesis_plus_gx_add_on', '"auto"')
+
+        # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
+        # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
+        if system.isOptSet('gpgx_cdda_volume'):
+            coreSettings.save('genesis_plus_gx_cdda_volume', system.config['gpgx_cdda_volume'])
+        elif system.name == 'msu-md':
+            coreSettings.save('genesis_plus_gx_cdda_volume', '"70"')
+        else:
+            coreSettings.save('genesis_plus_gx_cdda_volume', '"100"')
+
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('genesis_plus_gx_gun_input', '"lightgun"')
 
     # Sega 32X (Sega Megadrive / MegaCD / Master System)
     if system.config['core'] == 'picodrive':
@@ -1736,10 +1975,37 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('yabasanshiro_multitap_port1', '"disabled"')
             coreSettings.save('yabasanshiro_multitap_port2', '"disabled"')
 
-    # TODO: Add CORE options for Beetle-saturn and Kronos
+    if (system.config['core'] == 'kronos'):
+        # Share saves with Beetle
+        if system.isOptSet('kronos_use_beetle_saves') and system.config['kronos_use_beetle_saves'] == 'disabled':
+            coreSettings.save('kronos_use_beetle_saves', '"disabled"')
+        else:
+            coreSettings.save('kronos_use_beetle_saves', '"enabled"')
+
+    # gun cross
+    if (system.config['core'] == 'beetle-saturn'):
+        if system.isOptSet('beetle-saturn_crosshair'):
+            coreSettings.save('beetle_saturn_virtuagun_crosshair', system.config['beetle-saturn_crosshair'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"Cross"'
+            else:
+                status = '"Off"'
+            coreSettings.save('beetle_saturn_virtuagun_crosshair', status)
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
+        # Fresh config file
+        keropi_config = '/userdata/bios/keropi/config'
+        keropi_sram = '/userdata/bios/keropi/sram.dat'
+        for f in [ keropi_config, keropi_sram ]:
+            if os.path.exists(f):
+                os.remove(f)
+        fd = open(keropi_config, "w")
+        fd.write("[WinX68k]\n")
+        fd.write("StartDir=/userdata/roms/x68000\n")
+        fd.close()
+
         # To auto launch HDD games
         coreSettings.save('px68k_disk_path', '"disabled"')
         # CPU Speed (Overclock)
@@ -1790,8 +2056,11 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Sinclair ZX Spectrum
     if (system.config['core'] == 'fuse'):
-        # The most common configuration same as ZX Spectrum+
-        coreSettings.save('fuse_machine',   '"Spectrum 128K"')
+        if system.isOptSet('fuse_machine'):
+            coreSettings.save('fuse_machine', system.config['fuse_machine'])
+        else:
+            # The most common configuration same as ZX Spectrum+
+            coreSettings.save('fuse_machine',   '"Spectrum 128K"')
         # Zoom, Hide Video Border
         if system.isOptSet('fuse_hide_border'):
             coreSettings.save('fuse_hide_border', system.config['fuse_hide_border'])
@@ -1802,6 +2071,8 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'fbneo'):
         # Diagnostic input
         coreSettings.save('fbneo-diagnostic-input', '"Start + L + R"')
+        # Allow RetroAchievements in hardcore mode with FBNeo
+        coreSettings.save('fbneo-allow-patched-romsets', '"disabled"')
         # CPU Clock
         if system.isOptSet('fbneo-cpu-speed-adjust'):
             coreSettings.save('fbneo-cpu-speed-adjust', system.config['fbneo-cpu-speed-adjust'])
@@ -1816,7 +2087,11 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('fbneo-lightgun-hide-crosshair'):
             coreSettings.save('fbneo-lightgun-hide-crosshair', system.config['fbneo-lightgun-hide-crosshair'])
         else:
-            coreSettings.save('fbneo-lightgun-hide-crosshair', '"disabled"')
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('fbneo-lightgun-hide-crosshair', status)
 
         # NEOGEO
         if system.name == 'neogeo':
@@ -1856,7 +2131,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('neocd_bios'):
             coreSettings.save('neocd_bios', '"' + system.config['neocd_bios'] + '"')
         else:
-            coreSettings.save('neocd_bios', '"CDZ"')
+            coreSettings.save('neocd_bios', '"neocd_z.rom (CDZ)"')
         # Per-Game saves
         if system.isOptSet('neocd_per_content_saves') and system.config['neocd_per_content_saves'] == "False":
             coreSettings.save('neocd_per_content_saves', '"Off"')
@@ -2092,8 +2367,6 @@ def generateCoreSettings(coreSettings, system, rom):
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
             coreSettings.save(user_config[14:], system.config[user_config])
-
-    coreSettings.write()
 
 def generateHatariConf(hatariConf):
     hatariConfig = configparser.ConfigParser(interpolation=None)

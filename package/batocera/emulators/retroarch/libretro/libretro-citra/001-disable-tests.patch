@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 12f6b2e..78ba7bc 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -7,7 +7,7 @@ add_subdirectory(video_core)
+ add_subdirectory(audio_core)
+ add_subdirectory(network)
+ add_subdirectory(input_common)
+-add_subdirectory(tests)
++#add_subdirectory(tests)
+ if (ENABLE_SDL2)
+     add_subdirectory(citra)
+ endif()

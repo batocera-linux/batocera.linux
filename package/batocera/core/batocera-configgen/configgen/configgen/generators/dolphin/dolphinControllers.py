@@ -9,18 +9,22 @@ from utils.logger import get_logger
 import glob
 import configparser
 import re
+import controllersConfig
 
 eslog = get_logger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system, playersControllers, rom):
+def generateControllerConfig(system, playersControllers, rom, guns):
 
     generateHotkeys(playersControllers)
     if system.name == "wii":
-        if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+            generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns, system, rom)
+            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
+        elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             # Generate if hardcoded
             generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
@@ -31,9 +35,9 @@ def generateControllerConfig(system, playersControllers, rom):
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
+        generateControllerConfig_gamecube(system, playersControllers, rom)               # Pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
@@ -153,8 +157,8 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
                 wiiMapping.update(res)
                 line = cconfig.readline()
 
-    eslog.debug("Extra Options: {}".format(extraOptions))
-    eslog.debug("Wii Mappings: {}".format(wiiMapping))
+    eslog.debug(f"Extra Options: {extraOptions}")
+    eslog.debug(f"Wii Mappings: {wiiMapping}")
 
     generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
@@ -184,6 +188,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
         'l2':             'pageup',
         'r2':             'pagedown'
     }
+    gbaMapping = {
+        'b':        'Buttons/B',        'a':        'Buttons/A',
+        'pageup':   'Buttons/L',        'pagedown': 'Buttons/R',
+        'select':   'Buttons/SELECT',   'start':    'Buttons/START',
+        'up':       'D-Pad/Up',         'down':     'D-Pad/Down',
+        'left':     'D-Pad/Left',       'right':    'D-Pad/Right'
+    }
 
     # This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"       # Define ROM configuration name
@@ -198,19 +209,129 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 line = cconfig.readline()
 
     generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "GBA.ini", "GBA", gbaMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
     if os.path.isfile(configFileName):
         os.remove(configFileName)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GBA.ini")
+    if os.path.isfile(configFileName):
+        os.remove(configFileName)
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
+    configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     while nplayer <= 4:
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Source = 2\n")
+        nplayer += 1
+    f.write
+    f.close()
+
+def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
+    configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
+    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+
+    # In case of two pads having the same name, dolphin wants a number to handle this
+    double_pads = dict()
+
+    gunsmetadata = {}
+    if len(guns) > 0:
+        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+
+    nplayer = 1
+    while nplayer <= 4:
+        if len(guns) >= nplayer:
+            f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
+            f.write("Source = 1\n")
+
+            gundevname = guns[nplayer-1]["name"]
+
+            # Handle x pads having the same name
+            nsamepad = 0
+            if gundevname.strip() in double_pads:
+                nsamepad = double_pads[gundevname.strip()]
+            else:
+                nsamepad = 0
+                double_pads[gundevname.strip()] = nsamepad+1
+
+            f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
+            f.write("Device = evdev/" + str(nsamepad).strip() + "/" + gundevname.strip() + "\n")
+
+            buttons = guns[nplayer-1]["buttons"]
+            eslog.debug(f"Gun : {buttons}")
+            # buttons are orgnanized here as the reverse of the wii2gun mapping rules
+            # so that the wiimote has the correct mapping
+            # then, depending on missing buttons, we add the + which is important
+
+            # fire
+            if "right" in buttons:
+                f.write("Buttons/A = `BTN_RIGHT`\n")
+            if "left" in buttons:
+                f.write("Buttons/B = `BTN_LEFT`\n")
+
+            # extra buttons
+            mappings = {
+                "Home": "4",
+                "-": "1",
+                "1": "2",
+                "2": "3",
+                "+": "middle"
+            }
+
+            mapping_words = {
+                "middle": "BTN_MIDDLE"
+            }
+
+            # for a button for + because it is an important button
+            if mappings["+"] not in buttons:
+                for key in mappings:
+                    if mappings[key] in buttons:
+                        mappings["+"] = mappings[key]
+                        mappings[key] = None
+                        break
+
+            for mapping in mappings:
+                if mappings[mapping] in buttons:
+                    if mappings[mapping] in mapping_words:
+                        f.write("Buttons/" + mapping + " = `" + mapping_words[mappings[mapping]] + "`\n")
+                    else:
+                        f.write("Buttons/" + mapping + " = `" + mappings[mapping] + "`\n")
+
+            # directions
+            if "5" in buttons:
+                f.write("D-Pad/Up = `5`\n")
+            if "6" in buttons:
+                f.write("D-Pad/Down = `6`\n")
+            if "7" in buttons:
+                f.write("D-Pad/Left = `7`\n")
+            if "8" in buttons:
+                f.write("D-Pad/Right = `8`\n")
+
+            if "ir_up" not in gunsmetadata:
+                f.write("IR/Up = `Axis 1-`\n")
+            if "ir_down" not in gunsmetadata:
+                f.write("IR/Down = `Axis 1+`\n")
+            if "ir_left" not in gunsmetadata:
+                f.write("IR/Left = `Axis 0-`\n")
+            if "ir_right" not in gunsmetadata:
+                f.write("IR/Right = `Axis 0+`\n")
+
+            # specific games configurations
+            specifics = {
+                "vertical_offset": "IR/Vertical Offset",
+                "yaw":             "IR/Total Yaw",
+                "pitch":           "IR/Total Pitch",
+                "ir_up":           "IR/Up",
+                "ir_down":         "IR/Down",
+                "ir_left":         "IR/Left",
+                "ir_right":        "IR/Right",
+            }
+            for spe in specifics:
+                if spe in gunsmetadata:
+                    f.write("{} = {}\n".format(specifics[spe], gunsmetadata[spe]))
         nplayer += 1
     f.write
     f.close()
@@ -244,7 +365,6 @@ def generateHotkeys(playersControllers):
                 return
 
             for x in pad.inputs:
-                print
                 input = pad.inputs[x]
 
                 keyname = None
@@ -264,7 +384,7 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
+    configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     nsamepad = 0
@@ -356,13 +476,13 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
 def generateControllerConfig_any_from_profiles(f, pad):
     for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
         try:
-            eslog.debug("Looking profile : {}".format(profileFile))
+            eslog.debug(f"Looking profile : {profileFile}")
             profileConfig = configparser.ConfigParser(interpolation=None)
             # To prevent ConfigParser from converting to lower case
             profileConfig.optionxform = str
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug("Profile device : {}".format(profileDevice))
+            eslog.debug(f"Profile device : {profileDevice}")
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
@@ -370,10 +490,10 @@ def generateControllerConfig_any_from_profiles(f, pad):
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
-                            f.write("{} = {}\n".format(key, val))
+                            f.write(f"{key} = {val}\n")
                     return True
         except:
-            eslog.error("profile {} : FAILED".format(profileFile))
+            eslog.error(f"profile {profileFile} : FAILED")
 
     return False
 

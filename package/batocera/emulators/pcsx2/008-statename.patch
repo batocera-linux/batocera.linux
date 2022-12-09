@@ -1,0 +1,26 @@
+diff --git a/pcsx2/SaveState.cpp b/pcsx2/SaveState.cpp
+index e7981ac..00bd6bd 100644
+--- a/pcsx2/SaveState.cpp
++++ b/pcsx2/SaveState.cpp
+@@ -117,20 +117,7 @@ std::string SaveStateBase::GetSavestateFolder(int slot, bool isSavingOrLoading)
+ 		CRCvalue = "None";
+ 	}
+ 
+-	const std::string dir(StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s - (%s)",
+-		g_Conf->Folders.Savestates.ToUTF8().data(), serialName.c_str(), CRCvalue.c_str()));
+-
+-	if (isSavingOrLoading)
+-	{
+-		if (!FileSystem::DirectoryExists(dir.c_str()))
+-		{
+-			// sstates should exist, no need to create it
+-			FileSystem::CreateDirectoryPath(dir.c_str(), false);
+-		}
+-	}
+-
+-	return Path::Combine(dir, StringUtil::StdStringFromFormat("%s (%s).%02d.p2s",
+-		serialName.c_str(), CRCvalue.c_str(), slot));
++	return (g_Conf->Folders.Savestates + Path::GetFilename(g_Conf->CurrentIso)).GetFullPath().ToUTF8().data() + StringUtil::StdStringFromFormat(".%d", slot);
+ }
+ #endif
+ 

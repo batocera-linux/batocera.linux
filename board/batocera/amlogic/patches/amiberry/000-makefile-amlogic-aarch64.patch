@@ -1,25 +1,26 @@
---- a/Makefile	2021-04-01 19:41:31.122914328 +0200
-+++ b/Makefile	2021-04-01 19:43:51.499575976 +0200
-@@ -144,12 +144,8 @@
-     LDFLAGS += -L/opt/vero3/lib
-     HAVE_NEON = 1
+diff --git a/Makefile b/Makefile
+index 57c13e9..2a6587c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -175,9 +175,9 @@ else ifeq ($(PLATFORM),vero4k)
  
--# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
-+# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3
+ # Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
  else ifneq (,$(findstring AMLG,$(PLATFORM)))
--    CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8
--    CPPFLAGS += $(CPPFLAGS32) $(NEON_FLAGS)
--    HAVE_NEON = 1
--
-     ifneq (,$(findstring AMLG12,$(PLATFORM)))
-       ifneq (,$(findstring AMLG12B,$(PLATFORM)))
-         CPUFLAGS = -mcpu=cortex-a73
-@@ -160,6 +156,8 @@
-       CPUFLAGS = -mcpu=cortex-a53
-       CPPFLAGS += -DUSE_RENDER_THREAD
-     endif
-+    CPPFLAGS += $(CPPFLAGS64)
-+    AARCH64 = 1
+-	CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8
+-	CPPFLAGS += $(CPPFLAGS32) $(NEON_FLAGS)
+-	HAVE_NEON = 1
++	#CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8
++	#CPPFLAGS += $(CPPFLAGS32) $(NEON_FLAGS)
++	#HAVE_NEON = 1
+ 
+ 	ifneq (,$(findstring AMLG12,$(PLATFORM)))
+ 	  ifneq (,$(findstring AMLG12B,$(PLATFORM)))
+@@ -189,6 +189,8 @@ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+ 	  CPUFLAGS = -mcpu=cortex-a53
+ 	  CPPFLAGS += -DUSE_RENDER_THREAD
+ 	endif
++	CPPFLAGS += $(CPPFLAGS64)
++	AARCH64 = 1
  
  # Amlogic S905D3/S905X3/S905Y3 (AMLSM1) e.g. HardKernel ODroid C4 & Khadas VIM3L (SDL2 64-bit)
  else ifneq (,$(findstring AMLSM1,$(PLATFORM)))

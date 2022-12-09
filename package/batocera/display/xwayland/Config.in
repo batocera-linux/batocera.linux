@@ -1,0 +1,21 @@
+config BR2_PACKAGE_XWAYLAND
+    bool "xwayland"
+    select BR2_PACKAGE_XORGPROTO
+    select BR2_PACKAGE_PIXMAN
+    select BR2_PACKAGE_XLIB_LIBXKBFILE
+    select BR2_PACKAGE_XLIB_XTRANS
+    select BR2_PACKAGE_XLIB_LIBXKBFILE
+    select BR2_PACKAGE_DBUS
+    select BR2_PACKAGE_WAYLAND
+    select BR2_PACKAGE_WAYLAND_PROTOCOLS
+    select BR2_PACKAGE_LIBDRM
+    select BR2_PACKAGE_LIBEPOXY
+    select BR2_PACKAGE_XFONT_FONT_UTIL
+    select BR2_PACKAGE_XAPP_XKBCOMP
+    select BR2_PACKAGE_WAYLANDPP
+    select BR2_PACKAGE_XLIB_LIBXFONT2
+    select BR2_PACKAGE_XLIB_LIBXCVT
+    help
+        Run X clients under Wayland.
+
+	    https://xorg.freedesktop.org

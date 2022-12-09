@@ -1,16 +1,8 @@
 diff --git a/src/video/x11/SDL_x11modes.c b/src/video/x11/SDL_x11modes.c
-index c1efe243c..79ad2472c 100644
+index c8f6c54..bc72de2 100644
 --- a/src/video/x11/SDL_x11modes.c
 +++ b/src/video/x11/SDL_x11modes.c
-@@ -1,6 +1,6 @@
- /*
-   Simple DirectMedia Layer
--  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
-+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
- 
-   This software is provided 'as-is', without any express or implied
-   warranty.  In no event will the authors be held liable for any damages
-@@ -257,7 +257,7 @@ static int
+@@ -201,7 +201,7 @@ static int
  CalculateXRandRRefreshRate(const XRRModeInfo *info)
  {
      return (info->hTotal && info->vTotal) ?
@@ -19,7 +11,7 @@ index c1efe243c..79ad2472c 100644
  }
  
  static SDL_bool
-@@ -322,7 +322,7 @@ SetXRandRDisplayName(Display *dpy, Atom EDID, char *name, const size_t namelen,
+@@ -266,7 +266,7 @@ SetXRandRDisplayName(Display *dpy, Atom EDID, char *name, const size_t namelen,
                      dump_monitor_info(info);
  #endif
                      SDL_strlcpy(name, info->dsc_product_name, namelen);
@@ -28,9 +20,9 @@ index c1efe243c..79ad2472c 100644
                  }
                  X11_XFree(prop);
              }
-@@ -345,29 +345,6 @@ SetXRandRDisplayName(Display *dpy, Atom EDID, char *name, const size_t namelen,
- #endif
+@@ -532,30 +532,6 @@ X11_InitModes_XRandR(_THIS)
  }
+ #endif /* SDL_VIDEO_DRIVER_X11_XRANDR */
  
 -static int
 -GetXftDPI(Display* dpy)
@@ -55,74 +47,65 @@ index c1efe243c..79ad2472c 100644
 -
 -    return err == ERANGE ? 0 : xft_dpi;
 -}
+-
+ /* This is used if there's no better functionality--like XRandR--to use.
+    It won't attempt to supply different display modes at all, but it can
+    enumerate the current displays and their current sizes. */
+@@ -566,7 +542,7 @@ static int X11_InitModes_StdXlib(_THIS)
+     Display *dpy = data->display;
+     const int default_screen = DefaultScreen(dpy);
+     Screen *screen = ScreenOfDisplay(dpy, default_screen);
+-    int display_mm_width, display_mm_height, xft_dpi, scanline_pad, n, i;
++    int display_mm_width, display_mm_height, scanline_pad, n, i;
+     SDL_DisplayModeData *modedata;
+     SDL_DisplayData *displaydata;
+     SDL_DisplayMode mode;
+@@ -614,12 +590,6 @@ static int X11_InitModes_StdXlib(_THIS)
+     displaydata->vdpi = display_mm_height ? (((float) mode.h) * 25.4f / display_mm_height) : 0.0f;
+     displaydata->ddpi = SDL_ComputeDiagonalDPI(mode.w, mode.h, ((float) display_mm_width) / 25.4f,((float) display_mm_height) / 25.4f);
  
- static int
- X11_InitModes_XRandR(_THIS)
-@@ -440,7 +417,6 @@ X11_InitModes_XRandR(_THIS)
-                 RRMode modeID;
-                 RRCrtc output_crtc;
-                 XRRCrtcInfo *crtc;
--                int xft_dpi = 0;
- 
-                 /* The primary output _should_ always be sorted first, but just in case... */
-                 if ((looking_for_primary && (res->outputs[output] != primary)) ||
-@@ -495,14 +471,6 @@ X11_InitModes_XRandR(_THIS)
-                 displaydata->hdpi = display_mm_width ? (((float) mode.w) * 25.4f / display_mm_width) : 0.0f;
-                 displaydata->vdpi = display_mm_height ? (((float) mode.h) * 25.4f / display_mm_height) : 0.0f;
-                 displaydata->ddpi = SDL_ComputeDiagonalDPI(mode.w, mode.h, ((float) display_mm_width) / 25.4f,((float) display_mm_height) / 25.4f);
--
--                /* if xft dpi is available we will use this over xrandr */
--                xft_dpi = GetXftDPI(dpy);
--                if(xft_dpi > 0) {
--                    displaydata->hdpi = (float)xft_dpi;
--                    displaydata->vdpi = (float)xft_dpi;
--                }
--
-                 displaydata->scanline_pad = scanline_pad;
-                 displaydata->x = display_x;
-                 displaydata->y = display_y;
-@@ -849,16 +817,6 @@ X11_InitModes(_THIS)
-     if (_this->num_displays == 0) {
-         return SDL_SetError("No available displays");
-     }
--
--#if SDL_VIDEO_DRIVER_X11_XVIDMODE
--    if (use_vidmode) {  /* we intend to remove support for XVidMode soon. */
--        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "SDL is using XVidMode to manage your displays!");
--        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "This almost always means either SDL was misbuilt");
--        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "or your X server is insufficient. Please check your setup!");
--        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Fullscreen and/or multiple displays will not work well.");
+-    xft_dpi = GetXftDPI(dpy);
+-    if(xft_dpi > 0) {
+-        displaydata->hdpi = (float)xft_dpi;
+-        displaydata->vdpi = (float)xft_dpi;
 -    }
--#endif
 -
-     return 0;
- }
- 
-@@ -1005,15 +963,6 @@ X11_GetDisplayModes(_THIS, SDL_VideoDisplay * sdl_display)
+     scanline_pad = SDL_BYTESPERPIXEL(pixelformat) * 8;
+     pixmapformats = X11_XListPixmapFormats(dpy, &n);
+     if (pixmapformats) {
+@@ -733,23 +703,6 @@ X11_GetDisplayModes(_THIS, SDL_VideoDisplay * sdl_display)
      }
  }
  
+-#if SDL_VIDEO_DRIVER_X11_XRANDR
 -/* This catches an error from XRRSetScreenSize, as a workaround for now. */
 -/* !!! FIXME: remove this later when we have a better solution. */
 -static int (*PreXRRSetScreenSizeErrorHandler)(Display *, XErrorEvent *) = NULL;
 -static int
 -SDL_XRRSetScreenSizeErrHandler(Display *d, XErrorEvent *e)
 -{
--    return (e->error_code == BadMatch) ? 0 : PreXRRSetScreenSizeErrorHandler(d, e);
+-    /* BadMatch: https://github.com/libsdl-org/SDL/issues/4561 */
+-    /* BadValue: https://github.com/libsdl-org/SDL/issues/4840 */
+-    if ((e->error_code == BadMatch) || (e->error_code == BadValue)) {
+-        return 0;
+-    }
+-
+-    return PreXRRSetScreenSizeErrorHandler(d, e);
 -}
+-#endif
 -
  int
  X11_SetDisplayMode(_THIS, SDL_VideoDisplay * sdl_display, SDL_DisplayMode * mode)
  {
-@@ -1021,7 +970,6 @@ X11_SetDisplayMode(_THIS, SDL_VideoDisplay * sdl_display, SDL_DisplayMode * mode
-     Display *display = viddata->display;
-     SDL_DisplayData *data = (SDL_DisplayData *) sdl_display->driverdata;
-     SDL_DisplayModeData *modedata = (SDL_DisplayModeData *)mode->driverdata;
--    int mm_width, mm_height;
- 
-     viddata->last_mode_change_deadline = SDL_GetTicks() + (PENDING_FOCUS_TIME * 2);
- 
-@@ -1050,45 +998,10 @@ X11_SetDisplayMode(_THIS, SDL_VideoDisplay * sdl_display, SDL_DisplayMode * mode
+@@ -762,7 +715,6 @@ X11_SetDisplayMode(_THIS, SDL_VideoDisplay * sdl_display, SDL_DisplayMode * mode
+     if (data->use_xrandr) {
+         Display *display = viddata->display;
+         SDL_DisplayModeData *modedata = (SDL_DisplayModeData *)mode->driverdata;
+-        int mm_width, mm_height;
+         XRRScreenResources *res;
+         XRROutputInfo *output_info;
+         XRRCrtcInfo *crtc;
+@@ -786,45 +738,10 @@ X11_SetDisplayMode(_THIS, SDL_VideoDisplay * sdl_display, SDL_DisplayMode * mode
              return SDL_SetError("Couldn't get XRandR crtc info");
          }
  
@@ -168,4 +151,3 @@ index c1efe243c..79ad2472c 100644
          X11_XRRFreeCrtcInfo(crtc);
          X11_XRRFreeOutputInfo(output_info);
          X11_XRRFreeScreenResources(res);
-

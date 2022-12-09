@@ -24,8 +24,4 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocer
 cp "${BINARIES_DIR}/rk3288-miqi.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 
-# this part should be done in the uboot package (on in the genimage)
-"${HOST_DIR}/bin/mkimage" -n rk3288 -T rksd -d "${BINARIES_DIR}/miqi/u-boot-spl-dtb.bin" "${BINARIES_DIR}/miqi/u-boot-spl-dtb.img"
-cat "${BINARIES_DIR}/miqi/u-boot-dtb.bin" >> "${BINARIES_DIR}/miqi/u-boot-spl-dtb.img"
-
 exit 0

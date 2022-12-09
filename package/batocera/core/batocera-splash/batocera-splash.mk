@@ -5,14 +5,8 @@
 ################################################################################
 BATOCERA_SPLASH_VERSION = 5.2
 BATOCERA_SPLASH_SOURCE=
-BATOCERA_SYSTEM_GIT_VERSION = $(shell git log -n 1 --pretty=format:"%h")
 
-# version displayed
-ifeq ($(findstring dev,$(BATOCERA_SYSTEM_VERSION)),dev)
-    BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION)-$(BATOCERA_SYSTEM_GIT_VERSION) $(BATOCERA_SYSTEM_DATE_TIME)
-else
-    BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE)
-endif
+BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE)
 
 # video or image
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER),y)
@@ -31,10 +25,10 @@ endif
 
 # MPV options
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
         # drm doesn't work on my nvidia card. sdl run smoothly.
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=yes
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3326)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_RG552)$(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
+    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3326)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_RG552)$(BR2_PACKAGE_BATOCERA_TARGET_RK3128)$(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS)$(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2),y)
         # hwdec=yes doesnt work for n2
         BATOCERA_SPLASH_PLAYER_OPTIONS=
     else
@@ -74,6 +68,8 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png"        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo480p.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-640x480.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-720p.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1280x720.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-720p-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-720x1280.png"
 
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"

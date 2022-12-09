@@ -1,0 +1,54 @@
+From 317dcd349b5b72c2faef531c032c1a53c1ca5177 Mon Sep 17 00:00:00 2001
+From: ps4boot <ps4boot@localhost.mail>
+Date: Sat, 6 Feb 2021 19:11:28 +0100
+Subject: [PATCH] excludeBelizeSataFix
+
+---
+ drivers/usb/host/xhci-aeolia.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/host/xhci-aeolia.c b/drivers/usb/host/xhci-aeolia.c
+index 61cd9cd99324..7f5336b616f8 100644
+--- a/drivers/usb/host/xhci-aeolia.c
++++ b/drivers/usb/host/xhci-aeolia.c
+@@ -162,6 +162,7 @@ static int xhci_aeolia_probe(struct pci_dev *dev, const struct pci_device_id *id
+ 	if (retval < 0) {
+ 		goto free_axhci;
+ 	}
++	pci_set_master(dev);
+ 
+ 	pci_set_master(dev);
+ 
+@@ -172,6 +173,7 @@ static int xhci_aeolia_probe(struct pci_dev *dev, const struct pci_device_id *id
+ 
+ 	for (idx = 0; idx < NR_DEVICES; idx++) {
+  		if(dev->device != PCI_DEVICE_ID_SONY_AEOLIA_XHCI && idx == 1) 
++ 		if(dev->device != PCI_DEVICE_ID_SONY_AEOLIA_XHCI && idx == 1)
+ 			continue;
+ 		retval = xhci_aeolia_probe_one(dev, idx);
+ 		if (retval)
+@@ -210,7 +212,6 @@ static void xhci_aeolia_remove(struct pci_dev *dev)
+ 	pci_disable_device(dev);
+ }
+ 
+-
+ static const struct pci_device_id pci_ids[] = {
+ 		{ PCI_DEVICE(PCI_VENDOR_ID_SONY, PCI_DEVICE_ID_SONY_AEOLIA_XHCI) },
+ 		{ PCI_DEVICE(PCI_VENDOR_ID_SONY, PCI_DEVICE_ID_SONY_BELIZE_XHCI) },
+@@ -257,6 +258,8 @@ static int xhci_aeolia_resume(struct device *dev)
+ 	for (idx = 0; idx < NR_DEVICES; idx++) {
+  		if(pdev->device != PCI_DEVICE_ID_SONY_AEOLIA_XHCI && idx == 1) 
+ 			continue;		
++		if(pdev->device != PCI_DEVICE_ID_SONY_AEOLIA_XHCI && idx == 1) 
++			continue;
+ 		xhci = hcd_to_xhci(axhci->hcd[idx]);
+ 		retval = xhci_resume(xhci, 0);
+ 		if (retval < 0)
+@@ -280,6 +283,7 @@ static struct pci_driver xhci_aeolia_driver = {
+ 	/* suspend and resume implemented later 
+ 
+ 	.shutdown = 	usb_hcd_platform_shutdown, */
++	.shutdown = 	usb_hcd_pci_shutdown,
+ #ifdef CONFIG_PM_SLEEP
+ 	.driver = {
+ 		.pm = &xhci_aeolia_pm_ops

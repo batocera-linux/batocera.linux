@@ -1,0 +1,93 @@
+From a3760f539508e81d47b21321aa42a09ce96555d3 Mon Sep 17 00:00:00 2001
+From: Pavel Golikov <Paullo612@ya.ru>
+Date: Fri, 24 Jun 2022 15:52:58 +0000
+Subject: [PATCH 08/21] WIP: ARM/dma-mapping: implement ->alloc_noncontiguous
+
+Implement support for allocating a non-contiguous DMA region. The
+implementation is based on the ma-iommu driver.
+
+Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
+---
+ arch/arm/mm/dma-mapping.c | 59 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 059cce018570..8f867cb9fe75 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1759,6 +1759,63 @@ static void arm_iommu_unmap_sg(struct device *dev,
+ 	}
+ }
+ 
++static struct sg_table *arm_iommu_alloc_noncontiguous(struct device *dev,
++		size_t size, enum dma_data_direction dir, gfp_t gfp,
++		unsigned long attrs)
++{
++	struct dma_sgt_handle *sh;
++	int count;
++
++	sh = kmalloc(sizeof(*sh), gfp);
++	if (!sh)
++		return NULL;
++
++	size = PAGE_ALIGN(size);
++	count = size >> PAGE_SHIFT;
++
++	/*
++	 * Following is a work-around (a.k.a. hack) to prevent pages
++	 * with __GFP_COMP being passed to split_page() which cannot
++	 * handle them.  The real problem is that this flag probably
++	 * should be 0 on ARM as it is not supported on this
++	 * platform; see CONFIG_HUGETLBFS.
++	 */
++	gfp &= ~(__GFP_COMP);
++
++	sh->pages = __iommu_alloc_buffer(dev, size, gfp, attrs, false);
++	if (!sh->pages)
++		goto err_sh;
++
++	if (sg_alloc_table_from_pages(&sh->sgt, sh->pages, count, 0, size,
++	    GFP_KERNEL))
++		goto err_buffer;
++
++	if (arm_iommu_map_sg(dev, sh->sgt.sgl, sh->sgt.orig_nents, dir, attrs
++	    ) < 1)
++		goto err_free_sg;
++
++	return &sh->sgt;
++
++err_free_sg:
++	sg_free_table(&sh->sgt);
++err_buffer:
++	__iommu_free_buffer(dev, sh->pages, size, attrs);
++err_sh:
++	kfree(sh);
++	return NULL;
++}
++
++static void arm_iommu_free_noncontiguous(struct device *dev, size_t size,
++			struct sg_table *sgt, enum dma_data_direction dir)
++{
++	struct dma_sgt_handle *sh = sgt_handle(sgt);
++
++	arm_iommu_unmap_sg(dev, sgt->sgl, sgt->orig_nents, dir, 0);
++	__iommu_free_buffer(dev, sh->pages, PAGE_ALIGN(size), 0);
++	sg_free_table(&sh->sgt);
++	kfree(sh);
++}
++
+ /**
+  * arm_iommu_sync_sg_for_cpu
+  * @dev: valid struct device pointer
+@@ -1996,6 +2053,8 @@ static const struct dma_map_ops iommu_ops = {
+ 
+ 	.map_page		= arm_iommu_map_page,
+ 	.unmap_page		= arm_iommu_unmap_page,
++	.alloc_noncontiguous    = arm_iommu_alloc_noncontiguous,
++	.free_noncontiguous    = arm_iommu_free_noncontiguous,
+ 	.sync_single_for_cpu	= arm_iommu_sync_single_for_cpu,
+ 	.sync_single_for_device	= arm_iommu_sync_single_for_device,
+ 
+-- 
+2.17.1
+

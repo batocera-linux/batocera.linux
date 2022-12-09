@@ -15,7 +15,6 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys.conf          $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_disabled.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/triggerhappy.service  $(TARGET_DIR)/etc/init.d/S50triggerhappy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/shutdown-delay                     $(TARGET_DIR)/usr/bin/shutdown-delay
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3326_CONFIG
@@ -34,6 +33,10 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_RK3128_CONFIG
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/multimedia_keys_Game_Simulator_Board.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
 endef
 
+define BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/multimedia_keys_Jupiter.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
+endef
+
 BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
@@ -46,6 +49,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
 	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_RK3128_CONFIG
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
 endif
 
 $(eval $(generic-package))

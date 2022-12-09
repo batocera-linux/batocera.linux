@@ -1,0 +1,36 @@
+From 7d27155e90e78a5a38521eeda40fedfdfdcaf979 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Thu, 2 Jul 2020 00:59:24 +0200
+Subject: [PATCH 094/122] mmc: sdio: add Realtek SDIO vendor ID and various
+ wifi device IDs
+
+Add the SDIO vendor ID for Realtek and some device IDs extracted from
+their GPL vendor driver. This will be useful in the future when the
+rtw88 driver gains support for these chips.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ include/linux/mmc/sdio_ids.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
+index a85c9f0bd470..f9d51d05c0f5 100644
+--- a/include/linux/mmc/sdio_ids.h
++++ b/include/linux/mmc/sdio_ids.h
+@@ -109,6 +109,13 @@
+ #define SDIO_VENDOR_ID_MICROCHIP_WILC		0x0296
+ #define SDIO_DEVICE_ID_MICROCHIP_WILC1000	0x5347
+ 
++#define SDIO_VENDOR_ID_REALTEK			0x024c
++#define SDIO_DEVICE_ID_REALTEK_RTW8723BS	0xb723
++#define SDIO_DEVICE_ID_REALTEK_RTW8723DS	0xd723
++#define SDIO_DEVICE_ID_REALTEK_RTW8821DS	0xd821
++#define SDIO_DEVICE_ID_REALTEK_RTW8822BS	0xb822
++#define SDIO_DEVICE_ID_REALTEK_RTW8822CS	0xc822
++
+ #define SDIO_VENDOR_ID_SIANO			0x039a
+ #define SDIO_DEVICE_ID_SIANO_NOVA_B0		0x0201
+ #define SDIO_DEVICE_ID_SIANO_NICE		0x0202
+-- 
+2.25.1
+

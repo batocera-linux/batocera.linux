@@ -1,0 +1,1 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HJZ Mayflash Wiimote PC Adapter Mouse", MODE="0666", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN_NEED_CROSS}="1"

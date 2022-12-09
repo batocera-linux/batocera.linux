@@ -7,7 +7,7 @@ import controllersConfig
 
 class LightsparkGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["lightspark", "-s", "local-with-networking", rom]
         return Command.Command(
             array=commandArray)

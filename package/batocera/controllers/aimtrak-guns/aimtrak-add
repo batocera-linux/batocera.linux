@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# store the first 2 inputs into
+# /var/run/aimtrak-devs
+# then for the 3rd one, join
+# supports multi guns
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+
+cleanAndExit() {
+    rmdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
+    exit "${1}"
+}
+
+# lock
+N=0
+while ! mkdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
+do
+    sleep 1
+    let N++
+    test "${N}" -gt 30 && exit 1 # give up
+done
+
+NDEVS=$(cat "/var/run/aimtrak-devices.${USBPATHHASH}" | wc -l)
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(head -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
+    DEV2=$(tail -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
+    rm "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
+
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEVNAME}" persist=exit --map btn:trigger btn:middle --map btn:thumb btn:right --output name="Aimtrak ATRAK" &
+else
+    echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
+fi
+
+# unlock
+cleanAndExit 0

@@ -3,7 +3,7 @@
 # PYTHON_EVDEV
 #
 ################################################################################
-PYTHON_EVDEV_VERSION = v0.7.0
+PYTHON_EVDEV_VERSION = v1.6.0
 PYTHON_EVDEV_SITE =  $(call github,gvalkov,python-evdev,$(PYTHON_EVDEV_VERSION))
 PYTHON_EVDEV_SETUP_TYPE = setuptools
 

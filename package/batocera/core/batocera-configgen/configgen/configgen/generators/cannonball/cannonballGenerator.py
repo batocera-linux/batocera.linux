@@ -10,7 +10,7 @@ from . import cannonballControllers
 
 class CannonballGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         configFile = batoceraFiles.CONF + '/cannonball/config.xml'
         
         if not os.path.exists(os.path.dirname(configFile)):

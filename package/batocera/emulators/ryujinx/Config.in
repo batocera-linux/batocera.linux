@@ -2,10 +2,11 @@ config BR2_PACKAGE_RYUJINX
     bool "ryujinx"
     depends on BR2_x86_64
     depends on BR2_PACKAGE_XORG7
-    depends on BR2_PACKAGE_SDL2
-    depends on BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_OPENAL
     select BR2_PACKAGE_HICOLOR_ICON_THEME
     select BR2_PACKAGE_ADWAITA_ICON_THEME
+    select BR2_PACKAGE_LIBRSVG
     help
       Ryujinx is an open-source Nintendo Switch emulator created by gdkchan and written in C sharp.
 

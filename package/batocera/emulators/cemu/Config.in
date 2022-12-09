@@ -1,0 +1,21 @@
+config BR2_PACKAGE_CEMU
+    bool "cemu"
+    depends on BR2_x86_64
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_PUGIXML
+    select BR2_PACKAGE_RAPIDJSON
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+    select BR2_PACKAGE_BOOST_FILESYSTEM
+    select BR2_PACKAGE_BOOST_NOWIDE
+    select BR2_PACKAGE_LIBZIP
+    select BR2_PACKAGE_GLSLANG
+    select BR2_PACKAGE_ZLIB
+    select BR2_PACKAGE_ZSTD
+    select BR2_PACKAGE_GLM
+    select BR2_PACKAGE_LIBPNG
+    help
+      Cemu is a Wii U emulator that now runs natively on Linux.
+
+      https://cemu.info/

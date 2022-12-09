@@ -1,0 +1,15 @@
+--- a/Makefile
++++ b/Makefile
+@@ -173,6 +173,12 @@
+ 	LDFLAGS += -L/opt/vero3/lib
+ 	HAVE_NEON = 1
+ 
++# AYN Odin target (SDL2, 64-bit)
++else ifeq ($(PLATFORM),odin)
++	CPUFLAGS ?= -mcpu=cortex-a75
++	CPPFLAGS += $(CPPFLAGS64)
++	AARCH64 = 1
++
+ # Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
+ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+ 	CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8

@@ -1,0 +1,55 @@
+From 88ca9e924e87630a095e7c7433bb50d25be62755 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 17 Jul 2021 22:07:34 +0200
+Subject: [PATCH 099/122] rtw88: Configure the registers from rtw_bf_assoc()
+ outside the RCU lock
+
+Upcoming SDIO support may sleep in the read/write handlers. Configure
+the chip's BFEE configuration set from rtw_bf_assoc() outside the
+rcu_read_lock section to prevent a "scheduling while atomic" issue.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/wireless/realtek/rtw88/bf.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/bf.c b/drivers/net/wireless/realtek/rtw88/bf.c
+index aff70e4ae028..06034d5d6f6c 100644
+--- a/drivers/net/wireless/realtek/rtw88/bf.c
++++ b/drivers/net/wireless/realtek/rtw88/bf.c
+@@ -39,6 +39,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+ 	struct ieee80211_sta_vht_cap *vht_cap;
+ 	struct ieee80211_sta_vht_cap *ic_vht_cap;
+ 	const u8 *bssid = bss_conf->bssid;
++	bool config_bfee = false;
+ 	u32 sound_dim;
+ 	u8 i;
+ 
+@@ -70,7 +71,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+ 		bfee->aid = bss_conf->aid;
+ 		bfinfo->bfer_mu_cnt++;
+ 
+-		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
++		config_bfee = true;
+ 	} else if ((ic_vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE) &&
+ 		   (vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE)) {
+ 		if (bfinfo->bfer_su_cnt >= chip->bfer_su_max_num) {
+@@ -96,11 +97,14 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+ 			}
+ 		}
+ 
+-		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
++		config_bfee = true;
+ 	}
+ 
+ out_unlock:
+ 	rcu_read_unlock();
++
++	if (config_bfee)
++		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
+ }
+ 
+ void rtw_bf_init_bfer_entry_mu(struct rtw_dev *rtwdev,
+-- 
+2.25.1
+

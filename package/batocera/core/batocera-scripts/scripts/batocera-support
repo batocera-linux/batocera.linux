@@ -52,18 +52,20 @@ which tvservice >/dev/null && tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
 which tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
 lspci                   > "${DSYSTEM}/lspci.txt"
+lspci -v                > "${DSYSTEM}/lspci_v.txt"
 amixer                  > "${DSYSTEM}/amixer.txt"
 aplay -l                > "${DSYSTEM}/aplay-l.txt"
 which glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
 which xrandr  >/dev/null && xrandr     > "${DSYSTEM}/xrandr.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
+wpctl status            > "${DSYSTEM}/wireplumber.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
 batocera-systems        > "${DSYSTEM}/bios.txt"
-f_cp /usr/share/batocera/batocera.version                     "${DSYSTEM}"
+batocera-version        > "${DSYSTEM}/batocera.version"
 f_cp /boot/boot/batocera.board                                "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
-grep -vE '^[ #]*global.retroachievements.password[ ]*=' /userdata/system/batocera.conf > "${DSYSTEM}/batocera.conf"
+grep -vE '^[ #]*global.retroachievements.password[ ]*=|^[ #]*global.retroachievements.token[ ]*=' /userdata/system/batocera.conf > "${DSYSTEM}/batocera.conf"
 d_cp /userdata/system/logs                              "${DSYSTEM}"
 f_cp /var/log/messages                                        "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DSYSTEM}"
@@ -76,7 +78,7 @@ f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 f_cp /var/log/bluetooth-agent.log                             "${DSYSTEM}"
 
 # Emulators configs
-d_cp /userdata/system/configs                           "${TMPDIR}/configs"
+#d_cp /userdata/system/configs                           "${TMPDIR}/configs", disabled, too big
 
 # joysticks
 DJOYS="${TMPDIR}/joysticks"
@@ -88,6 +90,7 @@ do
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
 sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
+cp "/var/run/sinden/p"*"/sinden-"*".log" "${DJOYS}" 2>/dev/null
 
 # lirc
 DLIRC="${TMPDIR}/lirc"

@@ -1,7 +1,9 @@
 config BR2_PACKAGE_XEMU
-        bool "xemu"
-	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
-	select BR2_PACKAGE_SDL2
-
-        help
-          Xbox (og) emulator based on QEMU
+    bool "xemu"
+    depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_LIBSAMPLERATE
+    help
+        Xbox (og) emulator based on QEMU
+        
+        https://xemu.app/

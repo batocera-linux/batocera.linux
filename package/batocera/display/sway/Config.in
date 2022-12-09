@@ -1,0 +1,17 @@
+config BR2_PACKAGE_SWAY
+    bool "sway"
+
+    select BR2_PACKAGE_WLROOTS
+    select BR2_PACKAGE_WLROOTS_X11  if BR2_PACKAGE_XWAYLAND
+    select BR2_PACKAGE_CAIRO
+    select BR2_PACKAGE_CAIRO_PNG
+    select BR2_PACKAGE_PANGO
+    select BR2_PACKAGE_LIBGLIB2
+    select BR2_PACKAGE_GRIM
+    select BR2_PACKAGE_WF_RECORDER
+
+    help
+        Sway is a tiling Wayland compositor and a drop-in
+        replacement for the i3 window manager for X11
+
+	    https://swaywm.org/

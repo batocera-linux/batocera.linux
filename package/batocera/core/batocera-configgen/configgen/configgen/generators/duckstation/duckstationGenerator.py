@@ -13,7 +13,7 @@ from os import environ
 eslog = get_logger(__name__)
 
 class DuckstationGenerator(Generator):
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)
@@ -69,8 +69,6 @@ class DuckstationGenerator(Generator):
         ## [UI]
         if not settings.has_section("UI"):
             settings.add_section("UI")
-        # Show Messages
-        settings.set("UI", "ShowOSDMessages", "true")
 
         ## [CONSOLE]
         if not settings.has_section("Console"):
@@ -111,6 +109,8 @@ class DuckstationGenerator(Generator):
         # Backend - Default OpenGL
         if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':  # Using Gun, you'll have the Aiming ONLY in Vulkan. Duckstation Issue
             settings.set("GPU", "Renderer", "Vulkan")
+        elif system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Software':
+            settings.set("GPU", "Renderer", "Software")
         else:
             settings.set("GPU", "Renderer", "OpenGL")
         # Multisampling force (MSAA or SSAA)
@@ -147,6 +147,17 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
+        # PGXP - enabled by default
+        if system.isOptSet("duckstation_pgxp"):
+           settings.set("GPU", "PGXPEnable", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPCulling", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPTextureCorrection", system.config["duckstation_pgxp"])
+           settings.set("GPU", "PGXPPreserveProjFP", system.config["duckstation_pgxp"])
+        else:
+           settings.set("GPU", "PGXPEnable", "true")
+           settings.set("GPU", "PGXPCulling", "true")
+           settings.set("GPU", "PGXPTextureCorrection", "true")
+           settings.set("GPU", "PGXPPreserveProjFP", "true")
 
         ## [DISPLAY]
         if not settings.has_section("Display"):
@@ -168,6 +179,11 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "DisplayAllFrames", "true")
         else:
             settings.set("Display", "DisplayAllFrames", "false")
+        # OSD Messages
+        if system.isOptSet("duckstation_osd"):
+            settings.set("Display", "ShowOSDMessages", system.config["duckstation_osd"])
+        else:
+            settings.set("Display", "ShowOSDMessages", "false")
 
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
@@ -179,7 +195,7 @@ class DuckstationGenerator(Generator):
             username  = system.config.get('retroachievements.username', "")
             password  = system.config.get('retroachievements.password', "")
             hardcore  = system.config.get('retroachievements.hardcore', "")
-            login_cmd = "dorequest.php?r=login&u={}&p={}".format(username, password)
+            login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
             try:
                 cnx = httplib2.Http()
             except:
@@ -187,12 +203,12 @@ class DuckstationGenerator(Generator):
             try:
                 res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
                 if (res.status != 200):
-                    eslog.warning("ERROR: RetroAchievements.org responded with #{} [{}] {}".format(res.status, res.reason, rout))
+                    eslog.warning(f"ERROR: RetroAchievements.org responded with #{res.status} [{res.reason}] {rout}")
                     settings.set("Cheevos", "Enabled",  "false")
                 else:
-                    parsedout = json.loads((rout.decode('utf-8')))
+                    parsedout = json.loads(rout.decode('utf-8'))
                     if not parsedout['Success']:
-                        eslog.warning("ERROR: RetroAchievements login failed with ({})".format(str(parsedout)))
+                        eslog.warning(f"ERROR: RetroAchievements login failed with ({str(parsedout)})")
                     token = parsedout['Token']
                     settings.set("Cheevos", "Enabled",       "true")
                     settings.set("Cheevos", "Username",      username)
@@ -207,9 +223,9 @@ class DuckstationGenerator(Generator):
                     #settings.set("Cheevos", "RichPresence",  "true")             # Enable rich presence information will be collected and sent to the server where supported
                     #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
 
-                    eslog.debug("Duckstation RetroAchievements enabled for {}".format(username))
+                    eslog.debug(f"Duckstation RetroAchievements enabled for {username}")
             except Exception as e:
-                eslog.error("ERROR: Impossible to get a RetroAchievements token ({})".format(e))
+                eslog.error(f"ERROR: Impossible to get a RetroAchievements token ({e})")
                 settings.set("Cheevos", "Enabled",           "false")
         else:
             settings.set("Cheevos", "Enabled",               "false")
@@ -238,7 +254,7 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
         ## [CONTROLLERS]
-        configurePads(settings, playersControllers, system)
+        configurePads(settings, playersControllers, system, guns)
 
         ## [HOTKEYS]
         if not settings.has_section("Hotkeys"):
@@ -266,12 +282,20 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
 
+        ## [CDROM]
+        if not settings.has_section("CDROM"):
+            settings.add_section("CDROM")
+        if system.isOptSet("duckstation_boot_without_sbi"):
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", system.config["duckstation_boot_without_sbi"])
+        else:
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
+
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        
+
         env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
 
@@ -291,7 +315,7 @@ def getGfxRatioFromConfig(config, gameResolution):
 
     return "4:3"
 
-def configurePads(settings, playersControllers, system):
+def configurePads(settings, playersControllers, system, guns):
     mappings = {
         "ButtonUp":       "up",
         "ButtonDown":     "down",
@@ -334,6 +358,11 @@ def configurePads(settings, playersControllers, system):
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
             ctrlType = system.config["duckstation_" + controller]
+
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if nplayer == 1 and len(guns) >= 1:
+                settings.set(controller, "Type", "NamcoGunCon")
+                ctrlType = "NamcoGunCon"
 
         # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};

@@ -3,14 +3,14 @@
 # libretro-stella2014
 #
 ################################################################################
-# Version.: Commits on Feb 5, 2022
-LIBRETRO_STELLA2014_VERSION = 1a2e96bc6ccf91de6fb4322048da05f67a9d21d4
+# Version.: Commits on Apr 09, 2022
+LIBRETRO_STELLA2014_VERSION = 1351a4fe2ca6b1f3a66c7db0df2ec268ab002d41
 LIBRETRO_STELLA2014_SITE = $(call github,libretro,stella2014-libretro,$(LIBRETRO_STELLA2014_VERSION))
 LIBRETRO_STELLA2014_LICENSE = GPLv2
 
 LIBRETRO_STELLA2014_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_STELLA2014_PLATFORM = rpi1
 endif
 

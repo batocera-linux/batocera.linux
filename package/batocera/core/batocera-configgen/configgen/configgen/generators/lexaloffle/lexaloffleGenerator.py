@@ -12,12 +12,12 @@ CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
 
 # Generator for the official pico8 binary from Lexaloffle
 class LexaloffleGenerator(Generator):
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         if not os.path.exists(BIN_PATH):
-            eslog.error("Lexaloffle official pico-8 binary not found at {}".format(BIN_PATH))
+            eslog.error(f"Lexaloffle official pico-8 binary not found at {BIN_PATH}")
             return -1
         if not os.access(BIN_PATH, os.X_OK):
-            eslog.error("File {} is not set as executable".format(BIN_PATH))
+            eslog.error(f"File {BIN_PATH} is not set as executable")
             return -1
 
         # the command to run

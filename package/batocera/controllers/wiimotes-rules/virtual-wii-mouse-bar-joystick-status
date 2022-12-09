@@ -1,0 +1,10 @@
+#!/bin/bash
+
+WIIMOTEMODE=$(batocera-settings-get controllers.wiimote.mode)
+
+if test "${WIIMOTEMODE}" != 'gun' -a "${WIIMOTEMODE}" != ""
+then
+    echo 1
+else
+    echo 0
+fi

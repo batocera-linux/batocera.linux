@@ -11,5 +11,5 @@ echo "-- type 'batocera-check-updates' to check for stable branch --"
 echo "-- add 'beta' switch to check for latest arch developments  --"
 echo
 batocera-info 2>/dev/null
-echo "OS version: $(cat /usr/share/batocera/batocera.version)"
+echo "OS version: $(batocera-version)"
 echo

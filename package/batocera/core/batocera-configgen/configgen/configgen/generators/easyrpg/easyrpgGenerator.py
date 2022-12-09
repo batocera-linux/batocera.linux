@@ -8,7 +8,7 @@ import codecs
 
 class EasyRPGGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         commandArray = ["easyrpg-player"]
 
         # FPS
@@ -26,7 +26,7 @@ class EasyRPGGenerator(Generator):
             commandArray.extend(["--encoding", "auto"])
 
         # Save directory
-        savePath = "/userdata/saves/easyrpg/{}".format(os.path.basename(rom))
+        savePath = f"/userdata/saves/easyrpg/{os.path.basename(rom)}"
         if not os.path.exists(savePath):
             os.makedirs(savePath)
         commandArray.extend(["--save-path", savePath])
@@ -83,5 +83,5 @@ class EasyRPGGenerator(Generator):
                     if keymapping[key] is not None:
                         if pad.inputs[keymapping[key]].type == "button":
                             button = pad.inputs[keymapping[key]].id
-                    f.write("{}={}\n".format(key, button))
+                    f.write(f"{key}={button}\n")
             nplayer += 1

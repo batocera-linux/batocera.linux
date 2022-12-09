@@ -3,14 +3,14 @@
 # libretro-imame
 #
 ################################################################################
-# Version: Commits on Feb 22, 2022
-LIBRETRO_IMAME_VERSION = 098df85e3bc04a74db8c810d51fb72879594dc40
+# Version: Commits on Jul 26, 2022
+LIBRETRO_IMAME_VERSION = 0208517404e841fce0c094f1a2776a0e1c6c101d
 LIBRETRO_IMAME_SITE = $(call github,libretro,mame2000-libretro,$(LIBRETRO_IMAME_VERSION))
 LIBRETRO_IMAME_LICENSE = MAME
 
 LIBRETRO_IMAME_PLATFORM=$(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_IMAME_PLATFORM = rpi1
 endif
 

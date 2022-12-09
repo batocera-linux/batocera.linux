@@ -13,7 +13,7 @@ eslog = get_logger(__name__)
 
 class FpinballGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/fpinball"
 
         if not os.path.exists(wineprefix):
@@ -24,7 +24,7 @@ class FpinballGenerator(Generator):
             env = {"W_CACHE": "/userdata/bios", "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX":"/userdata/saves/fpinball" }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.debug("command: {}".format(str(cmd)))
+            eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
@@ -84,7 +84,7 @@ class FpinballGenerator(Generator):
                                 if pad.inputs[x].type == "button":
                                     assigns[mapping[x]] = int(pad.inputs[x].id)
 
-                    f.write("[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer\\Joypads\\{}]\r\n".format(joystickname))
+                    f.write(f"[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer\\Joypads\\{joystickname}]\r\n")
                     f.write("\"JoypadBackbox\"=dword:{:08x}\r\n".format(assigns["JoypadBackbox"]))
                     f.write("\"JoypadDeadZone\"=dword:00000064\r\n")
                     f.write("\"JoypadDigitalPlunger\"=dword:{:08x}\r\n".format(assigns["JoypadDigitalPlunger"]))
@@ -131,7 +131,7 @@ class FpinballGenerator(Generator):
         env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX":"/userdata/saves/fpinball" }
         env.update(os.environ)
         env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-        eslog.debug("command: {}".format(str(cmd)))
+        eslog.debug(f"command: {str(cmd)}")
         proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate()
         exitcode = proc.returncode

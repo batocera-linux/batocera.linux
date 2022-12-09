@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RZERO_UBOOT_VERSION = 0008019abdd487e75c094b01a09d128c3e2358fb
+RZERO_UBOOT_VERSION = def48de7f399d407f1f61615d5e738220216ce83
 RZERO_UBOOT_SITE = https://github.com/Multi-Retropie/rzero-uboot.git
 RZERO_UBOOT_SITE_METHOD=git
 
