@@ -1440,8 +1440,15 @@ config BR2_PACKAGE_BATOCERA_WAYLAND
     select BR2_PACKAGE_SWAYBG
 
     # Xorg emulation layer of Wayland
-    select BR2_PACKAGE_XWAYLAND     if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
-    select BR2_PACKAGE_XORG7        if BR2_PACKAGE_XWAYLAND
+    select BR2_PACKAGE_XWAYLAND                     if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+	select BR2_PACKAGE_XORG7                        if BR2_PACKAGE_XWAYLAND
+	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         if BR2_PACKAGE_XWAYLAND # batocera applications config and scripts
+	select BR2_PACKAGE_LIBGTK3                      if BR2_PACKAGE_XWAYLAND # gtk3 library
+	select BR2_PACKAGE_L3AFPAD                      if BR2_PACKAGE_XWAYLAND # gtk3 text editor
+	select BR2_PACKAGE_PCMANFM                      if BR2_PACKAGE_XWAYLAND # file manager
+	select BR2_PACKAGE_GVFS                         if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
+	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
+	select BR2_PACKAGE_XTERM                        if BR2_PACKAGE_XWAYLAND # terminal
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
