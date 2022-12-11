@@ -155,6 +155,13 @@ ifeq ($(BR2_PACKAGE_VITA3K),y)
   BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
 endif
 
+# BigPEmu
+ifeq ($(BR2_PACKAGE_BIGPEMU),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-bigpemu
+  BATOCERA_DESKTOPAPPS_APPS    += bigpemu-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += bigpemu.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
