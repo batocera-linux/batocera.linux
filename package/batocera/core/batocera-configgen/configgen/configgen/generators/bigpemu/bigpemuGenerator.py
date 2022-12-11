@@ -9,6 +9,7 @@ import sys
 import shutil
 import stat
 import configparser
+import filecmp
 from utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -26,6 +27,10 @@ class BigPEmuGenerator(Generator):
         if not os.path.exists(emupath):
             shutil.copytree("/usr/bigpemu", emupath)
         
+        # check we have the latest version in the wine bottle
+        if not filecmp.cmp("/usr/bigpemu/BigPEmu.exe", emupath + "/BigPEmu.exe"):
+            shutil.copytree("/usr/bigpemu", emupath, dirs_exist_ok=True)
+
         # install windows libraries required
         if not os.path.exists(wineprefix + "/d3dcompiler_43.done"):
             cmd = ["/usr/wine/winetricks", "d3dcompiler_43"]
@@ -69,7 +74,8 @@ class BigPEmuGenerator(Generator):
             with open(wineprefix + "/d3dx9.done", "w") as f:
                 f.write("done")
       
-        # some config?
+        # todo: some config?
+        # /userdata/saves/bigpemu-bottle/drive_c/users/root/AppData/Roaming/BigPEmu/BigPEmuConfig.bigpcfg
 
         # now run the emulator
         commandArray = ["/usr/wine/lutris/bin/wine", "/userdata/saves/bigpemu-bottle/bigpemu/BigPEmu.exe", rom]
