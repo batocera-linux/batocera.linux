@@ -275,6 +275,10 @@ def getGenerator(emulator):
         from generators.ikemen.ikemenGenerator import IkemenGenerator
         return IkemenGenerator()
 
+    if emulator == 'bigpemu':
+        from generators.bigpemu.bigpemuGenerator import BigPEmuGenerator
+        return BigPEmuGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),
