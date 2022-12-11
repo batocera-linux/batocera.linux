@@ -649,7 +649,6 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY  && \
 												!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
@@ -1218,9 +1217,6 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	# Kodi game controllers
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
 	select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE      # xarcade for kodi
-
-	# Rockchip ffmpeg playback package
-	select BR2_PACKAGE_ROCKCHIP_MPP     if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
 	# ffmpeg enabler that i'm not sure it has an impact on kodi
 	select BR2_PACKAGE_FFMPEG_GPL           # video recording

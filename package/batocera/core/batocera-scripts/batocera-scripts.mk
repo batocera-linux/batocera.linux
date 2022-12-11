@@ -53,8 +53,4 @@ define BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-rockchip-suspend $(TARGET_DIR)/usr/bin/
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
-endif
-
 $(eval $(generic-package))

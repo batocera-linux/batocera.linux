@@ -69,12 +69,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_PANFROST_MESA
     PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
 endif
 
-# rockchip
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-    # In order to support the custom resolution patch, permissive compile is needed
-    PPSSPP_TARGET_CFLAGS += -fpermissive
-endif
-
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
     PPSSPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali
 endif
