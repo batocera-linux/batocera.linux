@@ -13,7 +13,7 @@
 - Ikemen-Go fighting engine (x86_64)
 - automatic switch when a new display is plugged or unplugged (on es only for plugging)
 - Intel VAAPI drivers
-- Light gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3)
+- Light gun in-game pre-calibration for arcade (atomiswave, naomi, MAME, lr-mame, lr-mame2003-plus, model2, model3) and Wii
 - Mesa hadware codecs for supported Intel & AMD cards
 - Zink for OpenGL to Vulkan
 - patch to allow Switch clone controllers to work in some cases
