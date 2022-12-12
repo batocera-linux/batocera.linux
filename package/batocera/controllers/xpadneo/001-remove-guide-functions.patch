@@ -1,0 +1,54 @@
+--- a/hid-xpadneo/src/hid-xpadneo.c
++++ b/hid-xpadneo/src/hid-xpadneo.c
+@@ -942,51 +942,6 @@
+ 			xdata->last_abs_rz = value;
+ 			goto combine_z_axes;
+ 		}
+-	} else if ((usage->type == EV_KEY) && (usage->code == BTN_XBOX)) {
+-		/*
+-		 * Handle the Xbox logo button: We want to cache the button
+-		 * down event to allow for profile switching. The button will
+-		 * act as a shift key and only send the input events when
+-		 * released without pressing an additional button.
+-		 */
+-		if (!xdata->xbox_button_down && (value == 1)) {
+-			/* cache this event */
+-			xdata->xbox_button_down = true;
+-		} else if (xdata->xbox_button_down && (value == 0)) {
+-			xdata->xbox_button_down = false;
+-			if (xdata->profile_switched) {
+-				xdata->profile_switched = false;
+-			} else {
+-				/* replay cached event */
+-				input_report_key(idev, BTN_XBOX, 1);
+-				input_sync(idev);
+-				/* synthesize the release to remove the scan code */
+-				input_report_key(idev, BTN_XBOX, 0);
+-				input_sync(idev);
+-			}
+-		}
+-		goto stop_processing;
+-	} else if (xdata->xbox_button_down && (usage->type == EV_KEY)) {
+-		if (!(xdata->quirks & XPADNEO_QUIRK_USE_HW_PROFILES)) {
+-			switch (usage->code) {
+-			case BTN_A:
+-				if (value == 1)
+-					xpadneo_switch_profile(xdata, 0, true);
+-				goto stop_processing;
+-			case BTN_B:
+-				if (value == 1)
+-					xpadneo_switch_profile(xdata, 1, true);
+-				goto stop_processing;
+-			case BTN_X:
+-				if (value == 1)
+-					xpadneo_switch_profile(xdata, 2, true);
+-				goto stop_processing;
+-			case BTN_Y:
+-				if (value == 1)
+-					xpadneo_switch_profile(xdata, 3, true);
+-				goto stop_processing;
+-			}
+-		}
+ 	}
+ 
+ 	/* Let hid-core handle the event */
