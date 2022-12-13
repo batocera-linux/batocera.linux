@@ -99,6 +99,12 @@ case "${ACTION}" in
         ROTATE=$1
         OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
 
+        # Mapping touch screen
+        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+        if [ ! -z "${TOUCHSCREEN}" ]; then
+            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
+        fi
+
         case "${ROTATE}" in
             "1")
                 swaymsg output "${OUTPUT}" transform 90
