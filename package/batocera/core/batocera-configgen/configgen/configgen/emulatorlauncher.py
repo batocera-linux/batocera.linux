@@ -226,7 +226,9 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             mouseChanged = True
             videoMode.changeMouse(True)
 
-        useRatpoison = generator.useRatpoison(system.config)
+        useRatpoison = generator.useRatpoison(system.config):
+        if useRatpoison:
+            subprocess.call('batocera-ratpoison launch', shell=True)
 
         # SDL VSync is a big deal on OGA and RPi4
         if system.isOptSet('sdlvsync') and system.getOptBoolean('sdlvsync') == False:
@@ -259,6 +261,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                     with open('/var/run/hud.config', 'w') as f:
                         f.write(hudconfig)
                     cmd.env["MANGOHUD_CONFIGFILE"] = "/var/run/hud.config"
+                    if useRatpoison:
+                        cmd.env["DISPLAY"] = ":1"
                     if generator.hasInternalMangoHUDCall() == False:
                         cmd.array.insert(0, "mangohud")
 
@@ -274,7 +278,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             Evmapy.stop()
 
         if useRatpoison:
-            subprocess.Popen('batocera-ratpoison reset', shell=True)
+            subprocess.call('batocera-ratpoison reset', shell=True)
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])

@@ -275,6 +275,13 @@ class CemuGenerator(Generator):
         else:
             return False
 
+    def useRatpoison(self, config):
+        if ("cemu_touchpad" in config and config["cemu_touchpad"] == "1") or \
+            ("cemu_dualview" in config and config["cemu_dualview"] != "none"):
+            return True
+        else:
+            return False
+
     @staticmethod
     def getRoot(config, name):
         xml_section = config.getElementsByTagName(name)

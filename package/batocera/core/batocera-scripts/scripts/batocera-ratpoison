@@ -6,28 +6,35 @@ import time
 import subprocess
 
 def launchRatpoison():
-	if os.path.exists('/var/run/rpready'):
-		os.remove('/var/run/rpready')
-	subprocess.call(f'LC_ALL=C startx /usr/bin/ratpoison -- :1', shell=True)
+	# Launch Xephyr to create display 1 in a window, then launch ratpoison in display 1
+	subprocess.call('xephyr -br -ac -fullscreen -reset -terminate :1', shell=True)
+	subprocess.call('LC_ALL=C DISPLAY=:1 ratpoison')
 
 def killRatpoison():
 	runRatpoisonCommand('quit')
-	if os.path.exists('/var/run/rpready'):
-		os.remove('/var/run/rpready')
 
-def doScreenshot():
-	screenshotFolder = '/userdata/screenshots'
-	if not os.path.exists(screenshotFolder):
-		os.makedirs(screenshotFolder)
-	screenshotFile=f'{screenshotFolder}/screenshot-{time.strftime("%Y.%m.%d-%Hh%M.%S", time.localtime())}.png'
-	subprocess.call(f'ffmpeg -f x11grab -i :1.0 -vframes 1 "{screenshotFile}" 2>/dev/null', shell=True)
+def killXephyr():
+	# Xephyr should end when Ratpoison exits, this is a backup..
+    try:
+        for line in os.popen('ps ax | grep "xephyr" | grep -v grep'):
+            fields = line.split()
+
+            # extracting Process ID from the output
+            pid = fields[0]
+
+            # terminating process
+            os.kill(int(pid), signal.SIGKILL)
+        print("Ended Xephyr")
+
+    except:
+        print("Could not end Xephyr")
+
+def altTab():
+	runRatpoisonCommand('next')
+	showMessage(getRatpoisonCommand('windows %s %n:%t (%a)'))
 
 def showMessage(message):
 	runRatpoisonCommand(f'echo {message}')
-
-def setReady():
-	with open('/var/run/rpready', "w") as readyFile:
-		readyFile.write("")
 
 def runRatpoisonCommand(command):
 	print(f'Running ratpoison command {command}')
@@ -53,11 +60,8 @@ if __name__ == '__main__':
 		launchRatpoison()
 	elif sys.argv[1] == 'reset':
 		killRatpoison()
+		killXephyr()
 	elif sys.argv[1] == 'switchapp':
 		altTab()
 	elif sys.argv[1] == 'message':
 		showMessage(sys.argv[2])
-	elif sys.argv[1] == 'ready':
-		setReady()
-	elif sys.argv[1] == 'screenshot':
-		doScreenshot()
