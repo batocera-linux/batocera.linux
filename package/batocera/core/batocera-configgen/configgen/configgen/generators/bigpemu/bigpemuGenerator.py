@@ -86,7 +86,6 @@ class BigPEmuGenerator(Generator):
                 "WINEPREFIX": wineprefix,
                 "LD_LIBRARY_PATH": "/lib:/usr/lib:/lib32:/usr/wine/lutris/lib/wine",
                 "LIBGL_DRIVERS_PATH": "/usr/lib/dri:/lib32/dri",
-                "__NV_PRIME_RENDER_OFFLOAD": "1",
                 "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
                 "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
             })
