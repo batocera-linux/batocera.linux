@@ -262,13 +262,13 @@ define BATOCERA_NVIDIA_DRIVER_RENAME_KERNEL_MODULES
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
     # rename the kernel modules to avoid conflict
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-production.ko
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-production.ko
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-drm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-production.ko	
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-production.ko
 	# set the driver version file
 	echo $(BATOCERA_NVIDIA_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/production.version

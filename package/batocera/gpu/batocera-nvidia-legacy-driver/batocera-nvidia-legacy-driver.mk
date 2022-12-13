@@ -220,20 +220,18 @@ ifeq ($(BR2_i686),y)
 	BATOCERA_NVIDIA_LEGACY_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_LEGACY_DRIVER_VULKANJSON_X86
 endif
 
-KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
-
 # move to avoid the production driver
 define BATOCERA_NVIDIA_LEGACY_DRIVER_RENAME_KERNEL_MODULES
     mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
 	# rename the kernel modules to avoid conflict
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-drm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-legacy.ko	
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-legacy.ko
 	# set the driver version file
 	echo $(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/legacy.version
