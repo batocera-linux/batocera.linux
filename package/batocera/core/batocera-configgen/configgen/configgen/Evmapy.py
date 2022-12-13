@@ -14,8 +14,8 @@ class Evmapy():
     __started = False
 
     @staticmethod
-    def start(system, config, core, rom, playersControllers):
-        if Evmapy.__prepare(system, config, core, rom, playersControllers):
+    def start(system, emulator, core, rom, playersControllers):
+        if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
             Evmapy.__started = True
             subprocess.call(["batocera-evmapy", "start"])
 
@@ -26,22 +26,18 @@ class Evmapy():
             subprocess.call(["batocera-evmapy", "stop"])
 
     @staticmethod
-    def __prepare(system, config, core, rom, playersControllers):
-        emulator = config['emulator']
+    def __prepare(system, emulator, core, rom, playersControllers):
         # consider files here in this order to get a configuration
-        fileList = [
-            "{}.keys" .format (rom),
-            "{}/padto.keys" .format (rom), # case when the rom is a directory
-            #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
-            #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
-            "/userdata/system/configs/evmapy/{}.keys" .format (system),
-            #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
-            "/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
-            "/usr/share/evmapy/{}.keys" .format (system)
-        ]
-        if 'auto_ereader' in config and config['auto_ereader'] != 'none':
-            fileList.append("/usr/share/evmapy/p2mouse.keys")
-        for keysfile in fileList:
+        for keysfile in [
+                "{}.keys" .format (rom),
+                "{}/padto.keys" .format (rom), # case when the rom is a directory
+                #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
+                #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
+                "/userdata/system/configs/evmapy/{}.keys" .format (system),
+                #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
+                "/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
+                "/usr/share/evmapy/{}.keys" .format (system)
+        ]:
             if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
                 eslog.debug(f"evmapy on {keysfile}")
                 subprocess.call(["batocera-evmapy", "clear"])

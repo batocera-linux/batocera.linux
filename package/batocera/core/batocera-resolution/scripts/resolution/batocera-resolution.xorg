@@ -49,7 +49,6 @@ f_minTomaxResolution() {
 	    then
 		OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
 		xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
-		batocera-ratpoison reset
 		exit 0
 	    fi
 	done
@@ -85,10 +84,8 @@ case "${ACTION}" in
 		PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
 		PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
 		xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
-		batocera-ratpoison reset
 	    else
 		xrandr --output "${OUTPUT}" --mode "${MODE}"
-		batocera-ratpoison reset
 	    fi
 	fi
 	;;
@@ -118,7 +115,6 @@ case "${ACTION}" in
 	    # enable (in case of reboot of es)
 	    echo "set ${MODE} as primary" >&2
 	    xrandr --output "${MODE}" --auto
-	    batocera-ratpoison reset
 	else
 	    # disable all except the first one
 	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
@@ -133,7 +129,6 @@ case "${ACTION}" in
 		    # enable (in case of reboot of es)
 		    echo "set ${FIRSTOUTPUT} as primary" >&2
 		    xrandr --output "${FIRSTOUTPUT}" --auto
-		    batocera-ratpoison reset
 		)
 	fi
 	;;
@@ -163,7 +158,6 @@ case "${ACTION}" in
         xrandr --newmode ${MODE}
         xrandr --addmode "${OUTPUT}" "${MNAME}"
 	xrandr --output "${OUTPUT}" --mode "${MNAME}"
-	batocera-ratpoison reset
 	;;
     "supportSystemRotation")
 	exit 0

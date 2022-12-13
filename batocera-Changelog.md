@@ -5,8 +5,6 @@
 - holding power button 3s will show the shutdown menu
 - new enhanced UI for themes management (from Content Downloader)
 ### Added
-- GBA Link & e-Reader to Dolphin. (x86_64) - Additional instructions for linking GC & GBA ROMs to follow on Wiki.
-- Dual view for Cemu. Gamepad view hotkey (Hotkey + R2) will flip Gamepad & TV view
 - alsa ucm2 to x86 builds for soundcard compatibility
 - Vita3k - PlayStation Vita emulator (October 25th build)
 - WASM4 - WebAssembly fantasy console (x86_64)
@@ -22,7 +20,6 @@
 - Light gun support for PS3
 ### Changed
 - move to pipewire wireplumber audio
-- change window manager from Openbox to Ratpoison
 - bluetooth modes : automatic and manual (via a list)
 - kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
