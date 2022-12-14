@@ -18,6 +18,7 @@
 - Zink for OpenGL to Vulkan
 - patch to allow Switch clone controllers to work in some cases
 - Xenia a Microsoft Xbox 360 emulator (v1.0.2775) - requires x86_64+Vulkan card & Wine (Note: Limited compatibility)
+- Xbox 360 digital titles can now be seen via .xbox360 playlists in ES
 - Light gun support for Wii
 - Light gun support for PS3
 ### Changed
