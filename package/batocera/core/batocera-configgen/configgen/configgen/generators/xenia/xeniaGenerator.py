@@ -60,21 +60,21 @@ class XeniaGenerator(Generator):
                 f.write("done")
 
         # are we loading a digital title?
-        if os.path.splitext(rom)[1] == ".xbla":
-            eslog.debug(f"Found .xbla playlist: {rom}")
+        if os.path.splitext(rom)[1] == ".xbox360":
+            eslog.debug(f"Found .xbox360 playlist: {rom}")
             pathLead = os.path.dirname(rom)
             openFile = open(rom, 'r')
             # Read only the first line of the file.
             firstLine = openFile.readlines(1)[0]
             # Strip of any new line characters.
             firstLine = firstLine.strip('\n').strip('\r')
-            eslog.debug(f"Checking if specified XBLA file actually exists...")
+            eslog.debug(f"Checking if specified disc installation/XBLA file actually exists...")
             xblaFullPath = pathLead + "/" + firstLine
             if os.path.exists(xblaFullPath):
                 eslog.debug(f"Found! Switching active rom to: {firstLine}")
                 rom = xblaFullPath
             else:
-                eslog.error(f"XBLA title {firstLine} from {rom} not found, check path or filename.")
+                eslog.error(f"Disc installation/XBLA title {firstLine} from {rom} not found, check path or filename.")
             openFile.close()
 
         # now setup the command array for the emulator
