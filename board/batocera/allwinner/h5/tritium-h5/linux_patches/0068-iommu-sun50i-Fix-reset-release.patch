@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Wed, 12 Oct 2022 21:10:47 +0200
+Subject: [PATCH] iommu/sun50i: Fix reset release
+
+Reset signal is asserted by writing 0 to the corresponding locations of
+masters we want to reset. So in order to deassert all reset signals, we
+should write 1's to all locations.
+
+Current code writes 1's to locations of masters which were just reset
+which is good. However, at the same time it also writes 0's to other
+locations and thus asserts reset signals of remaining masters. Fix code
+by writing all 1's when we want to deassert all reset signals.
+
+This bug was discovered when working with Cedrus (video decoder). When
+it faulted, display went blank due to reset signal assertion.
+
+Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/iommu/sun50i-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index a84c63518773..c777882d0ec2 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -27,6 +27,7 @@
+ #include <linux/types.h>
+ 
+ #define IOMMU_RESET_REG			0x010
++#define IOMMU_RESET_RELEASE_ALL			0xffffffff
+ #define IOMMU_ENABLE_REG		0x020
+ #define IOMMU_ENABLE_ENABLE			BIT(0)
+ 
+@@ -893,7 +894,7 @@ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
+ 	iommu_write(iommu, IOMMU_INT_CLR_REG, status);
+ 
+ 	iommu_write(iommu, IOMMU_RESET_REG, ~status);
+-	iommu_write(iommu, IOMMU_RESET_REG, status);
++	iommu_write(iommu, IOMMU_RESET_REG, IOMMU_RESET_RELEASE_ALL);
+ 
+ 	spin_unlock(&iommu->iommu_lock);
+ 
