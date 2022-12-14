@@ -1,7 +1,8 @@
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c	1970-01-01 01:00:00.000000000 +0100
-@@ -5207,6 +5207,8 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ linux-6.1/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -5245,6 +5245,8 @@ static void fill_stream_properties_from_
  			timing_out->flags.HSYNC_POSITIVE_POLARITY = 1;
  		if (mode_in->flags & DRM_MODE_FLAG_PVSYNC)
  			timing_out->flags.VSYNC_POSITIVE_POLARITY = 1;
@@ -10,7 +11,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c lin
  	}
  
  	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
-@@ -5778,7 +5780,7 @@
+@@ -5817,7 +5819,7 @@ create_stream_for_sink(struct amdgpu_dm_
  
  	if (recalculate_timing)
  		drm_mode_set_crtcinfo(&saved_mode, 0);
@@ -19,7 +20,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c lin
  		drm_mode_set_crtcinfo(&mode, 0);
  
  	/*
-@@ -6221,8 +6223,7 @@
+@@ -6260,8 +6262,7 @@ enum drm_mode_status amdgpu_dm_connector
  	struct dc_stream_state *stream;
  	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
  
@@ -29,7 +30,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c lin
  		return result;
  
  	/*
-@@ -6884,7 +6885,7 @@
+@@ -6934,7 +6935,7 @@ void amdgpu_dm_connector_init_helper(str
  
  	aconnector->connector_id = link_index;
  	aconnector->dc_link = link;
@@ -38,10 +39,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c lin
  	aconnector->base.doublescan_allowed = false;
  	aconnector->base.stereo_allowed = false;
  	aconnector->base.dpms = DRM_MODE_DPMS_OFF;
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c	1970-01-01 01:00:00.000000000 +0100
-@@ -2629,6 +2629,9 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -2660,6 +2660,9 @@ static void update_scaler(struct pipe_ct
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = per_pixel_alpha;
  	pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_36BPP;
  	/* scaler configuration */
@@ -51,7 +53,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequenc
  	pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
  			pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
  }
-@@ -3751,8 +3754,7 @@
+@@ -3684,8 +3687,7 @@ int dcn10_get_vupdate_offset_from_vsync(
  
  	asic_blank_end = (patched_crtc_timing.v_total -
  			vesa_sync_start -
@@ -59,12 +61,13 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequenc
 -			* interlace_factor;
 +			patched_crtc_timing.v_border_top); // * interlace_factor;
  
- 	vertical_line_start = asic_blank_end -
+ 	return asic_blank_end -
  			pipe_ctx->pipe_dlg_param.vstartup_start + 1;
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c	1970-01-01 01:00:00.000000000 +0100
-@@ -577,10 +577,6 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
+@@ -588,10 +588,6 @@ bool optc1_validate_timing(
  		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
  		return false;
  
@@ -75,10 +78,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c lin
  	/* Check maximum number of pixels supported by Timing Generator
  	 * (Currently will never fail, in order to fail needs display which
  	 * needs more than 8192 horizontal and
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c	1970-01-01 01:00:00.000000000 +0100
-@@ -1535,6 +1535,9 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+@@ -1533,6 +1533,9 @@ static void dcn20_update_dchubp_dpp(
  		pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->plane_state->per_pixel_alpha;
  		ASSERT(pipe_ctx->plane_res.scl_data.lb_params.depth == LB_PIXEL_DEPTH_36BPP);
  		/* scaler configuration */
@@ -88,10 +92,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c li
  		pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
  				pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
  	}
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c	1970-01-01 01:00:00.000000000 +0100
-@@ -61,7 +61,8 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+@@ -61,7 +61,8 @@ void scaler_settings_calculation(struct
  			v->v_ratio[k] = v->h_ratio[k];
  		}
  		if (v->interlace_output[k] == 1.0) {
@@ -101,10 +106,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_aut
  		}
  		if (v->underscan_output[k] == 1.0) {
  			v->h_ratio[k] = v->h_ratio[k] * v->under_scan_factor;
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c	1970-01-01 01:00:00.000000000 +0100
-@@ -446,6 +446,7 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+@@ -446,6 +446,7 @@ static void pipe_ctx_to_e2e_pipe_params
  	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
  	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
  	input->dest.vupdate_width = pipe->pipe_dlg_param.vupdate_width;
@@ -112,7 +118,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c 
  
  }
  
-@@ -917,7 +918,7 @@
+@@ -900,7 +901,7 @@ bool dcn_validate_bandwidth(
  			continue;
  
  		v->underscan_output[input_idx] = false; /* taken care of in recout already*/
@@ -121,7 +127,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c 
  
  		v->htotal[input_idx] = pipe->stream->timing.h_total;
  		v->vtotal[input_idx] = pipe->stream->timing.v_total;
-@@ -1236,14 +1237,12 @@
+@@ -1219,14 +1220,12 @@ bool dcn_validate_bandwidth(
  
  			asic_blank_end = (pipe->stream->timing.v_total -
  						vesa_sync_start -
@@ -138,10 +144,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c 
  
  			pipe->pipe_dlg_param.vblank_start = asic_blank_start;
  			pipe->pipe_dlg_param.vblank_end = asic_blank_end;
-diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
---- linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c	1970-01-01 01:00:00.000000000 +0100
-@@ -586,9 +586,11 @@
+Index: linux-6.1/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
++++ linux-6.1/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+@@ -586,9 +586,11 @@ static void fetch_pipe_params(struct dis
  		mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] = scl->vscl_ratio_c;
  		mode_lib->vba.ScalerEnabled[mode_lib->vba.NumberOfActivePlanes] = scl->scl_enable;
  		mode_lib->vba.Interlace[mode_lib->vba.NumberOfActivePlanes] = dst->interlaced;
@@ -155,10 +162,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
  		}
  		mode_lib->vba.htaps[mode_lib->vba.NumberOfActivePlanes] = taps->htaps;
  		mode_lib->vba.vtaps[mode_lib->vba.NumberOfActivePlanes] = taps->vtaps;
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c
---- linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-@@ -163,6 +163,9 @@
+Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+@@ -163,6 +163,9 @@ static int drm_helper_probe_add_cmdline_
  				continue;
  		}
  
