@@ -5910,19 +5910,10 @@ cemu:
                "Enabled":            true
         cemu_gamepad:
             prompt: ENABLE GAMEPAD VIEW
-            description: Enable gamepad view for games that have interaction across two screens. Use Hotkey+R2 to switch screens.
+            description: Enable gamepad view for games that have interaction across two screens. Use L1+R1 to switch screens.
             choices:
                "Disabled (Default)": false
                "Enabled":            true
-        cemu_dualview:
-            prompt: ENABLE DUAL VIEW
-            description: Show the TV and gamepad views together. Use Hotkey+R2 to switch screens.
-            choices:
-               "Disabled (Default)":           none
-               "Side by Side (Even)":          vert1
-               "Side by Side (Small Gamepad)": vert2
-               "Stack-ed (Even)":               horiz1
-               "Stacked (Small Gamepad)":      horiz2
 
 citra:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6164,7 +6155,6 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
-                "GBA (Internal)":             13
         dolphin_port_2_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 2 TYPE
@@ -6177,7 +6167,6 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
-                "GBA (Internal)":             13
         dolphin_port_3_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 3 TYPE
@@ -6190,7 +6179,6 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
-                "GBA (Internal)":             13
         dolphin_port_4_type:
             group: ADVANCED OPTIONS
             prompt:      GAMECUBE PORT 4 TYPE
@@ -6203,7 +6191,6 @@ dolphin:
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
-                "GBA (Internal)":             13
         anisotropic_filtering:
             group: ADVANCED OPTIONS
             prompt:      ANISOTROPIC FILTERING
@@ -6301,23 +6288,6 @@ dolphin:
   systems:
     gamecube:
         cfeatures:
-            gbalayout:
-                group: ADVANCED OPTIONS
-                prompt:      GBA LAYOUT
-                description: Arrangement of GameCube and GBA screens.
-                choices:
-                    "Vertical - GBAs on Right":   vert
-                    "Horizontal - GBAs on Bottom": horiz
-            auto_ereader:
-                group: ADVANCED OPTIONS
-                archs_include: [x86, x86_64]
-                prompt:      AUTO E-READER
-                description: Make controller 2 a GBA with e-Reader
-                choices:
-                    "Disabled":       none
-                    "e-Reader (US)":  Card e-Reader (U)
-                    "e-Reader (JP)":  Card e-Reader (J)
-                    "e-Reader+ (JP)": Card e-Reader+ (J)
             widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.

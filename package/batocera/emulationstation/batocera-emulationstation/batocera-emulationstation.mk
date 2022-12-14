@@ -151,7 +151,6 @@ endif
 
 define BATOCERA_EMULATIONSTATION_XINITRC
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/ratpoisonrc $(TARGET_DIR)/etc/ratpoisonrc
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
