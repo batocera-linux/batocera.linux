@@ -67,7 +67,7 @@
 - mame to v0.248
 - switchres to sep 25th 2022 build
 - lr-mame to v0.248
-- retroarch to v1.13.0
+- retroarch to v1.14.0
 - libretro cores synced with retroarch v1.11.1 [#7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
 - libretro-core-info to Oct 04 2022 build
 - retroarch-assets to Oct 24 2022 build
@@ -86,6 +86,7 @@
 - vulkan stack to v1.3.231
 - lr-yabasanshiro to 28th sept build
 - lr-flycast emulators to Dec 5, 2022 build
+- bezels updated for many systems
 ### Fixed
 - lr-mame save state file names
 - slow rpcs3 initial ppu compilation times
@@ -97,6 +98,7 @@
 - long start times with vulkan in some cases
 - Sony touchpad for Mame
 - od-commander fixed for several screen resolutions
+- disabling rumble for some libretro emulators/controllers
 ### Dev  
 - buildroot upgrade to 2022.08.2
 - odroidxu4 upgrade kernel to 6.1
