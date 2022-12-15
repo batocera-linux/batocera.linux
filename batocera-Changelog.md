@@ -1283,7 +1283,7 @@ Note: this version is the first one with real wiimotes working on x86_64 archite
 Recalbox.remix is now mainly 3 files on the USB key/SD card (SD CARD CONTENT - grub) :
 - /boot/linux (os system, ~5/10mb)
 - /boot/recalbox (root filesystem, ~350mb)
-- /boot/initrd.gz (technical file needed to start the recalbox file from linux ~500kb)
+- /boot/initrd.lz4 (technical file needed to start the recalbox file from linux ~500kb)
 
 # 2016/11/14
 * play Wii with real wiimotes
