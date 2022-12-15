@@ -41,6 +41,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Saudio \
 		$(TARGET_DIR)/etc/init.d/S06audio
+	mkdir -p $(TARGET_DIR)/etc/modprobe.d
 	ln -sf /var/run/modprobe/intel-dsp.conf $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S27audioconfig \
 		$(TARGET_DIR)/etc/init.d/S27audioconfig
