@@ -42,13 +42,19 @@ else
 BATOCERA_INITRAMFS_INITRDA=arm
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+    COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
+else
+    COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -9 > $(BINARIES_DIR)/initrd.lz4)
+endif
+
 define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	mkdir -p $(INITRAMFS_DIR)
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init
 	$(BATOCERA_INITRAMFS_MAKE_ENV) $(MAKE) $(BATOCERA_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
 	(cd $(BINARIES_DIR) && mkimage -A $(BATOCERA_INITRAMFS_INITRDA) -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
-	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -9 > $(BINARIES_DIR)/initrd.lz4)
+	$(COMPRESSION_TYPE_COMMAND)
 endef
 
 $(eval $(kconfig-package))
