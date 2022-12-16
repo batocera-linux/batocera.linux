@@ -48,7 +48,7 @@ define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	$(BATOCERA_INITRAMFS_MAKE_ENV) $(MAKE) $(BATOCERA_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
 	(cd $(BINARIES_DIR) && mkimage -A $(BATOCERA_INITRAMFS_INITRDA) -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
-	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | lz4 -9 > $(BINARIES_DIR)/initrd.lz4)
+	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -9 > $(BINARIES_DIR)/initrd.lz4)
 endef
 
 $(eval $(kconfig-package))

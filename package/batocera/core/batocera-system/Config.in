@@ -337,6 +337,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_UNZIP        # for /userdata/system/upgrade/share.zip
 	select BR2_PACKAGE_XZ           # for updates
 	select BR2_PACKAGE_ZSTD         # for btrfs compression
+	select BR2_PACKAGE_LZ4          # for initramfs compression
 
 	# script tool
 	select BR2_PACKAGE_DIALOG
