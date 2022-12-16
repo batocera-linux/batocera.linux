@@ -1,6 +1,20 @@
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c
---- linux-6.0_stock/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
+Index: linux-6.1/drivers/gpu/drm/Makefile
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/Makefile
++++ linux-6.1/drivers/gpu/drm/Makefile
+@@ -19,7 +19,7 @@ drm-y       :=	drm_aperture.o drm_auth.o
+ 		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
+ 		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
+ 		drm_client_modeset.o drm_atomic_uapi.o \
+-		drm_managed.o drm_vblank_work.o
++		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
+ drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
+ 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
+ 			    drm_memory.o drm_scatter.o drm_vm.o
+Index: linux-6.1/drivers/gpu/drm/drm_modes.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.1/drivers/gpu/drm/drm_modes.c
 @@ -47,6 +47,7 @@
  #include <drm/drm_print.h>
  
@@ -9,7 +23,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  
  /**
   * drm_mode_debug_printmodeline - print a mode to dmesg
-@@ -1551,7 +1552,7 @@
+@@ -1551,7 +1552,7 @@ static int drm_mode_parse_cmdline_res_mo
  					   struct drm_cmdline_mode *mode)
  {
  	const char *str_start = str;
@@ -18,7 +32,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  	int xres = 0, yres = 0;
  	int remaining, i;
  	char *end_ptr;
-@@ -1581,6 +1582,12 @@
+@@ -1581,6 +1582,12 @@ static int drm_mode_parse_cmdline_res_mo
  		case 'R':
  			rb = true;
  			break;
@@ -31,7 +45,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  		default:
  			/*
  			 * Try to pass that to our extras parsing
-@@ -1605,6 +1612,7 @@
+@@ -1605,6 +1612,7 @@ static int drm_mode_parse_cmdline_res_mo
  	mode->yres = yres;
  	mode->cvt = cvt;
  	mode->rb = rb;
@@ -39,7 +53,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  
  	return 0;
  }
-@@ -1937,7 +1945,11 @@
+@@ -1937,7 +1945,11 @@ drm_mode_create_from_cmdline_mode(struct
  	if (cmd->xres == 0 || cmd->yres == 0)
  		return NULL;
  
@@ -52,9 +66,10 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
---- linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
+Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
+===================================================================
+--- /dev/null
++++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 @@ -0,0 +1,136 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -192,9 +207,10 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-6.0_15
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
---- linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
+Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
+===================================================================
+--- /dev/null
++++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -219,10 +235,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-6.0_15
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c
---- linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-@@ -391,21 +391,26 @@
+Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+@@ -391,21 +391,26 @@ static int __drm_helper_update_and_valid
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -249,7 +266,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  		ret = drm_mode_validate_pipeline(mode, connector, ctx,
  						 &mode->status);
  		if (ret) {
-@@ -419,9 +424,11 @@
+@@ -419,9 +424,11 @@ static int __drm_helper_update_and_valid
  				return -EDEADLK;
  		}
  
@@ -261,7 +278,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  	}
  
  	return 0;
-@@ -491,6 +498,7 @@
+@@ -491,6 +498,7 @@ int drm_helper_probe_single_connector_mo
  {
  	struct drm_device *dev = connector->dev;
  	struct drm_display_mode *mode;
@@ -269,7 +286,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  	int count = 0, ret;
  	enum drm_connector_status old_status;
  	struct drm_modeset_acquire_ctx ctx;
-@@ -575,10 +583,13 @@
+@@ -575,10 +583,13 @@ retry:
  		goto exit;
  	}
  
@@ -284,22 +301,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  		count = drm_add_modes_noedid(connector, 1024, 768);
  
  		/*
-diff -Naur linux-6.0_stock/drivers/gpu/drm/Makefile linux-6.0_15kHz/drivers/gpu/drm/Makefile
---- linux-6.0_stock/drivers/gpu/drm/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/Makefile	1970-01-01 01:00:00.000000000 +0100
-@@ -17,7 +17,7 @@
- 		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
- 		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
- 		drm_client_modeset.o drm_atomic_uapi.o \
--		drm_managed.o drm_vblank_work.o
-+		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
- drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
- 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
- 			    drm_memory.o drm_scatter.o drm_vm.o
-diff -Naur linux-6.0_stock/include/drm/drm_connector.h linux-6.0_15kHz/include/drm/drm_connector.h
---- linux-6.0_stock/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
-@@ -1277,6 +1277,13 @@
+Index: linux-6.1/include/drm/drm_connector.h
+===================================================================
+--- linux-6.1.orig/include/drm/drm_connector.h
++++ linux-6.1/include/drm/drm_connector.h
+@@ -1298,6 +1298,13 @@ struct drm_cmdline_mode {
  	 * @tv_margins: TV margins to apply to the mode.
  	 */
  	struct drm_connector_tv_margins tv_margins;

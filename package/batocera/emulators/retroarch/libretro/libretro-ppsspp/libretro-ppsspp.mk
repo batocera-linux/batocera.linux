@@ -63,12 +63,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     LIBRETRO_PPSSPP_CONF_OPTS += -DX86_64=ON
 endif
 
-# rockchip
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-    # In order to support the custom resolution patch, permissive compile is needed
-    LIBRETRO_PPSSPP_TARGET_CFLAGS += -fpermissive
-endif
-
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
     LIBRETRO_PPSSPP_DEPENDENCIES += libmali
     LIBRETRO_PPSSPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali

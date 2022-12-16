@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RYUJINX_VERSION = 1.1.343
+RYUJINX_VERSION = 1.1.448
 RYUJINX_SOURCE = ryujinx-$(RYUJINX_VERSION)-linux_x64.tar.gz
 RYUJINX_SITE = https://github.com/Ryujinx/release-channel-master/releases/download/$(RYUJINX_VERSION)
 RYUJINX_LICENSE = MIT

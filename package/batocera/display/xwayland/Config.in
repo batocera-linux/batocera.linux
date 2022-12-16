@@ -15,7 +15,6 @@ config BR2_PACKAGE_XWAYLAND
     select BR2_PACKAGE_WAYLANDPP
     select BR2_PACKAGE_XLIB_LIBXFONT2
     select BR2_PACKAGE_XLIB_LIBXCVT
-    select BR2_PACKAGE_LIBGLVND
     help
         Run X clients under Wayland.
 

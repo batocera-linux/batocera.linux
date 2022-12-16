@@ -1,3 +1,6 @@
+# Modifier key
+set $alt Mod1
+
 # hide_cursor hides the cursor image after the specified timeout (in milliseconds) has elapsed with no activity on that cursor
 seat * hide_cursor 500
 
@@ -9,8 +12,11 @@ input * {
     xkb_layout "us"
 }
 
-# Batocera custom keybindings
-bindsym Print   exec /usr/bin/batocera-screenshot
+# kill focused window
+bindsym $alt+F4 kill
+
+# Make the current focus fullscreen
+bindsym $alt+f fullscreen
 
 # Starts EmulationStation when loading sway
-exec_always /usr/bin/emulationstation-standalone
+exec /usr/bin/emulationstation-standalone

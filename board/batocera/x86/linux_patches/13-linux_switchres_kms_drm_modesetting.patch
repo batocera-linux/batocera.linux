@@ -1,7 +1,8 @@
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_connector.c linux-6.0_15kHz/drivers/gpu/drm/drm_connector.c
---- linux-6.0_stock/drivers/gpu/drm/drm_connector.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_connector.c	1970-01-01 01:00:00.000000000 +0100
-@@ -280,6 +280,7 @@
+Index: linux-6.1/drivers/gpu/drm/drm_connector.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_connector.c
++++ linux-6.1/drivers/gpu/drm/drm_connector.c
+@@ -272,6 +272,7 @@ static int __drm_connector_init(struct d
  
  	INIT_LIST_HEAD(&connector->global_connector_list_entry);
  	INIT_LIST_HEAD(&connector->probed_modes);
@@ -9,7 +10,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_connector.c linux-6.0_15kHz/drive
  	INIT_LIST_HEAD(&connector->modes);
  	mutex_init(&connector->mutex);
  	connector->edid_blob_ptr = NULL;
-@@ -478,6 +479,11 @@
+@@ -555,6 +556,11 @@ void drm_connector_cleanup(struct drm_co
  	list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
  		drm_mode_remove(connector, mode);
  
@@ -21,10 +22,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_connector.c linux-6.0_15kHz/drive
  	list_for_each_entry_safe(mode, t, &connector->modes, head)
  		drm_mode_remove(connector, mode);
  
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_ioctl.c linux-6.0_15kHz/drivers/gpu/drm/drm_ioctl.c
---- linux-6.0_stock/drivers/gpu/drm/drm_ioctl.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_ioctl.c	1970-01-01 01:00:00.000000000 +0100
-@@ -660,8 +660,8 @@
+Index: linux-6.1/drivers/gpu/drm/drm_ioctl.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_ioctl.c
++++ linux-6.1/drivers/gpu/drm/drm_ioctl.c
+@@ -666,8 +666,8 @@ static const struct drm_ioctl_desc drm_i
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETGAMMA, drm_mode_gamma_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETENCODER, drm_mode_getencoder, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETCONNECTOR, drm_mode_getconnector, 0),
@@ -35,10 +37,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_ioctl.c linux-6.0_15kHz/drivers/g
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPERTY, drm_mode_getproperty_ioctl, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETPROPERTY, drm_connector_property_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPBLOB, drm_mode_getblob_ioctl, 0),
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_mode_object.c linux-6.0_15kHz/drivers/gpu/drm/drm_mode_object.c
---- linux-6.0_stock/drivers/gpu/drm/drm_mode_object.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_mode_object.c	1970-01-01 01:00:00.000000000 +0100
-@@ -143,6 +143,7 @@
+Index: linux-6.1/drivers/gpu/drm/drm_mode_object.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_mode_object.c
++++ linux-6.1/drivers/gpu/drm/drm_mode_object.c
+@@ -143,6 +143,7 @@ struct drm_mode_object *__drm_mode_objec
  	obj = idr_find(&dev->mode_config.object_idr, id);
  	if (obj && type != DRM_MODE_OBJECT_ANY && obj->type != type)
  		obj = NULL;
@@ -46,9 +49,10 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_mode_object.c linux-6.0_15kHz/dri
  	if (obj && obj->id != id)
  		obj = NULL;
  
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c
---- linux-6.0_stock/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_modes.c	1970-01-01 01:00:00.000000000 +0100
+Index: linux-6.1/drivers/gpu/drm/drm_modes.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.1/drivers/gpu/drm/drm_modes.c
 @@ -40,6 +40,7 @@
  #include <video/of_videomode.h>
  #include <video/videomode.h>
@@ -57,7 +61,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  #include <drm/drm_crtc.h>
  #include <drm/drm_device.h>
  #include <drm/drm_edid.h>
-@@ -117,6 +118,168 @@
+@@ -118,6 +119,168 @@ void drm_mode_probed_add(struct drm_conn
  EXPORT_SYMBOL(drm_mode_probed_add);
  
  /**
@@ -226,7 +230,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
   * drm_cvt_mode -create a modeline based on the CVT algorithm
   * @dev: drm device
   * @hdisplay: hdisplay size
-@@ -1407,7 +1570,7 @@
+@@ -1408,7 +1571,7 @@ EXPORT_SYMBOL(drm_mode_sort);
   */
  void drm_connector_list_update(struct drm_connector *connector)
  {
@@ -235,7 +239,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  
  	WARN_ON(!mutex_is_locked(&connector->dev->mode_config.mutex));
  
-@@ -1453,6 +1616,40 @@
+@@ -1454,6 +1617,40 @@ void drm_connector_list_update(struct dr
  			list_move_tail(&pmode->head, &connector->modes);
  		}
  	}
@@ -276,10 +280,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_modes.c linux-6.0_15kHz/drivers/g
  }
  EXPORT_SYMBOL(drm_connector_list_update);
  
-diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c
---- linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/drivers/gpu/drm/drm_probe_helper.c	1970-01-01 01:00:00.000000000 +0100
-@@ -314,6 +314,23 @@
+Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+===================================================================
+--- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+@@ -317,6 +317,23 @@ retry:
  	return ret;
  }
  
@@ -303,7 +308,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  /**
   * drm_helper_probe_detect - probe connector status
   * @connector: connector to probe
-@@ -499,6 +516,8 @@
+@@ -510,6 +527,8 @@ int drm_helper_probe_single_connector_mo
  
  	drm_modeset_acquire_init(&ctx, 0);
  
@@ -312,7 +317,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  	DRM_DEBUG_KMS("[CONNECTOR:%d:%s]\n", connector->base.id,
  			connector->name);
  
-@@ -516,6 +535,10 @@
+@@ -527,6 +546,10 @@ retry:
  
  	old_status = connector->status;
  
@@ -323,7 +328,7 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  	if (connector->force) {
  		if (connector->force == DRM_FORCE_ON ||
  		    connector->force == DRM_FORCE_ON_DIGITAL)
-@@ -627,7 +650,13 @@
+@@ -641,7 +664,13 @@ exit:
  
  	drm_mode_sort(&connector->modes);
  
@@ -338,10 +343,11 @@ diff -Naur linux-6.0_stock/drivers/gpu/drm/drm_probe_helper.c linux-6.0_15kHz/dr
  			connector->name);
  	list_for_each_entry(mode, &connector->modes, head) {
  		drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
-diff -Naur linux-6.0_stock/include/drm/drm_connector.h linux-6.0_15kHz/include/drm/drm_connector.h
---- linux-6.0_stock/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/include/drm/drm_connector.h	1970-01-01 01:00:00.000000000 +0100
-@@ -1407,6 +1407,14 @@
+Index: linux-6.1/include/drm/drm_connector.h
+===================================================================
+--- linux-6.1.orig/include/drm/drm_connector.h
++++ linux-6.1/include/drm/drm_connector.h
+@@ -1435,6 +1435,14 @@ struct drm_connector {
  	struct list_head probed_modes;
  
  	/**
@@ -356,10 +362,11 @@ diff -Naur linux-6.0_stock/include/drm/drm_connector.h linux-6.0_15kHz/include/d
  	 * @display_info: Display information is filled from EDID information
  	 * when a display is detected. For non hot-pluggable displays such as
  	 * flat panels in embedded systems, the driver should initialize the
-diff -Naur linux-6.0_stock/include/drm/drm_modes.h linux-6.0_15kHz/include/drm/drm_modes.h
---- linux-6.0_stock/include/drm/drm_modes.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-6.0_15kHz/include/drm/drm_modes.h	1970-01-01 01:00:00.000000000 +0100
-@@ -435,6 +435,10 @@
+Index: linux-6.1/include/drm/drm_modes.h
+===================================================================
+--- linux-6.1.orig/include/drm/drm_modes.h
++++ linux-6.1/include/drm/drm_modes.h
+@@ -460,6 +460,10 @@ int drm_mode_convert_umode(struct drm_de
  			   struct drm_display_mode *out,
  			   const struct drm_mode_modeinfo *in);
  void drm_mode_probed_add(struct drm_connector *connector, struct drm_display_mode *mode);

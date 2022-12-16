@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_DRIVER_VERSION = 515.76
+BATOCERA_NVIDIA_DRIVER_VERSION = 525.60.11
 BATOCERA_NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_DRIVER_VERSION)
 BATOCERA_NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_DRIVER_VERSION).run
@@ -44,7 +44,7 @@ BATOCERA_NVIDIA_DRIVER_LIBS_GLES = \
 #batocera libnvidia-egl-wayland soname bump
 BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-egl-wayland.so.1.1.9 \
+	libnvidia-egl-wayland.so.1.1.10 \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
@@ -262,13 +262,13 @@ define BATOCERA_NVIDIA_DRIVER_RENAME_KERNEL_MODULES
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
     # rename the kernel modules to avoid conflict
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-production.ko
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-production.ko
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-drm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-production.ko	
-	cp $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
+	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-production.ko
 	# set the driver version file
 	echo $(BATOCERA_NVIDIA_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/production.version

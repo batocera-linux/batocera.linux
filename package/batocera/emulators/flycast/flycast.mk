@@ -3,22 +3,22 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on Oct 13, 2022
-FLYCAST_VERSION = 02d4b821d755087d2db0fcb3bc002e198ac0fa22
+# Version: Commits on Dec 10, 2022
+FLYCAST_VERSION = 223504a2065d55238ae232dfa92b33d98c223b4c
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
-FLYCAST_DEPENDENCIES = sdl2 libpng libzip libao pulseaudio-utils
+FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc
 
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON
 else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
-    FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF
+    FLYCAST_CONF_OPTS += -DUSE_GLES=ON -DUSE_GLES2=OFF -DUSE_OPENGL=ON
 else ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
-    FLYCAST_CONF_OPTS += -DUSE_GLES2=ON -DUSE_GLES=OFF
+    FLYCAST_CONF_OPTS += -DUSE_GLES2=ON -DUSE_GLES=OFF -DUSE_OPENGL=ON
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)

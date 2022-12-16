@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+	export DISPLAY=:0.0
+fi
+
+emulatorlauncher -system xbox360 -rom config
+
+exit 0

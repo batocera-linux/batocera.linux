@@ -1,0 +1,88 @@
+#!/bin/sh
+
+f_usage() {
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} minTomaxResolution" >&2
+    echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} getDisplayMode" >&2
+}
+
+if [ $# -eq 0 ]; then
+	f_usage
+	exit 1
+fi
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "supportSystemRotation")
+	exit 1
+	;;
+    "listModes")
+	tvservice --list-modes | sed -e s+'^[^ ]*:\(.*\)$'+'\1'+
+	;;
+    "setMode")
+	MODE=$1
+	tvservice -e "${MODE}"
+	sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+	;;
+    "currentMode")
+	tvservice --current-mode
+	;;
+    "currentResolution")
+	tvservice --current-resolution
+	;;
+    "listOutputs")
+	;;
+    "setOutput")
+	;;
+    "minTomaxResolution" | "minTomaxResolution-secure")
+	# minimize resolution because of 4K tv
+	MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
+	MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+	if test -n "$MWIDTH" -a -n "$MHEIGHT" -a "$MWIDTH" != 0 -a "$MHEIGHT" != 0; then
+		MAXWIDTH="$MWIDTH"
+		MAXHEIGHT="$MHEIGHT"
+	else
+		MAXWIDTH=1920
+		MAXHEIGHT=1080
+	fi
+	CURRENT_RESOLUTION=$(tvservice --current-resolution)
+	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
+	then
+	    exit 0
+	fi
+
+	# select a new one
+	# select the first one valid
+	# is it the best ? or should we loop to search the first with the same ratio ?
+	# highest resolution first, then p over i, then 6xxx over 5xxxx
+	tvservice --list-modes | sed -e s+"^\([^:]*:[^:]*:[^ ]* \)\(.*\)$"+"\2:\1\2"+ | sort -rn | cut -d : -f 2-
+	    while IFS=':\n' read SUGGRESOLUTION SUGGMODE SUGGDESCRIPTION
+	    do
+		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+		then
+		    tvservice -e "${SUGGMODE}"
+		    sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+		    exit 0
+		fi
+	    done
+	;;
+    "getDisplayMode")
+        echo "tvservice"
+    ;;
+	*)
+		f_usage
+		>&2 echo "error: invalid command ${ACTION}"
+		exit 1
+esac
+exit 0

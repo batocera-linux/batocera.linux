@@ -64,7 +64,7 @@ disable_splash=1
 gpu_mem=128
 
 kernel=boot/linux
-initramfs boot/initrd.gz
+initramfs boot/initrd.lz4
 
 # enable UART (required for for retroflag)
 # affect rpi performances

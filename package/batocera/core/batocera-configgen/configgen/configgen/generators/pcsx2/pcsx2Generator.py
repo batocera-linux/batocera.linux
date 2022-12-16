@@ -119,7 +119,6 @@ def configureVM(config_directory, system):
         pcsx2VMConfig.add_section("EmuCore/GS")
 
     # Some defaults needed on first run
-    pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
     pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
     pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
     pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")
@@ -134,6 +133,12 @@ def configureVM(config_directory, system):
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
     else:
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")
+
+    # Vsyncs in MTGS Queue
+    if system.isOptSet('VsyncQueueSize'):
+        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", system.config['VsyncQueueSize'])
+    else:
+        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
 
     if not pcsx2VMConfig.has_section("EmuCore/Speedhacks"):
         pcsx2VMConfig.add_section("EmuCore/Speedhacks")

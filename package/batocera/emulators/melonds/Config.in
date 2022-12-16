@@ -1,13 +1,16 @@
 config BR2_PACKAGE_MELONDS
+    bool "melonDS"
+    select BR2_PACKAGE_LIBARCHIVE
+    select BR2_PACKAGE_LIBEPOXY
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SLIRP
     select BR2_PACKAGE_QT5
     select BR2_PACKAGE_QT5_VERSION_LATEST
     select BR2_PACKAGE_QT5BASE
     select BR2_PACKAGE_QT5BASE_GUI
     select BR2_PACKAGE_QT5BASE_WIDGETS
     select BR2_PACKAGE_QT5BASE_OPENGL
-    select BR2_PACKAGE_SLIRP
-    bool "melonDS"
+    select BR2_PACKAGE_QT5MULTIMEDIA
     help
       Ninteno DS emulator, sorta
 

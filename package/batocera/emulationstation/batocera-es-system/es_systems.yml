@@ -1775,14 +1775,14 @@ apple2:
   manufacturer: Apple
   release: 1977
   hardware: computer
-  extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z]
+  extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg]
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [chd, hdv, 2mg] }
     gsplus:
-      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z] }
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
 
 saturn:
   name:       Saturn
@@ -1806,6 +1806,8 @@ jaguar:
   emulators:
     libretro:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
+    bigpemu:
+      bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
 gamecube:
   name:       GameCube
@@ -2157,7 +2159,7 @@ windows:
   name:       Windows
   manufacturer: Microsoft
   release: 1992
-  hardware: pc
+  hardware: computer
   extensions: [pc, exe, wine, wsquashfs, wtgz]
   platform:   pc
   theme:      windows
@@ -2176,7 +2178,7 @@ windows_installers:
   name:       Install a new Windows game
   manufacturer: Microsoft
   release: 1992
-  hardware: pc
+  hardware: computer
   extensions: [exe, iso]
   platform:   pc
   group:      windows
@@ -3944,10 +3946,12 @@ xbox360:
   manufacturer: Microsoft
   release: 2005
   hardware: console
-  extensions: [iso, xex]
+  extensions: [iso, xex, xbox360]
   emulators:
     xenia:
       xenia: { requireAnyOf: [BR2_PACKAGE_XENIA] }
+    xenia-canary:
+      xenia-canary: { requireAnyOf: [BR2_PACKAGE_XENIA_CANARY] }
   comment_en: |
     Currently Xenia runs under Wine and therefore is currently restricted to run using Vulkan only.
     Unfortunately the Vulkan implementation for Xenia is somewhat behind D3D12 in terms on graphics compatibility.

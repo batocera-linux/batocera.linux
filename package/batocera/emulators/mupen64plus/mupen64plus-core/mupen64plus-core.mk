@@ -3,8 +3,8 @@
 # mupen64plus-core
 #
 ################################################################################
-# Version.: Commits on Oct 01, 2022
-MUPEN64PLUS_CORE_VERSION = 2ac8682c60e7df3581b9167fa67d47e263d2b9da
+# Version.: Commits on Dec 3, 2022
+MUPEN64PLUS_CORE_VERSION = f63e1b35063241738d848f73311496b76c8aa918
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -63,11 +63,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	MUPEN64PLUS_HOST_CPU = x86_64
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-	MUPEN64PLUS_PARAMS += ARCH=arm NEW_DYNAREC=1 VFP=1 CRC_OPT=1 TRIBUFFER_OPT=1 NO_SSE=1 PIC=1 USE_FRAMESKIPPER=1
-	MUPEN64PLUS_GL_CFLAGS += -I$(STAGING_DIR)/usr/include/libdrm -ldrm -fpermissive -DEGL_NO_X11=1 -DMESA_EGL_NO_X11_HEADERS=1
 endif
 
 define MUPEN64PLUS_CORE_BUILD_CMDS

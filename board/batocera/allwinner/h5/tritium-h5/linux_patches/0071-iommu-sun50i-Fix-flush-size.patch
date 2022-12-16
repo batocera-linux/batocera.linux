@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Wed, 12 Oct 2022 21:35:53 +0200
+Subject: [PATCH] iommu/sun50i: Fix flush size
+
+Function sun50i_table_flush() takes number of entries as an argument,
+not number of bytes. Fix that mistake in sun50i_dte_get_page_table().
+
+Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/iommu/sun50i-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index 135df6934a9e..7c3b2ac552da 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -512,7 +512,7 @@ static u32 *sun50i_dte_get_page_table(struct sun50i_iommu_domain *sun50i_domain,
+ 		sun50i_iommu_free_page_table(iommu, drop_pt);
+ 	}
+ 
+-	sun50i_table_flush(sun50i_domain, page_table, PT_SIZE);
++	sun50i_table_flush(sun50i_domain, page_table, NUM_PT_ENTRIES);
+ 	sun50i_table_flush(sun50i_domain, dte_addr, 1);
+ 
+ 	return page_table;

@@ -211,7 +211,7 @@ shared:
       prompt:      RUMBLE LEVEL
       description: For emulators and controllers supporting force feedback.
       choices:
-        "disabled": 0
+        "disabled": 1
         "20%": 20
         "40%": 40
         "60%": 60
@@ -241,6 +241,7 @@ shared:
       choices:
         "normal": "normal"
         "hidden": "hidden"
+
 global:
   shared: [videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
@@ -1667,7 +1668,7 @@ libretro:
       shared: [rewind, autosave]
     genesisplusgx:
       features: [netplay, cheevos]
-      shared: [rewind, autosave, use_guns]
+      shared: [rewind, autosave]
       cfeatures:
             gpgx_region:
                 prompt:      REGION
@@ -2122,6 +2123,23 @@ libretro:
                           "Cassette":       cass
                           "Disk (Drive 1)": flop1
                           "Disk (Drive 2)": flop2
+                  gameio:
+                      group: ADVANCED OPTIONS
+                      prompt:      JOYSTICK TYPE
+                      description: Type of joystick connected to the game port.
+                      choices:
+                          "None":                                         none
+                          "Apple (2x 2-button Analog)":                   joy
+                          "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                          "Gizmo (1-Button Digital)":                     gizmo
+                  altmodel:
+                      group: ADVANCED OPTIONS
+                      prompt:      MODEL
+                      description: Model of emulated Apple II.
+                      choices:
+                          "Apple //e Enhanced (Default)": apple2ee
+                          "Apple //e":                    apple2e
+                          "Apple ][ Plus":                apple2p
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -6066,7 +6084,7 @@ devilutionx:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dolphin:
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, rk3326]
@@ -6266,13 +6284,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        dolphin-lightgun-hide-crosshair:
-            group: LIGHT GUN
-            prompt:      SHOW LIGHT GUN CROSSHAIRS
-            description: Show crosshairs in game
-            choices:
-                "Off": 0
-                "On":  1
 
   systems:
     gamecube:
@@ -6284,6 +6295,7 @@ dolphin:
                     "Off": 0
                     "On":  1
     wii:
+        shared: [use_guns]
         cfeatures:
             tv_mode:
                 prompt:      WII TV MODE
@@ -6307,6 +6319,13 @@ dolphin:
                     "Wiimote Sideway + Swing":   is
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
+            dolphin-lightgun-hide-crosshair:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description: Show crosshairs in game
+                choices:
+                    "Off": 0
+                    "On":  1
 
 dolphin_triforce:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -6801,6 +6820,12 @@ hatari:
 melonds:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        melonds_renderer:
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use.
+            choices:
+                "Software": 0
+                "OpenGL":   1
         melonds_framerate:
             group: ADVANCED OPTIONS
             prompt: LIMIT FRAME RATE
@@ -6832,8 +6857,8 @@ melonds:
             prompt: ENABLE POLYGON SPLITTING
             description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off":           0
-                "On":            1
+                "Off": 0
+                "On":  1
         melonds_rotation:
             prompt: SCREEN ROTATION
             description: Rotates the screens, to simulate holding the DS sideways.
@@ -7144,6 +7169,15 @@ pcsx2:
             choices:
                 "Off":      0
                 "On":       1
+        VsyncQueueSize:
+            group: ADVANCED OPTIONS
+            prompt:      VSYNCS IN MTGS QUEUE
+            description: Render this many frames ahead to improve performance at the cost of input lag.
+            choices:
+                "0":  0
+                "1":  1
+                "2":  2
+                "3":  3
         micro_vu:
             group: ADVANCED OPTIONS
             prompt:     "MICRO VU SPEED HACKS"
@@ -7324,7 +7358,7 @@ reicast:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 rpcs3:
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
         gui:
             group: ADVANCED OPTIONS
@@ -7816,6 +7850,24 @@ mame:
                         "Cassette":       cass
                         "Disk (Drive 1)": flop1
                         "Disk (Drive 2)": flop2
+                        "Hard Drive":     hard1
+                gameio:
+                    group: ADVANCED OPTIONS
+                    prompt:      JOYSTICK TYPE
+                    description: Type of joystick connected to the game port.
+                    choices:
+                        "None":                                         none
+                        "Apple (2x 2-button Analog)":                   joy
+                        "Sirius/Atari (2x 1-button Digital, II+ Only)": joyport
+                        "Gizmo (1-Button Digital)":                     gizmo
+                altmodel:
+                    group: ADVANCED OPTIONS
+                    prompt:      MODEL
+                    description: Model of emulated Apple II.
+                    choices:
+                        "Apple //e Enhanced (Default)": apple2ee
+                        "Apple //e":                    apple2e
+                        "Apple ][ Plus":                apple2p
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS
@@ -8918,6 +8970,20 @@ wine:
             choices:
                 "Off": 1
                 "On":  0
+        dxvk_reset_cache:
+            group: ADVANCED OPTIONS
+            prompt:      DXVK RESET CACHE
+            description: Reset the cache can fix some crashes if your game was running under Batocera 29.
+            choices:
+                "Off": 0
+                "On":  1
+        wine_ntfs:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE NTFS MODE
+            description: Enable this mode if you have issue for run your game on NTFS storage (by default is better to use LinuxFS).
+            choices:
+                "Off": 0
+                "On":  1
         wine_debug:
             group: ADVANCED OPTIONS
             prompt:      ENABLE DEBUG
@@ -9269,7 +9335,161 @@ steam:
 
 yuzu:
   features: [padtokeyboard]
-  shared: [videomode]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        yuzu_backend:
+          prompt: GRAPHICS API
+          description: Choose which graphics API library to use. Vulkan is better, when supported.
+          choices:
+            "OpenGL": 0
+            "Vulkan": 1
+        yuzu_scale:
+          prompt: RENDERING RESOLUTION
+          description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+          choices:
+            "Native (720p/1080p)": 2
+            "2x (1440p/2160p)":    3
+            "3x (2160p/3240p)":    4
+            "4x (2880p/4320p)":    5
+            "5x (3600p/5400p)":    6
+            "6x (4320p/6480p)":    7
+        yuzu_ratio:
+          prompt: ASPECT RATIO
+          description: Change the output resolution ratio.
+          choices:
+            "16:9 (Default)":    0
+            "Force 4:3":         1
+            "Force 21:9":        2
+            "Force 16:10":       3
+            "Stretch to window": 4
+        yuzu_anisotropy:
+          prompt: ANISOTROPIC FILTERING
+          description: Improves clarity of distant textures.
+          choices:
+            "Default": 1
+            "2x":      2
+            "4x":      3
+            "8x":      4
+            "16x":     5
+        yuzu_language:
+          prompt: LANGUAGE
+          description: Change the game's language.
+          choices:
+            "Japanese":               0
+            "English":                1
+            "French":                 2
+            "German":                 3
+            "Italian":                4
+            "Spanish":                5
+            "Chinese":                6
+            "Korean":                 7
+            "Dutch":                  8
+            "Portuguese":             9
+            "Russian":                10
+            "Taiwanese":              11
+            "British English":        12
+            "Canadian French":        13
+            "Latin American Spanish": 14
+            "Simplified Chinese":     15
+            "Traditional Chinese":    16
+            "Brazilian Portuguese":   17
+        yuzu_region:
+          prompt: CHOOSE CONSOLE REGION
+          description: Choose your console region.
+          choices:
+            "Japan":     0
+            "USA":       1
+            "Europe":    2
+            "Australia": 3
+            "China":     4
+            "Korea":     5
+            "Taiwan":    6
+        ryujinx_timezone:
+          prompt: CHOOSE CONSOLE TIMEZONE
+          description: Choose your console timezone.
+          choices:
+            "Default":   1
+            "CET":       2
+            "CST6CDT":   3
+            "Cuba":      4
+            "EET":       5
+            "Egypt":     6
+            "Eire":      7
+            "EST":       8
+            "EST5EDT":   9
+            "GB":        10
+            "GB-Eire":   11
+            "GMT":       12
+            "GMT+0":     13
+            "GMT-0":     14
+            "GMT0":      15
+            "Greenwich": 16
+            "Hong Kong": 17
+            "HST":       18
+            "Iceland":   19
+            "Iran":      20
+            "Israel":    21
+            "Jamaica":   22
+            "Japan":     23
+            "Kwajalein": 24
+            "Libya":     25
+            "MET":       26
+            "MST":       27
+            "MST7MDT":   28
+            "Navajo":    29
+            "NZ":        30
+            "NZ-CHAT":   31
+            "Poland":    32
+            "Portugal":  33
+            "PRC":       34
+            "PST8PDT":   35
+            "ROC":       36
+            "ROK":       37
+            "Singapore": 38
+            "Turkey":    39
+            "UCT":       40
+            "Univarsal": 41
+            "UTC":       42
+            "W-SU":      43
+            "WET":       44
+            "Zulu":      45
+        yuzu_sound_mode:
+          prompt: CHOOSE SOUND OUTPUT MODE
+          choices:
+            "Mono":     0
+            "Stereo":   1
+            "Surround": 2
+        yuzu_vsync:
+          prompt: VSYNC
+          description: Fix screen tearing.
+          choices:
+            "Disabled": "false"
+            "Enabled":  "true"
+        yuzu_async_shaders:
+          group: ADVANCED OPTIONS
+          prompt: ASYNC SHADER COMPILE
+          description: Speed up shader compilation.
+          choices:
+            "Disabled": "false"
+            "Enabled":  "true"
+        yuzu_aliasing_method:
+          group: ADVANCED OPTIONS
+          prompt:      ANTI-ALIASING METHOD
+          description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
+          choices:
+            "None": 0
+            "FXAA": 1
+        yuzu_scale_filter:
+          group: ADVANCED OPTIONS
+          prompt:      TEXTURE FILTERING
+          description: Smooth textures on 3D objects.
+          choices:
+            "Nearest Neighbour":            0
+            "Bilinear":                     1
+            "Bicubic":                      2
+            "Gaussian":                     3
+            "ScaleForce":                   4
+            "AMD FidelityFX (Vulkan Only)": 5
 
 ryujinx:
   features: [padtokeyboard]
@@ -9427,6 +9647,10 @@ xenia:
   features: []
   shared: [videomode]
 
+xenia-canary:
+  features: []
+  shared: [videomode]
+
 odcommander:
   features: [padtokeyboard]
   shared: [videomode, ratio, hud]
@@ -9509,3 +9733,7 @@ vita3k:
         "4x":  4
         "8x":  8
         "16x": 16
+
+bigpemu:
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

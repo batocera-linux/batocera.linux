@@ -66,7 +66,7 @@ endif
 # the GLES2 backend maps to OpenGL 2.1 on desktop, OpenGL ES 2.0 on mobile and WebGL 1.0 on the web.
 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES2 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES2 \
     || BR2_PACKAGE_BATOCERA_TARGET_RPI_GLES2 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC || BR2_PACKAGE_BATOCERA_TARGET_CHA \
-	 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+	 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS || BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
     config BR2_PACKAGE_BATOCERA_GLES2
 	bool "target has gles2 support"
 	default y
@@ -130,6 +130,7 @@ config BR2_PACKAGE_BATOCERA_VULKAN
 
 	# Vulkan mesa drivers
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_HASWELL     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM    if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_PANFROST    if BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
@@ -648,10 +649,6 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_S922X          && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY   && \
-												!BR2_PACKAGE_BATOCERA_TARGET_ODIN           && \
 												!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
@@ -804,8 +801,14 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        # dos
 
-	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3399 \
-	                                                && !BR2_PACKAGE_BATOCERA_TARGET_RG552 && !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RK3399     && \
+	                                                !BR2_PACKAGE_BATOCERA_TARGET_RG552      && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_XU4        && \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 	select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE     # ALL
 
@@ -1008,8 +1011,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 														!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 	# Gamecube / Wii
-	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY	|| \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X
+	select BR2_PACKAGE_DOLPHIN_EMU                  if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_LIBRETRO_DOLPHIN             if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY	|| \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X
 
@@ -1024,6 +1026,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
     # Microsoft Xbox 360
 	select BR2_PACKAGE_XENIA                        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_XENIA_CANARY                 if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 
     # Sony PS2
 	select BR2_PACKAGE_PCSX2                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -1054,6 +1057,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Atari Jaguar
 	select BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR       if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X
+	select BR2_PACKAGE_BIGPEMU		                if BR2_PACKAGE_BATOCERA_WINE
 
 	# NEC PC-FX
 	select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX         if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
@@ -1215,9 +1219,6 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
 	select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE      # xarcade for kodi
 
-	# Rockchip ffmpeg playback package
-	select BR2_PACKAGE_ROCKCHIP_MPP     if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
-
 	# ffmpeg enabler that i'm not sure it has an impact on kodi
 	select BR2_PACKAGE_FFMPEG_GPL           # video recording
 	select BR2_PACKAGE_FFMPEG_FFPROBE       # determine the audio&video characteristics of a container file
@@ -1260,9 +1261,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_KODI_VFS_SFTP
 	select BR2_PACKAGE_LIBVA_INTEL_DRIVER   if BR2_PACKAGE_XORG7 && BR2_PACKAGE_MESA3D_DRI_DRIVER
 	select BR2_PACKAGE_LIBVA_UTILS          if BR2_PACKAGE_XORG7 && BR2_PACKAGE_MESA3D_DRI_DRIVER
-	select BR2_PACKAGE_KODI_LIBVDPAU        if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_X11 && !BR2_PACKAGE_BATOCERA_SBC_XORG \
-	                                        && !BR2_PACKAGE_XWAYLAND
-
+	select BR2_PACKAGE_KODI_LIBVDPAU        if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_SUPPORTS_X11 && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_KODI_AUDIODECODER_MODPLUG
 	select BR2_PACKAGE_KODI_AUDIODECODER_NOSEFART
 	select BR2_PACKAGE_KODI_AUDIODECODER_SIDPLAY
@@ -1396,6 +1395,9 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	select BR2_PACKAGE_ZD1211_FIRMWARE
 	select BR2_PACKAGE_B43_FIRMWARE
 
+	# audio
+	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
 	# x86 (maybe some firmware could be for all, to be checked)
 	select BR2_PACKAGE_WILINK_BT_FIRMWARE   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
@@ -1409,8 +1411,8 @@ config BR2_PACKAGE_BATOCERA_SDL2
 	select BR2_PACKAGE_SDL2_NET
 	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_SDL2_OPENGLES
-	select BR2_PACKAGE_SDL2_OPENGL      if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND
-	select BR2_PACKAGE_SDL2_X11         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND
+	select BR2_PACKAGE_SDL2_OPENGL      if BR2_PACKAGE_HAS_LIBGL
+	select BR2_PACKAGE_SDL2_X11         if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_SDL2_KMSDRM      if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_SDL2_WAYLAND     if BR2_PACKAGE_BATOCERA_WAYLAND
 	select BR2_PACKAGE_FLAC             # flac
@@ -1434,9 +1436,22 @@ config BR2_PACKAGE_BATOCERA_WAYLAND
     select BR2_PACKAGE_SWAY
     select BR2_PACKAGE_SWAYBG
 
+config BR2_PACKAGE_BATOCERA_XWAYLAND
+	bool "batocera.linux xwayland packages selection"
+
+    # wayland packages
+    select BR2_PACKAGE_BATOCERA_WAYLAND
+
     # Xorg emulation layer of Wayland
-    select BR2_PACKAGE_XWAYLAND     if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
-    select BR2_PACKAGE_XORG7        if BR2_PACKAGE_XWAYLAND
+    select BR2_PACKAGE_XWAYLAND
+	select BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
+	select BR2_PACKAGE_LIBGTK3                      # gtk3 library
+	select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
+	select BR2_PACKAGE_PCMANFM                      # file manager
+	select BR2_PACKAGE_GVFS                         # file systems (trash, smb, ... in pcmanfm)
+	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     # theme for file manager
+	select BR2_PACKAGE_XTERM                        # terminal
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
@@ -1484,7 +1499,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	# vendor neutral GL dispatch library
 	# already set by nvidia for x86_64, but required on x86 for pcsx2
 	# required for RPi4 OpenGL stack
-	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND
+	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
 
 config BR2_PACKAGE_BATOCERA_GPU_X86
 	bool "batocera.linux GPU support for x86 platform"

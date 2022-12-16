@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTL8821CU_VERSION = 76605e464119f0d56bf3a41866b58defd54464d8
+RTL8821CU_VERSION = 7b8c45a270454f05e2dbf3beeb4afcf817db65da
 RTL8821CU_SITE = $(call github,morrownr,8821cu-20210118,$(RTL8821CU_VERSION))
 RTL8821CU_LICENSE = GPL-2.0
 RTL8821CU_LICENSE_FILES = LICENSE

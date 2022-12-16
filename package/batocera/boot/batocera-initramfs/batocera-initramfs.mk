@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_INITRAMFS_VERSION = 1.34.1
+BATOCERA_INITRAMFS_VERSION = 1.35.0
 BATOCERA_INITRAMFS_SITE = http://www.busybox.net/downloads
 BATOCERA_INITRAMFS_SOURCE = busybox-$(BATOCERA_INITRAMFS_VERSION).tar.bz2
 BATOCERA_INITRAMFS_LICENSE = GPLv2
@@ -48,7 +48,7 @@ define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	$(BATOCERA_INITRAMFS_MAKE_ENV) $(MAKE) $(BATOCERA_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
 	(cd $(BINARIES_DIR) && mkimage -A $(BATOCERA_INITRAMFS_INITRDA) -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
-	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
+	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | lz4 -9 > $(BINARIES_DIR)/initrd.lz4)
 endef
 
 $(eval $(kconfig-package))
