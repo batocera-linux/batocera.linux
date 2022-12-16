@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.3
+BATOCERA_AUDIO_VERSION = 6.4
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
@@ -43,6 +43,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/init.d/S06audio
 	mkdir -p $(TARGET_DIR)/etc/modprobe.d
 	ln -sf /var/run/modprobe/intel-dsp.conf $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
+	echo "options snd-hda-intel dmic_detect=0" > $(TARGET_DIR)/etc/modprobe.d/intel-dmic.conf
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S27audioconfig \
 		$(TARGET_DIR)/etc/init.d/S27audioconfig
 	# udev script to unmute audio devices
