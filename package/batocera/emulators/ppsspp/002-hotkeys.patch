@@ -17,7 +17,7 @@ index 44d034a..721f4cd 100644
  	}
 +
 +	if ( batocera_hotkey || (__CtrlPeekButtons() & CTRL_SELECT) == CTRL_SELECT ) {
-+		onVKeyDown(pspKeyCode);
++		onVKeyDown(deviceId, pspKeyCode);
 +	}
  }
  

@@ -2,15 +2,16 @@ diff --git a/Core/Config.cpp b/Core/Config.cpp
 index 305098f..ea7443f 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -1280,9 +1280,9 @@ void Config::Reload() {
- // really think of any other legit uses).
+@@ -1330,10 +1330,10 @@ void Config::Reload() {
  void Config::UpdateIniLocation(const char *iniFileName, const char *controllerIniFilename) {
  	const bool useIniFilename = iniFileName != nullptr && strlen(iniFileName) > 0;
--	iniFilename_ = FindConfigFile(useIniFilename ? iniFileName : "ppsspp.ini");
-+	iniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / "ppsspp.ini";
+ 	const char *ppssppIniFilename = IsVREnabled() ? "ppssppvr.ini" : "ppsspp.ini";
+-	iniFilename_ = FindConfigFile(useIniFilename ? iniFileName : ppssppIniFilename);
++	iniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / ppssppIniFilename;
  	const bool useControllerIniFilename = controllerIniFilename != nullptr && strlen(controllerIniFilename) > 0;
--	controllerIniFilename_ = FindConfigFile(useControllerIniFilename ? controllerIniFilename : "controls.ini");
-+	controllerIniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / "controls.ini";
+ 	const char *controlsIniFilename = IsVREnabled() ? "controlsvr.ini" : "controls.ini";
+-	controllerIniFilename_ = FindConfigFile(useControllerIniFilename ? controllerIniFilename : controlsIniFilename);
++	controllerIniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / controlsIniFilename;
  }
  
  void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
@@ -121,13 +122,13 @@ diff --git a/UI/NativeApp.cpp b/UI/NativeApp.cpp
 index 4bb1c42..15abbd0 100644
 --- a/UI/NativeApp.cpp
 +++ b/UI/NativeApp.cpp
-@@ -487,7 +487,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
- 	VFSRegister("", new DirectoryAssetReader(File::GetExeDirectory()));
- 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/ppsspp/assets")));
- 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/games/ppsspp/assets")));
+@@ -487,7 +487,7 @@ VFSRegister("", new DirectoryAssetReader(File::GetExeDirectory() / "assets"));
+	VFSRegister("", new DirectoryAssetReader(File::GetExeDirectory()));
+	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/ppsspp/assets")));
+	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/games/ppsspp/assets")));
 -	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/assets")));
 +	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/PPSSPP")));
- 	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/games/ppsspp/assets")));
+	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/games/ppsspp/assets")));
  #endif
  
 @@ -568,7 +568,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
