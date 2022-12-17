@@ -51,7 +51,7 @@ new file mode 100644
 index 0000000..9989ba8
 --- /dev/null
 +++ b/tools/xwiishowir.c
-@@ -0,0 +1,499 @@
+@@ -0,0 +1,502 @@
 +/*
 + * XWiimote - tools - xwiishow
 + * Written 2010-2013 by David Herrmann
@@ -319,11 +319,14 @@ index 0000000..9989ba8
 +	    }
 +	  }
 +	}
++	mvprintw(0, width-14, "Press q to quit");
 +}
 +
 +static void handle_resize(void)
 +{
 +  erase();
++  width = COLS-2;
++  height = LINES-3;
 +  setup_ext_window();
 +  setup_window();
 +  refresh_all();
