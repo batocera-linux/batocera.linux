@@ -133,6 +133,15 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/libvulkan"*"so"* \
 "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"* \
 "${G_TARGETDIR}/usr/lib/libmpg123"*"so"* \
+"${G_TARGETDIR}/usr/lib/libgmp"*"so"* \
+"${G_TARGETDIR}/usr/lib/libnettle.so"* \
+"${G_TARGETDIR}/usr/lib/libhogweed.so"* \
+"${G_TARGETDIR}/usr/lib/libXcomposite.so"* \
+"${G_TARGETDIR}/usr/lib/libgnutls"*"so"* \
+"${G_TARGETDIR}/usr/lib/libFAudio.so"* \
+"${G_TARGETDIR}/usr/lib/libXrender.so"* \
+"${G_TARGETDIR}/usr/lib/libXcursor.so"* \
+"${G_TARGETDIR}/usr/lib/libSDL2"*"so"* \
 "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"* \
 "${G_TARGETDIR}/lib/libnss_"*
 do
@@ -148,6 +157,14 @@ cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libgmp"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libnettle.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libhogweed.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libXcomposite.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libgnutls"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libFAudio.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libXrender.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libSDL2"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/lib32/" || exit 1
