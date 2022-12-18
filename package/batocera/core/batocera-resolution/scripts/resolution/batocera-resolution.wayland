@@ -23,21 +23,26 @@ f_minTomaxResolution() {
         MAXWIDTH=1920
         MAXHEIGHT=1080
     fi
-    # select the highest resolution less than or equal to the max resolution
-    # we sort & select the first valid one based on the refresh rate
-    swaymsg -t get_outputs | jq -r '.[].modes[] | "\(.width)x\(.height)@\(.refresh)"' | sort -nr |
+    CURRENT_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height)"')
+    CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+    CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+    if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"; then
+        exit 0
+    fi
+
+    # select a new one
+    # select the first one valid
+    # is it the best ? or should we loop to search the first with the same ratio ?
+    swaymsg -t get_outputs | jq -r '.[].modes[] | "\(.width)x\(.height)"' |
     while read SUGGRESOLUTIONRATE SUGGMODE
     do
         SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
         SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
-        SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2 | cut -d @ -f 1)
-        LENSUGGRES=$(echo ${#SUGGRESOLUTION})
-        CUTLENGTH=$((${LENSUGGRES}-2))
-        ENDREFRESH=$(echo "${SUGGRESOLUTION}" | cut -c ${CUTLENGTH}-)
-        FINALRESOLUTION="${SUGGRESOLUTION%???}.${ENDREFRESH}Hz"
+        SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
         if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"; then
             OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
-            swaymsg output "${OUTPUT}" mode "${FINALRESOLUTION}"
+            swaymsg output "${OUTPUT}" mode "${SUGGRESOLUTION}"
             exit 0
         fi
     done
