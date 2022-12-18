@@ -96,29 +96,52 @@ Subject: [PATCH] media: rockchip: Add Rockchip IEP driver
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- drivers/media/platform/Kconfig                |   14 +
- drivers/media/platform/Makefile               |    1 +
+ drivers/media/platform/rockchip/Kconfig       |    1 +
+ drivers/media/platform/rockchip/Makefile      |    1 +
+ drivers/media/platform/rockchip/iep/Kconfig   |   16 +
  drivers/media/platform/rockchip/iep/Makefile  |    5 +
  .../media/platform/rockchip/iep/iep-regs.h    |  291 +++++
  drivers/media/platform/rockchip/iep/iep.c     | 1089 +++++++++++++++++
  drivers/media/platform/rockchip/iep/iep.h     |  112 ++
- 6 files changed, 1512 insertions(+)
+ 7 files changed, 1515 insertions(+)
+ create mode 100644 drivers/media/platform/rockchip/iep/Kconfig
  create mode 100644 drivers/media/platform/rockchip/iep/Makefile
  create mode 100644 drivers/media/platform/rockchip/iep/iep-regs.h
  create mode 100644 drivers/media/platform/rockchip/iep/iep.c
  create mode 100644 drivers/media/platform/rockchip/iep/iep.h
 
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 157c924686e4..d77056060c7f 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -527,6 +527,20 @@ config VIDEO_RENESAS_VSP1
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called vsp1.
+diff --git a/drivers/media/platform/rockchip/Kconfig b/drivers/media/platform/rockchip/Kconfig
+index b41d3960c1b4..9ff362805ded 100644
+--- a/drivers/media/platform/rockchip/Kconfig
++++ b/drivers/media/platform/rockchip/Kconfig
+@@ -2,5 +2,6 @@
  
+ comment "Rockchip media platform drivers"
+ 
++source "drivers/media/platform/rockchip/iep/Kconfig"
+ source "drivers/media/platform/rockchip/rga/Kconfig"
+ source "drivers/media/platform/rockchip/rkisp1/Kconfig"
+diff --git a/drivers/media/platform/rockchip/Makefile b/drivers/media/platform/rockchip/Makefile
+index 4f782b876ac9..c075ecc2fa14 100644
+--- a/drivers/media/platform/rockchip/Makefile
++++ b/drivers/media/platform/rockchip/Makefile
+@@ -1,3 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++obj-y += iep/
+ obj-y += rga/
+ obj-y += rkisp1/
+diff --git a/drivers/media/platform/rockchip/iep/Kconfig b/drivers/media/platform/rockchip/iep/Kconfig
+new file mode 100644
+index 000000000000..d95155a95133
+--- /dev/null
++++ b/drivers/media/platform/rockchip/iep/Kconfig
+@@ -0,0 +1,16 @@
++# SPDX-License-Identifier: GPL-2.0-only
++ 
 +config VIDEO_ROCKCHIP_IEP
 +	tristate "Rockchip Image Enhancement Processor"
-+	depends on VIDEO_DEV && VIDEO_V4L2
++	depends on V4L_MEM2MEM_DRIVERS
++	depends on VIDEO_DEV
 +	depends on ARCH_ROCKCHIP || COMPILE_TEST
 +	select VIDEOBUF2_DMA_CONTIG
 +	select V4L2_MEM2MEM_DEV
@@ -129,22 +152,6 @@ index 157c924686e4..d77056060c7f 100644
 +	  images. The driver currently implements YUV deinterlacing only.
 +	  To compile this driver as a module, choose M here: the module
 +	  will be called rockchip-iep
-+
- config VIDEO_ROCKCHIP_RGA
- 	tristate "Rockchip Raster 2d Graphic Acceleration Unit"
- 	depends on VIDEO_DEV && VIDEO_V4L2
-diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 73ce083c2fc6..d1cf1cf99027 100644
---- a/drivers/media/platform/Makefile
-+++ b/drivers/media/platform/Makefile
-@@ -54,6 +54,7 @@ obj-$(CONFIG_VIDEO_RENESAS_FDP1)	+= rcar_fdp1.o
- obj-$(CONFIG_VIDEO_RENESAS_JPU)		+= rcar_jpu.o
- obj-$(CONFIG_VIDEO_RENESAS_VSP1)	+= vsp1/
- 
-+obj-$(CONFIG_VIDEO_ROCKCHIP_IEP)	+= rockchip/iep/
- obj-$(CONFIG_VIDEO_ROCKCHIP_ISP1)	+= rockchip/rkisp1/
- obj-$(CONFIG_VIDEO_ROCKCHIP_RGA)	+= rockchip/rga/
- 
 diff --git a/drivers/media/platform/rockchip/iep/Makefile b/drivers/media/platform/rockchip/iep/Makefile
 new file mode 100644
 index 000000000000..5c89b3277469
@@ -1680,10 +1687,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 22 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index ca03c8ed9708..ef0d04afc1b1 100644
+index eec03adf0902..5455a46c9a6b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -759,6 +759,28 @@ vop_mmu: iommu@ff373f00 {
+@@ -760,6 +760,28 @@ vop_mmu: iommu@ff373f00 {
  		status = "disabled";
  	};
  
@@ -1724,10 +1731,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 27938ff0d208..9adfc422ae90 100644
+index dbe6a9cb98a5..f0629b7a81c6 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1286,14 +1286,25 @@ vdec_mmu: iommu@ff660480 {
+@@ -1365,14 +1365,25 @@ vdec_mmu: iommu@ff660480 {
  		#iommu-cells = <0>;
  	};
  
@@ -1766,11 +1773,11 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 64b36cc8ef94..159c22805d03 100644
+index 59fba3ac6aae..06545f423de2 100644
 --- a/arch/arm/boot/dts/rk3288.dtsi
 +++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -983,6 +983,17 @@ crypto: cypto-controller@ff8a0000 {
- 		status = "okay";
+@@ -984,14 +984,25 @@ crypto: crypto@ff8a0000 {
+ 		reset-names = "crypto-rst";
  	};
  
 +	iep: iep@ff90000 {
@@ -1787,8 +1794,7 @@ index 64b36cc8ef94..159c22805d03 100644
  	iep_mmu: iommu@ff900800 {
  		compatible = "rockchip,iommu";
  		reg = <0x0 0xff900800 0x0 0x40>;
-@@ -990,8 +1001,8 @@ iep_mmu: iommu@ff900800 {
- 		interrupt-names = "iep_mmu";
+ 		interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
  		clocks = <&cru ACLK_IEP>, <&cru HCLK_IEP>;
  		clock-names = "aclk", "iface";
 +		power-domains = <&power RK3288_PD_VIO>;

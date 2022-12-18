@@ -6,15 +6,48 @@ Subject: [PATCH] arm64: dts: rockchip: add gpu powerdomain, gpu opp-table and
 
 Note: since the regulator that supplies the GPU usually also supplies
 other SoC components, we have to make sure voltage is never lower then
-1075 mV.
+1075 mV - also disable 500 MHz for now, since it will crash if rkvdec
+is running at the same time (voltage to high)
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 34 ++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ .../arm64/boot/dts/rockchip/rk3328-roc-cc.dts |  4 +++
+ .../arm64/boot/dts/rockchip/rk3328-rock64.dts |  4 +++
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi      | 35 +++++++++++++++++++
+ 3 files changed, 43 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+index aa22a0c22265..51c7723d6762 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
+@@ -166,6 +166,10 @@ &gmac2io {
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&vdd_logic>;
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts b/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
+index f69a38f42d2d..c198a8a7f95a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-rock64.dts
+@@ -162,6 +162,10 @@ &gmac2io {
+ 	status = "okay";
+ };
+ 
++&gpu {
++	mali-supply = <&vdd_logic>;
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 23021373e15b..ca03c8ed9708 100644
+index 431c4ec198be..eec03adf0902 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 @@ -300,6 +300,11 @@ power: power-controller {
@@ -41,7 +74,7 @@ index 23021373e15b..ca03c8ed9708 100644
  			};
  		};
  
-@@ -620,7 +630,31 @@ gpu: gpu@ff300000 {
+@@ -620,7 +630,32 @@ gpu: gpu@ff300000 {
  				  "ppmmu1";
  		clocks = <&cru ACLK_GPU>, <&cru ACLK_GPU>;
  		clock-names = "bus", "core";
@@ -69,6 +102,7 @@ index 23021373e15b..ca03c8ed9708 100644
 +		opp-500000000 {
 +			opp-hz = /bits/ 64 <500000000>;
 +			opp-microvolt = <1150000>;
++			status = "disabled";
 +		};
  	};
  
@@ -135,10 +169,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/boot/dts/rk3288-tinker.dtsi b/arch/arm/boot/dts/rk3288-tinker.dtsi
-index 9c1e38c54eae..ee332fc9cf1f 100644
+index 09618bb7d872..db9106a3dd22 100644
 --- a/arch/arm/boot/dts/rk3288-tinker.dtsi
 +++ b/arch/arm/boot/dts/rk3288-tinker.dtsi
-@@ -75,7 +75,7 @@ sdio_pwrseq: sdio-pwrseq {
+@@ -73,7 +73,7 @@ sdio_pwrseq: sdio-pwrseq {
  	sound {
  		compatible = "simple-audio-card";
  		simple-audio-card,format = "i2s";
@@ -148,10 +182,10 @@ index 9c1e38c54eae..ee332fc9cf1f 100644
  
  		simple-audio-card,codec {
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index ec3561d147d5..b2ed593a229c 100644
+index 093ebe070775..a10fe60b7680 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1807,7 +1807,7 @@ hdmi_sound: hdmi-sound {
+@@ -1893,7 +1893,7 @@ hdmi_sound: hdmi-sound {
  		compatible = "simple-audio-card";
  		simple-audio-card,format = "i2s";
  		simple-audio-card,mclk-fs = <256>;
@@ -172,10 +206,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-index d62fb1a3c916..e46165bed006 100644
+index ad068865ba20..9deb8d1d291d 100644
 --- a/drivers/gpu/drm/drm_gem.c
 +++ b/drivers/gpu/drm/drm_gem.c
-@@ -1073,7 +1073,7 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj, unsigned long obj_size,
+@@ -1038,7 +1038,7 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj, unsigned long obj_size,
  		ret = obj->funcs->mmap(obj, vma);
  		if (ret)
  			goto err_drm_gem_object_put;
@@ -195,7 +229,7 @@ Subject: [PATCH] ASoC: hdmi-codec: fix channel allocation
  1 file changed, 52 insertions(+), 61 deletions(-)
 
 diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
-index b61f980cabdc..3ad50ae8c93d 100644
+index 5679102de91f..f0cd183f7873 100644
 --- a/sound/soc/codecs/hdmi-codec.c
 +++ b/sound/soc/codecs/hdmi-codec.c
 @@ -194,78 +194,69 @@ static const struct snd_pcm_chmap_elem hdmi_codec_8ch_chmaps[] = {
@@ -332,34 +366,6 @@ index b61f980cabdc..3ad50ae8c93d 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
-Date: Sun, 2 May 2021 20:44:21 +0200
-Subject: [PATCH] arm64: dts: rockchip: Fix gmac delays for rockpro64 board
-
-Values are measured by RK's delayline tool in vendor kernel
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
-index 83db4ca67334..06d2a1e3e340 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
-@@ -289,8 +289,8 @@ &gmac {
- 	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
- 	snps,reset-active-low;
- 	snps,reset-delays-us = <0 10000 50000>;
--	tx_delay = <0x28>;
--	rx_delay = <0x11>;
-+	tx_delay = <0x23>;
-+	rx_delay = <0x1e>;
- 	status = "okay";
- };
- 
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 27 Feb 2021 17:52:02 +0100
 Subject: [PATCH] arm64: dts: rockchip: add SPDIF nodes for RK3328 A1 board
 
@@ -369,7 +375,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 23 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-index de2d3e88e27f..68b74ed080f3 100644
+index 40bf808642b9..27a1799027c2 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
 @@ -57,6 +57,24 @@ ir-receiver {
@@ -397,7 +403,7 @@ index de2d3e88e27f..68b74ed080f3 100644
  };
  
  &analog_sound {
-@@ -324,6 +342,11 @@ &sdmmc {
+@@ -325,6 +343,11 @@ &sdmmc {
  	status = "okay";
  };
  
@@ -421,7 +427,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
-index aa22a0c22265..a78fbddd21df 100644
+index 51c7723d6762..cf321302daec 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 @@ -88,6 +88,13 @@ vcc_phy: vcc-phy-regulator {
@@ -438,7 +444,7 @@ index aa22a0c22265..a78fbddd21df 100644
  	leds {
  		compatible = "gpio-leds";
  
-@@ -308,6 +315,13 @@ &io_domains {
+@@ -312,6 +319,13 @@ &io_domains {
  };
  
  &pinctrl {
@@ -486,7 +492,7 @@ Subject: [PATCH] HACK: arm64: dts: enable FE phy for Beelink A1 also
  1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-index 68b74ed080f3..6736b5dc53e4 100644
+index 27a1799027c2..7de9dfa71d89 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
 @@ -147,6 +147,14 @@ rtl8211f: ethernet-phy@0 {
@@ -515,7 +521,7 @@ Subject: [PATCH] WIP: dw-hdmi-cec: sleep 100ms on error
  1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
-index 70ab4fbdc23e..bf54bc70624f 100644
+index c8f44bcb298a..d4280ce4542c 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
 @@ -4,6 +4,7 @@
@@ -579,10 +585,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index b2ed593a229c..27938ff0d208 100644
+index a10fe60b7680..dbe6a9cb98a5 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1393,7 +1393,7 @@ cru: clock-controller@ff760000 {
+@@ -1477,7 +1477,7 @@ cru: clock-controller@ff760000 {
  			<1000000000>,
  			 <150000000>,   <75000000>,
  			  <37500000>,
@@ -603,10 +609,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-index 6736b5dc53e4..9000fae2a5ee 100644
+index 7de9dfa71d89..e857e5a727f4 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-a1.dts
-@@ -388,6 +388,11 @@ &usb_host0_ehci {
+@@ -389,6 +389,11 @@ &usb_host0_ehci {
  	status = "okay";
  };
  
@@ -621,27 +627,86 @@ index 6736b5dc53e4..9000fae2a5ee 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
-Date: Sat, 21 Aug 2021 14:03:25 +0200
-Subject: [PATCH] HACK: media: hantro: rockchip: disable H264 for RK3328
+Date: Sat, 30 Oct 2021 12:19:19 +0200
+Subject: [PATCH] WIP: drm: bridge: dw-hdmi: switch from .hw_parmas to .prepare
+ for i2s
+
+Seems to be the only way to get AES bits correctly as set by
+userspace.
+TODO: check other consequences.
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- drivers/staging/media/hantro/rockchip_vpu_hw.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-index 3d98e2251ea5..b201700ccc8a 100644
---- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
-+++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-@@ -530,8 +530,7 @@ const struct hantro_variant rk3328_vpu_variant = {
- 	.dec_offset = 0x400,
- 	.dec_fmts = rk3399_vpu_dec_fmts,
- 	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
--	.codec = HANTRO_MPEG2_DECODER | HANTRO_VP8_DECODER |
--		 HANTRO_H264_DECODER,
-+	.codec = HANTRO_MPEG2_DECODER | HANTRO_VP8_DECODER,
- 	.codec_ops = rk3399_vpu_codec_ops,
- 	.irqs = rockchip_vdpu2_irqs,
- 	.num_irqs = ARRAY_SIZE(rockchip_vdpu2_irqs),
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
+index a2f0860b20bb..8961f9c7885d 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
+@@ -34,9 +34,9 @@ static inline u8 hdmi_read(struct dw_hdmi_i2s_audio_data *audio, int offset)
+ 	return audio->read(hdmi, offset);
+ }
+ 
+-static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
+-				 struct hdmi_codec_daifmt *fmt,
+-				 struct hdmi_codec_params *hparms)
++static int dw_hdmi_i2s_prepare(struct device *dev, void *data,
++			       struct hdmi_codec_daifmt *fmt,
++			       struct hdmi_codec_params *hparms)
+ {
+ 	struct dw_hdmi_i2s_audio_data *audio = data;
+ 	struct dw_hdmi *hdmi = audio->hdmi;
+@@ -178,7 +178,7 @@ static int dw_hdmi_i2s_hook_plugged_cb(struct device *dev, void *data,
+ }
+ 
+ static const struct hdmi_codec_ops dw_hdmi_i2s_ops = {
+-	.hw_params	= dw_hdmi_i2s_hw_params,
++	.prepare	= dw_hdmi_i2s_prepare,
+ 	.audio_startup  = dw_hdmi_i2s_audio_startup,
+ 	.audio_shutdown	= dw_hdmi_i2s_audio_shutdown,
+ 	.get_eld	= dw_hdmi_i2s_get_eld,
 
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 18 Sep 2022 10:35:52 +0200
+Subject: [PATCH] arm64: dts: rockchip: Disbake fusb for rk3399-roc-pc
 
+As it will lead to an unbootable device in case one if those ports
+is used to power up the device.
+See https://lkml.org/lkml/2022/6/20/413
+---
+ arch/arm64/boot/dts/rockchip/rk3399-roc-pc.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-roc-pc.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-roc-pc.dtsi
+index 2f4b1b2e3ac7..7217ead94d39 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-roc-pc.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-roc-pc.dtsi
+@@ -215,7 +215,7 @@ vdd_log: vdd-log {
+ 		regulator-name = "vdd_log";
+ 		regulator-always-on;
+ 		regulator-boot-on;
+-		regulator-min-microvolt = <450000>;
++		regulator-min-microvolt = <430000>;
+ 		regulator-max-microvolt = <1400000>;
+ 		pwm-supply = <&vcc3v3_sys>;
+ 	};
+@@ -536,7 +536,7 @@ fusb1: usb-typec@22 {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&fusb1_int>;
+ 		vbus-supply = <&vcc_vbus_typec1>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ };
+ 
+@@ -553,7 +553,7 @@ fusb0: usb-typec@22 {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&fusb0_int>;
+ 		vbus-supply = <&vcc_vbus_typec0>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	mp8859: regulator@66 {
