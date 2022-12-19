@@ -1,0 +1,11 @@
+#!/bin/sh
+
+test "$1" != "start" && exit 0
+MODEL=$(cat /sys/firmware/devicetree/base/model)
+test "${MODEL}" != "Anbernic RG552" && exit 0
+
+# rg552 hdmi plugged information
+echo 54 > /sys/class/gpio/export
+echo in > /sys/class/gpio/gpio54/direction
+# /sys/class/gpio/gpio54/value give the value : 0 => connected, 1 => disconnected
+###

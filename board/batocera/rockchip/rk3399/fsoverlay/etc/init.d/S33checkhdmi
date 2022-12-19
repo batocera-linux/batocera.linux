@@ -1,0 +1,5 @@
+#!/bin/bash
+
+test "$1" = "start" || exit 0
+
+nohup batocera-check-hdmi &
