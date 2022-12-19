@@ -10,6 +10,8 @@ XENIA_SITE = https://github.com/xenia-project/release-builds-windows/releases/do
 XENIA_LICENSE = BSD
 XENIA_LICENSE_FILE = LICENSE
 
+XENIA_DEPENDENCIES = python-toml
+
 define XENIA_EXTRACT_CMDS
 	mkdir -p $(@D) && cd $(@D) && $(UNZIP) -d $(@D) $(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE)
 endef
