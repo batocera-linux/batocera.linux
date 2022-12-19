@@ -30,7 +30,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3399-rockpro64 rockchip/rk3399-rock960 rockchip/rk3399-orangepi-4-lts rockchip/rk3399-rock-pi-4a rockchip/rk3399-rock-pi-4b rockchip/rk3399-rock-pi-4c rockchip/rk3399-anbernic-rg552"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3399-rockpro64 rockchip/rk3399-rock960 rockchip/rk3399-orangepi rockchip/rk3399-rock-pi-4a rockchip/rk3399-rock-pi-4b rockchip/rk3399-rock-pi-4c rockchip/rk3399-anbernic-rg552"
 
 # Bootloader
 BR2_TARGET_ARM_TRUSTED_FIRMWARE_PLATFORM="rk3399"
