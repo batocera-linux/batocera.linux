@@ -1,0 +1,25 @@
+From eee53c33686eb7a79b495373f9a4cf1db6deaf16 Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Sat, 29 Oct 2022 12:58:06 -0700
+Subject: [PATCH 7/7] drivers: gpu: drm: panel: panel-sharp-ls054b3sx01: drop
+ drm_connector_set_panel_orientation call
+
+---
+ drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c b/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
+index 29f40f8c61a8..5c7521ff87d6 100644
+--- a/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
++++ b/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
+@@ -263,7 +263,6 @@ static int sharp_ls054_get_modes(struct drm_panel *panel,
+ 	connector->display_info.width_mm = mode->width_mm;
+ 	connector->display_info.height_mm = mode->height_mm;
+ 	drm_mode_probed_add(connector, mode);
+-	drm_connector_set_panel_orientation(connector, ctx->orientation);
+ 
+ 	return 1;
+ }
+-- 
+2.37.3
+
