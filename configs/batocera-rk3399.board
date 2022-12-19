@@ -12,7 +12,7 @@ BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a72.cortex-a53 -mtune=
 #BR2_TARGET_GENERIC_GETTY_PORT="tty1"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/patches"
-BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/orangepi4-lts/fsoverlay"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/fsoverlay"
 
 # Linux headers same as kernel, a 6.1 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y
