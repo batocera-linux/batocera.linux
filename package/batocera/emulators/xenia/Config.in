@@ -2,6 +2,7 @@ config BR2_PACKAGE_XENIA
     bool "xenia"
     depends on BR2_x86_64
     depends on BR2_PACKAGE_WINE_LUTRIS
+    select BR2_PACKAGE_PYTHON_TOML
     help
         Xenia is an open source research project for emulating Xbox 360 games on modern PCs.
 

@@ -9,6 +9,7 @@ import shutil
 import controllersConfig
 import filecmp
 import subprocess
+import toml
 from utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -16,66 +17,88 @@ eslog = get_logger(__name__)
 class XeniaGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        wineprefix = batoceraFiles.SAVES + "/xenia-bottle"
-        emupath = wineprefix + "/xenia"
-        canarypath = wineprefix + "/xenia-canary"
+        wineprefix = batoceraFiles.SAVES + '/xenia-bottle'
+        emupath = wineprefix + '/xenia'
+        canarypath = wineprefix + '/xenia-canary'
 
-        core = system.config["core"]
+        core = system.config['core']
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
 
         # create dir & copy xenia exe to wine bottle as necessary
         if not os.path.exists(emupath):
-            shutil.copytree("/usr/xenia", emupath)
+            shutil.copytree('/usr/xenia', emupath)
         if not os.path.exists(canarypath):
-            shutil.copytree("/usr/xenia-canary", canarypath)
+            shutil.copytree('/usr/xenia-canary', canarypath)
         # check binary then copy updated xenia exe's as necessary
-        if not filecmp.cmp("/usr/xenia/xenia.exe", emupath + "/xenia.exe"):
-            shutil.copytree("/usr/xenia", emupath, dirs_exist_ok=True)
-        if not filecmp.cmp("/usr/xenia-canary/xenia_canary.exe", canarypath + "/xenia_canary.exe"):
-            shutil.copytree("/usr/xenia-canary", canarypath, dirs_exist_ok=True)
+        if not filecmp.cmp('/usr/xenia/xenia.exe', emupath + '/xenia.exe'):
+            shutil.copytree('/usr/xenia', emupath, dirs_exist_ok=True)
+        if not filecmp.cmp('/usr/xenia-canary/xenia_canary.exe', canarypath + '/xenia_canary.exe'):
+            shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
 
         # create portable txt file to try & stop file spam
-        if not os.path.exists(emupath + "/portable.txt"):
-            with open(emupath + "/portable.txt", "w") as fp:
+        if not os.path.exists(emupath + '/portable.txt'):
+            with open(emupath + '/portable.txt', 'w') as fp:
                 pass
-        if not os.path.exists(canarypath + "/portable.txt"):
-            with open(canarypath + "/portable.txt", "w") as fp:
+        if not os.path.exists(canarypath + '/portable.txt'):
+            with open(canarypath + '/portable.txt', 'w') as fp:
                 pass
 
         # install windows libraries required
-        if not os.path.exists(wineprefix + "/vcrun2019.done"):
-            cmd = ["/usr/wine/winetricks", "-q", "vcrun2019"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
+        if not os.path.exists(wineprefix + '/vcrun2019.done'):
+            cmd = ['/usr/wine/winetricks', '-q', 'vcrun2019']
+            env = {'LD_LIBRARY_PATH': '/lib32:/usr/wine/lutris/lib/wine', 'WINEPREFIX': wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
+            env['PATH'] = '/usr/wine/lutris/bin:/bin:/usr/bin'
+            eslog.debug(f'command: {str(cmd)}')
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
             eslog.debug(out.decode())
             eslog.error(err.decode())
-            with open(wineprefix + "/vcrun2019.done", "w") as f:
-                f.write("done")
+            with open(wineprefix + '/vcrun2019.done', 'w') as f:
+                f.write('done')
 
         # are we loading a digital title?
-        if os.path.splitext(rom)[1] == ".xbox360":
-            eslog.debug(f"Found .xbox360 playlist: {rom}")
+        if os.path.splitext(rom)[1] == '.xbox360':
+            eslog.debug(f'Found .xbox360 playlist: {rom}')
             pathLead = os.path.dirname(rom)
             openFile = open(rom, 'r')
             # Read only the first line of the file.
             firstLine = openFile.readlines(1)[0]
             # Strip of any new line characters.
             firstLine = firstLine.strip('\n').strip('\r')
-            eslog.debug(f"Checking if specified disc installation/XBLA file actually exists...")
-            xblaFullPath = pathLead + "/" + firstLine
+            eslog.debug(f'Checking if specified disc installation / XBLA file actually exists...')
+            xblaFullPath = pathLead + '/' + firstLine
             if os.path.exists(xblaFullPath):
-                eslog.debug(f"Found! Switching active rom to: {firstLine}")
+                eslog.debug(f'Found! Switching active rom to: {firstLine}')
                 rom = xblaFullPath
             else:
-                eslog.error(f"Disc installation/XBLA title {firstLine} from {rom} not found, check path or filename.")
+                eslog.error(f'Disc installation/XBLA title {firstLine} from {rom} not found, check path or filename.')
             openFile.close()
+        
+        # adjust the config toml file accordingly
+        if core == 'xenia-canary':
+            toml_file = canarypath + '/xenia-canary.config.toml'
+        else:
+            toml_file = emupath + '/xenia.config.toml'
+        if os.path.isfile(toml_file):
+            with open(toml_file) as f:
+                config = toml.load(f)
+        # in case the file is empty
+        if config is None:
+            config = {}     
+        # add node Content
+        if 'Content' not in config:
+            config['Content'] = {}
+        # set the license mask
+        # 1= First license enabled. Generally the full version license in Xbox Live Arcade titles.
+        config['Content'] = {'license_mask': 1}
+        
+        # now write the updated toml
+        with open(toml_file, 'w') as f:
+            toml.dump(config, f)
 
         # now setup the command array for the emulator
         if rom == 'config':
