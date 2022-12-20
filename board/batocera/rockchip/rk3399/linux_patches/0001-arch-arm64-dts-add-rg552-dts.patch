@@ -1,8 +1,8 @@
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-anbernic-rg552.dts b/arch/arm64/boot/dts/rockchip/rk3399-anbernic-rg552.dts
-index e69de29bb..dadca595f 100644
+index e69de29bb..cf4110b03 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-anbernic-rg552.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-anbernic-rg552.dts
-@@ -0,0 +1,1353 @@
+@@ -0,0 +1,1382 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd.
@@ -253,28 +253,48 @@ index e69de29bb..dadca595f 100644
 +    };
 +    
 +    es8316-sound {
-+		compatible = "simple-audio-card";
-+		simple-audio-card,name = "es8316";
-+		simple-audio-card,format = "i2s";
-+		simple-audio-card,mclk-fs = <256>;
++        compatible = "simple-audio-card";
++        pinctrl-names = "default";
++        pinctrl-0 = <&hp_det_pin>;
++        simple-audio-card,name = "rockchip,es8316-codec";
++        simple-audio-card,format = "i2s";
++        simple-audio-card,mclk-fs = <256>;
 +        
-+		simple-audio-card,widgets = 
++        simple-audio-card,widgets = 
 +                "Microphone", "Mic Jack",
-+                "Headphone", "Headphones";
++                "Headphone", "Headphones",
++                "Speaker", "Speaker";
 +
-+		simple-audio-card,routing = 
++        simple-audio-card,routing = 
 +                "Mic Jack", "MIC1",
 +                "Headphones", "HPOL",
-+                "Headphones", "HPOR";
++                "Headphones", "HPOR",
++                "Speaker Amplifier INL", "HPOL",
++                "Speaker Amplifier INR", "HPOR",
++                "Speaker", "Speaker Amplifier OUTL",
++                "Speaker", "Speaker Amplifier OUTR";
 +
-+		simple-audio-card,cpu {
-+			sound-dai = <&i2s1>;
-+		};
++        simple-audio-card,hp-det-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++        simple-audio-card,aux-devs = <&speaker_amp>;
++        simple-audio-card,pin-switches = "Speaker";
 +
-+		simple-audio-card,codec {
-+			sound-dai = <&es8316>;
-+		};
-+	};
++        simple-audio-card,cpu {
++            sound-dai = <&i2s1>;
++        };
++
++        simple-audio-card,codec {
++            sound-dai = <&es8316>;
++        };
++    };
++
++    speaker_amp: speaker-amplifier {
++        compatible = "simple-audio-amplifier";
++        pinctrl-names = "default";
++        pinctrl-0 = <&spk_en_pin>;
++        enable-gpios = <&gpio1 RK_PC5 GPIO_ACTIVE_HIGH>;
++        sound-name-prefix = "Speaker Amplifier";
++        VCC-supply = <&vcc5v0_sys>;
++    };
 +
 +    hdmi-sound {
 +        status = "okay";
@@ -330,39 +350,39 @@ index e69de29bb..dadca595f 100644
 +    };
 +
 +    bat: battery {
-+		compatible = "simple-battery";
-+		charge-full-design-microamp-hours = <6400000>;
-+		voltage-max-design-microvolt = <4350000>;
-+		voltage-min-design-microvolt = <3400000>;
++        compatible = "simple-battery";
++        charge-full-design-microamp-hours = <6400000>;
++        voltage-max-design-microvolt = <4350000>;
++        voltage-min-design-microvolt = <3400000>;
 +                constant-charge-current-max-microamp = <1500000>;
 +                constant-charge-voltage-max-microvolt = <4350000>;
 +                factory-internal-resistance-micro-ohms = <150000>;
 +                resistance-temp-table = <20 150>;
-+		
++        
 +                ocv-capacity-celsius = <20>;
 +                ocv-capacity-table-0 =	<4308000 100>,<4217000 95>,
-+					<4161000 90>,<4110000 85>,
-+					<4066000 80>,<4007000 75>,
-+					<3974000 70>,<3937000 65>,
-+					<3896000 60>,<3853000 55>,
-+					<3827000 50>,<3807000 45>,
-+					<3793000 40>,<3780000 35>,
-+					<3768000 30>,<3756000 25>,
-+					<3740000 20>,<3716000 15>,
-+					<3689000 10>,<3675000 5>,
-+					<3400000 0>;
-+	};
++                    <4161000 90>,<4110000 85>,
++                    <4066000 80>,<4007000 75>,
++                    <3974000 70>,<3937000 65>,
++                    <3896000 60>,<3853000 55>,
++                    <3827000 50>,<3807000 45>,
++                    <3793000 40>,<3780000 35>,
++                    <3768000 30>,<3756000 25>,
++                    <3740000 20>,<3716000 15>,
++                    <3689000 10>,<3675000 5>,
++                    <3400000 0>;
++    };
 +
-+	mains_charger: dc-charger {
-+		compatible = "gpio-charger";
-+		charger-type = "mains";
-+		gpios = <&gpio4 RK_PD0 GPIO_ACTIVE_LOW>;
++    mains_charger: dc-charger {
++        compatible = "gpio-charger";
++        charger-type = "mains";
++        gpios = <&gpio4 RK_PD0 GPIO_ACTIVE_LOW>;
 +
-+		/* Also triggered by USB charger */
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&dc_det_pin>;
-+		monitored-battery = <&bat>;
-+	};
++        /* Also triggered by USB charger */
++        pinctrl-names = "default";
++        pinctrl-0 = <&dc_det_pin>;
++        monitored-battery = <&bat>;
++    };
 +
 +    xin32k: xin32k {
 +        compatible = "fixed-clock";
@@ -995,38 +1015,37 @@ index e69de29bb..dadca595f 100644
 +    };
 +
 +    cw2015@62 {
-+		compatible = "cellwise,cw2015";
-+		reg = <0x62>;
-+		cellwise,battery-profile = /bits/ 8 <
-+				   0x15 0x7E 0x66 0x5B 0x58 0x55 0x51 0x4D
-+				   0x4A 0x47 0x44 0x47 0x4D 0x46 0x32 0x27
-+				   0x1F 0x1A 0x15 0x16 0x21 0x30 0x3F 0x4A
-+				   0x46 0x5C 0x0C 0x29 0x19 0x31 0x59 0x74
-+				   0x7B 0x7D 0x81 0x82 0x3F 0x1A 0x58 0x22
-+				   0x06 0x42 0x2B 0x63 0x89 0x93 0x94 0x3C
-+				   0x57 0x7D 0x93 0xAE 0x80 0xC2 0xD2 0xCB
-+				   0x2F 0x00 0x64 0xA5 0xB5 0x1F 0xB0 0x11
-+		>;
-+		cellwise,monitor-interval-ms = <5000>;
-+		power-supplies = <&mains_charger>;	
-+		monitored-battery = <&bat>;
-+	};
++        compatible = "cellwise,cw2015";
++        reg = <0x62>;
++        cellwise,battery-profile = /bits/ 8 <
++                   0x15 0x7E 0x66 0x5B 0x58 0x55 0x51 0x4D
++                   0x4A 0x47 0x44 0x47 0x4D 0x46 0x32 0x27
++                   0x1F 0x1A 0x15 0x16 0x21 0x30 0x3F 0x4A
++                   0x46 0x5C 0x0C 0x29 0x19 0x31 0x59 0x74
++                   0x7B 0x7D 0x81 0x82 0x3F 0x1A 0x58 0x22
++                   0x06 0x42 0x2B 0x63 0x89 0x93 0x94 0x3C
++                   0x57 0x7D 0x93 0xAE 0x80 0xC2 0xD2 0xCB
++                   0x2F 0x00 0x64 0xA5 0xB5 0x1F 0xB0 0x11
++        >;
++        cellwise,monitor-interval-ms = <5000>;
++        power-supplies = <&mains_charger>;	
++        monitored-battery = <&bat>;
++    };
 +};
 +
 +&i2c1 {
-+	status = "okay";
-+	i2c-scl-rising-time-ns = <168>;
-+	i2c-scl-falling-time-ns = <4>;
++    clock-frequency = <100000>;
++    i2c-scl-rising-time-ns = <300>;
++    i2c-scl-falling-time-ns = <15>;
++    status = "okay";
 +
-+	es8316: es8316@11 {
-+		#sound-dai-cells = <0>;
-+		compatible = "everest,es8316";
-+		reg = <0x11>;
-+		clocks = <&cru SCLK_I2S_8CH_OUT>;
-+		clock-names = "mclk";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&i2s_8ch_mclk_pin>;
-+	};
++    es8316: es8316@11 {
++        compatible = "everest,es8316";
++        reg = <0x11>;
++        clocks = <&cru SCLK_I2S_8CH_OUT>;
++        clock-names = "mclk";
++        #sound-dai-cells = <0>;
++    };
 +};
 +
 +&i2c3 {
@@ -1100,11 +1119,12 @@ index e69de29bb..dadca595f 100644
 +};
 +
 +&i2s1 {
-+    status = "okay";
++    pinctrl-names = "default";
++    pinctrl-0 = <&i2s_8ch_mclk_pin>, <&i2s1_2ch_bus>;
 +    rockchip,i2s-broken-burst-len;
 +    rockchip,playback-channels = <8>;
 +    rockchip,capture-channels = <8>;
-+    #sound-dai-cells = <0>;
++    status = "okay";
 +};
 +
 +&i2s2 {
@@ -1129,6 +1149,15 @@ index e69de29bb..dadca595f 100644
 +    dc-charger {
 +        dc_det_pin: dc-det-pin {
 +            rockchip,pins = <4 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
++        };
++    };
++
++    es8316 {
++        hp_det_pin: hp-det-pin {
++            rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
++        };
++        spk_en_pin: spk-en-pin {
++            rockchip,pins = <1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_down>;
 +        };
 +    };
 +
@@ -1167,8 +1196,8 @@ index e69de29bb..dadca595f 100644
 +
 +    sdio-pwrseq {
 +        wifi_enable_h: wifi-enable-h {
-+			rockchip,pins = <0 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
++            rockchip,pins = <0 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
++        };
 +    };
 +
 +    usb-typec {
@@ -1298,9 +1327,9 @@ index e69de29bb..dadca595f 100644
 +};
 +
 +&uart0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
-+	status = "okay";
++    pinctrl-names = "default";
++    pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
++    status = "okay";
 +};
 +
 +&uart2 {
