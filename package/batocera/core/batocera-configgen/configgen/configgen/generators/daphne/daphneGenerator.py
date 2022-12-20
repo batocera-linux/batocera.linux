@@ -82,7 +82,7 @@ class DaphneGenerator(Generator):
             commandArray.append("-nolinear_scale")
 
         #The following options should only be set when os.path.isfile(singeFile) is true.
-        #-blend_sprites, -oversize_overlay, -nocrosshair, -sinden or -manymouse
+        #-blend_sprites, -set_overlay oversize, -nocrosshair, -sinden or -manymouse
         if os.path.isfile(singeFile):
             # Blend Sprites (Singe)
             if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
@@ -91,11 +91,11 @@ class DaphneGenerator(Generator):
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
             if bordersSize is not None:
                 if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "1", "w"])
+                    commandArray.extend(["-sinden", "1", "w", "-8bit_overlay"])
                 elif bordersSize == "medium":
-                    commandArray.extend(["-sinden", "2", "w"])
+                    commandArray.extend(["-sinden", "2", "w", "-8bit_overlay"])
                 else:
-                    commandArray.extend(["-sinden", "3", "w"])
+                    commandArray.extend(["-sinden", "3", "w", "-8bit_overlay"])
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
@@ -105,7 +105,7 @@ class DaphneGenerator(Generator):
 
             # Oversize Overlay (Singe) for HD lightgun games
             if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
-                commandArray.append("-oversize_overlay")
+                commandArray.append("-set_overlay", "oversize")
             
             # crosshair
             if system.isOptSet('daphne_crosshair'):
