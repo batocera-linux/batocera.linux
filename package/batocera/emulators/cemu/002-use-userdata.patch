@@ -2,15 +2,15 @@ diff --git a/src/Cafe/HW/Latte/Renderer/Renderer.cpp b/src/Cafe/HW/Latte/Rendere
 index 8f99c06930..7faa605755 100644
 --- a/src/Cafe/HW/Latte/Renderer/Renderer.cpp
 +++ b/src/Cafe/HW/Latte/Renderer/Renderer.cpp
-@@ -133,7 +133,7 @@ void Renderer::SaveScreenshot(const std::vector<uint8>& rgb_data, int width, int
- 		// save to png file
- 		if (save_screenshot)
- 		{
--			fs::path screendir = ActiveSettings::GetUserDataPath("screenshots");
-+			fs::path screendir = "/userdata/screenshots";
- 			if (!fs::exists(screendir))
- 				fs::create_directory(screendir);
+@@ -84,7 +84,7 @@ uint8 Renderer::RGBComponentToSRGB(uint8 cli)
  
+ static std::optional<fs::path> GenerateScreenshotFilename(bool isDRC)
+ {
+-	fs::path screendir = ActiveSettings::GetUserDataPath("screenshots");
++	fs::path screendir = "/userdata/screenshots";
+ 	// build screenshot name with format Screenshot_YYYY-MM-DD_HH-MM-SS[_GamePad].png
+ 	// if the file already exists add a suffix counter (_2.png, _3.png etc)
+ 	std::time_t time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 diff --git a/src/Cemu/Logging/CemuLogging.cpp b/src/Cemu/Logging/CemuLogging.cpp
 index 28a86427f6..a4f78b6d94 100644
 --- a/src/Cemu/Logging/CemuLogging.cpp
