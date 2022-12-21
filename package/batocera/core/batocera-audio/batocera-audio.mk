@@ -41,9 +41,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Saudio \
 		$(TARGET_DIR)/etc/init.d/S06audio
-	mkdir -p $(TARGET_DIR)/etc/modprobe.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/intel-dsp.conf $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
-
+	
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S27audioconfig \
 		$(TARGET_DIR)/etc/init.d/S27audioconfig
 	# udev script to unmute audio devices
@@ -72,5 +70,14 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf \
 		$(TARGET_DIR)/usr/share/pipewire/pipewire.conf
 endef
+
+define BATOCERA_AUDIO_X86_INTEL_DSP
+	mkdir -p $(TARGET_DIR)/etc/modprobe.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/intel-dsp.conf $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS = BATOCERA_AUDIO_X86_INTEL_DSP
+endif
 
 $(eval $(generic-package))
