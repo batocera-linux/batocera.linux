@@ -5,7 +5,7 @@ index e2752f7..061b5de 100644
 @@ -51,6 +51,19 @@ config INPUT_FF_MEMLESS
  	  To compile this driver as a module, choose M here: the
  	  module will be called ff-memless.
- 
+
 +config INPUT_POLLDEV
 +	tristate "Polled input device skeleton"
 +	help
@@ -28,7 +28,7 @@ index 2266c7d..bf1c654 100644
 +++ b/drivers/input/Makefile
 @@ -10,6 +10,7 @@ input-core-y := input.o input-compat.o input-mt.o input-poller.o ff-core.o
  input-core-y += touchscreen.o
- 
+
  obj-$(CONFIG_INPUT_FF_MEMLESS)	+= ff-memless.o
 +obj-$(CONFIG_INPUT_POLLDEV)		+= input-polldev.o
  obj-$(CONFIG_INPUT_SPARSEKMAP)	+= sparse-keymap.o
@@ -409,10 +409,10 @@ index 9dcf3f5..42eba36 100644
 @@ -392,6 +392,12 @@ config JOYSTICK_FSIA6B
  	  To compile this driver as a module, choose M here: the
  	  module will be called fsia6b.
- 
+
 +config JOYSTICK_SINGLEADCJOY
 +	tristate "Single SARADC dual-joystick gamepad driver"
-+	select INPUT_POLLDEV	
++	select INPUT_POLLDEV
 +	help
 +	  The 1-in 4-out SARADC joypad driver.
 +
@@ -439,7 +439,7 @@ index e69de29..e5ab241 100644
 +/*----------------------------------------------------------------------------*/
 +
 +/*
-+ * Copyright (c) 2008-2021 Anbernic 
++ * Copyright (c) 2008-2021 Anbernic
 + */
 +
 +/*
@@ -535,7 +535,7 @@ index e69de29..e5ab241 100644
 +	bool invert_absy;
 +	bool invert_absrx;
 +	bool invert_absry;
-+	
++
 +	/* report interval (ms) */
 +	int bt_gpio_count;
 +	struct bt_gpio *gpios;
@@ -975,8 +975,8 @@ index e69de29..e5ab241 100644
 +{
 +	struct platform_device *pdev  = to_platform_device(dev);
 +	struct joypad *joypad = platform_get_drvdata(pdev);
-+	
-+	return sprintf(buf, "%d\n", pwm_get_period(joypad->pwm));
++
++	return sprintf(buf, "%lld\n", pwm_get_period(joypad->pwm));
 +}
 +
 +/*----------------------------------------------------------------------------*/
@@ -1091,10 +1091,10 @@ index e69de29..e5ab241 100644
 +	ssize_t pos=0;
 +	if(gpio_get_value(54)==1)
 +	{
-+		pos += sprintf(&buf[pos], "disconnected\n");		
++		pos += sprintf(&buf[pos], "disconnected\n");
 +	}else{
 +		pos += sprintf(&buf[pos], "connected\n");
-+	}				
++	}
 +	return pos;
 +}
 +
@@ -1262,7 +1262,7 @@ index e69de29..e5ab241 100644
 +	mutex_lock(&joypad->lock);
 +	joypad->enable = false;
 +	mutex_unlock(&joypad->lock);
-+	
++
 +	cancel_work_sync(&joypad->play_work);
 +	pwm_vibrator_stop(joypad);
 +
@@ -1364,7 +1364,7 @@ index e69de29..e5ab241 100644
 +		struct bt_adc *adc = &joypad->adcs[nbtn];
 +
 +		adc->scale = joypad->bt_adc_scale;
-+		
++
 +		adc->max = (ADC_MAX_VOLTAGE / 2);
 +		adc->min = (ADC_MAX_VOLTAGE / 2) * (-1);
 +		if (adc->scale) {
@@ -1536,7 +1536,7 @@ index e69de29..e5ab241 100644
 +		boosted_level = effect->u.rumble.weak_magnitude + joypad->boost_weak;
 +
 +	joypad->level = (u16)CLAMP(boosted_level, 0, 0xffff);
-+	
++
 +	dev_info(joypad->dev,"joypad->level = %d",  joypad->level);
 +	schedule_work(&joypad->play_work);
 +	return 0;
@@ -1592,7 +1592,7 @@ index e69de29..e5ab241 100644
 +
 +	input = poll_dev->input;
 +	joypad->input = poll_dev->input;
-+	
++
 +	device_property_read_string(dev, "joypad-name", &input->name);
 +	input->phys = DRV_NAME"/input0";
 +
@@ -1635,7 +1635,7 @@ index e69de29..e5ab241 100644
 +			error);
 +		return error;
 +	}
-+	
++
 +
 +	/* GPIO key setup */
 +	__set_bit(EV_KEY, input->evbit);
@@ -1807,7 +1807,7 @@ index e69de29..e5ab241 100644
 +		dev_err(dev, "input setup failed!(err = %d)\n", error);
 +		return error;
 +	}
-+	
++
 +	/* rumble setup */
 +	error = joypad_rumble_setup(dev, joypad);
 +	if (error) {
