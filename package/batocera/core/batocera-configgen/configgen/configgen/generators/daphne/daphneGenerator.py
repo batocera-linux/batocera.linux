@@ -91,11 +91,11 @@ class DaphneGenerator(Generator):
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
             if bordersSize is not None:
                 if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "1", "w", "-8bit_overlay"])
+                    commandArray.extend(["-sinden", "1", "w"])
                 elif bordersSize == "medium":
-                    commandArray.extend(["-sinden", "2", "w", "-8bit_overlay"])
+                    commandArray.extend(["-sinden", "2", "w"])
                 else:
-                    commandArray.extend(["-sinden", "3", "w", "-8bit_overlay"])
+                    commandArray.extend(["-sinden", "3", "w"])
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
