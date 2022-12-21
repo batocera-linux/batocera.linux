@@ -6027,13 +6027,15 @@ daphne:
             choices:
                 "Off": 0
                 "On":  1
-        lightgun_hd:
+        overlay_size:
             group: ADVANCED OPTIONS
-            prompt:      OVERSIZE OVERLAY (SINGE)
-            description: Use with Singe HD light gun games.
+            prompt:      OVERLAY SIZE (SINGE)
+            description: Singe overlay size options.
             choices:
-                "Off": 0
-                "On":  1
+                "Standard": 0
+                "HD Gun Games":  oversize
+                "Singe 2 Full":  full
+                "Singe 2 Half":  half
         abs_mouse_input:
             group: ADVANCED OPTIONS
             prompt:      ABSOLUTE MOUSE INPUT
