@@ -8,19 +8,6 @@
 
 BOARD=$(cat /boot/boot/batocera.board)
 
-# set the DSP audio type if X86_64 only
-if test "${BOARD}" = "x86_64"
-then
-    if grep -qE "^[ ]*intel-dsp-config[ ]*=[ ]*sof[ ]*$" /boot/batocera-boot.conf
-    then
-        mkdir -p /var/run/modprobe/
-        echo "options snd-intel-dspcfg dsp_driver=3" > /var/run/modprobe/intel-dsp.conf
-    else
-        mkdir -p /var/run/modprobe/
-        echo "options snd-intel-dspcfg dsp_driver=1" > /var/run/modprobe/intel-dsp.conf
-    fi
-fi
-
 start_pipewire() {
     printf "Starting pipewire: "
     start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
