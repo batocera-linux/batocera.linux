@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_PPSSPP_VERSION = v1.14
+LIBRETRO_PPSSPP_VERSION = v1.14.1
 LIBRETRO_PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 LIBRETRO_PPSSPP_SITE_METHOD=git
 LIBRETRO_PPSSPP_GIT_SUBMODULES=YES
