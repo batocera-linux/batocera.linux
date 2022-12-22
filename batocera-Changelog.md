@@ -24,6 +24,7 @@
 - Light gun support for Wii (up to 4 players)
 - Light gun support for PS3 (up to 2 players)
 - initial Intel A770 GPU support
+- Enabled libretro-yabasanshiro for platform RK3399
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
