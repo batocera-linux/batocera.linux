@@ -1,8 +1,0 @@
-#!/bin/sh
-
-BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null)
-
-if test "${BOARD_MODEL}" = "Anbernic RG552"
-then
-    touch /var/run/rk-rotation
-fi
