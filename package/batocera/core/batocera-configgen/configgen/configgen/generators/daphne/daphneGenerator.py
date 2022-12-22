@@ -56,7 +56,7 @@ class DaphneGenerator(Generator):
                             "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                            romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
+                            romName, "vldp", "-framefile", frameFile, "-fullscreen",
                             "-fastboot", "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
         
         # controller config file
@@ -82,7 +82,7 @@ class DaphneGenerator(Generator):
             commandArray.append("-nolinear_scale")
 
         #The following options should only be set when os.path.isfile(singeFile) is true.
-        #-blend_sprites, -oversize_overlay, -nocrosshair, -sinden or -manymouse
+        #-blend_sprites, -set_overlay oversize, -nocrosshair, -sinden or -manymouse
         if os.path.isfile(singeFile):
             # Blend Sprites (Singe)
             if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
@@ -103,9 +103,13 @@ class DaphneGenerator(Generator):
                     if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
-            # Oversize Overlay (Singe) for HD lightgun games
-            if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
-                commandArray.append("-oversize_overlay")
+            # Overlay sizes (Singe) for HD lightgun and Singe 2 games
+            if system.isOptSet('overlay_size') and system.config['overlay_size'] == 'oversize':
+                commandArray.append("-set_overlay", "oversize")
+            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'full':
+                commandArray.append("-set_overlay", "full")
+            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'half':
+                commandArray.append("-set_overlay", "half")
             
             # crosshair
             if system.isOptSet('daphne_crosshair'):

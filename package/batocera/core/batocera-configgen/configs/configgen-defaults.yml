@@ -141,6 +141,8 @@ crvision:
 daphne:
   emulator: daphne
   core:     hypseus
+  options:
+    hud_support: false
 devilutionx:
   emulator: devilutionx
   core:     devilutionx
@@ -172,13 +174,11 @@ flash:
   emulator: ruffle
   core:     ruffle
   options:
-    forceNoBezel: true
     hud_support: false
 flatpak:
   emulator: flatpak
   core:     flatpak
   options:
-    forceNoBezel: true
     hud_support: false
 fm7:
   emulator: libretro
@@ -299,7 +299,6 @@ model2:
   emulator: model2emu
   core:     model2emu
   options:
-    forceNoBezel: true
     hud_support: false
 model3:
   emulator: supermodel
@@ -514,7 +513,6 @@ switch:
   emulator: yuzu
   core:     yuzu
   options:
-    forceNoBezel: true
     hud_support: false
 
 # T-Z
@@ -574,13 +572,11 @@ windows:
   emulator: wine
   core:     proton
   options:
-    forceNoBezel: true
     hud_support: false
 windows_installers:
   emulator: wine
   core:     proton
   options:
-    forceNoBezel: true
     hud_support: false
 wswan:
   emulator: libretro
@@ -598,7 +594,6 @@ xash3d_fwgs:
   emulator: xash3d_fwgs
   core:     xash3d_fwgs
   options:
-    forceNoBezel: true
     hud_support: false
 xegs:
   emulator: libretro
@@ -613,7 +608,6 @@ xbox360:
   emulator: xenia
   core:     xenia
   options:
-    forceNoBezel: true
     hud_support: false
 zc210:
   emulator: libretro

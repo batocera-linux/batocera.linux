@@ -21,7 +21,7 @@ cp "${BINARIES_DIR}/zImage"             "${BATOCERA_BINARIES_DIR}/boot/boot/linu
 cp "${BINARIES_DIR}/initrd.lz4"          "${BATOCERA_BINARIES_DIR}/boot/boot/"                || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs"    "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
-cp "${BINARIES_DIR}/rk3288-tinker.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
+cp "${BINARIES_DIR}/rk3288-tinker-s.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"    "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 
 exit 0

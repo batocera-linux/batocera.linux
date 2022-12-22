@@ -1,0 +1,45 @@
+From af221c360ec655e4b6c14649bda65eb9f044fae1 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Sun, 18 Dec 2022 15:12:19 +0200
+Subject: [PATCH] Add cha support and silent serial logs
+
+---
+ configs/libretech_all_h3_cc_h3_defconfig | 3 ++-
+ include/configs/sunxi-common.h           | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/configs/libretech_all_h3_cc_h3_defconfig b/configs/libretech_all_h3_cc_h3_defconfig
+index 7ca312c8..541a0b96 100644
+--- a/configs/libretech_all_h3_cc_h3_defconfig
++++ b/configs/libretech_all_h3_cc_h3_defconfig
+@@ -4,10 +4,11 @@ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-libretech-all-h3-cc"
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN8I_H3=y
+ CONFIG_DRAM_CLK=672
++CONFIG_SUPPORT_EMMC_BOOT=y
+ CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+ CONFIG_SPL_STACK=0x8000
+ CONFIG_SYS_PBSIZE=1024
+-CONFIG_SUN8I_EMAC=y
++# CONFIG_SUN8I_EMAC is not set
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 0f0ef4f6..9678aec8 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -300,8 +300,8 @@
+ 
+ #ifdef CONFIG_DM_VIDEO
+ #define CONSOLE_STDOUT_SETTINGS \
+-	"stdout=serial,vidconsole\0" \
+-	"stderr=serial,vidconsole\0"
++	"stdout=\0" \
++	"stderr=\0"
+ #else
+ #define CONSOLE_STDOUT_SETTINGS \
+ 	"stdout=serial\0" \
+-- 
+2.34.1
+

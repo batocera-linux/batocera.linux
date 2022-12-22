@@ -17,15 +17,15 @@ index 7551231..475bb63 100644
  		}
  		SDL_SetWindowFullscreen(window, window_flags);
  	}
-@@ -524,7 +524,7 @@ int main(int argc, char *argv[]) {
+@@ -570,7 +570,7 @@ int main(int argc, char *argv[]) {
  	Uint32 mode = 0;
  	for (int i = 1; i < argc; i++) {
- 		if (!strcmp(argv[i],"--fullscreen"))
+ 		if (!strcmp(argv[i],"--fullscreen")) {
 -			mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 +			mode |= SDL_WINDOW_FULLSCREEN;
- 		else if (set_xres == -2)
+ 			g_Config.iForceFullScreen = 1;
+ 		} else if (set_xres == -2)
  			set_xres = parseInt(argv[i]);
- 		else if (set_yres == -2)
 @@ -596,19 +596,19 @@ int main(int argc, char *argv[]) {
  
  	// Force fullscreen if the resolution is too low to run windowed.

@@ -1,0 +1,25 @@
+From ff8c7683905b4c175f9dc33edaf97c198d71c45d Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Thu, 22 Dec 2022 08:55:15 +0200
+Subject: [PATCH] RK3288: Add merge tinker into tinker-s
+
+---
+ arch/arm/boot/dts/rk3288-tinker-s.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/rk3288-tinker-s.dts b/arch/arm/boot/dts/rk3288-tinker-s.dts
+index 970e13859..baeca6632 100644
+--- a/arch/arm/boot/dts/rk3288-tinker-s.dts
++++ b/arch/arm/boot/dts/rk3288-tinker-s.dts
+@@ -9,7 +9,7 @@
+ 
+ / {
+ 	model = "Rockchip RK3288 Asus Tinker Board S";
+-	compatible = "asus,rk3288-tinker-s", "rockchip,rk3288";
++	compatible = "asus,rk3288-tinker-s", "asus,rk3288-tinker", "rockchip,rk3288";
+ };
+ 
+ &emmc {
+-- 
+2.34.1
+

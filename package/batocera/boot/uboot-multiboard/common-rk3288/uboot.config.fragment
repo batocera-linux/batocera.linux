@@ -1,0 +1,5 @@
+# rk3288 common configs:
+# Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y
+# which slows down boot because enumerating usb is slow. Empty preboot
+# makes it faster.
+CONFIG_PREBOOT=""
