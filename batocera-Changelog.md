@@ -113,7 +113,7 @@
 - disabling rumble for some libretro emulators/controllers
 - Xbox S|X controllers with the RPi4
 ### Dev  
-- buildroot upgrade to 2022.08.2
+- buildroot upgrade to 2022.08.3
 - odroidxu4 upgrade kernel to 6.1
 - rpi1 image renamed to bcm2835
 - rpi2 image renamed to bcm2836
