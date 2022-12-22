@@ -7,18 +7,18 @@ index 5552b5a..47b996e 100644
  option(USE_VIDEOCORE "RPI: use the legacy Broadcom GLES libraries" OFF)
  option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
 +option(USE_MALI "Use mali" OFF)
-+option(RG552 "Optimize for RG552" OFF)
++option(RK3399 "Optimize for RK3399" OFF)
 +option(RPI4 "Optimize for RPi4" OFF)
 +option(RK3326 "Optimize for RK3326" OFF)
 +option(S922X "Optimize for S922X" OFF)
- 
+
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
- 
+
 @@ -114,6 +114,19 @@ elseif(LIBRETRO)
  	set(CMAKE_SHARED_LIBRARY_PREFIX "")
  	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
  	target_compile_definitions(${PROJECT_NAME} PRIVATE LIBRETRO)
-+	if (RG552)
++	if (RK3399)
 +	    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53")
 +	    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53")
 +    elseif(RK3326)
@@ -37,7 +37,7 @@ index 5552b5a..47b996e 100644
 @@ -143,6 +161,10 @@ else()
      add_executable(${PROJECT_NAME} MACOSX_BUNDLE core/emulator.cpp)
  endif()
- 
+
 +if(USE_MALI)
 +  target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
 +endif()
