@@ -1,0 +1,14 @@
+--- a/src/wl/sys/wl_cfg80211_hybrid.c	2015-09-19 00:47:30.000000000 +0200
++++ b/src/wl/sys/wl_cfg80211_hybrid.c	2018-11-14 14:06:03.313487995 +0100
+@@ -1444,11 +1444,10 @@
+ 	s32 rate;
+ 	s32 err = 0;
+ 
+ 	if (memcmp(mac, wl->profile->bssid, ETHER_ADDR_LEN)) {
+ 		WL_ERR(("Wrong Mac address, mac = %pM   profile =%pM\n", mac, wl->profile->bssid));
+-		return -ENOENT;
+ 	}
+ 
+ 	err = wl_dev_ioctl(dev, WLC_GET_RATE, &rate, sizeof(rate));
+ 	if (err) {
+ 		WL_DBG(("Could not get rate (%d)\n", err));

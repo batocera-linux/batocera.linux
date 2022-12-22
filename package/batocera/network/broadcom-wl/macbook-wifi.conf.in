@@ -1,0 +1,11 @@
+# Unfortunately the older `wl` broadcom driver conflicts with other drivers in the kernel.
+# Therefore we need to rename this file so that other kernel modules don't conflict with it.
+# Rename this so that the .disabled is removed from the name - i.e. macbook-wifi.conf
+# Also rename the file blacklist-wl.conf to blacklist-wl.conf.disabled.
+# Afterwards type: batocera-save-overlay
+# This will make the changes permanent, then reboot.
+
+blacklist ssb
+blacklist bcma
+blacklist b43
+blacklist brcmsmac

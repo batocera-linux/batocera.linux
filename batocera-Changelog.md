@@ -1115,6 +1115,8 @@
 - Light gun support for PS3 (up to 2 players)
 - initial Intel A770 GPU support
 - Enabled libretro-yabasanshiro for platform RK3399
+- Macbook 2013 wifi driver (broadcom-wl) - v6.30.223.271
+	- Patches leveraged from Arch Linux - thanks :-)
 - force feedback for Nintendo controllers (requires linux kernel 5.16 or later)
 - Added wayland + sway support for single board computer (SBC)
 - Automatically recenter 16:9 bezels for a better rendition on 16:10 and 5:3 screens (SteamDeck and other handheld devices)
