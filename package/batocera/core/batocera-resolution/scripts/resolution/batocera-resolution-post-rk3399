@@ -34,11 +34,9 @@ then
 	NEWCONN=$(cat /var/run/drmConn)
 	if test "${NEWCONN}" = 0
 	then
-	    touch /var/run/rk-rotation
-	    fbv -z -e -i /usr/share/batocera/splash/boot-logo.png
+	    display.rotate 3
 	else
-	    rm -f /var/run/rk-rotation
-	    fbv -e -i /usr/share/batocera/splash/boot-logo.png
+	    display.rotate 0
 	fi
 
 	# force audio associated with the device
