@@ -1,0 +1,108 @@
+From 979114b00ad00715de3955e76feabc51d5b39791 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Thu, 22 Dec 2022 04:30:10 +0200
+Subject: [PATCH] RK3288-MiQi:Add proper cpu and gpu regulator configs and 
+ default cpu frequencies supported by the soc - These changes actually need 
+ upstreaming - Also add MiQi board's fan definition that is needed in order
+ for the fan to work preventing the board to overheat (gpiochip 0, pin 18) -
+ Switch naming the led from green to blue as the real colour is on newer
+ MiQi's - Also enable miqi's hevc, hevc_mmu and rga nodes
+
+---
+ arch/arm/boot/dts/rk3288-miqi.dts | 40 +++++++++++++++++++++++++++----
+ 1 file changed, 35 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
+index db1eb648e..5f408fb0b 100644
+--- a/arch/arm/boot/dts/rk3288-miqi.dts
++++ b/arch/arm/boot/dts/rk3288-miqi.dts
+@@ -30,9 +30,15 @@ ext_gmac: external-gmac-clock {
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
++		fan {
++		    gpios = <&gpio0 RK_PC2 GPIO_ACTIVE_HIGH>;
++		    label = "miqi:blue:fan";
++		    linux,default-trigger = "heartbeat";
++		};
++
+ 		work_led: led-0 {
+ 			gpios = <&gpio7 RK_PA2 GPIO_ACTIVE_HIGH>;
+-			label = "miqi:green:user";
++			label = "miqi:blue:user";
+ 			linux,default-trigger = "timer";
+ 		};
+ 	};
+@@ -96,6 +102,17 @@ &cpu3 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+ 
++&cpu_opp_table {
++	opp-1704000000 {
++		opp-hz = /bits/ 64 <1704000000>;
++		opp-microvolt = <1350000>;
++	};
++	opp-1800000000 {
++		opp-hz = /bits/ 64 <1800000000>;
++		opp-microvolt = <1400000>;
++	};
++};
++
+ &emmc {
+ 	bus-width = <8>;
+ 	cap-mmc-highspeed;
+@@ -133,6 +150,14 @@ &hdmi {
+ 	status = "okay";
+ };
+ 
++&hevc {
++	status = "okay";
++};
++
++&hevc_mmu {
++	status = "okay";
++};
++
+ &i2c0 {
+ 	clock-frequency = <400000>;
+ 	status = "okay";
+@@ -143,11 +168,10 @@ vdd_cpu: syr827@40 {
+ 		reg = <0x40>;
+ 		regulator-name = "vdd_cpu";
+ 		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-max-microvolt = <1500000>;
+ 		regulator-always-on;
+ 		regulator-boot-on;
+-		regulator-enable-ramp-delay = <300>;
+-		regulator-ramp-delay = <8000>;
++		regulator-ramp-delay = <1000>;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+ 
+@@ -157,8 +181,10 @@ vdd_gpu: syr828@41 {
+ 		reg = <0x41>;
+ 		regulator-name = "vdd_gpu";
+ 		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-max-microvolt = <1500000>;
++		regulator-ramp-delay = <1000>;
+ 		regulator-always-on;
++		regulator-boot-on;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+ 
+@@ -370,6 +396,10 @@ host_vbus_drv: host-vbus-drv {
+ 	};
+ };
+ 
++&rga {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcc_18>;
+ 	status = "okay";
+-- 
+2.34.1
+
