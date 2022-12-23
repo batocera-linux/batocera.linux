@@ -90,12 +90,18 @@ class DaphneGenerator(Generator):
 
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
             if bordersSize is not None:
-                if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "3", "w"])
-                elif bordersSize == "medium":
-                    commandArray.extend(["-sinden", "6", "w"])
+
+                if system.isOptSet('border_color'):
+                    borderColor = system.config['border_color']
                 else:
-                    commandArray.extend(["-sinden", "9", "w"])
+                    borderColor = "w"
+
+                if bordersSize == "thin":
+                    commandArray.extend(["-sinden", "2", borderColor])
+                elif bordersSize == "medium":
+                    commandArray.extend(["-sinden", "4", borderColor])
+                else:
+                    commandArray.extend(["-sinden", "6", borderColor])
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
@@ -105,11 +111,11 @@ class DaphneGenerator(Generator):
 
             # Overlay sizes (Singe) for HD lightgun and Singe 2 games
             if system.isOptSet('overlay_size') and system.config['overlay_size'] == 'oversize':
-                commandArray.append("-set_overlay", "oversize")
+                commandArray.extend(["-set_overlay", "oversize"])
             elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'full':
-                commandArray.append("-set_overlay", "full")
+                commandArray.extend(["-set_overlay", "full"])
             elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'half':
-                commandArray.append("-set_overlay", "half")
+                commandArray.extend(["-set_overlay", "half"])
             
             # crosshair
             if system.isOptSet('daphne_crosshair'):
