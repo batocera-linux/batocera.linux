@@ -130,17 +130,20 @@ do_format() {
 	echo "created partition not found for ${FORMATDISK}" >&2
 	return 1
     fi
-
+    
+    nr=$(blkid | grep "SHARE" | wc -l); nr=$(($nr + 1)); SHAREnr=SHARE$nr;
+    if [[ "$nr" -le "1" ]]; then SHAREnr=SHARE; fi
+    if [[ "$(blkid | grep \"SHARE\")" = "" ]]; then SHAREnr=SHARE; fi
     echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -L $SHAREnr "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -L $SHAREnr "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat -n SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n $SHAREnr "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
