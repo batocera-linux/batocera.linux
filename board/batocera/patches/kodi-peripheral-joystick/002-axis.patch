@@ -14,10 +14,10 @@ index 2ef41a2..95697b4 100644
 +	      int length = (info.maximum-info.minimum)/2;
 +
 +              if (event.value >= middle && event.value-middle > length/2) {
-+                SetAxisValue(axisIndex, event.value-middle, length/2);
++                SetAxisValue(axisIndex, event.value-middle, length);
 +	      }
 +              else if (event.value <= middle && middle-event.value > length/2) {
-+                SetAxisValue(axisIndex, -(middle-event.value), length/2);
++                SetAxisValue(axisIndex, -(middle-event.value), length);
 +	      } else {
 +                SetAxisValue(axisIndex, 0, length);
 +	      }
