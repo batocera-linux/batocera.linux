@@ -45,21 +45,6 @@ class XeniaGenerator(Generator):
             with open(canarypath + '/portable.txt', 'w') as fp:
                 pass
 
-        # install windows libraries required
-        if not os.path.exists(wineprefix + '/vcrun2019.done'):
-            cmd = ['/usr/wine/winetricks', '-q', 'vcrun2019']
-            env = {'LD_LIBRARY_PATH': '/lib32:/usr/wine/lutris/lib/wine', 'WINEPREFIX': wineprefix }
-            env.update(os.environ)
-            env['PATH'] = '/usr/wine/lutris/bin:/bin:/usr/bin'
-            eslog.debug(f'command: {str(cmd)}')
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with open(wineprefix + '/vcrun2019.done', 'w') as f:
-                f.write('done')
-
         # are we loading a digital title?
         if os.path.splitext(rom)[1] == '.xbox360':
             eslog.debug(f'Found .xbox360 playlist: {rom}')
@@ -79,6 +64,7 @@ class XeniaGenerator(Generator):
             openFile.close()
         
         # adjust the config toml file accordingly
+        config = {}
         if core == 'xenia-canary':
             toml_file = canarypath + '/xenia-canary.config.toml'
         else:
@@ -88,13 +74,57 @@ class XeniaGenerator(Generator):
                 config = toml.load(f)
         # in case the file is empty
         if config is None:
-            config = {}     
+            config = {}
+        # [ Now adjust the config file default we want ]
+        # add node CPU
+        if 'CPU' not in config:
+            config['CPU'] = {}
+        # hack, needed for certain games
+        config['CPU'] = {'break_on_unimplemented_instructions': False}
         # add node Content
         if 'Content' not in config:
             config['Content'] = {}
-        # set the license mask
-        # 1= First license enabled. Generally the full version license in Xbox Live Arcade titles.
+        # 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
         config['Content'] = {'license_mask': 1}
+        # add node Display
+        if 'Display' not in config:
+            config['Display'] = {}
+        # always run fullscreen
+        config['Display'] = {'fullscreen': True}
+        # add node GPU
+        if 'GPU' not in config:
+            config['GPU'] = {}
+        # may be used to bypass fetch constant type errors in certain games.
+        # ensure we use vulkan
+        config['GPU'] = {
+            'depth_float24_convert_in_pixel_shader': True,
+            'gpu': 'vulkan',
+            'gpu_allow_invalid_fetch_constants': True,
+            'render_target_path_vulkan': 'any'}
+        # add node General
+        if 'General' not in config:
+            config['General'] = {}
+        # disable discord
+        config['General'] = {'discord': False} 
+        # add node HID
+        if 'HID' not in config:
+            config['HID'] = {}
+        # ensure we use sdl2 for controllers
+        config['HID'] = {'hid': 'sdl'}
+        # add node Memory
+        if 'Memory' not in config:
+            config['Memory'] = {}
+        # certain games require this to set be set to false to work around crashes.
+        config['Memory'] = {'protect_zero': False}
+        # add node UI
+        if 'UI' not in config:
+            config['UI'] = {}
+        # run headless
+        config['UI'] = {'headless': True}
+        # add node Vulkan
+        if 'Vulkan' not in config:
+            config['Vulkan'] = {}
+        config['Vulkan'] = {'vulkan_sparse_shared_memory': False}
         
         # now write the updated toml
         with open(toml_file, 'w') as f:
@@ -108,9 +138,9 @@ class XeniaGenerator(Generator):
                 commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia-canary/xenia_canary.exe', '--fullscreen', 'z:' + rom]
+                commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia-canary/xenia_canary.exe', 'z:' + rom]
             else:
-                commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe', '--fullscreen', 'z:' + rom]
+                commandArray = ['/usr/wine/lutris/bin/wine64', '/userdata/saves/xenia-bottle/xenia/xenia.exe', 'z:' + rom]
 
         return Command.Command(
             array=commandArray,
