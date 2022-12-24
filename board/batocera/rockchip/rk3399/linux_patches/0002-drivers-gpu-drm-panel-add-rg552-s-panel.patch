@@ -19,13 +19,13 @@ index a582ddd..65618a7 100644
  	  (540x960) DSI panel as found on the Qualcomm APQ8074 Dragonboard
 
 +config DRM_PANEL_SHARP_LS054B3SX01
-+	bool "Sharp LS054B3SX01 1152x1080 video mode panel"
++	bool "Sharp LS054B3SX01 1152x1920 video mode panel"
 +	depends on OF
 +	depends on DRM_MIPI_DSI
 +	depends on BACKLIGHT_CLASS_DEVICE
 +	help
 +	  say Y here if you want to enable support for Sharp LS054B3SX01
-+	  1152x1080 panel as found in Anbernic RG552.
++	  1152x1920 panel as found in Anbernic RG552.
 +
  config DRM_PANEL_SHARP_LS060T1SX01
  	tristate "Sharp LS060T1SX01 FullHD video mode panel"
@@ -411,6 +411,6 @@ index e69de29..3f01928 100644
 +module_mipi_dsi_driver(sharp_ls054_driver);
 +
 +MODULE_AUTHOR("Maya Matuszczyk <maccraft123mc@gmail.com>");
-+MODULE_DESCRIPTION("Panel driver for Sharp LS054B3SX01 1152x1080 Video Mode DSI Panel");
++MODULE_DESCRIPTION("Panel driver for Sharp LS054B3SX01 1152x1920 Video Mode DSI Panel");
 +MODULE_LICENSE("GPL v2");
 \ No newline at end of file
