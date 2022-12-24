@@ -11,6 +11,8 @@ HID_NX_DEPENDENCIES = host-libcurl host-cabextract libusb
 define HID_NX_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/etc/udev/rules.d
 	cp -v $(@D)/99-joycond-ignore.rules $(TARGET_DIR)/etc/udev/rules.d/
+	# blacklist hid-nintendo
+	echo "blacklist hid-nintendo" > $(TARGET_DIR)/etc/modprobe.d/hid-nintendo.conf
 endef
 
 $(eval $(kernel-module))
