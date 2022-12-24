@@ -1029,7 +1029,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_RPCS3                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# Wii U (requires Wine layer)
-	select BR2_PACKAGE_CEMU                         if BR2_PACKAGE_BATOCERA_WINE
+	select BR2_PACKAGE_CEMU                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# future pinball
 	select BR2_PACKAGE_FPINBALL                     if BR2_PACKAGE_BATOCERA_WINE
