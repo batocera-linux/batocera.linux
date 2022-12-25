@@ -1,0 +1,13 @@
+diff --git a/plugins/Makefile.am b/plugins/Makefile.am
+index 8b6bd77..2177ecf 100644
+--- a/plugins/Makefile.am
++++ b/plugins/Makefile.am
+@@ -9,7 +9,7 @@ endif
+ AM_CFLAGS                   = -pthread -Wall
+ AM_CFLAGS                   += -DPLUGINDOCS=\"$(docdir)/plugindocs\"
+ AM_CPPFLAGS                 = -I../lib  -I$(top_srcdir)/lib -I$(top_srcdir) \
+-			      -I$(top_srcdir)/include
++			      -I$(top_srcdir)/include -I$(STAGING_DIR)/usr/include
+ AM_CPPFLAGS                 += -Wall -Wp,-D_FORTIFY_SOURCE=2
+ 
+ DISTCLEANFILES              = pluginlist.am
