@@ -25,7 +25,7 @@
 - Light gun support for PS3 (up to 2 players)
 - initial Intel A770 GPU support
 - Enabled libretro-yabasanshiro for platform RK3399
-- force feedback for Nintendo controllers
+- force feedback for Nintendo controllers (requires linux kernel 5.16 or later)
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
