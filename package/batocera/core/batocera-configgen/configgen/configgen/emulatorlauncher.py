@@ -226,7 +226,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             mouseChanged = True
             videoMode.changeMouse(True)
 
-        useRatpoison = generator.useRatpoison(system.config):
+        useRatpoison = generator.useRatpoison(system.config)
         if useRatpoison:
             subprocess.call('batocera-ratpoison launch', shell=True)
 
