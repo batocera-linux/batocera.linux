@@ -22,18 +22,11 @@ ifeq ($(BR2_ARCH_IS_64),y)
 XASH3D_FWGS_CONF_OPTS += --64bits
 endif
 
-ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
-# Batocera - SBC prefer GLES
-  ifneq ($(BR2_PACKAGE_BATOCERA_SBC_XORG),y)
-    XASH3D_FWGS_DEPENDENCIES += libgl
-  endif
-else
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
 XASH3D_FWGS_DEPENDENCIES += libgles
 XASH3D_FWGS_CONF_OPTS += --disable-gl --enable-gl4es
 else
 XASH3D_FWGS_CONF_OPTS += --disable-gl
-endif
 endif
 
 $(eval $(waf-package))
