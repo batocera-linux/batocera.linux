@@ -5,6 +5,7 @@ f_usage() {
     echo "${0} setMode <MODE>" >&2
     echo "${0} currentMode" >&2
     echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
     echo "${0} currentOutput" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
@@ -23,7 +24,7 @@ f_minTomaxResolution() {
         MAXWIDTH=1920
         MAXHEIGHT=1080
     fi
-    CURRENT_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height)"')
+    CURRENT_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height)"')
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
 
@@ -34,14 +35,14 @@ f_minTomaxResolution() {
     # select a new one
     # select the first one valid
     # is it the best ? or should we loop to search the first with the same ratio ?
-    swaymsg -t get_outputs | jq -r '.[].modes[] | "\(.width)x\(.height)"' |
+    swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height)"' |
     while read SUGGRESOLUTIONRATE SUGGMODE
     do
         SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
         SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
         SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
         if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"; then
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
+            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
             swaymsg output "${OUTPUT}" mode "${SUGGRESOLUTION}"
             exit 0
         fi
@@ -60,7 +61,7 @@ case "${ACTION}" in
     "listModes")
         echo "max-1920x1080:maximum 1920x1080"
         echo "max-640x480:maximum 640x480"
-        swaymsg -t get_outputs | jq -r '.[].modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh) Hz"' | uniq
+        swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh) Hz"' | uniq
     ;;
     "setMode")
         MODE=$1
@@ -68,7 +69,7 @@ case "${ACTION}" in
             SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
             f_minTomaxResolution "${SPMODE}"
         else # normal mode
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
+            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
 
             # let the old format widthxheight and the new one widthxheight.hz
             if echo "${MODE}" | grep "\."; then
@@ -81,13 +82,48 @@ case "${ACTION}" in
         fi
     ;;
     "currentMode")
-        swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height).\(.refresh)"'
+        swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height).\(.refresh)"'
     ;;
     "currentResolution")
-        swaymsg -t get_outputs | jq -r '.[].current_mode | "\(.width)x\(.height)"'
+        swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height)"'
+    ;;
+    "listOutputs")
+	swaymsg -t get_outputs | jq -r '.[].name'
     ;;
     "currentOutput")
-        swaymsg -t get_outputs | jq -r '.[].name'
+	swaymsg -t get_outputs | jq -r '.[] | select (.focused).name'
+    ;;
+    "setOutput")
+	MODE=$1
+	if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE}$"
+	then
+	    # enable (in case of reboot of es)
+	    echo "set ${MODE} as primary" >&2
+	    sway output "${MODE}" enable
+
+	    # disable all other outputs
+	    swaymsg -t get_outputs | jq -r '.[].name' | grep -vE "^${MODE}$" |
+		while read OUTP
+		do
+		    echo "set ${OUTP} off" >&2
+		    sway output "${OUTP}" disable
+		done
+	else
+	    # disable all except the first one
+	    swaymsg -t get_outputs | jq -r '.[].name' |
+		(
+		    read FIRSTOUTPUT
+		    while read OUTP
+		    do
+			echo "set ${OUTP} off" >&2
+			sway output "${OUTP}" disable
+		    done
+
+		    # enable (in case of reboot of es)
+		    echo "set ${FIRSTOUTPUT} as primary" >&2
+		    sway output "${FIRSTOUTPUT}" enable
+		)
+	fi
     ;;
     "minTomaxResolution" | "minTomaxResolution-secure")
         f_minTomaxResolution "$1"
@@ -97,7 +133,7 @@ case "${ACTION}" in
     ;;
     "setRotation")
         ROTATE=$1
-        OUTPUT=$(swaymsg -t get_outputs | jq -r '.[].name')
+        OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
 
         # Mapping touch screen
         TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')

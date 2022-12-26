@@ -2,6 +2,8 @@
 
 # required for x
 export DISPLAY=:0
+# required for wayland
+. /etc/profile.d/04-sway.sh
 
 if test "${1}" == "--init"
 then
