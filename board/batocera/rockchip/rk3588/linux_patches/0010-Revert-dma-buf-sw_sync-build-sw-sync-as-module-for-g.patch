@@ -1,0 +1,90 @@
+From bae53b1d8a16a36f26e5fe85af8fbd3e32f2d6d0 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <95260730+RadxaYuntian@users.noreply.github.com>
+Date: Mon, 10 Oct 2022 10:37:39 +0800
+Subject: [PATCH 10/18] Revert "dma-buf/sw_sync: build sw-sync as module for
+ gki"
+
+This reverts commit 70e8a5ecc49df2b401f7d286c060da051afeb02d.
+---
+ drivers/dma-buf/Kconfig      | 9 +--------
+ drivers/dma-buf/Makefile     | 3 +--
+ drivers/dma-buf/sync_debug.c | 2 ++
+ drivers/dma-buf/sync_debug.h | 2 +-
+ 4 files changed, 5 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
+index 5dc97ec09..73314027f 100644
+--- a/drivers/dma-buf/Kconfig
++++ b/drivers/dma-buf/Kconfig
+@@ -41,7 +41,7 @@ config SYNC_FILE
+ 	  Documentation/driver-api/sync_file.rst.
+ 
+ config SW_SYNC
+-	tristate "Sync File Validation Framework"
++	bool "Sync File Validation Framework"
+ 	default n
+ 	depends on SYNC_FILE
+ 	help
+@@ -52,13 +52,6 @@ config SW_SYNC
+ 	  WARNING: improper use of this can result in deadlocking kernel
+ 	  drivers from userspace. Intended for test and debug only.
+ 
+-config SW_SYNC_DEBUG
+-	bool "SW Sync Debug"
+-	depends on DEBUG_FS && SW_SYNC && NO_GKI
+-	default SW_SYNC
+-	help
+-	  To get current fence point and timeline status.
+-
+ config UDMABUF
+ 	bool "userspace dmabuf misc driver"
+ 	default n
+diff --git a/drivers/dma-buf/Makefile b/drivers/dma-buf/Makefile
+index 66c2dc4b6..f1db46828 100644
+--- a/drivers/dma-buf/Makefile
++++ b/drivers/dma-buf/Makefile
+@@ -5,8 +5,7 @@ obj-$(CONFIG_DMABUF_HEAPS)	+= dma-heap.o
+ obj-$(CONFIG_DMABUF_HEAPS)	+= heaps/
+ obj-$(CONFIG_DMABUF_CACHE)	+= dma-buf-cache.o
+ obj-$(CONFIG_SYNC_FILE)		+= sync_file.o
+-obj-$(CONFIG_SW_SYNC)		+= sw_sync.o
+-obj-$(CONFIG_SW_SYNC_DEBUG)	+= sync_debug.o
++obj-$(CONFIG_SW_SYNC)		+= sw_sync.o sync_debug.o
+ obj-$(CONFIG_UDMABUF)		+= udmabuf.o
+ obj-$(CONFIG_DMABUF_SYSFS_STATS) += dma-buf-sysfs-stats.o
+ obj-$(CONFIG_DMABUF_HEAPS_ROCKCHIP) += rk_heaps/
+diff --git a/drivers/dma-buf/sync_debug.c b/drivers/dma-buf/sync_debug.c
+index 101394f16..a2f906741 100644
+--- a/drivers/dma-buf/sync_debug.c
++++ b/drivers/dma-buf/sync_debug.c
+@@ -8,6 +8,7 @@
+ #include <linux/debugfs.h>
+ #include "sync_debug.h"
+ 
++#ifdef CONFIG_DEBUG_FS
+ static struct dentry *dbgfs;
+ 
+ static LIST_HEAD(sync_timeline_list_head);
+@@ -188,3 +189,4 @@ static __init int sync_debugfs_init(void)
+ 	return 0;
+ }
+ late_initcall(sync_debugfs_init);
++#endif
+diff --git a/drivers/dma-buf/sync_debug.h b/drivers/dma-buf/sync_debug.h
+index fb676da19..ee84997da 100644
+--- a/drivers/dma-buf/sync_debug.h
++++ b/drivers/dma-buf/sync_debug.h
+@@ -62,9 +62,9 @@ struct sync_pt {
+ 	struct rb_node node;
+ };
+ 
++#ifdef CONFIG_DEBUG_FS
+ extern const struct file_operations sw_sync_debugfs_fops;
+ 
+-#ifdef CONFIG_SW_SYNC_DEBUG
+ void sync_timeline_debug_add(struct sync_timeline *obj);
+ void sync_timeline_debug_remove(struct sync_timeline *obj);
+ void sync_file_debug_add(struct sync_file *fence);
+-- 
+2.30.2
+

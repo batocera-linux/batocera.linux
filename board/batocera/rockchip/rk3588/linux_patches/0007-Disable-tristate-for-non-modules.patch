@@ -1,0 +1,43 @@
+From d024ba26bf17e54efe65e215325cd62dadb27580 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <95260730+RadxaYuntian@users.noreply.github.com>
+Date: Sun, 9 Oct 2022 20:57:28 +0800
+Subject: [PATCH 07/18] Disable tristate for non-modules
+
+---
+ drivers/rkflash/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/rkflash/Kconfig b/drivers/rkflash/Kconfig
+index 5c2f4295d..b92659757 100644
+--- a/drivers/rkflash/Kconfig
++++ b/drivers/rkflash/Kconfig
+@@ -29,7 +29,7 @@ config RK_SFTL
+ 	  Say Y when you have a board with Slc Nand Flash register as block device.
+ 
+ config RK_NANDC_NAND
+-	tristate "Rockchip NANDC Slc Nand Devices support"
++	bool "Rockchip NANDC Slc Nand Devices support"
+ 	default n
+ 	depends on RK_NAND != y
+ 	help
+@@ -41,7 +41,7 @@ config RK_NANDC_NAND
+ 	  Nandc controller.
+ 
+ config RK_SFC_NAND
+-	tristate "Rockchip SFC Spi Nand Devices support"
++	bool "Rockchip SFC Spi Nand Devices support"
+ 	default n
+ 	depends on RK_NAND != y
+ 	help
+@@ -63,7 +63,7 @@ config RK_SFC_NAND_MTD
+ 	  Say Y when you wanna use mtd interface for SFC_NAND flash.
+ 
+ config RK_SFC_NOR
+-	tristate "Rockchip SFC Spi Nor Devices Support"
++	bool "Rockchip SFC Spi Nor Devices Support"
+ 	select CRYPTO
+ 	select CRYPTO_LIB_ARC4
+ 	default n
+-- 
+2.30.2
+

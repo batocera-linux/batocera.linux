@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHS="odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 rk3128 rk3288 rk3326 rk3399 s905 s905gen2 s905gen3 s912 s922x x86_64 tritium-h5 orangepi-pc cha odin orangepi-zero2 orangepi-3-lts"
+ARCHS="odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 rk3128 rk3288 rk3326 rk3399 s905 s905gen2 s905gen3 s912 s922x x86_64 tritium-h5 orangepi-pc cha odin orangepi-zero2 orangepi-3-lts rk3588"
 
 BR_DIR=$1
 BATOCERA_BINARIES_DIR=$2

@@ -1,0 +1,39 @@
+From 88575eaadc63c801347f9321c104fe52ac5af45e Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntan <yt@radxa.com>
+Date: Tue, 6 Dec 2022 16:10:47 +0800
+Subject: [PATCH 13/18] VENDOR: Version tagging linux-libc-dev as well
+
+---
+ scripts/package/builddeb | 2 +-
+ scripts/package/mkdebian | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 91a502bb9..6eb5af462 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -215,7 +215,7 @@ if [ "$ARCH" != "um" ]; then
+ 	fi
+ 
+ 	deploy_libc_headers debian/linux-libc-dev
+-	create_package linux-libc-dev debian/linux-libc-dev
++	create_package linux-libc-dev-$version debian/linux-libc-dev
+ fi
+ 
+ create_package "$packagename" "$tmpdir"
+diff --git a/scripts/package/mkdebian b/scripts/package/mkdebian
+index 60a2a63a5..c300ca732 100755
+--- a/scripts/package/mkdebian
++++ b/scripts/package/mkdebian
+@@ -184,7 +184,7 @@ Description: Linux kernel, version $version
+  This package contains the Linux kernel, modules and corresponding other
+  files, version: $version.
+ 
+-Package: linux-libc-dev
++Package: linux-libc-dev-$version
+ Section: devel
+ Provides: linux-kernel-headers
+ Architecture: $debarch
+-- 
+2.30.2
+

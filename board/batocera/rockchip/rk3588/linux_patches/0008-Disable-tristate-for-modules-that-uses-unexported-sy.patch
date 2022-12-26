@@ -1,0 +1,52 @@
+From 0c4e3035c3216f14a45429de84c0e15df8f7f7d9 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <95260730+RadxaYuntian@users.noreply.github.com>
+Date: Mon, 10 Oct 2022 10:57:00 +0800
+Subject: [PATCH 08/18] Disable tristate for modules that uses unexported
+ symbols
+
+---
+ drivers/media/platform/rockchip/hdmirx/Kconfig | 2 +-
+ drivers/soc/rockchip/Kconfig                   | 2 +-
+ drivers/staging/android/fiq_debugger/Kconfig   | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/media/platform/rockchip/hdmirx/Kconfig b/drivers/media/platform/rockchip/hdmirx/Kconfig
+index 4074cfe15..84bfa8afb 100644
+--- a/drivers/media/platform/rockchip/hdmirx/Kconfig
++++ b/drivers/media/platform/rockchip/hdmirx/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ config VIDEO_ROCKCHIP_HDMIRX
+-	tristate "Rockchip HDMI Receiver driver"
++	bool "Rockchip HDMI Receiver driver"
+ 	depends on VIDEO_V4L2
+ 	select MEDIA_CONTROLLER
+ 	select VIDEO_V4L2_SUBDEV_API
+diff --git a/drivers/soc/rockchip/Kconfig b/drivers/soc/rockchip/Kconfig
+index 0773f56a9..18cabac64 100644
+--- a/drivers/soc/rockchip/Kconfig
++++ b/drivers/soc/rockchip/Kconfig
+@@ -149,7 +149,7 @@ config ROCKCHIP_RAMDISK
+ 	  device.
+ 
+ config ROCKCHIP_SUSPEND_MODE
+-	tristate "Rockchip suspend mode config"
++	bool "Rockchip suspend mode config"
+ 	depends on ROCKCHIP_SIP
+ 	help
+ 	  Say Y here if you want to set the suspend mode to the ATF.
+diff --git a/drivers/staging/android/fiq_debugger/Kconfig b/drivers/staging/android/fiq_debugger/Kconfig
+index 6ee93bc42..a23a613ea 100644
+--- a/drivers/staging/android/fiq_debugger/Kconfig
++++ b/drivers/staging/android/fiq_debugger/Kconfig
+@@ -1,5 +1,5 @@
+ config FIQ_DEBUGGER
+-	tristate "FIQ Mode Serial Debugger"
++	bool "FIQ Mode Serial Debugger"
+ 	default n
+ 	depends on ARM || ARM64
+ 	help
+-- 
+2.30.2
+

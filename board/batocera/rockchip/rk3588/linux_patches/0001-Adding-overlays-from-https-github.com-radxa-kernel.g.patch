@@ -1,0 +1,1686 @@
+From c4c5889d037eecca7d6412edd03f8854c41d3384 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Thu, 5 Jan 2023 01:17:08 +0000
+Subject: [PATCH 01/18] Adding overlays from
+ https://github.com/radxa/kernel.git
+
+---
+ .../arm64/boot/dts/rockchip/overlays/Makefile |  51 +++++++++
+ .../dts/rockchip/overlays/README.overlays     |   6 ++
+ .../audioinjector-isolated-soundcard.dts      |  67 ++++++++++++
+ .../overlays/rk3588-camera-imx415.dts         | 101 ++++++++++++++++++
+ .../dts/rockchip/overlays/rk3588-i2c0-m1.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-i2c1-m0.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-i2c3-m1.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-i2c7-m3.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-i2c8-m4.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm12-m0.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm13-m0.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm13-m2.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm14-m0.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm14-m1.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm15-m0.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm15-m1.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm15-m3.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm2-m1.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm3-m1.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm5-m2.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm6-m2.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm7-m3.dts  |  13 +++
+ .../dts/rockchip/overlays/rk3588-pwm8-m0.dts  |  13 +++
+ .../overlays/rk3588-spi0-m2-cs0-spidev.dts    |  24 +++++
+ .../overlays/rk3588-spi0-m2-cs1-spidev.dts    |  24 +++++
+ .../overlays/rk3588-spi1-m1-cs0-spidev.dts    |  24 +++++
+ .../rk3588-spi1-m1-cs1-mcp2515-8mhz.dts       |  60 +++++++++++
+ .../overlays/rk3588-spi1-m1-cs1-spidev.dts    |  24 +++++
+ .../dts/rockchip/overlays/rk3588-uart2-m0.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-uart2-m2.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-uart3-m1.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-uart4-m2.dts |  13 +++
+ .../overlays/rk3588-uart7-m1-ctsn-rtsn.dts    |  13 +++
+ .../dts/rockchip/overlays/rk3588-uart7-m1.dts |  13 +++
+ .../dts/rockchip/overlays/rk3588-uart7-m2.dts |  13 +++
+ .../overlays/rock-5a-radxa-display-10fhd.dts  |  79 ++++++++++++++
+ .../overlays/rock-5ab-camera-imx415.dts       | 101 ++++++++++++++++++
+ .../rockchip/overlays/rock-5b-hdmi1-8k.dts    |  63 +++++++++++
+ .../rockchip/overlays/rock-5b-hdmi2-8k.dts    |  79 ++++++++++++++
+ .../overlays/rock-5b-radxa-display-10fhd.dts  |  77 +++++++++++++
+ .../dts/rockchip/overlays/rock-5b-sata.dts    |  37 +++++++
+ .../rpi-ov5647-on-cm3-sodimm-io-csi0.dts      |  86 +++++++++++++++
+ .../rpi-ov5647-on-cm3-sodimm-io-csi1.dts      |  86 +++++++++++++++
+ 43 files changed, 1327 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/Makefile
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/README.overlays
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/audioinjector-isolated-soundcard.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-camera-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c0-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c1-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c3-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c7-m3.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c8-m4.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm12-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m3.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm2-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm3-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm5-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm6-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm7-m3.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm8-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs0-spidev.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs1-spidev.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs0-spidev.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-mcp2515-8mhz.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-spidev.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart3-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart4-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1-ctsn-rtsn.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5a-radxa-display-10fhd.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5ab-camera-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi1-8k.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi2-8k.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5b-radxa-display-10fhd.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rock-5b-sata.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi0.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi1.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/Makefile b/arch/arm64/boot/dts/rockchip/overlays/Makefile
+new file mode 100644
+index 000000000..e5f22913a
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/Makefile
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_CLK_RK3588) += \
++	rk3588-camera-imx415.dtbo \
++	rk3588-i2c0-m1.dtbo \
++	rk3588-i2c1-m0.dtbo \
++	rk3588-i2c3-m1.dtbo \
++	rk3588-i2c7-m3.dtbo \
++	rk3588-i2c8-m4.dtbo \
++	rk3588-pwm2-m1.dtbo \
++	rk3588-pwm3-m1.dtbo \
++	rk3588-pwm5-m2.dtbo \
++	rk3588-pwm6-m2.dtbo \
++	rk3588-pwm7-m3.dtbo \
++	rk3588-pwm8-m0.dtbo \
++	rk3588-pwm12-m0.dtbo \
++	rk3588-pwm13-m0.dtbo \
++	rk3588-pwm13-m2.dtbo \
++	rk3588-pwm14-m0.dtbo \
++	rk3588-pwm14-m1.dtbo \
++	rk3588-pwm15-m0.dtbo \
++	rk3588-pwm15-m1.dtbo \
++	rk3588-pwm15-m3.dtbo \
++	rk3588-spi0-m2-cs0-spidev.dtbo \
++	rk3588-spi0-m2-cs1-spidev.dtbo \
++	rk3588-spi1-m1-cs0-spidev.dtbo \
++	rk3588-spi1-m1-cs1-mcp2515-8mhz.dtbo \
++	rk3588-spi1-m1-cs1-spidev.dtbo \
++	rk3588-uart2-m0.dtbo \
++	rk3588-uart2-m2.dtbo \
++	rk3588-uart3-m1.dtbo \
++	rk3588-uart4-m2.dtbo \
++	rk3588-uart7-m1-ctsn-rtsn.dtbo \
++	rk3588-uart7-m1.dtbo \
++	rk3588-uart7-m2.dtbo \
++	rock-5a-radxa-display-10fhd.dtbo \
++	rock-5ab-camera-imx415.dtbo \
++	rock-5b-radxa-display-10fhd.dtbo \
++	rock-5b-sata.dtbo
++
++dtb-$(CONFIG_CPU_RK3588) += \
++	rock-5b-hdmi1-8k.dtbo \
++	rock-5b-hdmi2-8k.dtbo
++
++dtbotxt-$(CONFIG_ARCH_ROCKCHIP) += \
++	README.overlays
++
++targets += $(dtb-y) $(dtbotxt-y)
++
++always-y		:= $(dtb-y) $(dtbotxt-y)
++clean-files		:= *.dtbo *.scr
++
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/README.overlays b/arch/arm64/boot/dts/rockchip/overlays/README.overlays
+new file mode 100644
+index 000000000..643b605fc
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/README.overlays
+@@ -0,0 +1,6 @@
++
++README.rockchip-overlays
++
++## Introduction
++
++
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/audioinjector-isolated-soundcard.dts b/arch/arm64/boot/dts/rockchip/overlays/audioinjector-isolated-soundcard.dts
+new file mode 100644
+index 000000000..37d29d44f
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/audioinjector-isolated-soundcard.dts
+@@ -0,0 +1,67 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++
++/ {
++	metadata {
++		title = "Enable Audio Injector Isolated Soundcard";
++		compatible = "unknown";
++		category = "misc";
++		description = "Enable Audio Injector Isolated Soundcard";
++	};
++
++	fragment@0 {
++		target = <&i2s3_2ch>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++			cs4272_mclk: codec-mclk {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24576000>;
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c3>;
++		__overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++			pinctrl-0 = <&i2c3m0_xfer>;
++
++			cs4272: cs4272@10 {
++				#sound-dai-cells = <0>;
++				compatible = "cirrus,cs4271";
++				reg = <0x10>;
++				//reset-gpio = <&gpio 5 0>;
++				reset-gpio = <&gpio2 RK_PD7 GPIO_ACTIVE_HIGH>;
++				clocks = <&cs4272_mclk>;
++				clock-names = "mclk";
++				status = "okay";
++			};
++		};
++	};
++
++	fragment@3 {
++		target-path = "/";
++		__overlay__ {
++			sound {
++				compatible = "ai,audioinjector-isolated-soundcard";
++				//mute-gpios = <&gpio 17 0>;
++				mute-gpios = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
++				i2s-controller = <&i2s3_2ch>;
++				codec = <&cs4272>;
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-camera-imx415.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-camera-imx415.dts
+new file mode 100644
+index 000000000..fbe851017
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-camera-imx415.dts
+@@ -0,0 +1,101 @@
++// ROCK 5A/5B Camera IMX415
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&imx415>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&csi2_dphy0_hw>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&csi2_dphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&mipi2_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkcif>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&rkcif_mipi_lvds2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&rkcif_mipi_lvds2_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&rkcif_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&isp0_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&rkisp0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&rkisp0_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c0-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c0-m1.dts
+new file mode 100644
+index 000000000..7e87681bc
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c0-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c0>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c0m1_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c1-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c1-m0.dts
+new file mode 100644
+index 000000000..002497535
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c1-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c1>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c1m0_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c3-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c3-m1.dts
+new file mode 100644
+index 000000000..9a4072596
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c3-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c3>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c3m1_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c7-m3.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c7-m3.dts
+new file mode 100644
+index 000000000..6b8feaf4f
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c7-m3.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c7>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c7m3_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c8-m4.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c8-m4.dts
+new file mode 100644
+index 000000000..34b9e14d7
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-i2c8-m4.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c8>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&i2c8m4_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm12-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm12-m0.dts
+new file mode 100644
+index 000000000..6dc0c7ed0
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm12-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm12>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm12m0_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m0.dts
+new file mode 100644
+index 000000000..38ec499ce
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm13>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm13m0_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m2.dts
+new file mode 100644
+index 000000000..0d9b225ff
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm13-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm13>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm13m2_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m0.dts
+new file mode 100644
+index 000000000..f3ecf1088
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm14>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm14m0_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m1.dts
+new file mode 100644
+index 000000000..30125ec18
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm14-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm14>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm14m1_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m0.dts
+new file mode 100644
+index 000000000..522b76723
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm15>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm15m0_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m1.dts
+new file mode 100644
+index 000000000..7d3de70b0
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm15>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm15m1_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m3.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m3.dts
+new file mode 100644
+index 000000000..207b91cdd
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm15-m3.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm15>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm15m3_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm2-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm2-m1.dts
+new file mode 100644
+index 000000000..d8f0598ed
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm2-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm2>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm2m1_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm3-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm3-m1.dts
+new file mode 100644
+index 000000000..38cdc6934
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm3-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm3>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm3m1_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm5-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm5-m2.dts
+new file mode 100644
+index 000000000..39c195846
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm5-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm5>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm5m2_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm6-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm6-m2.dts
+new file mode 100644
+index 000000000..3a2e5f753
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm6-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm6>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm6m2_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm7-m3.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm7-m3.dts
+new file mode 100644
+index 000000000..bf18b2128
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm7-m3.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm7>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm7m3_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm8-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm8-m0.dts
+new file mode 100644
+index 000000000..ec9067c17
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-pwm8-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm8>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&pwm8m0_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs0-spidev.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs0-spidev.dts
+new file mode 100644
+index 000000000..d3843ab34
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs0-spidev.dts
+@@ -0,0 +1,24 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&spi0>;
++
++		__overlay__ {
++			status = "okay";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi0m2_cs0 &spi0m2_pins>;
++			max-freq = <50000000>;
++
++			spidev@0 {
++				compatible = "rockchip,spidev";
++				status = "okay";
++				reg = <0>;
++				spi-max-frequency = <50000000>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs1-spidev.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs1-spidev.dts
+new file mode 100644
+index 000000000..4335bd151
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi0-m2-cs1-spidev.dts
+@@ -0,0 +1,24 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&spi0>;
++
++		__overlay__ {
++			status = "okay";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi0m2_cs1 &spi0m2_pins>;
++			max-freq = <50000000>;
++
++			spidev@1 {
++				compatible = "rockchip,spidev";
++				status = "okay";
++				reg = <1>;
++				spi-max-frequency = <50000000>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs0-spidev.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs0-spidev.dts
+new file mode 100644
+index 000000000..bad7628f0
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs0-spidev.dts
+@@ -0,0 +1,24 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&spi1>;
++
++		__overlay__ {
++			status = "okay";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi1m1_cs0 &spi1m1_pins>;
++			max-freq = <50000000>;
++
++			spidev@0 {
++				compatible = "rockchip,spidev";
++				status = "okay";
++				reg = <0>;
++				spi-max-frequency = <50000000>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-mcp2515-8mhz.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-mcp2515-8mhz.dts
+new file mode 100644
+index 000000000..b24c7be01
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-mcp2515-8mhz.dts
+@@ -0,0 +1,60 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++
++/ {
++	metadata {
++		title = "Enable MCP2515 with 8MHz external clock on SPI_1 CS1";
++		compatible = "radxa,rock-5b";
++		category = "misc";
++		description = "Provide support for Microchip MCP2515 SPI CAN controller.\nAssumes 8MHz external clock.\nUses Pin 19 (GPIOI1_B2) for INT.";
++	};
++
++	fragment@0 {
++		target = <&spi1>;
++		__overlay__ {
++			status = "okay";
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi1m1_pins &spi1m1_cs0 &spi1m1_cs1>;
++
++			can0: mcp2515@1 {
++				compatible = "microchip,mcp2515";
++				reg = <1>;
++				spi-max-frequency = <10000000>;
++
++				pinctrl-names = "default";
++				pinctrl-0 = <&mcp2515_int_pins>;
++
++				interrupt-parent = <&gpio1>;
++				interrupts = <RK_PB2 IRQ_TYPE_EDGE_FALLING>;
++
++				clocks = <&can0_osc>;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			mcp2515 {
++				mcp2515_int_pins: mcp2515-int-pins {
++					rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>;
++				};
++			};
++		};
++	};
++
++	fragment@2 {
++		target-path = "/";
++		__overlay__ {
++			can0_osc: can0-osc {
++                compatible = "fixed-clock";
++                #clock-cells = <0>;
++                clock-frequency  = <8000000>;
++            };
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-spidev.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-spidev.dts
+new file mode 100644
+index 000000000..6775b9008
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-spi1-m1-cs1-spidev.dts
+@@ -0,0 +1,24 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&spi1>;
++
++		__overlay__ {
++			status = "okay";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi1m1_cs1 &spi1m1_pins>;
++			max-freq = <50000000>;
++
++			spidev@1 {
++				compatible = "rockchip,spidev";
++				status = "okay";
++				reg = <1>;
++				spi-max-frequency = <50000000>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m0.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m0.dts
+new file mode 100644
+index 000000000..dcad7d809
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m0.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart2>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart2m0_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m2.dts
+new file mode 100644
+index 000000000..12ce0868e
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart2-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart2>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart2m2_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart3-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart3-m1.dts
+new file mode 100644
+index 000000000..cc5522c9c
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart3-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart3>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart3m1_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart4-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart4-m2.dts
+new file mode 100644
+index 000000000..a371018ef
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart4-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart4>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart4m2_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1-ctsn-rtsn.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1-ctsn-rtsn.dts
+new file mode 100644
+index 000000000..ce51459ff
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1-ctsn-rtsn.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart7>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart7m1_xfer &uart7m1_ctsn &uart7m1_rtsn>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1.dts
+new file mode 100644
+index 000000000..d6219867c
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m1.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart7>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart7m1_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m2.dts b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m2.dts
+new file mode 100644
+index 000000000..6a56f61d1
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rk3588-uart7-m2.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart7>;
++
++		__overlay__ {
++			status = "okay";
++			pinctrl-0 = <&uart7m2_xfer>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5a-radxa-display-10fhd.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5a-radxa-display-10fhd.dts
+new file mode 100644
+index 000000000..a536bd790
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5a-radxa-display-10fhd.dts
+@@ -0,0 +1,79 @@
++// ROCK 5A Radxa Display 10FHD
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "radxa,rock-5a", "rockchip,rk3588";
++
++	fragment@0 {
++		target = <&vcc_lcd_mipi0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&dsi0_backlight>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&pwm10>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&dsi0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&dsi0_panel>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&mipi_dcphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&route_dsi0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&dsi0_in_vp2>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@8 {
++		target = <&dsi0_in_vp3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5ab-camera-imx415.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5ab-camera-imx415.dts
+new file mode 100644
+index 000000000..fbe851017
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5ab-camera-imx415.dts
+@@ -0,0 +1,101 @@
++// ROCK 5A/5B Camera IMX415
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&i2c3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&imx415>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&csi2_dphy0_hw>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&csi2_dphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&mipi2_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkcif>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&rkcif_mipi_lvds2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&rkcif_mipi_lvds2_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&rkcif_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&isp0_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&rkisp0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&rkisp0_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi1-8k.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi1-8k.dts
+new file mode 100644
+index 000000000..0f02f383c
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi1-8k.dts
+@@ -0,0 +1,63 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/clock/rk3588-cru.h>
++
++/ {
++	metadata {
++		title ="Enable 8K output on HDMI1";
++		compatible = "radxa,rock-5b", "rockchip,rk3588";
++		category = "display";
++		description = "Enable 8K output on HDMI1. Note: 8K cannot be enabled on HDMI1 and HDMI2 at the same time.";
++	};
++
++	fragment@0 {
++		target = <&route_hdmi1>;
++
++		__overlay__ {
++			connect = <&vp2_out_hdmi1>;
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&hdmi1_in_vp1>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@2 {
++		target = <&hdmi1_in_vp2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&route_hdmi0>;
++
++		__overlay__ {
++			connect = <&vp0_out_hdmi0>;
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&hdmi0_in_vp0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&vop>;
++
++		__overlay__ {
++			assigned-clocks = <&cru ACLK_VOP>;
++			assigned-clock-rates = <800000000>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi2-8k.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi2-8k.dts
+new file mode 100644
+index 000000000..f65628814
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-hdmi2-8k.dts
+@@ -0,0 +1,79 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/clock/rk3588-cru.h>
++
++/ {
++	metadata {
++		title ="Enable 8K output on HDMI2";
++		compatible = "radxa,rock-5b", "rockchip,rk3588";
++		category = "display";
++		description = "Enable 8K output on HDMI2. Note: 8K cannot be enabled on HDMI1 and HDMI2 at the same time.";
++	};
++
++	fragment@0 {
++		target = <&route_hdmi1>;
++
++		__overlay__ {
++			connect = <&vp0_out_hdmi1>;
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&hdmi1_in_vp1>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@2 {
++		target = <&hdmi1_in_vp0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&route_hdmi0>;
++
++		__overlay__ {
++			connect = <&vp2_out_hdmi0>;
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&hdmi0_in_vp2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&hdmi0_in_vp1>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@6 {
++		target = <&hdmi0_in_vp0>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@7 {
++		target = <&vop>;
++
++		__overlay__ {
++			assigned-clocks = <&cru ACLK_VOP>;
++			assigned-clock-rates = <800000000>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5b-radxa-display-10fhd.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-radxa-display-10fhd.dts
+new file mode 100644
+index 000000000..0be121e18
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-radxa-display-10fhd.dts
+@@ -0,0 +1,77 @@
++// ROCK 5B Radxa Display 10FHD
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&vcc_lcd_mipi1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&dsi1_backlight>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&pwm2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&dsi1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&dsi1_panel>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&mipi_dcphy1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&route_dsi1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&dsi1_in_vp2>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@8 {
++		target = <&dsi1_in_vp3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rock-5b-sata.dts b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-sata.dts
+new file mode 100644
+index 000000000..2f38b7c0f
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rock-5b-sata.dts
+@@ -0,0 +1,37 @@
++// ROCK 5B Pcie M.2 to sata
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&wifi_disable>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@1 {
++		target = <&bt_wake>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@2 {
++		target = <&pcie2x1l0>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@3 {
++		target = <&sata1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi0.dts b/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi0.dts
+new file mode 100644
+index 000000000..998a91e59
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi0.dts
+@@ -0,0 +1,86 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "rockchip,rk3568";
++
++	fragment@0 {
++		target = <&ext_cam_ov5647_clk>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&ov5647_1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&csi2_dphy_hw>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&csi2_dphy1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkisp_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&rkisp>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&rkisp_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&rkcif_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&rkcif>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi1.dts b/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi1.dts
+new file mode 100644
+index 000000000..b2967c074
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlays/rpi-ov5647-on-cm3-sodimm-io-csi1.dts
+@@ -0,0 +1,86 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "rockchip,rk3568";
++
++	fragment@0 {
++		target = <&ext_cam_ov5647_clk>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&ov5647_2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&csi2_dphy_hw>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&csi2_dphy2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkisp_vir1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&rkisp>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@7 {
++		target = <&rkisp_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&rkcif_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&rkcif>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+\ No newline at end of file
+-- 
+2.30.2
+

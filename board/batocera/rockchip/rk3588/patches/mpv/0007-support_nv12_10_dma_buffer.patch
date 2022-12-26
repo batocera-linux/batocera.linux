@@ -1,0 +1,111 @@
+From 2e58e38ad934a402db26163526c5c631afb54ed6 Mon Sep 17 00:00:00 2001
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Date: Mon, 13 Dec 2021 18:47:48 +0800
+Subject: [PATCH] HACK: vo_xv: Support NV12_10 dma buffer
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+---
+ video/out/vo_xv.c | 31 ++++++++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/video/out/vo_xv.c b/video/out/vo_xv.c
+index 37513a1ac02..8f09c208723 100644
+--- a/video/out/vo_xv.c
++++ b/video/out/vo_xv.c
+@@ -57,6 +57,8 @@
+ #include "input/input.h"
+ #include "osdep/timer.h"
+ 
++#include <drm_fourcc.h>
++
+ #define CK_METHOD_NONE       0 // no colorkey drawing
+ #define CK_METHOD_BACKGROUND 1 // set colorkey as window background
+ #define CK_METHOD_AUTOPAINT  2 // let xv draw the colorkey
+@@ -70,12 +72,14 @@
+ #define XV_DMA_CLIENT_PROP      "XV_DMA_CLIENT_ID"
+ #define XV_DMA_VER_STRIDE_PROP  "XV_DMA_VER_STRIDE"
+ #define XV_DMA_HOR_STRIDE_PROP  "XV_DMA_HOR_STRIDE"
++#define XV_DMA_DRM_FOURCC_PROP  "XV_DMA_DRM_FOURCC"
+ #define XV_DMA_CLIENT_PATH      "/tmp/.xv_dma_client"
+ 
+ struct dma_desc {
+     int hor_stride;
+     int ver_stride;
+     int dma_fd;
++    uint32_t drm_fourcc;
+     int valid;
+ };
+ 
+@@ -249,7 +253,7 @@ static void xv_disable_dma_client(struct vo *vo)
+     ctx->dma_client_id = 0;
+ }
+ 
+-static void xv_send_dma_params(struct vo *vo, int hor_stride, int ver_stride)
++static void xv_send_dma_params(struct vo *vo, struct dma_desc *dma_desc)
+ {
+     struct xvctx *ctx = vo->priv;
+     Atom atom;
+@@ -261,13 +265,24 @@ static void xv_send_dma_params(struct vo *vo, int hor_stride, int ver_stride)
+     if (atom == None)
+         goto failed;
+ 
+-    XvSetPortAttribute(vo->x11->display, ctx->xv_port, atom, hor_stride);
++    XvSetPortAttribute(vo->x11->display, ctx->xv_port,
++                       atom, dma_desc->hor_stride);
+ 
+     atom = XInternAtom(vo->x11->display, XV_DMA_VER_STRIDE_PROP, True);
+     if (atom == None)
+         goto failed;
+ 
+-    XvSetPortAttribute(vo->x11->display, ctx->xv_port, atom, ver_stride);
++    XvSetPortAttribute(vo->x11->display, ctx->xv_port,
++                       atom, dma_desc->ver_stride);
++
++    atom = XInternAtom(vo->x11->display, XV_DMA_DRM_FOURCC_PROP, True);
++    if (atom == None) {
++        if (dma_desc->drm_fourcc != AV_PIX_FMT_NV12)
++            goto failed;
++    } else {
++        XvSetPortAttribute(vo->x11->display, ctx->xv_port,
++                           atom, dma_desc->drm_fourcc);
++    }
+ 
+     return;
+ 
+@@ -689,7 +704,7 @@ static int reconfig(struct vo *vo, struct mp_image_params *params)
+ 
+     resize(vo);
+ 
+-    ctx->dma_client_id = getpid();
++    ctx->dma_client_id = ctx->xv_port;
+     xv_flush_dma_client(vo);
+ 
+     return 0;
+@@ -850,7 +865,7 @@ static void flip_page(struct vo *vo)
+ 
+     if (dma_desc->valid) {
+         xv_send_dma_fd(vo, dma_desc->dma_fd);
+-        xv_send_dma_params(vo, dma_desc->hor_stride, dma_desc->ver_stride);
++        xv_send_dma_params(vo, dma_desc);
+         dma_desc->valid = 0;
+     }
+ 
+@@ -874,13 +889,15 @@ static void draw_image(struct vo *vo, mp_image_t *mpi)
+     if (mpi) {
+         if (mpi->hwctx && !xv_check_dma_client(vo)) {
+             AVHWFramesContext *fctx = (void *)mpi->hwctx->data;
+-            if (fctx->format == AV_PIX_FMT_DRM_PRIME &&
+-                fctx->sw_format == AV_PIX_FMT_NV12) {
++
++            /* HACK: NV12 or NV12_10 */
++            if (fctx->format == AV_PIX_FMT_DRM_PRIME) {
+                 AVDRMFrameDescriptor *desc =
+                     (AVDRMFrameDescriptor *)mpi->planes[0];
+                 AVDRMLayerDescriptor *layer = &desc->layers[0];
+                 struct dma_desc *dma_desc = &ctx->dma_descs[ctx->current_buf];
+ 
++                dma_desc->drm_fourcc = layer->format;
+                 dma_desc->hor_stride = layer->planes[0].pitch;
+                 dma_desc->ver_stride =
+                     layer->planes[1].offset / dma_desc->hor_stride;
+

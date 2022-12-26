@@ -1,0 +1,39 @@
+From 3a2bcae655c7152c72af305f4ef3c49bfd36bf93 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <yt@radxa.com>
+Date: Thu, 3 Nov 2022 19:27:24 +0800
+Subject: [PATCH 11/18] Disable tristate for essential boot services
+
+---
+ drivers/gpio/Kconfig    | 2 +-
+ drivers/pinctrl/Kconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 88edf9d46..0f2efbe28 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -496,7 +496,7 @@ config GPIO_REG
+ 	  can be used to represent any register as a set of GPIO signals.
+ 
+ config GPIO_ROCKCHIP
+-	tristate "Rockchip GPIO support"
++	bool "Rockchip GPIO support"
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	select GPIOLIB_IRQCHIP
+ 	default ARCH_ROCKCHIP
+diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+index f38f98fe5..1a1effc28 100644
+--- a/drivers/pinctrl/Kconfig
++++ b/drivers/pinctrl/Kconfig
+@@ -207,7 +207,7 @@ config PINCTRL_OXNAS
+ 	select MFD_SYSCON
+ 
+ config PINCTRL_ROCKCHIP
+-	tristate "Rockchip gpio and pinctrl driver"
++	bool "Rockchip gpio and pinctrl driver"
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	depends on OF
+ 	select GPIOLIB
+-- 
+2.30.2
+

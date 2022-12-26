@@ -1,0 +1,26 @@
+From 09bacda134c83f314f80213e25929c2c642db631 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <yt@radxa.com>
+Date: Thu, 3 Nov 2022 17:02:09 +0800
+Subject: [PATCH 12/18] Revert "ANDROID: clk: Enable writable debugfs files"
+
+This reverts commit 861a024589b3f42ca93877bf74f8a67f59c66ca8.
+---
+ drivers/clk/clk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index bec881941..f5f3e9db0 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3107,7 +3107,7 @@ static int clk_dump_show(struct seq_file *s, void *data)
+ }
+ DEFINE_SHOW_ATTRIBUTE(clk_dump);
+ 
+-#define CLOCK_ALLOW_WRITE_DEBUGFS
++#undef CLOCK_ALLOW_WRITE_DEBUGFS
+ #ifdef CLOCK_ALLOW_WRITE_DEBUGFS
+ /*
+  * This can be dangerous, therefore don't provide any real compile time
+-- 
+2.30.2
+
