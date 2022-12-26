@@ -4,6 +4,7 @@
 - brightness can go down to 1% (instead of 5%)
 - holding power button 3s will show the shutdown menu
 - new enhanced UI for themes management (from Content Downloader)
+- navigation with light guns now possible
 ### Added
 - alsa ucm2 to x86 builds for soundcard compatibility - v1.2.8
 - sound open firmware for expanded soundcard support - v2.2.3
