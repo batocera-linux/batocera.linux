@@ -86,9 +86,6 @@ endif
 config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
     bool "batocera is limited to abandonned systems"
 
-config BR2_PACKAGE_BATOCERA_SBC_XORG
-    bool "xorg on Single Board Computer"
-
 ##########################################
 config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 	bool "batocera.linux music formats support"
@@ -331,7 +328,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_SDL2
 
     # xorg
-	select BR2_PACKAGE_BATOCERA_XORG        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
+	select BR2_PACKAGE_BATOCERA_XORG        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	# compression tools
 	select BR2_PACKAGE_UNZIP        # for /userdata/system/upgrade/share.zip
@@ -1343,8 +1340,8 @@ config BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VC4
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
-    select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG || BR2_PACKAGE_XWAYLAND # glxinfo etc
+    select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_XWAYLAND # OpenGL GLX support
+    select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_XWAYLAND # glxinfo etc
 
 config BR2_PACKAGE_BATOCERA_LIMA_MESA3D
 	bool "batocera.linux driver mesa LIMA"
@@ -1372,8 +1369,6 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_OPENGL_EGL
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
-    select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_BATOCERA_SBC_XORG # OpenGL GLX support
-    select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_BATOCERA_SBC_XORG # glxinfo etc
 
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	bool "batocera.linux Firmwares packages selection"
@@ -1490,7 +1485,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	# vendor neutral GL dispatch library
 	# already set by nvidia for x86_64, but required on x86 for pcsx2
 	# required for RPi4 OpenGL stack
-	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_SBC_XORG
+	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 config BR2_PACKAGE_BATOCERA_GPU_X86
 	bool "batocera.linux GPU support for x86 platform"
