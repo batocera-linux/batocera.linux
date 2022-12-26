@@ -26,6 +26,7 @@
 - initial Intel A770 GPU support
 - Enabled libretro-yabasanshiro for platform RK3399
 - force feedback for Nintendo controllers (requires linux kernel 5.16 or later)
+- Added wayland + sway support for single board computer (SBC)
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
