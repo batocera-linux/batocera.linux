@@ -17,6 +17,13 @@ CEMU_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -Wno-dev -DBUILD_SHARED_LIBS=OFF
 CEMU_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF -DENABLE_VCPKG=OFF -DPORTABLE=OFF
 CEMU_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/glslang"
 
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+    CEMU_CONF_OPTS += -DENABLE_WAYLAND=ON
+    CEMU_DEPENDENCIES += wayland wayland-protocols
+else
+    CEMU_CONF_OPTS += -DENABLE_WAYLAND=OFF
+endif
+
 define CEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/cemu/
 	mv -f $(@D)/bin/Cemu_release $(@D)/bin/cemu
