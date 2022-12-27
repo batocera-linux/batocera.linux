@@ -1,6 +1,5 @@
 config BR2_PACKAGE_GLSLANG
   bool "glslang"
-  depends on BR2_PACKAGE_WAYLAND
   select BR2_PACKAGE_VULKAN_HEADERS
   select BR2_PACKAGE_VULKAN_LOADER
   help
