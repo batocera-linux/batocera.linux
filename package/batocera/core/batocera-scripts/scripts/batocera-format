@@ -131,19 +131,19 @@ do_format() {
 	return 1
     fi
     
-    nr=$(blkid | grep "SHARE" | wc -l); nr=$(($nr + 1)); SHAREnr=SHARE$nr;
-    if [[ "$nr" -le "1" ]]; then SHAREnr=SHARE; fi
-    if [[ "$(blkid | grep \"SHARE\")" = "" ]]; then SHAREnr=SHARE; fi
+    nr=$(blkid | grep "DRIVE" | wc -l); nr=$(($nr + 1)); DRIVEnr=DRIVE$nr;
+    if [[ "$nr" -le "1" ]]; then DRIVEnr=DRIVE1; fi
+    
     echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs -L $SHAREnr "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -L $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 -L $SHAREnr "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -L $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat -n $SHAREnr "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
