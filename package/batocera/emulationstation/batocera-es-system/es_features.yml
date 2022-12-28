@@ -7404,6 +7404,14 @@ rpcs3:
                 "ASMJIT Recompiler":    Recompiler (ASMJIT)
                 "Fast Interpreter":     Interpreter (fast)
                 "Precise Interpreter":  Interpreter (precise)
+        spuxfloataccuracy:
+            group: ADVANCED OPTIONS
+            prompt:      SPU XFloat Accuracy
+            description: Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder.
+            choices:
+                "Accurate XFloat":    accurate
+                "Approximate XFloat": approximate
+                "Relaxed XFloat":     relaxed
         framelimit:
             group: ADVANCED OPTIONS
             prompt:      ADDITIONAL FRAMELIMIT
