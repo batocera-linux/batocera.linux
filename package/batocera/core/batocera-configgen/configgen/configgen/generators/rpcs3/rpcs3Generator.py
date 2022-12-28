@@ -22,28 +22,28 @@ class Rpcs3Generator(Generator):
         # Taking care of the CurrentSettings.ini file
         if not os.path.exists(os.path.dirname(batoceraFiles.rpcs3CurrentConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.rpcs3CurrentConfig))
-            
+
         # Generates CurrentSettings.ini with values to disable prompts on first run
-        
+
         rpcsCurrentSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         rpcsCurrentSettings.optionxform = str
         if os.path.exists(batoceraFiles.rpcs3CurrentConfig):
             rpcsCurrentSettings.read(batoceraFiles.rpcs3CurrentConfig)
-        
+
         # Sets Gui Settings to close completely and disables some popups
         if not rpcsCurrentSettings.has_section("main_window"):
-            rpcsCurrentSettings.add_section("main_window")  
-        
+            rpcsCurrentSettings.add_section("main_window")
+
         rpcsCurrentSettings.set("main_window", "confirmationBoxExitGame", "false")
         rpcsCurrentSettings.set("main_window", "infoBoxEnabledInstallPUP","false")
         rpcsCurrentSettings.set("main_window", "infoBoxEnabledWelcome","false")
-                
+
         with open(batoceraFiles.rpcs3CurrentConfig, 'w') as configfile:
             rpcsCurrentSettings.write(configfile)
-        
+
         if not os.path.exists(os.path.dirname(batoceraFiles.rpcs3config)):
-            os.makedirs(os.path.dirname(batoceraFiles.rpcs3config))    
+            os.makedirs(os.path.dirname(batoceraFiles.rpcs3config))
 
         # Generate a default config if it doesn't exist otherwise just open the existing
         rpcs3ymlconfig = {}
@@ -59,10 +59,10 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"] = {}
         # Add Node Video
         if "Video" not in rpcs3ymlconfig:
-            rpcs3ymlconfig["Video"] = {}         
+            rpcs3ymlconfig["Video"] = {}
         # Add Node Audio
         if "Audio" not in rpcs3ymlconfig:
-            rpcs3ymlconfig["Audio"] = {}   
+            rpcs3ymlconfig["Audio"] = {}
         # Add Node Miscellaneous
         if "Miscellaneous" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Miscellaneous"] = {}
@@ -80,6 +80,24 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"]['SPU Decoder'] = system.config["spudecoder"]
         else:
             rpcs3ymlconfig["Core"]['SPU Decoder'] = 'Recompiler (LLVM)'
+
+        # Set the SPU XFloat Accuracy based on config
+        rpcs3ymlconfig["Core"]['Accurate xfloat'] = "false"
+        rpcs3ymlconfig["Core"]['Approximate xfloat'] = "true"
+        # This is not an oversight. Relaxed xfloat is always set to "true" by the RPCS3 config menu.
+        rpcs3ymlconfig["Core"]['Relaxed xfloat'] = "true"
+        if system.isOptSet("spuxfloataccuracy"):
+            if system.config["spuxfloataccuracy"] == "accurate":
+                rpcs3ymlconfig["Core"]['Accurate xfloat'] = "true"
+                rpcs3ymlconfig["Core"]['Approximate xfloat'] = "false"
+            # This is what is set by default.
+            # elif system.config["spuxfloataccuracy"] == "approximate":
+            #     rpcs3ymlconfig["Core"]['Accurate xfloat'] = "false"
+            #     rpcs3ymlconfig["Core"]['Approximate xfloat'] = "true"
+            elif system.config["spuxfloataccuracy"] == "relaxed":
+                rpcs3ymlconfig["Core"]['Accurate xfloat'] = "false"
+                rpcs3ymlconfig["Core"]['Approximate xfloat'] = "false"
+
         # Set the Default Core Values we need
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
         rpcs3ymlconfig["Core"]['SPU Cache'] = False # When SPU Cache is True, game performance decreases signficantly. Force it to off.
@@ -89,6 +107,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"]['Preferred SPU Threads'] = system.config["sputhreads"]
         else:
             rpcs3ymlconfig["Core"]['Preferred SPU Threads'] = 0
+
         # [Video]
         # gfx backend
         if system.isOptSet("gfxbackend"):
@@ -145,7 +164,7 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Audio"]['Renderer'] = 'Cubeb' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
         rpcs3ymlconfig["Audio"]['Master Volume'] = 100
         rpcs3ymlconfig["Audio"]['Audio Channels'] = 'Downmix to Stereo'
-        
+
         # [Miscellaneous]
         rpcs3ymlconfig["Miscellaneous"]['Exit RPCS3 when process finishes'] = True
         rpcs3ymlconfig["Miscellaneous"]['Start games in fullscreen mode'] = True
