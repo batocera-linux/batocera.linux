@@ -1,0 +1,13 @@
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+index 78c2a6a584..a568a8ee05 100644
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -174,7 +174,7 @@ else ifeq ($(platform), rpi4)
+ 	HAVE_SSE = 0
+ 	FORCE_GLES = 1
+ 	USE_AARCH64_DRC = 1
+-	DYNAREC_DEVMIYAX = 1
++	DYNAREC_DEVMIYAX = 0
+ 	FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 
+ # ODROIDs
