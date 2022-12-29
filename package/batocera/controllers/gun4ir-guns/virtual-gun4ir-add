@@ -1,0 +1,48 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+
+cleanAndExit() {
+    rmdir "/var/run/virtual-gun4ir-devices.${USBPATHHASH}.lock"
+    exit "${1}"
+}
+
+# lock
+N=0
+while ! mkdir "/var/run/virtual-gun4ir-devices.${USBPATHHASH}.lock"
+do
+    sleep 1
+    let N++
+    test "${N}" -gt 30 && exit 1 # give up
+done
+
+NDEVS=$(cat "/var/run/virtual-gun4ir-devices.${USBPATHHASH}" | wc -l)
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(head -1 "/var/run/virtual-gun4ir-devices.${USBPATHHASH}")
+    DEV2=$(tail -1 "/var/run/virtual-gun4ir-devices.${USBPATHHASH}")
+    rm "/var/run/virtual-gun4ir-devices.${USBPATHHASH}" || cleanAndExit 1
+
+    # 1:     left     / b
+    # 2:     right    / a
+    # 3:     middle   / home
+    # -:     button_1 / select
+    # 1:     button_2 / a
+    # 2:     button_3 / b
+    # +:     button_4 / c
+    # up:    button_5 / up
+    # down:  button_6 / down
+    # left:  button_7 / left
+    # right: button_8 / right
+    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"/var/log/virtual-gun4ir-devices.${USBPATHHASH}.log" &
+    echo $! > "/var/run/virtual-gun4ir-devices.${USBPATHHASH}.pid"
+else
+    echo "${DEVNAME}" >> "/var/run/virtual-gun4ir-devices.${USBPATHHASH}" || cleanAndExit 1
+fi
+
+# unlock
+cleanAndExit 0
