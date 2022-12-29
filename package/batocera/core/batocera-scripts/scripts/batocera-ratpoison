@@ -5,29 +5,11 @@ import re
 import time
 import subprocess
 
-def launchRatpoison():
-	# Launch Xephyr to create display 1 in a window, then launch ratpoison in display 1
-	subprocess.call('xephyr -br -ac -fullscreen -reset -terminate :1', shell=True)
-	subprocess.call('LC_ALL=C DISPLAY=:1 ratpoison')
-
 def killRatpoison():
 	runRatpoisonCommand('quit')
 
-def killXephyr():
-	# Xephyr should end when Ratpoison exits, this is a backup..
-    try:
-        for line in os.popen('ps ax | grep "xephyr" | grep -v grep'):
-            fields = line.split()
-
-            # extracting Process ID from the output
-            pid = fields[0]
-
-            # terminating process
-            os.kill(int(pid), signal.SIGKILL)
-        print("Ended Xephyr")
-
-    except:
-        print("Could not end Xephyr")
+def launchRatpoison():
+	subprocess.call(f'LC_ALL=C startx /usr/bin/ratpoison -- :1', shell=True)
 
 def altTab():
 	runRatpoisonCommand('next')
@@ -60,7 +42,6 @@ if __name__ == '__main__':
 		launchRatpoison()
 	elif sys.argv[1] == 'reset':
 		killRatpoison()
-		killXephyr()
 	elif sys.argv[1] == 'switchapp':
 		altTab()
 	elif sys.argv[1] == 'message':
