@@ -1,0 +1,10 @@
+set wingravity c
+set maxsizegravity c
+set transgravity c
+set bargravity c
+set winname title
+definekey top M-F4 delete
+definekey top M-Tab swap 0 1
+addhook newwindow focus
+addhook deletewindow quit
+banish

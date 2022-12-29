@@ -1500,7 +1500,6 @@ config BR2_PACKAGE_BATOCERA_XORG
 
 	select BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XSERVER_XORG_SERVER
-	select BR2_PACKAGE_XSERVER_XORG_SERVER_XEPHYR # X-in-a-window for ratpoison
 
 	# xwayland based architecture (no more ddx drivers)
 	select BR2_PACKAGE_LIBEPOXY             # required to enable xorg glamor

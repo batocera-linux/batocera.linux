@@ -9,6 +9,9 @@ import configparser
 from . import dolphinControllers
 from . import dolphinSYSCONF
 import controllersConfig
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class DolphinGenerator(Generator):
 

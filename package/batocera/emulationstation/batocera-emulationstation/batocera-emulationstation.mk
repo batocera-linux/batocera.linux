@@ -152,6 +152,7 @@ endif
 
 define BATOCERA_EMULATIONSTATION_XORG
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xorg/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/ratpoisonrc $(TARGET_DIR)/etc/ratpoisonrc
 endef
 
 define BATOCERA_EMULATIONSTATION_WAYLAND
