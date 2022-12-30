@@ -9327,6 +9327,12 @@ model2emu:
             choices:
                 "Off":      0
                 "On":       1
+        model2Software:
+            prompt:      ENABLE SOFTWARE RENDERER
+            description: Use if you're having graphical issues or GPU problems with this emulator.
+            choices:
+                "Off (Default)": 0
+                "On":            1
 
 gsplus:
   features: [padtokeyboard]
