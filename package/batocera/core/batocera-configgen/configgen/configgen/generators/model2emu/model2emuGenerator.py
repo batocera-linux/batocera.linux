@@ -9,6 +9,7 @@ import subprocess
 import sys
 import shutil
 import stat
+from pathlib import Path, PureWindowsPath
 import configparser
 
 eslog = get_logger(__name__)
@@ -18,6 +19,7 @@ class Model2EmuGenerator(Generator):
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/model2"
         emupath = wineprefix + "/model2emu"
+        rompath = "/userdata/roms/model2"
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
@@ -108,7 +110,18 @@ class Model2EmuGenerator(Generator):
         Config.optionxform = str
         if os.path.isfile(configFileName):
             Config.read(configFileName)
-
+        
+        # add subdirectories
+        dirnum = 1 # existing rom path
+        for x in os.listdir(rompath):
+            possibledir = str(rompath + "/" + x)
+            if os.path.isdir(possibledir) and x != "images":
+                dirnum = dirnum +1
+                # convert to windows friendly name
+                subdir = PureWindowsPath(possibledir)
+                # add path to ini file
+                Config.set("RomDirs",f"Dir{dirnum}", f"Z:{subdir}")
+        
         # set ini to use custom resolution and automatically start in fullscreen
         Config.set("Renderer","FullScreenWidth", str(gameResolution["width"]))
         Config.set("Renderer","FullScreenHeight", str(gameResolution["height"]))
@@ -161,7 +174,6 @@ class Model2EmuGenerator(Generator):
             "WINEPREFIX": wineprefix,
             "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
-            "__NV_PRIME_RENDER_OFFLOAD": "1",
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
             "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
         }
@@ -172,7 +184,6 @@ class Model2EmuGenerator(Generator):
             "WINEPREFIX": wineprefix,
             "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
-            "__NV_PRIME_RENDER_OFFLOAD": "1",
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
             "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3",
             "__GLX_VENDOR_LIBRARY_NAME": "mesa",
@@ -186,6 +197,7 @@ class Model2EmuGenerator(Generator):
         if rom != 'config':
             romname = rom.replace("/userdata/roms/model2/", "")
             smplromname = romname.replace(".zip", "")
-            commandArray.extend([smplromname])
+            rom = smplromname.split('/', 1)[-1]
+            commandArray.extend([rom])
         
         return Command.Command(array=commandArray, env=environment)
