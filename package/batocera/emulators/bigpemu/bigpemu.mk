@@ -3,8 +3,9 @@
 # bigpemu
 #
 ################################################################################
-# Version: v1.01
-BIGPEMU_SOURCE = BigPEmu_v101.zip
+
+BIGPEMU_VERSION = v104
+BIGPEMU_SOURCE = BigPEmu_$(BIGPEMU_VERSION).zip
 BIGPEMU_SITE = https://www.richwhitehouse.com/jaguar/builds
 
 define BIGPEMU_EXTRACT_CMDS
@@ -13,7 +14,7 @@ endef
 
 define BIGPEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bigpemu
-	cp -pr $(@D) $(TARGET_DIR)/usr
+	cp -pr $(@D)/* $(TARGET_DIR)/usr/bigpemu/
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/bigpemu/jaguar.bigpemu.keys $(TARGET_DIR)/usr/share/evmapy
