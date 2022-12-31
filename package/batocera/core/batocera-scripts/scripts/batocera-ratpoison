@@ -5,18 +5,22 @@ import re
 import time
 import subprocess
 
-def killRatpoison():
-	runRatpoisonCommand('quit')
-
 def launchRatpoison():
+	if os.path.exists('/var/run/rpready'):
+		os.remove('/var/run/rpready')
 	subprocess.call(f'LC_ALL=C startx /usr/bin/ratpoison -- :1', shell=True)
 
-def altTab():
-	runRatpoisonCommand('next')
-	showMessage(getRatpoisonCommand('windows %s %n:%t (%a)'))
+def killRatpoison():
+	runRatpoisonCommand('quit')
+	if os.path.exists('/var/run/rpready'):
+		os.remove('/var/run/rpready')
 
 def showMessage(message):
 	runRatpoisonCommand(f'echo {message}')
+
+def setReady():
+	with open('/var/run/rpready', "w") as readyFile:
+		readyFile.write("")
 
 def runRatpoisonCommand(command):
 	print(f'Running ratpoison command {command}')
@@ -46,3 +50,5 @@ if __name__ == '__main__':
 		altTab()
 	elif sys.argv[1] == 'message':
 		showMessage(sys.argv[2])
+	elif sys.argv[1] == 'ready':
+		setReady()
