@@ -148,7 +148,6 @@ class XeniaGenerator(Generator):
                 'WINEPREFIX': wineprefix,
                 'LD_LIBRARY_PATH': '/usr/lib:/lib32:/usr/wine/lutris/lib/wine',
                 'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
-                '__NV_PRIME_RENDER_OFFLOAD': '1',
                 'WINEESYNC': '1',
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0',
