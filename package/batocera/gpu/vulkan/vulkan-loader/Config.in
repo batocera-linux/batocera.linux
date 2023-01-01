@@ -1,6 +1,6 @@
 config BR2_PACKAGE_VULKAN_LOADER
   bool "vulkan-loader"
-  depends on BR2_PACKAGE_WAYLAND
+  depends on BR2_PACKAGE_WAYLAND || BR2_PACKAGE_XORG7
   select BR2_PACKAGE_VULKAN_HEADERS
   help
     Vulkan Loader from Khronos

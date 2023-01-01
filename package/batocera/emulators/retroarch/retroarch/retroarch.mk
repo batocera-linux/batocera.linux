@@ -141,7 +141,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
     RETROARCH_CONF_OPTS += --enable-vulkan
-    RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader
+    RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader slang-shaders
 endif
 
 define RETROARCH_CONFIGURE_CMDS

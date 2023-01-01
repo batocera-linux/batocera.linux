@@ -107,23 +107,9 @@ config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 config BR2_PACKAGE_BATOCERA_VULKAN
 	bool "batocera.linux Vulkan support"
 
-	# host-python3+ssl for building vulkan-tools
-	select BR2_PACKAGE_HOST_PYTHON3
-	select BR2_PACKAGE_HOST_PYTHON3_SSL
-
-    # Wayland is required as a dependency by buildroot
-	select BR2_PACKAGE_WAYLAND
-
 	# Vulkan headers, loaders, SPIR-V, glsLang
-	select BR2_PACKAGE_VULKAN_HEADERS
-	select BR2_PACKAGE_VULKAN_LOADER
-	select BR2_PACKAGE_SPIRV_HEADERS
+    select BR2_PACKAGE_VULKAN_TOOLS
 	select BR2_PACKAGE_SPIRV_TOOLS
-	select BR2_PACKAGE_GLSLANG
-	select BR2_PACKAGE_VULKAN_TOOLS
-
-	# Vulkan shaders for RetroArch
-	select BR2_PACKAGE_SLANG_SHADERS if BR2_PACKAGE_RETROARCH
 
 	# Vulkan mesa drivers
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

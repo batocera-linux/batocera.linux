@@ -5,6 +5,7 @@ config BR2_PACKAGE_RETROARCH
 	select BR2_PACKAGE_RETROARCH_ASSETS
 	select BR2_PACKAGE_LIBRETRO_CORE_INFO
 	select BR2_PACKAGE_FLAC
+    select BR2_PACKAGE_SLANG_SHADERS        if BR2_PACKAGE_VULKAN_TOOLS
       help
         A multi emulator frontend.
 
