@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index 10a6c58..516a8e3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -111,6 +111,8 @@ AC_CHECK_TOOL(CPPBIN,cpp,cpp)
+ AC_DEFINE_UNQUOTED(EXEEXT,["$ac_exeext"],[Define to the file extension for executables.])
+ AC_CHECK_TOOL(LD,ld)
+ 
++LIBS="$LIBS -lm"
++
+ case $host in
+   *-darwin*)
+     with_fontconfig=${with_fontconfig:-no}
