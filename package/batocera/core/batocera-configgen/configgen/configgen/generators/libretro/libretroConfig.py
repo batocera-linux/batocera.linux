@@ -858,6 +858,8 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     if bezel == "none" or bezel == "":
         bezel = None
 
+    eslog.debug("libretro bezel: {}".format(bezel))
+
     # create a fake bezel if guns need it
     if bezel is None and gunsBordersSize is not None:
         eslog.debug("guns need border")
@@ -913,7 +915,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
 
     if viewPortUsed:
         if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
-            if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
+            if gameRatio < 1.6 and gunsBordersSize is None: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios ; don't skip if gun borders are needed
                 return
             else:
                 bezelNeedAdaptation = True
@@ -925,8 +927,8 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
 
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
-        if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
-            return
+        if gameRatio < 1.6 and gunsBordersSize is None: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios ; don't skip if gun borders are needed
+                return
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the
             # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
