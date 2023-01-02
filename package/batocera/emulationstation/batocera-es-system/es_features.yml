@@ -427,6 +427,20 @@ libretro:
                     "192+KB":  192
                     "512KB":   512
                     "576+KB":  576
+            cap32_colour:
+                prompt: COLOUR DEPTH
+                description: Choose the emulated colour depth.
+                choices:
+                    "16 bit":           16bit
+                    "24 bit (Default)": 24bit
+            cap32_language:
+                prompt: LANGUAGE
+                description: Change the game's language.
+                choices:
+                    "English (Default)": english
+                    "Spanish":           spanish
+                    "French":            french
+
     mesen-s:
       features: [netplay, padtokeyboard]
       shared: [rewind, autosave, use_guns]
