@@ -142,16 +142,16 @@ class MelonDSGenerator(Generator):
                     continue
                 option = melonDSMapping[input.name]
                 # Workaround - SDL numbers?
-                if option == "Joy_Up":
-                    val = 257
-                elif option == "Joy_Down":
-                    val = 260
-                elif option == "Joy_Left":
-                    val = 264
-                elif option == "Joy_Right":
-                    val = 258
-                else:
-                    val = input.id
+                val = input.id
+                if val == "0":
+                    if option == "Joy_Up":
+                        val = 257
+                    elif option == "Joy_Down":
+                        val = 260
+                    elif option == "Joy_Left":
+                        val = 264
+                    elif option == "Joy_Right":
+                        val = 258
                 eslog.debug(f"Name: {option} - Var: {val}")
                 f.write(f"{option}={val}\n")
         # Always set ID to 0
