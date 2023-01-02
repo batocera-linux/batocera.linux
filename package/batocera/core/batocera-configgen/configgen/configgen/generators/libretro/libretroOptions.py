@@ -1807,14 +1807,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('reicast_anisotropic_filtering', '"off"')
         # Texture Upscaling (xBRZ)
         if system.isOptSet('reicast_texupscale'):
-            coreSettings.save('reicast_texupscale', '"' + system.config['reicast_texupscale'] + '"')
+            coreSettings.save('reicast_texupscale', system.config['reicast_texupscale'])
         else:
-            coreSettings.save('reicast_texupscale', '"off"')
-        # Render to Texture Upscaling
-        if system.isOptSet('reicast_render_to_texture_upscaling'):
-            coreSettings.save('reicast_render_to_texture_upscaling', system.config['reicast_render_to_texture_upscaling'])
-        else:
-            coreSettings.save('reicast_render_to_texture_upscaling', '"1x"')
+            coreSettings.save('reicast_texupscale', '"1"')
         # Frame Skip
         if system.isOptSet('reicast_frame_skipping'):
             coreSettings.save('reicast_frame_skipping', system.config['reicast_frame_skipping'])

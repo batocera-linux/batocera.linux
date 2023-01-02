@@ -1418,20 +1418,10 @@ libretro:
                 prompt:      TEXTURE UPSCALING (XBRZ)
                 description: Enhancement. Upscales screen textures (2D games only).
                 choices:
-                    "Off": off
-                    "2x":  2x
-                    "4x":  4x
-                    "6x":  6x
-            reicast_render_to_texture_upscaling:
-                group: ADVANCED OPTIONS
-                prompt:      RENDER TO TEXTURE UPSCALING
-                description: Enhancement. Upscale in-game screen-captures.
-                choices:
-                    "Off": 1x
-                    "2x":  2x
-                    "3x":  3x
-                    "4x":  4x
-                    "8x":  8x
+                    "Off": 1
+                    "2x":  2
+                    "4x":  4
+                    "6x":  6
             reicast_frame_skipping:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance, at the cost of choppy motion.
