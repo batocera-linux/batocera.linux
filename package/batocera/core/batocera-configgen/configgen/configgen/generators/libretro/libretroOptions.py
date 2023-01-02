@@ -26,6 +26,16 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('cap32_ram', '"' + system.config['cap32_ram'] + '"')
         else:
             coreSettings.save('cap32_ram', '"128"')
+        # colour depth
+        if system.isOptSet('cap32_colour'):
+            coreSettings.save('cap32_gfx_colors', '"' + system.config['cap32_colour'] + '"')
+        else:
+            coreSettings.save('cap32_gfx_colors', '"24bit"')
+        # language
+        if system.isOptSet('cap32_language'):
+            coreSettings.save('cap32_lang_layout', '"' + system.config['cap32_language'] + '"')
+        else:
+            coreSettings.save('cap32_lang_layout', '"english"')
 
     # Atari 800 and 5200
     if (system.config['core'] == 'atari800'):
