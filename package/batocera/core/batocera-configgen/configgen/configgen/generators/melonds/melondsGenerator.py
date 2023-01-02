@@ -41,7 +41,7 @@ class MelonDSGenerator(Generator):
         f.write("ExternalBIOSEnable=1\n")
         f.write("BIOS9Path=/userdata/bios/bios9.bin\n")
         f.write("BIOS7Path=/userdata/bios/bios7.bin\n")
-        f.write("FirmwarePath=/userdata/bios/dsfirmware.bin\n")
+        f.write("FirmwarePath=/userdata/bios/firmware.bin\n")
         f.write("DSiBIOS9Path=/userdata/bios/dsi_bios9.bin\n")
         f.write("DSiBIOS7Path=/userdata/bios/dsi_bios7.bin\n")
         f.write("DSiFirmwarePath=/userdata/bios/dsi_firmware.bin\n")
