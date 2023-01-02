@@ -9,7 +9,7 @@ config BR2_PACKAGE_BATOCERA_AUDIO
 	select BR2_PACKAGE_ALSA_PLUGINS
 	select BR2_PACKAGE_SBC
 	select BR2_PACKAGE_PIPEWIRE
-	select BR2_PACKAGE_PULSEAUDIO_UTILS
+	select BR2_PACKAGE_PULSEAUDIO
 	#select BR2_PACKAGE_RTKIT fails to compile on sbc, not so required for the moment
 	help
 	  Audio support and scripts for batocera.linux

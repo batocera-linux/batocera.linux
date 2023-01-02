@@ -174,7 +174,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BOOST_ATOMIC                         # library that provides atomic data types and operations on these data types
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS              # library is used for smart adaptive formatting of tabular data
 	select BR2_PACKAGE_UTIL_LINUX_SETTERM                   # Set terminal attributes
-	select BR2_PACKAGE_PULSEAUDIO_UTILS                     # Add pactl for configure Pipewire
+	select BR2_PACKAGE_PULSEAUDIO                           # Add pactl for configure Pipewire
 	select BR2_PACKAGE_OPENVPN                              # VPN support
 	select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
 	select BR2_PACKAGE_UMTOOL								# command line tool for configuring Ultimarc arcade hardware

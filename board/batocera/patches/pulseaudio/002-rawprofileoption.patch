@@ -47,21 +47,21 @@ index 9db1d6a..2de5257 100644
  static void get_sink_input_info_callback(pa_context *c, const pa_sink_input_info *i, int is_last, void *userdata) {
      char t[32], k[32], s[PA_SAMPLE_SPEC_SNPRINT_MAX], cv[PA_CVOLUME_SNPRINT_VERBOSE_MAX], cm[PA_CHANNEL_MAP_SNPRINT_MAX], f[PA_FORMAT_INFO_SNPRINT_MAX];
      char *pl;
-@@ -1325,6 +1363,8 @@ static void context_state_callback(pa_context *c, void *userdata) {
-                             o = pa_context_get_sample_info_list(c, get_sample_info_callback, NULL);
-                         else if (pa_streq(list_type, "cards"))
+@@ -2346,6 +2346,8 @@ static void context_state_callback(pa_context *c, void *userdata) {
                              o = pa_context_get_card_info_list(c, get_card_info_callback, NULL);
+                         else if (pa_streq(list_type, "message-handlers"))
+                             o = pa_context_send_message_to_object(c, "/core", "list-handlers", NULL, list_handlers_callback, NULL);
 +                        else if (pa_streq(list_type, "cards-profiles-raw"))
 +                            o = pa_context_get_card_info_list(c, get_card_profile_raw_info_callback, NULL);
                          else
                              pa_assert_not_reached();
                      } else {
-@@ -1756,7 +1796,7 @@ int main(int argc, char *argv[]) {
+@@ -2841,7 +2843,7 @@ int main(int argc, char *argv[]) {
                  if (pa_streq(argv[i], "modules") || pa_streq(argv[i], "clients") ||
                      pa_streq(argv[i], "sinks")   || pa_streq(argv[i], "sink-inputs") || pa_streq(argv[i], "sinks-raw") ||
                      pa_streq(argv[i], "sources") || pa_streq(argv[i], "source-outputs") ||
--                    pa_streq(argv[i], "samples") || pa_streq(argv[i], "cards")) {
-+                    pa_streq(argv[i], "samples") || pa_streq(argv[i], "cards") || pa_streq(argv[i], "cards-profiles-raw")) {
+-                    pa_streq(argv[i], "samples") || pa_streq(argv[i], "cards") ||
++                    pa_streq(argv[i], "samples") || pa_streq(argv[i], "cards") || pa_streq(argv[i], "cards-profiles-raw") ||
+                     pa_streq(argv[i], "message-handlers")) {
                      list_type = pa_xstrdup(argv[i]);
                  } else if (pa_streq(argv[i], "short")) {
-                     short_list_format = true;
