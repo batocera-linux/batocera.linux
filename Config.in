@@ -55,7 +55,6 @@ menu "System"
 
   menu "GPU"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/libmali/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-T860/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-g31-gbm/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-mp400-wayland/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-mp400-gbm/Config.in"
