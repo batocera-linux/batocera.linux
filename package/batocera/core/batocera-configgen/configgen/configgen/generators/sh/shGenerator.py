@@ -2,6 +2,7 @@
 
 from generators.Generator import Generator
 import Command
+import controllersConfig
 import glob
 
 class ShGenerator(Generator):
@@ -16,7 +17,9 @@ class ShGenerator(Generator):
             shrom = rom
 
         commandArray = ["/bin/bash", shrom]
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray,env={
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+        })
 
     def getMouseMode(self, config):
         return True
