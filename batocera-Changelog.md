@@ -43,6 +43,7 @@
 	- Using Sway as the Wayland compositor - v1.7
 	- RPi4 will also use XWayaland - v22.1.7
 		- Removed 'redream' emulator which fails under wayland
+- Light gun support for GUN4IR (was partial in v35)
 ### Updated
 - pcsx2 to v1.7.3292
 - alsa to 1.2.8
