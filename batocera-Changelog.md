@@ -43,6 +43,7 @@
 	- Using Sway as the Wayland compositor - v1.7
 	- RPi4 will also use XWayaland - v22.1.7
 		- Removed 'redream' emulator which fails under wayland
+- Light gun support for GUN4IR (was partial in v35)
 ### Updated
 - pcsx2 to v1.7.3292
 - alsa to 1.2.8
@@ -116,6 +117,7 @@
 - od-commander fixed for several screen resolutions
 - disabling rumble for some libretro emulators/controllers
 - Xbox S|X controllers with the RPi4
+- White frame on 4:3 screen in libretro cores for Sinden Lightgun
 ### Dev  
 - buildroot upgrade to 2022.11.x
 - odroidxu4 upgrade kernel to 6.1
