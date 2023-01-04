@@ -6418,8 +6418,10 @@ dolphin:
                 prompt:      GBA LAYOUT
                 description: Arrangement of GameCube and GBA screens.
                 choices:
-                    "Vertical - GBAs on Right":   vert
+                    "Vertical - GBAs on Right":    vert
                     "Horizontal - GBAs on Bottom": horiz
+                    "Big GBA - Side by Side":      vertbig
+                    "Big GBA - Stacked":           horizbig
             auto_ereader:
                 group: ADVANCED OPTIONS
                 archs_include: [x86, x86_64]

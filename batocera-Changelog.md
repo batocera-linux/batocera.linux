@@ -10,6 +10,9 @@
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
+- Re-added GameCube-GBA link capability including eReader
+- Re-added Cemu multi-screen display
+- Added new screenshot function when in multi-window mode (Hotkey + L1)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -38,6 +41,7 @@
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
+- Bumped Dolphin to 5.0-17995
 ### Dev
 - dxvk to 2.1
 - linux firmware to 20230310

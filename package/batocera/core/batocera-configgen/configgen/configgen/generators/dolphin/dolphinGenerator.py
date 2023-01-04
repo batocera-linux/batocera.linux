@@ -181,6 +181,8 @@ class DolphinGenerator(Generator):
         if not os.path.exists(gbaSavePath):
             os.makedirs(gbaSavePath)
         dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
+        dolphinSettings.set("GBA", "SavesPath", gbaSavePath)
+        dolphinSettings.set("GBA", "Threads", "False")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and controllersConfig.gunsNeedCrosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):
@@ -335,14 +337,17 @@ class DolphinGenerator(Generator):
 
         if gbaMode:
              # Pick layout, if not selected, use horizontal if widescreen hacks are on, vertical otherwise.
-            if system.isOptSet('gba_layout'):
-                gbaLayout = system.config['gba_layout']
+            if system.isOptSet('gbalayout'):
+                gbaLayout = system.config['gbalayout']
             else:
                 if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
                     gbaLayout = "horiz"
                 else:
                     gbaLayout = "vert"
-            videoMode.setupRatpoisonFrames(gbaLayout, .75, gbaSlots, False)
+            if gbaLayout.endswith('big'):
+                videoMode.setupRatpoisonFrames(gbaLayout.removesuffix('big'), .5, gbaSlots, False)
+            else:
+                videoMode.setupRatpoisonFrames(gbaLayout, .75, gbaSlots, False)
         # Check what version we've got
         if os.path.isfile("/usr/bin/dolphin-emu"):
             commandArray = ["dolphin-emu", "-e", rom]
@@ -421,6 +426,39 @@ class DolphinGenerator(Generator):
             return gameResolution["width"] / gameResolution["height"]
 
         return 4/3
+
+def prepGBAROM(rom, slot, gbaSavePath):
+    baseFileName = os.path.splitext(os.path.basename(rom))[0]
+    baseFilePath = os.path.dirname(rom)
+
+    if not os.path.exists(gbaSavePath):
+        os.makedirs(gbaSavePath)
+
+    # By default, we symlink the save file if it doesn't exist.
+    eslog.debug(f"Looking for /userdata/saves/gba/{baseFileName}.srm")
+    if os.path.exists(f"/userdata/saves/gba/{baseFileName}.srm"):
+        if not os.path.exists(f"{gbaSavePath}{baseFileName}-{slot}.sav"):
+            try:
+                os.symlink(f"/userdata/saves/gba/{baseFileName}.srm", f"{gbaSavePath}{baseFileName}-{slot}.sav")
+                eslog.debug(f"Symlinked /userdata/saves/gba/{baseFileName}.srm to {gbaSavePath}{baseFileName}-{slot}.sav")
+            except:
+                eslog.error(f"Unable to symlink {basefilename}.srm, may not be supported on this filesystem.")
+        else:
+            eslog.debug(f"Save file {gbaSavePath}{baseFileName}-{slot}.sav exists, not overwriting.")
+    else:
+        eslog.debug(f"No save file found, no link created.")
+    if os.path.exists(rom):
+        eslog.debug(f"Found {rom}")
+        return rom
+    elif os.path.exists(f"/userdata/roms/gba/{rom}"):
+        eslog.debug(f"Found /userdata/roms/gba/{rom}")
+        return f"/userdata/roms/gba/{rom}"
+    elif os.path.exists(f"/userdata/roms/gba{rom}"):
+        eslog.debug(f"Found /userdata/roms/gba{rom}")
+        return f"/userdata/roms/gba{rom}"
+    else:
+        eslog.error(f"GBA ROM {rom} not found, check path or filename")
+        return ""
 
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
 # It may be used for something else, so set it anyway

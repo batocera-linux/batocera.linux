@@ -14,8 +14,8 @@ class Evmapy():
     __started = False
 
     @staticmethod
-    def start(system, emulator, core, rom, playersControllers):
-        if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
+    def start(system, config, core, rom, playersControllers):
+        if Evmapy.__prepare(system, config, core, rom, playersControllers):
             Evmapy.__started = True
             subprocess.call(["batocera-evmapy", "start"])
 
@@ -26,18 +26,30 @@ class Evmapy():
             subprocess.call(["batocera-evmapy", "stop"])
 
     @staticmethod
-    def __prepare(system, emulator, core, rom, playersControllers):
+    def __prepare(system, config, core, rom, playersControllers):
+        emulator = config['emulator']
         # consider files here in this order to get a configuration
-        for keysfile in [
-                "{}.keys" .format (rom),
-                "{}/padto.keys" .format (rom), # case when the rom is a directory
-                #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
-                #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
-                "/userdata/system/configs/evmapy/{}.keys" .format (system),
-                #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
-                "/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
-                "/usr/share/evmapy/{}.keys" .format (system)
-        ]:
+        fileList = [
+            "{}.keys" .format (rom),
+            "{}/padto.keys" .format (rom), # case when the rom is a directory
+            #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
+            #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
+            "/userdata/system/configs/evmapy/{}.keys" .format (system),
+            #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
+            "/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
+            "/usr/share/evmapy/{}.keys" .format (system)
+        ]
+        # Load extra config(s) for Dolphin if needed
+        if 'auto_ereader' in config and config['auto_ereader'] != 'none':
+            fileList.append("/usr/share/evmapy/p2mouse.keys")
+            fileList.append("/usr/share/evmapy/ratpoisonscreenshot.keys")
+        for i in range(1,5):
+            if "dolphin_port_" + str(i) + "_type" in config and config["dolphin_port_" + str(i) + "_type"] == 13 and not "/usr/share/evmapy/ratpoisonscreenshot.keys" in fileList:
+                fileList.append("/usr/share/evmapy/ratpoisonscreenshot.keys")
+        # Load extra config for Cemu if needed
+        if 'cemu_dualview' in config and config['cemu_dualview'] != 'none':
+            fileList.append("/usr/share/evmapy/ratpoisonscreenshot.keys")
+        for keysfile in fileList:
             if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
                 eslog.debug(f"evmapy on {keysfile}")
                 subprocess.call(["batocera-evmapy", "clear"])
