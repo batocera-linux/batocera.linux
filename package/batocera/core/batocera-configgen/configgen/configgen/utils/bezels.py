@@ -238,9 +238,9 @@ def gunBordersSize(bordersSize):
     if bordersSize == "thin":
         return 1, 0
     if bordersSize == "medium":
-        return 1, 1
+        return 2, 0
     if bordersSize == "big":
-        return 2, 3
+        return 2, 1
     return 0, 0
 
 def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSizePer = 3, innerBorderColor = "#ffffff", outerBorderColor = "#000000"):

@@ -230,7 +230,7 @@ def gunsNeedCrosses(guns):
 
 # returns None is no border is wanted
 def gunsBordersSizeName(guns, config):
-    bordersSize = "big"
+    bordersSize = "medium"
     if "controllers.guns.borderssize" in config and config["controllers.guns.borderssize"]:
         bordersSize = config["controllers.guns.borderssize"]
 
