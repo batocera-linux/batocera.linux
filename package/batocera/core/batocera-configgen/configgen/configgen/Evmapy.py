@@ -95,7 +95,7 @@ class Evmapy():
                                         "max": 1
                                     })
                             elif input.type == "axis":
-                                if input.code not in known_axes_codes: # avoid duplicated value for axis (bad pad configuration that make evmappy to stop)
+                                if True: # input.code not in known_axes_codes: # avoid duplicated value for axis (bad pad configuration that make evmappy to stop) ; i don't get why we do that while someties we want several keys execute the same action. so, let's comment until it causes a new issue
                                     known_axes_codes[input.code] = True
                                     axisId = None
                                     axisName = None
