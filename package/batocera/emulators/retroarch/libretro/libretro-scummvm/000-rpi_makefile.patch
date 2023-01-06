@@ -1,13 +1,13 @@
-diff --git a/backends/platform/libretro/build/Makefile b/backends/platform/libretro/build/Makefile
+diff --git a/Makefile b/Makefile
 index 25d141e..b599725 100644
---- a/backends/platform/libretro/build/Makefile
-+++ b/backends/platform/libretro/build/Makefile
-@@ -76,6 +76,36 @@ ifeq ($(platform), unix)
-    LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
-    TARGET_64BIT := $(BUILD_64BIT)
+--- a/Makefile
++++ b/Makefile
+@@ -34,8 +34,38 @@ MKDIR     = mkdir -p
+ RM        = rm -f
+ RM_REC    = rm -rf
  
 +# Raspberry Pi 1
-+else ifeq ($(platform), rpi1)
++ifeq ($(platform), rpi1)
 +   TARGET = $(TARGET_NAME)_libretro.so
 +   DEFINES += -fPIC
 +   CFLAGS += -fPIC
@@ -37,5 +37,8 @@ index 25d141e..b599725 100644
 +   CXXFLAGS = $(CFLAGS) -frtti
 +
  # Raspberry Pi 3 (64 bit)
- else ifeq ($(platform), rpi3_64)
-    TARGET = $(TARGET_NAME)_libretro.so
+-ifeq ($(platform), rpi3_64)
++else ifeq ($(platform), rpi3_64)
+    TARGET   = $(TARGET_NAME)_libretro.so
+    DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -DARM
+    LDFLAGS += -shared -Wl,--version-script=$(BUILD_PATH)/link.T -fPIC
