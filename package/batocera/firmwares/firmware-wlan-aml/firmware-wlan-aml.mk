@@ -3,8 +3,8 @@
 # firmware-wlan-aml
 #
 ################################################################################
-# Version.: Commits on Apr 18, 2022
-FIRMWARE_WLAN_AML_VERSION = 1da9185bddb6ec3c975f5739335e7e23b7e2b6d0
+# Version.: Commits on Dec 5, 2022
+FIRMWARE_WLAN_AML_VERSION = 528134d76f87bdd39d6f1ab27d20f28f1759434e
 FIRMWARE_WLAN_AML_SITE = $(call github,LibreELEC,brcmfmac_sdio-firmware,$(FIRMWARE_WLAN_AML_VERSION))
 FIRMWARE_WLAN_AML_DEPENDENCIES = alllinuxfirmwares
 

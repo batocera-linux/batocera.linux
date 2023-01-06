@@ -137,6 +137,7 @@
 - uinput-joystick update to Feb 11, 2022
 - firmware-orangepi update to Nov 24, 2022
 - The build of RG552 has been added to RK3399
+- firmware-wlan-aml update to Dec 5, 2022
 
 # 2022/09/20 - batocera.linux 35 - Monarch Butterfly
 * add: gun support in emulationstation
