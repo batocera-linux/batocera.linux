@@ -1,44 +1,41 @@
 diff --git a/Makefile b/Makefile
-index 25d141e..b599725 100644
+index 30e0bfb6..fc1d361b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -34,8 +34,38 @@ MKDIR     = mkdir -p
+@@ -34,8 +34,35 @@ MKDIR     = mkdir -p
  RM        = rm -f
  RM_REC    = rm -rf
  
 +# Raspberry Pi 1
 +ifeq ($(platform), rpi1)
 +   TARGET = $(TARGET_NAME)_libretro.so
-+   DEFINES += -fPIC
-+   CFLAGS += -fPIC
-+   LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
-+   CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
++   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
++   CFLAGS += -fPIC -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 +   CFLAGS += -fomit-frame-pointer -ffast-math
-+   CXXFLAGS = $(CFLAGS) -frtti
++   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
 +
 +# Raspberry Pi 2
 +else ifeq ($(platform), rpi2)
 +   TARGET = $(TARGET_NAME)_libretro.so
-+   DEFINES += -fPIC
-+   CFLAGS += -fPIC
-+   LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
-+   CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
++   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
++   CFLAGS += -fPIC -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 +   CFLAGS += -fomit-frame-pointer -ffast-math
-+   CXXFLAGS = $(CFLAGS) -frtti
++   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
 +
 +# Raspberry Pi 3
 +else ifeq ($(platform), rpi3)
 +   TARGET = $(TARGET_NAME)_libretro.so
-+   DEFINES += -fPIC
-+   CFLAGS += -fPIC
-+   LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
-+   CFLAGS += -marm -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
++   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
++   CFLAGS += -fPIC -marm -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
 +   CFLAGS += -fomit-frame-pointer -ffast-math
-+   CXXFLAGS = $(CFLAGS) -frtti
++   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
 +
  # Raspberry Pi 3 (64 bit)
 -ifeq ($(platform), rpi3_64)
 +else ifeq ($(platform), rpi3_64)
     TARGET   = $(TARGET_NAME)_libretro.so
     DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -DARM
-    LDFLAGS += -shared -Wl,--version-script=$(BUILD_PATH)/link.T -fPIC
+    LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
