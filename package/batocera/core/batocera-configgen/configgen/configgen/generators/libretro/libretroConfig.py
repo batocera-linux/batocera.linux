@@ -911,7 +911,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos or shaderBezel:
         viewPortUsed = False
 
-    gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
+    gameRatio = float(gameResolution["width"]) / float(gameResolution["height"])
 
     if viewPortUsed:
         if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
@@ -928,7 +928,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
         if gameRatio < 1.6 and gunsBordersSize is None: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios ; don't skip if gun borders are needed
-                return
+            return
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the
             # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
@@ -977,7 +977,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
 
-        # If width or height < original, can't add black borders, need to stretch
+        # Stretch also takes care of cutting off the bezel and adapting viewport, if aspect ratio is < 16:9
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
             eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
@@ -1014,9 +1014,16 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
                             pass
 
         if bezel_stretch:
-            retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
+            borderx = 0
+            viewportRatio = (float(infos["width"])/float(infos["height"]))
+            if (viewportRatio - gameRatio > 0.01):
+                new_x = int(infos["width"]*gameRatio/viewportRatio)
+                delta = int(infos["width"]-new_x)
+                borderx = delta//2
+            eslog.debug(f"Bezel_stretch: need to cut off {borderx} pixels")
+            retroarchConfig['custom_viewport_x']      = (infos["left"] - borderx/2) * wratio
             retroarchConfig['custom_viewport_y']      = infos["top"] * hratio
-            retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"])  * wratio
+            retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"] + borderx)  * wratio
             retroarchConfig['custom_viewport_height'] = (infos["height"] - infos["top"]  - infos["bottom"]) * hratio
             retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
             retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
