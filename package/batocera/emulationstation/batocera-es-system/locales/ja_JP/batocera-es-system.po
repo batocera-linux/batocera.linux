@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v36beta(2022/12/10)\n"
+"Project-Id-Version: batocera-es v36beta(2023/01/03)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-12-10 08:00+0900\n"
+"PO-Revision-Date: 2023-01-03 08:46+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -609,51 +609,6 @@ msgctxt "game_options"
 msgid "576+KB"
 msgstr "576+KB"
 
-#. TRANSLATION: libretro/cap32
-msgctxt "game_options"
-msgid "Choose the emulated colour depth."
-msgstr ""
-
-#. TRANSLATION: libretro/cap32
-msgctxt "game_options"
-msgid "COLOUR DEPTH"
-msgstr ""
-
-#. TRANSLATION: libretro/cap32
-msgctxt "game_options"
-msgid "16 bit"
-msgstr ""
-
-#. TRANSLATION: libretro/cap32
-msgctxt "game_options"
-msgid "24 bit (Default)"
-msgstr ""
-
-#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx
-msgctxt "game_options"
-msgid "Change the game's language."
-msgstr "ゲームの表示言語を変更します"
-
-#. TRANSLATION: libretro/cap32, libretro/dolphin, hatari, redream, sonic2013, ...
-msgctxt "game_options"
-msgid "LANGUAGE"
-msgstr "言語"
-
-#. TRANSLATION: libretro/cap32, redream
-msgctxt "game_options"
-msgid "English (Default)"
-msgstr "英語 (標準)"
-
-#. TRANSLATION: libretro/cap32, libretro/dolphin, cemu, flycast/uzem, redream, ...
-msgctxt "game_options"
-msgid "Spanish"
-msgstr "スペイン語"
-
-#. TRANSLATION: libretro/cap32, libretro/dolphin, cemu, flycast/uzem, redream, ...
-msgctxt "game_options"
-msgid "French"
-msgstr "フランス語"
-
 #. TRANSLATION: libretro/mesen-s, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia
 msgctxt "game_options"
 msgid "Core-powered video filter."
@@ -954,7 +909,7 @@ msgstr "精度を犠牲にして読込時間を短縮します"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "(FDS) FAST FORWARD DISK LOADING"
-msgstr "(FDS) ディスク読み込みを早める"
+msgstr "(FDS) ディスク読み込みを早送りする"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -1157,6 +1112,11 @@ msgctxt "game_options"
 msgid "Wii NAND's language setting."
 msgstr "Wii NAND の言語設定"
 
+#. TRANSLATION: libretro/dolphin, hatari, redream, sonic2013, soniccd, ...
+msgctxt "game_options"
+msgid "LANGUAGE"
+msgstr "言語"
+
 #. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
 msgctxt "game_options"
 msgid "English"
@@ -1164,8 +1124,18 @@ msgstr "英語"
 
 #. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
 msgctxt "game_options"
+msgid "French"
+msgstr "フランス語"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
 msgid "German"
 msgstr "ドイツ語"
+
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
+msgctxt "game_options"
+msgid "Spanish"
+msgstr "スペイン語"
 
 #. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, redream, sonic2013, ...
 msgctxt "game_options"
@@ -2232,6 +2202,16 @@ msgctxt "game_options"
 msgid "Enhancement. Upscales screen textures (2D games only)."
 msgstr "強化：スクリーンテクスチャをアップスケール（2Dゲームのみ）"
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Enhancement. Upscale in-game screen-captures."
+msgstr "強化：ゲーム内スクリーンキャプチャをアップスケールします"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "RENDER TO TEXTURE UPSCALING"
+msgstr "テクスチャアップスケーリングレンダリング"
+
 #. TRANSLATION: libretro/flycast, libretro/quasi88
 msgctxt "game_options"
 msgid "Required for some games."
@@ -2623,22 +2603,22 @@ msgstr "ジョイパッド 6ボタン"
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Joypad 3 Button + 4-WayPlay"
-msgstr "3ボタン+4ウェイプレイ"
+msgstr "3ボタン + 4ウェイプレイ"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Joypad 6 Button + 4-WayPlay"
-msgstr "ジョイパッド 6ボタン+4ウェイプレイ"
+msgstr "ジョイパッド 6ボタン + 4ウェイプレイ"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Joypad 3 Button + Teamplayer"
-msgstr "3ボタン+チームプレイ"
+msgstr "3ボタン + チームプレイ"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Joypad 6 Button + Teamplayer"
-msgstr "ジョイパッド 6ボタン+チームプレイ"
+msgstr "ジョイパッド 6ボタン + チームプレイ"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/snes9x
 msgctxt "game_options"
@@ -2951,7 +2931,7 @@ msgstr "カートリッジ (スロット 4)"
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Toggle with hotkey + D-pad up or Scroll Lock in-game."
-msgstr "ホットキー+十字キー上またはスクロールロックでゲームを切り替えます"
+msgstr "ホットキー+Dパッド上またはスクロールロックでゲームを切り替えます"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -6541,7 +6521,7 @@ msgstr "ゲームパッド + 4 プロコントローラー"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "GamePad + 4 Sideway Wiimote"
-msgstr "ゲームパッド+4 横向きWiiリモコン"
+msgstr "ゲームパッド + 4 横向きWiiリモコン"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6744,6 +6724,7 @@ msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
 "L1+R1 to switch screens."
 msgstr ""
+"２画面でプレイするゲームのパッド画面を有効にします (L1+R1で画面切り替え)"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6865,32 +6846,32 @@ msgstr "ブレンドスプライト（SINGE）"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Singe overlay size options."
-msgstr ""
+msgstr "Singe オーバーレイ サイズ オプション"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "OVERLAY SIZE (SINGE)"
-msgstr ""
+msgstr "オーバーレイ サイズ（SINGE）"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Standard"
-msgstr ""
+msgstr "スタンダード"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "HD Gun Games"
-msgstr ""
+msgstr "HD ガン ゲーム"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Singe 2 Full"
-msgstr ""
+msgstr "Singe 2 フル"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Singe 2 Half"
-msgstr ""
+msgstr "Singe 2 ハーフ"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -7678,7 +7659,7 @@ msgstr "4M"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
-msgstr ""
+msgstr "使用するグラフィック API を選択します"
 
 #. TRANSLATION: melonds, pcsx2
 msgctxt "game_options"
@@ -8508,26 +8489,28 @@ msgctxt "game_options"
 msgid ""
 "Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder."
 msgstr ""
+"一部のゲームのバグを修正します (ダイナミックまたは LLVM SPU デコーダーにのみ"
+"関連)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "SPU XFloat Accuracy"
-msgstr ""
+msgstr "SPU XFloat 精度"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Accurate XFloat"
-msgstr ""
+msgstr "Accurate XFloat(正確)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Approximate XFloat"
-msgstr ""
+msgstr "Approximate XFloat(おおよそ)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Relaxed XFloat"
-msgstr ""
+msgstr "Relaxed XFloat(リラックス)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8579,7 +8562,7 @@ msgstr "インタープリタのみ（実験的）"
 msgctxt "game_options"
 msgid ""
 "Can fix screen tearing on unorthodox displays (most LCDs don't need this)."
-msgstr "特殊なディスプレイでの画面のずれを修正できます（ほぼ必要ありません）"
+msgstr "特殊なディスプレイでの画面のずれを修正します（ほぼ必要ありません）"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8808,6 +8791,11 @@ msgstr "USA (標準)"
 msgctxt "game_options"
 msgid "Choose the Dreamcast console language."
 msgstr "ドリームキャストのコンソール言語を選択します"
+
+#. TRANSLATION: redream
+msgctxt "game_options"
+msgid "English (Default)"
+msgstr "英語 (標準)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -9474,6 +9462,11 @@ msgctxt "game_options"
 msgid "USE DSP AUDIO"
 msgstr "DSP オーディオを使用する"
 
+#. TRANSLATION: sonic2013, soniccd, yuzu, ryujinx
+msgctxt "game_options"
+msgid "Change the game's language."
+msgstr "ゲームの表示言語を変更します"
+
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
 msgid "Portugese"
@@ -9656,12 +9649,12 @@ msgstr "RAW入力を有効"
 msgctxt "game_options"
 msgid ""
 "Use if you're having graphical issues or GPU problems with this emulator."
-msgstr ""
+msgstr "グラフィックの問題または GPU の問題が発生している場合に使用します"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "ENABLE SOFTWARE RENDERER"
-msgstr ""
+msgstr "ソフトウェア レンダラーを有効"
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -10153,125 +10146,3 @@ msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr ""
 "高速近似アンチエイリアシング(FXAA)は、ギザギザのエッジを滑らかにする技術です"
-
-#~ msgctxt "game_options"
-#~ msgid "Enhancement. Upscale in-game screen-captures."
-#~ msgstr "強化：ゲーム内スクリーンキャプチャをアップスケールします"
-
-#~ msgctxt "game_options"
-#~ msgid "RENDER TO TEXTURE UPSCALING"
-#~ msgstr "テクスチャアップスケーリングレンダリング"
-
-#~ msgctxt "game_options"
-#~ msgid "Use with Singe HD light gun games."
-#~ msgstr "Singe HD ライトガンゲームで使用します"
-
-#~ msgctxt "game_options"
-#~ msgid "OVERSIZE OVERLAY (SINGE)"
-#~ msgstr "特大オーバーレイ（SINGE）"
-
-#~ msgctxt "game_options"
-#~ msgid "Change the number of enabled cores, increasing per-core performance"
-#~ msgstr "有効なコアの数を変更して、コアあたりのパフォーマンスを向上させます"
-
-#~ msgctxt "game_options"
-#~ msgid "CPU CORES"
-#~ msgstr "CPU コア"
-
-#~ msgctxt "game_options"
-#~ msgid "Use All Cores"
-#~ msgstr "全コア使用"
-
-#~ msgctxt "game_options"
-#~ msgid "Use Physical Cores Only"
-#~ msgstr "物理コアのみを使用"
-
-#~ msgctxt "game_options"
-#~ msgid "Dual Core"
-#~ msgstr "デュアルコア"
-
-#~ msgctxt "game_options"
-#~ msgid "Triple Core"
-#~ msgstr "トリプルコア"
-
-#~ msgctxt "game_options"
-#~ msgid "Quad Core"
-#~ msgstr "クアッドコア"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Enable gamepad view for games that have interaction across two screens. "
-#~ "Use Hotkey+R2 to switch screens."
-#~ msgstr ""
-#~ "２画面でするゲームのパッド画面を有効にします (ホットキー+R2で画面切り替え)"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Show the TV and gamepad views together. Use Hotkey+R2 to switch screens."
-#~ msgstr ""
-#~ "ゲーム画面とゲームパッド画面を一緒に表示します (ホットキー+R2で画面切り替"
-#~ "え)"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE DUAL VIEW"
-#~ msgstr "デュアル(２画面同時)表示を有効"
-
-#~ msgctxt "game_options"
-#~ msgid "Side by Side (Even)"
-#~ msgstr "左右 (同等画面)"
-
-#~ msgctxt "game_options"
-#~ msgid "Side by Side (Small Gamepad)"
-#~ msgstr "左右 (パッド画面：小)"
-
-#~ msgctxt "game_options"
-#~ msgid "Stack-ed (Even)"
-#~ msgstr "上下 (同等画面)"
-
-#~ msgctxt "game_options"
-#~ msgid "Stacked (Small Gamepad)"
-#~ msgstr "上下 (パッド画面：小)"
-
-#~ msgctxt "game_options"
-#~ msgid "Arrangement of GameCube and GBA screens."
-#~ msgstr "ゲームキューブとGBA の画面配置を選択します"
-
-#~ msgctxt "game_options"
-#~ msgid "GBA LAYOUT"
-#~ msgstr "GBA接続時の画面レイアウト"
-
-#~ msgctxt "game_options"
-#~ msgid "Vertical - GBAs on Right"
-#~ msgstr "縦並び表示 - 右に GBA"
-
-#~ msgctxt "game_options"
-#~ msgid "Horizontal - GBAs on Bottom"
-#~ msgstr "横並び表示 - 下に GBA"
-
-#~ msgctxt "game_options"
-#~ msgid "Make controller 2 a GBA with e-Reader"
-#~ msgstr "コントローラー2を カードeリーダー付GBA にします"
-
-#~ msgctxt "game_options"
-#~ msgid "AUTO E-READER"
-#~ msgstr "カードeリーダー  接続選択"
-
-#~ msgctxt "game_options"
-#~ msgid "e-Reader (US)"
-#~ msgstr "e-リーダー (US)"
-
-#~ msgctxt "game_options"
-#~ msgid "e-Reader (JP)"
-#~ msgstr "カードeリーダー (日本)"
-
-#~ msgctxt "game_options"
-#~ msgid "e-Reader+ (JP)"
-#~ msgstr "カードeリーダー+ (日本)"
-
-#~ msgctxt "game_options"
-#~ msgid "GBA (Internal)"
-#~ msgstr "GBA（eリーダー）"
-
-#~ msgctxt "game_options"
-#~ msgid "A-Sync Skip Rendering"
-#~ msgstr "非同期 スキップ レンダリング"
