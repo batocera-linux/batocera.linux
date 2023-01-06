@@ -105,11 +105,11 @@ class DaphneGenerator(Generator):
 
             # Overlay sizes (Singe) for HD lightgun and Singe 2 games
             if system.isOptSet('overlay_size') and system.config['overlay_size'] == 'oversize':
-                commandArray.append("-set_overlay", "oversize")
+                commandArray.extend(["-set_overlay", "oversize"])
             elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'full':
-                commandArray.append("-set_overlay", "full")
+                commandArray.extend(["-set_overlay", "full"])
             elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'half':
-                commandArray.append("-set_overlay", "half")
+                commandArray.extend(["-set_overlay", "half"])
             
             # crosshair
             if system.isOptSet('daphne_crosshair'):
