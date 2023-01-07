@@ -1,9 +1,8 @@
 config BR2_PACKAGE_FPINBALL
     bool "fpinball"
     depends on BR2_x86_64
-    depends on BR2_PACKAGE_WINE_LUTRIS
-
+    select BR2_PACKAGE_WINE_LUTRIS
     help
-      Fpinball precompiled for x86_32 running through Wine
+      Future Pinball precompiled for 32bit Windows running through Wine
 
       https://futurepinball.com
