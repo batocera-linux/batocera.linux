@@ -28,6 +28,7 @@
 - Enabled libretro-yabasanshiro for platform RK3399
 - force feedback for Nintendo controllers (requires linux kernel 5.16 or later)
 - Added wayland + sway support for single board computer (SBC)
+- Automatically recenter 16:9 bezels for a better rendition on 16:10 and 5:3 screens (SteamDeck and other handheld devices)
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
