@@ -126,6 +126,7 @@
 - disabling rumble for some libretro emulators/controllers
 - Xbox S|X controllers with the RPi4
 - White frame on 4:3 screen in libretro cores for Sinden Lightgun
+- Future Pinball saves
 ### Dev  
 - buildroot upgrade to 2022.11.x
 - odroidxu4 upgrade kernel to 6.1
