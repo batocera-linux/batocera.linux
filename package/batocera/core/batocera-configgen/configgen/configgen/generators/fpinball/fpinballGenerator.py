@@ -3,11 +3,13 @@
 from generators.Generator import Generator
 import Command
 import controllersConfig
-from utils.logger import get_logger
 import batoceraFiles
 import os
 import subprocess
 import sys
+import shutil
+from pathlib import Path, PureWindowsPath
+from utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
@@ -15,13 +17,14 @@ class FpinballGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/fpinball"
+        emupath = wineprefix + "/fpinball"
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
 
         if not os.path.exists(wineprefix + "/wsh57.done"):
             cmd = ["/usr/wine/winetricks", "wsh57"]
-            env = {"W_CACHE": "/userdata/bios", "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX":"/userdata/saves/fpinball" }
+            env = {"W_CACHE": "/userdata/bios", "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
@@ -33,7 +36,18 @@ class FpinballGenerator(Generator):
             with open(wineprefix + "/wsh57.done", "w") as f:
                 f.write("done")
 
-        commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/usr/fpinball/Future Pinball.exe", "/open", "z:" + rom, "/play", "/exit" ]
+        # create dir & copy fpinball files to wine bottle as necessary
+        if not os.path.exists(emupath):
+            shutil.copytree('/usr/fpinball', emupath)
+        
+        # convert rom path
+        rompath = PureWindowsPath(rom)
+        rom = f"Z:{rompath}"
+
+        if rom == 'config':
+            commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), emupath +"/Future Pinball.exe" ]
+        else:
+            commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), emupath +"/Future Pinball.exe", "/open", rom, "/play", "/exit" ]
 
         # config
         if not os.path.exists("/userdata/system/configs/fpinball"):
@@ -128,7 +142,7 @@ class FpinballGenerator(Generator):
                     f.write("\r\n")
 
         cmd = ["wine", "regedit", "/userdata/system/configs/fpinball/batocera.confg.reg"]
-        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX":"/userdata/saves/fpinball" }
+        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
         env.update(os.environ)
         env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
         eslog.debug(f"command: {str(cmd)}")
@@ -157,6 +171,3 @@ class FpinballGenerator(Generator):
             if config["ratio"] == "16/9":
                 return 169
         return 43
-
-    def executionDirectory(self, config, rom):
-        return os.path.dirname(rom)
