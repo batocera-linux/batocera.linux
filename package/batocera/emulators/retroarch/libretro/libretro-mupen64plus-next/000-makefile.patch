@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 58648e5..e9b50b7 100644
+index 58648e5..711b580 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -334,6 +334,42 @@ else ifneq (,$(findstring amlogic,$(platform)))
+@@ -334,6 +334,87 @@ else ifneq (,$(findstring amlogic,$(platform)))
     COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
     CPUFLAGS += -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53
  
@@ -30,6 +30,17 @@ index 58648e5..e9b50b7 100644
 +   COREFLAGS += -DOS_LINUX
 +   ASFLAGS = -f elf64 -d ELF_TYPE
 +
++# Amlogic S912
++else ifneq (,$(findstring s912,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
 +# Rockchip RK3326
 +else ifneq (,$(findstring rk3326,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
@@ -41,6 +52,40 @@ index 58648e5..e9b50b7 100644
 +   GLES3 = 1
 +   COREFLAGS += -DOS_LINUX
 +   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Allwinner H5
++else ifneq (,$(findstring h5,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Allwinner H6 / H616
++else ifneq (,$(findstring h616,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# AYN Odin
++else ifneq (,$(findstring odin,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a75.cortex-a55
++   GLES3= 1
++   GL_LIB := -lGLESv2
++   COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
++   ASFLAGS = -f elf -d ELF_TYPE
 +
  # Generic AArch64 Cortex-A53 GLES 2.0 target
  else ifneq (,$(findstring arm64_cortex_a53_gles2,$(platform)))
