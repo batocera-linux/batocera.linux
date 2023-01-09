@@ -1,6 +1,7 @@
 #!/bin/sh
 
 CONFIGFILE=/boot/config.txt
+CONFIGMODIFIED=0
 
 setup="# ====== GPi Case setup section =====
 display_lcd_rotate=1
@@ -24,8 +25,6 @@ disable_audio_dither=1
 dtoverlay=pwm-audio-pi-zero_gpicase
 # ====== GPi Case toggle section =====
 # This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
-
-    CONFIGMODIFIED=0
 
     echo "${setup}" | (
 	while read LINE
