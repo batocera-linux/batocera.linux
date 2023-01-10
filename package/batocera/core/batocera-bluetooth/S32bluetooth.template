@@ -14,6 +14,20 @@ case "$1" in
         # soft unblock bluetooth
         rfkill unblock bluetooth
 
+        # RPi4 BT config check
+        if test "${BOARD}" = "bcm2711"
+        then
+            # check the config.txt has the BT setting
+            if ! grep -q "^dtparam=krnbt=on" "/boot/config.txt"
+            then
+                mount -o remount,rw /boot
+                echo "" >> "/boot/config.txt"
+                echo "# Enable bluetooth" >> "/boot/config.txt"
+                echo "dtparam=krnbt=on" >> "/boot/config.txt"
+                mount -o remount,r /boot
+            fi
+        fi
+
         #Start hciattach for applicable boards
         bluetoothstack="@INTERNAL_BLUETOOTH_STACK@"
         for i in $bluetoothstack
