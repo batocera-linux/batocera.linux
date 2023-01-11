@@ -77,7 +77,7 @@ shared:
         "On":  1
         "Off": 0
     hud:
-      archs_exclude: [s905 bcm2835 bcm2836 rpizero2]
+      archs_exclude: [s905 bcm2835 bcm2836]
       prompt:      HEADS UP DISPLAY
       description: Show context-sensitive info over the game.
       submenu: DECORATIONS
@@ -87,7 +87,7 @@ shared:
         "Performance": perf
         "Custom": custom
     hud_corner:
-      archs_exclude: [s905 bcm2835 bcm2836 rpizero2]
+      archs_exclude: [s905 bcm2835 bcm2836]
       prompt: HEADS UP DISPLAY CORNER
       submenu: DECORATIONS
       choices:

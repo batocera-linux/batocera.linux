@@ -165,7 +165,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PM_UTILS                             # suspend
 	select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
 	select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
-	select BR2_PACKAGE_EVSIEVE                              if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
+	select BR2_PACKAGE_EVSIEVE                              # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT                  # for util-linux compilation to work (so, may be removed in the future)
 	select BR2_PACKAGE_FBDUMP                               # tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
 	select BR2_PACKAGE_FBGRAB                               # framebuffer screenshot program, capturing the linux frambuffer and converting it to a png-picture
@@ -234,9 +234,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.18)
 	#select BR2_PACKAGE_XOW                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (requires linux >= 4.5) - *** deprecated use above xinput drivers***
 	select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
-	select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # wiimotes
+	select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
 	select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
-	select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+	select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
 
@@ -246,7 +246,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_WIFI      if BR2_PACKAGE_BATOCERA_RPI_ANY
 
 	# Case
-	select BR2_PACKAGE_GPICASE              if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 || BR2_PACKAGE_BATOCERA_TARGET_BCM2836 # retroflag gpicase
+	select BR2_PACKAGE_GPICASE              if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_BCM2836 # retroflag gpicase
 	select BR2_PACKAGE_ROSHAMBO_CASE        if BR2_PACKAGE_BATOCERA_TARGET_RK3399 # roshambo case
 	select BR2_PACKAGE_RPIGPIOSWITCH        if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio switchs
 	select BR2_PACKAGE_RETROGAME            if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
@@ -274,7 +274,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # wireless drivers
     # use the morrownr RTL8812au & RTL8821au drivers
 	select BR2_PACKAGE_RTL8812AU             if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
@@ -294,7 +293,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# do NOT remove this one for OGA
 	select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RK3128
@@ -340,7 +338,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_GAMECON_GPIO_RPI         if BR2_PACKAGE_BATOCERA_RPI_ANY
 	select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI   if BR2_PACKAGE_BATOCERA_RPI_ANY
     select BR2_PACKAGE_PYTHON_RPI_GPIO          if BR2_PACKAGE_BATOCERA_RPI_ANY
-    select BR2_PACKAGE_PYTHON_GPIOZERO          if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+    select BR2_PACKAGE_PYTHON_GPIOZERO          if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_WS2801   if BR2_PACKAGE_BATOCERA_RPI_ANY
 
 	# joy 2 pad
@@ -398,7 +396,6 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "broadcom/bcm2836"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	default "broadcom/bcm2837"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 	default "broadcom/bcm2711"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
-	default "broadcom/rpizero2"                                                               if BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
 	default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                                if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/rg552 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4"   if BR2_PACKAGE_BATOCERA_TARGET_RK3399
@@ -424,9 +421,6 @@ choice
 
 config BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	bool "bcm2835"
-
-config BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
-	bool "rpizero2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	bool "bcm2836"
@@ -625,13 +619,11 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 
 	# Dreamcast / Naomi / Atomiswave emulation
 	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
 												!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
@@ -671,7 +663,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	# RetroArch MAME derivatives
 	select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS   # ALL
 	select BR2_PACKAGE_LIBRETRO_IMAME           if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # IMAME
-	select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 # MAME2010
+	select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # MAME2010
     select BR2_PACKAGE_LIBRETRO_MAME            if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
@@ -728,9 +720,9 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_CITRA           if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# PSP
-	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
-	select BR2_PACKAGE_LIBRETRO_PPSSPP          if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+	select BR2_PACKAGE_LIBRETRO_PPSSPP          if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
 	# Neo Geo Pocket
 	select BR2_PACKAGE_LIBRETRO_BEETLE_NGP      # ALL
@@ -771,7 +763,6 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 
 	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3399		&& \
@@ -780,7 +771,6 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 
 	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3288     && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3399     && \
@@ -797,7 +787,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	bool "batocera.linux ports packages"
 
 	# DevilutionX (Diablo 1)
-	select BR2_PACKAGE_DEVILUTIONX              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_DEVILUTIONX              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Cannonball (OutRun)
 	select BR2_PACKAGE_CANNONBALL               # ALL
@@ -806,7 +796,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_PRBOOM          if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# TyrQuake (Quake 1)
-	select BR2_PACKAGE_LIBRETRO_TYRQUAKE        if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_TYRQUAKE        if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# NxEngine (Cave Story)
 	select BR2_PACKAGE_LIBRETRO_NXENGINE        if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
@@ -815,16 +805,16 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_MRBOOM          if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Prince of Persia
-	select BR2_PACKAGE_SDLPOP                   if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_SDLPOP                   if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Xash3D-FWGS (Half-Life 1)
-	select BR2_PACKAGE_XASH3D_FWGS              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_XASH3D_FWGS              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Commander Genius (Commander Keen series)
-	#select BR2_PACKAGE_CGENIUS                 if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	#select BR2_PACKAGE_CGENIUS                 if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Rick Dangerous
-	select BR2_PACKAGE_LIBRETRO_XRICK           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_XRICK           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Flashback
 	select BR2_PACKAGE_LIBRETRO_REMINISCENCE    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -848,7 +838,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_VITAQUAKE2	    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# Super Mario War
-	select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
     select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
     select BR2_PACKAGE_GZDOOM                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
@@ -868,7 +858,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	select BR2_PACKAGE_LIBCAPSIMAGE         # ALL
 
 	# Commodore 64/128/VIC20/PET/Plus4
-	select BR2_PACKAGE_VICE                 if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+	select BR2_PACKAGE_VICE                 if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	select BR2_PACKAGE_LIBRETRO_VICE        # ALL
 
 	# Commodore Amiga
@@ -892,7 +882,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_81          # ALL
 
 	# Atari ST/TT/Falcon
-	select BR2_PACKAGE_HATARI               if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+	select BR2_PACKAGE_HATARI               if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	select BR2_PACKAGE_LIBRETRO_HATARI      # ALL
 
 	# MSX range
@@ -935,9 +925,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	bool "batocera.linux console emulators/cores"
 
 	# Nintendo 64
-	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2# mupen64 (n64) runs too slow on these platforms
+	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # mupen64 (n64) runs too slow on these platforms
 
-	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
 
 	select BR2_PACKAGE_LIBRETRO_PARALLEL_N64		if 	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
 														BR2_PACKAGE_BATOCERA_TARGET_RK3288	|| \
@@ -950,15 +940,13 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# PSX
 	select BR2_PACKAGE_DUCKSTATION                  if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
 														!BR2_PACKAGE_BATOCERA_TARGET_RK3128
 
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
 	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
 	select BR2_PACKAGE_LIBRETRO_PCSX                # All
 
@@ -973,7 +961,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_KRONOS              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
@@ -1019,7 +1006,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# Panasonic 3DO
 	select BR2_PACKAGE_LIBRETRO_OPERA               if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2837    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905   	&& \
@@ -1036,7 +1022,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# NEC PC-FX
 	select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX         if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2837        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
@@ -1086,7 +1071,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Super Nintendo / Super Famicom
 	select BR2_PACKAGE_LIBRETRO_SNES9X              if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT         if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
-	select BR2_PACKAGE_LIBRETRO_POCKETSNES          if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_CHA || BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2 || BR2_PACKAGE_BATOCERA_TARGET_BCM2836
+	select BR2_PACKAGE_LIBRETRO_POCKETSNES          if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || BR2_PACKAGE_BATOCERA_TARGET_CHA || BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	select BR2_PACKAGE_LIBRETRO_BSNES               if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_S922X
 	select BR2_PACKAGE_LIBRETRO_BSNES_HD            if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_LIBRETRO_MESENS              if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3399
