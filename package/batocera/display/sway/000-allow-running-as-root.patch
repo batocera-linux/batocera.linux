@@ -1,5 +1,5 @@
 diff --git a/sway/ipc-server.c b/sway/ipc-server.c
-index 1bf5a05..be2dcc9 100644
+index 00b01d7..8f60cfb 100644
 --- a/sway/ipc-server.c
 +++ b/sway/ipc-server.c
 @@ -140,7 +140,7 @@ struct sockaddr_un *ipc_user_sockaddr(void) {
@@ -12,17 +12,40 @@ index 1bf5a05..be2dcc9 100644
  	}
  
 diff --git a/sway/main.c b/sway/main.c
-index b6f8a8b..84a0523 100644
+index 85bc2f1..032fd25 100644
 --- a/sway/main.c
 +++ b/sway/main.c
-@@ -152,6 +152,10 @@ static void log_kernel(void) {
+@@ -151,7 +151,8 @@ static void log_kernel(void) {
+ }
  
- 
- static bool drop_permissions(void) {
-+	if (getuid() == 0 || getgid() == 0) {
+ static bool detect_suid(void) {
+-	if (geteuid() != 0 && getegid() != 0) {
++	if (geteuid() == 0 && getegid() == 0) {
 +		sway_log(SWAY_INFO, "Running sway as root user");
-+		return true;
+ 		return false;
+ 	}
+ 
+@@ -309,11 +310,6 @@ int main(int argc, char **argv) {
+ 		}
+ 	}
+ 
+-	// SUID operation is deprecated, so block it for now.
+-	if (detect_suid()) {
+-		exit(EXIT_FAILURE);
+-	}
+-
+ 	// Since wayland requires XDG_RUNTIME_DIR to be set, abort with just the
+ 	// clear error message (when not running as an IPC client).
+ 	if (!getenv("XDG_RUNTIME_DIR") && optind == argc) {
+@@ -363,6 +359,11 @@ int main(int argc, char **argv) {
+ 		return 0;
+ 	}
+ 
++	// SUID operation is deprecated, so block it for now.
++	if (detect_suid()) {
++		exit(EXIT_FAILURE);
 +	}
- 	if (getuid() != geteuid() || getgid() != getegid()) {
- 		sway_log(SWAY_ERROR, "!!! DEPRECATION WARNING: "
- 			"SUID privilege drop will be removed in a future release, please migrate to seatd-launch");
++
+ 	detect_proprietary(allow_unsupported_gpu);
+ 	increase_nofile_limit();
+ 

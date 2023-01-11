@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SWAY_VERSION = 1.7
+SWAY_VERSION = 1.8
 SWAY_SITE = $(call github,swaywm,sway,$(SWAY_VERSION))
 SWAY_LICENSE = MIT
 SWAY_LICENSE_FILES = LICENSE
