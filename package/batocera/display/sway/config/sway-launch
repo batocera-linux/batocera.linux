@@ -4,4 +4,4 @@ SWAY_LOG_FILE=/userdata/system/logs/sway.log
 # start sway, even if no input devices are connected
 export WLR_LIBINPUT_NO_DEVICES=1
 
-/usr/bin/sway -V > ${SWAY_LOG_FILE} 2>&1
+/usr/bin/sway -d > ${SWAY_LOG_FILE} 2>&1
