@@ -38,7 +38,7 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"/var/log/virtual-gun4ir-devices.${USBPATHHASH}.log" &
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"/var/log/virtual-gun4ir-devices.${USBPATHHASH}.log" &
     echo $! > "/var/run/virtual-gun4ir-devices.${USBPATHHASH}.pid"
 else
     echo "${DEVNAME}" >> "/var/run/virtual-gun4ir-devices.${USBPATHHASH}" || cleanAndExit 1
