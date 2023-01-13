@@ -102,7 +102,7 @@ then
     V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
 # 3rd time lucky
-if test "${V_BOARD_MODEL}" == "Default_string"
+if test -z "$myvar" || test "${V_BOARD_MODEL}" == "Default_string"
 then
     V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
