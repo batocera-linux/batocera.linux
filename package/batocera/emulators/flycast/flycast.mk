@@ -3,8 +3,8 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on Dec 10, 2022
-FLYCAST_VERSION = 223504a2065d55238ae232dfa92b33d98c223b4c
+# Version: Commits on Jan 14, 2023
+FLYCAST_VERSION = 174ce8786ba86018ee54a774e3adfdbc4a2305ac
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
@@ -35,16 +35,6 @@ endif
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
     FLYCAST_DEPENDENCIES += libmali
     FLYCAST_CONF_OPTS += -DUSE_MALI=ON
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
-    FLYCAST_CONF_OPTS += -DRK3399=ON
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
-    FLYCAST_CONF_OPTS += -DRPI4=ON
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
-    FLYCAST_CONF_OPTS += -DRK3326=ON
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-    FLYCAST_CONF_OPTS += -DS922X=ON
 endif
 
 define FLYCAST_INSTALL_TARGET_CMDS
