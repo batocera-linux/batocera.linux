@@ -29,6 +29,7 @@
 - force feedback for Nintendo controllers (requires linux kernel 5.16 or later)
 - Added wayland + sway support for single board computer (SBC)
 - Automatically recenter 16:9 bezels for a better rendition on 16:10 and 5:3 screens (SteamDeck and other handheld devices)
+- Added the initial Radxa RockPi 5b board support - thanks @stvhay for your persistence & hard work!
 ### Changed
 - move to pipewire wireplumber audio
 - bluetooth modes : automatic and manual (via a list)
