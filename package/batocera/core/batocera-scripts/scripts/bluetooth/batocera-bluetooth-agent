@@ -43,12 +43,15 @@ def connect_device(path, address, properties, forceConnect, filter):
 
   #
   if filter is None:
+    logging.info("skipping {}. No filter.".format(address))
     return
 
   # avoid devices without interesting information
   if "Trusted" not in properties:
+    logging.info("skipping {}. No Trusted property.".format(address))
     return
   if "Connected" not in properties:
+    logging.info("skipping {}. No Connected property.".format(address))
     return
 
   trusted   = prop2str(properties["Trusted"])
@@ -218,10 +221,6 @@ def getBluetoothWantedAddr():
       logging.info("bt_dev: {}".format(addrDevice))
   return addrDevice
 
-def clearBluetoothWantedAddr():
-    if os.path.isfile("/var/run/bt_device"):
-      os.remove("/var/run/bt_device")
-
 def interfaces_added(path, interfaces):
   global gdevices
   global glisting_mode
@@ -238,14 +237,15 @@ def interfaces_added(path, interfaces):
   else:
     gdevices[path] = properties
 
-  logging.info("Interface added: {}".format(properties))
+  logging.info("Interface added: {}".format(propertiesToStr(properties)))
 
   if glisting_mode:
     listing_dev_event(path, gdevices[path], True)
 
   if "Address" in gdevices[path]:
     connect_device(path, prop2str(properties["Address"]), gdevices[path], False, getBluetoothWantedAddr())
-    clearBluetoothWantedAddr()
+  else:
+    logging.info("No address. skip.")
 
 def interfaces_removed(path, interfaces):
   global gdevices
@@ -255,6 +255,15 @@ def interfaces_removed(path, interfaces):
 
   if path in gdevices:
     del gdevices[path]
+
+def propertiesToStr(properties):
+  str = ""
+  for p in properties:
+    if p not in ["ServiceData", "RSSI", "UUIDs", "Adapter", "AddressType", "Alias", "Bonded", "ServicesResolved"]:
+      if str != "":
+        str = str + ", "
+      str = str + "{}={}".format(p, properties[p])
+  return str
 
 def properties_changed(interface, changed, invalidated, path):
   global gdevices
@@ -271,12 +280,13 @@ def properties_changed(interface, changed, invalidated, path):
   if glisting_mode:
     listing_dev_event(path, gdevices[path], True)
 
-  logging.info("Properties changed: {}".format(changed))
+  propstr = propertiesToStr(changed)
+  if propstr != "":
+    logging.info("Properties changed: {}".format(propstr))
 
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
     connect_device(path, gdevices[path]["Address"], gdevices[path], True, getBluetoothWantedAddr())
-    clearBluetoothWantedAddr()
     return
   
   # ok, it is now connected, what else ?
@@ -289,7 +299,6 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Address" in gdevices[path]:
     connect_device(path, gdevices[path]["Address"], gdevices[path], False, getBluetoothWantedAddr())
-    clearBluetoothWantedAddr()
 
 def merge2dicts(d1, d2):
   res = d1.copy()
@@ -458,6 +467,7 @@ def do_main_loop(dev_id):
   # use events while i manage to stop discovery only from the process having started it
   signal.signal(signal.SIGUSR1, user_signal_start_discovery)
   signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
+  logging.info("signals set")
   
   mainloop = GLib.MainLoop()
   mainloop.run()
