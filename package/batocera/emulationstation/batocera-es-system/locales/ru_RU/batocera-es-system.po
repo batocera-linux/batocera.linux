@@ -32,7 +32,7 @@ msgstr ""
 "Принудительно рендерить игру в данном соотношении сторон. Не все системы "
 "поддерживают все соотношения."
 
-#. TRANSLATION: shared, dolphin, mupen64plus, pcsx2, demul
+#. TRANSLATION: shared, dolphin, flycast, mupen64plus, pcsx2, ...
 msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
 msgstr "СООТНОШЕНИЕ СТОРОН ИГРЫ"
@@ -114,7 +114,7 @@ msgstr ""
 "Отключено, если используется набор шейдеров или дисплей соответствует "
 "разрешению игры."
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, daphne
 msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
 msgstr "СГЛАЖИВАНИЕ ИГР (БИЛИНЕАРНАЯ ФИЛЬТРАЦИЯ)"
@@ -808,7 +808,7 @@ msgctxt "game_options"
 msgid "After NMI"
 msgstr "После NMI"
 
-#. TRANSLATION: libretro/mesen-s, libretro/snes9x, libretro/snes9x_next
+#. TRANSLATION: libretro/mesen-s, libretro/snes9x_next
 msgctxt "game_options"
 msgid "Enhancement. Reduces slowdown in mode 7 games."
 msgstr "Улучшение. Уменьшает замедление в играх с mode 7."
@@ -823,7 +823,7 @@ msgctxt "game_options"
 msgid "Dendy is a popular Russian clone with unique characteristics."
 msgstr "Dendy - популярный российский клон с уникальными характеристиками."
 
-#. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation
+#. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation, flycast/uzem
 msgctxt "game_options"
 msgid "CONSOLE REGION"
 msgstr "РЕГИОН КОНСОЛИ"
@@ -843,7 +843,7 @@ msgctxt "game_options"
 msgid "DISPLAY ROTATION"
 msgstr "ПОВОРОТ ЭКРАНА"
 
-#. TRANSLATION: libretro/mesen, daphne, melonds
+#. TRANSLATION: libretro/mesen, daphne, flycast, melonds
 msgctxt "game_options"
 msgid "90 degrees"
 msgstr "90 градусов"
@@ -893,7 +893,7 @@ msgctxt "game_options"
 msgid "COLOR PALETTE"
 msgstr "ЦВЕТОВАЯ ПАЛИТРА"
 
-#. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, flycast/uzem, flycast/uzem, ...
+#. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, yuzu, yuzu
 msgctxt "game_options"
 msgid "Default"
 msgstr "По умолчанию"
@@ -1625,12 +1625,12 @@ msgctxt "game_options"
 msgid "PHYSICAL KEYBOARD LAYOUT"
 msgstr "РАСКЛАДКА ФИЗИЧЕСКОЙ КЛАВИАТУРЫ"
 
-#. TRANSLATION: libretro/dosbox_pure, hatari
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "US"
 msgstr "US"
 
-#. TRANSLATION: libretro/dosbox_pure, hatari
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "UK"
 msgstr "UK"
@@ -2198,8 +2198,8 @@ msgstr "2.5x (1600x1200)"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 1."
-msgstr "Цвет мишени для игрока 1."
+msgid "PLAYER 1 CROSSHAIR COLOR"
+msgstr ""
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -2223,18 +2223,18 @@ msgstr "Белый"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 2."
-msgstr "Цвет мишени для игрока 2."
+msgid "PLAYER 2 CROSSHAIR COLOR"
+msgstr ""
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 3."
-msgstr "Цвет мишени для игрока 3."
+msgid "PLAYER 3 CROSSHAIR COLOR"
+msgstr ""
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
-msgid "Target color for player 4."
-msgstr "Цвет мишени для игрока 4."
+msgid "PLAYER 4 CROSSHAIR COLOR"
+msgstr ""
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -2246,7 +2246,7 @@ msgctxt "game_options"
 msgid "TEXTURE MIP-MAPPING (BLUR)"
 msgstr "MIP-MAPPING ТЕКСТУР (РАЗМЫТИЕ)"
 
-#. TRANSLATION: libretro/flycast
+#. TRANSLATION: libretro/flycast, flycast
 msgctxt "game_options"
 msgid "Improves clarity of distant textures when mip-mapping is enabled."
 msgstr "Улучшает чёткость удаленных текстур при включенном mip-mapping."
@@ -2256,12 +2256,12 @@ msgctxt "game_options"
 msgid "Enhancement. Upscales screen textures (2D games only)."
 msgstr "Улучшение. Масштабирует текстуры экрана (только для 2D-игр)."
 
-#. TRANSLATION: libretro/flycast, libretro/quasi88
+#. TRANSLATION: libretro/flycast, libretro/quasi88, flycast/uzem
 msgctxt "game_options"
 msgid "Required for some games."
 msgstr "Требуется для некоторых игр. "
 
-#. TRANSLATION: libretro/flycast
+#. TRANSLATION: libretro/flycast, flycast/uzem
 msgctxt "game_options"
 msgid "FORCE WINDOWS CE MODE"
 msgstr "ПРИНУДИТЕЛЬНЫЙ РЕЖИМ WINDOWS CE"
@@ -5113,7 +5113,7 @@ msgctxt "game_options"
 msgid "CPU COMPATIBILITY"
 msgstr "СОВМЕСТИМОСТЬ CPU"
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, flycast, openbor
+#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor
 msgctxt "game_options"
 msgid "Normal"
 msgstr "Нормальный "
@@ -5641,6 +5641,13 @@ msgstr "Совместимый"
 msgctxt "game_options"
 msgid "Max (demanding games)"
 msgstr "Макс (требовательные игры)"
+
+#. TRANSLATION: libretro/snes9x
+msgctxt "game_options"
+msgid ""
+"Enhancement. Reduces slowdown in mode 7 games. Can cause issues in certain "
+"games."
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -6341,8 +6348,8 @@ msgstr "ОБРЕЗАТЬ РАМКУ"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
-msgid "Always have 6 bullets, 6 dynamite, 6 lives."
-msgstr "Всегда иметь 6 пуль, 6 динамита, 6 жизней."
+msgid "Always have 6 bullets, 6 dynamite and 6 lives."
+msgstr ""
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
@@ -6392,7 +6399,7 @@ msgstr ""
 "Выберите, какую API библиотеку использовать. Vulkan может работать не на "
 "каждом ядре."
 
-#. TRANSLATION: libretro, cemu, dolphin, duckstation, flycast, ...
+#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "ГРАФИЧЕСКИЙ API"
@@ -6849,56 +6856,37 @@ msgstr "РЕЖИМ NEW 3DS"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Choose your graphics rendering"
-msgstr "Выберите графический рендеринг"
+msgid ""
+"Choose which graphics API library to use. Vulkan may not work on all "
+"hardware."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "GRAPHICS BACKEND"
-msgstr "ГРАФИЧЕСКИЙ БЭКЭНД"
-
-#. TRANSLATION: daphne
-msgctxt "game_options"
-msgid "Not all games support Stretch, depending on the video files."
-msgstr "Не все игры поддерживают Растягивание, зависит от видеофайлов."
+msgid "Not all games support stretching, depending on their video files."
+msgstr ""
 
 #. TRANSLATION: daphne, dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
 msgid "Force 4:3"
 msgstr "Принудительно 4:3"
 
-#. TRANSLATION: daphne
-msgctxt "game_options"
-msgid "Rotate the screen with the emulator."
-msgstr "Поворот экрана с помощью эмулятора."
-
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne, flycast, melonds
 msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "ПОВОРОТ ЭКРАНА"
 
-#. TRANSLATION: daphne, melonds
+#. TRANSLATION: daphne, flycast, melonds
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 градусов"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Smooth pixels."
-msgstr "Гладкие пиксели."
-
-#. TRANSLATION: daphne, model2emu
-msgctxt "game_options"
-msgid "BILINEAR FILTERING"
-msgstr "БИЛИНЕАРНАЯ ФИЛЬТРАЦИЯ"
-
-#. TRANSLATION: daphne
-msgctxt "game_options"
 msgid ""
-"Use with Stretch aspect ratio and adjust joystick sensitivity as required."
+"Use with the stretch aspect ratio and adjust joystick sensitivity as "
+"required."
 msgstr ""
-"Исп. с соотношением сторон \"Растянуть\" и настройте чувствительность "
-"джойстика по мере необходимости."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6909,11 +6897,6 @@ msgstr "Восстанавливает контур РЕЖИМА СМЕШИВА�
 msgctxt "game_options"
 msgid "BLEND SPRITES (SINGE)"
 msgstr "СМЕШИВАНИЕ СПРАЙТОВ (SINGE)"
-
-#. TRANSLATION: daphne
-msgctxt "game_options"
-msgid "Singe overlay size options."
-msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6942,9 +6925,8 @@ msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "This option is required for some gun games when playing with the mouse"
+msgid "This option is required for some gun games when playing with a mouse."
 msgstr ""
-"Эта опция требуется для некоторых игр с пистолетом при игре с помощью мыши"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6953,22 +6935,13 @@ msgstr "АБСОЛЮТНЫЙ ВВОД МЫШИ"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "Invert joystick on flight games."
-msgstr "Инвертирует джойстик в играх с полетами."
+msgid "Invert the vertical joystick axis on flight games."
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "INVERT AXIS"
 msgstr "ИНВЕРТИРОВАТЬ ОСЬ"
-
-#. TRANSLATION: daphne
-msgctxt "game_options"
-msgid ""
-"Singe automatically interprets joystick axis change as mouse movement, "
-"useful for light gun games."
-msgstr ""
-"Singe автоматически интерпретирует изменение оси джойстика как движение "
-"мыши, полезно для игр с световым пистолетом."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6995,13 +6968,12 @@ msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid "SDL TEXTUREACCESS STREAMING"
-msgstr "SDL TEXTUREACCESS STREAMING"
+msgid "SDL TEXTURE ACCESS STREAMING"
+msgstr ""
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
-msgid ""
-"Allows you to set the controller settings in the custom.ini file manually."
+msgid "Use controller settings manually defined in custom.ini."
 msgstr ""
 
 #. TRANSLATION: daphne
@@ -7507,53 +7479,30 @@ msgstr "РАЗРЕШИТЬ ЗАГРУЗКУ БЕЗ SBI ФАЙЛА"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
-msgid "Choose the emulator language."
-msgstr "Выберите язык эмулятора."
+msgid ""
+"Dreamcast BIOS's language setting. Can change the language of some games. "
+"Some games default to Japanese."
+msgstr ""
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
-msgid "CHOOSE DREAMCAST LANGUAGE"
-msgstr "ВЫБРАТЬ ЯЗЫК DREAMCAST"
+msgid "BIOS LANGUAGE"
+msgstr ""
 
-#. TRANSLATION: flycast/uzem, yuzu, ryujinx
+#. TRANSLATION: flycast/uzem, flycast/uzem
 msgctxt "game_options"
-msgid "Choose your console region."
-msgstr "Выберите регион консоли."
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "CHOOSE DREAMCAST CONSOLE REGION"
-msgstr "ВЫБЕРИТЕ РЕГИОН КОНСОЛИ DREMCAST"
+msgid "Game's default"
+msgstr ""
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
-msgid "Enable Dreamcast auto load states."
-msgstr "Включает авто загрузку Dreamcast."
+msgid "AUTO LOAD ON GAME LAUNCH"
+msgstr ""
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
-msgid "ENABLE AUTO LOAD STATES"
-msgstr "ВКЛЮЧИТЬ АВТО ЗАГРУЗКУ СОХРАНЕНИЯ"
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "Enable Dreamcast auto saves states."
-msgstr "Включает авто сохранение Dreamcast."
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "ENABLE AUTO SAVE STATES"
-msgstr "ВКЛЮЧИТЬ АВТО СОХРАНЕНИЕ"
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "Forces Dreamcast Windows CE mode on."
-msgstr "Принудительно включает режим Dreamcast Windows CE."
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "FORCE WINDOWS CE"
-msgstr "ПРИНУДИТЕЛЬНЫЙ WINDOWS CE"
+msgid "AUTO SAVE ON GAME EXIT"
+msgstr ""
 
 #. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
@@ -7572,8 +7521,8 @@ msgstr "2nd VMU (по умолчанию)"
 
 #. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
-msgid "Purupuru (Rumble)"
-msgstr "Purupuru (вибрация)"
+msgid "Purupuru Pack/Vibration Pack"
+msgstr ""
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7592,9 +7541,10 @@ msgstr "КОТРОЛЛЕР 4 FEATURE PACK"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
-msgid "Enable the Dreamcast DSP. Only recommended for fast systems."
+msgid ""
+"Enable the Dreamcast DSP for more accurate audio. Only recommended for fast "
+"systems."
 msgstr ""
-"Включение DSP процессора Dreamcast. Рекомендуется только для быстрых систем."
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7608,24 +7558,8 @@ msgstr "Отключить (по умолчанию)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "Choose which screen ratio you want to use."
-msgstr "Выберите, какое соотношение сторон вы хотите использовать."
-
-#. TRANSLATION: flycast, openbor
-msgctxt "game_options"
-msgid "SCREEN RATIO"
-msgstr "СООТНОШЕНИЕ ЭКРАНА"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "Widescreen"
-msgstr "Широкоэкранный"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "Choose which internal rendering resolution you want to use."
+msgid "Force the game to render in this aspect ratio."
 msgstr ""
-"Выберите, какое внутреннее разрешение рендеринга вы хотите использовать."
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -7644,35 +7578,63 @@ msgstr "4.5x (2880x2160)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "Choose your graphics renderer."
-msgstr "Выберите графический рендерер."
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (по умолчанию)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "Rotate the screen by 90 degrees."
-msgstr "Поворачивает экран на 90 градусов."
+msgid "Rotate the screen with the emulator."
+msgstr "Поворот экрана с помощью эмулятора."
 
-#. TRANSLATION: flycast
+#. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "ROTATE SCREEN 90 DEGREES"
-msgstr "ПОВЕРНУТЬ ЭКРАН НА 90 ГРАДУСОВ"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "Rotate"
-msgstr "Повернуть"
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "Higher values make textures viewed at oblique angles look sharper."
+msgid "520 ST AUTO"
 msgstr ""
-"При более высоких значениях текстуры, под косыми углами, выглядят более "
-"чёткими."
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "520 ST TOS 1.00"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "520 ST TOS 1.02"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "520 ST TOS 1.04"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "1040 STE AUTO"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "1040 STE 1.06"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "1040 STE 1.62"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "Mega STE AUTO"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "Mega STE 2.05"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "Mega STE 2.06"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7681,38 +7643,48 @@ msgstr "Язык TOS."
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "DE"
-msgstr "DE"
+msgid "German (de)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "ES"
-msgstr "ES"
+msgid "Spanish (es)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "FR"
-msgstr "FR"
+msgid "French (fr)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "IT"
-msgstr "IT"
+msgid "Italian (it)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "NL"
-msgstr "NL"
+msgid "Dutch (nl)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "RU"
-msgstr "RU"
+msgid "Russian (ru)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
-msgid "SE"
-msgstr "SE"
+msgid "Swedish (se)"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "British English (uk)"
+msgstr ""
+
+#. TRANSLATION: hatari
+msgctxt "game_options"
+msgid "English (us)"
+msgstr ""
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -8140,6 +8112,11 @@ msgstr "Растягивает игры на весь экран, но може�
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
+msgid "SCREEN RATIO"
+msgstr "СООТНОШЕНИЕ ЭКРАНА"
+
+#. TRANSLATION: openbor
+msgctxt "game_options"
 msgid "Simple 2x"
 msgstr "Простой 2x"
 
@@ -8527,6 +8504,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "TV MODE"
 msgstr "ТВ РЕЖИМ"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "16:9 (default)"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9568,6 +9550,18 @@ msgctxt "game_options"
 msgid "USE DSP AUDIO"
 msgstr ""
 
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
+"performance loss."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "USE ZINK RENDERER"
+msgstr ""
+
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
 msgid "Portugese"
@@ -9666,6 +9660,11 @@ msgstr "ФАЛЬШИВЫЙ ГУРО"
 msgctxt "game_options"
 msgid "Smooth textures."
 msgstr "Гладкие текстуры."
+
+#. TRANSLATION: model2emu
+msgctxt "game_options"
+msgid "BILINEAR FILTERING"
+msgstr "БИЛИНЕАРНАЯ ФИЛЬТРАЦИЯ"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -9823,6 +9822,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Brazilian Portuguese"
 msgstr ""
+
+#. TRANSLATION: yuzu, ryujinx
+msgctxt "game_options"
+msgid "Choose your console region."
+msgstr "Выберите регион консоли."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -10248,6 +10252,180 @@ msgstr "Показать (По умолчанию)"
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 1."
+#~ msgstr "Цвет мишени для игрока 1."
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 2."
+#~ msgstr "Цвет мишени для игрока 2."
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 3."
+#~ msgstr "Цвет мишени для игрока 3."
+
+#~ msgctxt "game_options"
+#~ msgid "Target color for player 4."
+#~ msgstr "Цвет мишени для игрока 4."
+
+#~ msgctxt "game_options"
+#~ msgid "Always have 6 bullets, 6 dynamite, 6 lives."
+#~ msgstr "Всегда иметь 6 пуль, 6 динамита, 6 жизней."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose your graphics rendering"
+#~ msgstr "Выберите графический рендеринг"
+
+#~ msgctxt "game_options"
+#~ msgid "GRAPHICS BACKEND"
+#~ msgstr "ГРАФИЧЕСКИЙ БЭКЭНД"
+
+#~ msgctxt "game_options"
+#~ msgid "Not all games support Stretch, depending on the video files."
+#~ msgstr "Не все игры поддерживают Растягивание, зависит от видеофайлов."
+
+#~ msgctxt "game_options"
+#~ msgid "Smooth pixels."
+#~ msgstr "Гладкие пиксели."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use with Stretch aspect ratio and adjust joystick sensitivity as required."
+#~ msgstr ""
+#~ "Исп. с соотношением сторон \"Растянуть\" и настройте чувствительность "
+#~ "джойстика по мере необходимости."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "This option is required for some gun games when playing with the mouse"
+#~ msgstr ""
+#~ "Эта опция требуется для некоторых игр с пистолетом при игре с помощью мыши"
+
+#~ msgctxt "game_options"
+#~ msgid "Invert joystick on flight games."
+#~ msgstr "Инвертирует джойстик в играх с полетами."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Singe automatically interprets joystick axis change as mouse movement, "
+#~ "useful for light gun games."
+#~ msgstr ""
+#~ "Singe автоматически интерпретирует изменение оси джойстика как движение "
+#~ "мыши, полезно для игр с световым пистолетом."
+
+#~ msgctxt "game_options"
+#~ msgid "SDL TEXTUREACCESS STREAMING"
+#~ msgstr "SDL TEXTUREACCESS STREAMING"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose the emulator language."
+#~ msgstr "Выберите язык эмулятора."
+
+#~ msgctxt "game_options"
+#~ msgid "CHOOSE DREAMCAST LANGUAGE"
+#~ msgstr "ВЫБРАТЬ ЯЗЫК DREAMCAST"
+
+#~ msgctxt "game_options"
+#~ msgid "CHOOSE DREAMCAST CONSOLE REGION"
+#~ msgstr "ВЫБЕРИТЕ РЕГИОН КОНСОЛИ DREMCAST"
+
+#~ msgctxt "game_options"
+#~ msgid "Enable Dreamcast auto load states."
+#~ msgstr "Включает авто загрузку Dreamcast."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE AUTO LOAD STATES"
+#~ msgstr "ВКЛЮЧИТЬ АВТО ЗАГРУЗКУ СОХРАНЕНИЯ"
+
+#~ msgctxt "game_options"
+#~ msgid "Enable Dreamcast auto saves states."
+#~ msgstr "Включает авто сохранение Dreamcast."
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE AUTO SAVE STATES"
+#~ msgstr "ВКЛЮЧИТЬ АВТО СОХРАНЕНИЕ"
+
+#~ msgctxt "game_options"
+#~ msgid "Forces Dreamcast Windows CE mode on."
+#~ msgstr "Принудительно включает режим Dreamcast Windows CE."
+
+#~ msgctxt "game_options"
+#~ msgid "FORCE WINDOWS CE"
+#~ msgstr "ПРИНУДИТЕЛЬНЫЙ WINDOWS CE"
+
+#~ msgctxt "game_options"
+#~ msgid "Purupuru (Rumble)"
+#~ msgstr "Purupuru (вибрация)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the Dreamcast DSP. Only recommended for fast systems."
+#~ msgstr ""
+#~ "Включение DSP процессора Dreamcast. Рекомендуется только для быстрых "
+#~ "систем."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose which screen ratio you want to use."
+#~ msgstr "Выберите, какое соотношение сторон вы хотите использовать."
+
+#~ msgctxt "game_options"
+#~ msgid "Widescreen"
+#~ msgstr "Широкоэкранный"
+
+#~ msgctxt "game_options"
+#~ msgid "Choose which internal rendering resolution you want to use."
+#~ msgstr ""
+#~ "Выберите, какое внутреннее разрешение рендеринга вы хотите использовать."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose your graphics renderer."
+#~ msgstr "Выберите графический рендерер."
+
+#~ msgctxt "game_options"
+#~ msgid "Rotate the screen by 90 degrees."
+#~ msgstr "Поворачивает экран на 90 градусов."
+
+#~ msgctxt "game_options"
+#~ msgid "ROTATE SCREEN 90 DEGREES"
+#~ msgstr "ПОВЕРНУТЬ ЭКРАН НА 90 ГРАДУСОВ"
+
+#~ msgctxt "game_options"
+#~ msgid "Rotate"
+#~ msgstr "Повернуть"
+
+#~ msgctxt "game_options"
+#~ msgid "Higher values make textures viewed at oblique angles look sharper."
+#~ msgstr ""
+#~ "При более высоких значениях текстуры, под косыми углами, выглядят более "
+#~ "чёткими."
+
+#~ msgctxt "game_options"
+#~ msgid "DE"
+#~ msgstr "DE"
+
+#~ msgctxt "game_options"
+#~ msgid "ES"
+#~ msgstr "ES"
+
+#~ msgctxt "game_options"
+#~ msgid "FR"
+#~ msgstr "FR"
+
+#~ msgctxt "game_options"
+#~ msgid "IT"
+#~ msgstr "IT"
+
+#~ msgctxt "game_options"
+#~ msgid "NL"
+#~ msgstr "NL"
+
+#~ msgctxt "game_options"
+#~ msgid "RU"
+#~ msgstr "RU"
+
+#~ msgctxt "game_options"
+#~ msgid "SE"
+#~ msgstr "SE"
 
 #~ msgctxt "game_options"
 #~ msgid "Enhancement. Upscale in-game screen-captures."
