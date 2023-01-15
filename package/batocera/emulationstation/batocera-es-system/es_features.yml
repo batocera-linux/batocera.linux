@@ -6720,7 +6720,7 @@ flycast:
             "Off (Default)": no
             "On"           : yes
         flycast_savestate:
-          prompt:      AUTO SAVE ON GAME LAUNCH
+          prompt:      AUTO SAVE ON GAME EXIT
           choices:
             "Off (Default)": no
             "On"           : yes
@@ -6794,15 +6794,15 @@ hatari:
             prompt:      LANGUAGE
             description: TOS languages.
             choices:
-                German (de):    de
-                Spanish (es):   es
-                French (fr):    fr
-                Italian (it):   it
-                Dutch (nl):     nl
-                Russian (ru):   ru
-                (se):        se
-                (uk):        uk
-                (us):        us
+                German (de):          de
+                Spanish (es):         es
+                French (fr):          fr
+                Italian (it):         it
+                Dutch (nl):           nl
+                Russian (ru):         ru
+                Swedish (se):         se
+                British English (uk): uk
+                English (us):         us
         ram:
             prompt:      EMULATED RAM SIZE
             choices:
