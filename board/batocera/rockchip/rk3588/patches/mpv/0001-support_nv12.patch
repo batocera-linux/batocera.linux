@@ -1,0 +1,31 @@
+From 1ba3b1707ebc53243bf44a1ff04eb3527099f30c Mon Sep 17 00:00:00 2001
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Date: Mon, 20 Jan 2020 15:41:59 +0800
+Subject: [PATCH] vo_xv: Support NV12
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+---
+ video/out/vo_xv.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/video/out/vo_xv.c b/video/out/vo_xv.c
+index e75a653d654..f37a8d1228a 100644
+--- a/video/out/vo_xv.c
++++ b/video/out/vo_xv.c
+@@ -100,6 +100,7 @@ struct xvctx {
+ #define MP_FOURCC_I420  MP_FOURCC('I', '4', '2', '0')
+ #define MP_FOURCC_IYUV  MP_FOURCC('I', 'Y', 'U', 'V')
+ #define MP_FOURCC_UYVY  MP_FOURCC('U', 'Y', 'V', 'Y')
++#define MP_FOURCC_NV12  MP_FOURCC('N', 'V', '1', '2')
+ 
+ struct fmt_entry {
+     int imgfmt;
+@@ -109,6 +110,7 @@ static const struct fmt_entry fmt_table[] = {
+     {IMGFMT_420P,       MP_FOURCC_YV12},
+     {IMGFMT_420P,       MP_FOURCC_I420},
+     {IMGFMT_UYVY,       MP_FOURCC_UYVY},
++    {IMGFMT_NV12,       MP_FOURCC_NV12},
+     {0}
+ };
+ 
+

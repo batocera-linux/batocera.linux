@@ -1,0 +1,24 @@
+From effea7c3b0a9755a331a3036da26cfd5a9c67bb9 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <95260730+RadxaYuntian@users.noreply.github.com>
+Date: Mon, 10 Oct 2022 11:05:56 +0800
+Subject: [PATCH 09/18] Disable tristate for builtin dependencies
+
+---
+ drivers/media/cec/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/cec/Kconfig b/drivers/media/cec/Kconfig
+index 9ba3a00dc..e04df844c 100644
+--- a/drivers/media/cec/Kconfig
++++ b/drivers/media/cec/Kconfig
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config CEC_CORE
+-	tristate
++	bool
+ 
+ config CEC_NOTIFIER
+ 	bool
+-- 
+2.30.2
+

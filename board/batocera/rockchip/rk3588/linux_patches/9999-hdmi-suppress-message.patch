@@ -1,0 +1,22 @@
+From 39141d792534c5703bb834861c47718008c85001 Mon Sep 17 00:00:00 2001
+From: Steev Klimaszewski <steev@kali.org>
+Date: Mon, 12 Dec 2022 16:25:23 -0600
+Subject: [PATCH] hack: drm: gpu: dw-hdmi: rockchip: shut the fuck up about
+ tmds mode
+
+---
+ drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+index ed06757c828042..6f95e7b57cf2fa 100644
+--- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+@@ -806,7 +806,6 @@ static void hdmi_select_link_config(struct rockchip_hdmi *hdmi,
+ 	hdmi->link_cfg.add_func = hdmi->add_func;
+ 
+ 	if (!max_frl_rate || (tmdsclk < HDMI20_MAX_RATE && mode.clock < HDMI20_MAX_RATE)) {
+-		dev_info(hdmi->dev, "use tmds mode\n");
+ 		hdmi->link_cfg.frl_mode = false;
+ 		return;
+ 	}
