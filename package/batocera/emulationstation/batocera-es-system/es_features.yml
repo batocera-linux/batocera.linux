@@ -7377,8 +7377,8 @@ rpcs3:
             prompt:      TV MODE
             description: PS3's internal ratio setting. Some games only support 16/9.
             choices:
-                "16:9":  16/9
-                "4:3":   4/3
+                "16:9 (default)": "16:9"
+                "4:3":            "4:3"
         ppudecoder:
             group: ADVANCED OPTIONS
             prompt:      PPU DECODER
