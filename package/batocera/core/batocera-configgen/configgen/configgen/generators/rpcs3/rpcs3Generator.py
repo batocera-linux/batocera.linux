@@ -110,11 +110,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = 0
 
         # -= [Video] =-
-        # gfx backend
+        # gfx backend - default to Vulkan
         if system.isOptSet("gfxbackend"):
             rpcs3ymlconfig["Video"]["Renderer"] = system.config["gfxbackend"]
         else:
-            rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
+            rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
         if system.isOptSet("tv_mode"):
             rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config["tv_mode"]
@@ -142,7 +142,7 @@ class Rpcs3Generator(Generator):
         if system.isOptSet("framelimit"):
             rpcs3ymlconfig["Video"]["Frame limit"] = system.config["framelimit"]
         else:
-            rpcs3ymlconfig["Video"]["Frame limit"] = 60
+            rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
         # Write Depth Buffer
         if system.isOptSet("depthbuffer") and system.config["depthbuffer"] == "True":
             rpcs3ymlconfig["Video"]["Write Depth Buffer"] = True
@@ -160,8 +160,22 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Disable Vertex Cache"] = False
 
         # -= [Audio] =-
-        rpcs3ymlconfig["Audio"]["Renderer"] = "Cubeb" # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
+        # defaults
+        rpcs3ymlconfig["Audio"]["Renderer"] = "Cubeb"
         rpcs3ymlconfig["Audio"]["Master Volume"] = 100
+        # audio buffering
+        if system.isOptSet("audiobuffer") and system.config["audiobuffer"] == "False":
+            rpcs3ymlconfig["Audio"]["Enable Buffering"] = False
+        else:
+            rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
+        rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = 100
+        # time stretching
+        if system.isOptSet("timestretch") and system.config["timestretch"] == "True":
+            rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = True
+            rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
+        else:
+            rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = False
+        rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = 75
 
         # -= [Input/Output] =-
         # gun stuff

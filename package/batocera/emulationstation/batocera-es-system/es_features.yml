@@ -7356,32 +7356,32 @@ rpcs3:
   cfeatures:
         gui:
             group: ADVANCED OPTIONS
-            prompt:      GRAPHICAL USER INTERFACE
+            prompt: GRAPHICAL USER INTERFACE
             description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
             choices:
-                "Off":   0
-                "On":    1
+                "Off": 0
+                "On":  1
         gfxbackend:
-            prompt:      GRAPHICS API
+            prompt: GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
-                "OpenGL":   OpenGL
-                "Vulkan":   Vulkan
+                "OpenGL": OpenGL
+                "Vulkan": Vulkan
         stretchtodisplayarea:
-            prompt:      STRETCH TO DISPLAY AREA
+            prompt: STRETCH TO DISPLAY AREA
             description: Distorts the output to fill the display fully.
             choices:
-                "Off":   False
-                "On":    True
+                "Off": False
+                "On":  True
         tv_mode:
-            prompt:      TV MODE
+            prompt: TV MODE
             description: PS3's internal ratio setting. Some games only support 16/9.
             choices:
                 "16:9 (default)": "16:9"
                 "4:3":            "4:3"
         ppudecoder:
             group: ADVANCED OPTIONS
-            prompt:      PPU DECODER
+            prompt: PPU DECODER
             description: LLVM is fastest, use the Interpreter settings if there are issues.
             choices:
                 "LLVM Recompiler":     Recompiler (LLVM)
@@ -7389,16 +7389,16 @@ rpcs3:
                 "Static Interpreter":  Interpreter (static)
         spudecoder:
             group: ADVANCED OPTIONS
-            prompt:      SPU DECODER
+            prompt: SPU DECODER
             description: If game crashes, try ASMJIT. If still crashing, try Fast Interpreter.
             choices:
-                "LLVM Recompiler":      Recompiler (LLVM)
-                "ASMJIT Recompiler":    Recompiler (ASMJIT)
-                "Fast Interpreter":     Interpreter (fast)
-                "Precise Interpreter":  Interpreter (precise)
+                "LLVM Recompiler":     Recompiler (LLVM)
+                "ASMJIT Recompiler":   Recompiler (ASMJIT)
+                "Fast Interpreter":    Interpreter (fast)
+                "Precise Interpreter": Interpreter (precise)
         spuxfloataccuracy:
             group: ADVANCED OPTIONS
-            prompt:      SPU XFloat Accuracy
+            prompt: SPU XFloat Accuracy
             description: Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder.
             choices:
                 "Accurate XFloat":    accurate
@@ -7406,30 +7406,30 @@ rpcs3:
                 "Relaxed XFloat":     relaxed
         framelimit:
             group: ADVANCED OPTIONS
-            prompt:      ADDITIONAL FRAMELIMIT
+            prompt: ADDITIONAL FRAMELIMIT
             description: Most games already have an internal framelimit. Minor performance cost.
             choices:
-                "Off (faster, unstable)":  Off
-                "59.94":                   59.94
-                "50":                      50
-                "60":                      60
-                "30":                      30
+                "Off (faster, unstable)": Off
+                "30":                     30
+                "50":                     50
+                "59.94":                  59.94
+                "60":                     60
         shadermode:
             group: ADVANCED OPTIONS
-            prompt:      SHADER MODE
+            prompt: SHADER MODE
             description: Only Async (skip draw) avoids freezing while compiling shaders.
             choices:
-                "Legacy (laggy)":                   Shader Recompiler
-                "Async (skip draw, recommended)":   Async Shader Recompiler
-                "Async with interp. (hybrid)":      Async with Shader Interpreter
-                "Interpreter only (experimental)":  Shader Interpreter only
+                "Legacy (laggy)":                  Shader Recompiler
+                "Async (skip draw, recommended)":  Async Shader Recompiler
+                "Async with interp. (hybrid)":     Async with Shader Interpreter
+                "Interpreter only (experimental)": Shader Interpreter only
         vsync:
             group: ADVANCED OPTIONS
-            prompt:      VSYNC
+            prompt: VSYNC
             description: Can fix screen tearing on unorthodox displays (most LCDs don't need this).
             choices:
-                "Off":         0
-                "On (slower)": 1
+                "Off (Default)": False
+                "On":            True
         colorbuffers:
             group: ADVANCED OPTIONS
             prompt: WRITE COLOR BUFFERS
@@ -7463,6 +7463,20 @@ rpcs3:
                 "4 threads": 4
                 "5 threads": 5
                 "6 threads": 6
+        audiobuffer:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE AUDIO BUFFERING
+            description: Can reduce crackle and stutter but increases audio latency.
+            choices:
+                "Off":          False
+                "On (Default)": True
+        timestretch:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE TIME STRETCHING
+            description: Reduces crackle and stutter further, but may cause a very noticeable reduction in audio quality on slower CPUs.
+            choices:
+                "Off (Default)": False
+                "On":            True             
 
 scummvm:
   features: [padtokeyboard]
