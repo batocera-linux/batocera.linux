@@ -14,7 +14,6 @@ MALI_G610_EXTRA_DOWNLOADS = https://gitlab.freedesktop.org/glvnd/libglvnd/-/arch
 
 MALI_G610_PROVIDES = libegl libgbm libgles libmali
 MALI_G610_DEPENDENCIES = host-patchelf libdrm libglvnd
-#MALI_G610_DEPENDENCIES += wayland libxcb xlib_libX11
 
 MALI_G610_GPU = valhall-g610
 MALI_G610_VER = g6p0
@@ -30,21 +29,5 @@ MALI_G610_CONF_OPTS += \
    -Dplatform=$(subst $(eval) $(eval),-,$(MALI_G610_PLATFORM)) \
    -Dwrappers=auto \
    -Dhooks=true
-
-#define MALI_G610_INSTALL_HEADERS
-#   tar xvfz $(MALI_G610_DL_DIR)/libglvnd-master.tar.gz -C $(@D)
-#   for header_dir in $(MALI_G610_MESA_HEADER_DIRS); do \
-#      cp -rpv $(@D)/libglvnd-master/include/$${header_dir} $(STAGING_DIR)/usr/include/ || exit 1; done
-#   for header_dir in $(MALI_G610_ROCKCHIP_HEADER_DIRS); do \
-#      cp -rpv $(@D)/include/$${header_dir} $(STAGING_DIR)/usr/include/ || exit 1; done
-#endef
-
-# define MALI_G610_REMOVE_BROKEN_HOOKS
-# 	rm -fv $(STAGING_DIR)/usr/lib/libwayland-egl.so.1
-# 	rm -fv $(TARGET_DIR)/usr/lib/libwayland-egl.so.1
-# endef
-
-# MALI_G610_PRE_CONFIGURE_HOOKS += MALI_G610_INSTALL_HEADERS
-# MALI_G610_POST_INSTALL_TARGET_HOOKS += MALI_G610_REMOVE_BROKEN_HOOKS
 
 $(eval $(meson-package))
