@@ -69,7 +69,7 @@ do_devlist() {
     fi
 
     NPID=$(cat /var/run/bluetooth-agent.pid)
-    trap "kill -12 ${NPID} ; rm -f /var/run/bt_listing" 2 3
+    trap "kill -12 ${NPID} ; rm -f /var/run/bt_listing; rm -f /var/run/bt_device" 2 3
 
     kill -10 "${NPID}"
     # ok, not 10 lines should happen during this instant (between kill and tail)
@@ -107,7 +107,7 @@ do_trust() {
     then
 	rm -f "/var/run/bt_listing"
 	NPID=$(cat /var/run/bluetooth-agent.pid)
-	trap "kill -12 ${NPID}" 2 3
+	trap "kill -12 ${NPID}; rm -f /var/run/bt_device" 2 3
 	kill -10 "${NPID}"
     fi
 
@@ -142,6 +142,7 @@ do_trust() {
     then
 	NPID=$(cat /var/run/bluetooth-agent.pid)
 	kill -12 "${NPID}"
+	rm -f /var/run/bt_device
     fi
 
     do_save # save
