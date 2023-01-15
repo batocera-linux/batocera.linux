@@ -130,7 +130,7 @@
 - Future Pinball saves
 ### Dev  
 - buildroot upgrade to 2022.11.x
-- odroidxu4 upgrade kernel to 6.1
+- odroidxu4 upgrade kernel to 6.1.6
 - rpi1 image renamed to bcm2835
 - rpi2 image renamed to bcm2836
 - rpi3 image renamed to bcm2837
