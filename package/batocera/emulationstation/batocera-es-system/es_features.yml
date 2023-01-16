@@ -6693,6 +6693,14 @@ flycast:
         "4x"                : 4
         "8x"                : 8
         "16x"               : 16
+    flycast_sorting:
+      group: ADVANCED OPTIONS
+      prompt: TRANSPARENT SORTING
+      description: How the emulator should sort transparent objects.
+      choices:
+        "Per Triangle (Default)": 1
+        "Per Strip":              2
+        "Per Pixel":              3 
   systems:
     dreamcast:
       cfeatures:
