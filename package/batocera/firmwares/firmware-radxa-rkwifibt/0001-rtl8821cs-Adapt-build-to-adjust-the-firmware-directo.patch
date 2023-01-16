@@ -1,0 +1,81 @@
+From 713062beac4d51cc3d27f2cf926e0a1fd4217eca Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Sun, 19 Feb 2023 03:11:54 +0100
+Subject: [PATCH 1/3] rtl8821cs / Adapt build to adjust the firmware directory
+ and load the 8821cs firmware.
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ bt_load_rtk_firmware            | 5 +++--
+ realtek/rtk_hciattach/Makefile  | 2 +-
+ realtek/rtk_hciattach/rtb_fwc.c | 9 +++++----
+ 3 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/bt_load_rtk_firmware b/bt_load_rtk_firmware
+index 66c553c..70c8dd4 100755
+--- a/bt_load_rtk_firmware
++++ b/bt_load_rtk_firmware
+@@ -7,6 +7,7 @@ sleep 2
+ echo 1 > /sys/class/rfkill/rfkill0/state
+ sleep 2
+ 
+-insmod /usr/lib/modules/hci_uart.ko
+-rtk_hciattach -n -s 115200 BT_TTY_DEV rtk_h5 &
++insmod /lib/modules/$(uname -r)/kernel/drivers/bluetooth/hci_uart.ko
++rtk_hciattach -n -s 115200 $BT_TTY_DEV rtk_h5 &
++sleep 5
+ hciconfig hci0 up
+diff --git a/realtek/rtk_hciattach/Makefile b/realtek/rtk_hciattach/Makefile
+index 80505fd..d825d1e 100644
+--- a/realtek/rtk_hciattach/Makefile
++++ b/realtek/rtk_hciattach/Makefile
+@@ -1,5 +1,5 @@
+ CFLAGS := -Wall -g
+-#CC := $(CROSS_COMPLE)gcc
++CC := $(CROSS_COMPILE)gcc
+ all: rtk_hciattach
+ OBJS := hciattach.o hciattach_rtk.o hciattach_h4.o rtb_fwc.o
+ 
+diff --git a/realtek/rtk_hciattach/rtb_fwc.c b/realtek/rtk_hciattach/rtb_fwc.c
+index 5e9e370..93a4d0f 100644
+--- a/realtek/rtk_hciattach/rtb_fwc.c
++++ b/realtek/rtk_hciattach/rtb_fwc.c
+@@ -36,8 +36,8 @@
+ 
+ //#define BT_ADDR_FROM_VENDOR_STORAGE
+ 
+-#define FIRMWARE_DIRECTORY	"/lib/firmware/rtlbt/"
+-#define BT_CONFIG_DIRECTORY	"/lib/firmware/rtlbt/"
++#define FIRMWARE_DIRECTORY	"/lib/firmware/rtl_bt/"
++#define BT_CONFIG_DIRECTORY	"/lib/firmware/rtl_bt/"
+ #define EXTRA_CONFIG_FILE	"/opt/rtk_btconfig.txt"
+ #define BT_ADDR_FILE		"/opt/bdaddr"
+ #define BDADDR_STRING_LEN	17
+@@ -149,7 +149,7 @@ static struct patch_info patch_table[] = {
+ 	/* RTL8821CS */
+ 	{ RTL_FW_MATCH_HCI_REV, CHIP_8821CS,
+ 		ROM_LMP_8821a, ROM_LMP_8821a, 0, 0x000c,
+-		"rtl8821c_fw", "rtl8821c_config", "RTL8821CS"},
++		"rtl8821cs_fw", "rtl8821cs_config", "RTL8821CS"},
+ 	/* RTL8821AS */
+ 	{ 0, 0, ROM_LMP_8821a, ROM_LMP_8821a, 0, 0,
+ 		"rtl8821a_fw", "rtl8821a_config", "RTL8821AS"},
+@@ -700,13 +700,14 @@ typedef int8_t RT_S8, *PRT_S8;
+ typedef uint16_t RT_U16, *PRT_U16;
+ typedef int32_t RT_S32, *PRT_S32;
+ typedef uint32_t RT_U32, *PRT_U32;
++/*
+ static void rtk_get_ram_addr(uint8_t bt_addr[0])
+ {
+ 	srand(time(NULL) + getpid() + getpid() * 987654 + rand());
+ 
+ 	RT_U32 addr = rand();
+ 	memcpy(bt_addr, &addr, sizeof(RT_U8));
+-}
++}*/
+ 
+ #ifdef BT_ADDR_FROM_VENDOR_STORAGE
+ 
+-- 
+2.30.2
+
