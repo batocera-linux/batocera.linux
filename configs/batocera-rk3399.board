@@ -21,7 +21,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.1.1"
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.1.6"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/linux-defconfig.config"
@@ -30,8 +30,8 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3399-rockpro64 rockchip/rk3399-rock960 rockchip/rk3399-orangepi rockchip/rk3399-rock-pi-4b"
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/dts/rk3399-anbernic-rg552.dts"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3399-rockpro64 rockchip/rk3399-rock960 rockchip/rk3399-rock-pi-4b"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/dts/rk3399-anbernic-rg552.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3399/dts/rk3399-orangepi-4-lts.dts"
 
 # Bootloader
 BR2_TARGET_ARM_TRUSTED_FIRMWARE_PLATFORM="rk3399"
