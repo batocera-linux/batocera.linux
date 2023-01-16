@@ -77,8 +77,20 @@ class FlycastGenerator(Generator):
         else:
             Config.set("config", "rend.Rotate90", "no")
         # renderer - default: OpenGL
-        if system.isOptSet("flycast_renderer"):
-            Config.set("config", "pvr.rend", str(system.config["flycast_renderer"]))
+        if system.isOptSet("flycast_renderer") and system.config["flycast_renderer"] == "0":
+            if system.isOptSet("flycast_sorting") and system.config["flycast_sorting"] == "3":
+                # per pixel
+                Config.set("config", "pvr.rend", "3")
+            else:
+                # per triangle
+                Config.set("config", "pvr.rend", "0")
+        elif system.isOptSet("flycast_renderer") and system.config["flycast_renderer"] == "4":
+            if system.isOptSet("flycast_sorting") and system.config["flycast_sorting"] == "3":
+                # per pixel
+                Config.set("config", "pvr.rend", "5")
+            else:
+                # per triangle
+                Config.set("config", "pvr.rend", "4")
         else:
             Config.set("config", "pvr.rend", "0")
         # anisotropic filtering
@@ -86,6 +98,12 @@ class FlycastGenerator(Generator):
             Config.set("config", "rend.AnisotropicFiltering", str(system.config["flycast_anisotropic"]))
         else:
             Config.set("config", "rend.AnisotropicFiltering", "1")
+        # transparent sorting
+        # per strip
+        if system.isOptSet("flycast_sorting") and system.config["flycast_sorting"] == "2":
+            Config.set("config", "rend.PerStripSorting", "yes")
+        else:
+            Config.set("config", "rend.PerStripSorting", "no")
         
         # [Dreamcast specifics]
         # language
