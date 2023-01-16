@@ -2,7 +2,7 @@ diff --git a/.gitmodules b/.gitmodules
 index e57fd159..bb5ed956 100644
 --- a/.gitmodules
 +++ b/.gitmodules
-@@ -90,6 +90,6 @@
+@@ -90,9 +90,9 @@
  [submodule "external/tracy"]
  	path = external/tracy
  	url = https://github.com/wolfpld/tracy.git
@@ -12,6 +12,9 @@ index e57fd159..bb5ed956 100644
 +[submodule "external/nativefiledialog-cmake"]
 +    path = external/nativefiledialog-cmake
 +	url = https://github.com/Vita3K/nativefiledialog-cmake
+ [submodule "external/cubeb"]
+ 	path = external/cubeb
+ 	url = https://github.com/mozilla/cubeb.git
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
 index d4dcfc94..4cb3e1ee 100644
 --- a/external/CMakeLists.txt
@@ -92,8 +95,8 @@ index ef7de553..811ee661 100644
  
  target_include_directories(gui PUBLIC include ${CMAKE_SOURCE_DIR}/vita3k)
  target_link_libraries(gui PUBLIC app config dialog emuenv ime imgui glutil lang np)
--target_link_libraries(gui PRIVATE ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil host::dialog)
-+target_link_libraries(gui PRIVATE ctrl kernel miniz nativefiledialog psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil)
+-target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil host::dialog)
++target_link_libraries(gui PRIVATE audio ctrl kernel miniz nativefiledialog psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil)
  target_link_libraries(gui PUBLIC tracy)
 diff --git a/vita3k/gui/src/archive_install_dialog.cpp b/vita3k/gui/src/archive_install_dialog.cpp
 index 67832991..5d724637 100644
