@@ -7249,100 +7249,108 @@ ppsspp:
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, rk3326]
-            prompt:      GRAPHICS API
+            prompt: GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
-                "OpenGL":               0 (OPENGL)
-                "Vulkan":               3 (VULKAN)
+                "OpenGL": 0 (OPENGL)
+                "Vulkan": 3 (VULKAN)
         rendering_mode:
             group: ADVANCED OPTIONS
-            prompt:      RENDERING MODE
+            prompt: RENDERING MODE
             description: Skip buffer disables auto frameskip and renders at display output resolution.
             choices:
-                "Buffered rendering":   1
-                "Skip buffer effects":  0
+                "Skip buffer effects": 0
+                "Buffered rendering":  1
         internal_resolution:
-            prompt:      RENDERING RESOLUTION
+            prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                #"Automatic (1:1)":        0
-                "1x (480x272)":           1
-                "2x (960x544)":           2
-                "3x 720p (1440x816)":     3
-                "4x 1080p (1920x1088)":   4
-                "5x (2400x1360)":         5
-                "6x (2880x1632)":         6
-                "7x (3360x1904)":         7
-                "8x 4K (3840x2176)":      8
-                "9x (4320x2448)":         9
-                "10x (4800x2720)":        10
+                #"Automatic (1:1)":     0
+                "1x (480x272)":         1
+                "2x (960x544)":         2
+                "3x 720p (1440x816)":   3
+                "4x 1080p (1920x1088)": 4
+                "5x (2400x1360)":       5
+                "6x (2880x1632)":       6
+                "7x (3360x1904)":       7
+                "8x 4K (3840x2176)":    8
+                "9x (4320x2448)":       9
+                "10x (4800x2720)":      10
         frameskip:
-            prompt:      FRAMESKIP
+            prompt: FRAMESKIP
             description: Skip frames to improve performance, at the cost of choppy motion.
             choices:
-                "Off":                  0
-                "1":                    1
-                "2":                    2
-                "3":                    3
-                "4":                    4
-                "5":                    5
+                "Off": 0
+                "1":   1
+                "2":   2
+                "3":   3
+                "4":   4
+                "5":   5
         autoframeskip:
-            prompt:      AUTO FRAMESKIP
+            prompt: AUTO FRAMESKIP
             description: Automatically reduce frameskip if the system has spare overhead.
             choices:
-                "On":                   1
-                "Off":                  0
+                "Off": 0
+                "On":  1
         vsyncinterval:
             group: ADVANCED OPTIONS
             prompt:      VSYNC INTERVAL
             description: Enable for more fluidity, disable if screen tearing.
             choices:
-                "Enable":               1
                 "Disable":              0
+                "Enable":               1
         texture_scaling_level:
             group: ADVANCED OPTIONS
-            prompt:      TEXTURE UPSCALING LEVEL
+            prompt: TEXTURE UPSCALING LEVEL
             description: Enhancement. Enables texture upscaling textures and their size.
             choices:
-                "Off":                  1
-                "Automatic":            0
-                "2x":                   2
-                "3x":                   3
-                "4x":                   4
-                "5x":                   5
+                "Off (Default)": 1
+                "2x":            2
+                "3x":            3
+                "4x":            4
+                "5x":            5
         texture_scaling_type:
             group: ADVANCED OPTIONS
-            prompt:      TEXTURE UPSCALING TYPE
+            prompt: TEXTURE UPSCALING TYPE
             description: The upscaling method used when enabled.
             choices:
-                "xBRZ":                 0
-                "Hybride":              1
-                "Bicubique":            2
-                "Hybride + Bicubique":  3
+                "xBRZ (Default)":   0
+                "Hybrid":           1
+                "Bicubic":          2
+                "Hybrid + Bicubic": 3
         texture_deposterize:
             group: ADVANCED OPTIONS
-            prompt:      TEXTURE DEPOSTERIZE
+            prompt: TEXTURE DEPOSTERIZE
             description: Fix texture banding when upscaling.
             choices:
-                "Off":                  False
-                "On":                   True
+                "Off": False
+                "On":  True
         anisotropic_filtering:
             group: ADVANCED OPTIONS
-            prompt:      ANISOTROPIC FILTERING
+            prompt: ANISOTROPIC FILTERING
             description: Improves clarity of distant textures.
             choices:
-                "Off":                  0
-                "2x":                   1
-                "4x":                   2
-                "8x":                   3
-                "16x":                  4
+                "Off": 0
+                "2x":  1
+                "4x":  2
+                "8x":  3
+                "16x": 4
+        texture_filtering:
+            group: ADVANCED OPTIONS
+            prompt: TEXTURE FILTERING
+            description: Smooth textures on 3D objects.
+            choices:
+                # "Auto (Default)":   1
+                "Nearest":          2
+                "Linear":           3
+                "Auto Max Quality": 4
         enable_cheats:
             group: ADVANCED OPTIONS
-            prompt:      GAME CHEATS
+            prompt: GAME CHEATS
             description: Enables Action Replay cheats.
             choices:
-                "Off":                  False
-                "On":                   True
+                "Off": False
+                "On":  True
 
 pygame:
   features: [padtokeyboard]

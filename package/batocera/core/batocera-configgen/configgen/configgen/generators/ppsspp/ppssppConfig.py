@@ -103,7 +103,11 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("Graphics", "AnisotropyLevel", system.config["anisotropic_filtering"])
     else:
         iniConfig.set("Graphics", "AnisotropyLevel", "3")
-
+    # Texture Filtering
+    if system.isOptSet('texture_filtering'):
+        iniConfig.set("Graphics", "TextureFiltering", system.config["texture_filtering"])
+    else:
+        iniConfig.set("Graphics", "TextureFiltering", "1")
 
    ## [SYSTEM PARAM]
     if not iniConfig.has_section("SystemParam"):
