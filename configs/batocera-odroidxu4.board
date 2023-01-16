@@ -8,7 +8,7 @@ BR2_PACKAGE_BATOCERA_TARGET_XU4=y
 
 # Toolchain definition
 BR2_GCC_VERSION_12_X=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a15.cortex-a7 -mtune=cortex-a15.cortex-a7"
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 #BR2_TARGET_GENERIC_GETTY_PORT="tty1"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/samsung/exynos5422/odroidxu4/patches"
