@@ -284,6 +284,7 @@ class DolphinGenerator(Generator):
         return Command.Command(array=commandArray, \
             env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \
             "XDG_DATA_HOME":batoceraFiles.SAVES, \
+            "QT_PLUGIN_PATH":"/usr/lib/qt/plugins", \
             "QT_QPA_PLATFORM":"xcb"})
 
     def getInGameRatio(self, config, gameResolution, rom):
