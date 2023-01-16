@@ -1938,7 +1938,7 @@ msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTROVÁNÍ TEXTUR"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, ppsspp
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "Nejbližší"
@@ -4164,7 +4164,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
 msgstr "Vylepšení. Vyhlazení zubatých hran na polygonech 3D objektů."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, yuzu
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, ppsspp, yuzu
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
 msgstr "Hladké textury na 3D objektech."
@@ -4745,7 +4745,7 @@ msgctxt "game_options"
 msgid "4.5x (1440x1080)"
 msgstr "4.5x (1440x1080)"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, rpcs3, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automaticky"
@@ -6707,7 +6707,7 @@ msgctxt "game_options"
 msgid "UPSCALE FILTER"
 msgstr "FILTR UPSCALINGU"
 
-#. TRANSLATION: cemu, cemu, yuzu
+#. TRANSLATION: cemu, cemu, ppsspp, yuzu
 msgctxt "game_options"
 msgid "Bicubic"
 msgstr "Bikubický"
@@ -7775,7 +7775,7 @@ msgctxt "game_options"
 msgid "Always enforce horizontal"
 msgstr "Vždy prosazovat horizontální"
 
-#. TRANSLATION: melonds
+#. TRANSLATION: melonds, ppsspp
 msgctxt "game_options"
 msgid "Hybrid"
 msgstr "Hybridní"
@@ -8372,13 +8372,13 @@ msgstr "REŽIM VYKRESLOVÁNÍ"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Buffered rendering"
-msgstr "Vykreslování vyrovnávací paměti"
+msgid "Skip buffer effects"
+msgstr "Přeskočení účinků vyrovnávací paměti"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Skip buffer effects"
-msgstr "Přeskočení účinků vyrovnávací paměti"
+msgid "Buffered rendering"
+msgstr "Vykreslování vyrovnávací paměti"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8427,23 +8427,13 @@ msgstr "TYP UPSCALINGU TEXTUR"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "xBRZ"
-msgstr "xBRZ"
+msgid "xBRZ (Default)"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Hybride"
-msgstr "Hybridní"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Bicubique"
-msgstr "Bicubique"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Hybride + Bicubique"
-msgstr "Hybridní + Bicubique"
+msgid "Hybrid + Bicubic"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8454,6 +8444,16 @@ msgstr "Oprava proužkování textur při upscalingu."
 msgctxt "game_options"
 msgid "TEXTURE DEPOSTERIZE"
 msgstr "DEPOSTERIZACE TEXTURY"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Linear"
+msgstr ""
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Auto Max Quality"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10246,6 +10246,22 @@ msgstr "Zobrazit (výchozí)"
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr "Anti-aliasing je technika vyhlazování zubatých hran."
+
+#~ msgctxt "game_options"
+#~ msgid "xBRZ"
+#~ msgstr "xBRZ"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybride"
+#~ msgstr "Hybridní"
+
+#~ msgctxt "game_options"
+#~ msgid "Bicubique"
+#~ msgstr "Bicubique"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybride + Bicubique"
+#~ msgstr "Hybridní + Bicubique"
 
 #~ msgctxt "game_options"
 #~ msgid "On (slower)"

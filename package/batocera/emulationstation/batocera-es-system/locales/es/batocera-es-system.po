@@ -1951,7 +1951,7 @@ msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTRADO DE TEXTURAS"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, ppsspp
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "Más cercano"
@@ -4183,7 +4183,7 @@ msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
 msgstr "Mejora. Suaviza lo bordes irregulares en polígonos de objetos 3D."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, yuzu
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, ppsspp, yuzu
 msgctxt "game_options"
 msgid "Smooth textures on 3D objects."
 msgstr "Suaviza las texturas en objetos 3D."
@@ -4763,7 +4763,7 @@ msgctxt "game_options"
 msgid "4.5x (1440x1080)"
 msgstr "Scorpion 256K"
 
-#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, ppsspp, ...
+#. TRANSLATION: libretro/parallel_n64, libretro/tyrquake, amiberry, melonds, rpcs3, ...
 msgctxt "game_options"
 msgid "Automatic"
 msgstr "Automático"
@@ -6730,7 +6730,7 @@ msgctxt "game_options"
 msgid "UPSCALE FILTER"
 msgstr "FILTRO DE AMPLIACIÓN"
 
-#. TRANSLATION: cemu, cemu, yuzu
+#. TRANSLATION: cemu, cemu, ppsspp, yuzu
 msgctxt "game_options"
 msgid "Bicubic"
 msgstr "Bicúbico"
@@ -7802,7 +7802,7 @@ msgctxt "game_options"
 msgid "Always enforce horizontal"
 msgstr "Forzar siempre horizontal"
 
-#. TRANSLATION: melonds
+#. TRANSLATION: melonds, ppsspp
 msgctxt "game_options"
 msgid "Hybrid"
 msgstr "Híbrido"
@@ -8406,13 +8406,13 @@ msgstr "MODO DE RENDERIZADO"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Buffered rendering"
-msgstr "Renderizado de buffer"
+msgid "Skip buffer effects"
+msgstr "Omitir efectos de buffer"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Skip buffer effects"
-msgstr "Omitir efectos de buffer"
+msgid "Buffered rendering"
+msgstr "Renderizado de buffer"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8463,23 +8463,13 @@ msgstr "TIPO DE ESCALADO DE TEXTURAS"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "xBRZ"
-msgstr "xBRZ"
+msgid "xBRZ (Default)"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
-msgid "Hybride"
-msgstr "Híbrido"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Bicubique"
-msgstr "Bicúbico"
-
-#. TRANSLATION: ppsspp
-msgctxt "game_options"
-msgid "Hybride + Bicubique"
-msgstr "Híbrido + Bicúbico"
+msgid "Hybrid + Bicubic"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8490,6 +8480,16 @@ msgstr "Arregla las bandas en texturas cuando se escalan."
 msgctxt "game_options"
 msgid "TEXTURE DEPOSTERIZE"
 msgstr "DESPOSTERIZAR TEXTURA"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Linear"
+msgstr ""
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Auto Max Quality"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10299,6 +10299,22 @@ msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr ""
 "Antialiasing es una técnica de procesamiento digital para el suavizado de "
 "bordes."
+
+#~ msgctxt "game_options"
+#~ msgid "xBRZ"
+#~ msgstr "xBRZ"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybride"
+#~ msgstr "Híbrido"
+
+#~ msgctxt "game_options"
+#~ msgid "Bicubique"
+#~ msgstr "Bicúbico"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybride + Bicubique"
+#~ msgstr "Híbrido + Bicúbico"
 
 #~ msgctxt "game_options"
 #~ msgid "On (slower)"
