@@ -4013,11 +4013,11 @@ arduboy:
       arduous: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ARDUOUS] }
 
 gzdoom:
-  name:         GZDoom
+  name: GZDoom
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [wad, iwad, pwad, gz]
+  extensions: [wad, iwad, pwad, gzdoom]
   platform: pc
   group: ports
   emulators:
@@ -4025,20 +4025,24 @@ gzdoom:
       gzdoom: { requireAnyOf: [BR2_PACKAGE_GZDOOM] }
   comment_en: |
     Put your WAD files in this directory.
-    The gz extension allow you to add customer mods - blah blah (tbd)
-    i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    Using the .gzdoom extension allows you to add custom mods.
+    i.e. Aliens Eradication.gzdoom = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
+    Note: Ensure the full command is on one line in the .gzdoom file.
+
+    Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts flders respectively
 
     More info: https://wiki.batocera.org/systems:eduke32
   comment_pt: |
-    Coloque seus arquivos .WAD neste diretório.
-    A extensão .gz permite adicionar mods de customização - blah blah (tbd)
-    ou seja, Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    Placez vos fichiers WAD dans ce répertoire.
+    L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
+    c'est-à-dire Aliens Eradication.gzdoom = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Músicas adicionais podem ser adicionadas a /userdata/system/configs/gzdoom em fm_banks & soundfonts respectivamente
-
-    Mais informações em: https://wiki.batocera.org/systems:gzdoom
+    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom.
+    
+    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les flders fm_banks et soundfonts respectivement
+    
+    Plus d'infos : https://wiki.batocera.org/systems:eduke32
 
 eduke32:
   name: EDuke32
