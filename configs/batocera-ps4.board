@@ -4,9 +4,6 @@ include batocera-board.common
 BR2_x86_64=y
 BR2_x86_jaguar=y
 BR2_PACKAGE_BATOCERA_TARGET_PS4=y
-
-# Toolchain definition
-BR2_GCC_VERSION_11_X=y
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 #BR2_TARGET_GENERIC_GETTY_PORT="tty1"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y

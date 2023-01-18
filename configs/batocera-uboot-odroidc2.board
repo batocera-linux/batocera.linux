@@ -1,17 +1,8 @@
+include batocera-board.common
 # Target definition
 BR2_aarch64=y
 BR2_cortex_a53=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
-
-# Toolchain definition
-BR2_GCC_VERSION_12_X=y
-BR2_GCC_ENABLE_GRAPHITE=y
-BR2_GCC_ENABLE_LTO=y
-BR2_SHARED_STATIC_LIBS=y
-BR2_TOOLCHAIN_BUILDROOT_GLIBC=y
-# required for utf-8
-BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
-BR2_TOOLCHAIN_BUILDROOT_CXX=y
 
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s905/patches"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s905/odroidc2/create-uboot.sh"

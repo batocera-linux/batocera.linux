@@ -3,9 +3,6 @@ include batocera-board.common
 # Target definition
 BR2_x86_64=y
 BR2_PACKAGE_BATOCERA_TARGET_X86_64=y
-
-# Toolchain definition
-BR2_GCC_VERSION_12_X=y
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 #BR2_TARGET_GENERIC_GETTY_PORT="tty1"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y

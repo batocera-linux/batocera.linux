@@ -5,9 +5,6 @@ BR2_aarch64=y
 BR2_cortex_a76_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_RK3588=y
-
-# Toolchain definition
-BR2_GCC_VERSION_12_X=y
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55 -march=armv8.2-a+crypto+dotprod+rcpc+sb+ssbs"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_KEEP=y
 BR2_TARGET_GENERIC_GETTY_BAUDRATE="0"
