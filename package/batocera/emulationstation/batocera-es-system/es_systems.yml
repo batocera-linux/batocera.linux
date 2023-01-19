@@ -4024,24 +4024,28 @@ gzdoom:
     gzdoom:
       gzdoom: { requireAnyOf: [BR2_PACKAGE_GZDOOM] }
   comment_en: |
-    Put your WAD files in this directory.
+    Put your rom and mod files in this directory.
+    
     Using the .gzdoom extension allows you to add custom mods.
-    i.e. Aliens Eradication.gzdoom = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    i.e. Aliens Eradication.gzdoom should contain a line like so:
+    -iwad DOOM2.WAD -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Note: Ensure the full command is on one line in the .gzdoom file.
+    Note: Ensure the full command is on one line in the .gzdoom file and the filenames and extensions matech your files exactly.
 
-    Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts flders respectively
+    Additional music can be added to /userdata/system/configs/gzdoom in the fm_banks & soundfonts folders respectively.
 
     More info: https://wiki.batocera.org/systems:eduke32
   comment_pt: |
-    Placez vos fichiers WAD dans ce répertoire.
+    Mettez vos fichiers rom et mod dans ce répertoire.
+    
     L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
-    c'est-à-dire Aliens Eradication.gzdoom = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    c'est-à-dire que Aliens Eradication.gzdoom doit contenir une ligne comme celle-ci :
+    -iwad DOOM2.WAD -fichier ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom.
-    
-    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les flders fm_banks et soundfonts respectivement
-    
+    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
+
+    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
+
     Plus d'infos : https://wiki.batocera.org/systems:eduke32
 
 eduke32:
