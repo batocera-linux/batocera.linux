@@ -1,0 +1,80 @@
+#!/bin/sh
+
+prog=daemonwatch
+pidfile=/var/run/$prog
+
+watchdir="/home"
+command="/usr/bin/batocera-save-overlay"
+
+RETVAL=0
+
+check() {
+    [ "$(id -u)" = 0 ] || exit 4
+}
+
+start() {
+    check
+    printf 'Starting %s:\n' $prog
+    {
+        while : ; do
+            inotifywait -e modify,create,delete,move -r "$watchdir" 2>/dev/null >/dev/null
+            sleep 15
+            $command
+        done
+    } &
+    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        printf '%s' $! > $pidfile
+    fi
+    return $RETVAL
+}
+
+stop() {
+    check
+    printf 'Stopping %s:\n' $prog
+    pid="$(cat $pidfile)" && kill "$pid"
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+      rm -f $pidfile
+    fi
+    echo
+    return $RETVAL
+}
+
+status() {
+    pid="$(cat $pidfile)"
+    if [ -z "$pid" ]; then
+        printf '%s not running.\n' "$prog"
+        return 1
+    fi
+    printf '%s running with pid=%s\n' "$prog" "$pid" 
+    return 0
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    restart
+    ;;
+status)
+    status
+    RETVAL=$?
+    ;;
+*)
+    printf 'Usage: %s {start|stop|restart|status}\n' "$0"
+    RETVAL=2
+esac
+
+exit $RETVAL
+
