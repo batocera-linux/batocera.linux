@@ -24,6 +24,6 @@ EOF
 
 unclutter-remote -s
 
-DISPLAY=:0.0 pcmanfm /userdata
+DISPLAY=${DISPLAY:-:0.0} pcmanfm /userdata
 
 unclutter-remote -h
