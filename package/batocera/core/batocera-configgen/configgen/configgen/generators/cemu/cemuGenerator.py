@@ -52,10 +52,7 @@ class CemuGenerator(Generator):
 
         # Create the settings file
         CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
-        
-        # Copy the keys.txt file from where cemu reads it
-        shutil.copyfile(batoceraFiles.BIOS + "/cemu/keys.txt", cemuConfig + "/keys.txt")
-        
+
         # Set-up the controllers
         cemuControllers.generateControllerConfig(system, playersControllers)
 
