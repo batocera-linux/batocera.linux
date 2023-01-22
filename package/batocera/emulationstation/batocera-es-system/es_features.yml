@@ -364,8 +364,7 @@ libretro:
       cfeatures:
           beetle-saturn_crosshair:
                 group: LIGHT GUN
-                prompt:      SHOW LIGHT GUN CROSSHAIRS
-                description: Show crosshairs in game
+                prompt:      LIGHT GUN CROSSHAIR
                 choices:
                     "Cross": "Cross"
                     "Dot": "Dot"
@@ -1234,7 +1233,6 @@ libretro:
             fbneo-lightgun-hide-crosshair:
                 group: LIGHT GUN
                 prompt:      SHOW LIGHT GUN CROSSHAIRS
-                description: Show crosshairs in game
                 choices:
                     "Off":                                disabled
                     "On":                                 enabled
@@ -1705,7 +1703,6 @@ libretro:
                     gun_cursor_md:
                         group: LIGHT GUN
                         prompt:      SHOW LIGHT GUN CROSSHAIRS
-                        description: Show crosshairs in game
                         choices:
                             "Off":        disabled
                             "On":         enabled
@@ -1807,7 +1804,6 @@ libretro:
                     gun_cursor_ms:
                         group: LIGHT GUN
                         prompt:      SHOW LIGHT GUN CROSSHAIRS
-                        description: Show crosshairs in game
                         choices:
                             "Off":        disabled
                             "On":         enabled
@@ -4858,7 +4854,6 @@ libretro:
             superscope_crosshair:
                 group: LIGHT GUN
                 prompt:      SHOW LIGHT GUN CROSSHAIRS
-                description: Show crosshairs in game
                 choices:
                     "Off":                                disabled
                     "On":                                 enabled
@@ -6312,7 +6307,7 @@ dolphin:
                     "Off": 0
                     "On": 1
             controller_mode:
-                prompt:      CUSTOMIZE WIIMOTE & GAMEPAD
+                prompt:      CUSTOMIZE EMULATED WIIMOTE & GAMEPAD
                 description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
                 choices:
                     "Off":                       disabled
@@ -6324,7 +6319,6 @@ dolphin:
             dolphin-lightgun-hide-crosshair:
                 group: LIGHT GUN
                 prompt:      SHOW LIGHT GUN CROSSHAIRS
-                description: Show crosshairs in game
                 choices:
                     "Off": 0
                     "On":  1
