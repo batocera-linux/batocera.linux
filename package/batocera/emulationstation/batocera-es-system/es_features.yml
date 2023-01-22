@@ -303,6 +303,8 @@ libretro:
                     "Autodetect":  automatic
                     "Off":         none
                     "On (forced)": WRX
+    arduous:
+      features: [cheevos]
     atari800:
       features: [padtokeyboard]
       systems:
@@ -5660,7 +5662,7 @@ libretro:
                     "Off":      disabled
                     "On":       enabled
     wasm4:
-      features: [netplay, padtokeyboard]
+      features: [netplay, padtokeyboard, cheevos]
       shared: [rewind, autosave]
     x1:
       features: [padtokeyboard]
