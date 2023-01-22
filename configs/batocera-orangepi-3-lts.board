@@ -28,7 +28,8 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="allwinner/sun50i-h6-orangepi-3-lts"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME=""
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/h6/orangepi-3-lts/dts/sun50i-h6-orangepi-3-lts.dts"
 
 # orangepi firmware
 BR2_PACKAGE_FIRMWARE_ORANGEPI=y
