@@ -3,7 +3,7 @@
 # uboot multiboard
 #
 ################################################################################
-UBOOT_MULTIBOARD_VERSION = 2022.10
+UBOOT_MULTIBOARD_VERSION = 2023.01
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
