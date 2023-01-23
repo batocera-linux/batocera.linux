@@ -349,7 +349,7 @@ static int modeset_prepare(int fd, int do_current)
 		  live_crtc = drmModeGetCrtc(fd, dev->crtc);
 		  for (j = 0; (int)j < conn->count_modes; j++) {
 		    if(crtc_cmp(&live_crtc->mode, conn->modes+j) == 0) {
-		      if(!(conn->modes[j].hdisplay == 1366 && conn->modes[j].vdisplay == 768))
+		      if(!(conn->modes[j].hdisplay == 1360 && conn->modes[j].vdisplay == 768))
 		      printf("%d.%d:%s %dx%d %uHz (%s%s)\n",
 			     i, j,
 			     connType,
@@ -364,7 +364,7 @@ static int modeset_prepare(int fd, int do_current)
 
 		if(do_current == 0) {
 		  for (j = 0; (int)j < conn->count_modes; j++) {
-		    if(!(conn->modes[j].hdisplay == 1366 && conn->modes[j].vdisplay == 768))
+		    if(!(conn->modes[j].hdisplay == 1360 && conn->modes[j].vdisplay == 768))
 		    printf("%d.%d:%s %dx%d %uHz (%s%s)\n",
 			   i, j,
 			   connType,
