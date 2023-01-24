@@ -40,10 +40,6 @@ define SWAY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/etc/profile.d
     $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/display/sway/config/04-sway.sh \
         $(TARGET_DIR)/etc/profile.d/04-sway.sh
-
-    mkdir -p $(TARGET_DIR)/usr/bin
-    $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/display/sway/config/sway-launch \
-        $(TARGET_DIR)/usr/bin
 endef
 
 $(eval $(meson-package))
