@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SWAYBG_VERSION = v1.1.1
+SWAYBG_VERSION = v1.2.0
 SWAYBG_SITE = $(call github,swaywm,swaybg,$(SWAYBG_VERSION))
 SWAYBG_LICENSE = MIT
 SWAYBG_LICENSE_FILES = LICENSE
