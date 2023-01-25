@@ -8,7 +8,7 @@ SWAY_VERSION = 1.8
 SWAY_SITE = $(call github,swaywm,sway,$(SWAY_VERSION))
 SWAY_LICENSE = MIT
 SWAY_LICENSE_FILES = LICENSE
-SWAY_DEPENDENCIES = wlroots cairo pango libglib2 pcre2 grim wf-recorder
+SWAY_DEPENDENCIES = wlroots cairo pango libglib2 pcre2 gdk-pixbuf grim wf-recorder
 
 SWAY_CONF_OPTS = -Ddefault-wallpaper=false \
                 -Dzsh-completions=false \
@@ -17,7 +17,8 @@ SWAY_CONF_OPTS = -Ddefault-wallpaper=false \
                 -Dswaybar=false \
                 -Dswaynag=false \
                 -Dtray=disabled \
-                -Dman-pages=disabled
+                -Dman-pages=disabled \
+                -Dgdk-pixbuf=enabled
 
 ifeq ($(BR2_PACKAGE_XWAYLAND),y)
 SWAY_CONF_OPTS += -Dxwayland=enabled
