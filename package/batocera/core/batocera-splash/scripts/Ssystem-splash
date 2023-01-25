@@ -22,14 +22,20 @@ do_start ()
         V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
     fi
     # 3rd time lucky
-    if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"
+    if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" = "Default_string"
     then
         V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
     fi
+
+    if test "${V_BOARD_MODEL}" = "Anbernic_RG552"
+    then
+        touch /var/run/rk-rotation
+    fi
+
     # don't display a rotate image if the screen is not horizontal
     # we can't know if that's left or right, it depends on the device, so, just ignore
     # maybe in some case we want the rotated image for some boards. add those boards here
-    if test $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+) -a "$V_BOARD_MODEL" != "Hardkernel_ODROID_GO2"
+    if test $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+) -a "${V_BOARD_MODEL}" != "Hardkernel_ODROID_GO2"
     then
         exit 0
     fi
