@@ -89,9 +89,9 @@
 - linux kernel for x86_64 to 6.1 lts
 - daphne emulator hypseus-singe to v2.10.1 (now uses SDL controller)
 - amiberry to v5.4
-- mame to v0.248
+- mame to v0.251
 - switchres to sep 25th 2022 build
-- lr-mame to v0.248
+- lr-mame to v0.251
 - retroarch to v1.14.0
 - libretro cores synced with retroarch v1.11.1 [#7245](https://github.com/batocera-linux/batocera.linux/pull/7245)
 - libretro-core-info to Oct 04 2022 build
