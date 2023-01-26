@@ -1,6 +1,12 @@
 config BR2_PACKAGE_SWAY
     bool "sway"
 
+    depends on !BR2_STATIC_LIBS # wlroots
+    depends on BR2_TOOLCHAIN_HAS_THREADS # wlroots
+    depends on BR2_PACKAGE_HAS_LIBEGL # wlroots
+    depends on BR2_PACKAGE_HAS_LIBEGL_WAYLAND # wlroots
+    depends on BR2_PACKAGE_HAS_LIBGLES # wlroots
+    depends on BR2_PACKAGE_HAS_UDEV # wlroots
     select BR2_PACKAGE_WLROOTS
     select BR2_PACKAGE_WLROOTS_X11  if BR2_PACKAGE_XWAYLAND
     select BR2_PACKAGE_CAIRO
