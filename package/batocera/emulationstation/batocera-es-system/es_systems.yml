@@ -395,7 +395,6 @@ lcdgames:
   group:      lcdgames
   emulators:
     libretro:
-      gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
