@@ -34,6 +34,7 @@ function smart_wait() {
         sleep 0.25
         ((watchdog++))
         [[ $disablekill9 -eq 1 ]] && [[ watchdog -gt 12 ]] && kill -9 $PID
+        [[ watchdog -gt 12 ]] && return
     done
 }
 
@@ -72,8 +73,8 @@ function version_update() {
 
 case ${1,,} in
     --restart)
-        /etc/init.d/S31emulationstation stop
         ES_PID=$(check_esrun)
+        /etc/init.d/S31emulationstation stop
         [[ -z $ES_PID ]] || smart_wait 0 $ES_PID
         /etc/init.d/S31emulationstation start
     ;;
