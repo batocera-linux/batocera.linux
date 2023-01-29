@@ -1,0 +1,114 @@
+From a2b6a10d9cedb6db79a6a5b3efc0f14fd2ac9387 Mon Sep 17 00:00:00 2001
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Sun, 20 Feb 2022 08:24:47 +0000
+Subject: [PATCH 16/92] FROMLIST(v5): dt-bindings: auxdisplay: Add Titan Micro
+ Electronics TM1628
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add a YAML schema binding for TM1628 auxdisplay
+(7/11-segment LED) controller.
+
+This patch is partially based on previous RFC work from
+Andreas Färber <afaerber@suse.de>.
+
+Co-developed-by: Andreas Färber <afaerber@suse.de>
+Signed-off-by: Andreas Färber <afaerber@suse.de>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ .../bindings/auxdisplay/titanmec,tm1628.yaml  | 82 +++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/auxdisplay/titanmec,tm1628.yaml
+
+diff --git a/Documentation/devicetree/bindings/auxdisplay/titanmec,tm1628.yaml b/Documentation/devicetree/bindings/auxdisplay/titanmec,tm1628.yaml
+new file mode 100644
+index 000000000000..d9cbbc950aab
+--- /dev/null
++++ b/Documentation/devicetree/bindings/auxdisplay/titanmec,tm1628.yaml
+@@ -0,0 +1,82 @@
++# SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/titanmec,tm1628.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Titan Micro Electronics TM1628 LED controller
++
++properties:
++  compatible:
++    enum:
++    - titanmec,tm1628
++
++  reg:
++    maxItems: 1
++
++  grid:
++    description:
++      Mapping of display digit position to grid number.
++      This implicitly defines the display size.
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 1
++    maxItems: 7
++
++  segment-mapping:
++    description:
++      Mapping of 7 segment display segments A-G to bit numbers 1-12.
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 7
++    maxItems: 7
++
++  "#address-cells":
++    const: 2
++
++  "#size-cells":
++    const: 0
++
++required:
++  - compatible
++  - reg
++
++patternProperties:
++  "^.*@[1-7],([1-9]|1[0-6])$":
++    type: object
++    description: |
++      Properties for a single LED.
++
++    properties:
++      reg:
++        description: |
++          1-based grid number, followed by 1-based segment bit number.
++        maxItems: 1
++
++    required:
++      - reg
++
++examples:
++  - |
++    #include <dt-bindings/leds/common.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        led-controller@0 {
++            compatible = "titanmec,tm1628";
++            reg = <0>;
++            spi-3-wire;
++            spi-lsb-first;
++            spi-max-frequency = <500000>;
++            grid = /bits/ 8 <4 3 2 1>;
++            segment-mapping = /bits/ 8 <4 5 6 1 2 3 7>;
++            #address-cells = <2>;
++            #size-cells = <0>;
++
++            alarmn@5,4 {
++                reg = <5 4>;
++                function = LED_FUNCTION_ALARM;
++            };
++        };
++    };
++...
+-- 
+2.34.1
+
