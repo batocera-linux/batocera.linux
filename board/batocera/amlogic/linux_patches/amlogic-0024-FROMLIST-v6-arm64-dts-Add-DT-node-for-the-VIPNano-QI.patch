@@ -1,0 +1,62 @@
+From 4c9cf2ba95cf5dde129212e0a4f7228cda5db8ec Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Wed, 30 Nov 2022 12:05:46 +0000
+Subject: [PATCH 24/92] FROMLIST(v6): arm64: dts: Add DT node for the
+ VIPNano-QI on the A311D
+
+This "NPU" is very similar to the Vivante GPUs and Etnaviv works well
+with it with just a few small changes.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi    | 12 ++++++++++++
+ .../dts/amlogic/meson-g12b-a311d-khadas-vim3.dts     |  4 ++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 2c56b216d6f9..ac5280df143e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -11,6 +11,7 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/reset/amlogic,meson-g12a-reset.h>
+ #include <dt-bindings/thermal/thermal.h>
++#include <dt-bindings/power/meson-g12a-power.h>
+ 
+ / {
+ 	interrupt-parent = <&gic>;
+@@ -2484,4 +2485,15 @@ xtal: xtal-clk {
+ 		#clock-cells = <0>;
+ 	};
+ 
++	npu: npu@ff100000 {
++		status = "disabled";
++		compatible = "vivante,gc";
++		reg = <0x0 0xff100000 0x0 0x20000>;
++		interrupts = <0 147 4>;
++		clocks = <&clkc CLKID_NNA_CORE_CLK>,
++			 <&clkc CLKID_NNA_AXI_CLK>;
++		clock-names = "core", "bus";
++		resets = <&reset RESET_NNA>;
++		power-domains = <&pwrc PWRC_G12A_NNA_ID>;
++	};
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dts
+index 124a80901084..73f3d87dcefd 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dts
+@@ -15,6 +15,10 @@ / {
+ 	compatible = "khadas,vim3", "amlogic,a311d", "amlogic,g12b";
+ };
+ 
++&npu {
++	status = "okay";
++};
++
+ /*
+  * The VIM3 on-board  MCU can mux the PCIe/USB3.0 shared differential
+  * lines using a FUSB340TMX USB 3.1 SuperSpeed Data Switch between
+-- 
+2.34.1
+

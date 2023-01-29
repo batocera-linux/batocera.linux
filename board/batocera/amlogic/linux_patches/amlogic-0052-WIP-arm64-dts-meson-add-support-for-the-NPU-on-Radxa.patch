@@ -1,0 +1,35 @@
+From 7c9aedb198c2dc03679ca8bd3908790f1dbdffb5 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 30 Nov 2022 12:07:55 +0000
+Subject: [PATCH 52/92] WIP: arm64: dts: meson: add support for the NPU on
+ Radxa Zero2
+
+Radxa Zero2 has an NPU on the A311D SoC, so lets enable it.
+
+NPU support depends upon [0].
+
+[0] https://patchwork.kernel.org/project/linux-amlogic/cover/20221129085047.49813-1-tomeu.vizoso@collabora.com/
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+index fefa6f2b7abf..7432c7f9255b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+@@ -366,6 +366,10 @@ &ir {
+ 	pinctrl-names = "default";
+ };
+ 
++&npu {
++	status = "okay";
++};
++
+ &pwm_ab {
+ 	pinctrl-0 = <&pwm_a_e_pins>;
+ 	pinctrl-names = "default";
+-- 
+2.34.1
+
