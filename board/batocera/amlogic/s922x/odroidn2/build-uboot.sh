@@ -18,19 +18,19 @@ patch -p1 < $patch
 done
 
 # Make config
-make beelink-gtkingpro_defconfig
+make odroid-n2_defconfig
 
 # Build it
 ARCH=aarch64 CROSS_COMPILE="${HOST_DIR}/bin/aarch64-buildroot-linux-gnu-" make -j$(nproc)
-mkdir -p ../../uboot-gtkingpro
+mkdir -p ../../uboot-odroidn2
 
 # Clone LibreElec Amlogic FIP
 git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip
 
 # Sign U-Boot build with Amlogic process
 ABF="amlogic-boot-fip"
-AMLOGIC_FIP_DIR="amlogic-boot-fip/beelink-s922x"
+AMLOGIC_FIP_DIR="amlogic-boot-fip/odroid-n2"
 cp u-boot.bin ${AMLOGIC_FIP_DIR}/bl33.bin
 # Build and put to appropriate place
-${ABF}/build-fip.sh beelink-s922x ../../uboot-gtkingpro/
+${ABF}/build-fip.sh odroid-n2 ../../uboot-odroidn2/
 

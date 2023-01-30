@@ -1,7 +1,7 @@
-From 9d8b7974d563683553bf3277f76657e5f54dd3ea Mon Sep 17 00:00:00 2001
+From 2fc65ac09a5698b9e2060890de1cd3310a237658 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Sat, 15 Jan 2022 06:35:47 +0000
-Subject: [PATCH 11/11] WIP: doc: boards: amlogic: update for Radxa Zero2
+Subject: [PATCH 12/15] WIP: doc: boards: amlogic: update for Radxa Zero2
 
 Add documentation bits for the Radxa Zero2
 
@@ -11,10 +11,10 @@ Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
  doc/board/amlogic/index.rst                   |  3 +-
  .../{radxa-zero.rst => radxa-zero2.rst}       | 29 ++++++++++---------
  3 files changed, 18 insertions(+), 15 deletions(-)
- rename doc/board/amlogic/{radxa-zero.rst => radxa-zero2.rst} (75%)
+ rename doc/board/amlogic/{radxa-zero.rst => radxa-zero2.rst} (76%)
 
 diff --git a/board/amlogic/w400/MAINTAINERS b/board/amlogic/w400/MAINTAINERS
-index 8587f67b46..d8f9d3bded 100644
+index caad41577d..6e1ef9b8b8 100644
 --- a/board/amlogic/w400/MAINTAINERS
 +++ b/board/amlogic/w400/MAINTAINERS
 @@ -5,3 +5,4 @@ L:	u-boot-amlogic@groups.io
@@ -23,7 +23,7 @@ index 8587f67b46..d8f9d3bded 100644
  F:	doc/board/amlogic/w400.rst
 +F:	doc/board/amlogic/radxa-zero2.rst
 diff --git a/doc/board/amlogic/index.rst b/doc/board/amlogic/index.rst
-index 189b1efe2b..8369f6f3d0 100644
+index 4d407f9362..f0b92e4209 100644
 --- a/doc/board/amlogic/index.rst
 +++ b/doc/board/amlogic/index.rst
 @@ -19,7 +19,7 @@ This matrix concerns the actual source code version.
@@ -35,7 +35,7 @@ index 189b1efe2b..8369f6f3d0 100644
  +-------------------------------+-----------+-----------------+--------------+-------------+------------+-------------+--------------+
  | UART                          | **Yes**   | **Yes**         | **Yes**      | **Yes**     | **Yes**    | **Yes**     | **Yes**      |
  +-------------------------------+-----------+-----------------+--------------+-------------+------------+-------------+--------------+
-@@ -99,6 +99,7 @@ Board Documentation
+@@ -110,6 +110,7 @@ Board Documentation
     p212
     q200
     radxa-zero
@@ -44,10 +44,10 @@ index 189b1efe2b..8369f6f3d0 100644
     sei510
     sei610
 diff --git a/doc/board/amlogic/radxa-zero.rst b/doc/board/amlogic/radxa-zero2.rst
-similarity index 75%
+similarity index 76%
 rename from doc/board/amlogic/radxa-zero.rst
 rename to doc/board/amlogic/radxa-zero2.rst
-index 423403f3c7..24bc1b0767 100644
+index f5611f52ec..95a42a05d0 100644
 --- a/doc/board/amlogic/radxa-zero.rst
 +++ b/doc/board/amlogic/radxa-zero2.rst
 @@ -1,18 +1,17 @@
@@ -95,7 +95,7 @@ index 423403f3c7..24bc1b0767 100644
      $ make
  
  Image creation
-@@ -40,6 +40,7 @@ git trees published by the board vendor:
+@@ -42,6 +42,7 @@ git trees published by the board vendor:
  
  .. code-block:: bash
  
@@ -103,7 +103,7 @@ index 423403f3c7..24bc1b0767 100644
      $ git clone -b radxa-zero-v2021.07 https://github.com/radxa/u-boot.git
      $ git clone https://github.com/radxa/fip.git
  
-@@ -52,11 +53,11 @@ git trees published by the board vendor:
+@@ -54,11 +55,11 @@ git trees published by the board vendor:
      $ export CROSS_COMPILE=/opt/gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf/bin/aarch64-none-elf-
      $ export ARCH=arm
      $ cd u-boot

@@ -1,7 +1,7 @@
-From 6cf3857ecc3ed6197c08a6d2d488deb2cd86bcec Mon Sep 17 00:00:00 2001
+From 95ed57b0ca24cde1d7547878101c62f552cb1160 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Fri, 13 Nov 2020 02:09:36 +0000
-Subject: [PATCH 01/11] HACK: configs: meson64: prevent stdout/stderr on
+Subject: [PATCH 01/15] LOCAL: configs: meson64: prevent stdout/stderr on
  videoconsole
 
 Several devices have CONFIG_DM_VIDEO enabled which causes stdout/stderr
@@ -14,7 +14,7 @@ Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/meson64.h b/include/configs/meson64.h
-index cb202d5555..ba095efe62 100644
+index 40803ee9da..05b1fcb9fd 100644
 --- a/include/configs/meson64.h
 +++ b/include/configs/meson64.h
 @@ -18,7 +18,7 @@

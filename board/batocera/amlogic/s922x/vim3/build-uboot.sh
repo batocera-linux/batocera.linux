@@ -18,19 +18,19 @@ patch -p1 < $patch
 done
 
 # Make config
-make beelink-gtkingpro_defconfig
+make khadas-vim3_defconfig
 
 # Build it
 ARCH=aarch64 CROSS_COMPILE="${HOST_DIR}/bin/aarch64-buildroot-linux-gnu-" make -j$(nproc)
-mkdir -p ../../uboot-gtkingpro
+mkdir -p ../../uboot-vim3
 
 # Clone LibreElec Amlogic FIP
 git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip
 
 # Sign U-Boot build with Amlogic process
 ABF="amlogic-boot-fip"
-AMLOGIC_FIP_DIR="amlogic-boot-fip/beelink-s922x"
+AMLOGIC_FIP_DIR="amlogic-boot-fip/khadas-vim3"
 cp u-boot.bin ${AMLOGIC_FIP_DIR}/bl33.bin
 # Build and put to appropriate place
-${ABF}/build-fip.sh beelink-s922x ../../uboot-gtkingpro/
+${ABF}/build-fip.sh khadas-vim3 ../../uboot-vim3/
 
