@@ -30,10 +30,10 @@ dtoverlay=pwm-audio-pi-zero_gpicase
 # This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
 
     # Enable audio in GPI Case
-    if ! grep -qE "snd_bcm2835.enable_compat_alsa" "${CMDLINE}"
+    if ! grep -qE "snd_bcm2835.enable_headphones" "${CMDLINE}"
     then
         mount -o remount,rw /boot
-        sed -i s/$/" snd_bcm2835.enable_compat_alsa=1"/ "${CMDLINE}"
+        sed -i s/$/" snd_bcm2835.enable_headphones=1"/ "${CMDLINE}"
         CMDMODIFIED=1
     fi
 
