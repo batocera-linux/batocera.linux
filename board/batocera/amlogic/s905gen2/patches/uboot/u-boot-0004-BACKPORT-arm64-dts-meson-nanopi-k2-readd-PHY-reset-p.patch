@@ -1,0 +1,38 @@
+From 7d8355053316d3f760a5ac14156e77e27aa5f6d5 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 25 Oct 2022 14:24:21 +0000
+Subject: [PATCH 04/15] BACKPORT: arm64: dts: meson: nanopi-k2: readd PHY reset
+ properties
+
+The sync of device-tree/bindings in 11a48a5a18c6 ("Linux 5.6-rc2") causes
+Ethernet to break on some GXBB boards; the PHY seems to need proper reset
+timing to function in u-boot and Linux. Re-add the old PHY reset binding
+for dwmac until we support new bindings in the PHY node. This borrows the
+same fix applied to the Odroid C2 board [0].
+
+[0] https://lists.denx.de/pipermail/u-boot/2021-April/446658.html
+
+Fixes: dd5f2351e99a ("arm64: dts: meson: sync dt and bindings from v5.6-rc2")
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/dts/meson-gxbb-nanopi-k2-u-boot.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/dts/meson-gxbb-nanopi-k2-u-boot.dtsi b/arch/arm/dts/meson-gxbb-nanopi-k2-u-boot.dtsi
+index c35158d7e9..2a245bbe7f 100644
+--- a/arch/arm/dts/meson-gxbb-nanopi-k2-u-boot.dtsi
++++ b/arch/arm/dts/meson-gxbb-nanopi-k2-u-boot.dtsi
+@@ -5,3 +5,10 @@
+  */
+ 
+ #include "meson-gx-u-boot.dtsi"
++
++&ethmac {
++	snps,reset-gpio = <&gpio GPIOZ_14 0>;
++	snps,reset-delays-us = <0 10000 1000000>;
++	snps,reset-active-low;
++};
++
+-- 
+2.17.1
+
