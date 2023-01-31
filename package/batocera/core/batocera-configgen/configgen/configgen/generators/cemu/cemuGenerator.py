@@ -12,6 +12,7 @@ import controllersConfig
 import shutil
 import filecmp
 import subprocess
+import glob
 from . import cemuControllers
 
 from utils.logger import get_logger
@@ -32,12 +33,9 @@ class CemuGenerator(Generator):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
-        if os.path.isdir(rom + "/code"):
-            rpxInDir = os.listdir(rom + "/code")
-            for file in rpxInDir:
-                basename, extension = os.path.splitext(file)
-                if extension == ".rpx":
-                    rpxrom = rom + "/code/" + basename + extension
+        paths = list(glob.iglob(os.path.join(rom, '**/code/*.rpx'), recursive=True))
+        if len(paths) >= 1:
+            rpxrom = paths[0]
 
         cemu_exe = cemuConfig + "/cemu"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
