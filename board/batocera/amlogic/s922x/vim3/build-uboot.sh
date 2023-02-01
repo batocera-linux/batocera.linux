@@ -9,8 +9,8 @@ wget "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
 tar xf u-boot-2023.01.tar.bz2
 cd u-boot-2023.01
 
-Apply patches
-PATCHES="(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s922x/patches/uboot/*.patch"
+# Apply patches
+PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/patches/uboot/*.patch"
 for patch in $PATCHES
 do
 echo "Applying patch: $patch"
@@ -27,10 +27,5 @@ mkdir -p ../../uboot-vim3
 # Clone LibreElec Amlogic FIP
 git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip
 
-# Sign U-Boot build with Amlogic process
-ABF="amlogic-boot-fip"
-AMLOGIC_FIP_DIR="amlogic-boot-fip/khadas-vim3"
-cp u-boot.bin ${AMLOGIC_FIP_DIR}/bl33.bin
 # Build and put to appropriate place
-${ABF}/build-fip.sh khadas-vim3 ../../uboot-vim3/
-
+cd amlogic-boot-fip && ./build-fip.sh khadas-vim3 ../u-boot.bin ../../../uboot-vim3/
