@@ -33,7 +33,7 @@ class CemuGenerator(Generator):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
-        paths = list(glob.iglob(os.path.join(rom, '**/code/*.rpx'), recursive=True))
+        paths = list(glob.iglob(os.path.join(glob.escape(rom), '**/code/*.rpx'), recursive=True))
         if len(paths) >= 1:
             rpxrom = paths[0]
 
