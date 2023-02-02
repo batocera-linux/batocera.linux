@@ -3162,6 +3162,12 @@ libretro:
                     "Arcade MVS Japan":                    japan
                     "Arcade Universe BIOS 4.0 (Cheats)":   unibios40
                     "Arcade Universe BIOS 3.3 (Cheats)":   unibios33
+            mame2003-plus_crosshair_enabled:
+                group: LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
     mednafen_lynx:
       features: [netplay, cheevos]
       shared: [rewind, autosave]

@@ -778,6 +778,21 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('mame2003-plus_neogeo_bios', '"unibios33"')
 
+        # gun
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save('mame2003-plus_xy_device', '"lightgun"')
+        else:
+            coreSettings.save('mame2003-plus_xy_device', '"mouse"')
+        # gun cross
+        if system.isOptSet('mame2003-plus_crosshair_enabled'):
+            coreSettings.save('mame2003-plus_crosshair_enabled', system.config['mame2003-plus_crosshair_enabled'])
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"enabled"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('mame2003-plus_crosshair_enabled', status)
+
     # MAME 2010
     if (system.config['core'] == 'mame0139'):
         # Skip Gameinfo / Nagscreen / Disclamers
