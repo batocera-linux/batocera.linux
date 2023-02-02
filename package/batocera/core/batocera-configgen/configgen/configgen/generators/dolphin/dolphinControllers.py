@@ -263,10 +263,10 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
 
             # extra buttons
             mappings = {
-                "Home": "4",
-                "-": "1",
-                "1": "2",
-                "2": "3",
+                "Home": "BTN_4",
+                "-": "BTN_1",
+                "1": "BTN_2",
+                "2": "BTN_3",
                 "+": "middle"
             }
 
@@ -291,13 +291,13 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
 
             # directions
             if "5" in buttons:
-                f.write("D-Pad/Up = `5`\n")
+                f.write("D-Pad/Up = `BTN_5`\n")
             if "6" in buttons:
-                f.write("D-Pad/Down = `6`\n")
+                f.write("D-Pad/Down = `BTN_6`\n")
             if "7" in buttons:
-                f.write("D-Pad/Left = `7`\n")
+                f.write("D-Pad/Left = `BTN_7`\n")
             if "8" in buttons:
-                f.write("D-Pad/Right = `8`\n")
+                f.write("D-Pad/Right = `BTN_8`\n")
 
             if "ir_up" not in gunsmetadata:
                 f.write("IR/Up = `Axis 1-`\n")
