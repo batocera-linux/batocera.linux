@@ -263,31 +263,26 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
 
             # extra buttons
             mappings = {
-                "Home": "BTN_4",
-                "-": "BTN_1",
-                "1": "BTN_2",
-                "2": "BTN_3",
-                "+": "middle"
-            }
-
-            mapping_words = {
-                "middle": "BTN_MIDDLE"
+                "Home": { "code": "BTN_4", "button": "4" },
+                "-":    { "code": "BTN_1", "button": "1" },
+                "1":    { "code": "BTN_2", "button": "2" },
+                "2":    { "code": "BTN_3", "button": "3" },
+                "+":    { "code": "BTN_MIDDLE", "button": "middle" },
             }
 
             # for a button for + because it is an important button
-            if mappings["+"] not in buttons:
+            if mappings["+"]["button"] not in buttons:
                 for key in mappings:
-                    if mappings[key] in buttons:
-                        mappings["+"] = mappings[key]
-                        mappings[key] = None
+                    if mappings[key]["button"] in buttons:
+                        mappings["+"]["code"]   = mappings[key]["code"]
+                        mappings["+"]["button"] = mappings[key]["button"]
+                        mappings[key]["code"] = None
+                        mappings[key]["button"] = None
                         break
 
             for mapping in mappings:
-                if mappings[mapping] in buttons:
-                    if mappings[mapping] in mapping_words:
-                        f.write("Buttons/" + mapping + " = `" + mapping_words[mappings[mapping]] + "`\n")
-                    else:
-                        f.write("Buttons/" + mapping + " = `" + mappings[mapping] + "`\n")
+                if mappings[mapping]["button"] in buttons:
+                    f.write("Buttons/" + mapping + " = `" + mappings[mapping]["code"] + "`\n")
 
             # directions
             if "5" in buttons:
