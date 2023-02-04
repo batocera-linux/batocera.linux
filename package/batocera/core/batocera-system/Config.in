@@ -383,7 +383,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato" if BR2_PACKAGE_BATOCERA_TARGET_S905 # amlogic/s905/fun-r1
 	default "amlogic/s905gen2"                                                                if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/tvbox-gen3"                           if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
-	default "amlogic/s912"                                                                    if BR2_PACKAGE_BATOCERA_TARGET_S912
+	default "amlogic/s912/vim2"                                                               if BR2_PACKAGE_BATOCERA_TARGET_S912
 	default "broadcom/bcm2835"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	default "broadcom/bcm2836"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
 	default "broadcom/bcm2837"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2837

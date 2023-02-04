@@ -1,0 +1,29 @@
+From a9fc1d56916fbcf4e00a1dd7543c9f53d697477a Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 3 Aug 2021 18:42:55 +0000
+Subject: [PATCH 03/15] LOCAL: board: amlogic: odroid-n2: remove /amlogic/
+ prefix for dtb path
+
+Remove the /amlogic/ prefix to align with current LE dtb locations.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ board/amlogic/odroid-n2/odroid-n2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/amlogic/odroid-n2/odroid-n2.c b/board/amlogic/odroid-n2/odroid-n2.c
+index 2135457edd..ec1f4efc11 100644
+--- a/board/amlogic/odroid-n2/odroid-n2.c
++++ b/board/amlogic/odroid-n2/odroid-n2.c
+@@ -63,7 +63,7 @@ static void odroid_set_fdtfile(char *soc, char *variant)
+ {
+ 	char s[128];
+ 
+-	snprintf(s, sizeof(s), "amlogic/meson-%s-odroid-%s.dtb", soc, variant);
++	snprintf(s, sizeof(s), "meson-%s-odroid-%s.dtb", soc, variant);
+ 	env_set("fdtfile", s);
+ }
+ 
+-- 
+2.17.1
+
