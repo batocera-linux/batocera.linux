@@ -1,0 +1,54 @@
+SDIO specification defines that the interrupt is level-sensitive.
+Fix the interrupt trigger type for emmc_a accordingly.
+See comment at beginning of the file wrt which is the SDIO port.
+mmc2 = &sd_emmc_a; /* SDIO */
+
+The usage of edge-triggered interrupts lead to lost interrupts under load,
+see [0]. This was confirmed to be fixed by using level-triggered
+interrupts.
+
+Note:
+SDIO interrupt support was added in Linux just recently, however other
+users of this dts may be affected too.
+
+[0] https://www.spinics.net/lists/linux-mmc/msg73991.html
+
+Fixes: 1499218c80c9 ("arm64: dts: move common G12A & G12B modes to meson-g12-common.dtsi")
+Reported-by: Peter Suti <peter.suti@streamunlimited.com>
+Tested-by: Peter Suti <peter.suti@streamunlimited.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 1a931d5c2..c09eb9f6f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -2324,7 +2324,7 @@ uart_A: serial@24000 {
+ 		sd_emmc_a: sd@ffe03000 {
+ 			compatible = "amlogic,meson-axg-mmc";
+ 			reg = <0x0 0xffe03000 0x0 0x800>;
+-			interrupts = <GIC_SPI 189 IRQ_TYPE_EDGE_RISING>;
++			interrupts = <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>;
+ 			status = "disabled";
+ 			clocks = <&clkc CLKID_SD_EMMC_A>,
+ 				 <&clkc CLKID_SD_EMMC_A_CLK0>,
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+index a79a35e84..ae1a5a568 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+@@ -603,7 +603,7 @@ apb: apb@d0000000 {
+ 			sd_emmc_a: mmc@70000 {
+ 				compatible = "amlogic,meson-gx-mmc", "amlogic,meson-gxbb-mmc";
+ 				reg = <0x0 0x70000 0x0 0x800>;
+-				interrupts = <GIC_SPI 216 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
+ 				status = "disabled";
+ 			};
+ 
+-- 
+2.39.1
+
