@@ -96,7 +96,7 @@ index 111c05c..e42edd9 100644
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN6) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_SQUARE;
 +
-+  //analog_t = (mouse_data.buttons & CELL_MOUSE_BUTTON_1) ? 0xFFFF : 0;
++  analog_t = (gh->getButton(gem_no, EVDEV_GUN_BUTTON_LEFT) == 1) ? 0xFFFF : 0;
 +  return true;
 +}
 +
