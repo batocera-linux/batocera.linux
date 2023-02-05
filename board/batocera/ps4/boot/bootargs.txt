@@ -1,3 +1,0 @@
-LABEL batocera.linux
-  LINUX /zImage
-  APPEND initrd=/initrd.lz4 label=BATOCERA rootwait quiet loglevel=0 console=tty3 vt.global_cursor_default=0 mitigations=off

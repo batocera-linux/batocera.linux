@@ -401,7 +401,6 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "samsung/exynos5422/odroidxu4"                                                    if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86_64"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-	default "ps4"                                                                             if BR2_PACKAGE_BATOCERA_TARGET_PS4
 	default "znver2"                                                                          if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
 	default "qualcomm/sd845/odin"                                                             if BR2_PACKAGE_BATOCERA_TARGET_ODIN
 	default "allwinner/h6/orangepi-3-lts"                                                     if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
@@ -456,9 +455,6 @@ config BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 config BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
 	bool "x86_64_znver2"
-
-config BR2_PACKAGE_BATOCERA_TARGET_PS4
-	bool "ps4"
 
 config BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	bool "rk3399"
