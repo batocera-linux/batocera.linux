@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v36beta(2023/01/16)\n"
+"Project-Id-Version: batocera-es v36beta(2023/01/24)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-01-17 07:49+0900\n"
+"PO-Revision-Date: 2023-02-05 21:05+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -501,7 +501,7 @@ msgstr "ジョイスティックハック（ROBOTRON 2084用）"
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "LIGHT GUN CROSSHAIR"
-msgstr ""
+msgstr "ガンコンの照準(クロスヘア)"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
@@ -1745,7 +1745,7 @@ msgstr "巻き戻し使用"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Apply a joy2key profile for the current game."
-msgstr "現在のゲームに joy2key プロファイルを適用します"
+msgstr "現在のゲームに「パッドキー設定」を適用します"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1815,7 +1815,7 @@ msgstr "両方のジョイスティック (4軸,4ボタン)"
 #. TRANSLATION: libretro/dosbox_pure, libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Custom Keyboard Binds (best for Pad2Key)"
-msgstr "カスタムキーボード(pad2keyに最適)"
+msgstr "カスタムキーボード(パッドキー設定に最適)"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1997,7 +1997,7 @@ msgctxt "game_options"
 msgid "No skipping"
 msgstr "スキップなし"
 
-#. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/mame078plus, ...
+#. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia, ...
 msgctxt "game_options"
 msgid "SHOW LIGHT GUN CROSSHAIRS"
 msgstr "ガンコンの照準(クロスヘア)を表示"
@@ -2676,8 +2676,8 @@ msgid ""
 "Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are "
 "not affected."
 msgstr ""
-"CD音声のミキシングを調整します。 MSU-MDでは、カートリッジソースの効果音は影響"
-"を受けません"
+"CD音声のミキシングを調整します。 MSU-MDでは、カートリッジイメージの効果音は影"
+"響を受けません"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
@@ -4511,7 +4511,7 @@ msgstr "キーボード/マウス/ジョイパッドをエミュレートしま�
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "JOY2KEY PROFILE"
-msgstr "パッドキープロファイル"
+msgstr "パッドキー設定"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
@@ -6949,7 +6949,7 @@ msgstr "Wiiリモコンをエミュレート"
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "CUSTOMIZE EMULATED WIIMOTE & GAMEPAD"
-msgstr ""
+msgstr "Wii リモコン&ゲームパッド"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7112,8 +7112,7 @@ msgstr "アンチエイリアシング"
 #. TRANSLATION: dolphin, yuzu
 msgctxt "game_options"
 msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
-msgstr ""
-"MSAA / SSAAを切り替えます。アンチエイリアシングが有効/無効によって異なります"
+msgstr "MSAA / SSAAを切り替えます。アンチエイリアシングの有効/無効に依存します"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7545,27 +7544,27 @@ msgstr "エミュレータで画面を回転します"
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "How the emulator should sort transparent objects."
-msgstr ""
+msgstr "エミュレータが透明オブジェクトをソートする方法"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "TRANSPARENT SORTING"
-msgstr ""
+msgstr "透過ソート"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Triangle (Default)"
-msgstr ""
+msgstr "三角形単位 (標準)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Strip"
-msgstr ""
+msgstr "ストリップ単位"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Pixel"
-msgstr ""
+msgstr "ピクセル単位"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -8410,14 +8409,16 @@ msgid "TEXTURE UPSCALING TYPE"
 msgstr "テクスチャアップスケーリング方式"
 
 #. TRANSLATION: ppsspp
+#| msgctxt "game_options"
+#| msgid "On (Default)"
 msgctxt "game_options"
 msgid "xBRZ (Default)"
-msgstr ""
+msgstr "xBRZ (標準)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
-msgstr ""
+msgstr "ハイブリッド+バイキュービック"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8432,12 +8433,12 @@ msgstr "テクスチャ デポスタライズ"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Linear"
-msgstr ""
+msgstr "リニア"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Auto Max Quality"
-msgstr ""
+msgstr "自動最高品質"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9322,7 +9323,7 @@ msgstr "ヒープ遅延なし"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
-msgstr "Nvidia GPUを常にAMD GPUとしての偽装を強制します"
+msgstr "Nvidia GPU が常に AMD GPU として認識されるように偽装します"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -9347,13 +9348,12 @@ msgid ""
 "Reset the cache can fix some crashes if your game was running under Batocera "
 "29."
 msgstr ""
-"Batocera 29 でゲームを実行していた場合、キャッシュをリセットすると修正される"
-"ことがあります"
+"古いBatocera(29より前)で実行していた場合、修正されることがあります"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "DXVK RESET CACHE"
-msgstr "DXVK リセット キャッシュ"
+msgstr "DXVKのキャッシュをリセット"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -9361,8 +9361,8 @@ msgid ""
 "Enable this mode if you have issue for run your game on NTFS storage (by "
 "default is better to use LinuxFS)."
 msgstr ""
-"NTFS ストレージでゲームの実行に問題がある場合は、このモードを有効にします (通"
-"常は LinuxFS の使用をお勧めします)"
+"NTFS ストレージで不具合がある場合は、これを有効にします (通常は LinuxFS をお"
+"勧めします)"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
