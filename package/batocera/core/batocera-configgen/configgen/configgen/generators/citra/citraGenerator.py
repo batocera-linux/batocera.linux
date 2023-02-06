@@ -170,6 +170,18 @@ class CitraGenerator(Generator):
             # We only care about player 1
             if controller.player != "1":
                 continue
+            if system.isOptSet("citra_motion_device"):
+                citraConfig.set("Controls", "profiles\\1\\motion_device", system.config["citra_motion_device"])
+                citraConfig.set("Controls", "profiles\\1\\motion_device\\default", "false")
+            if system.isOptSet("citra_touch_device"):
+                citraConfig.set("Controls", "profiles\\1\\touch_device", system.config["citra_touch_device"])
+                citraConfig.set("Controls", "profiles\\1\\touch_device\\default", "false")
+            if system.isOptSet("citra_udp_input_address"):
+                citraConfig.set("Controls", "profiles\\1\\udp_input_address", system.config["citra_udp_input_address"])
+                citraConfig.set("Controls", "profiles\\1\\udp_input_address\\default", "false")
+            if system.isOptSet("citra_udp_input_port"):
+                citraConfig.set("Controls", "profiles\\1\\udp_input_port", system.config["citra_udp_input_port"])
+                citraConfig.set("Controls", "profiles\\1\\udp_input_port\\default", "false")
             for x in citraButtons:
                 citraConfig.set("Controls", "profiles\\1\\" + x, f'"{CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)}"')
             for x in citraAxis:
