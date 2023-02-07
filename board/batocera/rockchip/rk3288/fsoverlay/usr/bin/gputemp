@@ -1,1 +1,3 @@
-cputemp
+#!/bin/sh
+TEMP="$(cat /sys/class/thermal/thermal_zone1/temp)"
+echo "$(( $TEMP / 1000 )) C"
