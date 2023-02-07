@@ -1,0 +1,13 @@
+diff --git a/plat/rockchip/rk3399/rk3399_def.h b/plat/rockchip/rk3399/rk3399_def.h
+index ba83242ebe..8d6ecfbe66 100644
+--- a/plat/rockchip/rk3399/rk3399_def.h
++++ b/plat/rockchip/rk3399/rk3399_def.h
+@@ -17,7 +17,7 @@
+ /**************************************************************************
+  * UART related constants
+  **************************************************************************/
+-#define RK3399_BAUDRATE			115200
++#define RK3399_BAUDRATE			1500000
+ #define RK3399_UART_CLOCK		24000000
+ 
+ /******************************************************************************
