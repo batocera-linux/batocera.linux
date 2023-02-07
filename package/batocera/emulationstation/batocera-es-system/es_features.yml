@@ -6697,12 +6697,12 @@ flycast:
         "16x"               : 16
     flycast_sorting:
       group: ADVANCED OPTIONS
-      prompt: TRANSPARENT SORTING
-      description: How the emulator should sort transparent objects.
+      prompt: ALPHA SORTING
+      description: Per pixel is the most accurate, but also the most demanding.
       choices:
-        "Per Triangle (Default)": 1
         "Per Strip":              2
-        "Per Pixel":              3 
+        "Per Triangle (Default)": 1
+        "Per Pixel":              3
   systems:
     dreamcast:
       cfeatures:
@@ -7494,7 +7494,7 @@ rpcs3:
             description: Reduces crackle and stutter further, but may cause a very noticeable reduction in audio quality on slower CPUs.
             choices:
                 "Off (Default)": False
-                "On":            True             
+                "On":            True
 
 scummvm:
   features: [padtokeyboard]
@@ -9169,7 +9169,7 @@ xemu:
                 "Enabled":      "true"
                 "Disabled":     "false"
         use_zink:
-            group: ADVANCED OPTIONS            
+            group: ADVANCED OPTIONS
             prompt: USE ZINK RENDERER
             description: Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause performance loss.
             choices:
