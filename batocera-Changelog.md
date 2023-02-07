@@ -132,7 +132,7 @@
 - Future Pinball saves
 ### Dev  
 - buildroot upgrade to 2022.11.1
-- odroidxu4 upgrade kernel to 6.1.9
+- odroidxu4 upgrade kernel to 6.1.10
 - raspberrypi upgrade kernel to 6.1.8
 - Amlogic upgrade kernel to 6.1.9
 - rpi1 image renamed to bcm2835
