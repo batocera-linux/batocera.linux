@@ -389,7 +389,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "broadcom/bcm2837"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 	default "broadcom/bcm2711"                                                                if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 	default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_RK3326
-	default "rockchip/rk3328/rock64 rockchip/rk3328/rock-cc"                                  if BR2_PACKAGE_BATOCERA_TARGET_RK3328
+	default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"                                   if BR2_PACKAGE_BATOCERA_TARGET_RK3328
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                                if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/rg552 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4"   if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "rockchip/rk3588/rock-5b"                                                         if BR2_PACKAGE_BATOCERA_TARGET_RK3588

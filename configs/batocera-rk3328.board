@@ -27,7 +27,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3328-rock64 rockchip/rk3328-rock-cc"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3328-rock64 rockchip/rk3328-roc-cc"
 # BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3328/dts/.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3328/dts/.dts"
 
 # Bootloader
