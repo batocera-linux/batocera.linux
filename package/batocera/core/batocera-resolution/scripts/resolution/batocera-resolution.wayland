@@ -88,58 +88,60 @@ case "${ACTION}" in
         swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height)"'
     ;;
     "listOutputs")
-	swaymsg -t get_outputs | jq -r '.[].name'
+	    swaymsg -t get_outputs | jq -r '.[].name'
     ;;
     "currentOutput")
-	swaymsg -t get_outputs | jq -r '.[] | select (.focused).name'
+	    swaymsg -t get_outputs | jq -r '.[] | select (.focused).name'
     ;;
     "setOutput")
-	MODE=$1
-	if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE}$"
-	then
-	    # enable (in case of reboot of es)
-	    echo "set ${MODE} as primary" >&2
-	    sway output "${MODE}" enable
+        MODE=$1
+        if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE}$"
+        then
+            # enable (in case of reboot of es)
+            echo "set ${MODE} as primary" >&2
+            swaymsg output "${MODE}" enable
 
-	    # disable all other outputs
-	    swaymsg -t get_outputs | jq -r '.[].name' | grep -vE "^${MODE}$" |
-		while read OUTP
-		do
-		    echo "set ${OUTP} off" >&2
-		    sway output "${OUTP}" disable
-		done
-	else
-	    # disable all except the first one
-	    swaymsg -t get_outputs | jq -r '.[].name' |
-		(
-		    read FIRSTOUTPUT
-		    while read OUTP
-		    do
-			echo "set ${OUTP} off" >&2
-			sway output "${OUTP}" disable
-		    done
+            # disable all other outputs
+            swaymsg -t get_outputs | jq -r '.[].name' | grep -vE "^${MODE}$" |
+            while read OUTP
+            do
+                echo "set ${OUTP} off" >&2
+                swaymsg output "${OUTP}" disable
+            done
+        else
+            # disable all except the first one
+            swaymsg -t get_outputs | jq -r '.[].name' |
+            (
+                read FIRSTOUTPUT
+                while read OUTP
+                do
+                echo "set ${OUTP} off" >&2
+                swaymsg output "${OUTP}" disable
+                done
 
-		    # enable (in case of reboot of es)
-		    echo "set ${FIRSTOUTPUT} as primary" >&2
-		    sway output "${FIRSTOUTPUT}" enable
-		)
-	fi
+                # enable (in case of reboot of es)
+                echo "set ${FIRSTOUTPUT} as primary" >&2
+                swaymsg output "${FIRSTOUTPUT}" enable
+            )
+        fi
+
+        # Mapping touch screen
+        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+        if [ ! -z "${TOUCHSCREEN}" ]; then
+            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
+            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
+        fi
+
     ;;
     "minTomaxResolution" | "minTomaxResolution-secure")
         f_minTomaxResolution "$1"
     ;;
     "supportSystemRotation")
-	exit 0
+	    exit 0
     ;;
     "setRotation")
         ROTATE=$1
         OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
-
-        # Mapping touch screen
-        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
-        if [ ! -z "${TOUCHSCREEN}" ]; then
-            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
-        fi
 
         case "${ROTATE}" in
             "1")
@@ -155,6 +157,12 @@ case "${ACTION}" in
                 # in case of reboot of es
                 swaymsg output "${OUTPUT}" transform normal
         esac
+
+        # Mapping touch screen
+        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+        if [ ! -z "${TOUCHSCREEN}" ]; then
+            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
+        fi
     ;;
     "getDisplayMode")
         echo "wayland"
