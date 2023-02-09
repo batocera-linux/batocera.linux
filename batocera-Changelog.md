@@ -6,9 +6,10 @@
 - new enhanced UI for themes management (from Content Downloader)
 - navigation with light guns now possible
 ### Added
+- Support for RK3328 Rock64(Pine64) & Roc-cc(firefly) Boards
 - alsa ucm2 to x86 builds for soundcard compatibility - v1.2.8
 - sound open firmware for expanded soundcard support - v2.2.3
-	- manaual config is necessary
+	- manual config is necessary
 - Vita3k - PlayStation Vita emulator (Nov 28th build)
 - WASM4 - WebAssembly fantasy console (x86_64)
 - Ikemen-Go fighting engine (x86_64)
@@ -33,15 +34,15 @@
 - Retroachievements for Arduboy and WASM4
 - Added RPI2, RPI3_32Bits and RPIZero2 support in bcm2836 image
 ### Changed
-- move to pipewire wireplumber audio
-- bluetooth modes : automatic and manual (via a list)
-- kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
+- Move to pipewire wireplumber audio
+- Bluetooth modes : automatic and manual (via a list)
+- Kronos now uses beetle's save path by default, move the save files out of saves/saturn/kronos to saves/saturn and rename:
     - *.ram to *.bkr
     - *-ext512K.ram to *.bcr
     - You can continue to use the old save format by entering the following line into batocera.conf: saturn.kronos_use_beetle_saves = disabled
-- cemu to native linux version (v2.0-22)
+- Cemu to native linux version (v2.0-22)
 	- cemu fixes for controllers
-- new Apple 2 MAME options - joystick & alternate models, (LR-MAME & Standalone), hard drive images (Standalone)
+- New Apple 2 MAME options - joystick & alternate models, (LR-MAME & Standalone), hard drive images (Standalone)
 - Playstation DS4 controllers now use the hid-playstation driver
 - Moving some SBC's to the Wayland display server protocol - v1.29
 	- Using Sway as the Wayland compositor - v1.7
