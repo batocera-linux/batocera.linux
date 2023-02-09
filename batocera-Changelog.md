@@ -144,7 +144,7 @@
 - rtl8192eu update to Nov 5, 2022
 - rtl8723ds update to Nov 4, 2022
 - rtl8812au update to Nov 16, 2022
-- mesa3d update to 22.3.4
+- mesa3d update to 22.3.5
 - uinput-joystick update to Feb 11, 2022
 - firmware-orangepi update to Jan 13, 2023
 - The build of RG552 has been added to RK3399
