@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DAEMON="splash-image"
-DEFAULT="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
+DEFAULT="/usr/share/batocera/splash/logo-version-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
 SPLASH_DIR=/userdata/splash
 
 FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
