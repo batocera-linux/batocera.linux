@@ -3,13 +3,22 @@
 # uboot multiboard
 #
 ################################################################################
-UBOOT_MULTIBOARD_VERSION = 2023.01
+# NOTE: latest uboot version string is in two places in Config.in:
+#         1. BR2_PACKAGE_UBOOT_MULTIBOARD_LATEST_VERSION
+#         2. BR2_PACKAGE_UBOOT_MULTIBOARD_VERSION
+#       Please change both when bumping even though former if just a prompt for menuconfig.
+UBOOT_MULTIBOARD_VERSION = $(call qstrip,$(BR2_PACKAGE_UBOOT_MULTIBOARD_VERSION))
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
 UBOOT_MULTIBOARD_DEPENDENCIES = arm-trusted-firmware
 UBOOT_MULTIBOARD_DEPENDENCIES += host-python3 host-python-setuptools
 UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
+
+# No hash check unless using BR2_PACKAGE_UBOOT_MULTIBOARD_LATEST_VERSION
+ifeq ($(BR2_PACKAGE_UBOOT_MULTIBOARD)$(BR2_PACKAGE_UBOOT_MULTIBOARD_LATEST_VERSION),y)
+BR_NO_CHECK_HASH_FOR += $(UBOOT_MULTIBOARD_SOURCE)
+endif
 
 # Default make opts, adaptation of buildroot uboot's opts. "-I $(HOST_DIR)/include"
 # prevents mixing openssl headers from docker (currently 3.0.2) and

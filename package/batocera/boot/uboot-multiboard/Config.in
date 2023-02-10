@@ -15,6 +15,32 @@ config BR2_PACKAGE_UBOOT_MULTIBOARD
 
 if BR2_PACKAGE_UBOOT_MULTIBOARD
 
+choice
+  prompt "U-Boot multiboard version"
+  help
+    Select the specific U-Boot version you want to use with uboot-multiboard
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_LATEST_VERSION
+  bool "2023.01"
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_VERSION
+  bool "Custom version"
+  help
+    This option allows to use a specific official versions
+
+endchoice
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_VERSION_VALUE
+  string "U-Boot multiboard version"
+  depends on BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_VERSION
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_VERSION
+  string
+  default "2023.01" if BR2_PACKAGE_UBOOT_MULTIBOARD_LATEST_VERSION
+  default "custom"  if BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_TARBALL
+  default BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_VERSION_VALUE \
+        if BR2_PACKAGE_UBOOT_MULTIBOARD_CUSTOM_VERSION
+
 config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
   string "U-Boot configs"
   default "miqi-rk3288 tinker-s-rk3288" if BR2_PACKAGE_BATOCERA_TARGET_RK3288
