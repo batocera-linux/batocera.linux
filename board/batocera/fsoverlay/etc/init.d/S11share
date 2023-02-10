@@ -125,9 +125,9 @@ mountDevicesOrNetwork() {
          sed -e s+'^[ ]*share\(network\|device\)_\([a-z]*\)[0-9][ ]*='+'\2 '+ |
         while read -r CTYPE CMD
         do
-            XTRY=5  # X tries and give up
             XWAIT=4 # N seconds between each try
-
+			XTRY=$((MAXTRY / XWAIT)) # X tries and give up
+            
             while [ "${XTRY}" -gt 0 ]
             do
                 XTRY=$((XTRY-1))
