@@ -52,8 +52,8 @@ flycastArcadeMapping = { # Directions
                          'x' :             {'button': 'btn_x'},
                          'pageup' :        {'button': 'btn_y'},
                          'pagedown':       {'button': 'btn_z'},
-                         'l3':             {'button': 'btn_dpad2_left'},
-                         'r3':             {'button': 'btn_dpad2_right'},
+                         'l3':             {'button': 'btn_dpad2_up'},
+                         'r3':             {'button': 'btn_dpad2_down'},
                          # Triggers
                          'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'},
                          'r2' :            {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
