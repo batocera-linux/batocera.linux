@@ -1,0 +1,26 @@
+#!/bin/sh
+
+F=/boot/config.txt
+
+# fix the initrd name (from .gz to .lz4)
+if grep -qE "^initramfs boot/initrd\.gz$" "${F}"
+then
+    if mount -o remount,rw /boot
+    then
+	sed -i -e s+"boot/initrd.gz"+"boot/initrd.lz4"+ "${F}"
+	mount -o remount,ro /boot
+    fi
+fi
+
+# clean the initrd.gz (replaced by initrd.lz4)
+if test -e /boot/boot/initrd.gz
+then
+    if grep -qE "^initramfs boot/initrd\.lz4$" "${F}"
+    then
+	if mount -o remount,rw /boot
+	then
+	    rm -f "/boot/boot/initrd.gz"
+	    mount -o remount,ro /boot
+	fi
+    fi
+fi
