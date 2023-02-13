@@ -4023,20 +4023,18 @@ gzdoom:
     gzdoom:
       gzdoom: { requireAnyOf: [BR2_PACKAGE_GZDOOM] }
   comment_en: |
-    Put your rom and mod files in this directory.
-    
-    Using the .gzdoom extension allows you to add custom mods.
-    i.e. Aliens Eradication.gzdoom should contain a line like so:
+    Custom mods can be used by creating a new text file named after the game with the extension ''.gzdoom''. For example:
+    Aliens Eradication.gzdoom, which contains this single line of text:
     -iwad DOOM2.WAD -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Note: Ensure the full command is on one line in the .gzdoom file and the filenames and extensions matech your files exactly.
+    Note: The command must be on one line and the casing of the filenames and extensions must match exactly.
 
     Additional music can be added to /userdata/system/configs/gzdoom in the fm_banks & soundfonts folders respectively.
 
-    More info: https://wiki.batocera.org/systems:eduke32
+    More info: https://wiki.batocera.org/systems:gzdoom
   comment_pt: |
     Mettez vos fichiers rom et mod dans ce répertoire.
-    
+
     L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
     c'est-à-dire que Aliens Eradication.gzdoom doit contenir une ligne comme celle-ci :
     -iwad DOOM2.WAD -fichier ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
@@ -4045,7 +4043,7 @@ gzdoom:
 
     De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
 
-    Plus d'infos : https://wiki.batocera.org/systems:eduke32
+    Plus d'infos : https://wiki.batocera.org/systems:gzdoom
 
 eduke32:
   name: EDuke32
