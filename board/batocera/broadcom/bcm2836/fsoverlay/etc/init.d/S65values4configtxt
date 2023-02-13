@@ -24,3 +24,13 @@ then
 	fi
     fi
 fi
+
+# fix krnbt (bluetooth)
+if ! grep -qE "^dtparam=krnbt=on$" "${F}"
+then
+    if mount -o remount,rw /boot
+    then
+	(echo ; echo "dtparam=krnbt=on") >> "${F}"
+	mount -o remount,ro /boot
+    fi
+fi
