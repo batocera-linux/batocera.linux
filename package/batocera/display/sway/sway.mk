@@ -22,8 +22,10 @@ SWAY_CONF_OPTS = -Ddefault-wallpaper=false \
 
 ifeq ($(BR2_PACKAGE_XWAYLAND),y)
 SWAY_CONF_OPTS += -Dxwayland=enabled
+SWAY_SUPPORT_XWAYLAND = enable
 else
 SWAY_CONF_OPTS += -Dxwayland=disabled
+SWAY_SUPPORT_XWAYLAND = disable
 endif
 
 # sway does not build without -Wno flags as all warnings being treated as errors
@@ -45,6 +47,9 @@ define SWAY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin
     $(INSTALL) -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/display/sway/config/sway-launch \
         $(TARGET_DIR)/usr/bin
+
+    sed -i -e 's;%SWAY_SUPPORT_XWAYLAND%;${SWAY_SUPPORT_XWAYLAND};g' \
+		$(TARGET_DIR)/etc/sway/config
 endef
 
 $(eval $(meson-package))
