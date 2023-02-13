@@ -2,6 +2,7 @@
 
 CONFIGFILE=/boot/config.txt
 CMDLINE=/boot/cmdline.txt
+SWAYLAUNCH=/usr/bin/sway-launch
 RPIMODEL="/proc/device-tree/model"
 CMDMODIFIED=0
 CONFIGMODIFIED=0
@@ -54,6 +55,12 @@ dtoverlay=pwm-audio-pi-zero_gpicase
         mount -o remount,rw /boot
         sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' "${CONFIGFILE}"
         CONFIGMODIFIED=1
+    fi
+
+    # GPICase: needs the parameter to start the sway
+    if grep -qE '^/usr/bin/sway' "${SWAYLAUNCH}"
+    then
+        sed -i 's|/usr/bin/sway|WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway|g' "${SWAYLAUNCH}"
     fi
 
     echo "${setup}" | (
