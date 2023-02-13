@@ -14,20 +14,6 @@ case "$1" in
         # soft unblock bluetooth
         rfkill unblock bluetooth
 
-        # RPi4 BT config check
-        if test "${BOARD}" = "bcm2711"
-        then
-            # check the config.txt has the BT setting
-            if ! grep -q "^dtparam=krnbt=on" "/boot/config.txt"
-            then
-                mount -o remount,rw /boot
-                echo "" >> "/boot/config.txt"
-                echo "# Enable bluetooth" >> "/boot/config.txt"
-                echo "dtparam=krnbt=on" >> "/boot/config.txt"
-                mount -o remount,r /boot
-            fi
-        fi
-
         #Start hciattach for applicable boards
         bluetoothstack="@INTERNAL_BLUETOOTH_STACK@"
         for i in $bluetoothstack
@@ -43,7 +29,7 @@ case "$1" in
                     # Bluetooth on the OrangePi 4-LTS board is handled by a Spreadtrum (sprd) chip
                     # and requires a custom hciattach_opi binary
                     if test "${BOARD}" = "orangepi4-lts"
-                    then                    
+                    then
                         /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
                     else
                         /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
@@ -67,7 +53,7 @@ case "$1" in
                 ;;
             esac
         done
-        
+
         btaddr="$(/usr/bin/batocera-settings-get bluetooth.adapter)"
         settings_version="$(/usr/bin/batocera-settings-get controllers.ps3.driver)"
         if [ "$settings_version" != "bluez" ]
@@ -76,7 +62,7 @@ case "$1" in
         else
             BLUETOOTHD_ARGS="--noplugin=sixaxispair"
         fi
-        
+
         debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
         if test "${debug}" = 1
         then
