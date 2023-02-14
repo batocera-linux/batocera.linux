@@ -10,6 +10,9 @@ then
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf
 then
     batocera-nvidia legacy390
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia legacy340
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
 then
     batocera-nvidia nouveau
