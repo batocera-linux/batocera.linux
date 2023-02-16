@@ -64,9 +64,9 @@ def checkModeExists(videomode):
 def changeMouse(mode):
     eslog.debug(f"changeMouseMode({mode})")
     if mode:
-        cmd = "unclutter-remote -s"
+        cmd = "batocera-mouse show"
     else:
-        cmd = "unclutter-remote -h"
+        cmd = "batocera-mouse hide"
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 
