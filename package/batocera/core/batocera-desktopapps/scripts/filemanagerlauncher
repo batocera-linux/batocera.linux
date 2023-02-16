@@ -22,8 +22,6 @@ if (not t or t == ''):
      c.write(wf)
 EOF
 
-unclutter-remote -s
-
+batocera-mouse show
 DISPLAY=${DISPLAY:-:0.0} pcmanfm /userdata
-
-unclutter-remote -h
+batocera-mouse hide

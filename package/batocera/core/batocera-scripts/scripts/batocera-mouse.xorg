@@ -1,0 +1,16 @@
+#!/bin/sh
+
+test -z "${DISPLAY}" && export DISPLAY=":0"
+
+case "${1}" in
+    "show")
+	unclutter-remote -s || exit 1
+    ;;
+    "hide")
+	unclutter-remote -h || exit 1
+    ;;
+    *)
+	echo "${0} <show|hide>" >&2
+	exit 1
+esac
+exit 0
