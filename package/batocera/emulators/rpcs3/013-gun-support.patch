@@ -87,14 +87,14 @@ index 111c05c..e42edd9 100644
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN2) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_CIRCLE;
 +
-+  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN3) == 1)
-+    digital_buttons |= CELL_GEM_CTRL_SELECT;
-+
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN5) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_TRIANGLE;
 +
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN6) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_SQUARE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN7) == 1)
++    digital_buttons |= CELL_GEM_CTRL_SELECT;
 +
 +  analog_t = (gh->getButton(gem_no, EVDEV_GUN_BUTTON_LEFT) == 1) ? 0xFFFF : 0;
 +  return true;
