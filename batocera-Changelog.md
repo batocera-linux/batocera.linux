@@ -7,6 +7,7 @@
 - navigation with light guns now possible
 ### Added
 - Support for RK3328 Rock64(Pine64) & Roc-cc(firefly) Boards
+- added odroid-n2l support
 - alsa ucm2 to x86 builds for soundcard compatibility - v1.2.8
 - sound open firmware for expanded soundcard support - v2.2.3
 	- manual config is necessary
