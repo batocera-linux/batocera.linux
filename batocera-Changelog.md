@@ -33,6 +33,7 @@
 - Added the initial Radxa RockPi 5b board support - thanks @stvhay for your persistence & hard work!
 - Retroachievements for Arduboy and WASM4
 - Added RPI2, RPI3_32Bits and RPIZero2 support in bcm2836 image
+- Expanded RTW89 linux driver for Realtek 8852xx devices
 ### Changed
 - Move to pipewire wireplumber audio
 - Bluetooth modes : automatic and manual (via a list)
