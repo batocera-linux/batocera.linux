@@ -1,4 +1,4 @@
-# 202x/xx/xx - batocera.linux 36 - Luna Moth
+# 2023/xx/xx - batocera.linux 36 - Luna Moth
 ### EmulationStation
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
 - brightness can go down to 1% (instead of 5%)
@@ -131,6 +131,8 @@
 - Xbox S|X controllers with the RPi4
 - White frame on 4:3 screen in libretro cores for Sinden Lightgun
 - Future Pinball saves
+- Light guns on RPi4
+-   - they now start when connected/plugged
 ### Dev  
 - buildroot upgrade to 2022.11.1
 - odroidxu4 upgrade kernel to 6.1.10
