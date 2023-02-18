@@ -3,8 +3,9 @@
 # libretro-o2em
 #
 ################################################################################
-# Version: Commits on Jul 26, 2022
-LIBRETRO_O2EM_VERSION = 3303cc15e4323280084471f694f6d34c78199725
+# Version: Commits on Nov 3, 2021
+# Do not upgrade this commit: https://github.com/libretro/libretro-o2em/issues/57
+LIBRETRO_O2EM_VERSION = c039e83f2589cb9d21b9aa5dc211954234ab8c97
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 LIBRETRO_O2EM_LICENSE = Artistic License
 
