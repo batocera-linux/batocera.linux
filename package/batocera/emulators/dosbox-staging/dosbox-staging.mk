@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-DOSBOX_STAGING_VERSION = v0.79.1
+DOSBOX_STAGING_VERSION = v0.80.1
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
-DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net fluidsynth zlib libpng libogg libvorbis opus opusfile slirp iir
+DOSBOX_STAGING_DEPENDENCIES = alsa-lib sdl2 sdl2_net sdl2_image fluidsynth zlib libpng libogg libvorbis opus opusfile slirp iir speexdsp
 DOSBOX_STAGING_LICENSE = GPLv2
 
 DOSBOX_STAGING_CPPFLAGS = -DNDEBUG
@@ -29,7 +29,7 @@ DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
@@ -83,13 +83,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a75 -mtune=cortex-a75.cortex-a55
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a75 -mtune=cortex-a75.cortex-a55
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
-endif
-
-ifeq ($(BR2_PACKAGE_FLUIDSYNTH),y)
-DOSBOX_STAGING_DEPENDENCIES += fluidsynth
-DOSBOX_STAGING_CONF_OPTS += -Duse_fluidsynth=true
-else
-DOSBOX_STAGING_CONF_OPTS += -Duse_fluidsynth=false
 endif
 
 define DOSBOX_STAGING_INSTALL_TARGET_CMDS
