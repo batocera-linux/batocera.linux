@@ -74,13 +74,13 @@ do
     if test -e "${PADBAT}" # when nothing is found, the expression is return
     then
 	# HID devices only
-	PADNAME=$(grep -E '^HID_NAME=' "${PADBAT}" | sed -e s+'^HID_NAME='++)
+	PADNAME=$(sed -nE 's/^HID_NAME=(.+)/\1/p' "${PADBAT}")
 	if test -n "${PADNAME}"
 	then
 	    # parent of parent / uevent
 	    BATTUEVENT=$(dirname "${PADBAT}")
 	    BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
-	    BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" "${BATTUEVENT}" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+	    BATT="$(batocera-padsinfo "${BATTUEVENT}")"
 	    echo "${PADNAME}: ${BATT}%"
 	fi
     fi
