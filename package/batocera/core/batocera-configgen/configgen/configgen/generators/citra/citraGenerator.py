@@ -201,14 +201,14 @@ class CitraGenerator(Generator):
         inputx = -1
         inputy = -1
 
-        if key == "joystick1":
+        if key == "joystick1" and "joystick1left" in padInputs:
             inputx = padInputs["joystick1left"]
-        elif key == "joystick2":
+        elif key == "joystick2" and "joystick2left" in padInputs:
             inputx = padInputs["joystick2left"]
 
-        if key == "joystick1":
+        if key == "joystick1" and "joystick1up" in padInputs:
             inputy = padInputs["joystick1up"]
-        elif key == "joystick2":
+        elif key == "joystick2" and "joystick2up" in padInputs:
             inputy = padInputs["joystick2up"]
 
         return ("axis_x:{},guid:{},axis_y:{},engine:sdl").format(inputx.id, padGuid, inputy.id)
