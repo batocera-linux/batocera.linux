@@ -1,13 +1,13 @@
-From 1d6bede75068778ded7ebf4113d3a490271af7d6 Mon Sep 17 00:00:00 2001
+From 17b6e407b5968dfe07e3935e8b89440ee487f7a9 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Sun, 19 Feb 2023 00:08:07 -0400
+Date: Sun, 19 Feb 2023 19:46:30 -0400
 Subject: [PATCH] OrangePi 3 LTS support
 
 ---
  arch/arm/dts/Makefile                     |   1 +
- arch/arm/dts/sun50i-h6-orangepi-3-lts.dts | 381 ++++++++++++++++++++++
- configs/orangepi_3_lts_defconfig          |  18 +
- 3 files changed, 400 insertions(+)
+ arch/arm/dts/sun50i-h6-orangepi-3-lts.dts | 374 ++++++++++++++++++++++
+ configs/orangepi_3_lts_defconfig          |  19 ++
+ 3 files changed, 394 insertions(+)
  create mode 100644 arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
  create mode 100644 configs/orangepi_3_lts_defconfig
 
@@ -25,10 +25,10 @@ index 43951a77..8dbbb6f4 100644
  	sun50i-h6-pine-h64.dtb \
 diff --git a/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts b/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
 new file mode 100644
-index 00000000..2bf670ad
+index 00000000..468c7fdd
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
-@@ -0,0 +1,381 @@
+@@ -0,0 +1,374 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +// Copyright (C) 2019 Ondřej Jirman <megous@megous.com>
 +// Copyright (C) 2023 Jernej Skrabec <jernej.skrabec@gmail.com>
@@ -162,6 +162,7 @@ index 00000000..2bf670ad
 +};
 +
 +&hdmi {
++	hvcc-supply = <&reg_bldo2>;
 +	status = "okay";
 +};
 +
@@ -174,11 +175,11 @@ index 00000000..2bf670ad
 +&emac {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&ext_rgmii_pins>;
-+	phy-mode = "rgmii-id";
++	phy-mode = "rgmii";
 +	phy-handle = <&ext_rgmii_phy>;
 +	phy-supply = <&reg_gmac_3v3>;
-+	allwinner,rx-delay-ps = <1500>;
-+	allwinner,tx-delay-ps = <700>;
++	allwinner,rx-delay-ps = <200>;
++	allwinner,tx-delay-ps = <300>;
 +	status = "okay";
 +};
 +
@@ -211,14 +212,6 @@ index 00000000..2bf670ad
 +	bus-width = <4>;
 +	non-removable;
 +	status = "okay";
-+
-+	brcm: sdio-wifi@1 {
-+		reg = <1>;
-+		compatible = "brcm,bcm4329-fmac";
-+		interrupt-parent = <&r_pio>;
-+		interrupts = <1 0 IRQ_TYPE_LEVEL_LOW>; /* PM0 */
-+		interrupt-names = "host-wake";
-+	};
 +};
 +
 +&mmc2 {
@@ -241,7 +234,7 @@ index 00000000..2bf670ad
 +&pio {
 +	vcc-pc-supply = <&reg_bldo2>;
 +	vcc-pd-supply = <&reg_cldo1>;
-+	vcc-pg-supply = <&reg_vcc_wifi_io>;
++	vcc-pg-supply = <&reg_bldo3>;
 +};
 +
 +&r_rsb {
@@ -412,29 +405,29 @@ index 00000000..2bf670ad
 +};
 diff --git a/configs/orangepi_3_lts_defconfig b/configs/orangepi_3_lts_defconfig
 new file mode 100644
-index 00000000..24c7816d
+index 00000000..41a9af4e
 --- /dev/null
 +++ b/configs/orangepi_3_lts_defconfig
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,19 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
++CONFIG_DEFAULT_DEVICE_TREE="sun50i-h6-orangepi-3-lts"
++CONFIG_SPL=y
 +CONFIG_MACH_SUN50I_H6=y
 +CONFIG_SUNXI_DRAM_H6_LPDDR3=y
-+CONFIG_SUNXI_DRAM_DDR3=n
-+CONFIG_DRAM_ODT_EN=y
 +CONFIG_MMC0_CD_PIN="PF6"
 +CONFIG_MMC_SUNXI_SLOT_EXTRA=2
-+CONFIG_HDMI_DDC_EN="PH2"
-+# CONFIG_PSCI_RESET is not set
-+CONFIG_DEFAULT_DEVICE_TREE="sun50i-h6-orangepi-3-lts"
 +# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
-+CONFIG_SPL=y
-+# CONFIG_CMD_FLASH is not set
-+# CONFIG_CMD_FPGA is not set
-+# CONFIG_SPL_DOS_PARTITION is not set
-+# CONFIG_SPL_ISO_PARTITION is not set
-+# CONFIG_SPL_EFI_PARTITION is not set
-\ No newline at end of file
++CONFIG_SPL_STACK=0x118000
++CONFIG_SYS_PBSIZE=1024
++CONFIG_SYS_BOOTM_LEN=0x2000000
++CONFIG_PHY_SUN50I_USB3=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_DWC3=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_OHCI_HCD=y
++CONFIG_USB_DWC3=y
++# CONFIG_USB_DWC3_GADGET is not set
 -- 
 2.39.2
 
