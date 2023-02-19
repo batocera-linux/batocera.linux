@@ -1,17 +1,16 @@
-From 72b6fa8ce7faa765ad0aa0491f9f4a907107b80e Mon Sep 17 00:00:00 2001
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
-Date: Sun, 29 Jan 2023 22:19:45 +0100
+From 1017f4d04f4490ea03e003c415a61c86a104776e Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Sun, 19 Feb 2023 00:14:14 -0400
 Subject: [PATCH] OrangePi 3 LTS support
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
  arch/arm64/boot/dts/allwinner/Makefile        |   1 +
- .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 313 ++++++++++++++++++
- 2 files changed, 314 insertions(+)
+ .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 381 ++++++++++++++++++
+ 2 files changed, 382 insertions(+)
  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 
 diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
-index 6a96494a2e0a..ace8159a6324 100644
+index 6a96494a2..ace8159a6 100644
 --- a/arch/arm64/boot/dts/allwinner/Makefile
 +++ b/arch/arm64/boot/dts/allwinner/Makefile
 @@ -32,6 +32,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h5-orangepi-zero-plus.dtb
@@ -24,14 +23,13 @@ index 6a96494a2e0a..ace8159a6324 100644
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64.dtb
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 new file mode 100644
-index 000000000000..6a5df1103a90
+index 000000000..71fd8b905
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
-@@ -0,0 +1,313 @@
+@@ -0,0 +1,381 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+// Copyright (C) 2023 Jernej Skrabec <jernej.skrabec@gmail.com>
-+// Based on sun50i-h6-orangepi-3.dts, which is:
 +// Copyright (C) 2019 Ondřej Jirman <megous@megous.com>
++// Copyright (C) 2023 Jernej Skrabec <jernej.skrabec@gmail.com>
 +
 +/dts-v1/;
 +
@@ -45,8 +43,9 @@ index 000000000000..6a5df1103a90
 +	compatible = "xunlong,orangepi-3-lts", "allwinner,sun50i-h6";
 +
 +	aliases {
-+		ethernet0 = &emac;
 +		serial0 = &uart0;
++		serial1 = &uart1;
++		ethernet0 = &emac;
 +	};
 +
 +	chosen {
@@ -87,16 +86,6 @@ index 000000000000..6a5df1103a90
 +		};
 +	};
 +
-+	reg_gmac_3v3: gmac-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "gmac-3v3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		startup-delay-us = <150000>;
-+		enable-active-high;
-+		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
-+	};
-+
 +	reg_vcc5v: vcc5v {
 +		/* board wide 5V supply directly from the DC jack */
 +		compatible = "regulator-fixed";
@@ -104,6 +93,44 @@ index 000000000000..6a5df1103a90
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
++	};
++
++	reg_gmac_3v3: gmac-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-gmac-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <150000>;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	reg_vcc33_wifi: vcc33-wifi {
++		/* Always on 3.3V regulator for WiFi and BT */
++		compatible = "regulator-fixed";
++		regulator-name = "vcc33-wifi";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++		vin-supply = <&reg_vcc5v>;
++	};
++
++	reg_vcc_wifi_io: vcc-wifi-io {
++		/* Always on 1.8V/300mA regulator for WiFi and BT IO */
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-wifi-io";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-always-on;
++		vin-supply = <&reg_vcc33_wifi>;
++	};
++
++	wifi_pwrseq: wifi-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&rtc CLK_OSC32K_FANOUT>;
++		clock-names = "ext_clock";
++		reset-gpios = <&r_pio 1 3 GPIO_ACTIVE_LOW>; /* PM3 */
++		post-power-on-delay-ms = <200>;
 +	};
 +};
 +
@@ -127,24 +154,12 @@ index 000000000000..6a5df1103a90
 +	status = "okay";
 +};
 +
-+&emac {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&ext_rgmii_pins>;
-+	phy-mode = "rgmii";
-+	phy-handle = <&ext_rgmii_phy>;
-+	phy-supply = <&reg_gmac_3v3>;
-+	allwinner,rx-delay-ps = <200>;
-+	allwinner,tx-delay-ps = <300>;
-+	status = "okay";
-+};
-+
 +&gpu {
 +	mali-supply = <&reg_dcdcc>;
 +	status = "okay";
 +};
 +
 +&hdmi {
-+	hvcc-supply = <&reg_bldo2>;
 +	status = "okay";
 +};
 +
@@ -152,6 +167,17 @@ index 000000000000..6a5df1103a90
 +	hdmi_out_con: endpoint {
 +		remote-endpoint = <&hdmi_con_in>;
 +	};
++};
++
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&ext_rgmii_phy>;
++	phy-supply = <&reg_gmac_3v3>;
++	allwinner,rx-delay-ps = <1500>;
++	allwinner,tx-delay-ps = <700>;
++	status = "okay";
 +};
 +
 +&mdio {
@@ -165,11 +191,32 @@ index 000000000000..6a5df1103a90
 +	};
 +};
 +
++&i2s1 {
++	status = "okay";
++};
++
 +&mmc0 {
 +	vmmc-supply = <&reg_cldo1>;
 +	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
 +	bus-width = <4>;
 +	status = "okay";
++};
++
++&mmc1 {
++	vmmc-supply = <&reg_vcc33_wifi>;
++	vqmmc-supply = <&reg_vcc_wifi_io>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	bus-width = <4>;
++	non-removable;
++	status = "okay";
++
++	brcm: sdio-wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++		interrupt-parent = <&r_pio>;
++		interrupts = <1 0 IRQ_TYPE_LEVEL_LOW>; /* PM0 */
++		interrupt-names = "host-wake";
++	};
 +};
 +
 +&mmc2 {
@@ -192,19 +239,16 @@ index 000000000000..6a5df1103a90
 +&pio {
 +	vcc-pc-supply = <&reg_bldo2>;
 +	vcc-pd-supply = <&reg_cldo1>;
-+	vcc-pg-supply = <&reg_bldo3>;
++	vcc-pg-supply = <&reg_vcc_wifi_io>;
 +};
 +
-+&r_ir {
-+	status = "okay";
-+};
-+
-+&r_i2c {
++&r_rsb {
++	clock-frequency = <100000>;
 +	status = "okay";
 +
-+	axp805: pmic@36 {
++	axp805: pmic@745 {
 +		compatible = "x-powers,axp805", "x-powers,axp806";
-+		reg = <0x36>;
++		reg = <0x745>;
 +		interrupt-parent = <&r_intc>;
 +		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_LOW>;
 +		interrupt-controller;
@@ -231,6 +275,7 @@ index 000000000000..6a5df1103a90
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +				regulator-name = "vcc33-audio-tv-ephy-mac";
++				regulator-enable-ramp-delay = <100000>;
 +			};
 +
 +			/* ALDO3 is shorted to CLDO1 */
@@ -249,15 +294,17 @@ index 000000000000..6a5df1103a90
 +			};
 +
 +			reg_bldo2: bldo2 {
++				regulator-always-on;
 +				regulator-min-microvolt = <1800000>;
 +				regulator-max-microvolt = <1800000>;
 +				regulator-name = "vcc-efuse-pcie-hdmi-pc";
 +			};
 +
 +			reg_bldo3: bldo3 {
++				regulator-always-on;
 +				regulator-min-microvolt = <1800000>;
 +				regulator-max-microvolt = <1800000>;
-+				regulator-name = "vcc-pm-pg-dcxoio-wifi";
++				regulator-name = "vcc-wifi-io-pm-pg";
 +			};
 +
 +			bldo4 {
@@ -297,8 +344,8 @@ index 000000000000..6a5df1103a90
 +
 +			reg_dcdcd: dcdcd {
 +				regulator-always-on;
-+				regulator-min-microvolt = <960000>;
-+				regulator-max-microvolt = <960000>;
++				regulator-min-microvolt = <980000>;
++				regulator-max-microvolt = <980000>;
 +				regulator-name = "vdd-sys";
 +			};
 +
@@ -316,6 +363,14 @@ index 000000000000..6a5df1103a90
 +	};
 +};
 +
++&pwm {
++	status = "okay";
++};
++
++&r_ir {
++	status = "okay";
++};
++
 +&rtc {
 +	clocks = <&ext_osc32k>;
 +};
@@ -326,7 +381,19 @@ index 000000000000..6a5df1103a90
 +	status = "okay";
 +};
 +
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	uart-has-rtscts;
++	status = "disabled";
++};
++
 +&usb2otg {
++	/*
++	 * This board doesn't have a controllable VBUS even though it
++	 * does have an ID pin. Using it as anything but a USB host is
++	 * unsafe.
++	 */
 +	dr_mode = "host";
 +	status = "okay";
 +};
@@ -342,5 +409,5 @@ index 000000000000..6a5df1103a90
 +	status = "okay";
 +};
 -- 
-2.39.1
+2.39.2
 
