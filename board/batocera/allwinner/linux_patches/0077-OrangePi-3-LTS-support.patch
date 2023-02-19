@@ -1,12 +1,12 @@
-From 1017f4d04f4490ea03e003c415a61c86a104776e Mon Sep 17 00:00:00 2001
+From b0afdd285da541f5051ffb1d43c40d053cb30a00 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Sun, 19 Feb 2023 00:14:14 -0400
+Date: Sun, 19 Feb 2023 19:42:21 -0400
 Subject: [PATCH] OrangePi 3 LTS support
 
 ---
  arch/arm64/boot/dts/allwinner/Makefile        |   1 +
- .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 381 ++++++++++++++++++
- 2 files changed, 382 insertions(+)
+ .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 374 ++++++++++++++++++
+ 2 files changed, 375 insertions(+)
  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 
 diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
@@ -23,10 +23,10 @@ index 6a96494a2..ace8159a6 100644
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64.dtb
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 new file mode 100644
-index 000000000..71fd8b905
+index 000000000..468c7fdde
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
-@@ -0,0 +1,381 @@
+@@ -0,0 +1,374 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +// Copyright (C) 2019 Ondřej Jirman <megous@megous.com>
 +// Copyright (C) 2023 Jernej Skrabec <jernej.skrabec@gmail.com>
@@ -160,6 +160,7 @@ index 000000000..71fd8b905
 +};
 +
 +&hdmi {
++	hvcc-supply = <&reg_bldo2>;
 +	status = "okay";
 +};
 +
@@ -172,11 +173,11 @@ index 000000000..71fd8b905
 +&emac {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&ext_rgmii_pins>;
-+	phy-mode = "rgmii-id";
++	phy-mode = "rgmii";
 +	phy-handle = <&ext_rgmii_phy>;
 +	phy-supply = <&reg_gmac_3v3>;
-+	allwinner,rx-delay-ps = <1500>;
-+	allwinner,tx-delay-ps = <700>;
++	allwinner,rx-delay-ps = <200>;
++	allwinner,tx-delay-ps = <300>;
 +	status = "okay";
 +};
 +
@@ -209,14 +210,6 @@ index 000000000..71fd8b905
 +	bus-width = <4>;
 +	non-removable;
 +	status = "okay";
-+
-+	brcm: sdio-wifi@1 {
-+		reg = <1>;
-+		compatible = "brcm,bcm4329-fmac";
-+		interrupt-parent = <&r_pio>;
-+		interrupts = <1 0 IRQ_TYPE_LEVEL_LOW>; /* PM0 */
-+		interrupt-names = "host-wake";
-+	};
 +};
 +
 +&mmc2 {
@@ -239,7 +232,7 @@ index 000000000..71fd8b905
 +&pio {
 +	vcc-pc-supply = <&reg_bldo2>;
 +	vcc-pd-supply = <&reg_cldo1>;
-+	vcc-pg-supply = <&reg_vcc_wifi_io>;
++	vcc-pg-supply = <&reg_bldo3>;
 +};
 +
 +&r_rsb {
