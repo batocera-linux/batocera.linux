@@ -786,9 +786,7 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3128		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        # dos
 
-	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_BCM2836    && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 	select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE     # ALL
 
 	help
