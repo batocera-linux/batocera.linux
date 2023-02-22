@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBLIFTOFF
+    bool "libliftoff"
+
+    help
+        libliftoff eases the use of KMS planes from userspace without standing in your
+        way. Users create "virtual planes" called layers, set KMS properties on them,
+        and libliftoff will pick hardware planes for these layers if possible.
+
+	    https://gitlab.freedesktop.org/emersion/libliftoff
