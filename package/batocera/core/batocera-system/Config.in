@@ -1434,8 +1434,11 @@ config BR2_PACKAGE_BATOCERA_XWAYLAND
     select BR2_PACKAGE_BATOCERA_WAYLAND
 
     # Xorg emulation layer of Wayland
+    select BR2_PACKAGE_XORG7
     select BR2_PACKAGE_XWAYLAND
-	select BR2_PACKAGE_XORG7
+    select BR2_PACKAGE_WLROOTS_X11
+
+    # Xorg apps
 	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
 	select BR2_PACKAGE_LIBGTK3                      # gtk3 library
 	select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
