@@ -3,9 +3,9 @@
 HOST_DIR=$1
 BOARD_DIR=$2
 IMAGES_DIR=$3
-
+BINARIES_DIR=$4
 # ARM Trusted Firmware BL31
-export BL31="${BOARD_DIR}/../bl31/bl31.elf"
+export BL31="${BINARIES_DIR}/bl31.elf"
 
 # Download U-Boot mainline
 wget "https://ftp.denx.de/pub/u-boot/u-boot-2022.10.tar.bz2"
