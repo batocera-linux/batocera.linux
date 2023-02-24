@@ -34,6 +34,7 @@ ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=wayland
   BATOCERA_SCRIPT_SCREENSHOT_TYPE=wayland
   BATOCERA_SCRIPT_RECORDER_TYPE=wayland
+  BATOCERA_RESOLUTION_DEPENDENCIES += grim wf-recorder
 endif
 
 # doesn't work on odroidgoa with mali g31_gbm

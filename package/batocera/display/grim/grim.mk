@@ -10,6 +10,6 @@ GRIM_SITE = https://git.sr.ht/~emersion/grim/refs/download/v$(GRIM_VERSION)
 GRIM_LICENSE = MIT
 GRIM_LICENSE_FILES = LICENSE
 
-GRIM_CONF_OPTS = -Dman-pages=disabled
+GRIM_CONF_OPTS = -Dman-pages=disabled -Dwerror=false
 
 $(eval $(meson-package))
