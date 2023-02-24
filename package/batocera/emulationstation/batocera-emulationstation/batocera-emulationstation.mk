@@ -155,9 +155,9 @@ define BATOCERA_EMULATIONSTATION_XORG
 endef
 
 define BATOCERA_EMULATIONSTATION_WAYLAND
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/04-sway.sh  $(TARGET_DIR)/etc/profile.d/
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/config      $(TARGET_DIR)/etc/sway
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway-launch $(TARGET_DIR)/usr/bin
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/04-sway.sh  $(TARGET_DIR)/etc/profile.d/04-sway.sh
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/config      $(TARGET_DIR)/etc/sway/config
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway-launch $(TARGET_DIR)/usr/bin/sway-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
