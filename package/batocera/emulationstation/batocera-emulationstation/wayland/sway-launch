@@ -1,0 +1,4 @@
+#!/bin/sh
+
+SWAY_LOG_FILE=/userdata/system/logs/sway.log
+/usr/bin/sway -d > ${SWAY_LOG_FILE} 2>&1
