@@ -1445,6 +1445,7 @@ config BR2_PACKAGE_BATOCERA_XWAYLAND
     select BR2_PACKAGE_XORG7
     select BR2_PACKAGE_XWAYLAND
     select BR2_PACKAGE_WLROOTS_X11
+    select BR2_PACKAGE_WLROOTS_XWAYLAND
 
     # Xorg apps
 	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
