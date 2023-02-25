@@ -9709,6 +9709,13 @@ odcommander:
 gzdoom:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   features: [padtokeyboard]
+  cfeatures:
+    gz_joystick:
+      prompt: USE GZDOOM JOYSTICK CONFIGURATION
+      description: Configuring controllers in GZDoom can cause problems.
+      choices:
+        "Disabled (Default)": false
+        "Enabled":            true
 
 eduke32:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
