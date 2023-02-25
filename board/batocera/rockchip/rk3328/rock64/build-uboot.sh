@@ -3,7 +3,6 @@
 HOST_DIR=$1
 BOARD_DIR=$2
 IMAGES_DIR=$3
-BINARIES_DIR=$4
 # ARM Trusted Firmware BL31
 export BL31="${BINARIES_DIR}/bl31.elf"
 
