@@ -62,7 +62,7 @@ class GZDoomGenerator(Generator):
                 file.write('[GlobalSettings]\n')
         else:
             # configparser wasn't working on the default ini file (non-compliant)
-            # it's not a tru ini file, use this crude method instead
+            # it's not a true ini file, use this crude method instead
             line_to_add = "Path=" + rom_path +"\n"
             with open(ini_file, "r") as file:
                 lines = file.readlines()
@@ -92,34 +92,63 @@ class GZDoomGenerator(Generator):
         with open(ini_file, "w") as file:
             file.writelines(lines)
                
-        # Disable controllers because support is poor
-        # we use evmapy instead for now...
-        with open(ini_file, "r") as file:
-            lines = file.readlines()
-        # Set a flag to track whether the line was found or not
-        joystick_line_found = False
-
-        for i, line in enumerate(lines):
-            if line.strip() == "use_joystick=true":
-                lines[i] = "use_joystick=false\n"
-                joystick_line_found = True
-                break
-            elif line.strip() == "[GlobalSettings]":
-                lines.insert(i + 1, "use_joystick=false\n")
-                joystick_line_found = True
-                break
-        
-        if not joystick_line_found:
+        if system.isOptSet("gz_joystick") and system.config["gz_joystick"] == "True":
+            # Enable the joystick for configuration in GZDoom by the user currently
+            with open(ini_file, "r") as file:
+                lines = file.readlines()
+            # Set a flag to track whether the line was found or not
+            joystick_line_found = False
+            
             for i, line in enumerate(lines):
-                if line.strip() == "[GlobalSettings]":
-                    lines.insert(i + 1, "use_joystick=false\n")
+                if line.strip() == "use_joystick=false":
+                    lines[i] = "use_joystick=true\n"
+                    joystick_line_found = True
                     break
+                elif line.strip() == "[GlobalSettings]":
+                    lines.insert(i + 1, "use_joystick=true\n")
+                    joystick_line_found = True
+                    break
+            
+            if not joystick_line_found:
+                for i, line in enumerate(lines):
+                    if line.strip() == "[GlobalSettings]":
+                        lines.insert(i + 1, "use_joystick=true\n")
+                        break
+            else:
+                lines.append("[GlobalSettings]\n")
+                lines.append("use_joystick=true\n")
+            
+            with open(ini_file, "w") as file:
+                file.writelines(lines)
         else:
-            lines.append("[GlobalSettings]\n")
-            lines.append("use_joystick=false\n")   
-        
-        with open(ini_file, "w") as file:
-            file.writelines(lines)
+            # Disable controllers because support is poor
+            # we use evmapy instead for now...
+            with open(ini_file, "r") as file:
+                lines = file.readlines()
+            # Set a flag to track whether the line was found or not
+            joystick_line_found = False
+            
+            for i, line in enumerate(lines):
+                if line.strip() == "use_joystick=true":
+                    lines[i] = "use_joystick=false\n"
+                    joystick_line_found = True
+                    break
+                elif line.strip() == "[GlobalSettings]":
+                    lines.insert(i + 1, "use_joystick=false\n")
+                    joystick_line_found = True
+                    break
+            
+            if not joystick_line_found:
+                for i, line in enumerate(lines):
+                    if line.strip() == "[GlobalSettings]":
+                        lines.insert(i + 1, "use_joystick=false\n")
+                        break
+            else:
+                lines.append("[GlobalSettings]\n")
+                lines.append("use_joystick=false\n")
+            
+            with open(ini_file, "w") as file:
+                file.writelines(lines)
         
         # define how wads are loaded
         # if we use a custom extension use that instead
