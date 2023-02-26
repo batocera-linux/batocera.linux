@@ -700,7 +700,8 @@ function element14_start()
 
 function element14_stop()
 {
-    /etc/init.d/S31emulationstation stop
+    # emulationstartion stop in the python script above
+    echo "Nothing to do"
 }
 
 function element14_config()
