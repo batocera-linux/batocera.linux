@@ -14,7 +14,7 @@ BINARIES_DIR=$4
 TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
-DTB="rk3588-rock-5b.dtb"
+DTB="rk3588s-orangepi-5.dtb"
 
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1

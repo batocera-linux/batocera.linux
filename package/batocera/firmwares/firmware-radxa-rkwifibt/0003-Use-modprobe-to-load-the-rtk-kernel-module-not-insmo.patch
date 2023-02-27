@@ -1,0 +1,25 @@
+From 0fb8bfe285083c596f6aee43f9cc40d49b75d450 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Wed, 22 Feb 2023 21:47:42 +0100
+Subject: [PATCH 3/3] Use modprobe to load the rtk kernel module, not insmod.
+
+---
+ bt_load_rtk_firmware | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bt_load_rtk_firmware b/bt_load_rtk_firmware
+index 70c8dd4..e4a296b 100755
+--- a/bt_load_rtk_firmware
++++ b/bt_load_rtk_firmware
+@@ -7,7 +7,7 @@ sleep 2
+ echo 1 > /sys/class/rfkill/rfkill0/state
+ sleep 2
+ 
+-insmod /lib/modules/$(uname -r)/kernel/drivers/bluetooth/hci_uart.ko
++modprobe hci_uart
+ rtk_hciattach -n -s 115200 $BT_TTY_DEV rtk_h5 &
+ sleep 5
+ hciconfig hci0 up
+-- 
+2.30.2
+

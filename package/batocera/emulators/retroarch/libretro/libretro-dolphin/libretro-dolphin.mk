@@ -28,9 +28,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
 LIBRETRO_DOLPHIN_CONF_OPTS += -DENABLE_X11=OFF
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
 LIBRETRO_DOLPHIN_CONF_OPTS += -DCMAKE_SHARED_LINKER_FLAGS="-lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali"
 LIBRETRO_DOLPHIN_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali"
 endif
