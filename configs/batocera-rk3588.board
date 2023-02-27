@@ -9,9 +9,9 @@ BR2_PACKAGE_BATOCERA_TARGET_RK3588=y
 BR2_aarch64=y
 BR2_cortex_a76_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
-BR2_TARGET_OPTIMIZATION="-fsigned-char"
+# As of rockchip-linux-5.10-rkr3.6, the vendored kernel does not like -fsigned-char. 
 # BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
-# (future?) BR2_EXTRA_GCC_CONFIG_OPTIONS="--enable-multiarch"
+# (future?) # BR2_EXTRA_GCC_CONFIG_OPTIONS="--enable-multiarch" 
 
 #
 # Early boot and kernel
@@ -28,7 +28,7 @@ BR2_PACKAGE_UBOOT_RK3588=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/stvhay/kernel.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="ec354f5a489db1fe6c9a9045584b66df202910e1"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="37f76d680d79eef04fcb78ed618017a3936df178"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-rock-5b rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux"
