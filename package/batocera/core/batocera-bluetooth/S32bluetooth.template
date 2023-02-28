@@ -48,7 +48,7 @@ case "$1" in
                     sleep 2 # without the sleep, on rpi4, the agent fails on startup complaining the device is not here
                 ;;
                 sprd)
-                    /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
+                    /usr/bin/hciattach_opi -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
                     sleep 2
                 ;;
             esac
