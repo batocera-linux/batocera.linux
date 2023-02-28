@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Architecture
+ARCH=$(uname -m)
+
 # Detect battery
 BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
 if ! test -n "${BATT}"
@@ -94,7 +97,8 @@ then
     echo "Temperature: ${TEMPE}°C"
 fi
 
-echo "Architecture: ${V_BOARD}"
+echo "Architecture: ${ARCH}"
+echo "Board: ${V_BOARD}"
 V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 if test -z "${V_BOARD_MODEL}"
 then
