@@ -5,7 +5,9 @@ BR2_aarch64=y
 BR2_cortex_a76_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_RK3588=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55 -march=armv8.2-a+crypto+dotprod+rcpc+sb+ssbs"
+# As of rockchip-linux-5.10-rkr3.6, the vendored kernel does not like -fsigned-char. 
+# Specifically, SDcards won't mount when built with this option.
+#BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_KEEP=y
 BR2_TARGET_GENERIC_GETTY_BAUDRATE="0"
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/patches"
@@ -17,8 +19,8 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10=y
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
-BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/radxa/kernel"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="linux-5.10-gen-rkr3.4"
+BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/stvhay/kernel.git"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="075ee3a411409898e24b6a949cf5fe114c6a5c15"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
