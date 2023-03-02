@@ -1,0 +1,56 @@
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+index 961154a9fd..7361ece073 100644
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -113,6 +113,51 @@ else ifneq (,$(findstring arm64_cortex_a53_gles3,$(platform)))
+ 	DYNAREC_DEVMIYAX = 1
+ 	FLAGS += -DAARCH64 -march=armv8-a+crc+fp+simd -mcpu=cortex-a53 -mtune=cortex-a53
+ 
++# AllWiner H616
++else ifneq (,$(findstring h616,$(platform)))
++       override platform += unix
++       TARGET := $(TARGET_NAME)_libretro.so
++       fpic := -fPIC
++       SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++       LDFLAGS += -lpthread
++       ARCH_IS_LINUX = 1
++       HAVE_SSE = 0
++       FORCE_GLES = 1
++       USE_AARCH64_DRC = 1
++       DYNAREC_DEVMIYAX = 1
++       FLAGS += -DAARCH64 -march=armv8-a+crc+fp+simd -mcpu=cortex-a53 -mtune=cortex-a53
++
++
++# ODROID C2
++else ifneq (,$(findstring c2,$(platform)))
++       override platform += unix
++       TARGET := $(TARGET_NAME)_libretro.so
++       fpic := -fPIC
++       SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++       LDFLAGS += -lpthread
++       ARCH_IS_LINUX = 1
++       HAVE_SSE = 0
++       FORCE_GLES = 1
++       USE_AARCH64_DRC = 1
++       DYNAREC_DEVMIYAX = 1
++       FLAGS += -DAARCH64 -march=armv8-a+crc+fp+simd -mcpu=cortex-a53 -mtune=cortex-a53
++
++
++# ODROID C4
++else ifneq (,$(findstring c4,$(platform)))
++       override platform += unix
++       TARGET := $(TARGET_NAME)_libretro.so
++       fpic := -fPIC
++       SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++       LDFLAGS += -lpthread
++       ARCH_IS_LINUX = 1
++       HAVE_SSE = 0
++       FORCE_GLES = 1
++       USE_AARCH64_DRC = 1
++       DYNAREC_DEVMIYAX = 1
++       FLAGS += -DAARCH64 -march=armv8-a+crc+fp+simd -mcpu=cortex-a55 -mtune=cortex-a55
++
++
+ # Amlogic S922X Odroid-N2 / A311D Khadas VIM3 (AMLG12B) - 32-bit userspace
+ else ifneq (,$(findstring AMLG12B,$(platform)))
+ 	override platform += unix
