@@ -11,11 +11,15 @@ if ! wget -q "http://translations.batocera.org/?q=updatable&type=options" -O - |
 		exit 1
 	    fi
 
-	    if ! wget "http://translations.batocera.org/po/options_${L}.po" -O "package/batocera/emulationstation/batocera-es-system/locales/${L}/batocera-es-system.po"
+	    TARGET="package/batocera/emulationstation/batocera-es-system/locales/${L}/batocera-es-system.po"
+	    if ! wget -q "http://translations.batocera.org/po/options_${L}.po" -O "${TARGET}"
 	    then
 		echo "unable to find file on translations.batocera.org" >&2
 		exit 1
 	    fi
+	    printf "\t"
+	    msgfmt --statistics "${TARGET}"
+
 	done
 then
     echo "failed" >&2
