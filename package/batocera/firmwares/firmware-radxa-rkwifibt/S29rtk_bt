@@ -1,15 +1,58 @@
 #!/bin/bash
 
-for path in /sys/bus/sdio/devices/*; do
-    if grep -q 0xc821 "$path/device"; then
-        # get highest numbered available serial tty, which is probably going to stay unused.
-        # lsof checks if its currently used
-        for tty in $(printf "%s\n" /dev/ttyS* | /usr/bin/sort -V); do
-            if ! /usr/bin/lsof | /bin/grep -q $tty ; then
-                export BT_TTY_DEV=$tty
+shopt -s nullglob
+
+dt="/sys/firmware/devicetree/base"
+log="/var/log/realtek.log"
+
+start() {
+    [ -f "$dt/compatible" ] || { echo "No device tree! $0 should not be installed on this architecture"; exit 1; }
+
+    # check for SDIO bluetooth support in device tree
+    echo "Checking for SDIO bluetooth support"
+    if [ -d "$dt/pinctrl/wireless-bluetooth" ]; then
+        # Search devices for the specific adapter
+        for path in /sys/bus/sdio/devices/*; do
+            if grep -q 0xc821 "$path/device"; then # RTK8821CS found
+                echo "RTK8821CS Found."
+                # Find the serial tty number using the device tree, which has a
+                # single file of the form uartN-gpios.
+                ttynum=$(printf "%s" $dt/pinctrl/wireless-bluetooth/uart*-gpios |
+                            sed -r 's/.*uart([0-9]+)-gpios/\1/')
+                tty=/dev/ttyS${ttynum}
+                echo "TTY Found: $tty"
+
+                # Run the userspace driver
+                echo "Starting userspace driver on $tty."
+                BT_TTY_DEV="$tty" nohup /usr/bin/bt_load_rtk_firmware 2>&1 > "$log" &
+                echo "Check $log for more information."
+                exit 0
             fi
         done
-        /usr/bin/bt_load_rtk_firmware;
-        break
     fi
-done
+}
+
+stop() {
+    killall rtk_hciattach
+}
+
+case "$1" in
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       start
+       ;;
+    status)
+        ps | grep rtk_hciattach | grep -v grep
+        cat "$log"
+
+       # code to check status of app comes here
+       # example: status program_name
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
