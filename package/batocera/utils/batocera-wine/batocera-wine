@@ -169,16 +169,18 @@ wine_options() {
 
     setxkbmap "${KEYBOARD}"
 
-    if [ "${RAW_INPUT}" = 1 ]; then
-        # Create registry file for raw input
-        echo 'Windows Registry Editor Version 5.00' >| /var/run/rawinput.reg
-        echo '' >> /var/run/rawinput.reg
-        echo '[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\winebus]' >> /var/run/rawinput.reg
-        echo '"DisableHidraw"=dword:0000000'"${RAW_INPUT}" >> /var/run/rawinput.reg
-        echo '' >> /var/run/rawinput.reg
-        echo '' >> /var/run/rawinput.reg
-        unix2dos /var/run/rawinput.reg
-    fi
+    # force hid_raw input disabled by default while it breaks pads (at udev level)
+    test "${RAW_INPUT}" != "0" && RAW_INPUT=1
+
+    # Create registry file for raw input
+    echo 'Windows Registry Editor Version 5.00' >| /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    echo '[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\winebus]' >> /var/run/rawinput.reg
+    echo '"DisableHidraw"=dword:0000000'"${RAW_INPUT}" >> /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    echo '' >> /var/run/rawinput.reg
+    unix2dos /var/run/rawinput.reg
+
 }
 
 mf_install() {
@@ -600,6 +602,7 @@ play_squashfs() {
 	return 1
     fi
 
+    reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
