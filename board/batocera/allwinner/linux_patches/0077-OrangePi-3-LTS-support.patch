@@ -1,6 +1,6 @@
-From 898be3d60c515aa6df8132a7b19b476083b75c22 Mon Sep 17 00:00:00 2001
+From 20d3d43d9daa82d5fa1e937e17b975974572d189 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Fri, 3 Mar 2023 10:07:50 -0400
+Date: Fri, 3 Mar 2023 16:12:03 -0400
 Subject: [PATCH] OrangePi 3 LTS support
 
 ---
@@ -23,7 +23,7 @@ index 6a96494a2..ace8159a6 100644
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64.dtb
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 new file mode 100644
-index 000000000..c56af9b77
+index 000000000..67f38b8a1
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 @@ -0,0 +1,361 @@
@@ -86,6 +86,15 @@ index 000000000..c56af9b77
 +		};
 +	};
 +
++	reg_vcc5v: vcc5v {
++		/* board wide 5V supply directly from the DC jack */
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-5v";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++	};
++
 +	reg_gmac_3v3: gmac-3v3 {
 +		compatible = "regulator-fixed";
 +		regulator-name = "gmac-3v3";
@@ -94,15 +103,6 @@ index 000000000..c56af9b77
 +		startup-delay-us = <150000>;
 +		enable-active-high;
 +		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
-+	};
-+
-+	reg_vcc5v: vcc5v {
-+		/* board wide 5V supply directly from the DC jack */
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc-5v";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-always-on;
 +	};
 +
 +	reg_vcc33_wifi: vcc33-wifi {
@@ -160,8 +160,8 @@ index 000000000..c56af9b77
 +	phy-mode = "rgmii";
 +	phy-handle = <&ext_rgmii_phy>;
 +	phy-supply = <&reg_gmac_3v3>;
-+	allwinner,rx-delay-ps = <200>;
-+	allwinner,tx-delay-ps = <300>;
++	allwinner,rx-delay-ps = <1500>;
++	allwinner,tx-delay-ps = <700>;
 +	status = "okay";
 +};
 +
@@ -334,8 +334,8 @@ index 000000000..c56af9b77
 +
 +			reg_dcdcd: dcdcd {
 +				regulator-always-on;
-+				regulator-min-microvolt = <960000>;
-+				regulator-max-microvolt = <960000>;
++				regulator-min-microvolt = <980000>;
++				regulator-max-microvolt = <980000>;
 +				regulator-name = "vdd-sys";
 +			};
 +
@@ -388,6 +388,6 @@ index 000000000..c56af9b77
 +&usb3phy {
 +	status = "okay";
 +};
---
+-- 
 2.39.2
 
