@@ -134,7 +134,7 @@
 - White frame on 4:3 screen in libretro cores for Sinden Lightgun
 - Future Pinball saves
 - Light guns on RPi4
--   - they now start when connected/plugged
+    - they now start when connected/plugged
 ### Dev  
 - buildroot upgrade to 2022.11.1
 - odroidxu4 upgrade kernel to 6.1.10
