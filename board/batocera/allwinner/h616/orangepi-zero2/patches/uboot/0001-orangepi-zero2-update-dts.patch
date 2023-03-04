@@ -1,15 +1,15 @@
-From 16c719ab183de6cbf14ebb4047d2da44cd9bdb9c Mon Sep 17 00:00:00 2001
+From a568f94a02cd9d5dac445d2702d8a171333b4090 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Thu, 2 Mar 2023 18:49:49 -0400
+Date: Sat, 4 Mar 2023 02:11:01 -0400
 Subject: [PATCH] orangepi zero2 update dts
 
 ---
- arch/arm/dts/sun50i-h616-orangepi-zero2.dts | 214 +++++-
- arch/arm/dts/sun50i-h616.dtsi               | 795 +++++++++++++++++++-
- 2 files changed, 997 insertions(+), 12 deletions(-)
+ arch/arm/dts/sun50i-h616-orangepi-zero2.dts | 216 +++++-
+ arch/arm/dts/sun50i-h616.dtsi               | 793 +++++++++++++++++++-
+ 2 files changed, 998 insertions(+), 11 deletions(-)
 
 diff --git a/arch/arm/dts/sun50i-h616-orangepi-zero2.dts b/arch/arm/dts/sun50i-h616-orangepi-zero2.dts
-index 02893f3a..277a218c 100644
+index 02893f3a..858dffc0 100644
 --- a/arch/arm/dts/sun50i-h616-orangepi-zero2.dts
 +++ b/arch/arm/dts/sun50i-h616-orangepi-zero2.dts
 @@ -18,12 +18,24 @@
@@ -52,7 +52,7 @@ index 02893f3a..277a218c 100644
  		};
  	};
  
-@@ -49,6 +61,64 @@
+@@ -49,6 +61,65 @@
  		regulator-max-microvolt = <5000000>;
  		regulator-always-on;
  	};
@@ -100,9 +100,10 @@ index 02893f3a..277a218c 100644
 +&de {
 +	status = "okay";
 +};
++
 +&gpu {
-+        mali-supply = <&reg_dcdcc>;
-+        status = "okay";
++	mali-supply = <&reg_dcdcc>;
++	status = "okay";
 +};
 +
 +&hdmi {
@@ -117,7 +118,7 @@ index 02893f3a..277a218c 100644
  };
  
  &emac0 {
-@@ -76,6 +146,15 @@
+@@ -76,6 +147,16 @@
  	status = "okay";
  };
  
@@ -130,10 +131,11 @@ index 02893f3a..277a218c 100644
 +	mmc-ddr-1_8v;
 +	status = "okay";
 +};
++
  &r_rsb {
  	status = "okay";
  
-@@ -125,8 +204,11 @@
+@@ -125,8 +206,11 @@
  				regulator-name = "vcc1v8";
  			};
  
@@ -147,7 +149,7 @@ index 02893f3a..277a218c 100644
  			};
  
  			bldo3 {
-@@ -165,8 +247,8 @@
+@@ -165,8 +249,8 @@
  
  			reg_dcdcd: dcdcd {
  				regulator-always-on;
@@ -158,7 +160,7 @@ index 02893f3a..277a218c 100644
  				regulator-name = "vdd-dram";
  			};
  
-@@ -192,12 +274,113 @@
+@@ -192,12 +276,113 @@
  	vcc-pi-supply = <&reg_aldo1>;
  };
  
@@ -272,7 +274,7 @@ index 02893f3a..277a218c 100644
  		#address-cells = <1>;
  		#size-cells = <1>;
  		compatible = "jedec,spi-nor";
-@@ -206,8 +389,23 @@
+@@ -206,8 +391,23 @@
  	};
  };
  
@@ -300,7 +302,7 @@ index 02893f3a..277a218c 100644
 +        status = "okay";
  };
 diff --git a/arch/arm/dts/sun50i-h616.dtsi b/arch/arm/dts/sun50i-h616.dtsi
-index 622a1f7d..1f36ed4f 100644
+index 622a1f7d..8563a7a6 100644
 --- a/arch/arm/dts/sun50i-h616.dtsi
 +++ b/arch/arm/dts/sun50i-h616.dtsi
 @@ -7,8 +7,12 @@
@@ -375,7 +377,7 @@ index 622a1f7d..1f36ed4f 100644
  			no-map;
  		};
  	};
-@@ -108,6 +126,75 @@
+@@ -108,6 +126,76 @@
  		#size-cells = <1>;
  		ranges = <0x0 0x0 0x0 0x40000000>;
  
@@ -434,6 +436,7 @@ index 622a1f7d..1f36ed4f 100644
 +			clocks = <&ccu CLK_GPU0>, <&ccu CLK_BUS_GPU>;
 +			clock-names = "core", "bus";
 +			resets = <&ccu RST_BUS_GPU>;
++			#cooling-cells = <2>;
 +			status = "disabled";
 +		};
 +
@@ -451,7 +454,7 @@ index 622a1f7d..1f36ed4f 100644
  		syscon: syscon@3000000 {
  			compatible = "allwinner,sun50i-h616-system-control";
  			reg = <0x03000000 0x1000>;
-@@ -115,12 +202,44 @@
+@@ -115,12 +203,44 @@
  			#size-cells = <1>;
  			ranges;
  
@@ -496,7 +499,7 @@ index 622a1f7d..1f36ed4f 100644
  			};
  		};
  
-@@ -133,12 +252,28 @@
+@@ -133,12 +253,28 @@
  			#reset-cells = <1>;
  		};
  
@@ -506,7 +509,7 @@ index 622a1f7d..1f36ed4f 100644
 +			#address-cells = <1>;
 +			#size-cells = <1>;
 +
-+			cpu_speed_grade: cpu-speed-grade@00 {
++			cpu_speed_grade: cpu-speed-grade@0 {
 +				reg = <0x00 0x02>;
 +			};
 +
@@ -525,7 +528,7 @@ index 622a1f7d..1f36ed4f 100644
  		};
  
  		pio: pinctrl@300b000 {
-@@ -173,11 +308,31 @@
+@@ -173,11 +309,31 @@
  				function = "i2c0";
  			};
  
@@ -558,7 +561,7 @@ index 622a1f7d..1f36ed4f 100644
  			ir_rx_pin: ir-rx-pin {
  				pins = "PH10";
  				function = "ir_rx";
-@@ -209,6 +364,13 @@
+@@ -209,6 +365,13 @@
  				bias-pull-up;
  			};
  
@@ -572,7 +575,7 @@ index 622a1f7d..1f36ed4f 100644
  			/omit-if-no-ref/
  			spi0_pins: spi0-pins {
  				pins = "PC0", "PC2", "PC4";
-@@ -230,6 +392,12 @@
+@@ -230,6 +393,12 @@
  			/omit-if-no-ref/
  			spi1_cs0_pin: spi1-cs0-pin {
  				pins = "PH5";
@@ -585,7 +588,7 @@ index 622a1f7d..1f36ed4f 100644
  				function = "spi1";
  			};
  
-@@ -249,6 +417,24 @@
+@@ -249,6 +418,24 @@
  				pins = "PG8", "PG9";
  				function = "uart1";
  			};
@@ -610,7 +613,7 @@ index 622a1f7d..1f36ed4f 100644
  		};
  
  		gic: interrupt-controller@3021000 {
-@@ -325,6 +511,106 @@
+@@ -325,6 +512,106 @@
  			#size-cells = <0>;
  		};
  
@@ -717,7 +720,7 @@ index 622a1f7d..1f36ed4f 100644
  		uart0: serial@5000000 {
  			compatible = "snps,dw-apb-uart";
  			reg = <0x05000000 0x400>;
-@@ -414,6 +700,8 @@
+@@ -414,6 +701,8 @@
  			interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
  			clocks = <&ccu CLK_BUS_I2C1>;
  			resets = <&ccu RST_BUS_I2C1>;
@@ -726,7 +729,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -427,6 +715,8 @@
+@@ -427,6 +716,8 @@
  			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
  			clocks = <&ccu CLK_BUS_I2C2>;
  			resets = <&ccu RST_BUS_I2C2>;
@@ -735,7 +738,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -440,6 +730,8 @@
+@@ -440,6 +731,8 @@
  			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
  			clocks = <&ccu CLK_BUS_I2C3>;
  			resets = <&ccu RST_BUS_I2C3>;
@@ -744,7 +747,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -453,6 +745,8 @@
+@@ -453,6 +746,8 @@
  			interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
  			clocks = <&ccu CLK_BUS_I2C4>;
  			resets = <&ccu RST_BUS_I2C4>;
@@ -753,7 +756,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -466,6 +760,10 @@
+@@ -466,6 +761,10 @@
  			clocks = <&ccu CLK_BUS_SPI0>, <&ccu CLK_SPI0>;
  			clock-names = "ahb", "mod";
  			resets = <&ccu RST_BUS_SPI0>;
@@ -764,7 +767,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -479,6 +777,10 @@
+@@ -479,6 +778,10 @@
  			clocks = <&ccu CLK_BUS_SPI1>, <&ccu CLK_SPI1>;
  			clock-names = "ahb", "mod";
  			resets = <&ccu RST_BUS_SPI1>;
@@ -775,7 +778,7 @@ index 622a1f7d..1f36ed4f 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -504,8 +806,341 @@
+@@ -504,6 +807,338 @@
  			};
  		};
  
@@ -1112,12 +1115,8 @@ index 622a1f7d..1f36ed4f 100644
 +		};
 +
  		rtc: rtc@7000000 {
--			compatible = "allwinner,sun50i-h616-rtc";
-+			compatible = "allwinner,sun50i-h616-rtc",
-+				     "allwinner,sun50i-h6-rtc";
+ 			compatible = "allwinner,sun50i-h616-rtc";
  			reg = <0x07000000 0x400>;
- 			interrupts = <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&r_ccu CLK_R_APB1_RTC>, <&osc24M>,
 @@ -528,11 +1163,14 @@
  		r_pio: pinctrl@7022000 {
  			compatible = "allwinner,sun50i-h616-r-pinctrl";
