@@ -3,13 +3,17 @@
 # uboot-rk3588
 #
 ################################################################################
-UBOOT_RK3588_VERSION = e8b6ae108b89256b6781195690b47a6ca0de6c95
-UBOOT_RK3588_SITE = https://github.com/stvhay/uboot-rk3588.git
-UBOOT_RK3588_SITE_METHOD=git
+
+UBOOT_RK3588_VERSION = e1bb28dd5be8e347096be7b0ea4e64716d054268
+UBOOT_RK3588_SITE = $(call github,stvhay,u-boot,$(UBOOT_RK3588_VERSION))
+UBOOT_RK3588_LICENSE = GPL + Rockchip Proprietary (Extra Downloads)
+
+define UBOOT_RK3588_BUILD_CMDS
+	@echo "---- See github repository build.sh for build instructions. -----"
+endef
 
 define UBOOT_RK3588_INSTALL_TARGET_CMDS
-	mkdir -p   $(BINARIES_DIR)/rock5b/
-	cp $(@D)/* $(BINARIES_DIR)/rock5b/
+	cp -rv $(@D)/staging/* $(BINARIES_DIR)
 endef
 
 $(eval $(generic-package))
