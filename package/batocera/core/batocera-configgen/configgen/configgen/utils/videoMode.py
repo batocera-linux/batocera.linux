@@ -76,7 +76,7 @@ def getGLVersion():
         if os.path.exists("/usr/bin/glxinfo") == False:
             return 0
 
-        glxVerCmd = 'glxinfo | grep "OpenGL version"'
+        glxVerCmd = 'timeout -k 2 1 glxinfo | grep "OpenGL version"'
         glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)
         glVerString = glVerOutput.split()
         glVerTemp = glVerString[3].split(".")
@@ -93,7 +93,7 @@ def getGLVendor():
         if os.path.exists("/usr/bin/glxinfo") == False:
             return "unknown"
 
-        glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
+        glxVendCmd = 'timeout -k 2 1 glxinfo | grep "OpenGL vendor string"'
         glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)
         glVendString = glVendOutput.split()
         glVendor = glVendString[3].casefold()
