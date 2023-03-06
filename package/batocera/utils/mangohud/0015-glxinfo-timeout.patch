@@ -1,0 +1,13 @@
+diff --git a/src/overlay.cpp b/src/overlay.cpp
+index e2c2728..44f8572 100644
+--- a/src/overlay.cpp
++++ b/src/overlay.cpp
+@@ -772,7 +772,7 @@ void init_system_info(){
+       const char* mangohud_recursion = getenv("MANGOHUD_RECURSION");
+       if (!mangohud_recursion) {
+          setenv("MANGOHUD_RECURSION", "1", 1);
+-         driver = exec("glxinfo -B | sed -n 's/^OpenGL version.*: \\(.*\\)/\\1/p' | sed 's/([^)]*)//g;s/  / /g'");
++         driver = exec("timeout -k 2 1 glxinfo -B | sed -n 's/^OpenGL version.*: \\(.*\\)/\\1/p' | sed 's/([^)]*)//g;s/  / /g'");
+          trim(driver);
+          unsetenv("MANGOHUD_RECURSION");
+       } else {
