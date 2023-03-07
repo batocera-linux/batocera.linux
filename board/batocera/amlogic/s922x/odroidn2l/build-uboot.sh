@@ -13,31 +13,31 @@ make_uboot () {
 
     # Make config
     make mrproper || exit 1
-    make ${build_target}_defconfig || exit 1
+    make "${build_target}_defconfig" || exit 1
 
     # Build it
     ARCH=aarch64 CROSS_COMPILE="${HOST_DIR}/bin/aarch64-buildroot-linux-gnu-" make -j$(nproc) || exit 1
     mkdir -p "../../$board" || exit 1
 
     # Build and put to appropriate place
-    pushd amlogic-boot-fip
-        ./build-fip.sh $build_target ../u-boot.bin "../../../$board/" || { popd; exit 1; }
-    popd
+    pushd amlogic-boot-fip || exit 1
+        ./build-fip.sh "$build_target" ../u-boot.bin "../../../$board/" || { popd; exit 1; }
+    popd || exit 1
 }
 
 # Download U-Boot mainline
 uboot="u-boot-2023.01"
 wget "https://ftp.denx.de/pub/u-boot/${uboot}.tar.bz2"
 tar xf "${uboot}.tar.bz2" || exit 1
-pushd "${uboot}"
+pushd "${uboot}" || exit 1
     # Clone LibreElec Amlogic FIP
     git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip || exit 1
 
-    # Apply patches
-    for patch in ${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/patches/uboot/*.patch ; do
+    # Apply patch sets
+    for patch in ${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/{,odroidn2l/}patches/uboot/*.patch; do
         echo "Applying patch: $patch"
-        patch -p1 < $patch || exit 1
+        patch -p1 < "$patch" || exit 1
     done
 
     make_uboot uboot-odroidn2l odroid-n2l
-popd
+popd || exit 1
