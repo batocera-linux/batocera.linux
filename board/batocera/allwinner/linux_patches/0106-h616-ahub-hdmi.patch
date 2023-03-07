@@ -1,11 +1,11 @@
-From be9c20f5d0f46a49f8794fbd2b711776ff3d85a2 Mon Sep 17 00:00:00 2001
+From b7a301508ffb5d281703148e962071950a5b6f49 Mon Sep 17 00:00:00 2001
 From: orangepi-xunlong
-Date: Sat, 4 Mar 2023 02:10:35 -0400
+Date: Mon, 6 Mar 2023 21:39:16 -0400
 Subject: [PATCH] sunxi: h616 ahub hdmi
 
 ---
- .../allwinner/sun50i-h616-orangepi-zero2.dts  |  216 ++-
- .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  793 ++++++++-
+ .../allwinner/sun50i-h616-orangepi-zero2.dts  |  217 ++-
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  782 ++++++++-
  drivers/clk/sunxi-ng/ccu-sun50i-h616.c        |   33 +-
  sound/soc/Kconfig                             |    1 +
  sound/soc/Makefile                            |    1 +
@@ -23,7 +23,7 @@ Subject: [PATCH] sunxi: h616 ahub hdmi
  sound/soc/sunxi_v2/snd_sunxi_mach.h           |   17 +
  sound/soc/sunxi_v2/snd_sunxi_mach_utils.c     |  422 +++++
  sound/soc/sunxi_v2/snd_sunxi_mach_utils.h     |  116 ++
- 19 files changed, 4887 insertions(+), 28 deletions(-)
+ 19 files changed, 4877 insertions(+), 28 deletions(-)
  create mode 100644 sound/soc/sunxi_v2/Kconfig
  create mode 100644 sound/soc/sunxi_v2/Makefile
  create mode 100644 sound/soc/sunxi_v2/drv_hdmi.h
@@ -40,7 +40,7 @@ Subject: [PATCH] sunxi: h616 ahub hdmi
  create mode 100644 sound/soc/sunxi_v2/snd_sunxi_mach_utils.h
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
-index 02893f3ac..858dffc06 100644
+index 02893f3ac..3f74b4411 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
 @@ -18,12 +18,24 @@ / {
@@ -83,12 +83,12 @@ index 02893f3ac..858dffc06 100644
  		};
  	};
 
-@@ -49,6 +61,65 @@ reg_vcc5v: vcc5v {
+@@ -49,8 +61,70 @@ reg_vcc5v: vcc5v {
  		regulator-max-microvolt = <5000000>;
  		regulator-always-on;
  	};
 +
-+	reg_usb1_vbus: usb1-vbus {
++	reg_usb1_vbus: regulator-usb1-vbus {
 +		compatible = "regulator-fixed";
 +		regulator-name = "usb1-vbus";
 +		regulator-min-microvolt = <5000000>;
@@ -96,9 +96,7 @@ index 02893f3ac..858dffc06 100644
 +		vin-supply = <&reg_vcc5v>;
 +		enable-active-high;
 +		gpio = <&pio 2 16 GPIO_ACTIVE_HIGH>; /* PC16 */
-+		status = "okay";
 +	};
-+
 +	reg_vcc33_wifi: vcc33-wifi {
 +		/* Always on 3.3V regulator for WiFi and BT */
 +		compatible = "regulator-fixed";
@@ -131,25 +129,32 @@ index 02893f3ac..858dffc06 100644
 +&de {
 +	status = "okay";
 +};
-+
 +&gpu {
-+	mali-supply = <&reg_dcdcc>;
-+	status = "okay";
++        mali-supply = <&reg_dcdcc>;
++        status = "okay";
 +};
 +
 +&hdmi {
 +	hvcc-supply = <&reg_bldo1>;
 +	status = "okay";
-+};
-+
+ };
+
 +&hdmi_out {
 +	hdmi_out_con: endpoint {
 +		remote-endpoint = <&hdmi_con_in>;
 +	};
- };
-
++};
++
++&ehci1 {
++	status = "okay";
++};
++
++/* USB 2 & 3 are on headers only. */
++
  &emac0 {
-@@ -76,6 +147,16 @@ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&ext_rgmii_pins>;
+@@ -76,6 +150,20 @@ &mmc0 {
  	status = "okay";
  };
 
@@ -163,14 +168,22 @@ index 02893f3ac..858dffc06 100644
 +	status = "okay";
 +};
 +
++&ohci1 {
++	status = "okay";
++};
++
  &r_rsb {
  	status = "okay";
 
-@@ -125,8 +206,11 @@ reg_bldo1: bldo1 {
+@@ -125,12 +213,11 @@ reg_bldo1: bldo1 {
  				regulator-name = "vcc1v8";
  			};
 
 -			bldo2 {
+-				/* unused */
+-			};
+-
+-			bldo3 {
 -				/* unused */
 +			reg_bldo2: bldo2 {
 +				regulator-always-on;
@@ -179,25 +192,46 @@ index 02893f3ac..858dffc06 100644
 +				regulator-name = "vcc1v8";
  			};
 
- 			bldo3 {
-@@ -165,8 +249,8 @@ reg_dcdcc: dcdcc {
+ 			bldo4 {
+@@ -197,7 +284,15 @@ &spi0  {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi0_pins>, <&spi0_cs0_pin>;
 
- 			reg_dcdcd: dcdcd {
- 				regulator-always-on;
--				regulator-min-microvolt = <1500000>;
--				regulator-max-microvolt = <1500000>;
-+				regulator-min-microvolt = <1400000>;
-+				regulator-max-microvolt = <1400000>;
- 				regulator-name = "vdd-dram";
- 			};
-
-@@ -192,12 +276,113 @@ &pio {
- 	vcc-pi-supply = <&reg_aldo1>;
++	spidev@0 {
++		status = "disabled";
++		compatible = "rohm,dh2228fv";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++	};
++
+ 	flash@0 {
++		status = "okay";
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+@@ -211,3 +306,111 @@ &uart0 {
+ 	pinctrl-0 = <&uart0_ph_pins>;
+ 	status = "okay";
  };
-
-+&uart0 {
++
++&spi1 {
++ 	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
 +	pinctrl-names = "default";
-+	pinctrl-0 = <&uart0_ph_pins>;
++	pinctrl-0 = <&spi1_pins>, <&spi1_cs1_pin>;
++
++	spidev@1 {
++		compatible = "rohm,dh2228fv";
++		status = "okay";
++		reg = <1>;
++		spi-max-frequency = <1000000>;
++	};
++};
++
++&codec {
++	allwinner,audio-routing =
++			"Line Out", "LINEOUT";
 +	status = "okay";
 +};
 +
@@ -287,55 +321,16 @@ index 02893f3ac..858dffc06 100644
 +	pinctrl-0 = <&uart5_ph_pins>;
 +	status = "okay";
 +};
-+
- &spi0  {
- 	status = "okay";
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&spi0_pins>, <&spi0_cs0_pin>;
-
-+	spidev@0 {
-+		status = "disabled";
-+		compatible = "rohm,dh2228fv";
-+		reg = <0>;
-+		spi-max-frequency = <1000000>;
-+	};
-+
- 	flash@0 {
-+		status = "okay";
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "jedec,spi-nor";
-@@ -206,8 +391,23 @@ flash@0 {
- 	};
- };
-
--&uart0 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&uart0_ph_pins>;
-+&spi1 {
- 	status = "okay";
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi1_pins>, <&spi1_cs1_pin>;
-+
-+	spidev@1 {
-+		compatible = "rohm,dh2228fv";
-+		status = "okay";
-+		reg = <1>;
-+		spi-max-frequency = <1000000>;
-+	};
-+};
-+
-+&codec {
-+        allwinner,audio-routing =
-+                "Line Out", "LINEOUT";
-+        status = "okay";
- };
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index 622a1f7d1..ba1751ce5 100644
+index 622a1f7d1..cb392c99b 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ // Copyright (C) 2020 Arm Ltd.
+ // based on the H6 dtsi, which is:
+ //   Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
 @@ -7,8 +7,12 @@
  #include <dt-bindings/clock/sun50i-h616-ccu.h>
  #include <dt-bindings/clock/sun50i-h6-r-ccu.h>
@@ -592,7 +587,7 @@ index 622a1f7d1..ba1751ce5 100644
  			ir_rx_pin: ir-rx-pin {
  				pins = "PH10";
  				function = "ir_rx";
-@@ -209,6 +365,13 @@ mmc2_pins: mmc2-pins {
+@@ -191,6 +347,13 @@ mmc0_pins: mmc0-pins {
  				bias-pull-up;
  			};
 
@@ -604,8 +599,8 @@ index 622a1f7d1..ba1751ce5 100644
 +			};
 +
  			/omit-if-no-ref/
- 			spi0_pins: spi0-pins {
- 				pins = "PC0", "PC2", "PC4";
+ 			mmc1_pins: mmc1-pins {
+ 				pins = "PG0", "PG1", "PG2", "PG3",
 @@ -230,6 +393,12 @@ spi1_pins: spi1-pins {
  			/omit-if-no-ref/
  			spi1_cs0_pin: spi1-cs0-pin {
@@ -809,7 +804,7 @@ index 622a1f7d1..ba1751ce5 100644
  			status = "disabled";
  			#address-cells = <1>;
  			#size-cells = <0>;
-@@ -504,6 +807,338 @@ mdio0: mdio {
+@@ -504,6 +807,326 @@ mdio0: mdio {
  			};
  		};
 
@@ -887,11 +882,9 @@ index 622a1f7d1..ba1751ce5 100644
 +			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI0>,
 +				 <&ccu CLK_BUS_EHCI0>,
-+				 <&ccu CLK_USB_OHCI0>,
-+				 <&ccu CLK_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI0>;
 +			resets = <&ccu RST_BUS_OHCI0>,
-+				 <&ccu RST_BUS_EHCI0>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu RST_BUS_EHCI0>;
 +			phys = <&usbphy 0>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -903,10 +896,8 @@ index 622a1f7d1..ba1751ce5 100644
 +			reg = <0x05101400 0x100>;
 +			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI0>,
-+				 <&ccu CLK_USB_OHCI0>,
-+				 <&ccu CLK_USB_PHY2>;
-+			resets = <&ccu RST_BUS_OHCI0>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI0>;
++			resets = <&ccu RST_BUS_OHCI0>;
 +			phys = <&usbphy 0>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -919,11 +910,9 @@ index 622a1f7d1..ba1751ce5 100644
 +			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI1>,
 +				 <&ccu CLK_BUS_EHCI1>,
-+				 <&ccu CLK_USB_OHCI1>,
-+				 <&ccu CLK_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI1>;
 +			resets = <&ccu RST_BUS_OHCI1>,
-+				 <&ccu RST_BUS_EHCI1>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu RST_BUS_EHCI1>;
 +			phys = <&usbphy 1>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -935,10 +924,8 @@ index 622a1f7d1..ba1751ce5 100644
 +			reg = <0x05200400 0x100>;
 +			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI1>,
-+				 <&ccu CLK_USB_OHCI1>,
-+				 <&ccu CLK_USB_PHY2>;
-+			resets = <&ccu RST_BUS_OHCI1>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI1>;
++			resets = <&ccu RST_BUS_OHCI1>;
 +			phys = <&usbphy 1>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -979,11 +966,9 @@ index 622a1f7d1..ba1751ce5 100644
 +			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI3>,
 +				 <&ccu CLK_BUS_EHCI3>,
-+				 <&ccu CLK_USB_OHCI3>,
-+				 <&ccu CLK_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI3>;
 +			resets = <&ccu RST_BUS_OHCI3>,
-+				 <&ccu RST_BUS_EHCI3>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu RST_BUS_EHCI3>;
 +			phys = <&usbphy 3>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -995,10 +980,8 @@ index 622a1f7d1..ba1751ce5 100644
 +			reg = <0x05311400 0x100>;
 +			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&ccu CLK_BUS_OHCI3>,
-+				 <&ccu CLK_USB_OHCI3>,
-+				 <&ccu CLK_USB_PHY2>;
-+			resets = <&ccu RST_BUS_OHCI3>,
-+				 <&ccu RST_USB_PHY2>;
++				 <&ccu CLK_USB_OHCI3>;
++			resets = <&ccu RST_BUS_OHCI3>;
 +			phys = <&usbphy 3>;
 +			phy-names = "usb";
 +			status = "disabled";
@@ -1148,7 +1131,7 @@ index 622a1f7d1..ba1751ce5 100644
  		rtc: rtc@7000000 {
  			compatible = "allwinner,sun50i-h616-rtc";
  			reg = <0x07000000 0x400>;
-@@ -528,11 +1163,14 @@ r_ccu: clock@7010000 {
+@@ -528,11 +1151,14 @@ r_ccu: clock@7010000 {
  		r_pio: pinctrl@7022000 {
  			compatible = "allwinner,sun50i-h616-r-pinctrl";
  			reg = <0x07022000 0x400>;
@@ -1163,7 +1146,7 @@ index 622a1f7d1..ba1751ce5 100644
 
  			/omit-if-no-ref/
  			r_i2c_pins: r-i2c-pins {
-@@ -587,5 +1225,154 @@ r_rsb: rsb@7083000 {
+@@ -587,5 +1213,153 @@ r_rsb: rsb@7083000 {
  			#address-cells = <1>;
  			#size-cells = <0>;
  		};
@@ -1291,7 +1274,7 @@ index 622a1f7d1..ba1751ce5 100644
 +				};
 +			};
 +		};
- 	};
++	};
 +
 +	gpu_opp_table: gpu-opp-table {
 +		compatible = "operating-points-v2";
@@ -1315,8 +1298,7 @@ index 622a1f7d1..ba1751ce5 100644
 +			opp-hz = /bits/ 64 <800000000>;
 +			opp-microvolt = <1080000>;
 +		};
-+	};
-+
+ 	};
  };
 diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h616.c b/drivers/clk/sunxi-ng/ccu-sun50i-h616.c
 index 21e918582..ad4ad6be0 100644
