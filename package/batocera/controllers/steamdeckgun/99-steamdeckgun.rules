@@ -1,0 +1,3 @@
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Steam Controller", RUN+="/usr/bin/steamdeckgun-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Steam Gun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_GUN_NEED_CROSS}="1"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Steam Mouse", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="0"
