@@ -3,7 +3,7 @@
 if ! wget -q "http://translations.batocera.org/?q=updatable&type=options" -O - |
 	while read L
 	do
-	    echo "updating ${L}..." >&2
+	    echo -n "updating ${L}..." >&2
 
 	    if ! test -d "package/batocera/emulationstation/batocera-es-system/locales/${L}"
 	    then
@@ -18,6 +18,7 @@ if ! wget -q "http://translations.batocera.org/?q=updatable&type=options" -O - |
 		exit 1
 	    fi
 	    printf "\t"
+	    dos2unix "${TARGET}" 2>/dev/null
 	    msgfmt --statistics "${TARGET}"
 
 	done
