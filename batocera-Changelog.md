@@ -1,6 +1,7 @@
 # 2023/xx/xx - batocera.linux 37 -
 # hardware
-- steamdeck virtual mouse/gun from trackpad (left/right hand options)
+- steamdeck virtual mouse/gun support from trackpad (left/right hand options)
+- JAMMAsd support (convert it in 2 pads)
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
 ### EmulationStation

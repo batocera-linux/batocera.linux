@@ -254,6 +254,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 	select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
+	select BR2_PACKAGE_JAMMASD
 
 	# Case
 	select BR2_PACKAGE_ELEMENT14_PI_DESKTOP    if BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837 # rpi2/rpi3
