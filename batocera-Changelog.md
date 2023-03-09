@@ -1,4 +1,8 @@
-# 2023/xx/xx - batocera.linux 36 - Luna Moth
+# 2023/xx/xx - batocera.linux 37 -
+# hardware
+- steamdeck virtual mouse/gun from trackpad (left/right hand options)
+
+# 2023/03/09 - batocera.linux 36 - Luna Moth
 ### EmulationStation
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
 - brightness can go down to 1% (instead of 5%)
