@@ -1,0 +1,3 @@
+# Keyboards are not joysticks, but keep it in 98* rules because some joysticks have keyboards in their names...
+SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{name}=="*keyboard*", ENV{ID_INPUT_JOYSTICK}="0"
