@@ -1,0 +1,13 @@
+diff --git a/src/radeon.h b/src/radeon.h
+index 2c913466..8e964805 100644
+--- a/src/radeon.h
++++ b/src/radeon.h
+@@ -896,7 +896,7 @@ radeon_pixmap_get_fb(PixmapPtr pix)
+ 				   handle);
+     }
+ 
+-    return *fb_ptr;
++    return fb_ptr ? *fb_ptr : NULL;
+ }
+ 
+ 
