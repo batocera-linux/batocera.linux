@@ -43,7 +43,7 @@ getMaxTryConfig() {
         echo "${X}"
         return
     fi
-    echo 7 # default value
+    echo 15 # default value
 }
 
 MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
