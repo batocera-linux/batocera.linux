@@ -9,9 +9,9 @@ BR2_PACKAGE_BATOCERA_TARGET_RK3588=y
 BR2_aarch64=y
 BR2_cortex_a76_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
-# As of rockchip-linux-5.10-rkr3.6, the vendored kernel does not like -fsigned-char. 
+# As of rockchip-linux-5.10-rkr3.6, the vendored kernel does not like -fsigned-char.
 # BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
-# (future?) # BR2_EXTRA_GCC_CONFIG_OPTIONS="--enable-multiarch" 
+# (future?) # BR2_EXTRA_GCC_CONFIG_OPTIONS="--enable-multiarch"
 
 #
 # Early boot and kernel
@@ -82,16 +82,13 @@ BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 # Key system packages (list should be kept minimal)
 #
 
-# Firmware
-BR2_PACKAGE_FIRMWARE_RK3588=y
-
 # Show a nice movie at bootup
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Include Kodi Media Center
 BR2_PACKAGE_BATOCERA_KODI19=y
 
-# Enable wayland compositor + sway. 
+# Enable wayland compositor + sway.
 # Option currently does not work with Mali drivers.
 # BR2_PACKAGE_WAYLAND=y
 
