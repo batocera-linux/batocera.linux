@@ -1779,7 +1779,7 @@ apple2:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [chd, hdv, 2mg] }
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
 
