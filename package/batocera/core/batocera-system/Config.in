@@ -1420,18 +1420,13 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_BT    if BR2_PACKAGE_BATOCERA_RPI_ANY
 	select BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_WIFI  if BR2_PACKAGE_BATOCERA_RPI_ANY
 
-    # tv-box firmwares
-	select BR2_PACKAGE_FIRMWARE_WLAN_AML                if BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY
-
-    # RK3399
-    select BR2_PACKAGE_FIRMWARE_ROCKPRO64               if  BR2_PACKAGE_BATOCERA_TARGET_RK3399
-
     # RK3358
     select BR2_PACKAGE_FIRMWARE_RK3588                  if  BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
-    # Orange PI
-    select BR2_PACKAGE_FIRMWARE_ORANGEPI                if  BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2  || \
+    # Extra linux firmware
+    select BR2_PACKAGE_EXTRALINUXFIRMWARES              if  BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS  || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RK3399
 
 config BR2_PACKAGE_BATOCERA_SDL2
