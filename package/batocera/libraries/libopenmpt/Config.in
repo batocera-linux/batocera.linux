@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBOPENMPT
+	bool "libopenmpt"
+	select BR2_PACKAGE_HOST_DOXYGEN
+	select BR2_PACKAGE_ZLIB
+	help 
+	    This library provides objects and helper methods to help reading and writing AppStream metadata.
+
+		https://github.com/hughsie/appstream-glib

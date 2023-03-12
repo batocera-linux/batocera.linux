@@ -1,0 +1,10 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,7 +22,6 @@ endif()
+ 
+ if(NOT MSVC)
+   add_definitions(-Wall)
+-  add_definitions(-Werror)
+   add_definitions(-Wsign-compare)
+   add_definitions(-Wconversion)
+   add_definitions(-Wno-sign-conversion)

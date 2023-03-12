@@ -1,0 +1,37 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2765341..1bd4fc2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,7 +22,7 @@
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ endif()
+ 
+-set(kodiplatform_INCLUDE_DIRS ${TINYXML_INCLUDE_DIR} "${CMAKE_INSTALL_PREFIX}/include/kodi")
++set(kodiplatform_INCLUDE_DIRS ${TINYXML_INCLUDE_DIR})
+ IF(WIN32)
+   LIST(APPEND kodiplatform_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include/kodi/windows")
+ ENDIF(WIN32)
+diff --git a/kodiplatform-config.cmake.in b/kodiplatform-config.cmake.in
+index 3fc5273..60bdf1b 100644
+--- a/kodiplatform-config.cmake.in
++++ b/kodiplatform-config.cmake.in
+@@ -10,16 +10,16 @@
+ #
+ # propagate these properties from one build system to the other
+ set (kodiplatform_VERSION "@kodiplatform_VERSION_MAJOR@.@kodiplatform_VERSION_MINOR@")
+-set (kodiplatform_INCLUDE_DIRS @kodiplatform_INCLUDE_DIRS@ @CMAKE_INSTALL_PREFIX@/include)
++set (kodiplatform_INCLUDE_DIRS @kodiplatform_INCLUDE_DIRS@ @CMAKE_INSTALL_PREFIX_TOOLCHAIN@/include/kodi)
+ set (kodiplatform_LIBRARY_DIRS "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@")
+ set (kodiplatform_LINKER_FLAGS "@kodiplatform_LINKER_FLAGS@")
+ set (kodiplatform_CONFIG_VARS "@kodiplatform_CONFIG_VARS@")
+ 
+ # libraries come from the build tree where this file was generated
+ if(WIN32)
+-  set (kodiplatform_LIBRARY "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/kodiplatform.lib")
++  set (kodiplatform_LIBRARY "@CMAKE_INSTALL_PREFIX_TOOLCHAIN@/@CMAKE_INSTALL_LIBDIR@/kodiplatform.lib")
+ else(WIN32)
+-  set (kodiplatform_LIBRARY "-L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lkodiplatform")
++  set (kodiplatform_LIBRARY "-L@CMAKE_INSTALL_PREFIX_TOOLCHAIN@/@CMAKE_INSTALL_LIBDIR@ -lkodiplatform")
+ endif(WIN32)
+ set (kodiplatform_LIBRARIES ${kodiplatform_LIBRARY} "@kodiplatform_LIBRARIES@")
+ mark_as_advanced (kodiplatform_LIBRARY)

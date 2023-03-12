@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_PVR_DVBVIEWER
+	bool "kodi20-pvr-dvbviewer"
+	select BR2_PACKAGE_TINYXML
+	help
+	  Kodi's DVBViewer client addon
+
+	  https://github.com/kodi20-pvr/pvr.dvbviewer

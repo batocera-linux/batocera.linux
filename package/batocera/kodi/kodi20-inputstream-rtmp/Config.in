@@ -1,0 +1,9 @@
+config BR2_PACKAGE_KODI20_INPUTSTREAM_RTMP
+	bool "kodi20-inputstream-rtmp"
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_RTMPDUMP
+	select BR2_PACKAGE_ZLIB
+	help
+	  RTMP input stream add-on for Kodi
+
+	  https://github.com/xbmc/inputstream.rtmp
