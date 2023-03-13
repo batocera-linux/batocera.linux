@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-06 12:45+0200\n"
-"PO-Revision-Date: 2023-01-06 20:02+0100\n"
+"PO-Revision-Date: 2023-03-05 20:22+0100\n"
 "Last-Translator: pedrobarbosa\n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -327,13 +327,13 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
-"Disminueix automàticament el retràs de tasa de quadres temporalment per a "
+"Disminueix automàticament el retràs de taxa de quadres temporalment per a "
 "evitar salts de quadre. Pot produir quequesa del joc."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
-msgstr "RETRÀS DE TASA DE QUADRES AUTOMÀTICS"
+msgstr "RETRÀS DE TAXA DE QUADRES AUTOMÀTICS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -345,7 +345,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "VARIABLE REFRESH RATE"
-msgstr "TASA DE REFRESC VARIABLE"
+msgstr "TAXA DE REFRESC VARIABLE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -519,7 +519,7 @@ msgstr "TRUC DE PALANCA (PER ROBOTRON 2084)"
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "LIGHT GUN CROSSHAIR"
-msgstr ""
+msgstr "PUNT DE MIRA DE LA PISTOLA"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
@@ -2209,7 +2209,7 @@ msgstr "2.5x (1600x1200)"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 1 CROSSHAIR COLOR"
-msgstr ""
+msgstr "COLOR DE DIANA DEL JUGADOR 1"
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -2234,17 +2234,17 @@ msgstr "Blanc"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 2 CROSSHAIR COLOR"
-msgstr ""
+msgstr "COLOR DE DIANA DEL JUGADOR 2"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 3 CROSSHAIR COLOR"
-msgstr ""
+msgstr "COLOR DE DIANA DEL JUGADOR 3"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 4 CROSSHAIR COLOR"
-msgstr ""
+msgstr "COLOR DE DIANA DEL JUGADOR 4"
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -4334,7 +4334,7 @@ msgstr "Velocitat completa pot fer que alguns jocs no funcionin."
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
-msgstr "TASA DE QUADRES"
+msgstr "TAXA DE REFRESC"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, daphne
 msgctxt "game_options"
@@ -5654,6 +5654,8 @@ msgid ""
 "Enhancement. Reduces slowdown in mode 7 games. Can cause issues in certain "
 "games."
 msgstr ""
+"Millora. Redueix l'slowdown en jocs en mode 7. Pot causar problemes en certs "
+"jocs."
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -5800,7 +5802,7 @@ msgstr "SINCRONITZAR ARXIUS DE DESAT"
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
 msgid "FRAME RATE LIMIT"
-msgstr "LÍMIT DE TASA DE QUADRES"
+msgstr "LÍMIT DE TAXA DE FOTOGRAMES"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
@@ -6357,7 +6359,7 @@ msgstr "TALLAR VORES"
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "Always have 6 bullets, 6 dynamite and 6 lives."
-msgstr ""
+msgstr "Sempre tenir 6 bales, 6 dinamites i 6 vides."
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
@@ -6870,11 +6872,15 @@ msgid ""
 "Choose which graphics API library to use. Vulkan may not work on all "
 "hardware."
 msgstr ""
+"Escollir quina API gràfica utilitzar. Vulkan pot no funcionar en tot el "
+"maquinari."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Not all games support stretching, depending on their video files."
 msgstr ""
+"No tots els jocs suporten l'stretching (estretir), depenent dels videos que "
+"tinguin."
 
 #. TRANSLATION: daphne, dolphin, dolphin_triforce, yuzu
 msgctxt "game_options"
@@ -6897,6 +6903,8 @@ msgid ""
 "Use with the stretch aspect ratio and adjust joystick sensitivity as "
 "required."
 msgstr ""
+"Utilitzar amb estretir el ràtio d'aspecte i ajusta la sensibilitat del "
+"joystick segons es requereixi."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6937,6 +6945,8 @@ msgstr "Singe 2 Mig"
 msgctxt "game_options"
 msgid "This option is required for some gun games when playing with a mouse."
 msgstr ""
+"Aquesta opció és requerida per diversos jocs amb pistola quan es juga amb "
+"ratolí."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6946,7 +6956,7 @@ msgstr "ENTRADA DE RATOLÍ ABSOLUTA"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Invert the vertical joystick axis on flight games."
-msgstr ""
+msgstr "Invertir l'eix vertical del joystick en simuladors de vol."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6978,12 +6988,13 @@ msgstr ""
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "SDL TEXTURE ACCESS STREAMING"
-msgstr ""
+msgstr "ACCÉS A L'STREAMING DE LA TEXTURA SDL"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Use controller settings manually defined in custom.ini."
 msgstr ""
+"Utilitza la configuració del comandament definits manualment a custom.ini."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -7003,7 +7014,7 @@ msgstr "EMULAR WIIMOTE"
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "CUSTOMIZE EMULATED WIIMOTE & GAMEPAD"
-msgstr ""
+msgstr "PERSONALITZA UN WIIMOTE & GAMEPAD EMULATS"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7212,7 +7223,7 @@ msgstr "Millora. Elimina la càrrega de discs."
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "FAST DISK TRANSFER RATE"
-msgstr "TASA DE TRANFERÈNCIA RÁPIDA DE DISC"
+msgstr "TAXA DE TRANFERÈNCIA DE DISC RÀPIDA"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7492,26 +7503,28 @@ msgid ""
 "Dreamcast BIOS's language setting. Can change the language of some games. "
 "Some games default to Japanese."
 msgstr ""
+"Establiment de l'idioma de la BIOS de Dreamcast. Pot canviar l'idoma "
+"d'alguns jocs. Uns altres es mostraran en Japonès per defecte."
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "BIOS LANGUAGE"
-msgstr ""
+msgstr "IDIOMA DE LA BIOS"
 
 #. TRANSLATION: flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Game's default"
-msgstr ""
+msgstr "Predeterminat del joc"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "AUTO LOAD ON GAME LAUNCH"
-msgstr ""
+msgstr "CARREGAR AUTOMÀTICAMENT A L'INICIAR UN JOC"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "AUTO SAVE ON GAME EXIT"
-msgstr ""
+msgstr "DESAR AUTOMÀTICAMENT AL SORTIR D'UN JOC"
 
 #. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
@@ -7531,7 +7544,7 @@ msgstr "2nd VMU (Per defecte)"
 #. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Purupuru Pack/Vibration Pack"
-msgstr ""
+msgstr "Purupuru Pack/Pack de Vibració"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7554,6 +7567,8 @@ msgid ""
 "Enable the Dreamcast DSP for more accurate audio. Only recommended for fast "
 "systems."
 msgstr ""
+"Activa el DSP de la Dreamcast per un àudio més precís. Només recomanat per "
+"sistemes ràpids."
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7568,7 +7583,7 @@ msgstr "Deshabilitat (Per defecte)"
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Force the game to render in this aspect ratio."
-msgstr ""
+msgstr "Forçar el joc a renderitzar en aquest ràtio d'aspecte."
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -7598,77 +7613,77 @@ msgstr "Gira la pantalla amb l’emulador."
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "How the emulator should sort transparent objects."
-msgstr ""
+msgstr "Com l'emulador ha d'organitzar els objectes transparents."
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "TRANSPARENT SORTING"
-msgstr ""
+msgstr "ORDRE DE TRANSPARÈNCIES"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Triangle (Default)"
-msgstr ""
+msgstr "Per Triangle (Per defecte)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Strip"
-msgstr ""
+msgstr "Per Franja"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per Pixel"
-msgstr ""
+msgstr "Per Pixel"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "520 ST AUTO"
-msgstr ""
+msgstr "520 ST AUTO"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "520 ST TOS 1.00"
-msgstr ""
+msgstr "520 ST TOS 1.00"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "520 ST TOS 1.02"
-msgstr ""
+msgstr "520 ST TOS 1.02"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "520 ST TOS 1.04"
-msgstr ""
+msgstr "520 ST TOS 1.04"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "1040 STE AUTO"
-msgstr ""
+msgstr "1040 STE AUTO"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "1040 STE 1.06"
-msgstr ""
+msgstr "1040 STE 1.06"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "1040 STE 1.62"
-msgstr ""
+msgstr "1040 STE 1.62"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Mega STE AUTO"
-msgstr ""
+msgstr "Mega STE AUTO"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Mega STE 2.05"
-msgstr ""
+msgstr "Mega STE 2.05"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Mega STE 2.06"
-msgstr ""
+msgstr "Mega STE 2.06"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7678,47 +7693,47 @@ msgstr "Idiomes TOS."
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "German (de)"
-msgstr ""
+msgstr "Alemany (de)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Spanish (es)"
-msgstr ""
+msgstr "Castellà (es)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "French (fr)"
-msgstr ""
+msgstr "Francès (fr)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Italian (it)"
-msgstr ""
+msgstr "Italià (it)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Dutch (nl)"
-msgstr ""
+msgstr "Holandès (nl)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Russian (ru)"
-msgstr ""
+msgstr "Rus (ru)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Swedish (se)"
-msgstr ""
+msgstr "Suec (se)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "British English (uk)"
-msgstr ""
+msgstr "Anglès Britànic (uk)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "English (us)"
-msgstr ""
+msgstr "Anglès Americà (us)"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7743,7 +7758,7 @@ msgstr "4M"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
-msgstr "Trii quina llibreria d’API gràfica vol emprar."
+msgstr "Triï quina llibreria d’API gràfica vol emprar."
 
 #. TRANSLATION: melonds, pcsx2
 msgctxt "game_options"
@@ -7753,7 +7768,7 @@ msgstr "Programari"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "LIMIT FRAME RATE"
-msgstr "LIMITAR TASA DE QUADRES"
+msgstr "LIMITAR TAXA DE QUADRES"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -7917,7 +7932,7 @@ msgstr "4K (3840x2160)"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM FRAME RATE"
-msgstr "TASA DE QUADRES DE TRANSMISSIÓ DE VÍDEO"
+msgstr "TAXA DE QUADRES DE TRANSMISSIÓ DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -7942,7 +7957,7 @@ msgstr "Nombre major per a major qualitat, però requereix ample de banda."
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM BITRATE"
-msgstr "TASA DE BITS DE TRANSMISSIÓ DE VÍDEO"
+msgstr "TAXA DE BITS DE TRANSMISSIÓ DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8481,12 +8496,12 @@ msgstr "TIPUS D’ESCALAT DE TEXTURA"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "xBRZ (Default)"
-msgstr ""
+msgstr "xBRZ (Defecte)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
-msgstr ""
+msgstr "Híbrid + Bicúbic"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8501,12 +8516,12 @@ msgstr "DESPOSTERITZAT DE TEXTURES"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Linear"
-msgstr ""
+msgstr "Linial"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Auto Max Quality"
-msgstr ""
+msgstr "Qualitat Màx Auto"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8541,7 +8556,7 @@ msgstr "MODE DE TV"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "16:9 (default)"
-msgstr ""
+msgstr "16:9 (Defecte)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8626,7 +8641,7 @@ msgstr "XFloat relaxat"
 msgctxt "game_options"
 msgid "Most games already have an internal framelimit. Minor performance cost."
 msgstr ""
-"La majoria dels jocs ja tenen un límit de tasa de quadres intern. Cost de "
+"La majoria dels jocs ja tenen un límit de taxa de quadres intern. Cost de "
 "rendiment mínim."
 
 #. TRANSLATION: rpcs3
@@ -8760,12 +8775,12 @@ msgstr "6 fils"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Can reduce crackle and stutter but increases audio latency."
-msgstr ""
+msgstr "Pot reduïr els salts  però incrementa la latència d'àudio."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ENABLE AUDIO BUFFERING"
-msgstr ""
+msgstr "ACTIVAR BUFFERING d'AUDIO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -8773,11 +8788,13 @@ msgid ""
 "Reduces crackle and stutter further, but may cause a very noticeable "
 "reduction in audio quality on slower CPUs."
 msgstr ""
+"Redueix encara més els salts, però pot causar una reducció de la qualitat "
+"d'àudio notable en CPUs lentes."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
-msgstr ""
+msgstr "ACTIVAR ESTRETIR EL TEMPS"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -9608,11 +9625,13 @@ msgid ""
 "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
 "performance loss."
 msgstr ""
+"Utilitza el renderitzador Zing (OpenGL a Vulkan) per resoldre problemes "
+"gràfics. Pot causar pèrdua de rendiment."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "USE ZINK RENDERER"
-msgstr ""
+msgstr "UTILITZA EL RENDERITZADOR ZINK"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -10293,6 +10312,16 @@ msgstr "UTC+11"
 msgctxt "game_options"
 msgid "UTC+12"
 msgstr "UTC+12"
+
+#. TRANSLATION: gzdoom
+msgctxt "game_options"
+msgid "Configuring controllers in GZDoom can cause problems."
+msgstr "Configurar els controladors a GZDoom pot provocar problemes."
+
+#. TRANSLATION: gzdoom
+msgctxt "game_options"
+msgid "USE GZDOOM JOYSTICK CONFIGURATION"
+msgstr "UTILITZA CONFIGURACIÓ DEL JOYSTICK DE GZDOOM"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"

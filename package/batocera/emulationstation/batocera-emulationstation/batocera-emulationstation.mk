@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Last update: Jan 21, 2023
-BATOCERA_EMULATIONSTATION_VERSION = 5f9956e15d73fa40b62830926cddc663b05459a9
+BATOCERA_EMULATIONSTATION_VERSION = c3ad08a6025aefed9d3f13dda40ef24b79093f61
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -140,17 +140,24 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 BATOCERA_EMULATIONSTATION_PREFIX =
 BATOCERA_EMULATIONSTATION_CMD = startx
 BATOCERA_EMULATIONSTATION_ARGS = --windowed
-BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_XINITRC
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_XORG
 endif
 
 ## on Wayland sway runs ES
 ifeq ($(BR2_PACKAGE_SWAY),y)
-BATOCERA_EMULATIONSTATION_CMD = sway
+BATOCERA_EMULATIONSTATION_CMD = sway-launch
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += sway
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND
 endif
 
-define BATOCERA_EMULATIONSTATION_XINITRC
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+define BATOCERA_EMULATIONSTATION_XORG
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xorg/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+endef
+
+define BATOCERA_EMULATIONSTATION_WAYLAND
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/04-sway.sh  $(TARGET_DIR)/etc/profile.d/04-sway.sh
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/config      $(TARGET_DIR)/etc/sway/config
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway-launch $(TARGET_DIR)/usr/bin/sway-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT

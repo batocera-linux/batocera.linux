@@ -22,8 +22,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG),y)
 # way to do so is to make nvidia-driver depend on them.
 #batocera enable nvidia-driver and mesa3d to coexist in the same fs
 BATOCERA_NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd \
-    batocera-nvidia-legacy-driver batocera-nvidia390-legacy-driver 
-#batocera-nvidia340-legacy-driver
+    batocera-nvidia-legacy-driver batocera-nvidia390-legacy-driver batocera-nvidia340-legacy-driver
 
 # BATOCERA_NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
 

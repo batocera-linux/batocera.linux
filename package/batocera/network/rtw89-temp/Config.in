@@ -1,0 +1,11 @@
+comment "rtw89-temp needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RTW89_TEMP
+	bool "rtw89-temp"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Temporary driver for Realtek 8852xx devices
+	  Remove when we migrate to Linux Kernel 6.2
+
+	  https://github.com/lwfinger/rtw89

@@ -1,0 +1,23 @@
+diff --git a/src/radeon.h b/src/radeon.h
+index 8e964805..e4a2ba66 100644
+--- a/src/radeon.h
++++ b/src/radeon.h
+@@ -790,8 +790,8 @@ static inline Bool radeon_set_pixmap_bo(PixmapPtr pPix, struct radeon_buffer *bo
+ 
+ static inline struct radeon_buffer *radeon_get_pixmap_bo(PixmapPtr pPix)
+ {
+-#ifdef USE_GLAMOR
+     RADEONInfoPtr info = RADEONPTR(xf86ScreenToScrn(pPix->drawable.pScreen));
++#ifdef USE_GLAMOR
+ 
+     if (info->use_glamor) {
+ 	struct radeon_pixmap *priv;
+@@ -799,7 +799,7 @@ static inline struct radeon_buffer *radeon_get_pixmap_bo(PixmapPtr pPix)
+ 	return priv ? priv->bo : NULL;
+     } else
+ #endif
+-    {
++    if (info->accelOn) {
+ 	struct radeon_exa_pixmap_priv *driver_priv;
+ 	driver_priv = exaGetPixmapDriverPrivate(pPix);
+ 	return driver_priv ? driver_priv->bo : NULL;

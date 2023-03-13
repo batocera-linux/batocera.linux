@@ -1,0 +1,86 @@
+diff --git a/include/sway/input/cursor.h b/include/sway/input/cursor.h
+index 8a2898d..e2b7a3c 100644
+--- a/include/sway/input/cursor.h
++++ b/include/sway/input/cursor.h
+@@ -77,6 +77,7 @@ struct sway_cursor {
+ 	// costly seat_config lookups on every keypress. HIDE_WHEN_TYPING_DEFAULT
+ 	// indicates that there is no cached value.
+ 	enum seat_config_hide_cursor_when_typing hide_when_typing;
++	bool hidden_forced;
+ 
+ 	size_t pressed_button_count;
+ };
+@@ -103,6 +104,7 @@ void cursor_handle_activity_from_idle_source(struct sway_cursor *cursor,
+ 		enum sway_input_idle_source idle_source);
+ void cursor_handle_activity_from_device(struct sway_cursor *cursor,
+ 		struct wlr_input_device *device);
++void cursor_hide(struct sway_cursor *cursor);
+ void cursor_unhide(struct sway_cursor *cursor);
+ int cursor_get_timeout(struct sway_cursor *cursor);
+ void cursor_notify_key_press(struct sway_cursor *cursor);
+diff --git a/sway/commands/seat/hide_cursor.c b/sway/commands/seat/hide_cursor.c
+index e09b82d..e699ba9 100644
+--- a/sway/commands/seat/hide_cursor.c
++++ b/sway/commands/seat/hide_cursor.c
+@@ -32,9 +32,20 @@ struct cmd_results *seat_cmd_hide_cursor(int argc, char **argv) {
+ 		}
+ 		seat_config->hide_cursor_timeout = timeout;
+ 	} else {
++		if (strcmp(argv[0], "force-hidden") == 0) {
++		  struct sway_seat *seat = NULL;
++		  bool hide = strcmp(argv[1], "enable") == 0;
++		  wl_list_for_each(seat, &server.input->seats, link) {
++		    seat->cursor->hidden_forced = hide;
++		    if(hide) {
++		      cursor_hide(seat->cursor);
++		    }
++		  }
++		} else {
++
+ 		if (strcmp(argv[0], "when-typing") != 0) {
+ 			return cmd_results_new(CMD_INVALID,
+-				"Expected 'hide_cursor <timeout>|when-typing [enable|disable]'");
++				"Expected 'hide_cursor <timeout>|force-hidden [enable|disable]|when-typing [enable|disable]'");
+ 		}
+ 		seat_config->hide_cursor_when_typing = parse_boolean(argv[1], true) ?
+ 			HIDE_WHEN_TYPING_ENABLE : HIDE_WHEN_TYPING_DISABLE;
+@@ -44,6 +55,8 @@ struct cmd_results *seat_cmd_hide_cursor(int argc, char **argv) {
+ 		wl_list_for_each(seat, &server.input->seats, link) {
+ 			seat->cursor->hide_when_typing = HIDE_WHEN_TYPING_DEFAULT;
+ 		}
++
++		}
+ 	}
+ 
+ 	return cmd_results_new(CMD_SUCCESS, NULL);
+diff --git a/sway/input/cursor.c b/sway/input/cursor.c
+index 449aa43..faf30d3 100644
+--- a/sway/input/cursor.c
++++ b/sway/input/cursor.c
+@@ -236,7 +236,7 @@ void cursor_update_image(struct sway_cursor *cursor,
+ 	}
+ }
+ 
+-static void cursor_hide(struct sway_cursor *cursor) {
++void cursor_hide(struct sway_cursor *cursor) {
+ 	wlr_cursor_set_image(cursor->cursor, NULL, 0, 0, 0, 0, 0, 0);
+ 	cursor->hidden = true;
+ 	wlr_seat_pointer_notify_clear_focus(cursor->seat->wlr_seat);
+@@ -329,6 +329,8 @@ void cursor_handle_activity_from_device(struct sway_cursor *cursor,
+ }
+ 
+ void cursor_unhide(struct sway_cursor *cursor) {
++	if(cursor->hidden_forced) return;
++
+ 	if (!cursor->hidden) {
+ 		return;
+ 	}
+@@ -1114,6 +1116,8 @@ struct sway_cursor *sway_cursor_create(struct sway_seat *seat) {
+ 	wl_list_init(&cursor->image_surface_destroy.link);
+ 	cursor->image_surface_destroy.notify = handle_image_surface_destroy;
+ 
++	cursor->hidden_forced = false;
++
+ 	// gesture events
+ 	cursor->pointer_gestures = wlr_pointer_gestures_v1_create(server.wl_display);
+ 

@@ -1,0 +1,74 @@
+From: Bastian Germann <bage@debian.org>
+To: Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Cc: Vasily Khoruzhick <anarsoul@gmail.com>,
+        Bastian Germann <bage@debian.org>
+Message-ID: <20220524212155.16944-2-bage@debian.org>
+Subject: [PATCH v2 1/3] Bluetooth: Add new quirk for broken local ext features
+ max_page
+Date: Tue, 24 May 2022 23:21:52 +0200
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220524212155.16944-1-bage@debian.org>
+References: <20220524212155.16944-1-bage@debian.org>
+MIME-Version: 1.0
+Precedence: bulk
+List-ID: <netdev.vger.kernel.org>
+X-Mailing-List: netdev@vger.kernel.org
+X-Patchwork-Delegate: kuba@kernel.org
+
+From: Vasily Khoruzhick <anarsoul@gmail.com>
+
+Some adapters (e.g. RTL8723CS) advertise that they have more than
+2 pages for local ext features, but they don't support any features
+declared in these pages. RTL8723CS reports max_page = 2 and declares
+support for sync train and secure connection, but it responds with
+either garbage or with error in status on corresponding commands.
+
+Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+[rebase on current tree]
+Signed-off-by: Bastian Germann <bage@debian.org>
+---
+ include/net/bluetooth/hci.h | 7 +++++++
+ net/bluetooth/hci_event.c   | 4 +++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index 69ef31cea582..af26e8051905 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -265,6 +265,13 @@ enum {
+ 	 * during the hdev->setup vendor callback.
+ 	 */
+ 	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
++
++	/* When this quirk is set, max_page for local extended features
++	 * is set to 1, even if controller reports higher number. Some
++	 * controllers (e.g. RTL8822BS, RTL8723CS) report more pages,
++	 * but they don't actually support features declared there.
++	 */
++	HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE,
+ };
+ 
+ /* HCI device flags */
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 66451661283c..52b358c33344 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -837,7 +837,9 @@ static u8 hci_cc_read_local_ext_features(struct hci_dev *hdev, void *data,
+ 	if (rp->status)
+ 		return rp->status;
+ 
+-	if (hdev->max_page < rp->max_page)
++	if (!test_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE,
++		      &hdev->quirks) &&
++	    hdev->max_page < rp->max_page)
+ 		hdev->max_page = rp->max_page;
+ 
+ 	if (rp->page < HCI_MAX_PAGES)

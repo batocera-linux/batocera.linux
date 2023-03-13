@@ -40,12 +40,8 @@ do_start ()
         exit 0
     fi
 
-    if [[ $(batocera-resolution getDisplayMode) == "xorg" ]]; then
-        image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
-    else
-        image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
-    fi
-
+    # Batocera boot logo
+    image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
     if ! [ -f "$image" ]; then
         image="/usr/share/batocera/splash/boot-logo.png"
         [ -f "$image" ] || exit 1
@@ -53,7 +49,7 @@ do_start ()
 
     FBV_OPTS="-f -e"
     # FBV_OPTS can be set differently for some boards to work
-    MODELOPTS=/etc/opts.$(cat /sys/firmware/devicetree/base/model)
+    MODELOPTS="/etc/opts.$V_BOARD_MODEL"
     test -e "${MODELOPTS}" && . "${MODELOPTS}"
 
     test -e /dev/fb0 && fbv ${FBV_OPTS} -i "${image}"

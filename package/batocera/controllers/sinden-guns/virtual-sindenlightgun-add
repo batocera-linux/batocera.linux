@@ -41,7 +41,7 @@ then
     echo $! > "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.pid"
 
     # ttyACM
-    ACMSEARCHDIR=/sys$(echo "${DEVPATH}" | cut -d / -f 1-7) # 1-7 ? sure ? no, not sure
+    ACMSEARCHDIR=/sys$(echo "${DEVPATH}" | cut -d / -f 1-8) # 1-7 ? sure ? no, not sure
     ACM=$(find "${ACMSEARCHDIR}" -name "ttyACM*" | head -1)
     ACMDEV=/dev/$(basename "${ACM}")
     if test -n "${ACMDEV}"
