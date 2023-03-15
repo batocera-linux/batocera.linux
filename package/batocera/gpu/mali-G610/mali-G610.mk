@@ -10,10 +10,8 @@ MALI_G610_LICENSE = Proprietary
 MALI_G610_LICENSE_FILES = END_USER_LICENCE_AGREEMENT.txt
 MALI_G610_INSTALL_STAGING = YES
 
-MALI_G610_EXTRA_DOWNLOADS = https://gitlab.freedesktop.org/glvnd/libglvnd/-/archive/master/libglvnd-master.tar.gz
-
 MALI_G610_PROVIDES = libegl libgbm libgles libmali
-MALI_G610_DEPENDENCIES = host-patchelf libdrm libglvnd
+MALI_G610_DEPENDENCIES = host-patchelf libdrm
 
 MALI_G610_GPU = valhall-g610
 MALI_G610_VER = g6p0
