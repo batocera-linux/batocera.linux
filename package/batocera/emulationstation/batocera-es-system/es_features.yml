@@ -9697,10 +9697,26 @@ sh:
 xenia:
   features: []
   shared: [videomode]
+  cfeatures:
+        xeniaLicense:
+            prompt: XBOX LIVE ARCADE
+            description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
+            choices:
+                "No licenses enabled":                     0
+                "XBLA license enabled (Default)":          1
+                "All possible licenses (Not recommended)": -1
 
 xenia-canary:
   features: []
   shared: [videomode]
+  cfeatures:
+        xeniaLicense:
+            prompt: XBOX LIVE ARCADE
+            description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
+            choices:
+                "No licenses enabled":                     0
+                "XBLA license enabled (Default)":          1
+                "All possible licenses (Not recommended)": -1
 
 odcommander:
   features: [padtokeyboard]
