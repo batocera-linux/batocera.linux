@@ -216,6 +216,7 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Source = 2\n")
         nplayer += 1
+    f.write("[BalanceBoard]\nSource = 2\n")
     f.write
     f.close()
 
