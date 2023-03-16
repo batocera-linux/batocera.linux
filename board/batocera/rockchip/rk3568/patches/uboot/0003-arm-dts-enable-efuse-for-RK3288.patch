@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Sun, 11 Sep 2022 10:56:43 +0200
+Subject: [PATCH 3/6] arm: dts: enable efuse for RK3288
+
+---
+ arch/arm/dts/rk3288.dtsi | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3288.dtsi b/arch/arm/dts/rk3288.dtsi
+index 53ee760b98..f923630f63 100644
+--- a/arch/arm/dts/rk3288.dtsi
++++ b/arch/arm/dts/rk3288.dtsi
+@@ -866,8 +866,7 @@
+ 
+ 	efuse: efuse@ffb40000 {
+ 		compatible = "rockchip,rk3288-efuse";
+-		reg = <0xffb40000 0x10000>;
+-		status = "disabled";
++		reg = <0xffb40000 0x20>;
+ 	};
+ 
+ 	gic: interrupt-controller@ffc01000 {

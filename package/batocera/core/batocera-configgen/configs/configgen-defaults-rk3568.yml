@@ -1,0 +1,15 @@
+gamecube:
+  emulator: libretro
+  core:     dolphin
+nds:
+  emulator: libretro
+  core:     melonds
+wii:
+  emulator: libretro
+  core:     dolphin
+fmtowns:
+  emulator: libretro
+  core:     mame
+psx:
+  options:
+    hud_support: false # duckstation doesn't like it on n2+
