@@ -1,0 +1,121 @@
+From 9293e6d1ea74fdfd54f8be92bd0bdb7fdf06f275 Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Wed, 15 Mar 2023 16:53:42 -0400
+Subject: [PATCH] odroid-go dts update
+
+---
+ .../boot/dts/rockchip/rk3326-odroid-go.dtsi   | 41 +++++++++++++------
+ .../boot/dts/rockchip/rk3326-odroid-go3.dts   |  4 +-
+ 2 files changed, 32 insertions(+), 13 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+index fbc6bfbaa..04eba432f 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+@@ -8,6 +8,7 @@
+ /dts-v1/;
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/rockchip.h>
+ #include "rk3326.dtsi"
+
+@@ -113,21 +114,35 @@ button-sw16 {
+ 		};
+ 	};
+
+-	leds: gpio-leds {
++	/* led-1 is wired directly to output of always-on regulator */
++
++	gpio_led: gpio-leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&blue_led_pin>;
++		pinctrl-0 = <&red_led_pin>;
++
++		red_led: led-3 {
++			color = <LED_COLOR_ID_RED>;
++			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++			function = LED_FUNCTION_CHARGING;
++		};
++	};
+
+-		blue_led: led-0 {
+-			label = "blue:heartbeat";
+-			gpios = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
++	pwm_led: led-controller {
++		compatible = "pwm-leds";
++
++		blue_led: led-2 {
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_STATUS;
+ 			linux,default-trigger = "heartbeat";
++			max-brightness = <255>;
++			pwms = <&pwm3 0 25000 0>;
+ 		};
+ 	};
+
+ 	rk817-sound {
+ 		compatible = "simple-audio-card";
+-		simple-audio-card,name = "Analog";
++		simple-audio-card,name = "rk817_int";
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+ 		simple-audio-card,mclk-fs = <256>;
+@@ -192,14 +207,12 @@ &cru {
+ 	assigned-clocks = <&cru PLL_NPLL>,
+ 		<&cru ACLK_BUS_PRE>, <&cru ACLK_PERI_PRE>,
+ 		<&cru HCLK_BUS_PRE>, <&cru HCLK_PERI_PRE>,
+-		<&cru PCLK_BUS_PRE>, <&cru SCLK_GPU>,
+-		<&cru PLL_CPLL>;
++		<&cru PCLK_BUS_PRE>, <&cru SCLK_GPU>;
+
+ 	assigned-clock-rates = <1188000000>,
+ 		<200000000>, <200000000>,
+ 		<150000000>, <150000000>,
+-		<100000000>, <200000000>,
+-		<17000000>;
++		<100000000>, <200000000>;
+ };
+
+ &display_subsystem {
+@@ -467,6 +480,10 @@ &pwm1 {
+ 	status = "okay";
+ };
+
++&pwm3 {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcc_1v8>;
+ 	status = "okay";
+@@ -571,8 +588,8 @@ hp_det: hp-det {
+ 	};
+
+ 	leds {
+-		blue_led_pin: blue-led-pin {
+-			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
++		red_led_pin: red-led-pin {
++			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+index 842efbaf1..1b9769ccf 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+@@ -142,7 +142,9 @@ button-sw22 {
+ };
+
+ &internal_display {
+-	status = "disabled";
++	compatible = "elida,kd50t048a", "sitronix,st7701";
++	reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
++	VCC-supply = <&vcc_lcd>;
+ };
+
+ &rk817_charger {
+--
+2.40.0
+
