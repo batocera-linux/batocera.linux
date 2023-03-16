@@ -2,6 +2,8 @@
 ### hardware
 - steamdeck virtual mouse/gun support from trackpad (left/right hand options)
 - JAMMAsd support (convert it in 2 pads)
+### Added
+- Added Lowres-NX for ARM-based SBC
 ### Updated
 - libretro-wasm4 to 2.5.4
 
