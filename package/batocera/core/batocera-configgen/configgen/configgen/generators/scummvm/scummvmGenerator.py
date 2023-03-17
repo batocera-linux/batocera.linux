@@ -6,11 +6,7 @@ import controllersConfig
 import os.path
 import glob
 
-class ScummVMGenerator(Generator):
-
-    def getResolutionMode(self, config):
-        return 'default'
-    
+class ScummVMGenerator(Generator):  
     # Main entry of the module
     # Configure mupen and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
