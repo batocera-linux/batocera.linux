@@ -1,0 +1,51 @@
+From 633838c39a4cbce8dfca663ddbbd9278abaf5d81 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Wed, 15 Feb 2023 03:34:50 +0200
+Subject: [PATCH] Add efuse config
+
+---
+ configs/roc-cc-rk3328_defconfig | 11 +++++++++++
+ configs/rock64-rk3328_defconfig | 11 +++++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/configs/roc-cc-rk3328_defconfig b/configs/roc-cc-rk3328_defconfig
+index 8ba50345..24141f61 100644
+--- a/configs/roc-cc-rk3328_defconfig
++++ b/configs/roc-cc-rk3328_defconfig
+@@ -115,3 +115,14 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++CONFIG_BOOTDELAY=1
++# CONFIG_DM_VIDEO is not set
++# CONFIG_DISPLAY is not set
++# CONFIG_ENV_IS_IN_MMC is not set
++# CONFIG_NET_RANDOM_ETHADDR is not set
++# CONFIG_USB_KEYBOARD is not set
++# CONFIG_TPL_DRIVERS_MISC is not set
++CONFIG_MISC=y
++CONFIG_MISC_INIT_R=y
++CONFIG_ROCKCHIP_EFUSE=y
++CONFIG_SHA256=y
+diff --git a/configs/rock64-rk3328_defconfig b/configs/rock64-rk3328_defconfig
+index b055dd09..ad321d9b 100644
+--- a/configs/rock64-rk3328_defconfig
++++ b/configs/rock64-rk3328_defconfig
+@@ -113,3 +113,14 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++CONFIG_BOOTDELAY=1
++# CONFIG_DM_VIDEO is not set
++# CONFIG_DISPLAY is not set
++# CONFIG_ENV_IS_IN_MMC is not set
++# CONFIG_NET_RANDOM_ETHADDR is not set
++# CONFIG_USB_KEYBOARD is not set
++# CONFIG_TPL_DRIVERS_MISC is not set
++CONFIG_MISC=y
++CONFIG_MISC_INIT_R=y
++CONFIG_ROCKCHIP_EFUSE=y
++CONFIG_SHA256=y
+-- 
+2.34.1
+

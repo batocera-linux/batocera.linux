@@ -1,20 +1,7 @@
-Index: linux-6.1/drivers/gpu/drm/Makefile
+Index: linux-6.2/drivers/gpu/drm/drm_modes.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/Makefile
-+++ linux-6.1/drivers/gpu/drm/Makefile
-@@ -19,7 +19,7 @@ drm-y       :=	drm_aperture.o drm_auth.o
- 		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
- 		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
- 		drm_client_modeset.o drm_atomic_uapi.o \
--		drm_managed.o drm_vblank_work.o
-+		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
- drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
- 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
- 			    drm_memory.o drm_scatter.o drm_vm.o
-Index: linux-6.1/drivers/gpu/drm/drm_modes.c
-===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_modes.c
-+++ linux-6.1/drivers/gpu/drm/drm_modes.c
+--- linux-6.2.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.2/drivers/gpu/drm/drm_modes.c
 @@ -47,6 +47,7 @@
  #include <drm/drm_print.h>
  
@@ -53,7 +40,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  
  	return 0;
  }
-@@ -1937,7 +1945,11 @@ drm_mode_create_from_cmdline_mode(struct
+@@ -2009,7 +2017,11 @@ drm_mode_create_from_cmdline_mode(struct
  	if (cmd->xres == 0 || cmd->yres == 0)
  		return NULL;
  
@@ -66,10 +53,10 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
+Index: linux-6.2/drivers/gpu/drm/drm_modes_low_dotclock.c
 ===================================================================
 --- /dev/null
-+++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
++++ linux-6.2/drivers/gpu/drm/drm_modes_low_dotclock.c
 @@ -0,0 +1,136 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -162,7 +149,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 +			1471, 1598, 0, 240, 314, 319, 415, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
 +	/* 640x480@60.00 31 kHz */
-+	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
++	{ DRM_MODE("640x480", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
 +	 752, 800, 0, 480, 489, 492, 525, 0,
 +	 DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) }
 +};
@@ -200,17 +187,17 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 +		if (((! interlace) && (ptr->flags & DRM_MODE_FLAG_INTERLACE)) \
 +		    || ((interlace) && ! (ptr->flags & DRM_MODE_FLAG_INTERLACE)))
 +			continue;
-+		DRM_INFO("Found a low dotclock mode for %dx%d (interlace: %d)", hsize, vsize, interlace);
++		DRM_DEBUG_KMS("Found a low dotclock mode for %dx%d (interlace: %d)", hsize, vsize, interlace);
 +		drm_mode_debug_printmodeline(ptr);
 +		return drm_mode_duplicate(dev, ptr);
 +	}
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
+Index: linux-6.2/drivers/gpu/drm/drm_modes_low_dotclock.h
 ===================================================================
 --- /dev/null
-+++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
++++ linux-6.2/drivers/gpu/drm/drm_modes_low_dotclock.h
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -235,11 +222,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.2/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
-@@ -391,21 +391,26 @@ static int __drm_helper_update_and_valid
+--- linux-6.2.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.2/drivers/gpu/drm/drm_probe_helper.c
+@@ -390,21 +390,26 @@ static int __drm_helper_update_and_valid
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -266,7 +253,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  		ret = drm_mode_validate_pipeline(mode, connector, ctx,
  						 &mode->status);
  		if (ret) {
-@@ -419,9 +424,11 @@ static int __drm_helper_update_and_valid
+@@ -418,9 +423,11 @@ static int __drm_helper_update_and_valid
  				return -EDEADLK;
  		}
  
@@ -278,7 +265,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	}
  
  	return 0;
-@@ -491,6 +498,7 @@ int drm_helper_probe_single_connector_mo
+@@ -490,6 +497,7 @@ int drm_helper_probe_single_connector_mo
  {
  	struct drm_device *dev = connector->dev;
  	struct drm_display_mode *mode;
@@ -286,7 +273,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	int count = 0, ret;
  	enum drm_connector_status old_status;
  	struct drm_modeset_acquire_ctx ctx;
-@@ -575,10 +583,13 @@ retry:
+@@ -574,10 +582,13 @@ retry:
  		goto exit;
  	}
  
@@ -301,11 +288,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  		count = drm_add_modes_noedid(connector, 1024, 768);
  
  		/*
-Index: linux-6.1/include/drm/drm_connector.h
+Index: linux-6.2/include/drm/drm_connector.h
 ===================================================================
---- linux-6.1.orig/include/drm/drm_connector.h
-+++ linux-6.1/include/drm/drm_connector.h
-@@ -1298,6 +1298,13 @@ struct drm_cmdline_mode {
+--- linux-6.2.orig/include/drm/drm_connector.h
++++ linux-6.2/include/drm/drm_connector.h
+@@ -1313,6 +1313,13 @@ struct drm_cmdline_mode {
  	 * @tv_margins: TV margins to apply to the mode.
  	 */
  	struct drm_connector_tv_margins tv_margins;
@@ -319,3 +306,15 @@ Index: linux-6.1/include/drm/drm_connector.h
  };
  
  /**
+Index: linux-6.2/drivers/gpu/drm/Makefile
+===================================================================
+--- linux-6.2.orig/drivers/gpu/drm/Makefile
++++ linux-6.2/drivers/gpu/drm/Makefile
+@@ -30,6 +30,7 @@ drm-y := \
+ 	drm_ioctl.o \
+ 	drm_lease.o \
+ 	drm_managed.o \
++	drm_modes_low_dotclock.o \
+ 	drm_mm.o \
+ 	drm_mode_config.o \
+ 	drm_mode_object.o \

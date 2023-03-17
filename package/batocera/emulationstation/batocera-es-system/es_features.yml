@@ -2732,7 +2732,7 @@ libretro:
                   imagereader:
                       group: ADVANCED OPTIONS
                       prompt:      IMAGE READER
-                      description: Install the image reader card to read idks image files (Mac IIx only)
+                      description: Install the image reader card to read disk image files (Mac IIx only). Minimum 4MB ram size recommended.
                       choices:
                           "Disabled":         disabled
                           "Slot A (Default)": nba
@@ -6698,12 +6698,12 @@ flycast:
         "16x"               : 16
     flycast_sorting:
       group: ADVANCED OPTIONS
-      prompt: TRANSPARENT SORTING
-      description: How the emulator should sort transparent objects.
+      prompt: ALPHA SORTING
+      description: Per pixel is the most accurate, but also the most demanding.
       choices:
-        "Per Triangle (Default)": 1
         "Per Strip":              2
-        "Per Pixel":              3 
+        "Per Triangle (Default)": 1
+        "Per Pixel":              3
   systems:
     dreamcast:
       cfeatures:
@@ -6778,7 +6778,15 @@ flycast:
             "Enabled"           : "yes"
 
 fpinball:
+  features: [padtokeyboard]
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    fpcontroller:
+      prompt: CONTROLLER CONFIGURATION
+      description: Allow mapping Future Pinabll with Pad to Keyboard.
+      choices:
+        "Disabled (Default)": false
+        "Enabled":            true
 
 fsuae:
   features: [padtokeyboard]
@@ -7495,7 +7503,7 @@ rpcs3:
             description: Reduces crackle and stutter further, but may cause a very noticeable reduction in audio quality on slower CPUs.
             choices:
                 "Off (Default)": False
-                "On":            True             
+                "On":            True
 
 scummvm:
   features: [padtokeyboard]
@@ -9173,7 +9181,7 @@ xemu:
                 "Enabled":      "true"
                 "Disabled":     "false"
         use_zink:
-            group: ADVANCED OPTIONS            
+            group: ADVANCED OPTIONS
             prompt: USE ZINK RENDERER
             description: Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause performance loss.
             choices:
@@ -9697,10 +9705,26 @@ sh:
 xenia:
   features: []
   shared: [videomode]
+  cfeatures:
+        xeniaLicense:
+            prompt: XBOX LIVE ARCADE
+            description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
+            choices:
+                "No licenses enabled":                     0
+                "XBLA license enabled (Default)":          1
+                "All possible licenses (Not recommended)": -1
 
 xenia-canary:
   features: []
   shared: [videomode]
+  cfeatures:
+        xeniaLicense:
+            prompt: XBOX LIVE ARCADE
+            description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
+            choices:
+                "No licenses enabled":                     0
+                "XBLA license enabled (Default)":          1
+                "All possible licenses (Not recommended)": -1
 
 odcommander:
   features: [padtokeyboard]

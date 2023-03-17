@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+import sys
+import pyudev
+import evdev
+import hashlib
+from os.path import basename
+
+def findUsbParent(ctx, event):
+    for device in ctx.list_devices(subsystem='input'):
+        if basename(device.device_path) == event:
+            return device.find_parent('usb')
+    raise Exception("unable to find the usb parent for " + event)
+
+def findChildren(ctx, parenthash):
+    children = []
+    for device in ctx.list_devices(subsystem='input'):
+        if basename(device.device_path)[0:5] == "event":
+            curparent = device.find_parent('usb')
+            if curparent is not None:
+                if parent2hash(curparent) == parenthash:
+                    event = evdev.InputDevice('/dev/input/' + basename(device.device_path))
+                    children.append({ "event": "/dev/input/"+basename(device.device_path), "name": event.name })
+    return children
+
+def parent2hash(parent):
+    return hashlib.md5(parent.device_path.encode('utf-8')).hexdigest()
+
+def do_help():
+    print("evsieve-helper parent <event>", file=sys.stderr)
+    print("evsieve-helper children <parent>", file=sys.stderr)
+
+if len(sys.argv) != 3:
+    do_help()
+    sys.exit(1)
+
+ctx = pyudev.Context()
+
+if sys.argv[1] == "parent":
+    event = sys.argv[2]
+    print(parent2hash(findUsbParent(ctx, basename(event))))
+    exit(0)
+elif sys.argv[1] == "children":
+    parenthash = sys.argv[2]
+    children = findChildren(ctx, parenthash)
+    for child in children:
+        print("{}\t{}".format(child["event"], child["name"]))
+    exit(0)
+else:
+    do_help()
+    sys.exit(1)
