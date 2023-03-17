@@ -160,6 +160,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         commandLine += ["-gameio", system.config['gameio']]
                         specialController = system.config['gameio']
 
+            # RAM size (Mac excluded, special handling below)
+            if system.name != "macintosh" and system.isOptSet("ramsize"):
+                commandLine += [ '-ramsize', str(system.config["ramsize"]) + 'M' ]
+
             # Mac RAM & Image Reader (if applicable)
             if system.name == "macintosh":
                 if system.isOptSet("ramsize"):

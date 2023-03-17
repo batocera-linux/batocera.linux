@@ -272,7 +272,6 @@ class MameGenerator(Generator):
                 messModel = system.config["altmodel"]
             commandArray += [ messModel ]
 
-
             #TI-99 32k RAM expansion & speech modules - enabled by default
             if system.name == "ti99":
                 commandArray += [ "-ioport", "peb" ]
@@ -305,6 +304,10 @@ class MameGenerator(Generator):
                     else:
                         commandArray += ["-gameio", system.config['gameio']]
                         specialController = system.config['gameio']
+
+            # RAM size (Mac excluded, special handling below)
+            if system.name != "macintosh" and system.isOptSet("ramsize"):
+                commandArray += [ '-ramsize', str(system.config["ramsize"]) + 'M' ]
 
             # Mac RAM & Image Reader (if applicable)
             if system.name == "macintosh":

@@ -2485,6 +2485,15 @@ libretro:
                       choices:
                           "Electron w/64k Master RAM Board (default)": electron64
                           "Electron":                                  electron
+                  altromtype:
+                      group: ADVANCED OPTIONS
+                      prompt:      MEDIA TYPE
+                      description: Type of ROM file to load.
+                      choices:
+                          "Floppy Disk":        flop
+                          "Cassette":           cass
+                          "Cartridge (Slot 1)": cart1
+                          "Cartridge (Slot 2)": cart2
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -2547,6 +2556,13 @@ libretro:
                           "FM Towns Marty (Default)": fmtmarty
                           "FM Towns (Model 1/2)":     fmtowns
                           "FM Towns II UX":           fmtownsux
+                  ramsize:
+                      group: ADVANCED OPTIONS
+                      prompt:      RAM SIZE
+                      description: How much RAM the emulated FM Towns will have installed
+                      choices:
+                          "2MB":    2
+                          "4MB":    4
                   addblankdisk:
                       group: ADVANCED OPTIONS
                       prompt:      ADD USER DISK
@@ -8234,6 +8250,15 @@ mame:
                     choices:
                         "Electron w/64k Master RAM Board (default)": electron64
                         "Electron":                                  electron
+                altromtype:
+                    group: ADVANCED OPTIONS
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file to load.
+                    choices:
+                        "Floppy Disk":        flop
+                        "Cassette":           cass
+                        "Cartridge (Slot 1)": cart1
+                        "Cartridge (Slot 2)": cart2
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS
@@ -8304,6 +8329,13 @@ mame:
                         "FM Towns Marty (Default)": fmtmarty
                         "FM Towns (Model 1/2)":     fmtowns
                         "FM Towns II UX":           fmtownsux
+                ramsize:
+                      group: ADVANCED OPTIONS
+                      prompt:      RAM SIZE
+                      description: How much RAM the emulated FM Towns will have installed
+                      choices:
+                          "2MB":    2
+                          "4MB":    4
                 addblankdisk:
                     group: ADVANCED OPTIONS
                     prompt:      ADD USER DISK
