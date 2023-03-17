@@ -7,6 +7,8 @@
 - Added Zelda Classic 2.10 for ARM-based SBC
 ### Updated
 - libretro-wasm4 to 2.5.4
+- linux kernel for x86_64 to 6.2.6
+- nvidia production driver to 525.89.02
 
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
