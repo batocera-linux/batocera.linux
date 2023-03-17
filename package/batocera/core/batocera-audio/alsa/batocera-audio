@@ -48,6 +48,10 @@ case "${ACTION}" in
 			;;
 			*)
 			    LANG=C pactl set-default-sink "${MODE}" || exit 1
+					if [[ $(LANG=C pactl get-default-sink) != "${MODE}" ]]; then
+						# default-sink didn't switch right away for some reason, try again later
+						exit 1
+					fi
 		esac
 		;;
 
@@ -63,10 +67,15 @@ case "${ACTION}" in
 	set-profile)
 	    MODE="$2"
 	    if test "${MODE}" != "auto"
-	    then
-		PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
-		CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
-		LANG=C pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+	    then			
+				if [[ $(batocera-audio list-profiles) =~ "${MODE}" ]]; then
+					PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
+					CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
+					LANG=C pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+				else
+					# the profile isn't available yet, try again later
+					exit 1
+				fi		
 	    fi
 	    ;;
 
