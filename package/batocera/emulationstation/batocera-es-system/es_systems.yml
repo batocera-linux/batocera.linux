@@ -44,12 +44,13 @@ c64:
   group:      c64
   emulators:
     vice:
-      x64:         { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      x64:          { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      x64dtv:       { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      xscpu64:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
-      vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64sc:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_xscpu64: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 cplus4:
   name:       Commodore Plus4

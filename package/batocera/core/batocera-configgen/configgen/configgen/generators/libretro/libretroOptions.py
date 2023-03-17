@@ -106,7 +106,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         coreSettings.save('handy_rot', '"None"')
 
     # Commodore 64
-    if (system.config['core'] == 'vice_x64') or (system.config['core'] == 'vice_x64sc'):
+    if (system.config['core'] == 'vice_x64') or (system.config['core'] == 'vice_x64sc') or (system.config['core'] == 'vice_xscpu64'):
 
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
