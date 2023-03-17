@@ -4,6 +4,7 @@
 - JAMMAsd support (convert it in 2 pads)
 ### Added
 - Added Lowres-NX for ARM-based SBC
+- Added Zelda Classic 2.10 for ARM-based SBC
 ### Updated
 - libretro-wasm4 to 2.5.4
 
