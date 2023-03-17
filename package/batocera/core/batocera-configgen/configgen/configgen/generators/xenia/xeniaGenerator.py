@@ -84,8 +84,11 @@ class XeniaGenerator(Generator):
         # add node Content
         if 'Content' not in config:
             config['Content'] = {}
-        # 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
-        config['Content'] = {'license_mask': 1}
+        # Default 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
+        if system.isOptSet('xeniaLicense'):
+            config['Content'] = {'license_mask': int(system.config['xeniaLicense'])}
+        else:
+            config['Content'] = {'license_mask': 1}
         # add node Display
         if 'Display' not in config:
             config['Display'] = {}
