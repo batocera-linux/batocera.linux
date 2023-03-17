@@ -120,56 +120,6 @@ index 334a844..c2a967a 100644
              /*case BTN_??:
                 mouse->b4 = event->value;
                 break;*/
-@@ -1002,10 +1030,24 @@ static int16_t udev_mouse_state(udev_input_t *udev,
-          return mouse->r;
-       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
-          return mouse->m;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
-+         return mouse->b1;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
-+         return mouse->b2;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
-+         return mouse->b3;
-       case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-          return mouse->b4;
-       case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-          return mouse->b5;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
-+         return mouse->b6;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
-+         return mouse->b7;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
-+         return mouse->b8;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
-+         return mouse->b9;
-       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
-          return mouse->wu;
-       case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
-@@ -1041,10 +1083,24 @@ static bool udev_mouse_button_pressed(
-          return mouse->r;
-       case RETRO_DEVICE_ID_MOUSE_MIDDLE:
-          return mouse->m;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_1:
-+         return mouse->b1;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_2:
-+         return mouse->b2;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_3:
-+         return mouse->b3;
-       case RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-          return mouse->b4;
-       case RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-          return mouse->b5;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_6:
-+         return mouse->b6;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_7:
-+         return mouse->b7;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_8:
-+         return mouse->b8;
-+      case RETRO_DEVICE_ID_MOUSE_BUTTON_9:
-+         return mouse->b9;
-       case RETRO_DEVICE_ID_MOUSE_WHEELUP:
-          return mouse->wu;
-       case RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
 diff --git a/libretro-common/include/libretro.h b/libretro-common/include/libretro.h
 index e8a03e5..f56092c 100644
 --- a/libretro-common/include/libretro.h

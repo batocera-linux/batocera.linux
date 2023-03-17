@@ -5,11 +5,14 @@
 ### Added
 - Added Lowres-NX for ARM-based SBC
 - Added Zelda Classic 2.10 for ARM-based SBC
+- Added SAM Coupe for ARM-based SBC
 ### Updated
+- retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
+- simcoupe to 1.2.12
+- ikemen-go to 0.99rc1
 - linux kernel for x86_64 to 6.2.6
 - nvidia production driver to 525.89.02
-
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
 ### EmulationStation
