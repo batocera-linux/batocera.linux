@@ -3,13 +3,15 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on Jan 14, 2023
-FLYCAST_VERSION = 174ce8786ba86018ee54a774e3adfdbc4a2305ac
+
+FLYCAST_VERSION = V2.1
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc
+
+FLYCAST_SUPPORTS_IN_SOURCE_BUILD = NO
 
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 
@@ -38,7 +40,7 @@ ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
 endif
 
 define FLYCAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/flycast $(TARGET_DIR)/usr/bin/flycast
+	$(INSTALL) -D $(@D)/buildroot-build/flycast $(TARGET_DIR)/usr/bin/flycast
 	# evmapy files
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/flycast/*.keys $(TARGET_DIR)/usr/share/evmapy
