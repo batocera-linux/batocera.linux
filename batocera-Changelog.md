@@ -7,12 +7,36 @@
 - Added Lowres-NX for ARM-based SBC
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
+- Mame additional MacIntosh options
+- Libretro Vice core xscpu64
+### Fixed
+- System reverting to 40% volume with Nvidia cards
+- Remove bezel option for BigPemu
+- ScummVM not being able to adjust resolution
+- Performance regression with Yabasanshiro
+- Battery levels for various controller are now displayed correctly
+- Second partition resizing with ext4 should now consume the rest of the disk
+- glibc library issue causing problems with Nvidia & Wine
+### Changed
+- Samba now allows wide symbolic links
+- Unicode support for x86 files systems
+- Added fpinball option to configure controller with pad2key
+- Added license option for Xbox 360
+- Removed .wux extension for Cemu
+- Wii balance board controller option for Dolphin now enabled
+- Flatpak emulators can now use a Switch Pro Controller
 ### Updated
 - llvm to 15.0.7
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
 - simcoupe to 1.2.12
 - ikemen-go to 0.99rc1
+- flycast emulators to 2.1
+- redream to 1.5.0-1051
+- hypseus to 2.10.2
+### Dev 
+- dxvk to 2.1
+- linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.6
 - nvidia production driver to 525.89.02
 
