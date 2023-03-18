@@ -26,6 +26,8 @@
 - Wii balance board controller option for Dolphin now enabled
 - Flatpak emulators can now use a Switch Pro Controller
 ### Updated
+- xenia to 1.0.2786
+- xenai canary to 8678bec (Commits on Mar 13, 2023)
 - cemu to 2.0-29
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
