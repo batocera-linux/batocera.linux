@@ -212,7 +212,7 @@ then
     ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
     ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia_production.json /var/run/nvidia/configs/10_nvidia.json
     ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-    ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-production-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
+    ln -sf /usr/share/nvidia/X11/10-nvidia-production-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
     ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
     
     # link Vulkan icd files
@@ -276,6 +276,9 @@ then
         ln -sf /var/run/nvidia/lib/libGLESv2.so /usr/lib/libGLESv2.so
         ln -sf /usr/lib/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2.so.2
         ln -sf /var/run/nvidia/lib/libGLESv2.so.2 /usr/lib/libGLESv2.so.2
+        # X11 conf
+        ln -sf /usr/share/nvidia/X11/20-nvidia.conf /var/run/nvidia/configs/20-nvidia.conf
+        ln -sf /var/run/nvidia/configs/20-nvidia.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
     else
         # libGLX_nvidia.so
         ln -sf /usr/lib/libGLX_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so
@@ -450,7 +453,7 @@ then
         ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
 	    ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia390_legacy.json /var/run/nvidia/configs/10_nvidia.json
         ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-	    ln -sf /usr/share/X11/xorg.conf.d/10-nvidia390-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
+	    ln -sf /usr/share/nvidia/X11/10-nvidia390-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
         ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
 
 	    # link Vulkan icd files
@@ -482,7 +485,7 @@ then
         ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
         ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia_legacy.json /var/run/nvidia/configs/10_nvidia.json
         ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-        ln -sf /usr/share/X11/xorg.conf.d/10-nvidia-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
+        ln -sf /usr/share/nvidia/X11/10-nvidia-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
         ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
         
         # link Vulkan icd files
