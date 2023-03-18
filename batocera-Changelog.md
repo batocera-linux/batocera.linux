@@ -1,4 +1,4 @@
-# 2023/xx/xx - batocera.linux 37 -
+# 2023/xx/xx - batocera.linux 37 - Red Admiral
 ### hardware
 - steamdeck virtual mouse/gun support from trackpad (left/right hand options)
 - JAMMAsd support (convert it in 2 pads)
@@ -36,7 +36,7 @@
 - flycast emulators to 2.1
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
-### Dev 
+### Dev
 - dxvk to 2.1
 - linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.6
