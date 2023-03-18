@@ -2,11 +2,13 @@
 ### hardware
 - steamdeck virtual mouse/gun support from trackpad (left/right hand options)
 - JAMMAsd support (convert it in 2 pads)
+- AMD RDNA3 support - i.e. 7900 cards
 ### Added
 - Added Lowres-NX for ARM-based SBC
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
 ### Updated
+- llvm to 15.0.7
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
 - simcoupe to 1.2.12
