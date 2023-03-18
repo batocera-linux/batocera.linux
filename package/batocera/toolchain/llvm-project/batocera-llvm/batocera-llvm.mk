@@ -90,16 +90,16 @@ BATOCERA_LLVM_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 # Generate libLLVM.so. This library contains a default set of LLVM components
 # that can be overwritten with "BATOCERA_LLVM_DYLIB_COMPONENTS". The default contains
 # most of LLVM and is defined in "tools/llvm-shlib/CMakelists.txt".
-HOST_BATOCERA_LLVM_CONF_OPTS += -DLLVM_BUILD_BATOCERA_LLVM_DYLIB=ON
-BATOCERA_LLVM_CONF_OPTS += -DLLVM_BUILD_BATOCERA_LLVM_DYLIB=ON
+HOST_BATOCERA_LLVM_CONF_OPTS += -DLLVM_BUILD_LLVM_DYLIB=ON
+BATOCERA_LLVM_CONF_OPTS += -DLLVM_BUILD_LLVM_DYLIB=ON
 
 # BATOCERA_LLVM_BUILD_BATOCERA_LLVM_DYLIB to ON. We need to enable this option for the
 # host as llvm-config for the host will be used in STAGING_DIR by packages
 # linking against libLLVM and if this option is not selected, then llvm-config
 # does not work properly. For example, it assumes that LLVM is built statically
 # and cannot find libLLVM.so.
-HOST_BATOCERA_LLVM_CONF_OPTS += -DLLVM_LINK_BATOCERA_LLVM_DYLIB=ON
-BATOCERA_LLVM_CONF_OPTS += -DLLVM_LINK_BATOCERA_LLVM_DYLIB=ON
+HOST_BATOCERA_LLVM_CONF_OPTS += -DLLVM_LINK_LLVM_DYLIB=ON
+BATOCERA_LLVM_CONF_OPTS += -DLLVM_LINK_LLVM_DYLIB=ON
 
 BATOCERA_LLVM_CONF_OPTS += -DCMAKE_CROSSCOMPILING=1
 
