@@ -3,7 +3,7 @@
 # cemu
 #
 ################################################################################
-CEMU_VERSION = v2.0-22
+CEMU_VERSION = v2.0-29
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git

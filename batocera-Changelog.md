@@ -26,7 +26,7 @@
 - Wii balance board controller option for Dolphin now enabled
 - Flatpak emulators can now use a Switch Pro Controller
 ### Updated
-- llvm to 15.0.7
+- cemu to 2.0-29
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
 - simcoupe to 1.2.12
@@ -39,6 +39,8 @@
 - linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.6
 - nvidia production driver to 525.89.02
+- llvm to 15.0.7
+
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
 ### EmulationStation
