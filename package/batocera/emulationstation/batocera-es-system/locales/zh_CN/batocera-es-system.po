@@ -622,7 +622,7 @@ msgctxt "game_options"
 msgid "24 bit (Default)"
 msgstr "24 bit (默认)"
 
-#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx
+#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "切换游戏语言."
@@ -632,7 +632,7 @@ msgctxt "game_options"
 msgid "LANGUAGE"
 msgstr "语言"
 
-#. TRANSLATION: libretro/cap32, redream
+#. TRANSLATION: libretro/cap32, redream, xenia, xenia-canary
 #, fuzzy
 msgctxt "game_options"
 msgid "English (Default)"
@@ -1163,7 +1163,7 @@ msgctxt "game_options"
 msgid "Italian"
 msgstr "意大利语"
 
-#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "荷兰语"
@@ -1493,7 +1493,7 @@ msgctxt "game_options"
 msgid "No EMS/XMS"
 msgstr ""
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/px68k, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/px68k, mame/uzem, ...
 msgctxt "game_options"
 msgid "4MB"
 msgstr "4MB"
@@ -2938,12 +2938,12 @@ msgctxt "game_options"
 msgid "Disk (Drive 2)"
 msgstr "磁盘 (驱动器 2)"
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 1)"
 msgstr "盒式磁带 (插槽 1)"
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 2)"
 msgstr "盒式磁带 (插槽 2)"
@@ -3451,6 +3451,11 @@ msgctxt "game_options"
 msgid "Electron"
 msgstr "电子"
 
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Floppy Disk"
+msgstr "软盘"
+
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-77AV disk images"
@@ -3491,6 +3496,21 @@ msgstr ""
 msgctxt "game_options"
 msgid "FM Towns II UX"
 msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "How much RAM the emulated FM Towns will have installed"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "RAM SIZE"
+msgstr "内存大小"
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/px68k, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "2MB"
+msgstr "2MB"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -3716,25 +3736,10 @@ msgid ""
 "How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "RAM SIZE"
-msgstr "内存大小"
-
-#. TRANSLATION: libretro/mame, libretro/px68k, mame/uzem
-msgctxt "game_options"
-msgid "2MB"
-msgstr "2MB"
-
 #. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Type of ROM file to load"
 msgstr ""
-
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "Floppy Disk"
-msgstr "软盘"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -6648,17 +6653,17 @@ msgctxt "game_options"
 msgid "Current language"
 msgstr "当前语言"
 
-#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Chinese"
 msgstr "中文"
 
-#. TRANSLATION: cemu, yuzu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx, xenia, xenia-canary
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr ""
 
-#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Russian"
 msgstr "俄语"
@@ -8870,7 +8875,7 @@ msgctxt "game_options"
 msgid "Greek"
 msgstr "希腊语"
 
-#. TRANSLATION: easyrpg
+#. TRANSLATION: easyrpg, xenia, xenia-canary
 msgctxt "game_options"
 msgid "Turkish"
 msgstr "土耳其"
@@ -10323,6 +10328,38 @@ msgstr ""
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "All possible licenses (Not recommended)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Polish"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Swedish"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Norwegian"
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid ""
+"Allow game that support different resolutions to be rendered in specific "
+"resolution."
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid "INTERNAL DISPLAY RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid "1280x720 (Default)"
 msgstr ""
 
 #. TRANSLATION: gzdoom
