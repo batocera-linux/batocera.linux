@@ -2,7 +2,6 @@ config BR2_PACKAGE_ABUSE
 	bool "abuse"
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_MIXER
-	select BR2_PACKAGE_ABUSE_DATA
 	help
 	  This is a fork of the original Abuse SDL port
 

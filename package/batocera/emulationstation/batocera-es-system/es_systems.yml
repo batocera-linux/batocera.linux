@@ -3402,9 +3402,9 @@ hurrican:
     hurrican:
       hurrican: { requireAnyOf: [BR2_PACKAGE_HURRICAN] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3420,9 +3420,9 @@ hcl:
     hcl:
       hcl: { requireAnyOf: [BR2_PACKAGE_HCL] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3448,9 +3448,11 @@ abuse:
     abuse:
       abuse: { requireAnyOf: [BR2_PACKAGE_ABUSE] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
+    You can add the game data files directly from the Batocera content downloader.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
+    Vous pouvez ajouter les fichiers de données du jeu depuis le menu de téléchargement de contenu Batocera.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3466,9 +3468,9 @@ cdogs:
     cdogs:
       cdogs: { requireAnyOf: [BR2_PACKAGE_CDOGS] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3484,9 +3486,11 @@ xrick:
     libretro:
       xrick: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XRICK] }
   comment_en: |
-    Put the data.zip in this directory.
+    Put the data.zip file in this directory.
+    Or you can add the game data files directly from the Batocera content downloader.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
+    Vous pouvez ajouter les fichiers de données du jeu depuis le menu de téléchargement de contenu Batocera.
   comment_br: |
     Coloque o data.zip do jogo xrick neste diretório.
 

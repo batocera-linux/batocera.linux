@@ -4,6 +4,8 @@
 #
 ################################################################################
 
+# This is now replaced by a Pacman package from the content downloader (saves 16MB)
+
 ABUSE_DATA_VERSION = 2.00
 ABUSE_DATA_SITE = abuse.zoy.org/raw-attachment/wiki/download
 ABUSE_DATA_SOURCE = abuse-data-2.00.tar.gz

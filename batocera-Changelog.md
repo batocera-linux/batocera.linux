@@ -7,6 +7,7 @@
 - Added Lowres-NX for ARM-based SBC
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
+- Added Abuse port for ARM-based SBC (game files available through content downloader)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 ### Fixed
@@ -27,7 +28,7 @@
 - Flatpak emulators can now use a Switch Pro Controller
 ### Updated
 - xenia to 1.0.2786
-- xenai canary to 8678bec (Commits on Mar 13, 2023)
+- xenia canary to 8678bec (Commits on Mar 13, 2023)
 - cemu to 2.0-29
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
@@ -36,6 +37,7 @@
 - flycast emulators to 2.1
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
+- abuse to 0.9.1
 ### Dev
 - dxvk to 2.1
 - linux firmware to 20230310
