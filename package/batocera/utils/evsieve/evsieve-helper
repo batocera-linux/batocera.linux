@@ -4,6 +4,7 @@ import sys
 import pyudev
 import evdev
 import hashlib
+import re
 from os.path import basename
 
 def findUsbParent(ctx, event):
@@ -24,7 +25,10 @@ def findChildren(ctx, parenthash):
     return children
 
 def parent2hash(parent):
-    return hashlib.md5(parent.device_path.encode('utf-8')).hexdigest()
+    return hashlib.md5(devicepathWithoutConf(parent.device_path).encode('utf-8')).hexdigest()
+
+def devicepathWithoutConf(path):
+    return re.sub(':[^:]*$', '', path)
 
 def do_help():
     print("evsieve-helper parent <event>", file=sys.stderr)
@@ -39,6 +43,11 @@ ctx = pyudev.Context()
 if sys.argv[1] == "parent":
     event = sys.argv[2]
     print(parent2hash(findUsbParent(ctx, basename(event))))
+    exit(0)
+elif sys.argv[1] == "parent-raw":
+    event = sys.argv[2]
+    parent = findUsbParent(ctx, basename(event))
+    print(devicepathWithoutConf(parent.device_path))
     exit(0)
 elif sys.argv[1] == "children":
     parenthash = sys.argv[2]
