@@ -9838,6 +9838,25 @@ xenia:
                 "No licenses enabled":                     0
                 "XBLA license enabled (Default)":          1
                 "All possible licenses (Not recommended)": -1
+        xeniaLanguage:
+            prompt: LANGUAGE
+            description: Change the game's language.
+            choices:
+                "English (Default)": 1
+                "Japanese":          2
+                "German":            3
+                "French":            4
+                "Spanish":           5
+                "Italian":           6
+                "Korean":            7
+                "Chinese":           8
+                "Portuguese":        9
+                "Polish":            11
+                "Russian":           12
+                "Swedish":           13
+                "Turkish":           14
+                "Norwegian":         15
+                "Dutch":             16
 
 xenia-canary:
   features: []
@@ -9850,6 +9869,45 @@ xenia-canary:
                 "No licenses enabled":                     0
                 "XBLA license enabled (Default)":          1
                 "All possible licenses (Not recommended)": -1
+        xeniaResolution:
+            prompt: INTERNAL DISPLAY RESOLUTION
+            description: Allow game that support different resolutions to be rendered in specific resolution.
+            choices:
+                "640x576":            1
+                "720x480":            2
+                "720x576":            3
+                "800x600":            4
+                "848x480":            5
+                "1024x768":           6
+                "1152x864":           7
+                "1280x720 (Default)": 8
+                "1280x768":           9
+                "1280x960":           10
+                "1280x1024":          11
+                "1360x768":           12
+                "1440x900":           13
+                "1680x1050":          14
+                "1920x540":           15
+                "1920x1080":          16
+        xeniaLanguage:
+            prompt: LANGUAGE
+            description: Change the game's language.
+            choices:
+                "English (Default)": 1
+                "Japanese":          2
+                "German":            3
+                "French":            4
+                "Spanish":           5
+                "Italian":           6
+                "Korean":            7
+                "Chinese":           8
+                "Portuguese":        9
+                "Polish":            11
+                "Russian":           12
+                "Swedish":           13
+                "Turkish":           14
+                "Norwegian":         15
+                "Dutch":             16
 
 odcommander:
   features: [padtokeyboard]
