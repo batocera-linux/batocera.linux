@@ -1066,7 +1066,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
         innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize)
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")

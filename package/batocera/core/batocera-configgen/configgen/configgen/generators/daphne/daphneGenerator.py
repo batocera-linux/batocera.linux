@@ -91,10 +91,17 @@ class DaphneGenerator(Generator):
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
             if bordersSize is not None:
 
-                if system.isOptSet('border_color'):
-                    borderColor = system.config['border_color']
-                else:
-                    borderColor = "w"
+                borderColor = "w"
+                if "controllers.guns.borderscolor" in system.config:
+                    borderColorOpt = system.config["controllers.guns.borderscolor"]
+                    if borderColorOpt == "white":
+                        borderColor = "w"
+                    elif borderColorOpt == "red":
+                        borderColor = "r"
+                    elif borderColorOpt == "green":
+                        borderColor = "g"
+                    elif borderColorOpt == "blue":
+                        borderColor = "b"
 
                 if bordersSize == "thin":
                     commandArray.extend(["-sinden", "2", borderColor])
