@@ -229,7 +229,7 @@ index 000000000..91d9ece56
 +
 +    rk817-sound {
 +        compatible = "simple-audio-card";
-+        simple-audio-card,name = "Analog";
++        simple-audio-card,name = "rk817_int";
 +        simple-audio-card,format = "i2s";
 +        simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
 +        simple-audio-card,mclk-fs = <256>;
@@ -748,6 +748,6 @@ index 000000000..91d9ece56
 +        };
 +    };
 +};
--- 
+--
 2.39.2
 
