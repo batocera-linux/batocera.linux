@@ -422,7 +422,7 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize):
         output_png_file = "/tmp/bezel_gunborders.png"
 
         innerSize, outerSize = bezelsUtil.gunBordersSize(bordersSize)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize)
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     eslog.debug(f"applying bezel {overlay_png_file}")
