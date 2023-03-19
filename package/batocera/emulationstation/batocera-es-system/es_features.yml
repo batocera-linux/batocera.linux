@@ -9134,13 +9134,6 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
-        raw_input:
-            group: ADVANCED OPTIONS
-            prompt:      RAW CONTROLLER INPUT
-            description: Disabling this may help compatibility with certain controllers and games.
-            choices:
-                "Off": 1
-                "On":  0
         dxvk_reset_cache:
             group: ADVANCED OPTIONS
             prompt:      DXVK RESET CACHE
