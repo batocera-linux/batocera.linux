@@ -1,0 +1,174 @@
+From f1193c5c09b1bb6e214c804c7dd1c7fb07046631 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Wed, 25 Jan 2023 09:18:39 +0100
+Subject: [PATCH] arm64: dts: meson-g12b-odroid: Add initial support for
+ Hardkernel ODROID-N2L
+
+ODROID-N2L is a variant SBC in small form factor and some peripherals
+are removed from ODROID-N2PLUS based on S922X SoC.
+
+- On-board ethernet is removed
+- On-board RTC is removed
+- USB 3.0 hub is removed, so one USB 2.0 and one USB 3.0 host ports
+  are available
+- Huge heatsink is replaced with 40x40mm heatsink, 5V active heatsink
+  is recommended or a tall passive sink is optional
+- 3.5mm earjack is removed
+- IR remote receiver is removed
+- MIPI DSI port is added new but not yet supported
+
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+Link: https://lore.kernel.org/r/20230122-topic-odroid-n2l-upstream-initial-v2-3-8d3fea6d403d@linaro.org
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |   1 +
+ .../dts/amlogic/meson-g12b-odroid-n2l.dts     | 125 ++++++++++++++++++
+ 2 files changed, 126 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 83c75550f..a4551ddff 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -17,6 +17,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-gtking-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-gtking.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2-plus.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2l.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-radxa-zero2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-s922x-khadas-vim3.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-ugoos-am6.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+new file mode 100644
+index 0000000000000..70919f40d5972
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+@@ -0,0 +1,125 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2022 Dongjin Kim <tobetter@gmail.com>
++ */
++
++/dts-v1/;
++
++/* The Amlogic S922X Rev. C supports the same OPPs as the A311D variant */
++#include "meson-g12b-a311d.dtsi"
++#include "meson-g12b-odroid.dtsi"
++
++/ {
++	compatible = "hardkernel,odroid-n2l", "amlogic,s922x", "amlogic,g12b";
++	model = "Hardkernel ODROID-N2L";
++
++	sound {
++		compatible = "amlogic,axg-sound-card";
++		model = "ODROID-N2L";
++		audio-aux-devs = <&tdmout_b>, <&tdmin_a>, <&tdmin_b>,
++				 <&tdmin_c>, <&tdmin_lb>;
++		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
++				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
++				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"TDMIN_A IN 4", "TDM_B Loopback",
++				"TDMIN_B IN 4", "TDM_B Loopback",
++				"TDMIN_C IN 4", "TDM_B Loopback",
++				"TDMIN_LB IN 1", "TDM_B Loopback",
++				"TODDR_A IN 0", "TDMIN_A OUT",
++				"TODDR_B IN 0", "TDMIN_A OUT",
++				"TODDR_C IN 0", "TDMIN_A OUT",
++				"TODDR_A IN 1", "TDMIN_B OUT",
++				"TODDR_B IN 1", "TDMIN_B OUT",
++				"TODDR_C IN 1", "TDMIN_B OUT",
++				"TODDR_A IN 2", "TDMIN_C OUT",
++				"TODDR_B IN 2", "TDMIN_C OUT",
++				"TODDR_C IN 2", "TDMIN_C OUT",
++				"TODDR_A IN 6", "TDMIN_LB OUT",
++				"TODDR_B IN 6", "TDMIN_LB OUT",
++				"TODDR_C IN 6", "TDMIN_LB OUT";
++
++		assigned-clocks = <&clkc CLKID_MPLL2>,
++				  <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		status = "okay";
++
++		dai-link-0 {
++			sound-dai = <&frddr_a>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&frddr_b>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&frddr_c>;
++		};
++
++		dai-link-3 {
++			sound-dai = <&toddr_a>;
++		};
++
++		dai-link-4 {
++			sound-dai = <&toddr_b>;
++		};
++
++		dai-link-5 {
++			sound-dai = <&toddr_c>;
++		};
++
++		/* 8ch hdmi interface */
++		dai-link-6 {
++			sound-dai = <&tdmif_b>;
++			dai-format = "i2s";
++			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
++			dai-tdm-slot-tx-mask-2 = <1 1>;
++			dai-tdm-slot-tx-mask-3 = <1 1>;
++			mclk-fs = <256>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
++			};
++		};
++
++		/* hdmi glue */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++	};
++};
++
++&eth_phy {
++	status = "disabled";
++};
++
++&vddcpu_a {
++	regulator-min-microvolt = <680000>;
++	regulator-max-microvolt = <1040000>;
++
++	pwms = <&pwm_ab 0 1500 0>;
++};
++
++&vddcpu_b {
++	regulator-min-microvolt = <680000>;
++	regulator-max-microvolt = <1040000>;
++
++	pwms = <&pwm_AO_cd 1 1500 0>;
++};
++
++&usb2_phy0 {
++	phy-supply = <&usb_pwr_en>;
++};
++
++&usb2_phy1 {
++	phy-supply = <&usb_pwr_en>;
++};
+-- 
+GitLab
+
