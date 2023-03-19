@@ -10,6 +10,7 @@
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
+- sinden gun border colors modifiable via es menu (white, red, green, blue)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
