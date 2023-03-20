@@ -6,6 +6,7 @@ import evdev
 import hashlib
 import re
 from os.path import basename
+from os.path import dirname
 
 def findUsbParent(ctx, event):
     for device in ctx.list_devices(subsystem='input'):
@@ -28,7 +29,7 @@ def parent2hash(parent):
     return hashlib.md5(devicepathWithoutConf(parent.device_path).encode('utf-8')).hexdigest()
 
 def devicepathWithoutConf(path):
-    return re.sub(':[^:]*$', '', path)
+    return dirname(path)
 
 def do_help():
     print("evsieve-helper parent <event>", file=sys.stderr)

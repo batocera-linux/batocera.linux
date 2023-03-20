@@ -33,6 +33,16 @@ trylock() {
     done
 }
 
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "sindengun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
 trylock
 checkRunningPIDAndExit1
 
@@ -58,7 +68,7 @@ then
     echo $! > "${PIDFILE}"
 
     # ttyACM
-    ACMSEARCHDIR=/sys$(echo "${DEVPATH}" | cut -d / -f 1-8) # 1-7 ? sure ? no, not sure
+    ACMSEARCHDIR=/sys$(evsieve-helper parent-raw "${DEVNAME}")
     ACM=$(find "${ACMSEARCHDIR}" -name "ttyACM*" | head -1)
     ACMDEV=/dev/$(basename "${ACM}")
     if test -n "${ACMDEV}"
