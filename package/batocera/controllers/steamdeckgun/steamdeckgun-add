@@ -3,6 +3,17 @@
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "steamdeckgun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
+
 SDGUN_HAND=$(batocera-settings-get controllers.steamdeckmouse.hand)
 SDGUN_GUN=$(batocera-settings-get controllers.steamdeckmouse.gun)
 
