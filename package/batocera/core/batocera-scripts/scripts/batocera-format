@@ -130,17 +130,20 @@ do_format() {
 	echo "created partition not found for ${FORMATDISK}" >&2
 	return 1
     fi
-
+    
+    nr=$(blkid | grep "DRIVE" | wc -l); nr=$(($nr + 1)); DRIVEnr=DRIVE$nr;
+    if [[ "$nr" -le "1" ]]; then DRIVEnr=DRIVE1; fi
+    
     echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -L $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -L $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat -n SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n $DRIVEnr "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
