@@ -8,6 +8,7 @@
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
+- Added Pyxel fantasy console (x86_64)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - sinden gun border colors modifiable via es menu (white, red, green, blue)
