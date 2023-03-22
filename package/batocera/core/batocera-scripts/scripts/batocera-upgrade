@@ -155,7 +155,7 @@ done
 
 # extract file on /boot
 do_upgmsg "Extracting files ..."
-if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf -)
+if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf - --no-same-owner)
 then
     exit 1
 fi
