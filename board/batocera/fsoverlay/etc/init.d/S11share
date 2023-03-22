@@ -63,7 +63,7 @@ mountDeviceOrFallback() {
             then
                 if mkdir -p "${BATOCERAFULLFS}/batocera"
                 then
-                    if mount "${BATOCERAFULLFS}/batocera" "/userdata" -o "noatime"
+                    if mount --bind "${BATOCERAFULLFS}/batocera" "/userdata" -o "noatime"
                     then
                         FALLBACK=0
                     fi
@@ -266,7 +266,7 @@ case "${MODE}" in
            LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
         done
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-        TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+        TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)".*$'+'\1'+)
         mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
     ;;
     "ANYEXTERNAL")
@@ -279,7 +279,7 @@ case "${MODE}" in
             LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
         done
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-        TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+        TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)".*$'+'\1'+)
         mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
     ;;
     "RAM")
