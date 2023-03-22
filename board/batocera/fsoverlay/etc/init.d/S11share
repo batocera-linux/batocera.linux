@@ -322,7 +322,7 @@ then
 fi
 
 # some custom files, like extension_strace.tar.gz or gdb.
-find /userdata/system -name "extension_*.tar.gz" -maxdepth 1 |
+find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" |
     while read FILE
     do
 	(cd / && gunzip -c "${FILE}" | tar xf -)

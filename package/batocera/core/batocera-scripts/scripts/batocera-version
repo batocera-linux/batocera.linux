@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FIND_EXT=$(find /userdata/system -name "extension_*.tar.gz" -maxdepth 1 | head -1)
+FIND_EXT=$(find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" | head -1)
 
 FIND_OVERLAY=
 test -e "/boot/boot/overlay" && FIND_OVERLAY=1

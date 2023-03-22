@@ -7,6 +7,9 @@ MODE=$1
 LOG="/userdata/system/logs/nvidia.log"
 LISTDIR=/usr/share/nvidia
 
+# try to create the log dir
+mkdir -p "/userdata/system/logs"
+
 if test "${MODE}" = "auto"
 then
     echo "Detect if we have a Nvidia GPU"
