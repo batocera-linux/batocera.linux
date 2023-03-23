@@ -334,8 +334,19 @@ systems = {
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
 
     # ---------- Zelda Classic ---------- #
-    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
-                                                  { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zc210/zcdata.dat"  },
+                                                          { "md5": "39e5bc84ce9aac3a2d297d8aeb2a0d05", "file": "bios/zc210/sf2/default.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zc210/sf2/custom0.sf2" },
+                                                          { "md5": "c1dc781c34cff8f9a023c0192754dc6c", "file": "bios/zc210/sf2/custom1.sf2" },
+                                                          { "md5": "144fcdbb6a30f1f916f6963006c2da97", "file": "bios/zc210/sf2/custom2.sf2" },
+                                                          { "md5": "134d217fb99c3be1e89cfaf8f28280d8", "file": "bios/zc210/sf2/custom3.sf2" },
+                                                          { "md5": "b37366199c6df9ee5316f031755aa821", "file": "bios/zc210/sf2/custom4.sf2" },
+                                                          { "md5": "64068b84eb88dc85b75148bbe9b393fb", "file": "bios/zc210/sf2/custom5.sf2" },
+                                                          { "md5": "1241986de5b1d00b02d34f1e6651a1d1", "file": "bios/zc210/sf2/custom6.sf2" },
+                                                          { "md5": "386db0d538f372a9f1af622d1e934abf", "file": "bios/zc210/sf2/custom7.sf2" },
+                                                          { "md5": "6f68e4baf89c8ee4623c19617319184b", "file": "bios/zc210/sf2/custom8.sf2" },
+                                                          { "md5": "2010e5b85f9e1d60685ccb3d84a17115", "file": "bios/zc210/sf2/custom9.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
     "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM", "emulator": "libretro", "core": "minivmac" },
                                                   { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM", "emulator": "libretro", "core": "minivmac" },
