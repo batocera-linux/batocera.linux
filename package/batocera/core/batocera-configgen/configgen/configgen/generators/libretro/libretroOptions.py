@@ -2077,7 +2077,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Sinclair ZX Spectrum
     if (system.config['core'] == 'fuse'):
         if system.isOptSet('fuse_machine'):
-            coreSettings.save('fuse_machine', system.config['fuse_machine'])
+            output = '"' + system.config['fuse_machine'] + '"'
+            coreSettings.save('fuse_machine', output)
         else:
             # The most common configuration same as ZX Spectrum+
             coreSettings.save('fuse_machine',   '"Spectrum 128K"')
