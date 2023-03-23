@@ -11,6 +11,7 @@
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - sinden gun border colors modifiable via es menu (white, red, green, blue)
+- sinden gun options to control camera contrast, brightness and exposure
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
