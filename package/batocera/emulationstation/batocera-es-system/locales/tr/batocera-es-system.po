@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Options file\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-03-23 10:25+0300\n"
+"PO-Revision-Date: 2023-03-23 20:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -318,7 +318,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
-msgstr "İLERİDE ÇALIŞTIRMAK İÇİN İKİNCİ OLUŞUM KULLAN"
+msgstr "ÖNDEN ÇALIŞMAK İÇİN İKİNCİ OLUŞUM KULLAN"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -420,7 +420,7 @@ msgstr "gizli"
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
-msgstr ""
+msgstr "Chroma 81 arayüzünü emüle et (renklendirmeli)."
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/atari800, libretro/atari800, libretro/atari800, ...
 msgctxt "game_options"
@@ -486,6 +486,8 @@ msgstr "SIO HIZLANDIRMASI"
 msgctxt "game_options"
 msgid "Emulate NTSC quirks to show more colors in hi-res mode."
 msgstr ""
+"Yüksek çözünürlüklü modda daha fazla renk göstermek için NTSC garip "
+"olaylarını emüle et."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -515,7 +517,7 @@ msgstr "JOYSTICK HACK (ROBOTRON 2084 İÇİN)"
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "LIGHT GUN CROSSHAIR"
-msgstr "LIGHT GUN GÖSTERGESİ"
+msgstr "LIGHT GUN HEDEF İMLECİ"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
@@ -560,7 +562,7 @@ msgstr "KONTROL AYGITI 2 TİP"
 #. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games used the borders."
-msgstr ""
+msgstr "Birçok oyunda sınırları gizler. Bazı oyunlar sınırları kullandı."
 
 #. TRANSLATION: libretro/bluemsx, libretro/fuse, vice
 msgctxt "game_options"
@@ -724,6 +726,8 @@ msgid ""
 "Change behaviour when emulating GB games. Auto uses SGB for GB and GBC for "
 "GBC."
 msgstr ""
+"GB oyunlarını emüle ederken davranışı değiştir. GB için SGB'yi ve GBC için "
+"GBC'yi otomatik kullanır."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -749,6 +753,7 @@ msgstr "Super Game Boy"
 msgctxt "game_options"
 msgid "Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed."
 msgstr ""
+"SGB için Super Game Boy 2'yi emüle et. Oyunları doğru hızda çalıştırır."
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -2026,7 +2031,7 @@ msgstr "ATLAMA YOK"
 #. TRANSLATION: libretro/fbneo, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/mame078plus, ...
 msgctxt "game_options"
 msgid "SHOW LIGHT GUN CROSSHAIRS"
-msgstr "TABANCA CROSSHAIR'I GÖSTER"
+msgstr "SİLAH HEDEF İMLECİNİ GÖSTER"
 
 #. TRANSLATION: libretro/fbneo, libretro/mame078plus
 msgctxt "game_options"
@@ -2203,7 +2208,7 @@ msgstr "2.5x (1600x1200)"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 1 CROSSHAIR COLOR"
-msgstr "OYUNCU 1 CROSSHAIR RENGİ"
+msgstr "OYUNCU 1 HEDEF İMLECİ RENGİ"
 
 #. TRANSLATION: libretro/flycast, libretro/flycast, libretro/flycast, libretro/flycast
 msgctxt "game_options"
@@ -2228,17 +2233,17 @@ msgstr "Beyaz"
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 2 CROSSHAIR COLOR"
-msgstr "OYUNCU 2 CROSSHAIR RENGİ"
+msgstr "OYUNCU 2 HEDEF İMLECİ RENGİ"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 3 CROSSHAIR COLOR"
-msgstr "OYUNCU 3 CROSSHAIR RENGİ"
+msgstr "OYUNCU 3 HEDEF İMLECİ RENGİ"
 
 #. TRANSLATION: libretro/flycast
 msgctxt "game_options"
 msgid "PLAYER 4 CROSSHAIR COLOR"
-msgstr "OYUNCU 4 CROSSHAIR RENGİ"
+msgstr "OYUNCU 4 HEDEF İMLECİ RENGİ"
 
 #. TRANSLATION: libretro/flycast, mupen64plus
 msgctxt "game_options"
@@ -2713,7 +2718,7 @@ msgstr "CD-DA SESİ"
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
 msgid "Enhanced sound output support for compatible games."
-msgstr ""
+msgstr "Uyumlu oyunlar için geliştirilmiş ses çıkışı desteği."
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
@@ -2910,22 +2915,22 @@ msgstr "Kullanma (Varsayılan)"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam cartridges"
-msgstr ""
+msgstr "Coleco Adam kartuşları"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco Adam Digital Data Packs"
-msgstr ""
+msgstr "Coleco Adam Dijital Veri Paketleri"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ADAM diskettes"
-msgstr ""
+msgstr "Coleco ADAM disketleri"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Coleco ColecoVision cartridges"
-msgstr ""
+msgstr "Coleco ColecoVision kartuşları"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -3001,7 +3006,7 @@ msgstr "Başlangıçta Açık"
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Enable per-game custom configuration via MAME menu."
-msgstr ""
+msgstr "MAME menüsü aracılığıyla oyun başına özel yapılandırmayı etkinleştir."
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -3511,7 +3516,7 @@ msgstr "FM Towns II UX"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "How much RAM the emulated FM Towns will have installed"
-msgstr ""
+msgstr "Emüle edilen FM Towns'da ne kadar RAM olacağı miktarı"
 
 #. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
@@ -3813,7 +3818,7 @@ msgstr "System 7.5.5 (Hard Drive)"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Creatronic Mega Duck cartridges"
-msgstr ""
+msgstr "Creatronic Mega Duck kartuşları"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -4739,7 +4744,7 @@ msgstr "Microcosm"
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
 msgid "Enable shared saves for multi-disc games"
-msgstr ""
+msgstr "Çok diskli oyunlar için paylaşılan kaydetmeyi etkinleştir"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
@@ -4819,7 +4824,7 @@ msgstr "Capcom VS oyunları Ekran Genişliğini Genişlet"
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Chrono Chross Odd/Even Bit Hack"
-msgstr ""
+msgstr "Chrono Cross Tek/Çift Bit Hack"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
@@ -5218,7 +5223,7 @@ msgstr "Çok-Yüksek 1440p"
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games use the borders."
-msgstr ""
+msgstr "Birçok oyunda sınırları gizler. Bazı oyunlar sınırları kullanır."
 
 #. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
@@ -5313,7 +5318,7 @@ msgstr "2P GAMEPAD EŞLEME (KEYRAH)"
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
 msgid "Enable launching pre-installed WHDLoad installs."
-msgstr ""
+msgstr "Önceden yüklenmiş WHDLoad yüklemelerini başlatmayı etkinleştir."
 
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae2021, libretro/puae2021
 msgctxt "game_options"
@@ -6096,7 +6101,7 @@ msgstr "C64 Japon NTSC"
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Change the output resolution ratio."
-msgstr ""
+msgstr "Çıkış çözünürlüğü oranını değiştir."
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -6496,7 +6501,7 @@ msgstr "Süper yüksek"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "Change pixel scaling and filtering method."
-msgstr ""
+msgstr "Piksel ölçekleme ve filtreleme yöntemini değiştir."
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6516,7 +6521,7 @@ msgstr "Pürüzsüz (Doğrusal)"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "Fix flickering in a static screen like Workbench."
-msgstr ""
+msgstr "Workbench gibi statik bir ekranda titremeyi düzelt."
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -6604,7 +6609,7 @@ msgstr "GamePad + 4 Pro Kontrol Aygıtı"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "GamePad + 4 Sideway Wiimote"
-msgstr ""
+msgstr "GamePad + 4 Sideway Wiimote"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6679,7 +6684,7 @@ msgstr "Surround"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Have Batocera set the first audio output device."
-msgstr ""
+msgstr "Batocera'nın ilk ses çıkış cihazını ayarlamasını sağla."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6774,7 +6779,7 @@ msgstr "Uzat"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Enable mouse input to simulate touchscreen."
-msgstr ""
+msgstr "Dokunmatik ekranı simüle etmek için fare girişini etkinleştir."
 
 #. TRANSLATION: cemu, mame/uzem, wine
 msgctxt "game_options"
@@ -6807,6 +6812,8 @@ msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
 "L1+R1 to switch screens."
 msgstr ""
+"İki ekranda da etkileşimli oyunlar için gamepad görünümünü etkinleştir. "
+"Ekranları değiştirmek için L1+R1'i kullanın."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6870,6 +6877,8 @@ msgid ""
 "Choose which graphics API library to use. Vulkan may not work on all "
 "hardware."
 msgstr ""
+"Hangi grafik API kitaplığının kullanılacağını seç. Vulkan tüm donanımlarda "
+"çalışmayabilir."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -6963,12 +6972,12 @@ msgstr "JOYSTICK'TEN İMLEÇ HASSASİYETİNE"
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "Hide crosshairs in supported games e.g. ActionMax."
-msgstr ""
+msgstr "Desteklenen oyunlarda hedef imlecini gizle, ör. ActionMax."
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
 msgid "HIDE LIGHT GUN CROSSHAIRS"
-msgstr "SİLAH CROSSHAIR GİZLE"
+msgstr "SİLAH HEDEF İMLECİ GİZLE"
 
 #. TRANSLATION: daphne
 msgctxt "game_options"
@@ -7058,6 +7067,8 @@ msgctxt "game_options"
 msgid ""
 "Compile shaders on next launch of game (one time). Reduces micro-freezes."
 msgstr ""
+"Oyunun bir sonraki açılışında gölgelendiricileri derle (bir defa). Mikro "
+"donmaları azaltır."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7092,7 +7103,7 @@ msgstr "PAD PROFILLERİ KULLAN"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Change what's plugged into the virtual GameCube ports."
-msgstr ""
+msgstr "Sanal GameCube bağlantı noktalarına takılanları değiştir."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7219,7 +7230,7 @@ msgstr "HIZLI DİSK AKTARIM HIZI"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
-msgstr ""
+msgstr "Wiimote işaretçisini DS4'ün jiroskopuyla emüle et."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7229,7 +7240,7 @@ msgstr "DUALSHOCK HAREKET KONTROLÜ"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Emulate the Wiimote pointer with a mouse."
-msgstr ""
+msgstr "Wiimote işaretçisini bir fare ile emüle et."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7556,6 +7567,8 @@ msgid ""
 "Enable the Dreamcast DSP for more accurate audio. Only recommended for fast "
 "systems."
 msgstr ""
+"Daha doğru ses için Dreamcast DSP'yi etkinleştir. Sadece hızlı sistemler "
+"için önerilir."
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -7950,6 +7963,8 @@ msgstr "120FPS"
 msgctxt "game_options"
 msgid "Higher number for higher picture quality, but requires more bandwidth."
 msgstr ""
+"Daha yüksek resim kalitesi için daha yüksek değer, fakat daha fazla bant "
+"genişliği gerektirir."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8002,7 +8017,7 @@ msgstr "kapalı"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
-msgstr ""
+msgstr "Moonlight'tan çıkarken uzak ana bilgisayardaki uygulamayı kapat."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8323,17 +8338,17 @@ msgstr "VU Add hack (Tri-Ace oyunlarının önyükleme çökmesini düzeltir)"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "FPU Compare hack (For Digimon Rumble Arena 2)"
-msgstr ""
+msgstr "FPU Karşılaştırma hack (Digimon Rumble Arena 2 için)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "FPU Multiply hack (For Tales of Destiny)"
-msgstr ""
+msgstr "FPU Çarpan hack (Tales of Destiny için)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "FPU Negative Div hack (For Gundam Games)"
-msgstr ""
+msgstr "FPU Negatif Div hack (Gundam Games için)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8378,7 +8393,7 @@ msgstr "Gecikmeli VIF1 Duraklamaları (SOCOM2 ve Spy Hunter için)"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Enable the GIF FIFO (Wallace and Gromit, DJ Hero)"
-msgstr ""
+msgstr "GIF FIFO'yu etkinleştir (Wallace ve Gromit, DJ Hero)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8995,7 +9010,7 @@ msgstr "Kompozit"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Enable the legacy or the new 3D engine (choose legacy for older GPUs)."
-msgstr ""
+msgstr "Eski veya yeni 3D motoru etkinleştir (eski GPU'lar için eskiyi seçin)."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -9015,7 +9030,7 @@ msgstr "Yeni3D"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Enable proper quad rendering (for higher end systems)."
-msgstr ""
+msgstr "Uygun dörtlü işlemeyi etkinleştirin (daha yüksek sistemler için)."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -9025,7 +9040,7 @@ msgstr "DÖRTLÜ GÖRÜNTÜLEME"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Enable crosshairs in shooting games for the selected players."
-msgstr ""
+msgstr "Seçilen oyuncular için atış oyunlarında hedef imlecini etkinleştir."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -9066,6 +9081,7 @@ msgstr "MODERN PEDAL KONTROLLERİ"
 msgctxt "game_options"
 msgid "Change the speed of the emulated PowerPC chip (fixes some issues)."
 msgstr ""
+"Emüle edilmiş PowerPC yongasının hızını değiştir (bazı sorunları giderir)."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -9179,7 +9195,7 @@ msgstr "Interton VC 4000 kartuşları"
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
 msgid "Enable or disable high score saving"
-msgstr ""
+msgstr "Yüksek skor kaydetmeyi etkinleştir veya devre dışı bırak"
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
@@ -9187,6 +9203,8 @@ msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
 msgstr ""
+"Trackball, spinner, silah (eğer bağlı değilse) ve benzer kontroller için "
+"fare girişini etkinleştir"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -9371,7 +9389,7 @@ msgstr "YÜKLEME ORTAMI TEMELİ"
 #. TRANSLATION: wine, mugen
 msgctxt "game_options"
 msgid "Define the resolution and a new dedicated window."
-msgstr ""
+msgstr "Çözünürlüğü ve yeni bir özel pencere tanımla."
 
 #. TRANSLATION: wine, mugen
 msgctxt "game_options"
@@ -9453,6 +9471,8 @@ msgid ""
 "Enable this mode if you have issue for run your game on NTFS storage (by "
 "default is better to use LinuxFS)."
 msgstr ""
+"Oyununuzu NTFS depolama alanında çalıştırmakta sorun yaşıyorsanız bu modu "
+"etkinleştirin (varsayılan olarak LinuxFS kullanmak daha iyidir)."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -9467,7 +9487,7 @@ msgstr "HATA AYIKLAMAYI ETKİNLEŞTİR"
 #. TRANSLATION: solarus
 msgctxt "game_options"
 msgid "Choose which pad to control your hero."
-msgstr ""
+msgstr "Kahramanı kontrol etmek için pad seç."
 
 #. TRANSLATION: solarus
 msgctxt "game_options"
@@ -9561,7 +9581,7 @@ msgstr "Tek"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Choose the scaling mode for the game screen."
-msgstr ""
+msgstr "Oyun ekranı için ölçeklendirme modunu seç."
 
 #. TRANSLATION: xemu, sonic2013, soniccd
 msgctxt "game_options"
@@ -9650,7 +9670,7 @@ msgstr "Normal Bilinear"
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
 msgid "Enable high quality effects for special stages."
-msgstr ""
+msgstr "Özel sahneler için yüksek kaliteli efektleri etkinleştir."
 
 #. TRANSLATION: sonic2013, soniccd
 msgctxt "game_options"
@@ -9777,7 +9797,7 @@ msgstr "MIP-MAP ETKİNLEŞTİR"
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "Enabled meshed polygons for translucency."
-msgstr ""
+msgstr "Yarı saydamlık için kafesli çokgenler etkinleştirildi."
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -9887,7 +9907,7 @@ msgstr "Brezilya Portekizcesi"
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
 msgid "Choose your console region."
-msgstr ""
+msgstr "Konsol bölgenizi seç."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -9917,7 +9937,7 @@ msgstr "Tayvan"
 #. TRANSLATION: yuzu
 msgctxt "game_options"
 msgid "Choose your console timezone."
-msgstr ""
+msgstr "Konsolunuzun saat dilimini seç."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
