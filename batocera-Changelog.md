@@ -28,6 +28,7 @@
 - Removed .wux extension for Cemu
 - Wii balance board controller option for Dolphin now enabled
 - Flatpak emulators can now use a Switch Pro Controller
+- move from busybox linux commands to more standard linux commands
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)
