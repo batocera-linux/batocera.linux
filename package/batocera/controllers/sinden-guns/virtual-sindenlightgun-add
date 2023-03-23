@@ -126,12 +126,25 @@ then
 	    ;;
 	esac
 
+	# camera
+	OPT_CONTRAST=$(batocera-settings-get controllers.guns.sinden.contrast)
+	OPT_BRIGHTNESS=$(batocera-settings-get controllers.guns.sinden.brightness)
+	OPT_EXPOSURE=$(batocera-settings-get controllers.guns.sinden.exposure)
+	test -z "${OPT_CONTRAST}"   && OPT_CONTRAST=60
+	test -z "${OPT_BRIGHTNESS}" && OPT_BRIGHTNESS=120
+	test -z "${OPT_EXPOSURE}"   && OPT_EXPOSURE=-7
+
 	# recoil
 	sed -i -e s+'\(key="EnableRecoil"[ ]*value="\)[^"]*"'+'\1'${RECOIL_ENABLED}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="TriggerRecoilNormalOrRepeat"[ ]*value="\)[^"]*"'+'\1'${RECOIL_NORMALORREPEAT}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilStrength"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STRENGTH}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilStartDelay"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STARTDELAY}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilDelayBetweenPulses"[ ]*value="\)[^"]*"'+'\1'${RECOIL_PULSEDELAY}'"'+ "${CONFIGFILE}" # no exit for that
+
+	# camera
+	sed -i -e s+'\(key="CameraContrast"[ ]*value="\)[^"]*"'+'\1'${OPT_CONTRAST}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="CameraBrightness"[ ]*value="\)[^"]*"'+'\1'${OPT_BRIGHTNESS}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="CameraExposure"[ ]*value="\)[^"]*"'+'\1'${OPT_EXPOSURE}'"'+ "${CONFIGFILE}" # no exit for that
 
 	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || unlockAndExit 1
 	rm -f "/var/run/sinden/p${PARENTHASH}/lockfile"
