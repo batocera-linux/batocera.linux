@@ -240,7 +240,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         # run the emulator
         try:
             from Evmapy import Evmapy
-            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers)
+            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
             if executionDirectory is not None:
