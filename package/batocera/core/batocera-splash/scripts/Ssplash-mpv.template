@@ -105,8 +105,12 @@ do_videostart ()
     # determine the DRM connector name based on type & index
     drm_connector=$(mpv --drm-connector=help | grep "(connected)" | grep -i "$display_type" | awk -v idx=$display_index 'NR==idx')
     if [ -z "$drm_connector" ]; then
-        echo "Error: No connected DRM connectors found for $preferred_display_type. Defaulting to index 1" >> $log
-        drm_connector=$(mpv --drm-connector=help | grep "(connected)" | awk 'NR==1')
+        echo "Error: No connected DRM connectors found for $display_type at index $display_index. Trying index 1" >> $log
+        drm_connector=$(mpv --drm-connector=help | grep "(connected)" | grep -i "$display_type" | awk 'NR==1')
+        if [ -z "$drm_connector" ]; then
+            echo "Error: No connected DRM connectors found for $display_type. Trying index 1 regardless" >> $log
+            drm_connector=$(mpv --drm-connector=help | grep "(connected)" | awk 'NR==1')
+        fi
     fi
     drm_connector=$(echo "$drm_connector" | awk '{print $1}')
     echo "Selected DRM connector: $drm_connector" >> $log
