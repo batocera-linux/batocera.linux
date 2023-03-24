@@ -2089,6 +2089,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # SNK Neogeo AES MVS / Neogeo CD
     if (system.config['core'] == 'fbneo'):
+        romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
         # Diagnostic input
         coreSettings.save('fbneo-diagnostic-input', '"Start + L + R"')
         # Allow RetroAchievements in hardcore mode with FBNeo
@@ -2112,6 +2113,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"disabled"'
             coreSettings.save('fbneo-lightgun-hide-crosshair', status)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+            coreSettings.save("fbneo-dipswitch-" + romBase+ "-Controls", '"Light Gun"')
+        else:
+            coreSettings.save("fbneo-dipswitch-" + romBase+ "-Controls", '"Joystick"')
 
         # NEOGEO
         if system.name == 'neogeo':
