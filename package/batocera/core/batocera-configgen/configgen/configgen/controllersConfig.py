@@ -282,6 +282,31 @@ def getMouseButtons(device):
     buttons.append("8")
   return buttons
 
+def mouseButtonToCode(button):
+    if button == "left":
+        return evdev.ecodes.BTN_LEFT
+    if button == "right":
+        return evdev.ecodes.BTN_RIGHT
+    if button == "middle":
+        return evdev.ecodes.BTN_MIDDLE
+    if button == "1":
+        return evdev.ecodes.BTN_1
+    if button == "2":
+        return evdev.ecodes.BTN_2
+    if button == "3":
+        return evdev.ecodes.BTN_3
+    if button == "4":
+        return evdev.ecodes.BTN_4
+    if button == "5":
+        return evdev.ecodes.BTN_5
+    if button == "6":
+        return evdev.ecodes.BTN_6
+    if button == "7":
+        return evdev.ecodes.BTN_7
+    if button == "8":
+        return evdev.ecodes.BTN_8
+    return None
+
 def getGuns():
     import pyudev
     import re
