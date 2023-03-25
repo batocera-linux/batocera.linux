@@ -7,6 +7,7 @@ import os
 import configparser
 import io
 import re
+import shutil
 from shutil import copyfile
 
 class SupermodelGenerator(Generator):
@@ -56,6 +57,12 @@ class SupermodelGenerator(Generator):
         # copy nvram files
         copy_nvram_files()
 
+        # copy gun asset files
+        copy_asset_files()
+
+        # copy xml
+        copy_xml()
+
         # config
         configPadsIni(playersControllers, drivingGame)
 
@@ -67,12 +74,42 @@ def copy_nvram_files():
     if not os.path.exists(targetDir):
         os.makedirs(targetDir)
 
-    # create nv files which are in source and not in target
+    # create nv files which are in source and have a newer modification time than in target
     for file in os.listdir(sourceDir):
         extension = os.path.splitext(file)[1][1:]
         if extension == "nv":
-            if not os.path.exists(targetDir + "/" + file):
-                copyfile(sourceDir + "/" + file, targetDir + "/" + file)
+            sourceFile = os.path.join(sourceDir, file)
+            targetFile = os.path.join(targetDir, file)
+            if not os.path.exists(targetFile):
+                # if the target file doesn't exist, just copy the source file
+                copyfile(sourceFile, targetFile)
+            else:
+                # if the target file exists and has an older modification time than the source file, create a backup and copy the new file
+                if os.path.getmtime(sourceFile) > os.path.getmtime(targetFile):
+                    backupFile = targetFile + ".bak"
+                    if os.path.exists(backupFile):
+                        os.remove(backupFile)
+                    os.rename(targetFile, backupFile)
+                    copyfile(sourceFile, targetFile)
+
+def copy_asset_files():
+    sourceDir = "/usr/share/supermodel/Assets"
+    targetDir = "/userdata/system/configs/supermodel/Assets"
+    if not os.path.exists(targetDir):
+        os.makedirs(targetDir)
+
+    # create asset files which are in source and have a newer modification time than in target
+    for file in os.listdir(sourceDir):
+        sourceFile = os.path.join(sourceDir, file)
+        targetFile = os.path.join(targetDir, file)
+        if not os.path.exists(targetFile) or os.path.getmtime(sourceFile) > os.path.getmtime(targetFile):
+            copyfile(sourceFile, targetFile)
+
+def copy_xml():
+    source_path = '/usr/share/supermodel/Games.xml'
+    dest_path = '/userdata/system/configs/supermodel/Games.xml'
+    if not os.path.exists(dest_path) or os.path.getmtime(source_path) > os.path.getmtime(dest_path):
+        shutil.copy2(source_path, dest_path)
 
 def configPadsIni(playersControllers, altControl):
     if bool(altControl):
