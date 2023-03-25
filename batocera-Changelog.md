@@ -31,6 +31,7 @@
 - Wii balance board controller option for Dolphin now enabled
 - Flatpak emulators can now use a Switch Pro Controller
 - move from busybox linux commands to more standard linux commands
+- supermodel nvram files & ini file based on Warped Polygon's work
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)
@@ -43,6 +44,7 @@
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
+- supermodel to Mar 19, 2023 build
 ### Dev
 - dxvk to 2.1
 - linux firmware to 20230310

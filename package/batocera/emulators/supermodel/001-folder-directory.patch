@@ -1,58 +1,122 @@
---- a/Src/OSD/SDL/Main.cpp	2020-07-27 20:42:50.558288000 +0200
-+++ b/Src/OSD/SDL/Main.cpp	2020-07-27 20:53:37.716417446 +0200
-@@ -429,7 +429,7 @@
-     time_t now = std::time(nullptr);
-     tm* ltm = std::localtime(&now);
+diff --git a/Src/OSD/Unix/FileSystemPath.cpp b/Src/OSD/Unix/FileSystemPath.cpp
+index f30bb04fb7..a013e8de20 100644
+--- a/Src/OSD/Unix/FileSystemPath.cpp
++++ b/Src/OSD/Unix/FileSystemPath.cpp
+@@ -48,7 +48,7 @@ namespace FileSystemPath
+     std::string GetPath(PathType pathType)
+     {
+         std::string finalPath = "";
+-        std::string homePath = "";
++        std::string homePath = "/userdata";
+         std::string strPathType = "";
+         struct passwd* pwd = getpwuid(getuid());
  
--    sprintf(file, "Screenshot %.4d-%.2d-%.2d (%.2d-%.2d-%.2d).bmp", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-+    sprintf(file, "/userdata/screenshots/supermodel %.4d-%.2d-%.2d (%.2d-%.2d-%.2d).bmp", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+@@ -78,84 +78,43 @@ namespace FileSystemPath
+             break;
+         }
  
-     info += file;
-     puts(info.c_str());
-@@ -569,7 +569,7 @@
- {
-   CBlockFile  SaveState;
+-        // Get user's HOME directory
+-        if (pwd)
++        // Use batocera directories
++        if (pathType == Analysis)
+         {
+-            homePath = pwd->pw_dir;
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel/" << strPathType;
+         }
+-        else
++        if (pathType == Config)
+         {
+-            homePath = getenv("HOME");
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel";
+         }
+-
+-        // If Config path exists in current directory or the user doesn't have a HOME directory use current directory
+-        if (FileSystemPath::PathExists("Config") || homePath.empty())
++        if (pathType == Log)
+         {
+-            // Use current directory
+-            if (pathType == Screenshots || pathType == Log)
+-            {
+-                finalPath = "";
+-            }
+-            else
+-            {
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(strPathType))
+-                {
+-                    mkdir(strPathType.c_str(), 0775);
+-                }
+-                finalPath = strPathType;
+-            }
++            finalPath = Util::Format() << homePath << "/system/logs";
+         }
+-        // Check if $HOME/.supermodel exists
+-        else if (FileSystemPath::PathExists(Util::Format() << homePath << "/.supermodel"))
++        if (pathType == NVRAM)
+         {
+-            // Use $HOME/.supermodel
+-            finalPath = Util::Format() << homePath << "/.supermodel/" << strPathType;
+-            // If directory doesn't exist, create it
+-            if (!FileSystemPath::PathExists(finalPath))
+-            {
+-                mkdir(finalPath.c_str(), 0775);
+-            }
++            finalPath = Util::Format() << homePath << "/saves/supermodel/saves/" << strPathType;
+         }
+-        // On Linux one may want to follow the XDG base directory specs (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+-        else
++        if (pathType == Saves)
+         {
+-            // Use $HOME/.config/supermodel or $HOME/.local/share/supermodel depending on the file type
+-            if (pathType == Config)
+-            {
+-                finalPath = Util::Format() << homePath << "/.config/supermodel";
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-                // If directory doesn't exist, create it
+-                finalPath = Util::Format() << homePath << "/.config/supermodel/Config";
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-            }
+-            else
+-            {
+-                finalPath = Util::Format() << homePath << "/.local/share/supermodel";
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-                // If directory doesn't exist, create it
+-                finalPath = Util::Format() << homePath << "/.local/share/supermodel/" << strPathType;
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-            }
+-            
++            finalPath = Util::Format() << homePath << "/saves/supermodel/" << strPathType;
++        }                     
++        if (pathType == Screenshots)
++        {
++            finalPath = Util::Format() << homePath << "/screenshots/supermodel";
++        }
++        if (pathType == Assets)
++        {
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel/Assets";
+         }
+         
+         if (finalPath != "")
+         {
++            // If directory doesn't exist, create it
++            if (!FileSystemPath::PathExists(finalPath))
++            {
++                mkdir(finalPath.c_str(), 0775);
++            }
+             finalPath = Util::Format() << finalPath << "/";
+         }
  
--  std::string file_path = Util::Format() << "Saves/" << Model3->GetGame().name << ".st" << s_saveSlot;
-+  std::string file_path = Util::Format() << "/userdata/saves/supermodel/" << Model3->GetGame().name << ".st" << s_saveSlot;
-   if (OKAY != SaveState.Create(file_path, "Supermodel Save State", "Supermodel Version " SUPERMODEL_VERSION))
-   {
-     ErrorLog("Unable to save state to '%s'.", file_path.c_str());
-@@ -594,7 +594,7 @@
- 
-   // Generate file path
-   if (file_path.empty())
--    file_path = Util::Format() << "Saves/" << Model3->GetGame().name << ".st" << s_saveSlot;
-+    file_path = Util::Format() << "/userdata/saves/supermodel/" << Model3->GetGame().name << ".st" << s_saveSlot;
- 
-   // Open and check to make sure format is correct
-   if (OKAY != SaveState.Load(file_path))
-@@ -628,7 +628,7 @@
- {
-   CBlockFile  NVRAM;
- 
--  std::string file_path = Util::Format() << "NVRAM/" << Model3->GetGame().name << ".nv";
-+  std::string file_path = Util::Format() << "/userdata/saves/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
-   if (OKAY != NVRAM.Create(file_path, "Supermodel NVRAM State", "Supermodel Version " SUPERMODEL_VERSION))
-   {
-     ErrorLog("Unable to save NVRAM to '%s'. Make sure directory exists!", file_path.c_str());
-@@ -651,7 +651,7 @@
-   CBlockFile  NVRAM;
- 
-   // Generate file path
--  std::string file_path = Util::Format() << "NVRAM/" << Model3->GetGame().name << ".nv";
-+  std::string file_path = Util::Format() << "/userdata/saves/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
- 
-   // Open and check to make sure format is correct
-   if (OKAY != NVRAM.Load(file_path))
-@@ -1273,8 +1273,8 @@
-  Entry Point and Command Line Procesing
- ******************************************************************************/
- 
--static const char s_configFilePath[] = { "Config/Supermodel.ini" };
--static const char s_gameXMLFilePath[] = { "Config/Games.xml" };
-+static const char s_configFilePath[] = { "/userdata/system/configs/supermodel/Supermodel.ini" };
-+static const char s_gameXMLFilePath[] = { "/usr/share/supermodel/Games.xml" };
- 
- // Create and configure inputs
- static bool ConfigureInputs(CInputs *Inputs, Util::Config::Node *fileConfig, Util::Config::Node *runtimeConfig, const Game &game, bool configure)
