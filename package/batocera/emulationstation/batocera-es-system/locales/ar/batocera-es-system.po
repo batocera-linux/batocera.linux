@@ -4,8 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2023-03-25 09:02+0100\n"
-"Last-Translator: Chipsum <"
-"chipsum@fallenbyte.com>\n"
+"Last-Translator: Chipsum <chipsum@fallenbyte.com>\n"
 "Language-Team: Chipsum\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -535,7 +534,7 @@ msgctxt "game_options"
 msgid "CONTROLLER 2 TYPE"
 msgstr ""
 
-#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "Hides borders on many games. Some games used the borders."
 msgstr ""
@@ -615,7 +614,7 @@ msgctxt "game_options"
 msgid "24 bit (Default)"
 msgstr ""
 
-#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx
+#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr ""
@@ -625,7 +624,7 @@ msgctxt "game_options"
 msgid "LANGUAGE"
 msgstr ""
 
-#. TRANSLATION: libretro/cap32, redream
+#. TRANSLATION: libretro/cap32, redream, xenia, xenia-canary
 msgctxt "game_options"
 msgid "English (Default)"
 msgstr ""
@@ -1155,7 +1154,7 @@ msgctxt "game_options"
 msgid "Italian"
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Dutch"
 msgstr ""
@@ -1482,7 +1481,7 @@ msgctxt "game_options"
 msgid "No EMS/XMS"
 msgstr ""
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/px68k, mame/uzem
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/px68k, mame/uzem, ...
 msgctxt "game_options"
 msgid "4MB"
 msgstr "4 م.ب"
@@ -2057,12 +2056,12 @@ msgctxt "game_options"
 msgid "Both"
 msgstr ""
 
-#. TRANSLATION: libretro/fceumm, libretro/nestopia, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/fceumm, libretro/nestopia, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "Can be used to simulate colors of particular displays."
 msgstr ""
 
-#. TRANSLATION: libretro/fceumm, libretro/nestopia, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/fceumm, libretro/nestopia, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "COLOR FILTER"
 msgstr ""
@@ -2908,12 +2907,12 @@ msgctxt "game_options"
 msgid "Disk (Drive 2)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 1)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
 msgid "Cartridge (Slot 2)"
 msgstr ""
@@ -3413,6 +3412,11 @@ msgctxt "game_options"
 msgid "Electron"
 msgstr ""
 
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "Floppy Disk"
+msgstr ""
+
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Fujitsu FM-77AV disk images"
@@ -3451,6 +3455,21 @@ msgstr ""
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "FM Towns II UX"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/uzem
+msgctxt "game_options"
+msgid "How much RAM the emulated FM Towns will have installed"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "RAM SIZE"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/px68k, mame/uzem, mame/uzem
+msgctxt "game_options"
+msgid "2MB"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/uzem
@@ -3632,9 +3651,11 @@ msgctxt "game_options"
 msgid "Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem
+#. TRANSLATION: libretro/mame
 msgctxt "game_options"
-msgid "Install the image reader card to read idks image files (Mac IIx only)"
+msgid ""
+"Install the image reader card to read disk image files (Mac IIx only). "
+"Minimum 4MB ram size recommended."
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/uzem
@@ -3673,24 +3694,9 @@ msgid ""
 "How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "RAM SIZE"
-msgstr ""
-
-#. TRANSLATION: libretro/mame, libretro/px68k, mame/uzem
-msgctxt "game_options"
-msgid "2MB"
-msgstr ""
-
 #. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "Type of ROM file to load"
-msgstr ""
-
-#. TRANSLATION: libretro/mame, mame/uzem
-msgctxt "game_options"
-msgid "Floppy Disk"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/uzem
@@ -3858,7 +3864,7 @@ msgctxt "game_options"
 msgid "Digital"
 msgstr ""
 
-#. TRANSLATION: libretro/mame078plus, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/mame078plus, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "Keyboard shortcuts unavailable if passing through the keyboard."
 msgstr ""
@@ -3958,12 +3964,12 @@ msgctxt "game_options"
 msgid "MULTITAP"
 msgstr ""
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "Port 1"
 msgstr ""
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, ...
+#. TRANSLATION: libretro/mednafen_psx, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, ...
 msgctxt "game_options"
 msgid "Port 2"
 msgstr ""
@@ -5152,12 +5158,12 @@ msgctxt "game_options"
 msgid "Hides borders on many games. Some games use the borders."
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "ZOOM/CROP (HIDE BORDERS)"
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "Auto zoom"
 msgstr ""
@@ -5172,12 +5178,12 @@ msgctxt "game_options"
 msgid "smaller"
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "small"
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "medium"
 msgstr ""
@@ -5192,7 +5198,7 @@ msgctxt "game_options"
 msgid "larger"
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, ...
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
 msgid "maximum"
 msgstr ""
@@ -5307,7 +5313,7 @@ msgctxt "game_options"
 msgid "Makes the blue button press up instead."
 msgstr ""
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/puae, libretro/puae2021, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "JUMP ON A"
 msgstr ""
@@ -5974,107 +5980,107 @@ msgctxt "game_options"
 msgid "RESOLUTION MULTIPLIER"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xvic
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_xvic
 msgctxt "game_options"
 msgid "Automatic switches region per file path tags"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 PAL Automatic"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 NTSC Automatic"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 PAL"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 NTSC"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 Games System PAL"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64
 msgctxt "game_options"
 msgid "C64 Japanese NTSC"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Change the output resolution ratio."
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "ASPECT RATIO"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "PAL 576x312px"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "NTSC 492x262px"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Auto-disable zoom"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Most games use port 2, some use port 1."
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "CONTROLLER PORT"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "CONTROLLER TYPE"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Paddles"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Mouse (1351)"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Trackball (Atari CX-22)"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Koalapad"
 msgstr ""
 
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128, libretro/vice_xplus4, libretro/vice_xvic, ...
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "KEYBOARD PASSTHROUGH"
 msgstr ""
@@ -6548,17 +6554,17 @@ msgctxt "game_options"
 msgid "Current language"
 msgstr ""
 
-#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Chinese"
 msgstr ""
 
-#. TRANSLATION: cemu, yuzu, ryujinx
+#. TRANSLATION: cemu, yuzu, ryujinx, xenia, xenia-canary
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr ""
 
-#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx
+#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Russian"
 msgstr ""
@@ -7502,17 +7508,12 @@ msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "How the emulator should sort transparent objects."
+msgid "Per pixel is the most accurate, but also the most demanding."
 msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
-msgid "TRANSPARENT SORTING"
-msgstr ""
-
-#. TRANSLATION: flycast
-msgctxt "game_options"
-msgid "Per Triangle (Default)"
+msgid "ALPHA SORTING"
 msgstr ""
 
 #. TRANSLATION: flycast
@@ -7522,7 +7523,22 @@ msgstr ""
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
+msgid "Per Triangle (Default)"
+msgstr ""
+
+#. TRANSLATION: flycast
+msgctxt "game_options"
 msgid "Per Pixel"
+msgstr ""
+
+#. TRANSLATION: fpinball
+msgctxt "game_options"
+msgid "Allow mapping Future Pinabll with Pad to Keyboard."
+msgstr ""
+
+#. TRANSLATION: fpinball
+msgctxt "game_options"
+msgid "CONTROLLER CONFIGURATION"
 msgstr ""
 
 #. TRANSLATION: hatari
@@ -8706,7 +8722,7 @@ msgctxt "game_options"
 msgid "Greek"
 msgstr ""
 
-#. TRANSLATION: easyrpg
+#. TRANSLATION: easyrpg, xenia, xenia-canary
 msgctxt "game_options"
 msgid "Turkish"
 msgstr ""
@@ -8995,6 +9011,11 @@ msgstr ""
 
 #. TRANSLATION: mame/uzem
 msgctxt "game_options"
+msgid "Install the image reader card to read idks image files (Mac IIx only)"
+msgstr ""
+
+#. TRANSLATION: mame/uzem
+msgctxt "game_options"
 msgid "Type of ROM file to load. Disk Image requires Mac IIx and Image Reader"
 msgstr ""
 
@@ -9256,17 +9277,6 @@ msgstr ""
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "HIDE NVIDIA GPU"
-msgstr ""
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Disabling this may help compatibility with certain controllers and games."
-msgstr ""
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "RAW CONTROLLER INPUT"
 msgstr ""
 
 #. TRANSLATION: wine
@@ -10112,6 +10122,65 @@ msgstr "التوقيت العالمي+11"
 msgctxt "game_options"
 msgid "UTC+12"
 msgstr "التوقيت العالمي+12"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"This option enables the ability to play Xbox Live Arcacde games. May cause "
+"compatibility issues with non-XBLA games."
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "XBOX LIVE ARCADE"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "No licenses enabled"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "XBLA license enabled (Default)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "All possible licenses (Not recommended)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Polish"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Swedish"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Norwegian"
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid ""
+"Allow game that support different resolutions to be rendered in specific "
+"resolution."
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid "INTERNAL DISPLAY RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid "1280x720 (Default)"
+msgstr ""
 
 #. TRANSLATION: gzdoom
 msgctxt "game_options"
