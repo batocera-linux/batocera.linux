@@ -61,7 +61,7 @@ index f30bb04fb7..a013e8de20 100644
 -            {
 -                mkdir(finalPath.c_str(), 0775);
 -            }
-+            finalPath = Util::Format() << homePath << "/saves/supermodel/saves/" << strPathType;
++            finalPath = Util::Format() << homePath << "/saves/supermodel/" << strPathType;
          }
 -        // On Linux one may want to follow the XDG base directory specs (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 -        else
