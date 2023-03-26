@@ -1,6 +1,6 @@
-From b4e3c3acdaaff33e6012199a6fffb8b36c76afa4 Mon Sep 17 00:00:00 2001
+From 1a4ee68fe2434d015c8e14b8fbf5ceecdeb1fac2 Mon Sep 17 00:00:00 2001
 From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Sat, 25 Mar 2023 19:24:58 +0000
+Date: Sun, 26 Mar 2023 05:31:24 +0000
 Subject: [PATCH] evdev for guns
 
 Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
@@ -15,7 +15,7 @@ Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
  create mode 100644 Src/OSD/evdev/EvdevInputSystem.h
 
 diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
-index d499234..51c5b63 100644
+index 1e48361..7433a53 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
 @@ -63,7 +63,7 @@ SDL2_LIBS = `sdl2-config --libs`
@@ -28,7 +28,7 @@ index d499234..51c5b63 100644
  
  ###############################################################################
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index 52f2b6a..7f1d91a 100644
+index 1f10ad7..d0a2d8b 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
 @@ -149,6 +149,7 @@ SRC_FILES = \
@@ -36,22 +36,22 @@ index 52f2b6a..7f1d91a 100644
  	Src/Inputs/MultiInputSource.cpp \
  	Src/OSD/SDL/SDLInputSystem.cpp \
 +	Src/OSD/evdev/EvdevInputSystem.cpp \
+ 	Src/OSD/SDL/Crosshair.cpp \
  	Src/OSD/Outputs.cpp \
  	Src/Sound/MPEG/MpegAudio.cpp \
- 	Src/Model3/Crypto.cpp \
 diff --git a/Src/OSD/SDL/Main.cpp b/Src/OSD/SDL/Main.cpp
-index 8033d7e..427b5cf 100644
+index 8b71041..618e754 100644
 --- a/Src/OSD/SDL/Main.cpp
 +++ b/Src/OSD/SDL/Main.cpp
-@@ -68,6 +68,7 @@
- #include "Util/ConfigBuilders.h"
+@@ -69,6 +69,7 @@
+ #include "OSD/FileSystemPath.h"
  #include "GameLoader.h"
  #include "SDLInputSystem.h"
 +#include "EvdevInputSystem.h"
  #include "SDLIncludes.h"
  #include "Debugger/SupermodelDebugger.h"
  #include "Graphics/Legacy3D/Legacy3D.h"
-@@ -2048,6 +2049,10 @@ int main(int argc, char **argv)
+@@ -1972,6 +1973,10 @@ int main(int argc, char **argv)
    // Create input system
    if (selectedInputSystem == "sdl")
      InputSystem = new CSDLInputSystem(s_runtime_config);
