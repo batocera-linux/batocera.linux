@@ -45,6 +45,7 @@
 - hypseus to 2.10.2
 - abuse to 0.9.1
 - supermodel to Mar 19, 2023 build
+- Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 ### Dev
 - dxvk to 2.1
 - linux firmware to 20230310
