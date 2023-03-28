@@ -1228,8 +1228,8 @@ pyxel:
   hardware: console
   extensions: [py, pyxapp]
   emulators:
-    libretro:
-      wasm4: { requireAnyOf: [BR2_PACKAGE_PYTHON_PYXEL] }
+    pyxel:
+      pyxel: { requireAnyOf: [BR2_PACKAGE_PYTHON_PYXEL] }
 
 channelf:
   name:       Channel-F

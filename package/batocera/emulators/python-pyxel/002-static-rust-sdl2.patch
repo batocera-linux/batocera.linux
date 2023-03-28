@@ -6,7 +6,7 @@ diff '--color=auto' -uri python-pyxel-lbrpdx/crates/pyxel-core/Cargo.toml python
  [target.'cfg(any(target_os = "linux", target_os = "emscripten"))'.dependencies]
  sdl2 = { version = "0.35", default-features = false, features = [
 +    "bundled",
-+    "static-link",
++    "use-pkgconfig",
      "unsafe_textures",
  ] }
 
