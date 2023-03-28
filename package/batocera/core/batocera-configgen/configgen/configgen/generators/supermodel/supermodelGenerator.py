@@ -33,6 +33,12 @@ class SupermodelGenerator(Generator):
         # crosshairs
         if system.isOptSet("crosshairs"):
             commandArray.append("-crosshairs={}".format(system.config["crosshairs"]))
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                if len(guns) == 1:
+                    commandArray.append("-crosshairs={}".format("1"))
+                else:
+                    commandArray.append("-crosshairs={}".format("3"))
 
         # force feedback
         if system.isOptSet("forceFeedback") and system.getOptBoolean("forceFeedback"):
