@@ -1221,6 +1221,16 @@ wasm4:
     libretro:
       wasm4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WASM4] }
 
+pyxel:
+  name:       pyxel
+  manufacturer: Fantasy
+  release: 2021
+  hardware: console
+  extensions: [py, pyxapp]
+  emulators:
+    pyxel:
+      pyxel: { requireAnyOf: [BR2_PACKAGE_PYTHON_PYXEL] }
+
 channelf:
   name:       Channel-F
   manufacturer: Fairchild
