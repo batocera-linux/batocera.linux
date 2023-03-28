@@ -15,6 +15,8 @@
 - sinden gun options to control camera contrast, brightness and exposure
 - pad2keys for guns (use actions_gun1, actions_gun2, ... and "left", "right", "middle", "1", "2", ... for trigger)
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
+- supermodel now supports multi guns.
+- supermodel now supports start and coin buttons on the gun
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
