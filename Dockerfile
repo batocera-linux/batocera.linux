@@ -1,47 +1,43 @@
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
-
 RUN dpkg --add-architecture i386 && \
 	apt-get update && \
-	# libc6:i386 libncurses5:i386 libstdc++6:i386: required for mame2016
 	apt-get install -y -o APT::Immediate-Configure=0 libc6:i386 \
-	libncurses6:i386 \
-	libstdc++6:i386 \
-	build-essential \
-	cmake \
-	git \
-	libncurses6 \
-	libncurses-dev \
-	libssl-dev \
-	mercurial \
-	texinfo \
-	zip \
-	default-jre \
-	imagemagick \
-	subversion \
-	autoconf \
-	automake \
-	bison \
-	scons \
-	libglib2.0-dev \
-	bc \
-	mtools \
-	u-boot-tools \
-	flex \
-	wget \
-	cpio \
-	dosfstools \
-	libtool \
-	rsync \
-	# device-tree-compiler : required for device-trees-aml-s9xx
-	device-tree-compiler \
-	# gettext : required for buildstats.sh
-	gettext \
-	locales \
-	graphviz \
-	python3 \
-	gcc-multilib \
-	g++-multilib \
+		libncurses6:i386 \
+		libstdc++6:i386 \
+		build-essential \
+		cmake \
+		git \
+		libncurses6 \
+		libncurses-dev \
+		libssl-dev \
+		mercurial \
+		texinfo \
+		zip \
+		default-jre \
+		imagemagick \
+		subversion \
+		autoconf \
+		automake \
+		bison \
+		scons \
+		libglib2.0-dev \
+		bc \
+		mtools \
+		u-boot-tools \
+		flex \
+		wget \
+		cpio \
+		dosfstools \
+		libtool \
+		rsync \
+		device-tree-compiler \
+		gettext \
+		locales \
+		graphviz \
+		python3 \
+		gcc-multilib \
+		g++-multilib \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -56,17 +52,11 @@ ENV TZ Europe/Paris
 # Workaround host-tar configure error
 ENV FORCE_UNSAFE_CONFIGURE 1
 
-ARG BUILD_USER=builder
-ARG UID=1000
-ARG GID=1000
+# device-tree-compiler : required for device-trees-aml-s9xx
+# libc6:i386 libncurses5:i386 libstdc++6:i386: required for mame2016
+# gettext : required for buildstats.sh
 
-# If UID and GID were passed in as build args, they'll be used for the build user.
-RUN	useradd -u $UID -g $GID --create-home $BUILD_USER
-ENV HOME=/home/$BUILD_USER
-
-RUN mkdir -p /build && chown $UID:$GID /build
-
-USER $BUILD_USER
+RUN mkdir -p /build
 WORKDIR /build
 
 CMD ["/bin/bash"]
