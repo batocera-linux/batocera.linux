@@ -51,6 +51,7 @@
 - Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 - Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
 ### Dev
+- buildroot upgrade to 2023.02
 - dxvk to 2.1
 - linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.8
