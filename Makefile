@@ -44,7 +44,7 @@ vars:
 
 
 build-docker-image:
-	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
+	$(DOCKER) build --build-arg UID=$(UID) --build-arg GID=$(GID) . -t $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
 .ba-docker-image-available:
@@ -77,8 +77,6 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
@@ -93,8 +91,6 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
@@ -107,8 +103,6 @@ dl-dir:
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
@@ -120,8 +114,6 @@ dl-dir:
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot source
@@ -133,8 +125,6 @@ dl-dir:
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot show-build-order
@@ -146,8 +136,6 @@ dl-dir:
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot linux-menuconfig
@@ -159,8 +147,6 @@ dl-dir:
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build BR2_GRAPH_OUT=svg -C /build/buildroot graph-depends
@@ -175,8 +161,6 @@ dl-dir:
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
 		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
