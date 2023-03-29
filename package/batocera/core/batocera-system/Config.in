@@ -722,53 +722,6 @@ config BR2_PACKAGE_BATOCERA_XWAYLAND
 	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     # theme for file manager
 	select BR2_PACKAGE_XTERM                        # terminal
 
-config BR2_PACKAGE_BATOCERA_XORG
-	bool "batocera.linux xorgs packages selection"
-
-	select BR2_PACKAGE_XORG7
-	select BR2_PACKAGE_XSERVER_XORG_SERVER
-
-	# xwayland based architecture (no more ddx drivers)
-	select BR2_PACKAGE_LIBEPOXY             # required to enable xorg glamor
-	select BR2_PACKAGE_WAYLAND_PROTOCOLS    if BR2_PACKAGE_WAYLAND
-	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
-
-	# drivers
-	select BR2_PACKAGE_XDRIVER_XF86_INPUT_EVDEV
-	select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
-	select BR2_PACKAGE_XDRIVER_XF86_INPUT_SYNAPTICS
-
-	# GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
-	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI                   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU               if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_XDRIVER_XF86_INTEL                       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	# nvidia xorg packages are selected by batocera-nvidia package
-
-	# applications
-	select BR2_PACKAGE_XAPP_SETXKBMAP
-	select BR2_PACKAGE_XAPP_XEV
-	select BR2_PACKAGE_XAPP_XINIT
-	select BR2_PACKAGE_XAPP_XINPUT
-	select BR2_PACKAGE_XAPP_XRANDR                  # required for resolution manipulation
-	select BR2_PACKAGE_XAPP_XSET                    # X11 Xset command
-
-	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
-	select BR2_PACKAGE_LIBGTK3                      # gtk3 library
-	select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
-	select BR2_PACKAGE_PCMANFM                      # file manager
-	select BR2_PACKAGE_GVFS                         if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
-	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
-	select BR2_PACKAGE_XTERM                        # terminal
-	select BR2_PACKAGE_OPENBOX                      # window manager
-	select BR2_PACKAGE_UNCLUTTER                    # hide mouse
-	select BR2_PACKAGE_TOUCHEGG                     # touchscreen extended gestures
-
-	# vendor neutral GL dispatch library
-	# already set by nvidia for x86_64, but required on x86 for pcsx2
-	# required for RPi4 OpenGL stack
-	select BR2_PACKAGE_LIBGLVND                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-
 ### ### ###
 
 # Retroarch / Libretro
@@ -782,3 +735,6 @@ source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config
 
 # Emulator
 source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config.emulator.in"
+
+# Xorg
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config.xorg.in"
