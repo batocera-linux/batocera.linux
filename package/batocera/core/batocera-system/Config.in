@@ -684,44 +684,6 @@ config BR2_PACKAGE_BATOCERA_SDL2
 	select BR2_PACKAGE_LIBMAD           # mp3
 	select BR2_PACKAGE_LIBVORBIS        # ogg
 
-config BR2_PACKAGE_BATOCERA_WAYLAND
-	bool "batocera.linux wayland packages selection"
-
-     # Wayland Protocol
-    select BR2_PACKAGE_WAYLAND
-    select BR2_PACKAGE_WAYLANDPP
-    select BR2_PACKAGE_WAYLAND_UTILS
-    select BR2_PACKAGE_WAYLAND_PROTOCOLS
-
-    # Seat management daemon
-    select BR2_PACKAGE_SEATD
-    select BR2_PACKAGE_SEATD_DAEMON
-
-    # Compositor for wayland
-    select BR2_PACKAGE_SWAY
-    select BR2_PACKAGE_SWAYBG
-
-config BR2_PACKAGE_BATOCERA_XWAYLAND
-	bool "batocera.linux xwayland packages selection"
-
-    # wayland packages
-    select BR2_PACKAGE_BATOCERA_WAYLAND
-
-    # Xorg emulation layer of Wayland
-    select BR2_PACKAGE_XORG7
-    select BR2_PACKAGE_XWAYLAND
-    select BR2_PACKAGE_WLROOTS_X11
-    select BR2_PACKAGE_WLROOTS_XWAYLAND
-
-    # Xorg apps
-	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
-	select BR2_PACKAGE_LIBGTK3                      # gtk3 library
-	select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
-	select BR2_PACKAGE_PCMANFM                      # file manager
-	select BR2_PACKAGE_GVFS                         # file systems (trash, smb, ... in pcmanfm)
-	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     # theme for file manager
-	select BR2_PACKAGE_XTERM                        # terminal
-
 ### ### ###
 
 # Retroarch / Libretro
@@ -738,3 +700,6 @@ source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config
 
 # Xorg
 source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config.xorg.in"
+
+# Wayland
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config.wayland.in"
