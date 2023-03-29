@@ -1,0 +1,36 @@
+diff '--color=auto' -uri pigo-v1.4.6-lbrpdx/build.sh pigo-v1.4.6/build.sh
+--- pigo-v1.4.6-lbrpdx/build.sh	2022-10-04 01:07:52.000000000 -0700
++++ pigo-v1.4.6/build.sh	2023-03-29 14:54:05.714549133 -0700
+@@ -3,6 +3,7 @@
+
+ VERSION="1.4.6"
+ PROTECTED_MODE="no"
++BATOCERA_SCISORS="yes"
+
+ export GO15VENDOREXPERIMENT=1
+
+@@ -42,6 +43,7 @@
+
+ # temp directory for storing isolated environment.
+ TMP="$(mktemp -d -t sdb.XXXX)"
++TMPC="$(mktemp -d -t gocache.XXXX)"
+ rmtemp() {
+ 	rm -rf "$TMP"
+ }
+@@ -51,6 +53,8 @@
+ 	# copy all files to an isolated directory.
+ 	WD="$TMP/src/github.com/esimov/pigo"
+ 	export GOPATH="$TMP"
++	export GO_PORTABLE_TYPE="linux"
++	export GO_CROSS_COMP="no" # Will need fixing later for ARM SBC (same as Ikemen-GO)
+ 	for file in `find . -type f`; do
+ 		# TODO: use .gitignore to ignore, or possibly just use git to determine the file list.
+ 		if [[ "$file" != "." && "$file" != ./.git* && "$file" != ./pigo ]]; then
+@@ -62,4 +66,4 @@
+ fi
+
+ # build and store objects into original directory.
+-go build -ldflags "-X main.Version=$VERSION" -o "$OD/pigo" cmd/pigo/*.go
+\ No newline at end of file
++GOCACHE="$TMPC" GOMODCACHE="$TMPC" go build -ldflags "-X main.Version=$VERSION" -o "$OD/pigo" cmd/pigo/*.go
+

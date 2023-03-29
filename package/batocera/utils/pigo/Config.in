@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PIGO
+        bool "pigo"
+        depends on BR2_PACKAGE_HOST_GO_TARGET_ARCH_SUPPORTS
+        depends on BR2_PACKAGE_HOST_GO_TARGET_CGO_LINKING_SUPPORTS
+	select BR2_PACKAGE_BATOCERA_SCISOR_GUNS
+        help
+          Fast face/eye tracking module to detect eyes getting open/closed quickly.
+          To be used jointly with Batocera scisor-guns (same webcam framework).
+
+          https://github.com/esimov/pigo

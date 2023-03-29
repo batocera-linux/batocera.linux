@@ -1537,6 +1537,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_OPENBOX                      # window manager
 	select BR2_PACKAGE_UNCLUTTER                    # hide mouse
 	select BR2_PACKAGE_TOUCHEGG                     # touchscreen extended gestures
+	select BR2_PACKAGE_PIGO 			# eye detection for Batocera scisor guns
 
 	# vendor neutral GL dispatch library
 	# already set by nvidia for x86_64, but required on x86 for pcsx2
