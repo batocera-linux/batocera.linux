@@ -1,0 +1,17 @@
+config BR2_PACKAGE_XLIB_LIBXPRESENT
+	bool "libXpresent"
+	select BR2_PACKAGE_XLIB_LIBX11
+	select BR2_PACKAGE_XLIB_LIBXEXT
+	select BR2_PACKAGE_XLIB_LIBXFIXES
+	select BR2_PACKAGE_XLIB_LIBXRANDR
+	help
+	  X11 Present extension library
+	  libXpresent provides an X Window System client interface to the
+	  Present extension to the X protocol. The Present extension
+	  provides a way for applications to update their window contents
+	  from a pixmap in a well defined fashion, synchronizing with the
+	  display refresh and potentially using a more efficient mechanism
+	  than copying the contents of the source pixmap.
+
+	  More information about X.Org can be found at:
+	  <URL:http://www.X.org>

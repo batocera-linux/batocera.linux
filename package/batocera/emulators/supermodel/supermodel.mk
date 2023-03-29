@@ -3,8 +3,8 @@
 # supermodel
 #
 ################################################################################
-# Version: Commits on Nov 14, 2022
-SUPERMODEL_VERSION = acc7161ca5545a592d5b4145b2b5bacfc7b08f73
+# Version: Commits on Mar 19, 2023
+SUPERMODEL_VERSION = 87de86f7d19aba5cb16c675a3b0ee8142da72bd7
 SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net
 SUPERMODEL_LICENSE = GPLv3
@@ -36,6 +36,8 @@ define SUPERMODEL_INSTALL_TARGET_CMDS
 	$(SED) 's|InputGearShift4 = "KEY_R,JOY1_BUTTON8"|InputGearShift4 = "KEY_R"|g' $(TARGET_DIR)/usr/share/supermodel/Supermodel-Driving.ini.template
 	$(SED) 's|InputGearShiftUp = "KEY_Y"|InputGearShiftUp = "KEY_Y,JOY1_BUTTON6,JOY1_RYAXIS_NEG"|g' $(TARGET_DIR)/usr/share/supermodel/Supermodel-Driving.ini.template
 	$(SED) 's|InputGearShiftDown = "KEY_H"|InputGearShiftDown = "KEY_H,JOY1_BUTTON5,JOY1_RYAXIS_POS"|g' $(TARGET_DIR)/usr/share/supermodel/Supermodel-Driving.ini.template
+	mkdir -p $(TARGET_DIR)/usr/share/supermodel/Assets
+	$(INSTALL) -D -m 0644 $(@D)/Assets/* $(TARGET_DIR)/usr/share/supermodel/Assets/
 endef
 
 define SUPERMODEL_LINE_ENDINGS_FIXUP
@@ -43,12 +45,13 @@ define SUPERMODEL_LINE_ENDINGS_FIXUP
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/OSD/SDL/Main.cpp
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/Inputs/Inputs.cpp
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/Graphics/New3D/R3DShaderTriangles.h
+	sed -i -E -e "s|\r$$||g" $(@D)/Src/OSD/Unix/FileSystemPath.cpp
 endef
 
 define SUPERMODEL_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/supermodel
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/model3.supermodel.keys $(TARGET_DIR)/usr/share/evmapy
-        cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/NVRAM $(TARGET_DIR)/usr/share/supermodel
+    cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/NVRAM $(TARGET_DIR)/usr/share/supermodel
 endef
 
 SUPERMODEL_PRE_PATCH_HOOKS += SUPERMODEL_LINE_ENDINGS_FIXUP

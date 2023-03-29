@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_MGBA_VERSION = 0.9.3
+LIBRETRO_MGBA_VERSION = 0.10.1
 LIBRETRO_MGBA_SITE = $(call github,mgba-emu,mgba,$(LIBRETRO_MGBA_VERSION))
 LIBRETRO_MGBA_LICENSE = MPLv2.0
 

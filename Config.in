@@ -308,6 +308,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/vita3k/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ikemen/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/bigpemu/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pyxel/Config.in"
   endmenu
 
   menu "WINE"
@@ -424,6 +425,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/grim/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wf-recorder/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wlr-randr/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/alsa-topology-conf/Config.in"
 endmenu
 
 menu "Cases"
@@ -434,6 +436,7 @@ menu "Cases"
 endmenu
 
 menu "Libraries"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/xlib_libXpresent/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libcapsimage/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libenet/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-autobreadcrumbs/Config.in"

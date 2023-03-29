@@ -51,16 +51,3 @@ index 99cc611..2b153f1 100644
  
          ret = drmModeAtomicCommit(p->kms->fd, atomic_ctx->request,
                                    DRM_MODE_ATOMIC_NONBLOCK | DRM_MODE_PAGE_FLIP_EVENT, data);
-diff --git a/video/out/opengl/hwdec_drmprime_drm.c b/video/out/opengl/hwdec_drmprime_drm.c
-index d4097db..fe16664 100644
---- a/video/out/opengl/hwdec_drmprime_drm.c
-+++ b/video/out/opengl/hwdec_drmprime_drm.c
-@@ -206,7 +206,6 @@ static int overlay_frame(struct ra_hwdec *hw, struct mp_image *hw_image,
-                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_Y",  MP_ALIGN_DOWN(dy, 2));
-                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_W",  dstw);
-                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_H",  dsth);
--                drm_object_set_property(request, p->ctx->drmprime_video_plane, "ZPOS",    1);
-             } else {
-                 ret = drmModeSetPlane(p->ctx->fd, p->ctx->drmprime_video_plane->id, p->ctx->crtc->id, next_frame.fb.fb_id, 0,
-                                       MP_ALIGN_DOWN(dx, 2), MP_ALIGN_DOWN(dy, 2), dstw, dsth,
-

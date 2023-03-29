@@ -40,7 +40,7 @@ function smart_wait() {
 
 # Emulator currently running?
 function check_emurun() {
-    local RC_PID="$(pgrep -f -n emulatorlauncher)"
+    local RC_PID="$(pgrep -f -n 'sh -c emulatorlauncher')"
     echo $RC_PID
 }
 
@@ -50,6 +50,12 @@ function check_esrun() {
     echo $ES_PID
 }
 
+# Wine processes currently running?
+function check_winerun() {
+    local EXE=$1
+    local ES_PID="$(pgrep -f -n $EXE)"
+    echo $ES_PID
+}
 
 # Kill emulators running in a proper way! (SAVE SRM STATE!)
 function emu_kill() {
@@ -61,6 +67,13 @@ function emu_kill() {
             smart_wait 1 ${pidarray[z]}
         done
         unset pidarray
+    fi
+    WINE_PID=$(check_winerun winedevice.exe)
+    if [[ -n $WINE_PID ]]; then
+            for P in winedevice.exe plugplay.exe svchost.exe tabtip.exe services.exe explorer.exe rpcss.exe wineserver ; do
+                # the usual (gentle) way keeps Zombie processes, blame wine.
+                killall -9 "$P" 2>/dev/null
+            done
     fi
 }
 

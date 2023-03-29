@@ -83,7 +83,6 @@ wine_options() {
     FORCE_LARGE_ADRESS="$(get_setting force_large_adress "${SYSTEM}" "${ROMGAMENAME}")"
     HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
     HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
-    RAW_INPUT="$(get_setting raw_input "${SYSTEM}" "${ROMGAMENAME}")"
     DXVK_RESET_CACHE="$(get_setting dxvk_reset_cache "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_NTFS="$(get_setting wine_ntfs "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
@@ -168,19 +167,6 @@ wine_options() {
     fi
 
     setxkbmap "${KEYBOARD}"
-
-    # force hid_raw input disabled by default while it breaks pads (at udev level)
-    test "${RAW_INPUT}" != "0" && RAW_INPUT=1
-
-    # Create registry file for raw input
-    echo 'Windows Registry Editor Version 5.00' >| /var/run/rawinput.reg
-    echo '' >> /var/run/rawinput.reg
-    echo '[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\winebus]' >> /var/run/rawinput.reg
-    echo '"DisableHidraw"=dword:0000000'"${RAW_INPUT}" >> /var/run/rawinput.reg
-    echo '' >> /var/run/rawinput.reg
-    echo '' >> /var/run/rawinput.reg
-    unix2dos /var/run/rawinput.reg
-
 }
 
 mf_install() {

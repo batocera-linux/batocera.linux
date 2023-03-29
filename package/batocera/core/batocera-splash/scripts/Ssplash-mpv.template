@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log="/userdata/system/logs/display.log"
+
 DAEMON="splash-mpv"
 DEFAULT="/usr/share/batocera/splash/splash.mp4"
 SPLASH_DIR=/userdata/splash
@@ -20,7 +22,7 @@ do_filerandomize ()
 {
     local array
     [[ -d "$SPLASH_DIR" ]] || return 1
-    readarray -t array < <(find "$SPLASH_DIR" -regex "$1" -maxdepth 1 -type f)
+    readarray -t array < <(find "$SPLASH_DIR" -maxdepth 1 -regex "$1" -type f)
     if [[ ${#array[@]} -gt 0 ]]; then
         echo "${array[$RANDOM % ${#array[@]}]}"
     fi
@@ -90,8 +92,31 @@ do_videostart ()
 	fi
     fi
 
+    # determine the display type & index
+    if preferred_display=$(batocera-settings-get global.videooutput); then
+        echo "Preferred display is $preferred_display" > $log
+        display_type=$(echo "$preferred_display" | cut -d'-' -f1)
+        display_index=$(echo "$preferred_display" | cut -d '-' -f 2 | awk '{print $0+1}')
+        echo "Display Index = $display_index" >> $log
+    else
+        echo "No preferred display chosen, defaulting to index 1" > $log
+        display_index=1
+    fi  
+    # determine the DRM connector name based on type & index
+    drm_connector=$(mpv --drm-connector=help | grep "(connected)" | grep -i "$display_type" | awk -v idx=$display_index 'NR==idx')
+    if [ -z "$drm_connector" ]; then
+        echo "Error: No connected DRM connectors found for $display_type at index $display_index. Trying index 1" >> $log
+        drm_connector=$(mpv --drm-connector=help | grep "(connected)" | grep -i "$display_type" | awk 'NR==1')
+        if [ -z "$drm_connector" ]; then
+            echo "Error: No connected DRM connectors found for $display_type. Trying index 1 regardless" >> $log
+            drm_connector=$(mpv --drm-connector=help | grep "(connected)" | awk 'NR==1')
+        fi
+    fi
+    drm_connector=$(echo "$drm_connector" | awk '{print $1}')
+    echo "Selected DRM connector: $drm_connector" >> $log
+    
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"
+    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --log-file=/userdata/system/logs/mpv.log --drm-connector=$drm_connector $mpv_audio $mpv_video "$video"
 }
 
 case "$1" in

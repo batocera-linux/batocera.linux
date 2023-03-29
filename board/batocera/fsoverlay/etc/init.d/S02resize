@@ -29,12 +29,15 @@ function textoutput()
     local cmd="$3"
     local percent="$2"
     local pid ret
+    echo "cmd:$cmd" >> /tmp/resize.log
     $cmd >> /tmp/resize.log 2>&1 &
     ret=$?
     pid=$!
     arr[$1]=7 #msg: In Progress
     dialogoutput "$percent"
     wait $pid
+    code=$?
+    echo "cmd code:$code" >> /tmp/resize.log
     arr[$1]=$ret #msg: Depends from return value
 }
 
@@ -64,6 +67,7 @@ then
     # only for ext4
     PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
     test "${PARTTYPE}" != "ext4" && exit 0
+    echo "Partition type = ${PARTTYPE}" >> $log
 
     # get the size of the disk in bytes
     # this may change if fdisk is updated
@@ -96,7 +100,7 @@ then
     mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
 
     # textoutput "Message" "percentage" "command call" 
-    for i in 1 3 5 7 9 11 13 15; do
+    for i in 1 3 4 5 7 9 11 13 15; do
     case $i in
         1) 
            # initial disk sync
@@ -106,6 +110,10 @@ then
            # move backup GPT data structures to the end of the disk
            echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$log"
            textoutput $i 20 "sgdisk -e ${DISK}";;
+	4)
+           # probing partitions
+           echo "Step $i: partprobe partitions" >> "$log"
+           textoutput $i 20 "partprobe";;
         5) 
            # checking the alignment before resizing the partition
            echo "Step $i: Checking the partition alignment" >> "$log"
@@ -114,13 +122,21 @@ then
            # resize the partition
            echo "Step $i: Resizing the partition to $new_end_size MB" >> "$log"
            textoutput $i 40 "parted -s -m ${DISK} resizepart 2 ${new_end_size}";;
-        9) 
+        9)
            # check & resize the ext4 file system
-           echo "Step $i: Checking file system" >> "$log"
-           textoutput $i 60 "e2fsck -f -p ${PART}";;
+           if test "${PARTTYPE}" = "ext4"
+           then
+	       echo "Step $i: Checking ext4 file system" >> "$log"
+	       textoutput $i 60 "e2fsck -f -p ${PART}"
+           fi
+           ;;
         11) 
-           echo "Step $i: Expanding the file system" >> "$log"
-           textoutput $i 70 "resize2fs ${PART}";;
+           if test "${PARTTYPE}" = "ext4"
+           then
+               echo "Step $i: Expanding ext4 the file system" >> "$log"
+               textoutput $i 70 "resize2fs ${PART}"
+           fi
+           ;;
         13) 
            # update the kernel again
            echo "Step $i: Updating the kernel" >> "$log"

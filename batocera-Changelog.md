@@ -8,11 +8,18 @@
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
+- Added Pyxel fantasy console (x86_64)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - Re-added GameCube-GBA link capability including eReader
 - Re-added Cemu multi-screen display
 - Added new screenshot function when in multi-window mode (Hotkey + L1)
+- sinden gun border colors modifiable via es menu (white, red, green, blue)
+- sinden gun options to control camera contrast, brightness and exposure
+- pad2keys for guns (use actions_gun1, actions_gun2, ... and "left", "right", "middle", "1", "2", ... for trigger)
+- virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
+- supermodel now supports multi guns.
+- supermodel now supports start and coin buttons on the gun
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -29,6 +36,8 @@
 - Removed .wux extension for Cemu
 - Wii balance board controller option for Dolphin now enabled
 - Flatpak emulators can now use a Switch Pro Controller
+- move from busybox linux commands to more standard linux commands
+- supermodel nvram files & ini file based on Warped Polygon's work
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)
@@ -41,12 +50,16 @@
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
-- Bumped Dolphin to 5.0-17995
+- dolphin to 5.0-17995
+- supermodel to Mar 19, 2023 build
+- Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
+- Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
 ### Dev
+- buildroot upgrade to 2023.02
 - dxvk to 2.1
 - linux firmware to 20230310
-- linux kernel for x86_64 to 6.2.6
-- nvidia production driver to 525.89.02
+- linux kernel for x86_64 to 6.2.8
+- nvidia production driver to 530.41.03
 - llvm to 15.0.7
 
 
