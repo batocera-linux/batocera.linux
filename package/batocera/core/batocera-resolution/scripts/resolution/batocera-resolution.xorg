@@ -69,25 +69,32 @@ case "${ACTION}" in
 	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
 	;;
     "setMode")
-	MODE=$1
-
+    MODE=$1
 	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
-	then
-	    SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
-	    f_minTomaxResolution "${SPMODE}"
-	else # normal mode
-	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-
-	    # let the old format widthxheight and the new one widthxheight.hz
-	    if echo "${MODE}" | grep "\."
-	    then
-		PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
-		PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
-		xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
-	    else
-		xrandr --output "${OUTPUT}" --mode "${MODE}"
-	    fi
-	fi
+    then
+        SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
+        f_minTomaxResolution "${SPMODE}"
+    else # normal mode
+        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        if [ -z "$OUTPUT" ]; then
+            echo "No connected output detected"
+            exit 1
+        fi
+        # let the old format widthxheight and the new one widthxheight.hz
+        if echo "${MODE}" | grep "\."
+        then
+            PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
+            PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
+            xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
+        else
+            xrandr --output "${OUTPUT}" --mode "${MODE}"
+        fi
+		# check if there was an error setting the mode
+        if [ $? -ne 0 ]; then
+            echo "Failed to set display mode"
+            exit 1
+        fi
+    fi
 	;;
     "currentMode")
 	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
