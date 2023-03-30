@@ -17,6 +17,7 @@
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
 - supermodel now supports multi guns.
 - supermodel now supports start and coin buttons on the gun
+- samco guns (https://github.com/samuelballantyne/IR-Light-Gun)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
