@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0bb3cf5..9e1db11 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -64,8 +64,6 @@ if(MSVC)
+ endif()
+ 
+ add_subdirectory (libde265)
+-add_subdirectory (dec265)
+-add_subdirectory (enc265)
+ 
+ set(libdir ${CMAKE_INSTALL_PREFIX}/lib)
+ set(VERSION 1.0.3)
+-- 
+2.25.1
+

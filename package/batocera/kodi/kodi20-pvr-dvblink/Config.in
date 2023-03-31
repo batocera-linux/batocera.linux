@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_PVR_DVBLINK
+	bool "kodi20-pvr-dvblink"
+	select BR2_PACKAGE_TINYXML2
+	help
+	  Kodi's DVBLink client addon
+
+	  https://github.com/kodi20-pvr/pvr.dvblink

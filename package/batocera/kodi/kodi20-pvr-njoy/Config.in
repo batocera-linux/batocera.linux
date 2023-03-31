@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_PVR_NJOY
+	bool "kodi20-pvr-njoy"
+	select BR2_PACKAGE_TINYXML
+	help
+	  Kodi's Njoy N7 client addon
+
+	  https://github.com/kodi20-pvr/pvr.njoy

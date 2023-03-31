@@ -1,0 +1,29 @@
+From 73a9818fc325e1832cd36694436c884d37835905 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Thu, 30 Mar 2023 02:38:14 +0200
+Subject: [PATCH] include / added GLES3/gl3ext.h stub for compatibility.
+
+---
+ include/GLES3/gl3ext.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 include/GLES3/gl3ext.h
+
+diff --git a/include/GLES3/gl3ext.h b/include/GLES3/gl3ext.h
+new file mode 100644
+index 0000000..10cc476
+--- /dev/null
++++ b/include/GLES3/gl3ext.h
+@@ -0,0 +1,10 @@
++#ifndef __gl3ext_h_
++#define __gl3ext_h_
++
++/* 
++ * This file is intentionally empty and is provided for source compatibility
++ * with Mesa.
++ */
++
++#endif /* __gl3ext_h_ */
++
+-- 
+2.30.2
+

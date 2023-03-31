@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9327358..25a2ff2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,6 +48,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+ endif()
+ 
+ option(DISABLE_SSE "Disable SSE optimizations" OFF)
++if(NOT(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CPU STREQUAL "x86_64"))
++  set(DISABLE_SSE ON)
++endif()
+ 
+ option(BUILD_SHARED_LIBS "Build shared library" ON)
+ if(NOT BUILD_SHARED_LIBS)

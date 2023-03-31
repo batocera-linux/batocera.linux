@@ -1,0 +1,29 @@
+diff --git a/libde265/encoder/algo/tb-transform.cc b/libde265/encoder/algo/tb-transform.cc
+index d740e0f..1bd3811 100644
+--- a/libde265/encoder/algo/tb-transform.cc
++++ b/libde265/encoder/algo/tb-transform.cc
+@@ -71,7 +71,7 @@ void compute_transform_coeffs(encoder_context* ectx,
+   enum PredMode predMode = cb->PredMode;
+ 
+   int16_t blk[32*32]; // residual
+-  int16_t* residual;
++  int16_t* residual = nullptr;
+ 
+ 
+   //printf("transform-coeffs %d;%d size:%d cIdx:%d\n", tb->x,tb->y,1<<tb->log2Size,cIdx);
+diff --git a/libde265/transform.cc b/libde265/transform.cc
+index ef404f8..36730ef 100644
+--- a/libde265/transform.cc
++++ b/libde265/transform.cc
+@@ -487,7 +487,7 @@ void scale_coefficients_internal(thread_context* tctx,
+     else {
+       const int offset = (1<<(bdShift-1));
+ 
+-      const uint8_t* sclist;
++      const uint8_t* sclist = nullptr;
+       int matrixID = cIdx;
+       if (!intra) {
+         if (nT<32) { matrixID += 3; }
+-- 
+2.25.1
+
