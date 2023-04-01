@@ -8,12 +8,16 @@
 - Added Zelda Classic 2.10 for ARM-based SBC
 - Added SAM Coupe for ARM-based SBC
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
+- Added Pyxel fantasy console (x86_64)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - sinden gun border colors modifiable via es menu (white, red, green, blue)
 - sinden gun options to control camera contrast, brightness and exposure
 - pad2keys for guns (use actions_gun1, actions_gun2, ... and "left", "right", "middle", "1", "2", ... for trigger)
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
+- supermodel now supports multi guns.
+- supermodel now supports start and coin buttons on the gun
+- samco guns (https://github.com/samuelballantyne/IR-Light-Gun)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -45,7 +49,10 @@
 - hypseus to 2.10.2
 - abuse to 0.9.1
 - supermodel to Mar 19, 2023 build
+- Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
+- Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
 ### Dev
+- buildroot upgrade to 2023.02
 - dxvk to 2.1
 - linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.8

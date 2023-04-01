@@ -111,6 +111,7 @@ menu "Controllers"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xpadneo/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/xow/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/aimtrak-guns/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/samco-guns/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/dolphinbar-guns/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/sinden-guns/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/sinden-guns-libs/Config.in"
@@ -308,6 +309,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/vita3k/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ikemen/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/bigpemu/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pyxel/Config.in"
   endmenu
 
   menu "WINE"
@@ -374,6 +376,22 @@ if BR2_PACKAGE_KODI
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-el_gr/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-pvr-freebox/Config.in"
 endif
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20/Config.in"
+if BR2_PACKAGE_KODI20
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-de_de/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-es_es/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-eu_es/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-fr_fr/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-it_it/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-pt_br/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-sv_se/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-tr_tr/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-zh_cn/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-resource-language-el_gr/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-freebox/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-p8-platform/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-kodi-platform/Config.in"
+endif
 endmenu
 
 menu "Looks"
@@ -435,6 +453,7 @@ menu "Cases"
 endmenu
 
 menu "Libraries"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libopenmpt/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/xlib_libXpresent/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libcapsimage/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libenet/Config.in"
@@ -444,6 +463,9 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ecm/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/iir/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libxmp/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libheif/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libde265/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/projectm/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/wildmidi/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/appstream-glib/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python3-pyparsing/Config.in"
@@ -457,6 +479,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-sysv-ipc/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-pyqt5-sip/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-hidapi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libliftoff/Config.in"
 endmenu
 
 endmenu

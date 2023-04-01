@@ -1,0 +1,9 @@
+config BR2_PACKAGE_KODI20_IMAGEDECODER_RAW
+	bool "kodi20-imagedecoder-raw"
+	select BR2_PACKAGE_LIBRAW
+	select BR2_PACKAGE_JPEG_TURBO
+	select BR2_PACKAGE_LCMS2
+	help
+	  Kodi .raw imagedecoder
+
+	  https://github.com/xbmc/imagedecoder.raw

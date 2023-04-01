@@ -56,7 +56,6 @@ class CitraGenerator(Generator):
         citraConfig = configparser.RawConfigParser(strict=False)
         citraConfig.optionxform=str             # Add Case Sensitive comportement
         if os.path.exists(citraConfigFile):
-            os.remove(citraConfigFile)          # Force removing qt-config.ini
             citraConfig.read(citraConfigFile)
 
         ## [LAYOUT]

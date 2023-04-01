@@ -279,6 +279,10 @@ def getGenerator(emulator):
         from generators.bigpemu.bigpemuGenerator import BigPEmuGenerator
         return BigPEmuGenerator()
 
+    if emulator == 'pyxel':
+        from generators.pyxel.pyxelGenerator import PyxelGenerator
+        return PyxelGenerator()
+
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator
     #return PlayGenerator(),

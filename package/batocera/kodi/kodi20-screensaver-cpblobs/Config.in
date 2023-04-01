@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_SCREENSAVER_CPBLOBS
+	bool "kodi20-screensaver-cpblobs"
+	select BR2_PACKAGE_GLM
+	help
+	  CpBlobs screensaver for Kodi
+
+	  https://github.com/xbmc/screensaver.cpblobs

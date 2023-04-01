@@ -1,0 +1,20 @@
+From b91a76aea33b60be19d3b66f9a49438887576ce6 Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Sat, 13 Nov 2021 08:23:54 -0800
+Subject: [PATCH] cmake: allow providing WAYLANDPP_SCANNER in a cross compile
+
+---
+ cmake/modules/FindWaylandpp.cmake | 2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/cmake/modules/FindWaylandpp.cmake
++++ b/cmake/modules/FindWaylandpp.cmake
+@@ -22,6 +22,8 @@ pkg_check_modules(PC_WAYLANDPP_SCANNER w
+ 
+ if(PC_WAYLANDPP_SCANNER_FOUND)
+   pkg_get_variable(PC_WAYLANDPP_SCANNER wayland-scanner++ wayland_scannerpp)
++elseif(WAYLANDPP_SCANNER)
++  message(STATUS "wayland-scanner++ already set to: ${WAYLANDPP_SCANNER}")
+ else()
+   message(SEND_ERROR "wayland-scanner++ not found via pkg-config")
+ endif()

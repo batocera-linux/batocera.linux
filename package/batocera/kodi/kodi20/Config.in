@@ -1,0 +1,406 @@
+config BR2_PACKAGE_KODI20_ARCH_SUPPORTS
+	bool
+	default y if BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS
+	# i386: needs sse (see upstream PR 10351)
+	# batocera
+	#depends on !(BR2_i386 && !BR2_X86_CPU_HAS_SSE)
+	depends on BR2_USE_MMU # libcdio, and others
+
+comment "kodi needs python3 w/ .py modules, a uClibc or glibc toolchain w/ C++, threads, wchar, dynamic library, gcc >= 4.9"
+	depends on BR2_PACKAGE_KODI20_ARCH_SUPPORTS
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS \
+		|| !BR2_USE_WCHAR || BR2_STATIC_LIBS \
+		|| !BR2_TOOLCHAIN_GCC_AT_LEAST_4_9 \
+		|| BR2_TOOLCHAIN_USES_MUSL \
+		|| !BR2_PACKAGE_PYTHON3 \
+		|| BR2_PACKAGE_PYTHON3_PYC_ONLY
+
+config BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+	bool
+
+config BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_GBM
+	bool
+	default y
+	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+
+	# batocera
+	#depends on BR2_PACKAGE_HAS_LIBGBM
+	#depends on BR2_PACKAGE_LIBGBM_HAS_FEATURE_DMA_BUF
+	depends on BR2_PACKAGE_MESA3D_GBM || BR2_PACKAGE_HAS_LIBMALI
+
+	depends on BR2_PACKAGE_HAS_UDEV # libinput
+	select BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+
+comment "kodi needs udev support for gbm"
+	depends on !BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+
+config BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_WAYLAND
+	bool
+	default y
+	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+	depends on BR2_PACKAGE_HAS_LIBEGL_WAYLAND # waylandpp
+	depends on BR2_HOST_GCC_AT_LEAST_4_9 # waylandpp
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_9 # waylandpp
+	depends on BR2_INSTALL_LIBSTDCPP # waylandpp
+	depends on BR2_PACKAGE_WAYLAND # waylandpp
+	select BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+
+config BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_X11
+	bool
+	default y
+	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+	depends on BR2_PACKAGE_XSERVER_XORG_SERVER # batocera - avoid x11 & wayland build when using xwayland
+	select BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+
+comment "kodi needs an OpenGL EGL backend with OpenGL or GLES support"
+	depends on !BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+
+menuconfig BR2_PACKAGE_KODI20
+	bool "kodi20"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # libass -> harfbuzz
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_9 # C++14
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on !BR2_TOOLCHAIN_USES_MUSL
+	depends on BR2_USE_WCHAR
+	depends on !BR2_STATIC_LIBS # gnutls, python3 and others
+	depends on BR2_PACKAGE_HAS_LIBEGL
+	depends on BR2_PACKAGE_KODI20_ARCH_SUPPORTS
+	depends on BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS
+	depends on BR2_PACKAGE_PYTHON3
+	depends on !BR2_PACKAGE_PYTHON3_PYC_ONLY
+	select BR2_NEEDS_HOST_JAVA
+	select BR2_PACKAGE_KODI20_P8_PLATFORM
+	select BR2_PACKAGE_KODI20_KODI_PLATFORM
+	select BR2_PACKAGE_FFMPEG
+	select BR2_PACKAGE_FFMPEG_GPL
+	select BR2_PACKAGE_FFMPEG_POSTPROC
+	select BR2_PACKAGE_FFMPEG_SWSCALE
+	select BR2_PACKAGE_FLATBUFFERS
+	select BR2_PACKAGE_FMT
+	select BR2_PACKAGE_FONTCONFIG # needed for libass
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_FSTRCMP
+	select BR2_PACKAGE_GIFLIB
+	select BR2_PACKAGE_JPEG
+	select BR2_PACKAGE_LIBASS
+	select BR2_PACKAGE_LIBCDIO
+	select BR2_PACKAGE_LIBCROSSGUID
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_LIBDRM
+	select BR2_PACKAGE_LIBFRIBIDI
+	select BR2_PACKAGE_LIBICONV if !BR2_ENABLE_LOCALE
+	select BR2_PACKAGE_LIBICONV_EXTRA_ENCODINGS if !BR2_ENABLE_LOCALE
+	select BR2_PACKAGE_LIBPLIST
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LZO
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_PCRE
+	select BR2_PACKAGE_PCRE_UCP
+	select BR2_PACKAGE_PYTHON3_2TO3
+	select BR2_PACKAGE_PYTHON3_PYEXPAT
+	select BR2_PACKAGE_PYTHON3_SQLITE
+	select BR2_PACKAGE_PYTHON3_SSL
+	select BR2_PACKAGE_PYTHON3_UNICODEDATA
+	select BR2_PACKAGE_PYTHON3_ZLIB
+	select BR2_PACKAGE_RAPIDJSON
+	select BR2_PACKAGE_SPDLOG
+	select BR2_PACKAGE_SQLITE
+	select BR2_PACKAGE_TAGLIB
+	select BR2_PACKAGE_TINYXML
+	select BR2_PACKAGE_ZLIB
+	select BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY if BR2_TOOLCHAIN_USES_GLIBC # runtime UTF conversion support
+	select BR2_PACKAGE_LIBINPUT if BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_GBM
+	select BR2_PACKAGE_LIBXKBCOMMON if BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_GBM
+	select BR2_PACKAGE_LIBXKBCOMMON if BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_WAYLAND
+	select BR2_PACKAGE_WAYLANDPP if BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_WAYLAND
+	select BR2_PACKAGE_XLIB_LIBXRANDR if BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_X11
+	help
+	  Kodi is an award-winning free and open source (GPL) software
+	  media player and entertainment hub for digital media.
+
+	  http://kodi.tv
+
+if BR2_PACKAGE_KODI20
+
+# batocera
+config BR2_PACKAGE_KODI20_LIBTHEORA
+	bool "theora20"
+	select BR2_PACKAGE_LIBTHEORA
+	help
+	  Enable Theora input support.
+	  Select this if you want to play back OGG/OGV files (Video).
+config BR2_PACKAGE_KODI20_GBM
+       bool "gbm"
+       help
+	 Enable gbm support.
+
+config BR2_PACKAGE_KODI20_ALSA_LIB
+	bool "alsa20"
+	select BR2_PACKAGE_ALSA_LIB
+	help
+	  Enable alsa support.
+
+config BR2_PACKAGE_KODI20_AVAHI
+	bool "avahi20"
+	select BR2_PACKAGE_AVAHI
+	select BR2_PACKAGE_AVAHI_DAEMON
+	help
+	  Enable Avahi support.
+	  Select this if you want Kodi to support Bonjour protocol.
+
+config BR2_PACKAGE_KODI20_BLUEZ
+	bool "bluetooth20"
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_18 # bluez5_utils hid plugin
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # bluez5_utils
+	select BR2_PACKAGE_BLUEZ5_UTILS
+	select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_AUDIO
+	select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_HID
+	help
+	    Enable bluetooth support
+
+comment "bluetooth support needs a toolchain w/ headers >= 3.18"
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_18
+
+config BR2_PACKAGE_KODI20_DBUS
+	bool "dbus20"
+	select BR2_PACKAGE_DBUS
+	help
+	  Enable D-Bus support
+
+config BR2_PACKAGE_KODI20_EVENTCLIENTS
+	bool "eventclients20"
+	help
+	  Enable event clients support
+
+	  https://github.com/xbmc/xbmc/blob/master/tools/EventClients/README.txt
+
+config BR2_PACKAGE_KODI20_LIBBLURAY
+	bool "blu-ray20"
+	select BR2_PACKAGE_LIBBLURAY
+	help
+	  Enable Blu-ray input support.
+	  Select this if you want to play back Blu-ray content.
+
+config BR2_PACKAGE_KODI20_LIBCEC
+	bool "hdmi cec20"
+	select BR2_PACKAGE_LIBCEC
+	help
+	  Enable CEC (Consumer Electronics Control) support.
+	  Select this if you want Kodi to support HDMI CEC.
+
+config BR2_PACKAGE_KODI20_LCMS2
+	bool "lcms220"
+	select BR2_PACKAGE_LCMS2
+	help
+	  Enable color management support.
+
+config BR2_PACKAGE_KODI20_LIBMICROHTTPD
+	bool "web server20"
+	select BR2_PACKAGE_LIBMICROHTTPD
+	help
+	  Enable webserver feature
+
+config BR2_PACKAGE_KODI20_LIBNFS
+	bool "nfs20"
+	# libnfs -> libtirpc
+	depends on BR2_TOOLCHAIN_HAS_NATIVE_RPC || BR2_TOOLCHAIN_HAS_THREADS
+	select BR2_PACKAGE_LIBNFS
+	help
+	  Enable NFS server support.
+
+comment "nfs support needs a toolchain w/ threads support"
+	depends on !(BR2_TOOLCHAIN_HAS_THREADS || BR2_TOOLCHAIN_HAS_NATIVE_RPC)
+
+config BR2_PACKAGE_KODI20_MYSQL
+	bool "mysql20"
+	select BR2_PACKAGE_MYSQL
+	help
+	  Enable MySQL support
+
+choice
+	prompt "render system"
+	default BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL
+
+#batocera
+config BR2_PACKAGE_KODI20_PLATFORM_GBM_GL
+	bool "gbm/OpenGL20"
+	depends on BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_GBM_GL
+	select BR2_PACKAGE_LIBGLU
+	select BR2_PACKAGE_LIBINPUT
+	select BR2_PACKAGE_LIBXKBCOMMON
+config BR2_PACKAGE_KODI20_PLATFORM_GBM_GLES
+	bool "gbm/GLES20"
+	depends on BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_GBM_GLES
+	select BR2_PACKAGE_LIBINPUT
+	select BR2_PACKAGE_LIBXKBCOMMON
+
+config BR2_PACKAGE_KODI20_PLATFORM_WAYLAND_GL
+	bool "Wayland/OpenGL20"
+	depends on BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_WAYLAND_GL
+
+config BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL
+	bool "OpenGL20"
+	depends on BR2_PACKAGE_HAS_LIBGL
+	select BR2_PACKAGE_LIBGLU
+
+config BR2_PACKAGE_KODI20_RENDER_SYSTEM_GLES
+	bool "GLES20"
+	depends on BR2_PACKAGE_HAS_LIBGLES
+
+endchoice
+
+# best audio support in kodi is alsa, so disabling others
+# config BR2_PACKAGE_KODI20_PULSEAUDIO
+# 	bool "pulseaudio20"
+# 	depends on BR2_PACKAGE_PULSEAUDIO_HAS_ATOMIC
+# 	# Pulseaudio support in kodi needs glib support in Pulseaudio,
+# 	# see FindPulseAudio.cmake. Kodi meets all dependencies of
+# 	# libglib2, so there is no need to propagate them here.
+# 	select BR2_PACKAGE_LIBGLIB2
+# 	select BR2_PACKAGE_PULSEAUDIO
+# 	help
+# 	  Enable Pulseaudio support.
+
+config BR2_PACKAGE_KODI20_LIBSHAIRPLAY
+	bool "shairport20"
+	select BR2_PACKAGE_LIBSHAIRPLAY
+	help
+	  Enable Shairport support.
+	  Select this if you want to stream content from an Apple
+	  device.
+
+config BR2_PACKAGE_KODI20_LIBSMBCLIENT
+	bool "samba20"
+	depends on BR2_PACKAGE_SAMBA4
+	help
+	  Enable Samba support
+
+config BR2_PACKAGE_KODI20_LIBUSB
+	bool "usb20"
+	# https://github.com/xbmc/xbmc/blob/Jarvis/configure.ac#L1554
+	# "if libudev is available, we don't need libusb"
+	depends on !BR2_PACKAGE_HAS_UDEV
+	select BR2_PACKAGE_LIBUSB
+	select BR2_PACKAGE_LIBUSB_COMPAT
+	help
+	  Enable libusb support.
+
+config BR2_PACKAGE_KODI20_LIBVDPAU
+	bool "vdpau20"
+	depends on BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_X11 && \
+		BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL
+	select BR2_PACKAGE_LIBVDPAU
+	help
+	  Enable libvdpau support.
+
+comment "libvdpau support needs platform 'X11/OpenGL'"
+	depends on !BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_X11 || \
+		!BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL
+
+config BR2_PACKAGE_KODI20_UPNP
+	bool "upnp20"
+	help
+	  Enable UPnP support
+
+config BR2_PACKAGE_KODI20_OPTICALDRIVE
+	bool "optical drives20"
+	help
+	  Add support for optical drives, to read e.g. DVDs...
+
+menu "Audio decoder addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-nosefart/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-openmpt/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-sidplay/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-snesapu/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-stsound/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-timidity/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audiodecoder-vgmstream/Config.in"
+endmenu
+
+menu "Audio encoder addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audioencoder-flac/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audioencoder-lame/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audioencoder-vorbis/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-audioencoder-wav/Config.in"
+endmenu
+
+menu "Peripheral addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-peripheral-joystick/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-peripheral-xarcade/Config.in"
+endmenu
+
+menu "Inputstream addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-inputstream-adaptive/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-inputstream-ffmpegdirect/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-inputstream-rtmp/Config.in"
+endmenu
+
+menu "Image decoder addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-imagedecoder-heif/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-imagedecoder-raw/Config.in"
+endmenu
+
+menu "PVR addons"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-argustv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-dvblink/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-dvbviewer/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-filmon/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-hdhomerun/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-hts/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-iptvsimple/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-mediaportal-tvserver/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-mythtv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-nextpvr/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-njoy/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-octonet/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-pctv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-plutotv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-stalker/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-vbox/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-vdr-vnsi/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-vuplus/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-waipu/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-wmc/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-pvr-zattoo/Config.in"
+endmenu
+
+menu "Screensavers"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-asteroids/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-asterwave/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-biogenesis/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-cpblobs/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-greynetic/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-matrixtrails/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-pingpong/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-pyro/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-rsxs/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-shadertoy/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-screensaver-stars/Config.in"
+endmenu
+
+menu "Skins"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-skin-confluence/Config.in"
+endmenu
+
+menu "Virtual file systems"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-vfs-libarchive/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-vfs-rar/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-vfs-sftp/Config.in"
+endmenu
+
+menu "Visualisations"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-fishbmc/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-goom/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-matrix/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-pictureit/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-projectm/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-shadertoy/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-spectrum/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-starburst/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi20-visualisation-waveform/Config.in"
+endmenu
+
+endif # BR2_PACKAGE_KODI20

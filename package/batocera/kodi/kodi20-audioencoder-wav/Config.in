@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_AUDIOENCODER_WAV
+	bool "kodi20-audioencoder-wav"
+	select BR2_PACKAGE_KODI20_OPTICALDRIVE
+	help
+	  An audioencoder addon for Kodi
+
+	  https://github.com/xbmc/audioencoder.wav
