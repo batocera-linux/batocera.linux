@@ -15,7 +15,7 @@ class Evmapy():
     __started = False
 
     @staticmethod
-    def start(system, emulator, core, rom, playersControllers, guns):
+    def start(system, config, core, rom, playersControllers, guns):
         if Evmapy.__prepare(system, config, core, rom, playersControllers, guns):
             Evmapy.__started = True
             subprocess.call(["batocera-evmapy", "start"])
