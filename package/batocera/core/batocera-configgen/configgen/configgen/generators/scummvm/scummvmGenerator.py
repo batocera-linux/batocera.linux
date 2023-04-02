@@ -10,9 +10,9 @@ class ScummVMGenerator(Generator):
     # Main entry of the module
     # Configure mupen and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        # crete /userdata/roms/scummvm/extras folder if it doesn't exist
-        if not os.path.exists('/userdata/roms/scummvm/extras'):
-            os.makedirs('/userdata/roms/scummvm/extras')
+        # crete /userdata/bios/scummvm/extra folder if it doesn't exist
+        if not os.path.exists('/userdata/bios/scummvm/extra'):
+            os.makedirs('/userdata/bios/scummvm/extra')
         
         # Find rom path
         if os.path.isdir(rom):
@@ -38,7 +38,7 @@ class ScummVMGenerator(Generator):
                         "-f",
                         f"--joystick={id}",
                         "--screenshotspath="+batoceraFiles.screenshotsDir, 
-                        "--extrapath=/userdata/roms/scummvm/extras",
+                        "--extrapath=/userdata/bios/scummvm/extra",
                         "--savepath="+batoceraFiles.scummvmSaves,
                         "--path=""{}""".format(romPath)]
         commandArray.append(f"""{romName}""")

@@ -36,6 +36,7 @@
 - Flatpak emulators can now use a Switch Pro Controller
 - move from busybox linux commands to more standard linux commands
 - supermodel nvram files & ini file based on Warped Polygon's work
+- ScummVM now will use extra files here - /userdata/bios/scummvm/extra (consistent with LR-ScummVM)
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)

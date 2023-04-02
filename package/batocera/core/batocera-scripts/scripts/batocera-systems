@@ -741,6 +741,10 @@ systems = {
     "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
                                                 { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
                                                 { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    
+    # ---------- ScummVM ---------- #
+    "scummvm":   { "name": "ScummVM", "biosFiles":  [ { "md5": "89e42e386e82e0cacb4a2704a03706ca", "file": "bios/scummvm/extra/MT32_PCM.ROM" },
+                                                      { "md5": "5626206284b22c2734f3e9efefcd2675", "file": "bios/scummvm/extra/MT32_CONTROL.ROM" } ] },
 }
 
 class BiosStatus:
