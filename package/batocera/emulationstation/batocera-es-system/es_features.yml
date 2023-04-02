@@ -9831,6 +9831,12 @@ xenia:
                 "No licenses enabled":                     0
                 "XBLA license enabled (Default)":          1
                 "All possible licenses (Not recommended)": -1
+        xeniaHeadless:
+            prompt: UI PROMPTS
+            description: Choose to display UI prompts or accept defaults.
+            choices:
+                "Enabled UI prompts (Default)": 0
+                "Disable UI prompts":           1
         xeniaLanguage:
             prompt: LANGUAGE
             description: Change the game's language.
@@ -9882,6 +9888,12 @@ xenia-canary:
                 "1680x1050":          14
                 "1920x540":           15
                 "1920x1080":          16
+        xeniaHeadless:
+            prompt: UI PROMPTS
+            description: Choose to display UI prompts or accept defaults.
+            choices:
+                "Enabled UI prompts (Default)": 0
+                "Disable UI prompts":           1
         xeniaLanguage:
             prompt: LANGUAGE
             description: Change the game's language.

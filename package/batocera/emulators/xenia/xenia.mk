@@ -5,7 +5,7 @@
 ################################################################################
 
 XENIA_SOURCE = xenia_master.zip
-XENIA_VERSION = v1.0.2786-master
+XENIA_VERSION = v1.0.2789-master
 XENIA_SITE = https://github.com/xenia-project/release-builds-windows/releases/download/$(XENIA_VERSION)
 XENIA_LICENSE = BSD
 XENIA_LICENSE_FILE = LICENSE
