@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_TRIGGERHAPPY_VERSION = 1
+BATOCERA_TRIGGERHAPPY_VERSION = 1.1
 BATOCERA_TRIGGERHAPPY_LICENSE = GPL
 BATOCERA_TRIGGERHAPPY_DEPENDENCIES = triggerhappy # to erase the trigger happy S50 startup script
 BATOCERA_TRIGGERHAPPY_SOURCE=
@@ -18,23 +18,19 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3326_CONFIG
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/multimedia_keys_Hardkernel_ODROID_GO2.conf    $(TARGET_DIR)/etc/triggerhappy/triggers.d
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/multimedia_keys_Hardkernel_ODROID_GO3.conf    $(TARGET_DIR)/etc/triggerhappy/triggers.d
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/multimedia_keys_Anbernic_RG351P.conf          $(TARGET_DIR)/etc/triggerhappy/triggers.d
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/multimedia_keys_Golden_GameForce.conf         $(TARGET_DIR)/etc/triggerhappy/triggers.d
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3399_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/multimedia_keys.conf          $(TARGET_DIR)/etc/triggerhappy/triggers.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/multimedia_keys_disabled.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3128_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/multimedia_keys_Game_Simulator_Board.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/multimedia_keys_Jupiter.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
 endef
 
 BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
