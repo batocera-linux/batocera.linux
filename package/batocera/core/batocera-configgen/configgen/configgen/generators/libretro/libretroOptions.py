@@ -683,7 +683,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Audio Filter
         if system.isOptSet('o2em_low_pass_range') and system.config['o2em_low_pass_range'] != "0":
             coreSettings.save('o2em_low_pass_filter', '"enabled"')
-            coreSettings.save('o2em_low_pass_range',  system.config['o2em_low_pass_range'] + '"')
+            coreSettings.save('o2em_low_pass_range', '"' + system.config['o2em_low_pass_range'] + '"')
         else:
             coreSettings.save('o2em_low_pass_filter', '"disabled"')
             coreSettings.save('o2em_low_pass_range',  '"0"')
@@ -1526,12 +1526,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mesen_hdpacks', '"enabled"')
         # FDS Auto-insert side A
         if system.isOptSet('mesen_fdsautoinsertdisk'):
-            coreSettings.save('mesen_fdsautoinsertdisk', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsautoinsertdisk', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsautoinsertdisk', '"disabled"')
         # FDS Fast forward floppy disk loading
         if system.isOptSet('mesen_fdsfastforwardload'):
-            coreSettings.save('mesen_fdsfastforwardload', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsfastforwardload', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsfastforwardload', '"disabled"')
         # RAM init state (speedrunning)
