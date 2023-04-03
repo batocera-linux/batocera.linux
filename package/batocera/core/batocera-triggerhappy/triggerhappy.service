@@ -6,11 +6,11 @@ CONFFILE=multimedia_keys.conf
 . /etc/profile.d/dbus.sh
 
 # hack for odroidgoa models
-BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+""+g)
 if test -z "${BOARD_MODEL}"
 then
     # give an other chance with dmi
-    BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+    BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+""+g)
 fi
 
 BOARD_CONFFILE=multimedia_keys_${BOARD_MODEL}.conf
