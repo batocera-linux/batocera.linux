@@ -18,19 +18,19 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3326_CONFIG
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
+    cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3399_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3128_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/*      $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
