@@ -1,0 +1,159 @@
+#!/usr/bin/python
+
+import xml.etree.ElementTree as ET
+import os
+import requests
+import time
+import yaml
+from datetime import datetime
+
+# input:
+# no input required, one game by system will be tested. you can choose a list if you create a file /userdata/system/gamesToTest.yml, example:
+# nes:
+#   /userdata/roms/nes/Super_mario_brothers3.nes
+# snes:
+#   /userdata/roms/snes/Micro Machines 2 - Turbo Tournament.7z
+#
+# output:
+# /tmp/batocera-test_22-07-03_18h34.42/index.html
+
+class BatoceraTest():
+
+    @staticmethod
+    def run():
+        emulators = BatoceraTest.findEmulators()
+
+        # games to test : from file by configuration, or from automatic list one by system
+        configFile = "/userdata/system/gamesToTest.yml"
+        if os.path.exists(configFile):
+            games = BatoceraTest.findGamesForEmulatorsFromFile(emulators, configFile)
+        else:
+            games = BatoceraTest.findGamesForEmulators(emulators)
+
+        resultName = "batocera-test_" + datetime.now().strftime('%y-%m-%d_%Hh%M.%S')
+        resultDir = "/tmp/" + resultName
+        print(f"directory: {resultDir}")
+        try:
+            os.makedirs(resultDir)
+        except:
+            raise Exception(f"unable to create the directory {resultDir}")
+
+        results = []
+        for system in games:
+            if BatoceraTest.runTest(system, games[system], resultDir):
+                print("SUCCESS")
+                results.append({"system": system, "game": games[system], "status": True})
+            else:
+                print("KO")
+                results.append({"system": system, "game": games[system], "status": False})
+
+        # generate report
+        with open(resultDir+"/index.html", "w") as f:
+            f.write("<html>\n")
+            f.write(" <head>\n")
+            f.write("  <meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\" />\n")
+            f.write("  <title>batocera-test</title>\n")
+            f.write("  <style>\n")
+            f.write("    table, th, td {\n")
+            f.write("      border: 1px solid;\n")
+            f.write("    }\n")
+            f.write("  </style>\n")
+            f.write(" </head>\n")
+            f.write(" <body>\n")
+            f.write(" <table>\n")
+            for result in results:
+                f.write("  <tr>\n")
+                f.write("  <td>" + result["system"] + "</td>\n")
+                f.write("  <td>" + os.path.basename(result["game"]) + "</td>\n")
+                if result["status"]:
+                    f.write("  <td style=\"background-color: green;\">OK</td>\n")
+                else:
+                    f.write("  <td style=\"background-color: red;\">FAILED</td>\n")
+                f.write("  </tr>\n")
+            f.write(" </table>\n")
+            f.write(" </body>\n")
+            f.write("</html>\n")
+
+    @staticmethod
+    def runTest(system, game, resultDir):
+        print("testing system {} with {}".format(system, os.path.basename(game)))
+
+        # start the game
+        # curl http://localhost:1234/launch -d "/userdata/roms/gamecube/Super Mario Sunshine.iso"
+        x = requests.post("http://localhost:1234/launch", data = game)
+        if not x.ok:
+            raise Exception("fail call es")
+
+        # wait 20s
+        time.sleep(20)
+
+        try:
+            x = requests.get("http://localhost:1234/runningGame")
+            if not x.ok:
+                raise Exception("fail call es")
+            xj = x.json()
+            stillRunning = (xj["systemName"] == system)
+        except:
+            stillRunning = False
+
+        # stop the game
+        code = os.system("batocera-es-swissknife --emukill")
+
+        # batocera-screenshot
+        # logs in case of failure
+
+        return stillRunning
+
+    @staticmethod
+    def findEmulators():
+        emulators = {}
+        if os.path.exists("/userdata/system/configuration/emulationstation/es_systems.cfg"):
+            tree = ET.parse("/userdata/system/configuration/emulationstation/es_systems.cfg")
+        elif os.path.exists("/usr/share/emulationstation/es_systems.cfg"):
+            tree = ET.parse("/usr/share/emulationstation/es_systems.cfg")
+        else:
+            raise Exception("es_system.cfg not found");
+        systemList = tree.getroot()
+
+        if systemList.tag != "systemList":
+            raise Exception("root tag is not systemList");
+        for system in systemList:
+            if system.tag == "system":
+                infos = {}
+                for systemInfo in system:
+                    if systemInfo.tag in ["name", "path", "extension"]:
+                        infos[systemInfo.tag] = systemInfo.text
+                if "name" in infos and "path" in infos and "extension" in infos:
+                    emulators[infos["name"]] = {"path": infos["path"], "extensions": infos["extension"].split(" ")}
+        return emulators
+
+    @staticmethod
+    def findGamesForEmulators(emulators):
+        games = {}
+        for emulator in emulators:
+            game = BatoceraTest.findGamesForEmulator(emulator, emulators[emulator])
+            if game is not None:
+                games[emulator] = game
+        return games
+
+    @staticmethod
+    def findGamesForEmulator(emulator, infos):
+        for root, dirs, files in os.walk(infos["path"]):
+            for file in files:
+                for extension in infos["extensions"]:
+                    if file.endswith(extension):
+                        return os.path.join(root, file)
+        return None
+
+    @staticmethod
+    def findGamesForEmulatorsFromFile(emulators, file):
+        with open(file, 'r') as f:
+            testgames = yaml.load(f, Loader=yaml.CLoader)
+        games = {}
+        for system in testgames:
+            if system in emulators:
+                games[system] = testgames[system]
+        return games
+
+if __name__ == '__main__':
+   BatoceraTest.run()

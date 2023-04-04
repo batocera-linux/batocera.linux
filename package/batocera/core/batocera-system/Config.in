@@ -199,7 +199,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_USBUTILS                             # usb key/sd card tools
 	select BR2_PACKAGE_BATOCERA_SPLASH                      # boot splash
 	select BR2_PACKAGE_BATOCERA_SCRIPTS                     # batocera scripts
-    select BR2_PACKAGE_BATOCERA_RESOLUTION                  # batocera resolution
+  select BR2_PACKAGE_BATOCERA_RESOLUTION                  # batocera resolution
 	select BR2_PACKAGE_BATOCERA_SETTINGS                    # batocera-settings-get/set
 	select BR2_PACKAGE_BATOCERA_AUDIO                       # batocera audio
 	select BR2_PACKAGE_BATOCERA_BLUETOOTH                   # batocera bluetooth
