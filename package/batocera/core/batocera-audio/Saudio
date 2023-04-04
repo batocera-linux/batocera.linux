@@ -6,6 +6,8 @@
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
+BOARD=$(cat /boot/boot/batocera.board)
+
 start_pipewire() {
     printf "Starting pipewire: "
     start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
@@ -31,6 +33,7 @@ stop_pipewire() {
 
 case "$1" in
     start)
+        alsactl init # init cards with alsa files
         start_pipewire
     ;;
     stop)

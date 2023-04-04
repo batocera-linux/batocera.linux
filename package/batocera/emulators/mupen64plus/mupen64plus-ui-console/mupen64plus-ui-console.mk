@@ -3,8 +3,8 @@
 # mupen64plus-ui-console
 #
 ################################################################################
-# Version.: Commits on Jan 3, 2021
-MUPEN64PLUS_UI_CONSOLE_VERSION = 32e27344214946f0dce3cd2b4fff152a3538bd8f
+# Version.: Commits on Mar 03, 2023
+MUPEN64PLUS_UI_CONSOLE_VERSION = 674dc3e9ec0d31b9a978c6df31d8afd04994ee93
 MUPEN64PLUS_UI_CONSOLE_SITE = $(call github,mupen64plus,mupen64plus-ui-console,$(MUPEN64PLUS_UI_CONSOLE_VERSION))
 MUPEN64PLUS_UI_CONSOLE_LICENSE = GPLv2
 MUPEN64PLUS_UI_CONSOLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core

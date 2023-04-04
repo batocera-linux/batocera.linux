@@ -65,7 +65,7 @@ class SonicRetroGenerator(Generator):
         # [Dev]
         if not sonicConfig.has_section("Dev"):
             sonicConfig.add_section("Dev")
-        if system.isOptSet('devmenu') and system.config["devmenu"] == 1:
+        if system.isOptSet('devmenu') and system.config["devmenu"] == '1':
             sonicConfig.set("Dev", "DevMenu", "true")
         else:
             sonicConfig.set("Dev", "DevMenu", "false")
@@ -80,7 +80,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.set("Dev", "StartingScene", "0")
             sonicConfig.set("Dev", "UseSteamDir", "false")
         sonicConfig.set("Dev", "FastForwardSpeed", "8")
-        if system.isOptSet('hqmode') and system.config["hqmode"] == 0:
+        if system.isOptSet('hqmode') and system.config["hqmode"] == '0':
             sonicConfig.set("Dev", "UseHQModes", "false")
         else:
             sonicConfig.set("Dev", "UseHQModes", "true")
@@ -91,7 +91,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.add_section("Game")
         
         if (emu == "sonic2013"):
-            if system.isOptSet('skipstart') and system.config["skipstart"] == 1:
+            if system.isOptSet('skipstart') and system.config["skipstart"] == '1':
                 sonicConfig.set("Game", "SkipStartMenu", "true")
             else:
                 sonicConfig.set("Game", "SkipStartMenu", "false")

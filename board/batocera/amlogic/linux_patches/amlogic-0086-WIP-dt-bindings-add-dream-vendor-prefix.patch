@@ -1,0 +1,28 @@
+From 16f6b516305e6b43019e5c6d9b5528037b58e27e Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Apr 2021 13:47:52 +0000
+Subject: [PATCH 86/92] WIP: dt-bindings: add dream vendor prefix
+
+Add vendor prefix for Dream Property GmbH
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 369bd0c826a1..a585da02832e 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -350,6 +350,8 @@ patternProperties:
+     description: DPTechnics
+   "^dragino,.*":
+     description: Dragino Technology Co., Limited
++  "^dream,.*":
++    description: Dream Property GmbH
+   "^ds,.*":
+     description: DaSheng, Inc.
+   "^dserve,.*":
+-- 
+2.34.1
+

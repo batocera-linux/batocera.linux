@@ -8,6 +8,7 @@ from os import environ
 import configparser
 from . import dolphinControllers
 from . import dolphinSYSCONF
+import controllersConfig
 
 class DolphinGenerator(Generator):
 
@@ -18,11 +19,11 @@ class DolphinGenerator(Generator):
         # Dir required for saves
         if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
+        
+        # Generate the controller config(s)
+        dolphinControllers.generateControllerConfig(system, playersControllers, rom, guns)
 
-        dolphinControllers.generateControllerConfig(system, playersControllers, rom)
-
-        ## dolphin.ini ##
-
+        ## [ dolphin.ini ] ##
         dolphinSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
@@ -40,6 +41,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Analytics")
         if not dolphinSettings.has_section("Display"):
             dolphinSettings.add_section("Display")
+        if not dolphinSettings.has_section("GBA"):
+            dolphinSettings.add_section("GBA")
 
         # Define default games path
         if "ISOPaths" not in dolphinSettings["General"]:
@@ -112,8 +115,20 @@ class DolphinGenerator(Generator):
         # Wiimote scanning
         dolphinSettings.set("Core", "WiimoteContinuousScanning", "True")
 
-        # Gamecube pads forced as standard pad
-        dolphinSettings.set("Core", "SIDevice0", "6")
+        # Gamecube ports
+        # Create a for loop going 1 through to 4 and iterate through it:
+        for i in range(1,5):
+            if system.isOptSet("dolphin_port_" + str(i) + "_type"):
+                # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
+                dolphinSettings.set("Core", "SIDevice" + str(i - 1), system.config["dolphin_port_" + str(i) + "_type"])
+            else:
+                dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
+
+        # HiResTextures for guns part 1/2 (see below the part 2)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and controllersConfig.gunsNeedCrosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):
+            dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
+        else:
+            dolphinSettings.remove_option("General", "CustomTexturesPath")
 
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
@@ -122,8 +137,7 @@ class DolphinGenerator(Generator):
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
 
-        ## gfx.ini ##
-
+        ## [ gfx.ini ] ##
         dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
@@ -135,17 +149,17 @@ class DolphinGenerator(Generator):
         if not dolphinGFXSettings.has_section("Hacks"):
             dolphinGFXSettings.add_section("Hacks")
         if not dolphinGFXSettings.has_section("Enhancements"):
-            dolphinGFXSettings.add_section("Enhancements")             
+            dolphinGFXSettings.add_section("Enhancements")
         if not dolphinGFXSettings.has_section("Hardware"):
-            dolphinGFXSettings.add_section("Hardware")  
-            
+            dolphinGFXSettings.add_section("Hardware")
+
         # Graphics setting Aspect Ratio
         if system.isOptSet('dolphin_aspect_ratio'):
             dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
         else:
             # set to zero, which is 'Auto' in Dolphin & Batocera
             dolphinGFXSettings.set("Settings", "AspectRatio", "0")
-        
+
         # Show fps
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinGFXSettings.set("Settings", "ShowFPS", "True")
@@ -160,9 +174,15 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "HiresTextures",      "False")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
 
+        # HiResTextures for guns part 2/2 (see upper part1)
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and (system.isOptSet('dolphin-lightgun-hide-crosshair') == False or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):
+            # erase what can be set by the option hires_textures
+            dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
+
         # Widescreen Hack
         if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
-            # Prefer Cheats than Hack 
+            # Prefer Cheats than Hack
             if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
                 dolphinGFXSettings.set("Settings", "wideScreenHack", "False")
             else:
@@ -199,7 +219,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Enhancements", "ForceFiltering", "True")
             dolphinGFXSettings.set("Enhancements", "ArbitraryMipmapDetection", "True")
             dolphinGFXSettings.set("Enhancements", "DisableCopyFilter", "True")
-            dolphinGFXSettings.set("Enhancements", "ForceTrueColor", "True")            
+            dolphinGFXSettings.set("Enhancements", "ForceTrueColor", "True")
         else:
             if dolphinGFXSettings.has_section("Hacks"):
                 dolphinGFXSettings.remove_option("Hacks", "BBoxEnable")
@@ -213,7 +233,7 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ForceFiltering")
                 dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
-                dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
+                dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")
 
         # Internal resolution settings
         if system.isOptSet('internal_resolution'):
@@ -255,14 +275,19 @@ class DolphinGenerator(Generator):
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        commandArray = ["dolphin-emu", "-e", rom]
-        if system.isOptSet('platform'):
-            commandArray = ["dolphin-emu-nogui", "-p", system.config["platform"], "-e", rom]
-
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
-            
-    def getInGameRatio(self, config, gameResolution, rom):
+        # Check what version we've got
+        if os.path.isfile("/usr/bin/dolphin-emu"):
+            commandArray = ["dolphin-emu", "-e", rom]
+        else:
+            commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
         
+        return Command.Command(array=commandArray, \
+            env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+            "XDG_DATA_HOME":batoceraFiles.SAVES, \
+            "QT_QPA_PLATFORM":"xcb"})
+
+    def getInGameRatio(self, config, gameResolution, rom):
+
         dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
@@ -297,7 +322,7 @@ class DolphinGenerator(Generator):
         # Stretched (thus depends on physical screen geometry)
         if dolphin_aspect_ratio == "3":
             return gameResolution["width"] / gameResolution["height"]
-                
+
         return 4/3
 
 # Seem to be only for the gamecube. However, while this is not in a gamecube section

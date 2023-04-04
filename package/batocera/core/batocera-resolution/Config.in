@@ -1,0 +1,10 @@
+config BR2_PACKAGE_BATOCERA_RESOLUTION
+	bool "batocera-resolution"
+
+	select BR2_PACKAGE_BASH
+	select BR2_PACKAGE_PCIUTILS
+    select BR2_PACKAGE_GRIM         if BR2_PACKAGE_WAYLAND && BR2_PACKAGE_SWAY
+    select BR2_PACKAGE_WF_RECORDER  if BR2_PACKAGE_WAYLAND && BR2_PACKAGE_SWAY
+
+	help
+	  Batocera resolution

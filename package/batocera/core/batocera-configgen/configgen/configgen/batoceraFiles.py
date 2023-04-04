@@ -14,6 +14,7 @@ ROMS = '/userdata/roms'
 
 esInputs = CONF + '/emulationstation/es_input.cfg'
 esSettings = CONF + '/emulationstation/es_settings.cfg'
+esGunsMetadata = "/usr/share/emulationstation/resources/gungames.xml"
 batoceraConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
@@ -23,7 +24,6 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'dosboxx'        : '/usr/bin/dosbox-x'
               , 'kodi'           : '/usr/bin/batocera-kodilauncher'
               , 'libretro'       : '/usr/bin/retroarch'
-              , 'linapple'       : '/usr/bin/linapple'
               , 'moonlight'      : '/usr/bin/moonlight'
               , 'mupen64plus'    : '/usr/bin/mupen64plus'
               , 'flycast'        : '/usr/bin/flycast'
@@ -111,15 +111,11 @@ amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
 
 hatariConf = CONF + '/hatari/hatari.cfg'
 
-daphneConfig = CONF + '/daphne/hypinput.ini'
 daphneHomedir = ROMS + '/daphne'
-daphneDatadir = '/usr/share/daphne'
+daphneDatadir = CONF + '/daphne'
+daphneConfig = daphneDatadir+ '/hypinput.ini'
+daphneConfigfile = 'hypinput.ini'
 daphneSaves = SAVES + '/daphne'
-
-linappleConfigFile = CONF + '/linapple/linapple.conf'
-linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
-linapplaSaves = SAVES + '/apple2'
-linappleMasterDSK = '/usr/share/batocera/configgen/data/linapple/Master.dsk'
 
 flycastCustom = CONF + '/flycast'
 flycastMapping = flycastCustom + '/mappings'
@@ -141,7 +137,7 @@ rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
 
-xemuConfig = CONF + '/xemu/xemu.ini'
+xemuConfig = CONF + '/xemu/xemu.toml'
 
 sdlpopConfigDir = CONF + '/sdlpop'
 sdlpopSrcCfg = sdlpopConfigDir + '/SDLPoP.cfg'

@@ -47,14 +47,14 @@ case $1 in
         # Read Config and set some defaults
         splash_setting="$(/usr/bin/batocera-settings-get splash.screen.length)"
         [ -z "$splash_setting" ] && splash_setting=auto
-        [ "$splash_setting" = "auto" -a "$(echo $ARCH | cut -c 1-3)" = "rpi" ] && splash_setting=$ARCH
+        [ "$splash_setting" = "auto" -a "$(echo $ARCH | cut -c 1-3)" = "rpi" -a "$(echo $ARCH | cut -c 1-3)" = "bcm" ] && splash_setting=$ARCH
         case "$splash_setting" in
-            rpi1)
+            bcm2835)
                 # Standard BATOCERA setting, for Pi platform with OMX Player
                 #
                 splash_default_rpi &
             ;;
-            auto|rpi2|rpi3|rpi4)
+            auto|bcm2836|bcm2837|bcm2711)
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay

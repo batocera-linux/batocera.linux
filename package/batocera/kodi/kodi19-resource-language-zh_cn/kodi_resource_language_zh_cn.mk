@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI19_RESOURCE_LANGUAGE_ZH_CN_VERSION = 9.0.37
+KODI19_RESOURCE_LANGUAGE_ZH_CN_VERSION = 9.0.39
 KODI19_RESOURCE_LANGUAGE_ZH_CN_SOURCE = resource.language.zh_cn-$(KODI19_RESOURCE_LANGUAGE_ZH_CN_VERSION).zip
 KODI19_RESOURCE_LANGUAGE_ZH_CN_SITE = http://mirrors.kodi.tv/addons/matrix/resource.language.zh_cn
 KODI19_RESOURCE_LANGUAGE_ZH_CN_PLUGINNAME=resource.language.zh_cn

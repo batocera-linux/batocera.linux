@@ -1,0 +1,12 @@
+diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+index e1aec5a..8d60bb5 100644
+--- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
++++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+@@ -202,6 +202,7 @@ static std::map<std::string, std::weak_ptr<evdevDevice>> s_devnode_objects;
+ static std::shared_ptr<evdevDevice>
+ FindDeviceWithUniqueIDAndPhysicalLocation(const char* unique_id, const char* physical_location)
+ {
++  return nullptr;
+   if (!unique_id || !physical_location)
+     return nullptr;
+ 

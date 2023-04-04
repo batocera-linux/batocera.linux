@@ -1,0 +1,30 @@
+From 8e14d531bb2fb3b52f7942c742e48e48c4b0c0c8 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Apr 2021 13:48:34 +0000
+Subject: [PATCH 87/92] WIP: dt-bindings: arm: amlogic: add support for
+ Dreambox One/Two
+
+The Dreambox One and Dreambox Two are DVBS/T2 receiver boxes based
+on the Amlogic W400 reference board with an S922X chip.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 083fab6ab099..6af30f2020a1 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -178,6 +178,8 @@ properties:
+               - azw,gsking-x
+               - azw,gtking
+               - azw,gtking-pro
++              - dream,dreambox-one
++              - dream,dreambox-two
+               - hardkernel,odroid-n2
+               - hardkernel,odroid-n2-plus
+               - khadas,vim3
+-- 
+2.34.1
+

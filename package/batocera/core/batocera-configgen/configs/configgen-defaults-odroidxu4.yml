@@ -3,6 +3,7 @@ default:
     # menu retroarch
     retroarch.audio_latency:   64
     retroarch.video_hard_sync: 0
+    retroarch.audio_driver: alsathread
 dreamcast:
   options:
     # menu retroarch
@@ -13,14 +14,21 @@ dreamcast:
     reicast_synchronous_rendering: disabled
 psx:
   options:
+    gpu_software: true
     # menu retroarch
     # settings to fix sound issue only on Odroid XU4
     retroarch.audio_latency:   128
     retroarch.video_hard_sync: 1
 fmtowns:
   emulator: libretro
-  core:     mess
+  core:     mame
 n64:
   options:
     # hud breaking mupen64
     hud_support: none
+nds:
+  emulator: drastic
+  core:     drastic
+fmtowns:
+  emulator: libretro
+  core:     mame

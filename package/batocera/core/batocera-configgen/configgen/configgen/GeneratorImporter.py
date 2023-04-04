@@ -11,10 +11,6 @@ def getGenerator(emulator):
         from generators.kodi.kodiGenerator import KodiGenerator
         return KodiGenerator()
 
-    if emulator == 'linapple':
-        from generators.linapple.linappleGenerator import LinappleGenerator
-        return LinappleGenerator()
-
     if emulator == 'libretro':
         from generators.libretro.libretroGenerator import LibretroGenerator
         return LibretroGenerator()
@@ -251,7 +247,7 @@ def getGenerator(emulator):
         from generators.demul.demulGenerator import DemulGenerator
         return DemulGenerator()
 
-    if emulator == 'xenia':
+    if emulator == 'xenia' or emulator == 'xenia-canary':
         from generators.xenia.xeniaGenerator import XeniaGenerator
         return XeniaGenerator()
 
@@ -263,13 +259,29 @@ def getGenerator(emulator):
         from generators.gzdoom.gzdoomGenerator import GZDoomGenerator
         return GZDoomGenerator()
 
-    if emulator == "ionfury":
-        from generators.ionfury.ionfuryGenerator import IonFuryGenerator
-        return IonFuryGenerator()
+    if emulator == "eduke32":
+        from generators.eduke32.eduke32Generator import EDuke32Generator
+        return EDuke32Generator()
 
     if emulator == "raze":
         from generators.raze.razeGenerator import RazeGenerator
         return RazeGenerator()
+
+    if emulator == "vita3k":
+        from generators.vita3k.vita3kGenerator import Vita3kGenerator
+        return Vita3kGenerator()
+
+    if emulator == "ikemen":
+        from generators.ikemen.ikemenGenerator import IkemenGenerator
+        return IkemenGenerator()
+
+    if emulator == 'bigpemu':
+        from generators.bigpemu.bigpemuGenerator import BigPEmuGenerator
+        return BigPEmuGenerator()
+
+    if emulator == 'pyxel':
+        from generators.pyxel.pyxelGenerator import PyxelGenerator
+        return PyxelGenerator()
 
     #if emulator == 'play':
     #from generators.play.playGenerator import PlayGenerator

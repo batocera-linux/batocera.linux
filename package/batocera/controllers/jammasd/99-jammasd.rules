@@ -1,0 +1,3 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="ASD JammASD Interface Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/jammASDSplit $env{DEVNAME}"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="ASD JammASD Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="ASD JammASD Player 2", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0

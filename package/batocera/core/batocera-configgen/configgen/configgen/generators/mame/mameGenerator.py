@@ -19,6 +19,7 @@ from PIL import Image, ImageOps
 from . import mameControllers
 from pathlib import Path
 import csv
+import controllersConfig
 
 eslog = get_logger(__name__)
 
@@ -57,25 +58,16 @@ class MameGenerator(Generator):
                 messRomType.append(row[2])
                 messAutoRun.append(row[3])
         
-        # Identify the current system, select MAME or MESS as needed.
+        # Identify the current system
         try:
             messMode = messSystems.index(system.name)
         except ValueError:
             messMode = -1
-        if messMode == -1:
-            commandArray =  [ "/usr/bin/mame/mame" ]
-        elif system.name == "vgmplay":
-            commandArray =  [ "/usr/bin/mame/vgmplay" ]
-            if system.isOptSet("softList") and system.config["softList"] != "none":
-                softList = system.config["softList"]
-            else:
-                softList = ""
+
+        if system.isOptSet("softList") and system.config["softList"] != "none":
+            softList = system.config["softList"]
         else:
-            commandArray =  [ "/usr/bin/mame/mess" ]
-            if system.isOptSet("softList") and system.config["softList"] != "none":
-                softList = system.config["softList"]
-            else:
-                softList = ""
+            softList = ""
 
         # Auto softlist for FM Towns if there is a zip that matches the folder name
         # Used for games that require a CD and floppy to both be inserted
@@ -84,6 +76,7 @@ class MameGenerator(Generator):
             if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
                 softList = 'fmtowns_cd'
 
+        commandArray =  [ "/usr/bin/mame/mame" ]
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
@@ -106,6 +99,9 @@ class MameGenerator(Generator):
         # Enable cheats
         commandArray += [ "-cheat" ]
         commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path containing the cheat.7z file
+
+        # logs
+        commandArray += [ "-verbose" ]
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
         commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
@@ -189,9 +185,7 @@ class MameGenerator(Generator):
             commandArray += [ "-modesetting" ]
             commandArray += [ "-readconfig" ]
         else:
-            commandArray += [ "-nomodeline_generation" ]
-            commandArray += [ "-nochangeres" ]
-            commandArray += [ "-noswitchres" ]
+            commandArray += [ "-resolution", "{}x{}".format(gameResolution["width"], gameResolution["height"]) ]
 
         # Refresh rate options to help with screen tearing
         # syncrefresh is unlisted, it requires specific display timings and 99.9% of users will get unplayable games.
@@ -228,6 +222,45 @@ class MameGenerator(Generator):
         if len(pluginsToLoad) > 0:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
 
+        # Mouse
+        useMouse = False
+        if (system.isOptSet('use_mouse') and system.getOptBoolean('use_mouse')) or not (messSysName[messMode] == "" or messMode == -1):
+            useMouse = True
+            commandArray += [ "-dial_device", "mouse" ]
+            commandArray += [ "-trackball_device", "mouse" ]
+            commandArray += [ "-paddle_device", "mouse" ]
+            commandArray += [ "-positional_device", "mouse" ]
+            commandArray += [ "-mouse_device", "mouse" ]
+            commandArray += [ "-ui_mouse" ]
+            if not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns')):
+                commandArray += [ "-lightgun_device", "mouse" ]
+                commandArray += [ "-adstick_device", "mouse" ]
+        else:
+            commandArray += [ "-dial_device", "joystick" ]
+            commandArray += [ "-trackball_device", "joystick" ]
+            commandArray += [ "-paddle_device", "joystick" ]
+            commandArray += [ "-positional_device", "joystick" ]
+            commandArray += [ "-mouse_device", "joystick" ]
+            if not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns')):
+                commandArray += [ "-lightgun_device", "joystick" ]
+                commandArray += [ "-adstick_device", "joystick" ]
+        # Multimouse option currently hidden in ES, SDL only detects one mouse.
+        # Leaving code intact for testing & possible ManyMouse integration
+        multiMouse = False
+        if system.isOptSet('multimouse') and system.getOptBoolean('multimouse'):
+            multiMouse = True
+            commandArray += [ "-multimouse" ]
+
+        # guns
+        useGuns = False
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            useGuns = True
+            commandArray += [ "-lightgunprovider", "udev" ]
+            commandArray += [ "-lightgun_device", "lightgun" ]
+            commandArray += [ "-adstick_device", "lightgun" ]
+        if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
+            commandArray += [ "-offscreen_reload" ]
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messSysName[messMode] == "" or messMode == -1:
@@ -239,7 +272,6 @@ class MameGenerator(Generator):
                 messModel = system.config["altmodel"]
             commandArray += [ messModel ]
 
-
             #TI-99 32k RAM expansion & speech modules - enabled by default
             if system.name == "ti99":
                 commandArray += [ "-ioport", "peb" ]
@@ -248,11 +280,34 @@ class MameGenerator(Generator):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandArray += ["-ioport:peb:slot3", "speech"]
 
+            #Laser 310 Memory Expansion & Joystick
+            if system.name == "laser310":
+                commandArray += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandArray += ["-mem", laser310mem]
+
             # BBC Joystick
             if system.name == "bbc":
                 if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
                     commandArray += ["-analogue", system.config['sticktype']]
                     specialController = system.config['sticktype']
+
+            # Apple II
+            if system.name == "apple2":
+                commandArray += ["-sl7", "cffa202"]
+                if system.isOptSet('gameio') and system.config['gameio'] != 'none':
+                    if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
+                        eslog.debug("Joyport joystick is only compatible with Apple II Plus")
+                    else:
+                        commandArray += ["-gameio", system.config['gameio']]
+                        specialController = system.config['gameio']
+
+            # RAM size (Mac excluded, special handling below)
+            if system.name != "macintosh" and system.isOptSet("ramsize"):
+                commandArray += [ '-ramsize', str(system.config["ramsize"]) + 'M' ]
 
             # Mac RAM & Image Reader (if applicable)
             if system.name == "macintosh":
@@ -401,7 +456,7 @@ class MameGenerator(Generator):
                 commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
         # bezels
-        if 'bezel' not in system.config or system.config['bezel'] == '':
+        if 'bezel' not in system.config.keys() or system.config['bezel'] == '':
             bezelSet = None
         else:
             bezelSet = system.config['bezel']
@@ -409,18 +464,18 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode])
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, "")
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
         except:
-            MameGenerator.writeBezelConfig(None, system, rom, "")
+            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
 
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
@@ -459,7 +514,7 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom, messSys):
+    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsBordersSize):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         if messSys == "":
@@ -470,19 +525,32 @@ class MameGenerator(Generator):
         if os.path.exists(tmpZipDir):
             shutil.rmtree(tmpZipDir)
 
-        if bezelSet is None:
+        if bezelSet is None and gunsBordersSize is None:
             return
 
         # let's generate the zip file
         os.makedirs(tmpZipDir)
 
         # bezels infos
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
+        if bezelSet is None:
+            if gunsBordersSize is not None:
+                bz_infos = None
+            else:
+                return
+        else:
+            bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
+            if bz_infos is None:
+                if gunsBordersSize is None:
+                    return
+
+        # create an empty bezel
         if bz_infos is None:
-            return
+            overlay_png_file = "/tmp/bezel_transmame_black.png"
+            bezelsUtil.createTransparentBezel(overlay_png_file, gameResolution["width"], gameResolution["height"])
+            bz_infos = { "png": overlay_png_file }
 
         # copy the png inside
-        if os.path.exists(bz_infos["mamezip"]):
+        if "mamezip" in bz_infos and os.path.exists(bz_infos["mamezip"]):
             if messSys == "":
                 artFile = "/var/run/mame_artwork/" + romBase + ".zip"
             else:
@@ -493,15 +561,16 @@ class MameGenerator(Generator):
                 else:
                     os.remove(artFile)
             os.symlink(bz_infos["mamezip"], artFile)
+            # hum, not nice if guns need borders
             return
-        elif os.path.exists(bz_infos["layout"]):
+        elif "layout" in bz_infos and os.path.exists(bz_infos["layout"]):
             os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
             pngFile = os.path.split(bz_infos["png"])[1]
             os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)
         else:
             pngFile = "default.png"
             os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
-            if os.path.exists(bz_infos["info"]):
+            if "info" in bz_infos and os.path.exists(bz_infos["info"]):
                 bzInfoFile = open(bz_infos["info"], "r")
                 bzInfoText = bzInfoFile.readlines()
                 bz_alpha = 1.0 # Just in case it's not set in the info file
@@ -598,6 +667,17 @@ class MameGenerator(Generator):
             imgnew.paste(back, (0,0,img_width,img_height))
             imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
+            try:
+                os.remove(tmpZipDir + "/" + pngFile)
+            except:
+                pass
+            os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
+
+        # borders for guns
+        if gunsBordersSize is not None:
+            output_png_file = "/tmp/bezel_gunborders.png"
+            innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:

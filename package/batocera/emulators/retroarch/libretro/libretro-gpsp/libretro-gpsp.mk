@@ -4,17 +4,17 @@
 # libretro-gpsp
 #
 ################################################################################
-# Version: Commits on  Apr 9, 2022
-LIBRETRO_GPSP_VERSION = f0f0b31f9ab95946965b75fed8d31e19290f3d43
+# Version: Commits on Mar 03, 2023
+LIBRETRO_GPSP_VERSION = 541adc9e1c6c9328c07058659594d6300ae0fa19
 LIBRETRO_GPSP_SITE = $(call github,libretro,gpsp,$(LIBRETRO_GPSP_VERSION))
 LIBRETRO_GPSP_LICENSE = GPLv2
 
 LIBRETRO_GPSP_PLATFORM = unix
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_GPSP_PLATFORM = rpi1
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_GPSP_PLATFORM = rpi2
 endif
 

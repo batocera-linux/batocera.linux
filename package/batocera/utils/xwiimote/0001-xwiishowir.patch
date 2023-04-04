@@ -1,0 +1,559 @@
+From c1528fdb9b26c70dc42d2fe26b457a8b85c197b5 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Thu, 15 Dec 2022 19:58:39 +0000
+Subject: [PATCH] xwiishowir
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ Makefile.am        |  18 +-
+ tools/xwiishowir.c | 499 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 516 insertions(+), 1 deletion(-)
+ create mode 100644 tools/xwiishowir.c
+
+diff --git a/Makefile.am b/Makefile.am
+index e34f84b..0e42110 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -42,7 +42,7 @@ EXTRA_DIST = \
+ #
+ 
+ lib_LTLIBRARIES = libxwiimote.la
+-bin_PROGRAMS = xwiishow
++bin_PROGRAMS = xwiishow xwiishowir
+ noinst_PROGRAMS = xwiidump
+ include_HEADERS = lib/xwiimote.h
+ man_MANS = \
+@@ -127,6 +127,22 @@ xwiishow_LDADD = \
+ xwiishow_LDFLAGS = \
+ 	$(AM_LDFLAGS)
+ 
++#
++# xwiishow
++#
++
++xwiishowir_SOURCES = \
++	tools/xwiishowir.c
++xwiishowir_CPPFLAGS = \
++	$(AM_CPPFLAGS) \
++	$(NCURSES_CFLAGS)
++xwiishowir_LDADD = \
++	$(NCURSES_LIBS) \
++	libxwiimote.la \
++	-lm
++xwiishowir_LDFLAGS = \
++	$(AM_LDFLAGS)
++
+ #
+ # xwiidump
+ #
+diff --git a/tools/xwiishowir.c b/tools/xwiishowir.c
+new file mode 100644
+index 0000000..9989ba8
+--- /dev/null
++++ b/tools/xwiishowir.c
+@@ -0,0 +1,502 @@
++/*
++ * XWiimote - tools - xwiishow
++ * Written 2010-2013 by David Herrmann
++ * Dedicated to the Public Domain
++ */
++
++/*
++ * Interactive Wiimote Testing Tool
++ * If you run this tool without arguments, then it shows usage information. If
++ * you pass "list" as first argument, it lists all connected Wii Remotes.
++ * You need to pass one path as argument and the given wiimote is opened and
++ * printed to the screen. When wiimote events are received, then the screen is
++ * updated correspondingly. You can use the keyboard to control the wiimote.
++ */
++
++#include <errno.h>
++#include <fcntl.h>
++#include <inttypes.h>
++#include <math.h>
++#include <ncurses.h>
++#include <poll.h>
++#include <stdarg.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/time.h>
++#include <time.h>
++#include <unistd.h>
++#include "xwiimote.h"
++
++static struct xwii_iface *iface;
++static bool freeze = false;
++
++//static int width  = 52;
++//static int height = 10;
++
++static int width  = 100;
++static int height = 20;
++
++static void print_error(const char *format, ...)
++{
++	va_list list;
++	char str[58 + 80 + 1];
++
++	va_start(list, format);
++	vsnprintf(str, sizeof(str), format, list);
++	str[sizeof(str) - 1] = 0;
++	va_end(list);
++
++	mvprintw(23, 22, "                                                          ");
++	mvprintw(23, 80, "                                                                                ");
++	mvprintw(23, 22, "%s", str);
++	refresh();
++}
++
++/* IR events */
++
++static void ir_show_ext(const struct xwii_event *event)
++{
++	double v;
++	uint64_t x[4], y[4], i, j, num;
++	char c;
++	int xoffset = 1;
++	int yoffset = 2;
++	char linetxt[512];
++	char linemidtxt[512];
++
++	bool midtxtdone = false;
++	for(int t=0; t<width; t++) {
++	  if(midtxtdone == false && t >= width/2) {
++	    linetxt[t] = '|';
++	    linemidtxt[t] = '+';
++	    midtxtdone = true;
++	  } else {
++	    linetxt[t] = ' ';
++	    if(t%2 == 0) {
++	      linemidtxt[t] = ' ';
++	    } else {
++	      linemidtxt[t] = '-';
++	    }
++	  }
++	}
++	linetxt[width] = '\0';
++	linemidtxt[width] = '\0';
++
++	bool middone = false;
++	for(int l=0; l<height; l++) {
++	  if(middone == false && l >= height/2) {
++	    mvprintw(yoffset+l,  xoffset, linemidtxt);
++	    middone = true;
++	  } else {
++	    mvprintw(yoffset+l,  xoffset, linetxt);
++	  }
++	}
++
++	for (i = 0; i < 4; ++i) {
++		v = event->v.abs[i].x;
++		v *= width;
++		v /= 1024;
++		//v += 0.5;
++		x[i] = v;
++
++		v = event->v.abs[i].y;
++		v *= height;
++		v /= 768;
++		//v += 0.5;
++		y[i] = v;
++	}
++
++	for (i = 0; i < 4; ++i) {
++		if (!xwii_event_ir_is_valid(&event->v.abs[i]))
++			continue;
++
++		num = 0;
++		for (j = 0; j < 4; ++j) {
++			if (x[j] == x[i] && y[j] == y[i])
++				++num;
++		}
++
++		if (num > 1)
++			c = '#';
++		else if (i == 0)
++			c = 'x';
++		else if (i == 1)
++			c = '+';
++		else if (i == 2)
++			c = '*';
++		else
++			c = '-';
++
++		if(y[i] <= height && x[i] < width)
++		  mvprintw(yoffset + y[i], xoffset + x[i], "%c", c);
++	}
++}
++
++static void ir_show(const struct xwii_event *event)
++{
++  int xoffset = 4;
++  int yoffset = 0;
++  
++	if (xwii_event_ir_is_valid(&event->v.abs[0])) {
++		mvprintw(yoffset, xoffset+0, "%04" PRId32, event->v.abs[0].x);
++		mvprintw(yoffset, xoffset+5, "%04" PRId32, event->v.abs[0].y);
++	} else {
++		mvprintw(yoffset, xoffset+0, "N/A ");
++		mvprintw(yoffset, xoffset+5, " N/A");
++	}
++
++	if (xwii_event_ir_is_valid(&event->v.abs[1])) {
++		mvprintw(yoffset, xoffset+14, "%04" PRId32, event->v.abs[1].x);
++		mvprintw(yoffset, xoffset+19, "%04" PRId32, event->v.abs[1].y);
++	} else {
++		mvprintw(yoffset, xoffset+14, "N/A ");
++		mvprintw(yoffset, xoffset+19, " N/A");
++	}
++
++	if (xwii_event_ir_is_valid(&event->v.abs[2])) {
++		mvprintw(yoffset, xoffset+28, "%04" PRId32, event->v.abs[2].x);
++		mvprintw(yoffset, xoffset+33, "%04" PRId32, event->v.abs[2].y);
++	} else {
++		mvprintw(yoffset, xoffset+28, "N/A ");
++		mvprintw(yoffset, xoffset+33, " N/A");
++	}
++
++	if (xwii_event_ir_is_valid(&event->v.abs[3])) {
++		mvprintw(yoffset, xoffset+42, "%04" PRId32, event->v.abs[3].x);
++		mvprintw(yoffset, xoffset+47, "%04" PRId32, event->v.abs[3].y);
++	} else {
++		mvprintw(yoffset, xoffset+42, "N/A ");
++		mvprintw(yoffset, xoffset+47, " N/A");
++	}
++}
++
++static void ir_clear(void)
++{
++	struct xwii_event ev;
++
++	ev.v.abs[0].x = 1023;
++	ev.v.abs[0].y = 1023;
++	ev.v.abs[1].x = 1023;
++	ev.v.abs[1].y = 1023;
++	ev.v.abs[2].x = 1023;
++	ev.v.abs[2].y = 1023;
++	ev.v.abs[3].x = 1023;
++	ev.v.abs[3].y = 1023;
++	ir_show_ext(&ev);
++	ir_show(&ev);
++}
++
++static void ir_toggle(void)
++{
++	int ret;
++
++	if (xwii_iface_opened(iface) & XWII_IFACE_IR) {
++		xwii_iface_close(iface, XWII_IFACE_IR);
++		ir_clear();
++	} else {
++		ret = xwii_iface_open(iface, XWII_IFACE_IR);
++		if (ret)
++			print_error("Error: Cannot enable IR: %d",
++				    ret);
++	}
++}
++
++/* basic window setup */
++
++static void refresh_all(void)
++{
++	if (geteuid() != 0)
++		mvprintw(20, 22, "Warning: Please run as root! (sysfs+evdev access needed)");
++}
++
++static void setup_window(void)
++{
++	/* 80x24 Box */
++	mvprintw(0, 0, "#1:     x     #2:     x     #3:     x     #4:     x      ");
++}
++
++static void setup_ext_window(void)
++{
++	size_t i;
++	int xoffset = 0;
++	int yoffset = 1;
++
++	char linetxt[512];
++	char linemidtxt[512];
++	int widthbords = width+2;
++	int heightbords = height+2;
++
++	bool midtxtdone = false;
++	for(int t=0; t<widthbords; t++) {
++	  if(midtxtdone == false && t >= widthbords/2) {
++	    linetxt[t] = '|';
++	    linemidtxt[t] = '+';
++	    midtxtdone = true;
++	  } else {
++	    if(t == 0 || t == widthbords-1) {
++	      linetxt[t] = '|';
++	      linemidtxt[t] = '+';
++	    } else {
++	      linetxt[t] = ' ';
++	      if(t%2 == 0) {
++		linemidtxt[t] = ' ';
++	      } else {
++		linemidtxt[t] = '-';
++	      }
++	    }
++	  }
++	}
++	linetxt[widthbords] = '\0';
++	linemidtxt[widthbords] = '\0';
++
++	bool middone = false;
++	for(int l=0; l<heightbords; l++) {
++	  if(middone == false && l >= heightbords/2) {
++	    mvprintw(yoffset+l,  xoffset, linemidtxt);
++	    middone = true;
++	  } else {
++	    if(l==0 || l==heightbords-1) {
++	      mvprintw(yoffset+l,  xoffset, linemidtxt);
++	    } else {
++	      mvprintw(yoffset+l,  xoffset, linetxt);
++	    }
++	  }
++	}
++	mvprintw(0, width-14, "Press q to quit");
++}
++
++static void handle_resize(void)
++{
++  erase();
++  width = COLS-2;
++  height = LINES-3;
++  setup_ext_window();
++  setup_window();
++  refresh_all();
++}
++
++/* device watch events */
++
++static void handle_watch(void)
++{
++	static unsigned int num;
++	int ret;
++
++	ret = xwii_iface_open(iface, xwii_iface_available(iface) |
++				     XWII_IFACE_WRITABLE);
++	if (ret)
++		print_error("Error: Cannot open interface: %d", ret);
++
++	refresh_all();
++}
++
++/* keyboard handling */
++
++static void freeze_toggle(void)
++{
++	freeze = !freeze;
++}
++
++static int keyboard(void)
++{
++	int key;
++
++	key = getch();
++	if (key == ERR)
++		return 0;
++
++	switch (key) {
++	case KEY_RESIZE:
++		handle_resize();
++		break;
++	case 'i':
++		ir_toggle();
++		break;
++	case 'f':
++		freeze_toggle();
++		break;
++	case 's':
++		refresh_all();
++		break;
++	case 'q':
++		return -ECANCELED;
++	}
++
++	return 0;
++}
++
++static int run_iface(struct xwii_iface *iface)
++{
++	struct xwii_event event;
++	int ret = 0, fds_num;
++	struct pollfd fds[2];
++
++	memset(fds, 0, sizeof(fds));
++	fds[0].fd = 0;
++	fds[0].events = POLLIN;
++	fds[1].fd = xwii_iface_get_fd(iface);
++	fds[1].events = POLLIN;
++	fds_num = 2;
++
++	ret = xwii_iface_watch(iface, true);
++	if (ret)
++		print_error("Error: Cannot initialize hotplug watch descriptor");
++
++	while (true) {
++		ret = poll(fds, fds_num, -1);
++		if (ret < 0) {
++			if (errno != EINTR) {
++				ret = -errno;
++				print_error("Error: Cannot poll fds: %d", ret);
++				break;
++			}
++		}
++
++		ret = xwii_iface_dispatch(iface, &event, sizeof(event));
++		if (ret) {
++			if (ret != -EAGAIN) {
++				print_error("Error: Read failed with err:%d",
++					    ret);
++				break;
++			}
++		} else if (!freeze) {
++			switch (event.type) {
++			case XWII_EVENT_GONE:
++				fds[1].fd = -1;
++				fds[1].events = 0;
++				fds_num = 1;
++				break;
++			case XWII_EVENT_WATCH:
++				handle_watch();
++				break;
++			case XWII_EVENT_IR:
++			  ir_show_ext(&event);
++			  ir_show(&event);
++				break;
++			}
++		}
++
++		ret = keyboard();
++		if (ret == -ECANCELED)
++			return 0;
++		else if (ret)
++			return ret;
++		refresh();
++	}
++
++	return ret;
++}
++
++static int enumerate()
++{
++	struct xwii_monitor *mon;
++	char *ent;
++	int num = 0;
++
++	mon = xwii_monitor_new(false, false);
++	if (!mon) {
++		printf("Cannot create monitor\n");
++		return -EINVAL;
++	}
++
++	while ((ent = xwii_monitor_poll(mon))) {
++		printf("  Found device #%d: %s\n", ++num, ent);
++		free(ent);
++	}
++
++	xwii_monitor_unref(mon);
++	return 0;
++}
++
++static char *get_dev(int num)
++{
++	struct xwii_monitor *mon;
++	char *ent;
++	int i = 0;
++
++	mon = xwii_monitor_new(false, false);
++	if (!mon) {
++		printf("Cannot create monitor\n");
++		return NULL;
++	}
++
++	while ((ent = xwii_monitor_poll(mon))) {
++		if (++i == num)
++			break;
++		free(ent);
++	}
++
++	xwii_monitor_unref(mon);
++
++	if (!ent)
++		printf("Cannot find device with number #%d\n", num);
++
++	return ent;
++}
++
++int main(int argc, char **argv)
++{
++	int ret = 0;
++	char *path = NULL;
++
++	if (argc < 2 || !strcmp(argv[1], "-h")) {
++		printf("Usage:\n");
++		printf("\txwiishow [-h]: Show help\n");
++		printf("\txwiishow list: List connected devices\n");
++		printf("\txwiishow <num>: Show device with number #num\n");
++		printf("\txwiishow /sys/path/to/device: Show given device\n");
++		printf("UI commands:\n");
++		printf("\tq: Quit application\n");
++		printf("\tf: Freeze/Unfreeze screen\n");
++		printf("\ti: Toggle IR camera\n");
++		ret = -1;
++	} else if (!strcmp(argv[1], "list")) {
++		printf("Listing connected Wii Remote devices:\n");
++		ret = enumerate();
++		printf("End of device list\n");
++	} else {
++		if (argv[1][0] != '/')
++			path = get_dev(atoi(argv[1]));
++
++		ret = xwii_iface_new(&iface, path ? path : argv[1]);
++		free(path);
++		if (ret) {
++			printf("Cannot create xwii_iface '%s' err:%d\n",
++								argv[1], ret);
++		} else {
++
++			initscr();
++			curs_set(0);
++			raw();
++			noecho();
++			timeout(0);
++
++			handle_resize();
++			ir_clear();
++			refresh_all();
++			refresh();
++
++			ret = xwii_iface_open(iface,
++					      xwii_iface_available(iface) |
++					      XWII_IFACE_WRITABLE);
++			if (ret)
++				print_error("Error: Cannot open interface: %d",
++					    ret);
++
++			ret = run_iface(iface);
++			xwii_iface_unref(iface);
++			if (ret) {
++				print_error("Program failed; press any key to exit");
++				refresh();
++				timeout(-1);
++				getch();
++			}
++			endwin();
++		}
++	}
++
++	return abs(ret);
++}
+-- 
+2.34.1
+

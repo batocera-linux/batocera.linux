@@ -3,16 +3,16 @@
 # libretro-smsplus-gx
 #
 ################################################################################
-# Version: Commits on Apr 9, 2022
-LIBRETRO_SMSPLUS_GX_VERSION = 9de9847dc8ba458e9522d5ae8b87bf71ad437257
+# Version: Commits on Jul 26, 2022
+LIBRETRO_SMSPLUS_GX_VERSION = 60af17ddb2231ba98f4ed1203e2a2f58d08ea088
 LIBRETRO_SMSPLUS_GX_SITE = $(call github,libretro,smsplus-gx,$(LIBRETRO_SMSPLUS_GX_VERSION))
 LIBRETRO_SMSPLUS_GX_LICENSE = Non-commercial
 
 LIBRETRO_SMSPLUS_GX_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_SMSPLUS_GX_PLATFORM = rpi1
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_SMSPLUS_GX_PLATFORM = rpi2
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_SMSPLUS_GX_PLATFORM = unix

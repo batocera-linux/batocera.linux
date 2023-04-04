@@ -1,0 +1,843 @@
+From 07013cbf5c84cf863102924cb91d5eba5b419a1b Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Thu, 10 Nov 2022 02:12:23 +0100
+Subject: [PATCH 1/6] Rebase/recreate my changes and add MIME support
+
+This commit recreates the changes proposed in #1394 on top of the
+current master (b069a2acf10e58579d82500fb057f275647507c0).
+This also adds support for determining filetypes using the MIME database
+provided by `QMimeDatabase`.
+---
+ src/frontend/qt_sdl/CLI.cpp  |  46 ++---
+ src/frontend/qt_sdl/CLI.h    |  10 +-
+ src/frontend/qt_sdl/main.cpp | 370 ++++++++++++++++++++++++-----------
+ src/frontend/qt_sdl/main.h   |   1 +
+ 4 files changed, 279 insertions(+), 148 deletions(-)
+
+diff --git a/src/frontend/qt_sdl/CLI.cpp b/src/frontend/qt_sdl/CLI.cpp
+index 5d8ebd10b..58e386e8f 100644
+--- a/src/frontend/qt_sdl/CLI.cpp
++++ b/src/frontend/qt_sdl/CLI.cpp
+@@ -39,7 +39,7 @@ CommandLineOptions* ManageArgs(QApplication& melon)
+ 
+     parser.addOption(QCommandLineOption({"b", "boot"}, "Whether to boot firmware on startup. Defaults to \"auto\" (boot if NDS rom given)", "auto/always/never", "auto"));
+     parser.addOption(QCommandLineOption({"f", "fullscreen"}, "Start melonDS in fullscreen mode"));
+-    
++
+ #ifdef ARCHIVE_SUPPORT_ENABLED
+     parser.addOption(QCommandLineOption({"a", "archive-file"}, "Specify file to load inside an archive given (NDS)", "rom"));
+     parser.addOption(QCommandLineOption({"A", "archive-file-gba"}, "Specify file to load inside an archive given (GBA)", "rom"));
+@@ -50,16 +50,16 @@ CommandLineOptions* ManageArgs(QApplication& melon)
+     CommandLineOptions* options = new CommandLineOptions;
+ 
+     options->fullscreen = parser.isSet("fullscreen");
+-    
++
+     QStringList posargs = parser.positionalArguments();
+     switch (posargs.size())
+     {
+         default:
+             printf("Too many positional arguments; ignoring 3 onwards\n");
+         case 2:
+-            options->gbaRomPath = QStringList(posargs[1]);
++            options->gbaRomPath = posargs[1];
+         case 1:
+-            options->dsRomPath = QStringList(posargs[0]);
++            options->dsRomPath = posargs[0];
+         case 0:
+             break;
+     }
+@@ -67,8 +67,8 @@ CommandLineOptions* ManageArgs(QApplication& melon)
+     QString bootMode = parser.value("boot");
+     if (bootMode == "auto")
+     {
+-        options->boot = posargs.size() > 0;
+-    } 
++        options->boot = !posargs.empty();
++    }
+     else if (bootMode == "always")
+     {
+         options->boot = true;
+@@ -86,45 +86,25 @@ CommandLineOptions* ManageArgs(QApplication& melon)
+ #ifdef ARCHIVE_SUPPORT_ENABLED
+     if (parser.isSet("archive-file"))
+     {
+-        if (options->dsRomPath.isEmpty())
++        if (options->dsRomPath.has_value())
+         {
+-            options->errorsToDisplay += "Option -a/--archive-file given, but no archive specified!";
++            options->dsRomArchivePath = parser.value("archive-file");
+         }
+         else
+         {
+-            options->dsRomPath += parser.value("archive-file");
+-        }
+-    } 
+-    else if (!options->dsRomPath.isEmpty())
+-    {
+-        //TODO-CLI: try to automatically find ROM
+-        QStringList paths = options->dsRomPath[0].split("|");
+-        if (paths.size() >= 2)
+-        {
+-            printf("Warning: use the a.zip|b.nds format at your own risk!\n");
+-            options->dsRomPath = paths;
++            options->errorsToDisplay += "Option -a/--archive-file given, but no archive specified!";
+         }
+     }
+ 
+     if (parser.isSet("archive-file-gba"))
+     {
+-        if (options->gbaRomPath.isEmpty())
++        if (options->gbaRomPath.has_value())
+         {
+-            options->errorsToDisplay += "Option -A/--archive-file-gba given, but no archive specified!";
++            options->gbaRomArchivePath = parser.value("archive-file-gba");
+         }
+         else
+         {
+-            options->gbaRomPath += parser.value("archive-file-gba");
+-        }
+-    }
+-    else if (!options->gbaRomPath.isEmpty())
+-    {
+-        //TODO-CLI: try to automatically find ROM
+-        QStringList paths = options->gbaRomPath[0].split("|");
+-        if (paths.size() >= 2)
+-        {
+-            printf("Warning: use the a.zip|b.gba format at your own risk!\n");
+-            options->gbaRomPath = paths;
++            options->errorsToDisplay += "Option -A/--archive-file-gba given, but no archive specified!";
+         }
+     }
+ #endif
+@@ -132,4 +112,4 @@ CommandLineOptions* ManageArgs(QApplication& melon)
+     return options;
+ }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/frontend/qt_sdl/CLI.h b/src/frontend/qt_sdl/CLI.h
+index 18520faec..8850fad20 100644
+--- a/src/frontend/qt_sdl/CLI.h
++++ b/src/frontend/qt_sdl/CLI.h
+@@ -11,7 +11,7 @@
+     melonDS is distributed in the hope that it will be useful, but WITHOUT ANY
+     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+-    
++
+     You should have received a copy of the GNU General Public License along
+     with melonDS. If not, see http://www.gnu.org/licenses/.
+ */
+@@ -22,14 +22,18 @@
+ #include <QApplication>
+ #include <QStringList>
+ 
++#include <optional>
++
+ namespace CLI {
+ 
+ struct CommandLineOptions
+ {
+     QStringList errorsToDisplay = {};
+ 
+-    QStringList dsRomPath;
+-    QStringList gbaRomPath;
++    std::optional<QString> dsRomPath;
++    std::optional<QString> dsRomArchivePath;
++    std::optional<QString> gbaRomPath;
++    std::optional<QString> gbaRomArchivePath;
+     bool fullscreen;
+     bool boot;
+ };
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index 7a816987e..dbc5d18a2 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -21,6 +21,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ 
++#include <optional>
+ #include <vector>
+ #include <string>
+ #include <algorithm>
+@@ -29,6 +30,7 @@
+ #include <QApplication>
+ #include <QMessageBox>
+ #include <QMenuBar>
++#include <QMimeDatabase>
+ #include <QFileDialog>
+ #include <QInputDialog>
+ #include <QPaintEvent>
+@@ -99,6 +101,51 @@
+ 
+ // TODO: uniform variable spelling
+ 
++const QStringList NdsRomMimeTypes { "application/x-nintendo-ds-rom" };
++const QStringList NdsRomExtensions { ".nds", ".srl", ".dsi", ".ids" };
++
++const QStringList GbaRomMimeTypes { "application/x-gba-rom" };
++const QStringList GbaRomExtensions { ".gba", ".agb" };
++
++const QStringList ArchiveMimeTypes {
++#ifdef ARCHIVE_SUPPORT_ENABLED
++    "application/zip",
++    "application/x-7z-compressed",
++    "application/vnd.rar", // *.rar
++    "application/x-tar",
++
++    "application/x-compressed-tar", // *.tar.gz
++    "application/x-xz-compressed-tar",
++    "application/x-bzip-compressed-tar",
++    "application/x-lz4-compressed-tar",
++    "application/x-zstd-compressed-tar",
++
++    "application/x-tarz", // *.tar.Z
++    "application/x-lzip-compressed-tar",
++    "application/x-lzma-compressed-tar",
++    "application/x-lrzip-compressed-tar",
++    "application/x-tzo", // *.tar.lzo
++#endif
++};
++const QStringList ArchiveExtensions {
++#ifdef ARCHIVE_SUPPORT_ENABLED
++    ".zip", ".7z", ".rar", ".tar",
++
++    ".tar.gz", ".tgz",
++    ".tar.xz", ".txz",
++    ".tar.bz2", ".tbz2",
++    ".tar.lz4", ".tlz4",
++    ".tar.zst", ".tzst",
++
++    ".tar.Z", ".taz",
++    ".tar.lz",
++    ".tar.lzma", ".tlz",
++    ".tar.lrz", ".tlrz",
++    ".tar.lzo", ".tzo",
++#endif
++};
++
++
+ bool RunningSomething;
+ 
+ MainWindow* mainWindow;
+@@ -588,7 +635,7 @@ void EmuThread::run()
+ #endif
+                 {
+                     videoRenderer = 0;
+-                }                
++                }
+ 
+                 videoRenderer = oglContext ? Config::_3DRenderer : 0;
+ 
+@@ -1418,6 +1465,65 @@ void ScreenPanelGL::onScreenLayoutChanged()
+     setupScreenLayout();
+ }
+ 
++
++static bool FileExtensionInList(const QString& filename, const QStringList& extensions, Qt::CaseSensitivity cs = Qt::CaseInsensitive)
++{
++    return std::any_of(extensions.cbegin(), extensions.cend(), [&](const auto& ext) {
++        return filename.endsWith(ext, cs);
++    });
++}
++
++static bool MimeTypeInList(const QMimeType& mimetype, const QStringList& superTypeNames)
++{
++    return std::any_of(superTypeNames.cbegin(), superTypeNames.cend(), [&](const auto& superTypeName) {
++        return mimetype.inherits(superTypeName);
++    });
++}
++
++
++static bool NdsRomByExtension(const QString& filename)
++{
++    return FileExtensionInList(filename, NdsRomExtensions);
++}
++
++static bool GbaRomByExtension(const QString& filename)
++{
++    return FileExtensionInList(filename, GbaRomExtensions);
++}
++
++static bool SupportedArchiveByExtension(const QString& filename)
++{
++    return FileExtensionInList(filename, ArchiveExtensions);
++}
++
++
++static bool NdsRomByMimetype(const QMimeType& mimetype)
++{
++    return  MimeTypeInList(mimetype, NdsRomMimeTypes);
++}
++
++static bool GbaRomByMimetype(const QMimeType& mimetype)
++{
++    return  MimeTypeInList(mimetype, GbaRomMimeTypes);
++}
++
++static bool SupportedArchiveByMimetype(const QMimeType& mimetype)
++{
++    return MimeTypeInList(mimetype, ArchiveMimeTypes);
++}
++
++
++static bool FileIsSupportedFiletype(const QString& filename, bool insideArchive = false)
++{
++    if (NdsRomByExtension(filename) || GbaRomByExtension(filename) || SupportedArchiveByExtension(filename))
++        return true;
++
++    const auto matchmode = insideArchive ? QMimeDatabase::MatchExtension : QMimeDatabase::MatchDefault;
++    const QMimeType mimetype = QMimeDatabase{}.mimeTypeForFile(filename, matchmode);
++    return NdsRomByMimetype(mimetype) || GbaRomByMimetype(mimetype) || SupportedArchiveByMimetype(mimetype);
++}
++
++
+ #ifndef _WIN32
+ static int signalFd[2];
+ QSocketNotifier *signalSn;
+@@ -2014,14 +2120,8 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+ 
+     QString filename = urls.at(0).toLocalFile();
+ 
+-    QStringList acceptedExts{".nds", ".srl", ".dsi", ".gba", ".rar",
+-                             ".zip", ".7z", ".tar", ".tar.gz", ".tar.xz", ".tar.bz2"};
+-
+-    for (const QString &ext : acceptedExts)
+-    {
+-        if (filename.endsWith(ext, Qt::CaseInsensitive))
+-            event->acceptProposedAction();
+-    }
++    if (FileIsSupportedFiletype(filename))
++        event->acceptProposedAction();
+ }
+ 
+ void MainWindow::dropEvent(QDropEvent* event)
+@@ -2031,9 +2131,6 @@ void MainWindow::dropEvent(QDropEvent* event)
+     QList<QUrl> urls = event->mimeData()->urls();
+     if (urls.count() > 1) return; // not handling more than one file at once
+ 
+-    QString filename = urls.at(0).toLocalFile();
+-    QStringList arcexts{".zip", ".7z", ".rar", ".tar", ".tar.gz", ".tar.xz", ".tar.bz2"};
+-
+     emuThread->emuPause();
+ 
+     if (!verifySetup())
+@@ -2042,55 +2139,57 @@ void MainWindow::dropEvent(QDropEvent* event)
+         return;
+     }
+ 
+-    for (const QString &ext : arcexts)
++    const QStringList file = splitArchivePath(urls.at(0).toLocalFile(), false);
++    if (file.isEmpty())
+     {
+-        if (filename.endsWith(ext, Qt::CaseInsensitive))
+-        {
+-            QString arcfile = pickFileFromArchive(filename);
+-            if (arcfile.isEmpty())
+-            {
+-                emuThread->emuUnpause();
+-                return;
+-            }
+-
+-            filename += "|" + arcfile;
+-        }
++        emuThread->emuUnpause();
++        return;
+     }
+ 
+-    QStringList file = filename.split('|');
++    const QString filename = file.last();
++    const bool romInsideArchive = file.size() > 1;
++    const auto matchMode = romInsideArchive ? QMimeDatabase::MatchExtension : QMimeDatabase::MatchDefault;
++    const QMimeType mimetype = QMimeDatabase{}.mimeTypeForFile(filename, matchMode);
+ 
+-    if (filename.endsWith(".gba", Qt::CaseInsensitive))
++    if (NdsRomByExtension(filename) || NdsRomByMimetype(mimetype))
+     {
+-        if (!ROMManager::LoadGBAROM(file))
++        if (!ROMManager::LoadROM(file, true))
+         {
+             // TODO: better error reporting?
+-            QMessageBox::critical(this, "melonDS", "Failed to load the ROM.");
++            QMessageBox::critical(this, "melonDS", "Failed to load the DS ROM.");
+             emuThread->emuUnpause();
+             return;
+         }
+ 
+-        emuThread->emuUnpause();
++        const QString barredFilename = file.join('|');
++        recentFileList.removeAll(barredFilename);
++        recentFileList.prepend(barredFilename);
++        updateRecentFilesMenu();
+ 
+-        updateCartInserted(true);
++        NDS::Start();
++        emuThread->emuRun();
++
++        updateCartInserted(false);
+     }
+-    else
++    else if (GbaRomByExtension(filename) || GbaRomByMimetype(mimetype))
+     {
+-        if (!ROMManager::LoadROM(file, true))
++        if (!ROMManager::LoadGBAROM(file))
+         {
+             // TODO: better error reporting?
+-            QMessageBox::critical(this, "melonDS", "Failed to load the ROM.");
++            QMessageBox::critical(this, "melonDS", "Failed to load the GBA ROM.");
+             emuThread->emuUnpause();
+             return;
+         }
+ 
+-        recentFileList.removeAll(filename);
+-        recentFileList.prepend(filename);
+-        updateRecentFilesMenu();
+-
+-        NDS::Start();
+-        emuThread->emuRun();
++        emuThread->emuUnpause();
+ 
+-        updateCartInserted(false);
++        updateCartInserted(true);
++    }
++    else
++    {
++        QMessageBox::critical(this, "melonDS", "The file could not be recognized as a DS or GBA ROM.");
++        emuThread->emuUnpause();
++        return;
+     }
+ }
+ 
+@@ -2188,101 +2287,128 @@ bool MainWindow::preloadROMs(QStringList file, QStringList gbafile, bool boot)
+     return true;
+ }
+ 
+-QString MainWindow::pickFileFromArchive(QString archiveFileName)
++QStringList MainWindow::splitArchivePath(const QString& filename, bool useMemberSyntax)
+ {
+-    QVector<QString> archiveROMList = Archive::ListArchive(archiveFileName);
++    if (filename.isEmpty()) return {};
+ 
+-    QString romFileName = ""; // file name inside archive
+-
+-    if (archiveROMList.size() > 2)
++#ifdef ARCHIVE_SUPPORT_ENABLED
++    if (useMemberSyntax)
+     {
+-        archiveROMList.removeFirst();
++        printf("Warning: use the a.zip|b.nds format at your own risk!\n");
+ 
+-        bool ok;
+-        QString toLoad = QInputDialog::getItem(this, "melonDS",
+-                                  "This archive contains multiple files. Select which ROM you want to load.", archiveROMList.toList(), 0, false, &ok);
+-        if (!ok) // User clicked on cancel
+-            return QString();
++        const QStringList filenameParts = filename.split('|');
++        if (filenameParts.size() > 2)
++        {
++            QMessageBox::warning(this, "melonDS", "This path contains too many vertical bars.");
++            return {};
++        }
+ 
+-        romFileName = toLoad;
+-    }
+-    else if (archiveROMList.size() == 2)
+-    {
+-        romFileName = archiveROMList.at(1);
++        if (filenameParts.size() == 2)
++        {
++            const QString archive = filenameParts.at(0);
++            if (!QFileInfo(archive).exists())
++            {
++                QMessageBox::warning(this, "melonDS", "This archive does not exist.");
++                return {};
++            }
++
++            const QString subfile = filenameParts.at(1);
++            if (!Archive::ListArchive(archive).contains(subfile))
++            {
++                QMessageBox::warning(this, "melonDS", "This archive does not contain the desired file.");
++                return {};
++            }
++
++            return filenameParts;
++        }
+     }
+-    else if ((archiveROMList.size() == 1) && (archiveROMList[0] == QString("OK")))
++#endif
++
++    if (!QFileInfo(filename).exists())
+     {
+-        QMessageBox::warning(this, "melonDS", "This archive is empty.");
++        QMessageBox::warning(this, "melonDS", "This ROM file does not exist.");
++        return {};
+     }
+-    else
++
++#ifdef ARCHIVE_SUPPORT_ENABLED
++    if (SupportedArchiveByExtension(filename)
++        || SupportedArchiveByMimetype(QMimeDatabase{}.mimeTypeForFile(filename)))
+     {
+-        QMessageBox::critical(this, "melonDS", "This archive could not be read. It may be corrupt or you don't have the permissions.");
++        const QString subfile = pickFileFromArchive(filename);
++        if (subfile.isEmpty())
++            return {};
++
++        return { filename, subfile };
+     }
++#endif
+ 
+-    return romFileName;
++    return { filename };
+ }
+ 
+-QStringList MainWindow::pickROM(bool gba)
++QString MainWindow::pickFileFromArchive(QString archiveFileName)
+ {
+-    QString console;
+-    QStringList romexts;
+-    QStringList arcexts{"*.zip", "*.7z", "*.rar", "*.tar", "*.tar.gz", "*.tar.xz", "*.tar.bz2"};
+-    QStringList ret;
++    QVector<QString> archiveROMList = Archive::ListArchive(archiveFileName);
+ 
+-    if (gba)
++    if (archiveROMList.size() <= 1)
+     {
+-        console = "GBA";
+-        romexts.append("*.gba");
++        if (!archiveROMList.isEmpty() && archiveROMList.at(0) == "OK")
++            QMessageBox::warning(this, "melonDS", "This archive is empty.");
++        else
++            QMessageBox::critical(this, "melonDS", "This archive could not be read. It may be corrupt or you don't have the permissions.");
++        return QString();
+     }
+-    else
++
++    archiveROMList.removeFirst();
++
++    const auto notSupportedRom = [&](const auto& filename){
++        if (NdsRomByExtension(filename) || GbaRomByExtension(filename))
++            return false;
++        const QMimeType mimetype = QMimeDatabase{}.mimeTypeForFile(filename, QMimeDatabase::MatchExtension);
++        return !(NdsRomByMimetype(mimetype) || GbaRomByMimetype(mimetype));
++    };
++
++    archiveROMList.erase(std::remove_if(archiveROMList.begin(), archiveROMList.end(), notSupportedRom),
++                         archiveROMList.end());
++
++    if (archiveROMList.isEmpty())
+     {
+-        console = "DS";
+-        romexts.append({"*.nds", "*.dsi", "*.ids", "*.srl"});
++        QMessageBox::warning(this, "melonDS", "This archive does not contain any supported ROMs.");
++        return QString();
+     }
+ 
+-    QString filter = romexts.join(' ') + " " + arcexts.join(' ');
+-    filter = console + " ROMs (" + filter + ");;Any file (*.*)";
++    if (archiveROMList.size() == 1)
++        return archiveROMList.first();
+ 
+-    QString filename = QFileDialog::getOpenFileName(this,
+-                                                    "Open "+console+" ROM",
+-                                                    QString::fromStdString(Config::LastROMFolder),
+-                                                    filter);
+-    if (filename.isEmpty())
+-        return ret;
++    bool ok;
++    const QString toLoad = QInputDialog::getItem(
++        this, "melonDS",
++        "This archive contains multiple files. Select which ROM you want to load.",
++        archiveROMList.toList(), 0, false, &ok
++    );
+ 
+-    int pos = filename.length() - 1;
+-    while (filename[pos] != '/' && filename[pos] != '\\' && pos > 0) pos--;
+-    QString path_dir = filename.left(pos);
+-    QString path_file = filename.mid(pos+1);
++    if (ok) return toLoad;
+ 
+-    Config::LastROMFolder = path_dir.toStdString();
++    // User clicked on cancel
+ 
+-    bool isarc = false;
+-    for (const auto& ext : arcexts)
+-    {
+-        int l = ext.length() - 1;
+-        if (path_file.right(l).toLower() == ext.right(l))
+-        {
+-            isarc = true;
+-            break;
+-        }
+-    }
++    return QString();
++}
+ 
+-    if (isarc)
+-    {
+-        path_file = pickFileFromArchive(filename);
+-        if (path_file.isEmpty())
+-            return ret;
++QStringList MainWindow::pickROM(bool gba)
++{
++    const QString console = gba ? "GBA" : "DS";
++    const QStringList& romexts = gba ? GbaRomExtensions : NdsRomExtensions;
++    static const QString filterSuffix = " *" + ArchiveExtensions.join(" *") + ");;Any file (*.*)";
+ 
+-        ret.append(filename);
+-        ret.append(path_file);
+-    }
+-    else
+-    {
+-        ret.append(filename);
+-    }
++    const QString filename = QFileDialog::getOpenFileName(
++        this, "Open " + console + " ROM",
++        QString::fromStdString(Config::LastROMFolder),
++        console + " ROMs (*" + romexts.join(" *") + filterSuffix
++    );
+ 
+-    return ret;
++    if (filename.isEmpty()) return {};
++
++    Config::LastROMFolder = QFileInfo(filename).dir().path().toStdString();
++    return splitArchivePath(filename, false);
+ }
+ 
+ void MainWindow::updateCartInserted(bool gba)
+@@ -2405,7 +2531,6 @@ void MainWindow::onClickRecentFile()
+ {
+     QAction *act = (QAction *)sender();
+     QString filename = act->data().toString();
+-    QStringList file = filename.split('|');
+ 
+     emuThread->emuPause();
+ 
+@@ -2415,6 +2540,13 @@ void MainWindow::onClickRecentFile()
+         return;
+     }
+ 
++    const QStringList file = splitArchivePath(filename, true);
++    if (file.isEmpty())
++    {
++        emuThread->emuUnpause();
++        return;
++    }
++
+     if (!ROMManager::LoadROM(file, true))
+     {
+         // TODO: better error reporting?
+@@ -3237,7 +3369,8 @@ bool MelonApplication::event(QEvent *event)
+         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
+ 
+         emuThread->emuPause();
+-        if (!mainWindow->preloadROMs(openEvent->file().split("|"), {}, true))
++        const QStringList file = mainWindow->splitArchivePath(openEvent->file(), true);
++        if (!mainWindow->preloadROMs(file, {}, true))
+             emuThread->emuUnpause();
+     }
+ 
+@@ -3256,7 +3389,7 @@ int main(int argc, char** argv)
+     // easter egg - not worth checking other cases for something so dumb
+     if (argc != 0 && (!strcasecmp(argv[0], "derpDS") || !strcasecmp(argv[0], "./derpDS")))
+         printf("did you just call me a derp???\n");
+-    
++
+     Platform::Init(argc, argv);
+ 
+     MelonApplication melon(argc, argv);
+@@ -3376,7 +3509,20 @@ int main(int argc, char** argv)
+ 
+     QObject::connect(&melon, &QApplication::applicationStateChanged, mainWindow, &MainWindow::onAppStateChanged);
+ 
+-    mainWindow->preloadROMs(options->dsRomPath, options->gbaRomPath, options->boot);
++    const auto prepareRomPath = [&](const std::optional<QString>& romPath, const std::optional<QString>& romArchivePath) -> QStringList {
++        if (!romPath.has_value())
++            return {};
++
++        if (romArchivePath.has_value())
++            return { *romPath, *romArchivePath };
++
++        return mainWindow->splitArchivePath(*romPath, true);
++    };
++
++    const QStringList dsfile = prepareRomPath(options->dsRomPath, options->dsRomArchivePath);
++    const QStringList gbafile = prepareRomPath(options->gbaRomPath, options->gbaRomArchivePath);
++
++    mainWindow->preloadROMs(dsfile, gbafile, options->boot);
+ 
+     int ret = melon.exec();
+ 
+diff --git a/src/frontend/qt_sdl/main.h b/src/frontend/qt_sdl/main.h
+index 9f9fc7c05..30af909b6 100644
+--- a/src/frontend/qt_sdl/main.h
++++ b/src/frontend/qt_sdl/main.h
+@@ -239,6 +239,7 @@ class MainWindow : public QMainWindow
+     GL::Context* getOGLContext();
+ 
+     bool preloadROMs(QStringList file, QStringList gbafile, bool boot);
++    QStringList splitArchivePath(const QString& filename, bool useMemberSyntax);
+ 
+     void onAppStateChanged(Qt::ApplicationState state);
+ 
+
+From b2d2cf3d1abb40594303285d2d48454500a3b908 Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Sat, 12 Nov 2022 04:04:07 +0100
+Subject: [PATCH 2/6] Move member syntax warning to a more appropriate place
+
+---
+ src/frontend/qt_sdl/main.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index dbc5d18a2..c9f236dad 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -3516,7 +3516,9 @@ int main(int argc, char** argv)
+         if (romArchivePath.has_value())
+             return { *romPath, *romArchivePath };
+ 
+-        return mainWindow->splitArchivePath(*romPath, true);
++        const QStringList path = mainWindow->splitArchivePath(*romPath, true);
++        if (path.size() > 1) printf("Warning: use the a.zip|b.nds format at your own risk!\n");
++        return path;
+     };
+ 
+     const QStringList dsfile = prepareRomPath(options->dsRomPath, options->dsRomArchivePath);
+
+From 37e2e1f785c12c608901beb255f110f939148580 Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Sat, 12 Nov 2022 04:08:20 +0100
+Subject: [PATCH 3/6] Deduplicate member syntax warning
+
+---
+ src/frontend/qt_sdl/main.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index c9f236dad..7d0891ba6 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -3509,6 +3509,7 @@ int main(int argc, char** argv)
+ 
+     QObject::connect(&melon, &QApplication::applicationStateChanged, mainWindow, &MainWindow::onAppStateChanged);
+ 
++    bool memberSyntaxUsed = false;
+     const auto prepareRomPath = [&](const std::optional<QString>& romPath, const std::optional<QString>& romArchivePath) -> QStringList {
+         if (!romPath.has_value())
+             return {};
+@@ -3517,13 +3518,15 @@ int main(int argc, char** argv)
+             return { *romPath, *romArchivePath };
+ 
+         const QStringList path = mainWindow->splitArchivePath(*romPath, true);
+-        if (path.size() > 1) printf("Warning: use the a.zip|b.nds format at your own risk!\n");
++        if (path.size() > 1) memberSyntaxUsed = true;
+         return path;
+     };
+ 
+     const QStringList dsfile = prepareRomPath(options->dsRomPath, options->dsRomArchivePath);
+     const QStringList gbafile = prepareRomPath(options->gbaRomPath, options->gbaRomArchivePath);
+ 
++    if (memberSyntaxUsed) printf("Warning: use the a.zip|b.nds format at your own risk!\n");
++
+     mainWindow->preloadROMs(dsfile, gbafile, options->boot);
+ 
+     int ret = melon.exec();
+
+From 0822c2f8b20eeca6a4889b0a82eceb518c71a761 Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Sat, 12 Nov 2022 04:10:01 +0100
+Subject: [PATCH 4/6] Change warning from "vertical bars" to "|"
+
+---
+ src/frontend/qt_sdl/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index 7d0891ba6..66c72dca9 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -2299,7 +2299,7 @@ QStringList MainWindow::splitArchivePath(const QString& filename, bool useMember
+         const QStringList filenameParts = filename.split('|');
+         if (filenameParts.size() > 2)
+         {
+-            QMessageBox::warning(this, "melonDS", "This path contains too many vertical bars.");
++            QMessageBox::warning(this, "melonDS", "This path contains too many '|'.");
+             return {};
+         }
+ 
+
+From 04061eda0b08c0f51428fb4dc93cc2f7e8f37686 Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Sat, 12 Nov 2022 04:17:23 +0100
+Subject: [PATCH 5/6] Conform brace placement to coding style
+
+---
+ src/frontend/qt_sdl/main.cpp | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index 66c72dca9..a230663ad 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -107,7 +107,8 @@ const QStringList NdsRomExtensions { ".nds", ".srl", ".dsi", ".ids" };
+ const QStringList GbaRomMimeTypes { "application/x-gba-rom" };
+ const QStringList GbaRomExtensions { ".gba", ".agb" };
+ 
+-const QStringList ArchiveMimeTypes {
++const QStringList ArchiveMimeTypes
++{
+ #ifdef ARCHIVE_SUPPORT_ENABLED
+     "application/zip",
+     "application/x-7z-compressed",
+@@ -127,7 +128,9 @@ const QStringList ArchiveMimeTypes {
+     "application/x-tzo", // *.tar.lzo
+ #endif
+ };
+-const QStringList ArchiveExtensions {
++
++const QStringList ArchiveExtensions
++{
+ #ifdef ARCHIVE_SUPPORT_ENABLED
+     ".zip", ".7z", ".rar", ".tar",
+ 
+@@ -3510,7 +3513,8 @@ int main(int argc, char** argv)
+     QObject::connect(&melon, &QApplication::applicationStateChanged, mainWindow, &MainWindow::onAppStateChanged);
+ 
+     bool memberSyntaxUsed = false;
+-    const auto prepareRomPath = [&](const std::optional<QString>& romPath, const std::optional<QString>& romArchivePath) -> QStringList {
++    const auto prepareRomPath = [&](const std::optional<QString>& romPath, const std::optional<QString>& romArchivePath) -> QStringList
++    {
+         if (!romPath.has_value())
+             return {};
+ 
+
+From fac5906a4de7094b50a44e03424cb9b41035dc85 Mon Sep 17 00:00:00 2001
+From: Jan Felix Langenbach <insert-penguin@protonmail.com>
+Date: Sat, 12 Nov 2022 04:37:29 +0100
+Subject: [PATCH 6/6] Fix QFileDialog filter when ArchiveExtensions is empty
+
+---
+ src/frontend/qt_sdl/main.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index a230663ad..0aa60ed3a 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -2400,7 +2400,10 @@ QStringList MainWindow::pickROM(bool gba)
+ {
+     const QString console = gba ? "GBA" : "DS";
+     const QStringList& romexts = gba ? GbaRomExtensions : NdsRomExtensions;
+-    static const QString filterSuffix = " *" + ArchiveExtensions.join(" *") + ");;Any file (*.*)";
++
++    static const QString filterSuffix = ArchiveExtensions.empty()
++        ? ");;Any file (*.*)"
++        : " *" + ArchiveExtensions.join(" *") + ");;Any file (*.*)";
+ 
+     const QString filename = QFileDialog::getOpenFileName(
+         this, "Open " + console + " ROM",

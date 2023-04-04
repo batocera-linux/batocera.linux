@@ -1,0 +1,30 @@
+default:
+  options:
+    video_threaded: true
+    videomode: max-1280x720
+    hud_support: true
+amiga500:
+  emulator: libretro
+  core:     uae4arm
+amiga1200:
+  emulator: libretro
+  core:     uae4arm
+amigacd32:
+  emulator: libretro
+  core:     uae4arm
+amigacdtv:
+  emulator: libretro
+  core:     uae4arm
+nds:
+  emulator: drastic
+  core:     drastic
+fmtowns:
+  emulator: libretro
+  core:     mame
+n64:
+  options:
+    hud_support: false
+psx:
+  options:
+    gpu_software: true
+    gfxbackend: Software

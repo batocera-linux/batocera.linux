@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# detect the appropriate Nvidia driver
+if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia production
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia legacy
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia legacy390
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia legacy340
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
+then
+    batocera-nvidia nouveau
+else
+    batocera-nvidia auto
+fi

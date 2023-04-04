@@ -1,12 +1,11 @@
 config BR2_PACKAGE_XASH3D_FWGS
 	bool "Xash3D-FWGS Half-Life Engine"
 	select BR2_PACKAGE_SDL2
-	select BR2_PACKAGE_SDL2_IMAGE
-	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_FREETYPE
 	select BR2_PACKAGE_FONTCONFIG
-
 	select BR2_PACKAGE_HLSDK_XASH3D
 
 	# Xash3D requires additional client and/or server libraries for some games.

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+BASEFILE="/var/run/virtual-gun4ir-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+if test "${NDEVS}" = 3
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+    DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
+    # 1:     left     / b
+    # 2:     right    / a
+    # 3:     middle   / home
+    # -:     button_1 / select
+    # 1:     button_2 / a
+    # 2:     button_3 / b
+    # +:     button_4 / c
+    # up:    button_5 / up
+    # down:  button_6 / down
+    # left:  button_7 / left
+    # right: button_8 / right
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0

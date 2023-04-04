@@ -1,0 +1,15 @@
+diff --git a/src/arduous/arduous.cpp b/src/arduous/arduous.cpp
+index 607adfa..7c36ff4 100644
+--- a/src/arduous/arduous.cpp
++++ b/src/arduous/arduous.cpp
+@@ -167,8 +167,8 @@ read_ihex_buffer(const char *data, size_t sz, uint32_t * dsize, uint32_t * start
+ 
+ 
+ void Arduous::loadHexBuffer(const char *buf, size_t sz) {
+-    uint32_t bootSize;
+-    uint32_t bootBase;
++    uint32_t bootSize = 0;
++    uint32_t bootBase = 0;
+     uint8_t* boot = read_ihex_buffer(buf, sz, &bootSize, &bootBase);
+     if (!boot) {
+         fprintf(stderr, "Unable to load buffer\n");

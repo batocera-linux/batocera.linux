@@ -9,6 +9,7 @@ LIBRETRO_SAME_CDI_SITE = $(call github,libretro,same_cdi,$(LIBRETRO_SAME_CDI_VER
 LIBRETRO_SAME_CDI_LICENSE = GPL
 
 define LIBRETRO_SAME_CDI_BUILD_CMDS
+	$(HOST_CONFIGURE_OPTS) $(MAKE) -C $(@D)/3rdparty/genie/build/gmake.linux -f genie.make
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" GIT_VERSION="" -C $(@D) -f Makefile.libretro
 endef
 

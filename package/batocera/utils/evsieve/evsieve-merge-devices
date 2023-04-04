@@ -77,5 +77,5 @@ done
 test ${GRABMODE} = 1 && INPUTS="${INPUTS} grab"
 
 echo "evsieve --input ${INPUTS} persist=exit --output name=\"${NEWNAME}\""
-evsieve --input ${INPUTS} persist=exit --output name="${NEWNAME}"
+nohup evsieve --input ${INPUTS} persist=exit --output name="${NEWNAME}" >/dev/null 2> /var/log/evsieve.log &
 ###

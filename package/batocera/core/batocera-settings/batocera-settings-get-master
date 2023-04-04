@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# this script can be used by values that can have a default value by board
+
+KEY="$1"
+
+# prefer the user value
+VALUE="$(/usr/bin/batocera-settings-get "${KEY}")"
+# when value is auto, ignore
+if [ "$?" = 0 -a "${VALUE}" != "auto" ]; then
+    echo "${VALUE}"
+    exit 0
+fi
+
+if [ -f /sys/firmware/devicetree/base/model ]; then
+    IFS= read -r BOARD_MODEL </sys/firmware/devicetree/base/model
+fi
+if [ -z "${BOARD_MODEL}" -a -f /sys/devices/virtual/dmi/id/board_name ]; then
+    # give an other chance with dmi
+    IFS= read -r BOARD_MODEL </sys/devices/virtual/dmi/id/board_name
+fi
+BOARD_MODEL="$(echo "$BOARD_MODEL" | sed -e s+"[^A-Za-z0-9]"+"_"+g)"
+
+# prefer the board value
+if [ -e "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" ]; then
+    VALUE="$(/usr/bin/batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" "${KEY}")"
+    # when value is auto, ignore
+    if [ "$?" = 0 -a "${VALUE}" != "auto" ]; then
+        echo "${VALUE}"
+        exit 0
+    fi
+fi
+
+# prefer the general value
+if [ -e "/usr/share/batocera/sysconfigs/batocera.conf" ]; then
+    /usr/bin/batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf" "${KEY}" && exit 0
+fi
+
+exit 1

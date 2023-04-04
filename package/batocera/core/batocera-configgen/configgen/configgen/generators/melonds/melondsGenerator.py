@@ -20,8 +20,8 @@ class MelonDSGenerator(Generator):
         if not os.path.exists("/userdata/saves/melonds"):
             os.mkdir("/userdata/saves/melonds")
         # Verify the cheat path exist
-        if not os.path.exists("/userdata/cheats/cht/melonDS"):
-            os.mkdir("/userdata/cheats/cht/melonDS")      
+        if not os.path.exists("/userdata/cheats/melonDS"):
+            os.mkdir("/userdata/cheats/melonDS")      
         # Config path
         configdir = "{}/{}".format(batoceraFiles.CONF, "melonDS")
         if not os.path.exists(configdir):
@@ -30,17 +30,45 @@ class MelonDSGenerator(Generator):
         configFileName = "{}/{}".format(configdir, "melonDS.ini")              
         f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
-        # Set config defaults
+        # [Set config defaults]
         f.write("WindowWidth={}\n".format(gameResolution["width"]))
         f.write("WindowHeight={}\n".format(gameResolution["height"]))
         f.write("WindowMax=1\n")
-        # MelonDS only has OpenGL or Software - always go for OpenGL (1)
-        f.write("3DRenderer=1\n")
         # Hide mouse after 5 seconds
         f.write("MouseHide=1\n")
         f.write("MouseHideSeconds=5\n")
+        # Set bios locations
+        f.write("ExternalBIOSEnable=1\n")
+        f.write("BIOS9Path=/userdata/bios/bios9.bin\n")
+        f.write("BIOS7Path=/userdata/bios/bios7.bin\n")
+        f.write("FirmwarePath=/userdata/bios/firmware.bin\n")
+        f.write("DSiBIOS9Path=/userdata/bios/dsi_bios9.bin\n")
+        f.write("DSiBIOS7Path=/userdata/bios/dsi_bios7.bin\n")
+        f.write("DSiFirmwarePath=/userdata/bios/dsi_firmware.bin\n")
+        f.write("DSiNANDPath=/userdata/bios/dsi_nand.bin\n")
+        # Set save locations
+        f.write("DLDIFolderPath=/userdata/saves/melonds\n")
+        f.write("DSiSDFolderPath=/userdata/saves/melonds\n")
+        f.write("MicWavPath=/userdata/saves/melonds\n")
+        f.write("SaveFilePath=/userdata/saves/melonds\n")
+        f.write("SavestatePath=/userdata/saves/melonds\n")
+        # Cheater!
+        f.write("CheatFilePath=/userdata/cheats/melonDS\n")
+        # Roms
+        f.write("LastROMFolder=/userdata/roms/nds\n")
+        # Audio
+        f.write("AudioInterp=1\n")
+        f.write("AudioBitrate=2\n")
+        f.write("AudioVolume=256\n")
+        # For Software Rendering
+        f.write("Threaded3D=1\n")
 
-        # User selected options
+        # [User selected options]
+        # MelonDS only has OpenGL or Software - use OpenGL if not selected
+        if system.isOptSet("melonds_renderer"):
+            f.write("3DRenderer={}\n".format(system.config["melonds_renderer"]))
+        else:
+            f.write("3DRenderer=1\n")
         if system.isOptSet("melonds_framerate"):
             f.write("LimitFPS={}\n".format(system.config["melonds_framerate"]))
         else:
@@ -73,6 +101,7 @@ class MelonDSGenerator(Generator):
             f.write("IntegerScaling={}\n".format(system.config["melonds_scaling"]))
         else:
             f.write("IntegerScaling=0\n")  
+        # Cheater!
         if system.isOptSet("melonds_cheats"):
             f.write("EnableCheats={}\n".format(system.config["melonds_cheats"]))
         else:
@@ -113,23 +142,24 @@ class MelonDSGenerator(Generator):
                     continue
                 option = melonDSMapping[input.name]
                 # Workaround - SDL numbers?
-                if option == "Joy_Up":
-                    val = 257
-                elif option == "Joy_Down":
-                    val = 260
-                elif option == "Joy_Left":
-                    val = 264
-                elif option == "Joy_Right":
-                    val = 258
-                else:
-                    val = input.id
+                val = input.id
+                if val == "0":
+                    if option == "Joy_Up":
+                        val = 257
+                    elif option == "Joy_Down":
+                        val = 260
+                    elif option == "Joy_Left":
+                        val = 264
+                    elif option == "Joy_Right":
+                        val = 258
                 eslog.debug(f"Name: {option} - Var: {val}")
                 f.write(f"{option}={val}\n")
         # Always set ID to 0
         f.write("JoystickID=0\n")
 
-        # Now right the ini file
+        # Now write the ini file
         f.close()
 
-        commandArray = ["/usr/bin/melonDS", rom]
-        return Command.Command(array=commandArray)
+        commandArray = ["/usr/bin/melonDS", "-f", rom]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, \
+            "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})

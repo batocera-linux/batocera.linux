@@ -12,14 +12,32 @@ apply_audioconfig() {
     VOLUME=$3
 
     EXITCODE=0
-    if batocera-audio set "${DEVICE}"
-       then
-	   if ! batocera-audio set-profile "${PROFILE}"
-	   then
-	       EXITCODE=1
-	   fi
+
+    # profile do card+profile
+    if test -n "${PROFILE}"
+    then
+	# set card profile
+	if batocera-audio set-profile "${PROFILE}"
+	then
+	    if test -n "${DEVICE}"
+	    then
+		# then set the default sink
+		if ! batocera-audio set "${DEVICE}"
+		then
+		    EXITCODE=1
+		fi
+	    fi
+	else
+	    EXITCODE=1
+	fi
     else
-	EXITCODE=1
+	if test -n "${DEVICE}"
+	then
+	    if ! batocera-audio set "${DEVICE}"
+	    then
+		EXITCODE=1
+	    fi
+	fi
     fi
 
     # always apply audio volume at last on the selected output
@@ -54,9 +72,9 @@ start_audioconfig() {
     # and thus, we let splash before config here while udev is the services taking the most time
 
     # set default device and volume
-    DEVICE=$(/usr/bin/batocera-settings-get audio.device)
-    PROFILE=$(/usr/bin/batocera-settings-get audio.profile)
-    VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
+    DEVICE=$(/usr/bin/batocera-settings-get-master audio.device)
+    PROFILE=$(/usr/bin/batocera-settings-get-master audio.profile)
+    VOLUME=$(/usr/bin/batocera-settings-get-master audio.volume)
     test -z "${DEVICE}"  && DEVICE=auto
     test -z "${PROFILE}" && PROFILE=auto
     test -z "${VOLUME}"  && VOLUME=80

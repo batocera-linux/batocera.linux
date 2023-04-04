@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-1045-g9f00768
+REDREAM_VERSION = 1.5.0-1051-g4ba6a39
 REDREAM_SITE = https://redream.io/download
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 REDREAM_SOURCE = redream.universal-raspberry-linux-v$(REDREAM_VERSION).tar.gz
 else
 REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz
@@ -27,7 +27,7 @@ define REDREAM_INSTALL_TARGET_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
     REDREAM_PRE_INSTALL_TARGET_HOOKS += REDREAM_RPI4_RENAME_ELF
 endif
 

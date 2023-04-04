@@ -5,10 +5,12 @@ import signal
 import os
 import batoceraFiles
 from xml.dom import minidom
+import hashlib
+
 # TODO: python3 - delete me!
 import codecs
 
-def writeKodiConfigs(kodiJoystick, currentControllers):
+def writeKodiConfigs(kodiJoystick, currentControllers, provider):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
     kodireversepositions = {'joystick1up': 'joystick1down', 'joystick1left': 'joystick1right', 'joystick2up': 'joystick2down', 'joystick2left': 'joystick2right' }
     kodiaxes             = { 'joystick1up': True, 'joystick1down': True, 'joystick1left': True, 'joystick1right': True,
@@ -45,16 +47,18 @@ def writeKodiConfigs(kodiJoystick, currentControllers):
         controllersDone[cur.realName] = True
 
         # initialized the file
-        kodiJoy = open(kodiJoystick.format(cur.guid), "w")
+        kodiJoy = open(kodiJoystick.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest()), "w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
 
         xmldevice = config.createElement('device')
         xmldevice.attributes["name"] = cur.realName
-        xmldevice.attributes["provider"] = "linux"
-        #xmldevice.attributes["provider"] = "udev"
-        #xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
+        xmldevice.attributes["provider"] = provider
+
+        if provider == "udev":
+            xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
+
         xmldevice.attributes["buttoncount"] = cur.nbbuttons
         xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
         xmlbuttonmap.appendChild(xmldevice)
@@ -123,13 +127,13 @@ def writeKodiConfig(controllersFromES):
     # or this allows people to plug the last used joystick
     if len(controllersFromES) == 0:
         return
-    provider = "linux"
-    #provider = "udev"
+    #provider = "linux"
+    provider = "udev"
     kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/' + provider + '/batocera_{}.xml'
     directory = os.path.dirname(kodiJoystick)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    writeKodiConfigs(kodiJoystick, controllersFromES)
+    writeKodiConfigs(kodiJoystick, controllersFromES, provider)
 
     # force the udev plugin
     directory = batoceraFiles.HOME + "/.kodi/userdata/addon_data/peripheral.joystick"
@@ -137,7 +141,12 @@ def writeKodiConfig(controllersFromES):
         os.makedirs(directory)
     with open(directory + "/settings.xml", "w") as f:
         f.write("<settings version=\"2\">")
-        f.write("<setting id=\"driver_linux\">0</setting>")
+
+        if provider == "linux":
+            f.write("<setting id=\"driver_linux\">0</setting>")
+        if provider == "udev":
+            f.write("<setting id=\"driver_linux\">1</setting>")
+
         f.write("</settings>")
         f.close()
 

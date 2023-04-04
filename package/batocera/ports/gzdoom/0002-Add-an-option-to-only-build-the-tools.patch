@@ -1,0 +1,206 @@
+From 5663c1b276a69a9a4506013113f7a48f94606bfa Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Mon, 7 Nov 2022 14:32:21 +0000
+Subject: [PATCH] Add an option to only build the tools
+
+This is useful when cross-compiling.
+Rather than building all of gzdoom for host, only configure and build the CROSS_EXPORTS tools.
+---
+ CMakeLists.txt | 139 ++++++++++++++++++++++++++-----------------------
+ 1 file changed, 75 insertions(+), 64 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c0b8ac9df..17407e954 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,6 +19,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+ include( FindPackageHandleStandardArgs )
+ 
+ # Support cross compiling
++option(TOOLS_ONLY "Only build the tools, not gzdoom itself (useful for cross-compiling)" OFF)
++
+ option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
+ if( FORCE_CROSSCOMPILE )
+ 	set( CMAKE_CROSSCOMPILING TRUE )
+@@ -188,9 +190,11 @@ endmacro()
+ option( NO_OPENAL "Disable OpenAL sound support" OFF )
+ 
+ find_package( BZip2 )
+-find_package( JPEG )
+-find_package( VPX )
+ find_package( ZLIB )
++if(NOT TOOLS_ONLY)
++	find_package( JPEG )
++	find_package( VPX )
++endif()
+ 
+ include( TargetArch )
+ 
+@@ -323,17 +327,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+ option(FORCE_INTERNAL_ASMJIT "Use internal asmjit" ON)
+ mark_as_advanced( FORCE_INTERNAL_ASMJIT )
+ 
+-if (HAVE_VULKAN)
+-	add_subdirectory( libraries/glslang/glslang)
+-	add_subdirectory( libraries/glslang/spirv )
+-	add_subdirectory( libraries/glslang/OGLCompilersDLL )
+-endif()
+-
+-add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
+-set( DRPC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/discordrpc/include" )
+-set( DRPC_LIBRARIES discord-rpc )
+-set( DRPC_LIBRARY discord-rpc )
+-
+ if( ZLIB_FOUND AND NOT FORCE_INTERNAL_ZLIB )
+ 	message( STATUS "Using system zlib, includes found at ${ZLIB_INCLUDE_DIR}" )
+ else()
+@@ -345,43 +338,6 @@ else()
+ 	set( ZLIB_LIBRARY z )
+ endif()
+ 
+-if( HAVE_VM_JIT AND UNIX )
+-	check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
+-	if( NOT HAVE_BACKTRACE )
+-		set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
+-		check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
+-		if( HAVE_LIBEXECINFO )
+-			set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
+-		else( HAVE_LIBEXECINFO )
+-			set( HAVE_VM_JIT NO )
+-		endif( HAVE_LIBEXECINFO )
+-		set( CMAKE_REQUIRED_FLAGS )
+-	endif( NOT HAVE_BACKTRACE )
+-endif( HAVE_VM_JIT AND UNIX )
+-
+-if( ${HAVE_VM_JIT} )
+-	if( ASMJIT_FOUND AND NOT FORCE_INTERNAL_ASMJIT )
+-		message( STATUS "Using system asmjit, includes found at ${ASMJIT_INCLUDE_DIR}" )
+-	else()
+-		message( STATUS "Using internal asmjit" )
+-		set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
+-		add_subdirectory( libraries/asmjit )
+-		set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
+-		set( ASMJIT_LIBRARIES asmjit )
+-		set( ASMJIT_LIBRARY asmjit )
+-	endif()
+-endif()
+-
+-if( JPEG_FOUND AND NOT FORCE_INTERNAL_JPEG )
+-	message( STATUS "Using system jpeg library, includes found at ${JPEG_INCLUDE_DIR}" )
+-else()
+-	message( STATUS "Using internal jpeg library" )
+-	add_subdirectory( libraries/jpeg )
+-	set( JPEG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/jpeg )
+-	set( JPEG_LIBRARIES jpeg )
+-	set( JPEG_LIBRARY jpeg )
+-endif()
+-
+ if( BZIP2_FOUND AND NOT FORCE_INTERNAL_BZIP2 )
+ 	message( STATUS "Using system bzip2 library, includes found at ${BZIP2_INCLUDE_DIR}" )
+ else()
+@@ -394,6 +350,56 @@ endif()
+ 
+ set( LZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/lzma/C" )
+ 
++if(NOT TOOLS_ONLY)
++	if (HAVE_VULKAN)
++		add_subdirectory( libraries/glslang/glslang)
++		add_subdirectory( libraries/glslang/spirv )
++		add_subdirectory( libraries/glslang/OGLCompilersDLL )
++	endif()
++
++	add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
++	set( DRPC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/discordrpc/include" )
++	set( DRPC_LIBRARIES discord-rpc )
++	set( DRPC_LIBRARY discord-rpc )
++
++	if( HAVE_VM_JIT AND UNIX )
++		check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
++		if( NOT HAVE_BACKTRACE )
++			set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
++			check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
++			if( HAVE_LIBEXECINFO )
++				set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
++			else( HAVE_LIBEXECINFO )
++				set( HAVE_VM_JIT NO )
++			endif( HAVE_LIBEXECINFO )
++			set( CMAKE_REQUIRED_FLAGS )
++		endif( NOT HAVE_BACKTRACE )
++	endif( HAVE_VM_JIT AND UNIX )
++
++	if( ${HAVE_VM_JIT} )
++		if( ASMJIT_FOUND AND NOT FORCE_INTERNAL_ASMJIT )
++			message( STATUS "Using system asmjit, includes found at ${ASMJIT_INCLUDE_DIR}" )
++		else()
++			message( STATUS "Using internal asmjit" )
++			set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
++			add_subdirectory( libraries/asmjit )
++			set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
++			set( ASMJIT_LIBRARIES asmjit )
++			set( ASMJIT_LIBRARY asmjit )
++		endif()
++	endif()
++
++	if( JPEG_FOUND AND NOT FORCE_INTERNAL_JPEG )
++		message( STATUS "Using system jpeg library, includes found at ${JPEG_INCLUDE_DIR}" )
++	else()
++		message( STATUS "Using internal jpeg library" )
++		add_subdirectory( libraries/jpeg )
++		set( JPEG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/jpeg )
++		set( JPEG_LIBRARIES jpeg )
++		set( JPEG_LIBRARY jpeg )
++	endif()
++endif()
++
+ if( NOT CMAKE_CROSSCOMPILING )
+ 	if( NOT CROSS_EXPORTS )
+ 		set( CROSS_EXPORTS "" )
+@@ -401,26 +407,31 @@ if( NOT CMAKE_CROSSCOMPILING )
+ endif()
+ 
+ # Install the entire docs directory in the distributed zip package
+-if( WIN32 )
+-	set( INSTALL_DOCS_PATH docs CACHE STRING "Directory where the documentation will be placed during install." )
+-else()
+-	set( INSTALL_DOCS_PATH share/doc/${ZDOOM_EXE_NAME} CACHE STRING "Directory where the zdoom documentation will be placed during install." )
++if(NOT TOOLS_ONLY)
++	if( WIN32 )
++		set( INSTALL_DOCS_PATH docs CACHE STRING "Directory where the documentation will be placed during install." )
++	else()
++		set( INSTALL_DOCS_PATH share/doc/${ZDOOM_EXE_NAME} CACHE STRING "Directory where the zdoom documentation will be placed during install." )
++	endif()
++	install(DIRECTORY docs/
++			DESTINATION ${INSTALL_DOCS_PATH}
++			COMPONENT "Documentation")
+ endif()
+-install(DIRECTORY docs/
+-		DESTINATION ${INSTALL_DOCS_PATH}
+-		COMPONENT "Documentation")
+ 
+ option( DYN_OPENAL "Dynamically load OpenAL" ON )
+ 
+ add_subdirectory( libraries/lzma )
+ add_subdirectory( tools )
+-add_subdirectory( libraries/gdtoa )
+-add_subdirectory( wadsrc )
+-add_subdirectory( wadsrc_bm )
+-add_subdirectory( wadsrc_lights )
+-add_subdirectory( wadsrc_extra )
+-add_subdirectory( wadsrc_widepix )
+-add_subdirectory( src )
++
++if(NOT TOOLS_ONLY)
++	add_subdirectory( libraries/gdtoa )
++	add_subdirectory( wadsrc )
++	add_subdirectory( wadsrc_bm )
++	add_subdirectory( wadsrc_lights )
++	add_subdirectory( wadsrc_extra )
++	add_subdirectory( wadsrc_widepix )
++	add_subdirectory( src )
++endif()
+ 
+ if( NOT CMAKE_CROSSCOMPILING )
+ 	export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake" )
+-- 
+2.37.2
+

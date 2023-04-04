@@ -1,0 +1,34 @@
+From 10b09cf6a2b47bcb45844a99f8e150e87566f248 Mon Sep 17 00:00:00 2001
+From: Romain Perier <romain.perier@collabora.com>
+Date: Sun, 14 Aug 2022 04:21:16 +0000
+Subject: [PATCH 83/92] WIP: ASoC: dt-bindings: add compatible for es8323-i2c
+
+Add a compatible for the everest,es8323 audio codec used with a number
+of Amlogic and Rockchip board devices.
+
+Signed-off-by: Romain Perier <romain.perier@collabora.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/sound/es8328.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/sound/es8328.txt b/Documentation/devicetree/bindings/sound/es8328.txt
+index 33fbf058c997..86b6d6e99732 100644
+--- a/Documentation/devicetree/bindings/sound/es8328.txt
++++ b/Documentation/devicetree/bindings/sound/es8328.txt
+@@ -4,7 +4,10 @@ This device supports both I2C and SPI.
+ 
+ Required properties:
+ 
+-  - compatible  : Should be "everest,es8328" or "everest,es8388"
++  - compatible  : Should be one of the following:
++	- "everest,es8323"
++	- "everest,es8328"
++	- "everest,es8388"
+   - DVDD-supply : Regulator providing digital core supply voltage 1.8 - 3.6V
+   - AVDD-supply : Regulator providing analog supply voltage 3.3V
+   - PVDD-supply : Regulator providing digital IO supply voltage 1.8 - 3.6V
+-- 
+2.34.1
+

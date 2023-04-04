@@ -3,14 +3,14 @@
 # libretro-prboom
 #
 ################################################################################
-# Version: Commits on Jan 29, 2022
-LIBRETRO_PRBOOM_VERSION = 4191903047650b40476f7f7584f4e2248789e4b7
+# Version: Commits on Mar 15, 2023
+LIBRETRO_PRBOOM_VERSION = 47a95e921e9f1e5928730b7369d14129769fa475
 LIBRETRO_PRBOOM_SITE = $(call github,libretro,libretro-prboom,$(LIBRETRO_PRBOOM_VERSION))
 LIBRETRO_PRBOOM_LICENSE = GPLv2
 
 LIBRETRO_PRBOOM_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_PRBOOM_PLATFORM = armv
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)

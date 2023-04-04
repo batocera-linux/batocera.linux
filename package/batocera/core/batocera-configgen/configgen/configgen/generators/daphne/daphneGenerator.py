@@ -5,19 +5,45 @@ import batoceraFiles
 from generators.Generator import Generator
 import shutil
 import os
-from . import daphneControllers
 import controllersConfig
+import filecmp
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class DaphneGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        if not os.path.exists(os.path.dirname(batoceraFiles.daphneConfig)):
-            os.makedirs(os.path.dirname(batoceraFiles.daphneConfig))
+        # copy input.ini file templates
+        daphneConfigSource = "/usr/share/daphne/hypinput_gamepad.ini"
 
-        # controllers
-        daphneControllers.generateControllerConfig(batoceraFiles.daphneConfig, playersControllers)
+        if not os.path.isdir(batoceraFiles.daphneDatadir):
+            os.mkdir(batoceraFiles.daphneDatadir)
+        if not os.path.exists(batoceraFiles.daphneConfig) or not filecmp.cmp(daphneConfigSource, batoceraFiles.daphneConfig):
+            shutil.copyfile(daphneConfigSource, batoceraFiles.daphneConfig)
 
+        # create a custom ini
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
+            shutil.copyfile(batoceraFiles.daphneConfig, batoceraFiles.daphneDatadir + "/custom.ini")
+            
+        # copy required resources to config
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/pics"):
+            shutil.copytree("/usr/share/daphne/pics", batoceraFiles.daphneDatadir + "/pics")
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/sound"):
+            shutil.copytree("/usr/share/daphne/sound", batoceraFiles.daphneDatadir + "/sound")
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/fonts"):
+            shutil.copytree("/usr/share/daphne/fonts", batoceraFiles.daphneDatadir + "/fonts")
+        
+        # create symbolic link for singe
+        if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
+            if not os.path.exists(batoceraFiles.daphneHomedir + "/roms"):
+                os.mkdir(batoceraFiles.daphneHomedir + "/roms")
+            os.symlink(batoceraFiles.daphneHomedir + "/roms", batoceraFiles.daphneDatadir + "/singe")
+        if not os.path.islink(batoceraFiles.daphneDatadir + "/singe"):
+            eslog.error("Your {} directory isn't a symlink, that's not good.".format(batoceraFiles.daphneDatadir + "/singe"))
+            
+        
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
@@ -27,11 +53,17 @@ class DaphneGenerator(Generator):
         if os.path.isfile(singeFile):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
-                            "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+                            "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                            romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
-                            "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+                            romName, "vldp", "-framefile", frameFile, "-fullscreen",
+                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+        
+        # controller config file
+        if system.isOptSet('daphne_joy')  and system.getOptBoolean('daphne_joy'):
+            commandArray.extend(['-keymapfile', 'custom.ini'])
+        else:
+            commandArray.extend(["-keymapfile", batoceraFiles.daphneConfigfile])
 
         # Default -fullscreen behaviour respects game aspect ratio
         if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
@@ -49,26 +81,56 @@ class DaphneGenerator(Generator):
         if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
             commandArray.append("-nolinear_scale")
 
-        # Blend Sprites (Singe)
-        if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
-            commandArray.append("-blend_sprites")
+        #The following options should only be set when os.path.isfile(singeFile) is true.
+        #-blend_sprites, -set_overlay oversize, -nocrosshair, -sinden or -manymouse
+        if os.path.isfile(singeFile):
+            # Blend Sprites (Singe)
+            if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
+                commandArray.append("-blend_sprites")
 
-        if controllersConfig.gunsNeedBorders(guns):
-            commandArray.extend(["-sinden", "2", "w"])
-        else:
-            commandArray.extend(["-manymouse"]) # sinden implies manymouse
+            bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
+            if bordersSize is not None:
 
-        # Oversize Overlay (Singe) for HD lightgun games
-        if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
-            commandArray.append("-oversize_overlay")
+                borderColor = "w"
+                if "controllers.guns.borderscolor" in system.config:
+                    borderColorOpt = system.config["controllers.guns.borderscolor"]
+                    if borderColorOpt == "white":
+                        borderColor = "w"
+                    elif borderColorOpt == "red":
+                        borderColor = "r"
+                    elif borderColorOpt == "green":
+                        borderColor = "g"
+                    elif borderColorOpt == "blue":
+                        borderColor = "b"
 
-        # crosshair
-        if system.isOptSet('daphne_crosshair'):
-            if not system.getOptBoolean("daphne_crosshair"):
-                commandArray.append("-nocrosshair")
-        else:
-            if not controllersConfig.gunsNeedCrosses(guns):
-                commandArray.append("-nocrosshair")
+                if bordersSize == "thin":
+                    commandArray.extend(["-sinden", "2", borderColor])
+                elif bordersSize == "medium":
+                    commandArray.extend(["-sinden", "4", borderColor])
+                else:
+                    commandArray.extend(["-sinden", "6", borderColor])
+            else:
+                if len(guns) > 0: # enable manymouse for guns
+                    commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                else:
+                    if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
+                        commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
+
+            # Overlay sizes (Singe) for HD lightgun and Singe 2 games
+            if system.isOptSet('overlay_size') and system.config['overlay_size'] == 'oversize':
+                commandArray.extend(["-set_overlay", "oversize"])
+            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'full':
+                commandArray.extend(["-set_overlay", "full"])
+            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'half':
+                commandArray.extend(["-set_overlay", "half"])
+            
+            # crosshair
+            if system.isOptSet('daphne_crosshair'):
+                if not system.getOptBoolean("daphne_crosshair"):
+                    commandArray.append("-nocrosshair")
+                else:
+                    if not controllersConfig.gunsNeedCrosses(guns):
+                        commandArray.append("-nocrosshair")
 
         # Invert Axis
         if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
@@ -104,7 +166,13 @@ class DaphneGenerator(Generator):
         if os.path.isfile(commandsFile):
             commandArray.extend(open(commandsFile,'r').read().split())
 
-        return Command.Command(array=commandArray)
+        # We now use SDL controller config
+        return Command.Command(
+            array=commandArray,
+            env={
+                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                'SDL_JOYSTICK_HIDAPI': '0'
+            })
 
     def getInGameRatio(self, config, gameResolution, rom):
         romName = os.path.splitext(os.path.basename(rom))[0]        

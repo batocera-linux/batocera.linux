@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+    export DISPLAY=:0.0
+fi
+
+CFGDIR=/userdata/system/configs/vita3k
+CFGFILE=$CFGDIR/config.yml
+
+# check the config folder exosts, if not create it & copy files
+if [[ ! -e $CFGDIR ]]
+then
+    mkdir $CFGDIR
+    cp -R /usr/bin/vita3k/* $CFGDIR
+fi
+
+# check a config files exists, if not make one
+if [[ ! -f $CFGFILE ]]
+then
+    mkdir -p $CFGDIR
+    touch $CFGFILE
+fi
+
+# now run the emulator
+/usr/bin/vita3k/Vita3K -c $CFGFILE

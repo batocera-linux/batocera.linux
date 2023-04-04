@@ -1,0 +1,58 @@
+#!/bin/bash
+
+ACTION=$1
+PARAM=$2
+INTERNALCARD=$(cat /boot/boot/batocera.board)
+
+if test "${INTERNALCARD}" = "p5000"
+then
+	CONNECTORNAME="DSI" # For PS5000
+else
+	CONNECTORNAME="DPI" # For Powkiddy A12/A13, & PS7000
+fi
+
+set_mode() {
+    MODE=$1
+    if test "${MODE}" != ""
+       then
+           echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
+           echo 0 > /var/run/drmMode # reset the drmMode
+    fi
+}
+
+if test "${ACTION}" = "setOutput"
+then
+        # force no hdmi if it is unplugged
+        NEWCONN=$(cat /var/run/drmConn)
+        HDMISTATUS=$(cat /sys/class/drm/card0-HDMI-A-1/status)
+        GLOBAL_VIDEO_OUTPUT=$(batocera-settings-get global.videooutput | cut -d ' ' -f 1)
+
+        if test "${NEWCONN}" = 0 -a "${HDMISTATUS}" = "connected"
+        then
+            if test "${GLOBAL_VIDEO_OUTPUT}" != "0" # if not forced on internal screen
+            then
+                curl http://localhost:1234/quit?confirm=switchscreen
+            fi
+            # force 0 which is supposed to be the internal device
+            echo off > /sys/class/drm/card0-${CONNECTORNAME}-1/status
+            echo on > /sys/class/drm/card0-HDMI-A-1/status
+            set_mode "1 - HDMI-A"
+            # Force audio to HDMI
+            batocera-audio set alsa_output.platform-sound.unknown.2
+        else
+            # force hdmi if hdmi is plugged, connector is on internal screen and mode is auto
+            if test "${NEWCONN}" = 1 -a "${HDMISTATUS}" = "disconnected"
+            then
+                if test "${GLOBAL_VIDEO_OUTPUT}" != "0" # if not forced on internal screen
+                then
+                        curl http://localhost:1234/quit # No confirmation when unplugging HDMI 
+                fi
+                echo off > /sys/class/drm/card0-HDMI-A-1/status
+                echo on > /sys/class/drm/card0-${CONNECTORNAME}-1/status
+                set_mode "0 - ${CONNECTORNAME}"
+                # Force audio to internal
+                batocera-audio set alsa_output.platform-sound.unknown
+            fi
+        fi
+fi
+

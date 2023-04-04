@@ -1,0 +1,13 @@
+diff --git a/src/SDL_internal.h b/src/SDL_internal.h
+index 43e407f..5c13390 100644
+--- a/src/SDL_internal.h
++++ b/src/SDL_internal.h
+@@ -102,7 +102,7 @@
+ /* Run-Length-Encoding
+    - SDL_SetColorKey() called with SDL_RLEACCEL flag */
+ #ifndef SDL_HAVE_RLE
+-#define SDL_HAVE_RLE                    !SDL_LEAN_AND_MEAN
++#define SDL_HAVE_RLE                    0
+ #endif
+ 
+ /* Software SDL_Renderer

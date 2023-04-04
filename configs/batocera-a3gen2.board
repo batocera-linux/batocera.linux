@@ -1,0 +1,45 @@
+include batocera-board.common
+
+# Target definition
+BR2_aarch64=y
+BR2_cortex_a73_a53=y
+BR2_ARM_FPU_NEON_FP_ARMV8=y
+BR2_PACKAGE_BATOCERA_TARGET_A3GEN2=y
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyAML0"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/fsoverlay"
+
+# Linux headers same as kernel, a 5.4 series
+BR2_KERNEL_HEADERS_AS_KERNEL=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_4=y
+
+# Kernel
+BR2_LINUX_KERNEL=y
+BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,khadas,linux,602415380f336556d99cde191afd29cf96ea7b01)/602415380f336556d99cde191afd29cf96ea7b01.tar.gz"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux_patches"
+BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-meson64-current.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
+
+# Build the DTB from the kernel sources
+BR2_LINUX_KERNEL_DTS_SUPPORT=y
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/kvim4.dts"
+
+# System
+BR2_PACKAGE_BATOCERA_KODI20=y
+BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
+
+# GPU
+# BR2_PACKAGE_BATOCERA_PANFROST_MESA3D=y
+# BR2_PACKAGE_BATOCERA_WAYLAND=y
+BR2_PACKAGE_MALI_G52=y
+
+# Bootloader
+BR2_PACKAGE_UBOOT_A3GEN2=y
+
+# choices can be put in _defconfig files only
+BR2_PACKAGE_BATOCERA_SPLASH_MPV=y

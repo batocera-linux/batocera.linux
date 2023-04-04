@@ -1,14 +1,16 @@
---- a/base/commandLine.cpp	2016-03-28 12:48:42.599648489 +0200
-+++ b/base/commandLine.cpp	2016-03-28 13:40:50.686398116 +0200
-@@ -108,6 +108,7 @@
+diff --git a/base/commandLine.cpp b/base/commandLine.cpp
+index 40e853f..dc1c5fa 100644
+--- a/base/commandLine.cpp
++++ b/base/commandLine.cpp
+@@ -151,6 +151,7 @@ static const char HELP_STRING[] =
  	"                           pce, segacd, wii, windows)\n"
  	"  --savepath=PATH          Path to where saved games are stored\n"
  	"  --extrapath=PATH         Extra path to additional game data\n"
 +	"  --screenshots=PATH       Path to where screenshots are saved\n"
+ 	"  --iconspath=PATH         Path to additional icons for the launcher grid view\n"
  	"  --soundfont=FILE         Select the SoundFont for MIDI playback (only\n"
  	"                           supported by some MIDI drivers)\n"
- 	"  --multi-midi             Enable combination AdLib and native MIDI\n"
-@@ -203,6 +204,8 @@
+@@ -308,6 +309,8 @@ void registerDefaults() {
  
  	ConfMan.registerDefault("enable_unsupported_game_warning", true);
  
@@ -17,8 +19,8 @@
  	// Game specific
  	ConfMan.registerDefault("path", "");
  	ConfMan.registerDefault("platform", Common::kPlatformDOS);
-@@ -544,6 +547,15 @@
- 				}
+@@ -857,6 +860,15 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
+ 			DO_LONG_OPTION("md5-engine")
  			END_OPTION
  
 +			DO_LONG_OPTION("screenshotspath")

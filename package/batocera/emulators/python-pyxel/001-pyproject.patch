@@ -1,0 +1,19 @@
+diff '--color=auto' -uri pyxel-1.9.12/pyproject.toml python-pyxel-lbrpdx/pyproject.toml
+--- pyxel-1.9.12/pyproject.toml 2023-02-05 05:29:24.000000000 -0800
++++ python-pyxel-lbrpdx/pyproject.toml  2023-03-19 17:19:35.093322206 -0700
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["maturin>=0.13.3,<0.14"]
++requires = ["maturin>=0.13.3"]
+ build-backend = "maturin"
+
+ [project]
+@@ -33,3 +33,7 @@
+
+ [tool.isort]
+ profile = "black"
++
++[tool.setuptools]
++py-modules = []
++
+

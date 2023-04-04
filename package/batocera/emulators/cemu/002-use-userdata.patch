@@ -1,0 +1,71 @@
+diff --git a/src/Cafe/HW/Latte/Renderer/Renderer.cpp b/src/Cafe/HW/Latte/Renderer/Renderer.cpp
+index 8f99c06930..7faa605755 100644
+--- a/src/Cafe/HW/Latte/Renderer/Renderer.cpp
++++ b/src/Cafe/HW/Latte/Renderer/Renderer.cpp
+@@ -84,7 +84,7 @@ uint8 Renderer::RGBComponentToSRGB(uint8 cli)
+ 
+ static std::optional<fs::path> GenerateScreenshotFilename(bool isDRC)
+ {
+-	fs::path screendir = ActiveSettings::GetUserDataPath("screenshots");
++	fs::path screendir = "/userdata/screenshots";
+ 	// build screenshot name with format Screenshot_YYYY-MM-DD_HH-MM-SS[_GamePad].png
+ 	// if the file already exists add a suffix counter (_2.png, _3.png etc)
+ 	std::time_t time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+diff --git a/src/Cemu/Logging/CemuLogging.cpp b/src/Cemu/Logging/CemuLogging.cpp
+index 28a86427f6..a4f78b6d94 100644
+--- a/src/Cemu/Logging/CemuLogging.cpp
++++ b/src/Cemu/Logging/CemuLogging.cpp
+@@ -98,7 +98,7 @@ void cemuLog_createLogFile(bool triggeredByCrash)
+ 	if (LogContext.file_stream.is_open())
+ 		return;
+ 
+-	const auto path = ActiveSettings::GetUserDataPath("log.txt");
++	const auto path = "/userdata/system/logs/cemu-log.txt";
+ 	LogContext.file_stream.open(path, std::ios::out);
+ 	if (LogContext.file_stream.fail())
+ 	{
+diff --git a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp b/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
+index 565f4f8fc4..00e15c51f3 100644
+--- a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
++++ b/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
+@@ -360,7 +360,7 @@ void createCrashlog(EXCEPTION_POINTERS* e, PCONTEXT context)
+ 		p /= fmt::format("log_{:04d}{:02d}{:02d}_{:02d}{:02d}{:02d}.txt", 1900 + time.tm_year, time.tm_mon + 1, time.tm_mday, time.tm_year, time.tm_hour, time.tm_min, time.tm_sec);
+ 
+ 		std::error_code ec;
+-		fs::copy_file(ActiveSettings::GetUserDataPath("log.txt"), p, ec);
++		fs::copy_file("/userdata/system/logs/cemu-log.txt", p, ec);
+ 	}
+ 
+ 	exit(0);
+diff --git a/src/gui/CemuApp.cpp b/src/gui/CemuApp.cpp
+index 2c766f5bab..425a125e5a 100644
+--- a/src/gui/CemuApp.cpp
++++ b/src/gui/CemuApp.cpp
+@@ -79,7 +79,7 @@ bool CemuApp::OnInit()
+ 	fs::path exePath(standardPaths.GetExecutablePath().ToStdString());
+ 	user_data_path = config_path = cache_path = data_path = exePath.parent_path();
+ #else
+-	SetAppName("Cemu");
++	SetAppName("cemu");
+ 	wxString appName=GetAppName();
+ 	#if BOOST_OS_LINUX
+ 	standardPaths.SetFileLayout(wxStandardPaths::FileLayout::FileLayout_XDG);
+@@ -91,14 +91,14 @@ bool CemuApp::OnInit()
+ 		return dir;
+ 	};
+ 	wxString homeDir=wxFileName::GetHomeDir();
+-	user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), homeDir + wxS("/.local/share")) + "/" + appName).ToStdString();
+-	config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), homeDir + wxS("/.config")) + "/" + appName).ToStdString();
++	user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), wxS("/userdata/saves")) + "/" + "wiiu").ToStdString();
++	config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), wxS("/userdata/system/configs")) + "/" + appName).ToStdString();
+ 	#else
+ 	user_data_path = config_path = standardPaths.GetUserDataDir().ToStdString();
+ 	#endif
+ 	data_path = standardPaths.GetDataDir().ToStdString();
+-	cache_path = standardPaths.GetUserDir(wxStandardPaths::Dir::Dir_Cache).ToStdString();
+-	cache_path /= appName.ToStdString();
++ 
++	cache_path = (getEnvDir(wxS("XDG_CACHE_HOME"), wxS("userdata/system/cache")) + "/" + appName).ToStdString();
+ #endif
+ 	auto failed_write_access = ActiveSettings::LoadOnce(user_data_path, config_path, cache_path, data_path);
+ 	for (auto&& path : failed_write_access)

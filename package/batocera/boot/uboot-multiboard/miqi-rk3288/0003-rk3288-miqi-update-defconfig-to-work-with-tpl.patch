@@ -1,0 +1,36 @@
+From fd1aebffc7bb89fc28829c2cb0e395f906528939 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Tue, 24 Jan 2023 16:56:21 +0200
+Subject: [PATCH] rk3288/miqi: update defconfig to work with tpl
+
+---
+ configs/miqi-rk3288_defconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configs/miqi-rk3288_defconfig b/configs/miqi-rk3288_defconfig
+index 2cf0efc8..9fc2188b 100644
+--- a/configs/miqi-rk3288_defconfig
++++ b/configs/miqi-rk3288_defconfig
+@@ -1,16 +1,16 @@
+ CONFIG_ARM=y
+ CONFIG_SPL_SKIP_LOWLEVEL_INIT_ONLY=y
++CONFIG_TPL_SKIP_LOWLEVEL_INIT_ONLY=y
+ CONFIG_SYS_ARCH_TIMER=y
+ CONFIG_ARCH_ROCKCHIP=y
+-CONFIG_TEXT_BASE=0x00000000
++CONFIG_TEXT_BASE=0x01000000
+ CONFIG_NR_DRAM_BANKS=1
+ CONFIG_ENV_OFFSET=0x3F8000
+ CONFIG_DEFAULT_DEVICE_TREE="rk3288-miqi"
+-CONFIG_SPL_TEXT_BASE=0xff704000
+ CONFIG_ROCKCHIP_RK3288=y
+-CONFIG_SPL_ROCKCHIP_BACK_TO_BROM=y
+ CONFIG_TARGET_MIQI_RK3288=y
+ CONFIG_SPL_STACK_R_ADDR=0x80000
++CONFIG_SPL_SIZE_LIMIT=0x40000
+ CONFIG_DEBUG_UART_BASE=0xff690000
+ CONFIG_DEBUG_UART_CLOCK=24000000
+ CONFIG_SYS_LOAD_ADDR=0x800800
+-- 
+2.34.1
+

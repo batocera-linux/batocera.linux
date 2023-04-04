@@ -1,36 +1,34 @@
 diff --git a/src/api/frontend.c b/src/api/frontend.c
-index 069d8ff..d24cbe1 100644
+index f2f8c04..ee3cc4f 100644
 --- a/src/api/frontend.c
 +++ b/src/api/frontend.c
-@@ -176,6 +176,9 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
+@@ -177,6 +177,9 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
      {
          case M64CMD_NOP:
              return M64ERR_SUCCESS;
-+         case M64CMD_ROM_FILENAME:
-+	  strncpy(g_rom_filename, (const unsigned char *) ParamPtr, ParamInt);
-+	  return M64ERR_SUCCESS;
++        case M64CMD_ROM_FILENAME:
++            strncpy(g_rom_filename, (const unsigned char *) ParamPtr, ParamInt);
++            return M64ERR_SUCCESS;
          case M64CMD_ROM_OPEN:
-             if (g_EmulatorRunning || l_ROMOpen)
+             if (g_EmulatorRunning || l_DiskOpen || l_ROMOpen)
                  return M64ERR_INVALID_STATE;
 diff --git a/src/api/m64p_types.h b/src/api/m64p_types.h
-index c3a1fc2..4cb8ca6 100644
+index dd95107..88970e7 100644
 --- a/src/api/m64p_types.h
 +++ b/src/api/m64p_types.h
-@@ -168,7 +168,8 @@ typedef enum {
-   M64CMD_NETPLAY_GET_VERSION,
+@@ -169,6 +169,7 @@ typedef enum {
    M64CMD_NETPLAY_CLOSE,
    M64CMD_PIF_OPEN,
--  M64CMD_ROM_SET_SETTINGS
-+  M64CMD_ROM_SET_SETTINGS,
-+  M64CMD_ROM_FILENAME
+   M64CMD_ROM_SET_SETTINGS,
++  M64CMD_ROM_FILENAME,
+   M64CMD_DISK_OPEN,
+   M64CMD_DISK_CLOSE
  } m64p_command;
- 
- typedef struct {
 diff --git a/src/main/main.c b/src/main/main.c
-index 64bb53f..88b9bab 100644
+index c1cccd5..d77cd2d 100644
 --- a/src/main/main.c
 +++ b/src/main/main.c
-@@ -113,6 +113,7 @@ uint32_t g_start_address = UINT32_C(0xa4000040);
+@@ -114,6 +114,7 @@ uint32_t g_start_address = UINT32_C(0xa4000040);
  struct device g_dev;
  
  m64p_media_loader g_media_loader;
@@ -39,7 +37,7 @@ index 64bb53f..88b9bab 100644
  int g_gs_vi_counter = 0;
  
 diff --git a/src/main/main.h b/src/main/main.h
-index 68efd5e..f1e6d1d 100644
+index 3aacca3..e03574b 100644
 --- a/src/main/main.h
 +++ b/src/main/main.h
 @@ -50,6 +50,7 @@ extern void* g_mem_base;
@@ -51,37 +49,45 @@ index 68efd5e..f1e6d1d 100644
  extern m64p_frame_callback g_FrameCallback;
  
 diff --git a/src/main/savestates.c b/src/main/savestates.c
-index cec408b..537b307 100644
+index 56e307d..b2ca7f6 100644
 --- a/src/main/savestates.c
 +++ b/src/main/savestates.c
-@@ -86,17 +86,23 @@ static char *savestates_generate_path(savestates_type type)
+@@ -86,6 +86,12 @@ static char *savestates_generate_path(savestates_type type)
      }
      else /* Use the selected savestate slot */
      {
 +        char* prefix = ROM_SETTINGS.goodname;
-+	if(g_rom_filename[0] != '\0') {
-+	  char *x = strrchr(g_rom_filename, '/');
-+	  if(x != NULL) prefix = x;
-+	}
++        if(g_rom_filename[0] != '\0') {
++        char *x = strrchr(g_rom_filename, '/');
++        if(x != NULL) prefix = x;
++    }
 +
-         char *filename;
-         switch (type)
+         char *filepath;
+         size_t size = 0;
+ 
+@@ -93,7 +99,7 @@ static char *savestates_generate_path(savestates_type type)
          {
              case savestates_type_m64p:
--                filename = formatstr("%s.st%d", ROM_SETTINGS.goodname, slot);
-+	        filename = formatstr("%s.st%d", prefix, slot);
+                 /* check if old file path exists, if it does then use that */
+-                filepath = formatstr("%s%s.st%d", get_savestatepath(), ROM_SETTINGS.goodname, slot);
++                filepath = formatstr("%s.st%d", prefix, slot);
+                 if (get_file_size(filepath, &size) != file_ok || size == 0)
+                 {
+                     /* else use new path */
+@@ -101,10 +107,10 @@ static char *savestates_generate_path(savestates_type type)
+                 }
                  break;
              case savestates_type_pj64_zip:
--                filename = formatstr("%s.pj%d.zip", ROM_PARAMS.headername, slot);
-+                filename = formatstr("%s.pj%d.zip", prefix, slot);
+-                filepath = formatstr("%s%s.pj%d.zip", get_savestatepath(), ROM_PARAMS.headername, slot);
++                filepath = formatstr("%s.pj%d.zip", prefix, slot);
                  break;
              case savestates_type_pj64_unc:
--                filename = formatstr("%s.pj%d", ROM_PARAMS.headername, slot);
-+                filename = formatstr("%s.pj%d", prefix, slot);
+-                filepath = formatstr("%s%s.pj%d", get_savestatepath(), ROM_PARAMS.headername, slot);
++                filepath = formatstr("%s.pj%d", prefix, slot);
                  break;
              default:
-                 filename = NULL;
-@@ -2143,6 +2149,7 @@ int savestates_save(void)
+                 filepath = NULL;
+@@ -2145,6 +2151,7 @@ int savestates_save(void)
      char *filepath;
      int ret = 0;
      const struct device* dev = &g_dev;
@@ -89,13 +95,12 @@ index cec408b..537b307 100644
  
      /* Can only save PJ64 savestates on VI / COMPARE interrupt.
         Otherwise try again in a little while. */
-@@ -2166,9 +2173,14 @@ int savestates_save(void)
+@@ -2168,9 +2175,13 @@ int savestates_save(void)
              case savestates_type_pj64_unc: ret = savestates_save_pj64_unc(dev, filepath); break;
              default: ret = 0; break;
          }
-+
-+	strncpy(ScreenshotFileName, filepath, 251);
-+	strncat(ScreenshotFileName, ".png", 4);
++        strncpy(ScreenshotFileName, filepath, 251);
++        strncat(ScreenshotFileName, ".png", 4);
          free(filepath);
      }
  
@@ -105,22 +110,23 @@ index cec408b..537b307 100644
      StateChanged(M64CORE_STATE_SAVECOMPLETE, ret);
  
 diff --git a/src/main/screenshot.c b/src/main/screenshot.c
-index 7f2260e..9180fec 100644
+index 7f2260e..4866bf5 100644
 --- a/src/main/screenshot.c
 +++ b/src/main/screenshot.c
-@@ -224,6 +224,11 @@ void TakeScreenshot(int iFrameNumber)
+@@ -224,6 +224,12 @@ void TakeScreenshot(int iFrameNumber)
      if (filename == NULL)
          return;
  
 +    TakeScreenshotToFile(filename, iFrameNumber);
 +    free(filename);
 +}
++
 +void TakeScreenshotToFile(char* filename, int iFrameNumber)
 +{
      // get the width and height
      int width = 640;
      int height = 480;
-@@ -233,7 +238,6 @@ void TakeScreenshot(int iFrameNumber)
+@@ -233,7 +239,6 @@ void TakeScreenshot(int iFrameNumber)
      unsigned char *pucFrame = (unsigned char *) malloc(width * height * 3);
      if (pucFrame == NULL)
      {
@@ -128,7 +134,7 @@ index 7f2260e..9180fec 100644
          return;
      }
  
-@@ -244,7 +248,6 @@ void TakeScreenshot(int iFrameNumber)
+@@ -244,7 +249,6 @@ void TakeScreenshot(int iFrameNumber)
      SaveRGBBufferToFile(filename, pucFrame, width, height, width * 3);
      // free the memory
      free(pucFrame);

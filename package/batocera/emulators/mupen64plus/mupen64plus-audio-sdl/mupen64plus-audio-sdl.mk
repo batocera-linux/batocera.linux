@@ -3,8 +3,8 @@
 # mupen64plus-audio-sdl
 #
 ################################################################################
-# Version.: Commits on Feb 20, 2021
-MUPEN64PLUS_AUDIO_SDL_VERSION = af6af5b1fd4fdb435c836be15371dd047f395c4d
+# Version.: Commits on Mar 03, 2023
+MUPEN64PLUS_AUDIO_SDL_VERSION = 8d5df662e91cae8c4ad327d67a2ccaffc486a88c
 MUPEN64PLUS_AUDIO_SDL_SITE = $(call github,mupen64plus,mupen64plus-audio-sdl,$(MUPEN64PLUS_AUDIO_SDL_VERSION))
 MUPEN64PLUS_AUDIO_SDL_LICENSE = GPLv2
 MUPEN64PLUS_AUDIO_SDL_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core

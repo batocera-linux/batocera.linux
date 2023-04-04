@@ -7,15 +7,17 @@ BOOTCONF="/boot/batocera-boot.conf"
 case "$1" in
 	start)
 	    enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
-	    if [ "$enabled" != "0" ];then
+	    if [ "$enabled" != "0" ]; then
 		%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
 	    fi
 	    ;;
 
 	stop)
-	        emulationstation-standalone --stop-rebooting
-		killall openbox 2>/dev/null # for xorg
+        emulationstation-standalone --stop-rebooting
+		killall openbox   2>/dev/null # for xorg
+		killall sway      2>/dev/null # for wayland
 		killall emulationstation 2>/dev/null
+		killall touchegg 2>/dev/null
 		if [ $? -eq 0 ]; then
 			sleep 20 &
 			watchdog=$!
@@ -31,7 +33,7 @@ case "$1" in
 		"$0" stop
 		"$0" start
 		;;
-	
+
 	*)
 		echo "Usage: $0 {start|stop|restart}"
 		exit 1

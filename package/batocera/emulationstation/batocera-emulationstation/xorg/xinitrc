@@ -1,0 +1,43 @@
+#!/bin/sh
+
+log="/userdata/system/logs/nvidia.log"
+
+# hide mouse cursor
+unclutter --noevents -b
+
+# disable dpms to prevent screen from blanking
+xset -dpms
+xset s off
+
+# allow coredumps for ES
+ulimit -H -c unlimited
+ulimit -S -c unlimited emulationstation
+
+# dbus launch is required for the gio/gvfs/trash:///...
+eval `dbus-launch --sh-syntax --exit-with-session`
+
+### nvidia ###
+nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
+if test "${nvidia_prime}" = "true"
+then
+    # Check if there are two GPUs in the system
+    gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+    if [ $gpu_count -ne 2 ]
+    then
+        echo "There are not two GPUs in the system for Nvidia Prime." >> $log
+    else
+        export __NV_PRIME_RENDER_OFFLOAD=1
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    fi
+fi
+
+### radeon ###
+# variable for AMD Dynamic Switchable Graphics to take amd-radeon gpu over intel cards when such hybrid cards are available
+radeon_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)"
+if test "${radeon_prime}" = "true"
+then
+    export DRI_PRIME=1
+fi
+
+openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"

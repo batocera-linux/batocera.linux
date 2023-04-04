@@ -1,32 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 3d2b37c..64a2869 100644
+index 58648e5..711b580 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -159,11 +159,19 @@ else ifneq (,$(findstring rpi,$(platform)))
-       CPUFLAGS += -mcpu=cortex-a7
-       ARM_CPUFLAGS = -mfpu=neon-vfpv4
-    else ifneq (,$(findstring rpi3,$(platform)))
--      CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a53
--      ARM_CPUFLAGS = -mfpu=neon-fp-armv8
-+      ifneq (,$(findstring rpi3_64,$(platform)))
-+         CPUFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
-+      else
-+         CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a53
-+         ARM_CPUFLAGS = -mfpu=neon-fp-armv8
-+      endif
-    else ifneq (,$(findstring rpi4,$(platform)))
--      CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a72
--      ARM_CPUFLAGS = -mfpu=neon-fp-armv8
-+      ifneq (,$(findstring rpi4_64,$(platform)))
-+         CPUFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
-+      else
-+         CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a72
-+         ARM_CPUFLAGS = -mfpu=neon-fp-armv8
-+      endif
-    else ifneq (,$(findstring rpi,$(platform)))
-       CPUFLAGS += -mcpu=arm1176jzf-s
-       ARM_CPUFLAGS = -mfpu=vfp
-@@ -319,6 +327,42 @@ else ifneq (,$(findstring amlogic,$(platform)))
+@@ -334,6 +334,87 @@ else ifneq (,$(findstring amlogic,$(platform)))
     COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
     CPUFLAGS += -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53
  
@@ -54,6 +30,17 @@ index 3d2b37c..64a2869 100644
 +   COREFLAGS += -DOS_LINUX
 +   ASFLAGS = -f elf64 -d ELF_TYPE
 +
++# Amlogic S912
++else ifneq (,$(findstring s912,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
 +# Rockchip RK3326
 +else ifneq (,$(findstring rk3326,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
@@ -66,6 +53,40 @@ index 3d2b37c..64a2869 100644
 +   COREFLAGS += -DOS_LINUX
 +   ASFLAGS = -f elf64 -d ELF_TYPE
 +
- # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
- else ifneq (,$(findstring RK,$(platform)))
++# Allwinner H5
++else ifneq (,$(findstring h5,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Allwinner H6 / H616
++else ifneq (,$(findstring h616,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# AYN Odin
++else ifneq (,$(findstring odin,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a75.cortex-a55
++   GLES3= 1
++   GL_LIB := -lGLESv2
++   COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
++   ASFLAGS = -f elf -d ELF_TYPE
++
+ # Generic AArch64 Cortex-A53 GLES 2.0 target
+ else ifneq (,$(findstring arm64_cortex_a53_gles2,$(platform)))
     TARGET := $(TARGET_NAME)_libretro.so

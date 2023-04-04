@@ -1,0 +1,22 @@
+#!/bin/sh
+
+case "${1}" in
+    "show")
+	swaymsg -t get_seats | jq -r '.[] | .name' |
+	    while read SEAT
+	    do
+		swaymsg seat "${SEAT}" hide_cursor force-hidden disable || exit 1
+	    done
+    ;;
+    "hide")
+	swaymsg -t get_seats | jq -r '.[] | .name' |
+	    while read SEAT
+	    do
+		swaymsg seat "${SEAT}" hide_cursor force-hidden enable || exit 1
+	    done
+    ;;
+    *)
+	echo "${0} <show|hide>" >&2
+	exit 1
+esac
+exit 0

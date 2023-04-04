@@ -1,0 +1,13 @@
+diff --git a/src/drmmode_display.c b/src/drmmode_display.c
+index 0e9e2474..72f96a0c 100644
+--- a/src/drmmode_display.c
++++ b/src/drmmode_display.c
+@@ -1275,7 +1275,7 @@ drmmode_show_cursor (xf86CrtcPtr crtc)
+ 	    arg.hot_y = yhot;
+ 
+ 	    ret = drmIoctl(pRADEONEnt->fd, DRM_IOCTL_MODE_CURSOR2, &arg);
+-	    if (ret == -EINVAL)
++	    if (ret == -1 && errno == EINVAL)
+ 		use_set_cursor2 = FALSE;
+ 	    else
+ 		return;

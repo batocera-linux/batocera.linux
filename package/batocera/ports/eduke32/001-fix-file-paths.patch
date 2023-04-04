@@ -1,0 +1,85 @@
+Index: source/duke3d/src/game.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/duke3d/src/game.cpp b/source/duke3d/src/game.cpp
+--- a/source/duke3d/src/game.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/source/duke3d/src/game.cpp	(date 1657236230400)
+@@ -6559,7 +6559,7 @@
+
+ int app_main(int argc, char const* const* argv)
+ {
+-    engineSetLogFile(APPBASENAME ".log", LOG_GAME_MAX);
++    engineSetLogFile("/userdata/system/logs/" APPBASENAME ".log", LOG_GAME_MAX);
+     engineSetLogVerbosityCallback(dukeVerbosityCallback);
+
+ #ifndef NETCODE_DISABLE
+@@ -6893,7 +6893,7 @@
+
+     CONFIG_ReadSettings();
+
+-    OSD_Exec("autoexec.cfg");
++    OSD_Exec("/userdata/system/configs/" APPBASENAME "/autoexec.cfg");
+
+     CONFIG_SetDefaultKeys(keydefaults, true);
+
+Index: source/duke3d/src/common.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/duke3d/src/common.cpp b/source/duke3d/src/common.cpp
+--- a/source/duke3d/src/common.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/source/duke3d/src/common.cpp	(date 1657270049493)
+@@ -300,15 +300,7 @@
+
+         if ((homedir = Bgethomedir()))
+         {
+-            Bsnprintf(cwd, ARRAY_SIZE(cwd), "%s/"
+-#if defined(_WIN32)
+-                      APPNAME
+-#elif defined(GEKKO)
+-                      "apps/" APPBASENAME
+-#else
+-                      ".config/" APPBASENAME
+-#endif
+-                      ,homedir);
++            Bsnprintf(cwd, ARRAY_SIZE(cwd), "/userdata/saves/" APPBASENAME);
+             asperr = addsearchpath(cwd);
+             if (asperr == -2)
+             {
+Index: source/duke3d/src/startgtk.game.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/duke3d/src/startgtk.game.cpp b/source/duke3d/src/startgtk.game.cpp
+--- a/source/duke3d/src/startgtk.game.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/source/duke3d/src/startgtk.game.cpp	(date 1657270555456)
+@@ -281,7 +281,7 @@
+         if (buildvfs_exists("user_profiles_disabled"))
+             buildvfs_getcwd(pdir, sizeof(pdir));
+         else
+-            Bsnprintf(pdir, sizeof(pdir), "%s/" ".config/eduke32", homedir);
++            Bsnprintf(pdir, sizeof(pdir), "/userdata/saves/" APPBASENAME);
+
+         dirs = klistpath(pdir, "*", BUILDVFS_FIND_DIR);
+         for (; dirs != NULL; dirs=dirs->next)
+Index: source/build/src/vfs.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/source/build/src/vfs.cpp b/source/build/src/vfs.cpp
+--- a/source/build/src/vfs.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
++++ b/source/build/src/vfs.cpp	(date 1656392416714)
+@@ -282,7 +282,7 @@
+     // pathsearchmode == 0: tests current dir and then the dirs of the path stack
+     // pathsearchmode == 1: tests fn without modification, then like for pathsearchmode == 0
+
+-    if (pathsearchmode)
++    if (1)
+     {
+         // test unmolested filename first
+         if (buildvfs_exists(fn))

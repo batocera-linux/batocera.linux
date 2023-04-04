@@ -1,0 +1,9 @@
+config BR2_PACKAGE_SOUND_OPEN_FIRMWARE
+	bool "sound-open-firmware"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_ALSA_UTILS
+	select BR2_PACKAGE_ALLLINUXFIRMWARES
+	help
+	  Open source audio DSP firmware and development tools.
+
+	  https://www.sofproject.org/

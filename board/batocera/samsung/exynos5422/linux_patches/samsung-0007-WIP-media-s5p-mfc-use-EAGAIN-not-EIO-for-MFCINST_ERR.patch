@@ -1,0 +1,38 @@
+From a31044355812a2e9e0df4edd3a1c503c7c77eee0 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 28 Jun 2022 07:34:21 +0000
+Subject: [PATCH 07/21] WIP: media: s5p-mfc: use EAGAIN not EIO for
+ MFCINST_ERROR
+
+Patch from https://forum.odroid.com/viewtopic.php?p=319025&sid=1fbdb9d8f7ea0ebee30dc8824f76d308#p319025
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/media/platform/samsung/s5p-mfc/s5p_mfc_dec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_dec.c b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_dec.c
+index 268ffe4da53c..ff5756e446d6 100644
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_dec.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_dec.c
+@@ -632,7 +632,7 @@ static int vidioc_qbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
+ 
+ 	if (ctx->state == MFCINST_ERROR) {
+ 		mfc_err("Call on QBUF after unrecoverable error\n");
+-		return -EIO;
++		return -EAGAIN;
+ 	}
+ 	if (buf->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
+ 		return vb2_qbuf(&ctx->vq_src, NULL, buf);
+@@ -652,7 +652,7 @@ static int vidioc_dqbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
+ 
+ 	if (ctx->state == MFCINST_ERROR) {
+ 		mfc_err_limited("Call on DQBUF after unrecoverable error\n");
+-		return -EIO;
++		return -EAGAIN;
+ 	}
+ 
+ 	switch (buf->type) {
+-- 
+2.17.1
+

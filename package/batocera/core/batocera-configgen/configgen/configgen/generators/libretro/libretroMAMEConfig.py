@@ -14,6 +14,34 @@ import shutil
 import subprocess
 import sys
 
+# Define RetroPad inputs for mapping
+retroPad = {
+    "joystick1up":      "YAXIS_UP_SWITCH",
+    "joystick1down":    "YAXIS_DOWN_SWITCH",
+    "joystick1left":    "XAXIS_LEFT_SWITCH",
+    "joystick1right":   "XAXIS_RIGHT_SWITCH",
+    "up":               "HAT1UP",
+    "down":             "HAT1DOWN",
+    "left":             "HAT1LEFT",
+    "right":            "HAT1RIGHT",
+    "joystick2up":      "RYAXIS_NEG_SWITCH",
+    "joystick2down":    "RYAXIS_POS_SWITCH",
+    "joystick2left":    "RXAXIS_NEG_SWITCH",
+    "joystick2right":   "RXAXIS_POS_SWITCH",
+    "a":                "BUTTON1",
+    "b":                "BUTTON2",
+    "x":                "BUTTON3",
+    "y":                "BUTTON4",
+    "pageup":           "BUTTON5",
+    "pagedown":         "BUTTON6",
+    "l2":               "RZAXIS_POS_SWITCH",
+    "r2":               "ZAXIS_POS_SWITCH",
+    "l3":               "BUTTON12",
+    "r3":               "BUTTON11",
+    "select":           "SELECT",
+    "start":            "START"
+}
+
 def generateMAMEConfigs(playersControllers, system, rom):
     # Generate command line for MAME/MESS/MAMEVirtual
     commandLine = []
@@ -27,8 +55,9 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         corePath = system.config['core']
 
-    if system.config['core'] == 'mame':
-        # Set up command line for MAME
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay' ]:
+        # Set up command line for basic systems
+        # ie. no media, softlists, etc.
         if system.getOptBoolean("customcfg"):
             cfgPath = "/userdata/system/configs/{}/custom/".format(corePath)
         else:
@@ -106,11 +135,34 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
 
+            #Laser 310 Memory Expansion & joystick
+            if system.name == "laser310":
+                commandLine += ['-io', 'joystick']
+                if not system.isOptSet('memslot'):
+                    laser310mem = 'laser_64k'
+                else:
+                    laser310mem = system.config['memslot']
+                commandLine += ["-mem", laser310mem]
+
             # BBC Joystick
             if system.name == "bbc":
                 if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
                     commandLine += ["-analogue", system.config['sticktype']]
                     specialController = system.config['sticktype']
+
+            # Apple II
+            if system.name == "apple2":
+                commandLine += ["-sl7", "cffa202"]
+                if system.isOptSet('gameio') and system.config['gameio'] != 'none':
+                    if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
+                        eslog.debug("Joyport is only compatible with Apple II +")
+                    else:
+                        commandLine += ["-gameio", system.config['gameio']]
+                        specialController = system.config['gameio']
+
+            # RAM size (Mac excluded, special handling below)
+            if system.name != "macintosh" and system.isOptSet("ramsize"):
+                commandLine += [ '-ramsize', str(system.config["ramsize"]) + 'M' ]
 
             # Mac RAM & Image Reader (if applicable)
             if system.name == "macintosh":
@@ -171,7 +223,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
                         else:
                             commandLine += [ "-" + messRomType[messMode] ]
                 # Use the full filename for MESS non-softlist ROMs
-                commandLine += [ '"' + rom + '"' ]
+                commandLine += [ f'"{rom}"' ]
                 commandLine += [ "-rompath", romDirname + ";/userdata/bios/" ]
 
                 # Boot disk for Macintosh
@@ -280,6 +332,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
                 else:
                     commandLine += [ '-flop2', '/userdata/saves/lr-mess/{}/{}.dsk'.format(system.name, os.path.splitext(romBasename)[0]) ]
 
+    # Lightgun reload option
+    if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
+        commandArray += [ "-offscreen_reload" ]
+
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
     if system.config['core'] != 'same_cdi':
@@ -305,10 +361,17 @@ def generateMAMEConfigs(playersControllers, system, rom):
         os.makedirs("/userdata/saves/mame/plugins/")
     commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
 
+    # Delete old cmd files & prepare path
+    cmdPath = "/var/run/cmdfiles/"
+    if not os.path.exists(cmdPath):
+        os.makedirs(cmdPath)
+    cmdFileList = os.listdir(cmdPath)
+    for file in cmdFileList:
+        if file.endswith(".cmd"):
+            os.remove(os.path.join(cmdPath, file))
+
     # Write command line file
-    cmdFilename = "/var/run/{}.cmd".format(corePath)
-    if os.path.exists(cmdFilename):
-        os.remove(cmdFilename)
+    cmdFilename = "{}{}.cmd".format(cmdPath, romDrivername)
     cmdFile = open(cmdFilename, "w")
     cmdFile.write(' '.join(commandLine))
     cmdFile.close()
@@ -428,131 +491,26 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
     # Get controller scheme
     altButtons = getMameControlScheme(system, romBasename)
     
-    # Common controls, default lr-mame mapping
-    # lr-mame still uses the actual controller buttons internally, it just converts to Retropad in the UI
-    mappings = {
-        "JOYSTICK_UP":    "joystick1up",
-        "JOYSTICK_DOWN":  "joystick1down",
-        "JOYSTICK_LEFT":  "joystick1left",
-        "JOYSTICK_RIGHT": "joystick1right",
-        "JOYSTICKLEFT_UP":    "joystick1up",
-        "JOYSTICKLEFT_DOWN":  "joystick1down",
-        "JOYSTICKLEFT_LEFT":  "joystick1left",
-        "JOYSTICKLEFT_RIGHT": "joystick1right",
-        "JOYSTICKRIGHT_UP": "joystick2up",
-        "JOYSTICKRIGHT_DOWN": "joystick2down",
-        "JOYSTICKRIGHT_LEFT": "joystick2left",
-        "JOYSTICKRIGHT_RIGHT": "joystick2right",
-        # For some reason, lr-mame is inverting A/B, X/Y, L2/R2, and L3/R3
-        "BUTTON1": "a",
-        "BUTTON2": "b",
-        "BUTTON3": "y",
-        "BUTTON4": "x",
-        "BUTTON5": "pageup",
-        "BUTTON6": "pagedown",
-        "BUTTON7": "r2",
-        "BUTTON8": "l2",
-        "BUTTON9": "r3",
-        "BUTTON10": "l3",
-        "START": "start",
-        "COIN": "select"
-        #"BUTTON11": "",
-        #"BUTTON12": "",
-        #"BUTTON13": "",
-        #"BUTTON14": "",
-        #"BUTTON15": ""
-    }
+    # Load standard controls from csv
+    controlFile = '/usr/share/batocera/configgen/data/mame/mameControls.csv'
+    openFile = open(controlFile, 'r')
+    controlDict = {}
+    with openFile:
+        controlList = csv.reader(openFile)
+        for row in controlList:
+            if not row[0] in controlDict.keys():
+                controlDict[row[0]] = {}
+            controlDict[row[0]][row[1]] = row[2]
+
+    # Common controls
+    mappings = {}
+    for controlDef in controlDict['default'].keys():
+        mappings[controlDef] = controlDict['default'][controlDef]
 
     # Buttons that change based on game/setting
-    if altButtons == "sfsnes": # Capcom 6-button Mapping (Based on Street Fighter II for SNES)
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pageup"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
-        mappings.update({"BUTTON6": "pagedown"})
-    elif altButtons == "mksnes": # MK 6-button Mapping (Based on Mortal Kombat 3 for SNES)
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "pageup"})
-        mappings.update({"BUTTON3": "y"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
-        mappings.update({"BUTTON6": "pagedown"})
-    elif altButtons == "kisnes": # KI 6-button Mapping (Based on Killer Instinct for SNES)
-        mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "x"})
-        mappings.update({"BUTTON3": "y"})
-        mappings.update({"BUTTON4": "pagedown"})
-        mappings.update({"BUTTON5": "a"})
-        mappings.update({"BUTTON6": "b"})
-    elif altButtons == "sfstick": # Capcom 6-button Mapping (the "modern fightstick" layout used in SFIV and above)
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "b"})
-        mappings.update({"BUTTON6": "l2"})
-        mappings.update({"BUTTON8": "pageup"})
-    elif altButtons == "mkstick": # Similar to the Genesis mapping
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "a"})
-        mappings.update({"BUTTON5": "l2"})
-        mappings.update({"BUTTON6": "b"})
-        mappings.update({"BUTTON7": "pageup"})
-        mappings.update({"BUTTON8": "r2"})
-    elif altButtons == "megadrive": # Genesis-style controller layout
-        mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "x"})
-        mappings.update({"BUTTON5": "a"})
-        mappings.update({"BUTTON6": "b"})
-    elif altButtons == "mkmegadrive": # Genesis-style controller layout (Ultimate Mortal Kombat 3 version)
-        mappings.update({"BUTTON1": "pageup"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "x"})
-        mappings.update({"BUTTON5": "b"})
-        mappings.update({"BUTTON6": "a"})
-    elif altButtons == "neomini": # Neo Geo Mini
-        mappings.update({"BUTTON1": "x"})
-        mappings.update({"BUTTON2": "a"})
-        mappings.update({"BUTTON3": "y"})
-        mappings.update({"BUTTON4": "b"})
-    elif altButtons == "neoccd": # Neo Geo CD
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "b"})
-        mappings.update({"BUTTON3": "x"})
-        mappings.update({"BUTTON4": "y"})
-    elif altButtons == "neostick": # Neo Geo Fightstick
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "y"})
-        mappings.update({"BUTTON3": "pagedown"})
-        mappings.update({"BUTTON4": "pageup"})
-        mappings.update({"BUTTON5": "x"})
-        mappings.update({"BUTTON6": "b"})
-    elif altButtons == "twinstick": # Twinstick with Buttons (Battle Zone, virtual On)
-        mappings.update({"BUTTON1": "r2"})
-        mappings.update({"BUTTON2": "pageup"})
-        mappings.update({"BUTTON3": "l2"})
-        mappings.update({"BUTTON4": "pagedown"})
-        mappings.update({"BUTTON5": "r3"})
-        mappings.update({"BUTTON6": "l3"})
-        mappings.update({"BUTTON7": ""})
-        mappings.update({"BUTTON8": ""})
-        mappings.update({"BUTTON9": ""})
-        mappings.update({"BUTTON10": ""})
-    elif altButtons == "fightstick": # Generic 8-button Fightstick
-        mappings.update({"BUTTON1": "a"})
-        mappings.update({"BUTTON2": "b"})
-        mappings.update({"BUTTON3": "l2"})
-        mappings.update({"BUTTON4": "r2"})
-        mappings.update({"BUTTON5": "x"})
-        mappings.update({"BUTTON6": "y"})
-        mappings.update({"BUTTON7": "pagedown"})
-        mappings.update({"BUTTON8": "pageup"})
+    if altButtons != "":
+        for controlDef in controlDict[altButtons].keys():
+            mappings.update({controlDef: controlDict[altButtons][controlDef]})
 
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
@@ -562,11 +520,68 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
     removeSection(config, xml_system, "input")
     xml_input = config.createElement("input")
     xml_system.appendChild(xml_input)
+
+    messControlDict = {}
+    if messSysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
+        if specialController == 'none':
+            useControls = "bbc"
+        else:
+            useControls = f"bbc-{specialController}"
+    elif messSysName in [ "apple2p", "apple2e", "apple2ee" ]:
+        if specialController == 'none':
+            useControls = "apple2"
+        else:
+            useControls = f"apple2-{specialController}"
+    else:
+        useControls = messSysName
     
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32" ]
+    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
+        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if messSysName in specialControlList:
+        # Load mess controls from csv
+        messControlFile = '/usr/share/batocera/configgen/data/mame/messControls.csv'
+        openMessFile = open(messControlFile, 'r')
+        with openMessFile:
+            controlList = csv.reader(openMessFile, delimiter=';')
+            for row in controlList:
+                if not row[0] in messControlDict.keys():
+                    messControlDict[row[0]] = {}
+                messControlDict[row[0]][row[1]] = {}
+                currentEntry = messControlDict[row[0]][row[1]]
+                currentEntry['type'] = row[2]
+                currentEntry['player'] = int(row[3])
+                currentEntry['tag'] = row[4]
+                currentEntry['key'] = row[5]
+                if currentEntry['type'] in [ 'special', 'main' ]:
+                    currentEntry['mapping'] = row[6]
+                    currentEntry['useMapping'] = row[7]
+                    currentEntry['reversed'] = row[8]
+                    currentEntry['mask'] = row[9]
+                    currentEntry['default'] = row[10]
+                elif currentEntry['type'] == 'analog':
+                    currentEntry['incMapping'] = row[6]
+                    currentEntry['decMapping'] = row[7]
+                    currentEntry['useMapping1'] = row[8]
+                    currentEntry['useMapping2'] = row[9]
+                    currentEntry['reversed'] = row[10]
+                    currentEntry['mask'] = row[11]
+                    currentEntry['default'] = row[12]
+                    currentEntry['delta'] = row[13]
+                    currentEntry['axis'] = row[14]
+                if currentEntry['type'] == 'combo':
+                    currentEntry['kbMapping'] = row[6]
+                    currentEntry['mapping'] = row[7]
+                    currentEntry['useMapping'] = row[8]
+                    currentEntry['reversed'] = row[9]
+                    currentEntry['mask'] = row[10]
+                    currentEntry['default'] = row[11]
+                if currentEntry['reversed'] == 'False':
+                    currentEntry['reversed'] == False
+                else:
+                    currentEntry['reversed'] == True
+
         config_alt = minidom.Document()
         configFile_alt = cfgPath + messSysName + ".cfg"
         if os.path.exists(configFile_alt):
@@ -582,13 +597,33 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             overwriteSystem = True
 
         xml_mameconfig_alt = getRoot(config_alt, "mameconfig")
+        xml_mameconfig_alt.setAttribute("version", "10")
         xml_system_alt = getSection(config_alt, xml_mameconfig_alt, "system")
         xml_system_alt.setAttribute("name", messSysName)
         
         removeSection(config_alt, xml_system_alt, "input")
         xml_input_alt = config_alt.createElement("input")
         xml_system_alt.appendChild(xml_input_alt)
+
+        # Hide the LCD display on CD-i
+        if useControls == "cdimono1":
+            removeSection(config_alt, xml_system_alt, "video")
+            xml_video_alt = config_alt.createElement("video")
+            xml_system_alt.appendChild(xml_video_alt)
+
+            xml_screencfg_alt = config_alt.createElement("target")
+            xml_screencfg_alt.setAttribute("index", "0")
+            xml_screencfg_alt.setAttribute("view", "Main Screen Standard (4:3)")
+            xml_video_alt.appendChild(xml_screencfg_alt)
+
+        # If using BBC keyboard controls, enable keyboard to gamepad
+        if useControls == 'bbc':
+            xml_kbenable_alt = config_alt.createElement("keyboard")
+            xml_kbenable_alt.setAttribute("tag", ":")
+            xml_kbenable_alt.setAttribute("enabled", "1")
+            xml_input_alt.appendChild(xml_kbenable_alt)
     
+    # Fill in controls on cfg files
     nplayer = 1
     maxplayers = len(playersControllers)
     for playercontroller, pad in sorted(playersControllers.items()):
@@ -602,317 +637,39 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", ""))
+                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], retroPad[mappings_use[mapping]], False, "", ""))
                 else:
-                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons))
+                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[mappings_use[mapping]], False, altButtons))
             else:
                 rmapping = reverseMapping(mappings_use[mapping])
-                if rmapping in pad.inputs:
-                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons))
+                if rmapping in retroPad:
+                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[rmapping], True, altButtons))
 
         #UI Mappings
         if nplayer == 1:
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "", ""))      # Down
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "", "")) # Right
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))      # Down
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", "")) # Right
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
 
-        # Special case for CD-i - doesn't use default controls, map special controller
-        # Keep orginal mapping functions for menus etc, create system-specific config file dor CD-i.
-        if nplayer == 1 and messSysName == "cdimono1":
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':slave_hle:MOUSEBTN', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "1", "0"))
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':slave_hle:MOUSEBTN', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "2", "0"))
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':slave_hle:MOUSEBTN', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "4", "0"))
-            # MAME .240+
-            xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':slave_hle:MOUSEX', nplayer, pad.index, "P1_MOUSE_X", mappings_use["JOYSTICK_RIGHT"], mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "65535", "0", "10", "XAXIS"))
-            xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':slave_hle:MOUSEY', nplayer, pad.index, "P1_MOUSE_Y", mappings_use["JOYSTICK_DOWN"], mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], pad.inputs[mappings_use["JOYSTICK_UP"]],False, "65535", "0", "10", "YAXIS"))
-            # Older MAME
-            xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':slave_hle:MOUSEX', nplayer, pad.index, "P1_MOUSE_X", mappings_use["JOYSTICK_RIGHT"], mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "1023", "0", "10", "XAXIS"))
-            xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':slave_hle:MOUSEY', nplayer, pad.index, "P1_MOUSE_Y", mappings_use["JOYSTICK_DOWN"], mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], pad.inputs[mappings_use["JOYSTICK_UP"]],False, "1023", "0", "10", "YAXIS"))
-            
-            #Hide LCD display
-            removeSection(config_alt, xml_system_alt, "video")
-            xml_video_alt = config_alt.createElement("video")
-            xml_system_alt.appendChild(xml_video_alt)
-            
-            xml_screencfg_alt = config_alt.createElement("target")
-            xml_screencfg_alt.setAttribute("index", "0")
-            xml_screencfg_alt.setAttribute("view", "Main Screen Standard (4:3)")
-            xml_video_alt.appendChild(xml_screencfg_alt)
-            
-        # Special case for APFM1000 - uses numpad controllers
-        if nplayer <= 2 and messSysName == "apfm1000":
-            if nplayer == 1:
-                # Based on Colecovision button mapping, changed slightly since Enter = Fire
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "OTHER", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "32", "32"))     # Clear
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "OTHER", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "32", "32"))     # Enter/Fire
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "OTHER", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "16", "16"))     # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "OTHER", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "16", "16"))     # 2
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "OTHER", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "16", "16"))     # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "OTHER", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "64", "64"))     # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "OTHER", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "64", "64"))     # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "OTHER", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "64", "64"))     # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "OTHER", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "128", "128")) # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "OTHER", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "128", "128"))   # 8
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "OTHER", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "128", "128"))         # 9
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "OTHER", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "32", "32"))         # 0
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "2", "2"))   # Clear
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "2", "2"))   # Enter/Fire
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "1", "1"))   # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "1", "1"))   # 2
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "1", "1"))   # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "4", "4"))   # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "4", "4"))   # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "4", "4"))   # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "8", "8")) # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.3', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "8", "8"))   # 8
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.2', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "8", "8"))         # 9
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy.0', nplayer, pad.index, "TYPE_OTHER(243,1)", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "2", "2"))       # 0
-        # Special case for Astrocade - numpad on console
-        if nplayer == 1 and messSysName == "astrocde":
-            # Based on Colecovision button mapping, keypad is on the console
-            # A auto maps to Fire, using B for 0, Select for 9, Start for = (which is the "enter" key)
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "32", "0"))  # 0
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "16", "0"))  # 1
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "16", "0"))  # 2
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "16", "0"))  # 3
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "8", "0"))   # 4
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "8", "0"))   # 5
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "8", "0"))   # 6
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "4", "0")) # 7
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "4", "0"))   # 8
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1', nplayer, pad.index, "KEYPAD", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "4", "0"))         # 9
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD0', nplayer, pad.index, "KEYPAD", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "32", "0"))      # = (Start)
-
-        # Special case for Adam - numpad
-        if nplayer == 1 and messSysName == "adam":
-            # Based on Colecovision button mapping - not enough buttons to map 0 & 9
-            # Fire 1 & 2 map to A & B
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "2", "2"))       # 1
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "4", "4"))       # 2
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "8", "8"))       # 3
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "16", "16"))     # 4
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "32", "32"))     # 5
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "64", "64"))     # 6
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "128", "128")) # 7
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "512", "512"))   # 8
-            # ':joy1:hand:KEYPAD', "KEYPAD", "128", "128"                                                                                                                                                                         9
-            # ':joy1:hand:KEYPAD', "KEYPAD", "1", "1"                                                                                                                                                                             0
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "1024", "0"))        # #
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1:hand:KEYPAD', nplayer, pad.index, "KEYPAD", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "2048", "0"))          # *
-
-        # Special case for Arcadia
-        if nplayer <= 2 and messSysName == "arcadia":
-            if nplayer == 1:
-                # Based on Colecovision button mapping - not enough buttons to map clear, enter
-                # No separate fire button, Start + Select on console (automapped), Option button also on console.
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "8", "0"))   # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "8", "0"))   # 2
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "8", "0"))   # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "4", "0"))   # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "4", "0"))   # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "4", "0"))   # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "2", "0"))   # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "2", "0"))   # 8
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "2", "0")) # 9
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller1_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "1", "0"))   # 0
-                # ':controller1_col1' "KEYPAD", "1", "0"                                                                                                                                                                          Clear
-                # ':controller1_col3',"KEYPAD", "1", "0"                                                                                                                                                                          Enter
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "8", "0"))   # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "8", "0"))   # 2
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "8", "0"))   # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "4", "0"))   # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "4", "0"))   # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "4", "0"))   # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "2", "0"))   # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "2", "0"))   # 8
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "2", "0")) # 9
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':controller2_col3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "1", "0"))   # 0
-                # ':controller1_col1', "KEYPAD", "1", "0"                                                                                                                                                                         Clear
-                # ':controller1_col3', "KEYPAD", "1", "0"                                                                                                                                                                         Enter
-
-        # Special case for Gamecom - buttons don't map normally
-        if nplayer == 1 and messSysName == "gamecom":
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "128", "128")) # A
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN1', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "1", "1"))     # B
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN1', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "2", "2"))     # C
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN2', nplayer, pad.index, "P1_BUTTON4", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "2", "2"))     # D
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "OTHER", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "16", "16"))              # Menu
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "OTHER", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "32", "32"))            # Pause
-
-        # Special case for Tomy Tutor - directions don't map normally
-        # Also maps arrow keys to directional input & enter to North button to get through the initial menu without a keyboard
-        if nplayer <= 2 and messSysName == "tutor":
-            if nplayer == 1:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE4_alt', nplayer, pad.index, "P1_JOYSTICK_DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "16", "0"))      # Down
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE4_alt', nplayer, pad.index, "P1_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "32", "0"))    # Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE4_alt', nplayer, pad.index, "P1_JOYSTICK_UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "64", "0"))          # Up
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE4_alt', nplayer, pad.index, "P1_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "128", "0")) # Right
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':LINE6', pad.index, "KEYBOARD", "ENTER", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "16", "0"))                              # Enter Key
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':LINE7', pad.index, "KEYBOARD", "DOWN", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "4", "0"))                                # Down Arrow
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE2_alt', nplayer, pad.index, "P2_JOYSTICK_DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "16", "0"))      # Down
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE2_alt', nplayer, pad.index, "P2_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "32", "0"))    # Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE2_alt', nplayer, pad.index, "P2_JOYSTICK_UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "64", "0"))          # Up
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':LINE2_alt', nplayer, pad.index, "P2_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "128", "0")) # Right
-
-        # Special case for crvision - maps the 4 corner buttons + 2nd from upper right since MAME considers that button 2.
-        if nplayer <= 2 and messSysName == "crvision":
-            if nplayer == 1:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA1.7', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "128", "128")) # P1 Button 1 (Shift)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA0.7', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "128", "128")) # P1 Button 2 (Control)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA0.2', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "8", "8"))       # P1 Upper Right (1)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA1.1', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "4", "4"))       # P1 Lower Left (B)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA1.4', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "64", "64"))     # P1 Lower Right (6)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':NMI', nplayer, pad.index, "P1_START", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "1", "0"))             # Reset/Start
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA3.7', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "128", "128")) # P2 Button 1 (-/=)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA2.7', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "128", "128")) # P2 Button 2 (Right)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA2.2', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "8", "8"))       # P2 Upper Right (Space)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA3.1', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "4", "4"))       # P2 Lower Left (7)
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PA3.1', nplayer, pad.index, "KEYBOARD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "64", "64"))     # P2 Lower Right (N)
-
-        # BBC Micro - joystick not emulated/supported for most games, map some to gamepad
-        if nplayer <= 2 and messSysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
-            if specialController == 'none' and nplayer == 1:
-                xml_kbenable_alt = config_alt.createElement("keyboard")
-                xml_kbenable_alt.setAttribute("tag", ":")
-                xml_kbenable_alt.setAttribute("enabled", "1")
-                xml_input_alt.appendChild(xml_kbenable_alt)
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL8', pad.index, "KEYBOARD", "QUOTE", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "64", "64"))                # *
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL8', pad.index, "KEYBOARD", "SLASH", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "16", "16"))                # ?
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL1', pad.index, "KEYBOARD", "Z", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "64", "64"))                    # Z
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL2', pad.index, "KEYBOARD", "X", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "16", "16"))                    # X
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL9', pad.index, "KEYBOARD", "ENTER", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "16", "16"))                # Enter
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL9', pad.index, "KEYBOARD", "DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "4", "4"))         # Down
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL9', pad.index, "KEYBOARD", "LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "2", "2"))       # Left
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL9', pad.index, "KEYBOARD", "UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "8", "8"))             # Up
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':COL9', pad.index, "KEYBOARD", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "128", "128")) # Right
-            elif specialController in ['acornjoy','voltmace3b']:
-                if nplayer == 1:
-                    xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':analogue:{}:BUTTONS'.format(specialController), nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "16", "16"))                                                             # P1 Button
-                    xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:JOY0'.format(specialController), nplayer, pad.index, "P1_AD_STICK_X", mappings_use["JOYSTICK_RIGHT"], mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "255", "128", "10", "XAXIS")) # P1 X Axis
-                    xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:JOY1'.format(specialController), nplayer, pad.index, "P1_AD_STICK_Y", mappings_use["JOYSTICK_DOWN"], mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], pad.inputs[mappings_use["JOYSTICK_UP"]] ,False, "255", "128", "10", "YAXIS"))      # P1 Y Axis
-                elif nplayer == 2:
-                    xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':analogue:{}:BUTTONS'.format(specialController), nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "32", "32"))                                                             # P2 Button
-                    xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:JOY2'.format(specialController), nplayer, pad.index, "P2_AD_STICK_X", mappings_use["JOYSTICK_RIGHT"], mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "255", "128", "10", "XAXIS")) # P2 X Axis
-                    xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:JOY3'.format(specialController), nplayer, pad.index, "P2_AD_STICK_Y", mappings_use["JOYSTICK_DOWN"], mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "255", "128", "10", "YAXIS"))      # P2 Y Axis
-            elif specialController in ['bitstik1','bitstik2'] and nplayer == 1:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':analogue:{}:BUTTONS'.format(specialController), nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "16", "16"))                                                               # P1 Button 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':analogue:{}:BUTTONS'.format(specialController), nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "32", "32"))                                                               # P1 Button 2
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':analogue:{}:BUTTONS'.format(specialController), nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "255", "255"))                                                             # P1 Button 3
-                xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:CHANNEL0'.format(specialController), nplayer, pad.index, "P1_AD_STICK_X", mappings_use["JOYSTICK_RIGHT"], mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "255", "0", "10", "XAXIS")) # P1 X Axis
-                xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:CHANNEL1'.format(specialController), nplayer, pad.index, "P1_AD_STICK_Y", mappings_use["JOYSTICK_DOWN"], mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "255", "0", "10", "YAXIS"))      # P1 Y Axis
-                xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, ':analogue:{}:CHANNEL2'.format(specialController), nplayer, pad.index, "P1_AD_STICK_Z", mappings_use["BUTTON5"], mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON5"]], pad.inputs[mappings_use["BUTTON6"]], False, "255", "0", "10", "ZAXIS"))                    # P1 Z Axis
-
-        # Special case for Atari XEGS, normally maps only to analog stick and buttons do not use normal button 1/2.
-        if nplayer <= 2 and messSysName == "xegs":
-            if nplayer == 1:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P1_JOYSTICK_DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "2", "2"))    # Down
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P1_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "4", "4"))  # Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P1_JOYSTICK_UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "1", "1"))        # Up
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P1_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "8", "8")) # Right
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_b', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "1", "1"))                      # P1 Button 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_b', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "16", "16"))                    # P1 Button 2
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P2_JOYSTICK_DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "32", "32"))       # Down
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P2_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "64", "64"))     # Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P2_JOYSTICK_UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "16", "16"))           # Up
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_0_1', nplayer, pad.index, "P2_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "128", "128")) # Right
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_b', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "2", "2"))                           # P2 Button 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':djoy_b', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "32", "32"))                         # P2 Button 2
-
-        # Socrates uses a keyboard + 2 detachable D-pad controllers, map the controllers to gamepads.
-        if nplayer <= 2 and messSysName == "socrates":
-            if nplayer == 1:
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "2PAD", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "8", "0"))    # Down
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "4PAD", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "4", "0"))  # Left
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "8PAD", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "2", "0"))      # Up
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "6PAD", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "1", "0")) # Right
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "ENTERPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "256", "0"))        # P1 Button
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "16", "0"))      # Down
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "32", "0"))    # Left
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "64", "0"))          # Up
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "128", "0")) # Right
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':IN5', pad.index, "KEYBOARD", "RALT", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "512", "0"))               # P2 Button
-
-        if nplayer == 1 and messSysName == "vgmplay":
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "1", "0"))            # Stop
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON2", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "2", "0"))                # Pause
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "4", "0"))            # Play
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON4", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "8", "0"))            # Restart
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON5", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "16", "0"))           # Loop
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON6", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "32", "0"))           # Change Visualization Mode
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON7", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "64", "0")) # Rate Down
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON8", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "128", "0"))  # Rate Up
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON9", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "256", "0"))          # Rate Reset
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':CONTROLS', nplayer, pad.index, "P1_BUTTON10", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "512", "0"))         # Rate Hold
-            xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, "UI_CONFIGURE", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "", ""))
-
-        # FM Towns (Marty) Run button mapping, the rest map properly automatically.
-        if nplayer == 1 and messSysName == "fmtmarty":
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':joy1_ex', nplayer, pad.index, "P1_START", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "1", "0")) # Run
-
-        # Punchtape loading & Spacewar controls for PDP-1
-        if nplayer <= 2 and messSysName == "pdp1":
-            if nplayer == 1:
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':CSW', pad.index, "KEYBOARD", "LCONTROL", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "1", "0"))                                # Control Panel Switch
-                xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, ':CSW', pad.index, "KEYBOARD", "ENTER", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "256", "0"))                                 # Load Punchtape
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "1", "0"))    # P1 Spin Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P1_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "2", "0"))  # P1 Spin Right
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "4", "0"))                      # P1 Thrust
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "8", "0"))                      # P1 Fire
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "256", "0"))                    # P1 Hyperspace
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "16", "0"))   # P2 Spin Left
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P2_JOYSTICK_RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "32", "0")) # P2 Spin Right
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "64", "0"))                     # P2 Thrust
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON2", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "128", "0"))                    # P2 Fire
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':SPACEWAR', nplayer, pad.index, "P2_BUTTON3", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "512", "0"))                    # P2 Hyperspace
-
-        # Special case for VC4000 - uses numpad controllers
-        if nplayer <= 2 and messSysName == "vc4000":
-            if nplayer == 1:
-                # Based on Colecovision button mapping, rearranged slightly since 2 = fire, not enough inputs
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "128", "0"))  # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "128", "0"))  # 2/Button
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "128", "0"))  # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "64", "0"))   # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "64", "0"))   # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "64", "0"))   # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "32", "0"))   # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "32", "0"))   # 8
-                # ':KEYPAD1_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
-                # ':KEYPAD1_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "16", "0")) # Enter
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD1_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "16", "0"))   # Clear
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PANEL', nplayer, pad.index, "P1_SELECT", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "128", "0"))         # Game Select
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':PANEL', nplayer, pad.index, "P1_START", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "64", "0"))         # Start
-            elif nplayer == 2:
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON3"], pad.inputs[mappings_use["BUTTON3"]], False, "128", "0"))  # 1
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "128", "0"))  # 2/Button
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON4"], pad.inputs[mappings_use["BUTTON4"]], False, "128", "0"))  # 3
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "64", "0"))   # 4
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "64", "0"))   # 5
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "64", "0"))   # 6
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON8"], pad.inputs[mappings_use["BUTTON8"]], False, "32", "0"))   # 7
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_2', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON7"], pad.inputs[mappings_use["BUTTON7"]], False, "32", "0"))   # 8
-                # ':KEYPAD2_3', 'KEYPAD', '32', '0'                                                                                                                                                                         9
-                # ':KEYPAD2_2', 'KEYPAD', '16', '0'                                                                                                                                                                         0
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_1', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON10"], pad.inputs[mappings_use["BUTTON10"]], False, "16", "0")) # Enter
-                xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':KEYPAD2_3', nplayer, pad.index, "KEYPAD", mappings_use["BUTTON9"], pad.inputs[mappings_use["BUTTON9"]], False, "16", "0"))   # Clear
-
-        # Special case for gp32 - buttons don't map normally
-        if nplayer == 1 and messSysName == "gp32":
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "P1_BUTTON2", mappings_use["BUTTON2"], pad.inputs[mappings_use["BUTTON2"]], False, "8192", "8192"))   # A
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "P1_BUTTON1", mappings_use["BUTTON1"], pad.inputs[mappings_use["BUTTON1"]], False, "16384", "16384")) # B
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "P1_BUTTON3", mappings_use["BUTTON5"], pad.inputs[mappings_use["BUTTON5"]], False, "4096", "4096"))   # L
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN0', nplayer, pad.index, "P1_BUTTON4", mappings_use["BUTTON6"], pad.inputs[mappings_use["BUTTON6"]], False, "32768", "32768")) # R
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN1', nplayer, pad.index, "P1_SELECT", mappings_use["COIN"], pad.inputs[mappings_use["COIN"]], False, "128", "128"))            # Select
-            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, ':IN1', nplayer, pad.index, "P1_START", mappings_use["START"], pad.inputs[mappings_use["START"]], False, "64", "64"))              # Start
+        if useControls in messControlDict.keys():
+            for controlDef in messControlDict[useControls].keys():
+                thisControl = messControlDict[useControls][controlDef]
+                if nplayer == thisControl['player']:
+                    if thisControl['type'] == 'special':
+                        xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                    elif thisControl['type'] == 'main':
+                        xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                    elif thisControl['type'] == 'analog':
+                        xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
+                            mappings_use[thisControl['decMapping']], retroPad[mappings_use[thisControl['useMapping1']]], retroPad[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
+                            thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
+                    elif thisControl['type'] == 'combo':
+                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
+                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
         nplayer = nplayer + 1
         
@@ -991,12 +748,12 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
-    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0))
+    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0, True))
     xml_newseq_inc.appendChild(incvalue)
     xml_newseq_dec = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_dec)
     xml_newseq_dec.setAttribute("type", "decrement")
-    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0))
+    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0, True))
     xml_newseq_dec.appendChild(decvalue)
     xml_newseq_std = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_std)
@@ -1008,77 +765,55 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad, key, input, joycode, reversed, altButtons):
-    if input.type == "button":
-        if key == "start":
-            return f"JOYCODE_{joycode}_START"
-        elif key == "select":
-            return f"JOYCODE_{joycode}_SELECT"
-        else:
-            return f"JOYCODE_{joycode}_BUTTON{int(input.id)+1}"
-    elif input.type == "hat":
-        if input.value == "1":
-            return f"JOYCODE_{joycode}_HAT1UP"
-        elif input.value == "2":
-            return f"JOYCODE_{joycode}_HAT1RIGHT"
-        elif input.value == "4":
-            return f"JOYCODE_{joycode}_HAT1DOWN"
-        elif input.value == "8":
-            return f"JOYCODE_{joycode}_HAT1LEFT"
-    elif input.type == "axis":
-        # Determine alternate button for D-Pad and right stick as buttons
-        dpadInputs = {}
-        for direction in ['up', 'down', 'left', 'right']:
-            if pad.inputs[direction].type == 'button':
-                dpadInputs[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
-            elif pad.inputs[direction].type == 'hat':
-                if pad.inputs[direction].value == "1":
-                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1UP'
-                if pad.inputs[direction].value == "2":
-                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1RIGHT'
-                if pad.inputs[direction].value == "4":
-                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1DOWN'
-                if pad.inputs[direction].value == "8":
-                    dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
-            else:
-                dpadInputs[direction] = ''
-        buttonDirections = {}
-        for direction in ['a', 'b', 'x', 'y']:
-            if pad.inputs[direction].type == 'button':
-                buttonDirections[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
-            else:
-                buttonDirections[direction] = ''
+def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
+    if input.find("BUTTON") != -1 or input.find("HAT") != -1 or input == "START" or input == "SELECT":
+        return f"JOYCODE_{joycode}_{input}"
+    elif input.find("AXIS") != -1:
         if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_YAXIS_UP_SWITCH JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH OR {dpadInputs['up']} {dpadInputs['right']}"
-            if key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_YAXIS_DOWN_SWITCH JOYCODE_{joycode}_XAXIS_LEFT_SWITCH OR {dpadInputs['down']} {dpadInputs['left']}"
-            if key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_XAXIS_LEFT_SWITCH JOYCODE_{joycode}_YAXIS_UP_SWITCH OR {dpadInputs['left']} {dpadInputs['up']}"
-            if key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH JOYCODE_{joycode}_YAXIS_DOWN_SWITCH OR {dpadInputs['right']} {dpadInputs['down']}"
+                return f"JOYCODE_{joycode}_{retroPad['joystick1up']}_{joycode}_{retroPad['joystick1right']} OR \
+                    JOYCODE_{joycode}_{retroPad['up']} JOYCODE_{joycode}_{retroPad['right']}"
+            elif key == "joystick1down" or key == "down":
+                return f"JOYCODE_{joycode}_{retroPad['joystick1down']} JOYCODE_{joycode}_{retroPad['joystick1left']} OR \
+                    JOYCODE_{joycode}_{retroPad['down']} JOYCODE_{joycode}_{retroPad['left']}"
+            elif key == "joystick1left" or key == "left":
+                return f"JOYCODE_{joycode}_{retroPad['joystick1left']} JOYCODE_{joycode}_{retroPad['joystick1up']} OR \
+                    JOYCODE_{joycode}_{retroPad['left']} JOYCODE_{joycode}_{retroPad['up']}"
+            elif key == "joystick1right" or key == "right":
+                return f"JOYCODE_{joycode}_{retroPad['joystick1right']} JOYCODE_{joycode}_{retroPad['joystick1down']} OR \
+                    JOYCODE_{joycode}_{retroPad['right']} JOYCODE_{joycode}_{retroPad['down']}"
+            else:
+                return f"JOYCODE_{joycode}_{input}"
+        elif ignoreAxis:
+            if key == "joystick1up" or key == "up":
+                return f"JOYCODE_{joycode}_{retroPad['up']}"
+            elif key == "joystick1down" or key == "down":
+                return f"JOYCODE_{joycode}_{retroPad['down']}"
+            elif key == "joystick1left" or key == "left":
+                return f"JOYCODE_{joycode}_{retroPad['left']}"
+            elif key == "joystick1right" or key == "right":
+                return f"JOYCODE_{joycode}_{retroPad['right']}"
         else:
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_YAXIS_UP_SWITCH OR {dpadInputs['up']}"
-            if key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_YAXIS_DOWN_SWITCH OR {dpadInputs['down']}"
-            if key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_XAXIS_LEFT_SWITCH OR {dpadInputs['left']}"
-            if key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_XAXIS_RIGHT_SWITCH OR {dpadInputs['right']}"
-        if key == "joystick2up":
-            return f"JOYCODE_{joycode}_RYAXIS_NEG_SWITCH OR {buttonDirections['y']}"
-        if key == "joystick2down":
-            return f"JOYCODE_{joycode}_RYAXIS_POS_SWITCH OR {buttonDirections['a']}"
-        if key == "joystick2left":
-            return f"JOYCODE_{joycode}_RXAXIS_NEG_SWITCH OR {buttonDirections['x']}"
-        if key == "joystick2right":
-            return f"JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {buttonDirections['b']}"
-        if int(input.id) == 2: # XInput L2
-            return f"JOYCODE_{joycode}_ZAXIS_POS_SWITCH"
-        if int(input.id) == 5: # XInput R2
-            return f"JOYCODE_{joycode}_RZAXIS_POS_SWITCH"
-    return "unknown"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up']}"
+            elif key == "joystick1down" or key == "down":
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['down']}"
+            elif key == "joystick1left" or key == "left":
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['left']}"
+            elif key == "joystick1right" or key == "right":
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['right']}"
+            elif(key == "joystick2up"):
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['x']}"
+            elif(key == "joystick2down"):
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['b']}"
+            elif(key == "joystick2left"):
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['y']}"
+            elif(key == "joystick2right"):
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['a']}"
+            else:
+                return f"JOYCODE_{joycode}_{input}"
+    else:
+        return "unknown"
 
 def getRoot(config, name):
     xml_section = config.getElementsByTagName(name)

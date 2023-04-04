@@ -1,0 +1,29 @@
+From 5f95a5931e6459199c4524f477d76875b6191619 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Wed, 30 Nov 2022 12:04:02 +0000
+Subject: [PATCH 22/92] FROMLIST(v6): dt-bindings: power: Add G12A NNA power
+ domain
+
+Add define for the NNA power domain for the NPU in the G12A.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ include/dt-bindings/power/meson-g12a-power.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/power/meson-g12a-power.h b/include/dt-bindings/power/meson-g12a-power.h
+index bb5e67a842de..93b03bdd60b7 100644
+--- a/include/dt-bindings/power/meson-g12a-power.h
++++ b/include/dt-bindings/power/meson-g12a-power.h
+@@ -9,5 +9,6 @@
+ 
+ #define PWRC_G12A_VPU_ID		0
+ #define PWRC_G12A_ETH_ID		1
++#define PWRC_G12A_NNA_ID		2
+ 
+ #endif
+-- 
+2.34.1
+

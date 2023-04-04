@@ -349,26 +349,28 @@ static int modeset_prepare(int fd, int do_current)
 		  live_crtc = drmModeGetCrtc(fd, dev->crtc);
 		  for (j = 0; (int)j < conn->count_modes; j++) {
 		    if(crtc_cmp(&live_crtc->mode, conn->modes+j) == 0) {
-		      printf("%d.%d:%s %dx%d %uHz (%s)\n",
+		      printf("%d.%d:%s %dx%d %uHz (%s%s)\n",
 			     i, j,
 			     connType,
 			     conn->modes[j].hdisplay,
 			     conn->modes[j].vdisplay,
 			     conn->modes[j].vrefresh,
-			     conn->modes[j].name);
+			     conn->modes[j].name,
+			     (conn->modes[j].type & DRM_MODE_TYPE_PREFERRED) == 0 ? "" : "*");
 		    }
 		  }
 		}
 
 		if(do_current == 0) {
 		  for (j = 0; (int)j < conn->count_modes; j++) {
-		    printf("%d.%d:%s %dx%d %uHz (%s)\n",
+		    printf("%d.%d:%s %dx%d %uHz (%s%s)\n",
 			   i, j,
 			   connType,
 			   conn->modes[j].hdisplay,
 			   conn->modes[j].vdisplay,
 			   conn->modes[j].vrefresh,
-			   conn->modes[j].name);
+			   conn->modes[j].name,
+			   (conn->modes[j].type & DRM_MODE_TYPE_PREFERRED) == 0 ? "" : "*");
 		  }
 		}
 		

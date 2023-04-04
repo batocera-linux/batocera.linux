@@ -3,27 +3,23 @@
 # libretro-cap32
 #
 ################################################################################
-# Version: Commits on Apr 16, 2022
-LIBRETRO_CAP32_VERSION = 4450f5aa3c6bae613bbaf0d74ae09df85941c041
+# Version: Commits on Dec 29, 2022
+LIBRETRO_CAP32_VERSION = 22d0475be7f6249669358d02b6cba4bc98abe936
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
 LIBRETRO_CAP32_LICENSE = GPLv2
 
 LIBRETRO_CAP32_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_CAP32_PLATFORM = rpi1
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_CAP32_PLATFORM = rpi2
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
-    ifeq ($(BR2_arm),y)
-        LIBRETRO_CAP32_PLATFORM = rpi3
-    else
-        LIBRETRO_CAP32_PLATFORM = rpi3_64
-    endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
+LIBRETRO_CAP32_PLATFORM = rpi3_64
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_CAP32_PLATFORM = rpi4_64
 
 else ifeq ($(BR2_cortex_a35)$(BR2_cortex_a53)$(BR2_arm),yy)

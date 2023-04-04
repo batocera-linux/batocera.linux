@@ -7,18 +7,19 @@ import os
 import configparser
 import io
 import re
+import shutil
 from shutil import copyfile
 
 class SupermodelGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        commandArray = ["supermodel", "-fullscreen"]
+        commandArray = ["supermodel", "-fullscreen", "-channels=2"]
         
         # legacy3d
-        if system.isOptSet("engine3D") and system.config["engine3D"] == "legacy3d":
-            commandArray.append("-legacy3d")
-        else:
+        if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
             commandArray.append("-new3d")
+        else:
+             commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
         
         # widescreen
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
@@ -32,6 +33,12 @@ class SupermodelGenerator(Generator):
         # crosshairs
         if system.isOptSet("crosshairs"):
             commandArray.append("-crosshairs={}".format(system.config["crosshairs"]))
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                if len(guns) == 1:
+                    commandArray.append("-crosshairs={}".format("1"))
+                else:
+                    commandArray.append("-crosshairs={}".format("3"))
 
         # force feedback
         if system.isOptSet("forceFeedback") and system.getOptBoolean("forceFeedback"):
@@ -56,10 +63,16 @@ class SupermodelGenerator(Generator):
         # copy nvram files
         copy_nvram_files()
 
-        # config
-        configPadsIni(playersControllers, drivingGame)
+        # copy gun asset files
+        copy_asset_files()
 
-        return Command.Command(array=commandArray)
+        # copy xml
+        copy_xml()
+
+        # config
+        configPadsIni(system, playersControllers, guns, drivingGame)
+
+        return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
 
 def copy_nvram_files():
     sourceDir = "/usr/share/supermodel/NVRAM"
@@ -67,14 +80,44 @@ def copy_nvram_files():
     if not os.path.exists(targetDir):
         os.makedirs(targetDir)
 
-    # create nv files which are in source and not in target
+    # create nv files which are in source and have a newer modification time than in target
     for file in os.listdir(sourceDir):
         extension = os.path.splitext(file)[1][1:]
         if extension == "nv":
-            if not os.path.exists(targetDir + "/" + file):
-                copyfile(sourceDir + "/" + file, targetDir + "/" + file)
+            sourceFile = os.path.join(sourceDir, file)
+            targetFile = os.path.join(targetDir, file)
+            if not os.path.exists(targetFile):
+                # if the target file doesn't exist, just copy the source file
+                copyfile(sourceFile, targetFile)
+            else:
+                # if the target file exists and has an older modification time than the source file, create a backup and copy the new file
+                if os.path.getmtime(sourceFile) > os.path.getmtime(targetFile):
+                    backupFile = targetFile + ".bak"
+                    if os.path.exists(backupFile):
+                        os.remove(backupFile)
+                    os.rename(targetFile, backupFile)
+                    copyfile(sourceFile, targetFile)
 
-def configPadsIni(playersControllers, altControl):
+def copy_asset_files():
+    sourceDir = "/usr/share/supermodel/Assets"
+    targetDir = "/userdata/system/configs/supermodel/Assets"
+    if not os.path.exists(targetDir):
+        os.makedirs(targetDir)
+
+    # create asset files which are in source and have a newer modification time than in target
+    for file in os.listdir(sourceDir):
+        sourceFile = os.path.join(sourceDir, file)
+        targetFile = os.path.join(targetDir, file)
+        if not os.path.exists(targetFile) or os.path.getmtime(sourceFile) > os.path.getmtime(targetFile):
+            copyfile(sourceFile, targetFile)
+
+def copy_xml():
+    source_path = '/usr/share/supermodel/Games.xml'
+    dest_path = '/userdata/system/configs/supermodel/Games.xml'
+    if not os.path.exists(dest_path) or os.path.getmtime(source_path) > os.path.getmtime(dest_path):
+        shutil.copy2(source_path, dest_path)
+
+def configPadsIni(system, playersControllers, guns, altControl):
     if bool(altControl):
         templateFile = "/usr/share/supermodel/Supermodel-Driving.ini.template"
         mapping = {
@@ -150,6 +193,45 @@ def configPadsIni(playersControllers, altControl):
         targetConfig.add_section(section)
         for key, value in templateConfig.items(section):
             targetConfig.set(section, key, transformValue(value, playersControllers, mapping, mapping_fallback))
+
+    # apply guns
+    for section in targetConfig.sections():
+        for key, value in targetConfig.items(section):
+            if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+                if key == "InputSystem":
+                    targetConfig.set(section, key, "evdev")
+                elif key == "InputGunX" or key == "InputAnalogGunX":
+                    targetConfig.set(section, key, "MOUSE1_XAXIS")
+                elif key == "InputGunY" or key == "InputAnalogGunY":
+                    targetConfig.set(section, key, "MOUSE1_YAXIS")
+                elif key == "InputTrigger" or key == "InputAnalogTriggerLeft":
+                    targetConfig.set(section, key, "MOUSE1_LEFT_BUTTON")
+                elif key == "InputOffscreen" or key == "InputAnalogTriggerRight":
+                    targetConfig.set(section, key, "MOUSE1_RIGHT_BUTTON")
+                elif key == "InputStart1":
+                    targetConfig.set(section, key, "MOUSE1_BUTTONX1,JOY1_BUTTON9")
+                elif key == "InputCoin1":
+                    targetConfig.set(section, key, "MOUSE1_BUTTONX2,JOY1_BUTTON10")
+                elif key == "InputAnalogJoyEvent":
+                    targetConfig.set(section, key, "KEY_S,JOY_BUTTON2,MOUSE1_MIDDLE_BUTTON")
+                elif len(guns) >= 2:
+                    if key == "InputGunX2" or key == "InputAnalogGunX2":
+                        targetConfig.set(section, key, "MOUSE2_XAXIS")
+                    elif key == "InputGunY2" or key == "InputAnalogGunY2":
+                        targetConfig.set(section, key, "MOUSE2_YAXIS")
+                    elif key == "InputTrigger2" or key == "InputAnalogTriggerLeft2":
+                        targetConfig.set(section, key, "MOUSE2_LEFT_BUTTON")
+                    elif key == "InputOffscreen2" or key == "InputAnalogTriggerRight2":
+                        targetConfig.set(section, key, "MOUSE2_RIGHT_BUTTON")
+                    elif key == "InputStart2":
+                        targetConfig.set(section, key, "MOUSE2_BUTTONX1,JOY2_BUTTON9")
+                    elif key == "InputCoin1":
+                        targetConfig.set(section, key, "MOUSE2_BUTTONX2,JOY1_BUTTON10")
+                    elif key == "InputAnalogJoyEvent2":
+                        targetConfig.set(section, key, "JOY2_BUTTON2,MOUSE2_MIDDLE_BUTTON")
+            else:
+                if key == "InputSystem":
+                    targetConfig.set(section, key, "sdl")
 
     # save the ini file
     if not os.path.exists(os.path.dirname(targetFile)):

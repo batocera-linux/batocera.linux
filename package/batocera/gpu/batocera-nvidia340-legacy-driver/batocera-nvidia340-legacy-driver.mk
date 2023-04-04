@@ -29,14 +29,15 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext 
 #batocera generic GL libraries are provided by libglvnd
 #batocera only vendor version are installed
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GL = \
-	libGLX_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	libGL.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
+	libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_EGL = \
-	libEGL_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	libEGL.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GLES = \
-	libGLESv1_CM_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libGLESv2_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	libGLESv1_CM.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
+	libGLESv2.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 #batocera libnvidia-egl-wayland soname bump
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_MISC = \
@@ -45,8 +46,7 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GL) \
@@ -54,9 +54,12 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GLES) \
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_MISC)
 
+BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GL_32 = \
+	libGL.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+
 # batocera 32bit libraries
 BATOCERA_NVIDIA340_LEGACY_DRIVER_32 = \
-	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GL) \
+	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GL_32) \
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_EGL) \
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_GLES) \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
@@ -64,8 +67,7 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_32 = \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 # Install the gl.pc file
 define BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_GL_DEV
@@ -118,21 +120,22 @@ endif
 # Build and install the kernel modules if needed
 ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULE),y)
 
-BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULES = nvidia nvidia-modeset nvidia-drm
+BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULES = nvidia
 ifeq ($(BR2_x86_64),y)
-BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULES += nvidia-uvm
+BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULES += uvm
 endif
 
 # They can't do everything like everyone. They need those variables,
 # because they don't recognise the usual variables set by the kernel
 # build system. We also need to tell them what modules to build.
 BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULE_MAKE_OPTS = \
-	NV_KERNEL_SOURCES="$(LINUX_DIR)" \
-	NV_KERNEL_OUTPUT="$(LINUX_DIR)" \
+	KERNEL_SOURCES="$(LINUX_DIR)" \
+	KERNEL_OUTPUT="$(LINUX_DIR)" \
 	NV_KERNEL_MODULES="$(BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULES)" \
 	IGNORE_CC_MISMATCH="1"
 
-BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULE_SUBDIRS = kernel
+BATOCERA_NVIDIA340_LEGACY_DRIVER_MODULE_SUBDIRS = kernel \
+	kernel/uvm
 
 $(eval $(kernel-module))
 
@@ -180,21 +183,17 @@ define BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia340_legacy_drv.so
 	$(INSTALL) -D -m 0644 $(@D)/libnvidia-wfb.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/drivers/libnvidia-wfb.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
+	        $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 	$(foreach p,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_PROGS), \
 		$(INSTALL) -D -m 0755 $(@D)/$(p) \
 			$(TARGET_DIR)/usr/bin/$(p)
 	)
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/batocera-nvidia340-legacy-driver/20-nvidia.conf \
+		$(TARGET_DIR)/usr/share/nvidia/X11/20-nvidia.conf
 	$(BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_KERNEL_MODULE)
-
-# batocera install files needed by libglvnd
-	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
-		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia340_legacy.json
-
-	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
-		$(TARGET_DIR)/usr/share/X11/xorg.conf.d/10-nvidia340-legacy-drm-outputclass.conf
-
-	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 endef
 
@@ -207,10 +206,6 @@ define BATOCERA_NVIDIA340_LEGACY_DRIVER_RENAME_KERNEL_MODULES
     # rename the kernel modules to avoid conflict
 	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia340-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-modeset.ko \
-	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia340-modeset-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-drm.ko \
-	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia340-drm-legacy.ko	
 	mv -f $(TARGET_DIR)/lib/modules/$(KVER)/extra/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia340-uvm-legacy.ko
 	# set the driver version file

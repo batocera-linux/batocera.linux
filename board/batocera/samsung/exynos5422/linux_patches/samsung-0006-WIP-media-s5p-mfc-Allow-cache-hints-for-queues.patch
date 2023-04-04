@@ -1,0 +1,36 @@
+From f07c3dc233b36997c3dcd679fa24fb4040a57d4f Mon Sep 17 00:00:00 2001
+From: Pavel Golikov <Paullo612@ya.ru>
+Date: Fri, 24 Jun 2022 15:56:05 +0000
+Subject: [PATCH 06/21] WIP: media: s5p-mfc: Allow cache hints for queues
+
+Passing V4L2_MEMORY_FLAG_NON_COHERENT from userspace significantly
+improves video rendering performance on Exynos 5422 (Odroid XU4).
+
+Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
+---
+ drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+index 761341934925..e33863d9ae2d 100644
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+@@ -861,6 +861,7 @@ static int s5p_mfc_open(struct file *file)
+ 	q->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES;
+ 	q->mem_ops = &vb2_dma_contig_memops;
+ 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
++	q->allow_cache_hints = 1;
+ 	ret = vb2_queue_init(q);
+ 	if (ret) {
+ 		mfc_err("Failed to initialize videobuf2 queue(capture)\n");
+@@ -896,6 +897,7 @@ static int s5p_mfc_open(struct file *file)
+ 	q->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES;
+ 	q->mem_ops = &vb2_dma_contig_memops;
+ 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
++	q->allow_cache_hints = 1;
+ 	ret = vb2_queue_init(q);
+ 	if (ret) {
+ 		mfc_err("Failed to initialize videobuf2 queue(output)\n");
+-- 
+2.17.1
+

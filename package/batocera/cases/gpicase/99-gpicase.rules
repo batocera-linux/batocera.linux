@@ -1,0 +1,1 @@
+SUBSYSTEM=="usb", ATTR{manufacturer}=="RetroFlag", ATTR{product}=="GPi Case", RUN+="/usr/bin/batocera-gpicase-install", RUN+="/bin/sh -c '/bin/echo RETROFLAG_GPI > /var/run/powerswitch-by-udevrule'", RUN+="/bin/sh -c '/bin/echo display.rotate=1 > /usr/share/batocera/sysconfigs/batocera.conf.Raspberry_Pi_Zero_2_W_Rev_1_0'"

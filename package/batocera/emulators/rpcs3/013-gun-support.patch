@@ -1,0 +1,625 @@
+From f50087582c14e8dbfbe59d490740a499dc4682a6 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Fri, 3 Feb 2023 07:31:24 +0000
+Subject: [PATCH] gun support
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ rpcs3/CMakeLists.txt               |   1 +
+ rpcs3/Emu/Cell/Modules/cellGem.cpp |  97 +++++++++-
+ rpcs3/Emu/System.cpp               |   4 +
+ rpcs3/Emu/system_config_types.cpp  |   1 +
+ rpcs3/Emu/system_config_types.h    |   1 +
+ rpcs3/Input/evdev_gun_handler.cpp  | 282 +++++++++++++++++++++++++++++
+ rpcs3/Input/evdev_gun_handler.h    |  61 +++++++
+ rpcs3/rpcs3qt/emu_settings.cpp     |   1 +
+ rpcs3/rpcs3qt/gs_frame.cpp         |   2 +-
+ 9 files changed, 446 insertions(+), 4 deletions(-)
+ create mode 100644 rpcs3/Input/evdev_gun_handler.cpp
+ create mode 100644 rpcs3/Input/evdev_gun_handler.h
+
+diff --git a/rpcs3/CMakeLists.txt b/rpcs3/CMakeLists.txt
+index a7cb0f8..355a1ae 100644
+--- a/rpcs3/CMakeLists.txt
++++ b/rpcs3/CMakeLists.txt
+@@ -66,6 +66,7 @@ set(RPCS3_SRC
+     Input/ds4_pad_handler.cpp
+     Input/dualsense_pad_handler.cpp
+     Input/evdev_joystick_handler.cpp
++    Input/evdev_gun_handler.cpp
+     Input/hid_pad_handler.cpp
+     Input/keyboard_pad_handler.cpp
+     Input/mm_joystick_handler.cpp
+diff --git a/rpcs3/Emu/Cell/Modules/cellGem.cpp b/rpcs3/Emu/Cell/Modules/cellGem.cpp
+index 111c05c..e42edd9 100644
+--- a/rpcs3/Emu/Cell/Modules/cellGem.cpp
++++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp
+@@ -11,6 +11,7 @@
+ #include "Emu/IdManager.h"
+ #include "Emu/RSX/Overlays/overlay_cursor.h"
+ #include "Input/pad_thread.h"
++#include "Input/evdev_gun_handler.h"
+ 
+ #include <cmath> // for fmod
+ 
+@@ -214,6 +215,11 @@ public:
+ 			connected_controllers = 1;
+ 			break;
+ 		}
++		case move_handler::gun:
++		{
++			connected_controllers = evdev_gun_handler::getInstance()->getNumGuns();
++			break;
++		}
+ 		case move_handler::null:
+ 		default:
+ 			break;
+@@ -851,6 +857,78 @@ static void mouse_pos_to_gem_state(const u32 mouse_no, const gem_config::gem_con
+ 	pos_to_gem_state(mouse_no, controller, gem_state, mouse.x_pos, mouse.y_pos, mouse.x_max, mouse.y_max);
+ }
+ 
++static bool gun_input_to_pad(const u32 gem_no, be_t<u16>& digital_buttons, be_t<u16>& analog_t)
++{
++  digital_buttons = 0;
++  analog_t = 0;
++
++  if (!is_input_allowed()) {
++    return false;
++  }
++
++  evdev_gun_handler *gh = evdev_gun_handler::getInstance();
++  gh->pool();
++
++  digital_buttons = 0;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_LEFT) == 1)
++    digital_buttons |= CELL_GEM_CTRL_T;
++  
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_RIGHT) == 1)
++    digital_buttons |= CELL_GEM_CTRL_MOVE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_MIDDLE) == 1)
++    digital_buttons |= CELL_GEM_CTRL_START;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN1) == 1)
++    digital_buttons |= CELL_GEM_CTRL_CROSS;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN2) == 1)
++    digital_buttons |= CELL_GEM_CTRL_CIRCLE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN5) == 1)
++    digital_buttons |= CELL_GEM_CTRL_TRIANGLE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN6) == 1)
++    digital_buttons |= CELL_GEM_CTRL_SQUARE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN7) == 1)
++    digital_buttons |= CELL_GEM_CTRL_SELECT;
++
++  analog_t = (gh->getButton(gem_no, EVDEV_GUN_BUTTON_LEFT) == 1) ? 0xFFFF : 0;
++  return true;
++}
++
++static void gun_pos_to_gem_image_state(const u32 gem_no, const gem_config::gem_controller& controller, vm::ptr<CellGemImageState>& gem_image_state)
++{
++  if (!gem_image_state || !is_input_allowed()) {
++    return;
++  }
++
++  evdev_gun_handler *gh = evdev_gun_handler::getInstance();
++  int x_pos = gh->getAxisX(gem_no);
++  int y_pos = gh->getAxisY(gem_no);
++  int x_max = gh->getAxisXMax(gem_no);
++  int y_max = gh->getAxisYMax(gem_no);
++
++  pos_to_gem_image_state(gem_no, controller, gem_image_state, x_pos, y_pos, x_max, y_max);
++}
++
++static void gun_pos_to_gem_state(const u32 gem_no, const gem_config::gem_controller& controller, vm::ptr<CellGemState>& gem_state)
++{
++  if (!gem_state || !is_input_allowed()) {
++    return;
++  }
++
++  evdev_gun_handler *gh = evdev_gun_handler::getInstance();
++  int x_pos = gh->getAxisX(gem_no);
++  int y_pos = gh->getAxisY(gem_no);
++  int x_max = gh->getAxisXMax(gem_no);
++  int y_max = gh->getAxisYMax(gem_no);
++
++  pos_to_gem_state(gem_no, controller, gem_state, x_pos, y_pos, x_max, y_max);
++}
++
+ // *********************
+ // * cellGem functions *
+ // *********************
+@@ -1232,7 +1310,7 @@ error_code cellGemGetImageState(u32 gem_num, vm::ptr<CellGemImageState> gem_imag
+ 
+ 	*gem_image_state = {};
+ 
+-	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse)
++	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse || g_cfg.io.move == move_handler::gun)
+ 	{
+ 		auto& shared_data = g_fxo->get<gem_camera_shared>();
+ 		gem_image_state->frame_timestamp = shared_data.frame_timestamp.load();
+@@ -1250,6 +1328,10 @@ error_code cellGemGetImageState(u32 gem_num, vm::ptr<CellGemImageState> gem_imag
+ 		{
+ 			mouse_pos_to_gem_image_state(gem_num, gem.controllers[gem_num], gem_image_state);
+ 		}
++		else if (g_cfg.io.move == move_handler::gun)
++		{
++			gun_pos_to_gem_image_state(gem_num, gem.controllers[gem_num], gem_image_state);
++		}
+ 	}
+ 
+ 	return CELL_OK;
+@@ -1280,7 +1362,7 @@ error_code cellGemGetInertialState(u32 gem_num, u32 state_flag, u64 timestamp, v
+ 
+ 	*inertial_state = {};
+ 
+-	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse)
++	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse || g_cfg.io.move == move_handler::gun)
+ 	{
+ 		ds3_input_to_ext(gem_num, gem.controllers[gem_num], inertial_state->ext);
+ 
+@@ -1296,6 +1378,10 @@ error_code cellGemGetInertialState(u32 gem_num, u32 state_flag, u64 timestamp, v
+ 		{
+ 			mouse_input_to_pad(gem_num, inertial_state->pad.digitalbuttons, inertial_state->pad.analog_T);
+ 		}
++ 		else if (g_cfg.io.move == move_handler::gun)
++		{
++			gun_input_to_pad(gem_num, inertial_state->pad.digitalbuttons, inertial_state->pad.analog_T);
++		}
+ 	}
+ 
+ 	return CELL_OK;
+@@ -1442,7 +1528,7 @@ error_code cellGemGetState(u32 gem_num, u32 flag, u64 time_parameter, vm::ptr<Ce
+ 
+ 	*gem_state = {};
+ 
+-	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse)
++	if (g_cfg.io.move == move_handler::fake || g_cfg.io.move == move_handler::mouse || g_cfg.io.move == move_handler::gun)
+ 	{
+ 		ds3_input_to_ext(gem_num, gem.controllers[gem_num], gem_state->ext);
+ 
+@@ -1466,6 +1552,11 @@ error_code cellGemGetState(u32 gem_num, u32 flag, u64 time_parameter, vm::ptr<Ce
+ 			mouse_input_to_pad(gem_num, gem_state->pad.digitalbuttons, gem_state->pad.analog_T);
+ 			mouse_pos_to_gem_state(gem_num, gem.controllers[gem_num], gem_state);
+ 		}
++		else if (g_cfg.io.move == move_handler::gun)
++		{
++			gun_input_to_pad(gem_num, gem_state->pad.digitalbuttons, gem_state->pad.analog_T);
++			gun_pos_to_gem_state(gem_num, gem.controllers[gem_num], gem_state);
++		}
+ 	}
+ 
+ 	if (false) // TODO: check if we are computing colors
+diff --git a/rpcs3/Emu/System.cpp b/rpcs3/Emu/System.cpp
+index 5af75bc..1c0d510 100644
+--- a/rpcs3/Emu/System.cpp
++++ b/rpcs3/Emu/System.cpp
+@@ -9,6 +9,7 @@
+ #include "Emu/perf_monitor.hpp"
+ #include "Emu/vfs_config.h"
+ #include "Emu/IPC_config.h"
++#include "Input/evdev_gun_handler.h"
+ 
+ #include "Emu/Cell/ErrorCodes.h"
+ #include "Emu/Cell/PPUThread.h"
+@@ -2706,6 +2707,9 @@ void Emulator::CleanUp()
+ {
+ 	// Deinitialize object manager to prevent any hanging objects at program exit
+ 	g_fxo->clear();
++
++	// deinitialize gun
++	evdev_gun_handler::shutdown();
+ }
+ 
+ std::string Emulator::GetFormattedTitle(double fps) const
+diff --git a/rpcs3/Emu/system_config_types.cpp b/rpcs3/Emu/system_config_types.cpp
+index 2540a72..f28d5c9 100644
+--- a/rpcs3/Emu/system_config_types.cpp
++++ b/rpcs3/Emu/system_config_types.cpp
+@@ -412,6 +412,7 @@ void fmt_class_string<move_handler>::format(std::string& out, u64 arg)
+ 		case move_handler::null: return "Null";
+ 		case move_handler::fake: return "Fake";
+ 		case move_handler::mouse: return "Mouse";
++		case move_handler::gun: return "Gun";
+ 		}
+ 
+ 		return unknown;
+diff --git a/rpcs3/Emu/system_config_types.h b/rpcs3/Emu/system_config_types.h
+index b708fce..f649447 100644
+--- a/rpcs3/Emu/system_config_types.h
++++ b/rpcs3/Emu/system_config_types.h
+@@ -128,6 +128,7 @@ enum class move_handler
+ 	null,
+ 	fake,
+ 	mouse,
++	gun
+ };
+ 
+ enum class buzz_handler
+diff --git a/rpcs3/Input/evdev_gun_handler.cpp b/rpcs3/Input/evdev_gun_handler.cpp
+new file mode 100644
+index 0000000..87f536f
+--- /dev/null
++++ b/rpcs3/Input/evdev_gun_handler.cpp
+@@ -0,0 +1,282 @@
++// This makes debugging on windows less painful
++//#define HAVE_LIBEVDEV
++
++#ifdef HAVE_LIBEVDEV
++
++#include "evdev_gun_handler.h"
++#include <libudev.h>
++#include <fcntl.h>
++#include <linux/input.h>
++
++LOG_CHANNEL(evdev_log, "evdev");
++
++evdev_gun_handler* evdev_gun_handler_instance = NULL;
++
++evdev_gun_handler* evdev_gun_handler::getInstance() {
++  if(evdev_gun_handler_instance != NULL) return evdev_gun_handler_instance;
++  evdev_gun_handler_instance = new evdev_gun_handler();
++  evdev_gun_handler_instance->init();
++  return evdev_gun_handler_instance;
++}
++
++struct event_udev_entry
++{
++   const char *devnode;
++   struct udev_list_entry *item;
++};
++
++int event_isNumber(const char *s) {
++  size_t n;
++
++  if(strlen(s) == 0) {
++    return 0;
++  }
++
++  for(n=0; n<strlen(s); n++) {
++    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
++         s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++      return 0;
++  }
++  return 1;
++}
++
++// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
++int event_strcmp_events(const char* x, const char* y) {
++
++  // find a common string
++  int n, common, is_number;
++  int a, b;
++
++  n=0;
++  while(x[n] == y[n] && x[n] != '\0' && y[n] != '\0') {
++    n++;
++  }
++  common = n;
++
++  // check if remaining string is a number
++  is_number = 1;
++  if(event_isNumber(x+common) == 0) is_number = 0;
++  if(event_isNumber(y+common) == 0) is_number = 0;
++
++  if(is_number == 1) {
++    a = atoi(x+common);
++    b = atoi(y+common);
++
++    if(a == b) return  0;
++    if(a < b)  return -1;
++    return 1;
++  } else {
++    return strcmp(x, y);
++  }
++}
++
++/* Used for sorting devnodes to appear in the correct order */
++static int sort_devnodes(const void *a, const void *b)
++{
++  const struct event_udev_entry *aa = static_cast<const struct event_udev_entry*>(a);
++  const struct event_udev_entry *bb = static_cast<const struct event_udev_entry*>(b);
++  return event_strcmp_events(aa->devnode, bb->devnode);
++}
++
++evdev_gun_handler::evdev_gun_handler()
++{
++  m_is_init = false;
++  m_ndevices = 0;
++}
++
++evdev_gun_handler::~evdev_gun_handler()
++{
++  for(int i=0; i<m_ndevices; i++) {
++    close(m_devices[i]);
++  }
++  if (m_udev != NULL) udev_unref(m_udev);
++  m_ndevices = 0;
++  m_is_init = false;
++  evdev_log.notice("Lightgun: Shutdown udev initialization");
++}
++
++int evdev_gun_handler::getButton(int gunno, int button) {
++  return m_devices_buttons[gunno][button];
++}
++
++int evdev_gun_handler::getAxisX(int gunno) {
++  return m_devices_axis[gunno][0][EVDEV_GUN_AXIS_VALS_CURRENT] - m_devices_axis[gunno][0][EVDEV_GUN_AXIS_VALS_MIN];
++}
++
++int evdev_gun_handler::getAxisY(int gunno) {
++  return m_devices_axis[gunno][1][EVDEV_GUN_AXIS_VALS_CURRENT] - m_devices_axis[gunno][1][EVDEV_GUN_AXIS_VALS_MIN];
++}
++
++int evdev_gun_handler::getAxisXMax(int gunno) {
++  return m_devices_axis[gunno][0][EVDEV_GUN_AXIS_VALS_MAX] - m_devices_axis[gunno][0][EVDEV_GUN_AXIS_VALS_MIN];
++}
++
++int evdev_gun_handler::getAxisYMax(int gunno) {
++  return m_devices_axis[gunno][1][EVDEV_GUN_AXIS_VALS_MAX] - m_devices_axis[gunno][1][EVDEV_GUN_AXIS_VALS_MIN];
++}
++
++void evdev_gun_handler::pool() {
++  struct input_event input_events[32];
++  int j, len;
++
++  for(int i=0; i<m_ndevices; i++) {
++    while ((len = read(m_devices[i], input_events, sizeof(input_events))) > 0) {
++      len /= sizeof(*input_events);
++      for (j = 0; j < len; j++) {
++	if(input_events[j].type == EV_KEY) {
++	  switch(input_events[j].code) {
++	  case BTN_LEFT:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_LEFT] = input_events[j].value;
++	    break;
++	  case BTN_RIGHT:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_RIGHT] = input_events[j].value;
++	    break;
++	  case BTN_MIDDLE:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_MIDDLE] = input_events[j].value;
++	    break;
++	  case BTN_1:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN1] = input_events[j].value;
++	    break;
++	  case BTN_2:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN2] = input_events[j].value;
++	    break;
++	  case BTN_3:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN3] = input_events[j].value;
++	    break;
++	  case BTN_4:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN4] = input_events[j].value;
++	    break;
++	  case BTN_5:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN5] = input_events[j].value;
++	    break;
++	  case BTN_6:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN6] = input_events[j].value;
++	    break;
++	  case BTN_7:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN7] = input_events[j].value;
++	    break;
++	  case BTN_8:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN8] = input_events[j].value;
++	    break;
++	  }
++	} else if(input_events[j].type == EV_ABS) {
++	  if(input_events[j].code == ABS_X) {
++	    m_devices_axis[i][0][EVDEV_GUN_AXIS_VALS_CURRENT] = input_events[j].value;
++	  } else if(input_events[j].code == ABS_Y) {
++	    m_devices_axis[i][1][EVDEV_GUN_AXIS_VALS_CURRENT] = input_events[j].value;
++	  }
++	}
++      }
++    }
++  }
++}
++
++int evdev_gun_handler::getNumGuns() {
++  return m_ndevices;
++}
++
++void evdev_gun_handler::shutdown() {
++  if(evdev_gun_handler_instance != NULL) {
++    delete evdev_gun_handler_instance;
++    evdev_gun_handler_instance = NULL;
++  }
++}
++
++bool evdev_gun_handler::init()
++{
++  if (m_is_init)
++    return true;
++
++  struct udev_enumerate *enumerate;
++  struct udev_list_entry     *devs = NULL;
++  struct udev_list_entry     *item = NULL;
++  unsigned sorted_count = 0;
++  struct event_udev_entry sorted[8]; // max devices
++  unsigned int i;
++
++  evdev_log.notice("Lightgun: Begin udev initialization");
++
++  m_udev = udev_new();
++  if(m_udev == NULL) return false;
++
++  enumerate = udev_enumerate_new(m_udev);
++
++  if (enumerate != NULL) {
++    udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++    udev_enumerate_add_match_subsystem(enumerate, "input");
++    udev_enumerate_scan_devices(enumerate);
++    devs = udev_enumerate_get_list_entry(enumerate);
++
++    for (item = devs; item; item = udev_list_entry_get_next(item)) {
++      const char         *name = udev_list_entry_get_name(item);
++      struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
++      const char      *devnode = udev_device_get_devnode(dev);
++
++      if (devnode != NULL && sorted_count < 8) {
++	sorted[sorted_count].devnode = devnode;
++	sorted[sorted_count].item = item;
++	sorted_count++;
++      } else {
++	udev_device_unref(dev);
++      }
++    }
++
++    /* Sort the udev entries by devnode name so that they are
++     * created in the proper order */
++    qsort(sorted, sorted_count,
++	  sizeof(struct event_udev_entry), sort_devnodes);
++
++    for (i = 0; i < sorted_count; i++) {
++      if(m_ndevices >= EVDEV_GUN_MAX_DEVICES) break;
++      
++      const char *name = udev_list_entry_get_name(sorted[i].item);
++      /* Get the filename of the /sys entry for the device
++       * and create a udev_device object (dev) representing it. */
++      struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
++      evdev_log.notice("Lightgun: found device %s", name);
++      const char *devnode = udev_device_get_devnode(dev);
++
++      if(devnode) {
++	struct input_absinfo absx, absy;
++	int valid = 0;
++	int fd = open(devnode, O_RDONLY | O_NONBLOCK);
++	if (fd != -1) {
++	  for(int b=0; b<EVDEV_GUN_BUTTON_MAX; b++) {
++	    m_devices_buttons[m_ndevices][b] = 0;
++	  }
++	  for(int a=0; a<3; a++) {
++	    m_devices_axis[m_ndevices][0][a] = 0;
++	    m_devices_axis[m_ndevices][1][a] = 0;
++	  }
++	  if (ioctl(fd, EVIOCGABS(ABS_X), &absx) >= 0) {
++            if (ioctl(fd, EVIOCGABS(ABS_Y), &absy) >= 0) {
++	      evdev_log.notice("Lightgun: device %s, absx(%i, %i), absy(%i, %i)", name, absx.minimum, absx.maximum, absy.minimum, absy.maximum);
++
++	      m_devices_axis[m_ndevices][0][EVDEV_GUN_AXIS_VALS_MIN] = absx.minimum;
++	      m_devices_axis[m_ndevices][0][EVDEV_GUN_AXIS_VALS_MAX] = absx.maximum;
++	      m_devices_axis[m_ndevices][1][EVDEV_GUN_AXIS_VALS_MIN] = absy.minimum;
++	      m_devices_axis[m_ndevices][1][EVDEV_GUN_AXIS_VALS_MAX] = absy.maximum;
++	      valid = 1;
++	    }
++	  }
++
++	  if(valid == 1) {
++	    evdev_log.notice("Lightgun: device %s set as gun %i", name, m_ndevices);
++	    m_devices[m_ndevices++] = fd;
++	  } else {
++	    evdev_log.notice("Lightgun: device %s not valid. abs_x and abs_y not found", name);
++	    close(fd);
++	  }
++	}
++      }
++      udev_device_unref(dev);
++    }
++    udev_enumerate_unref(enumerate);
++    return true;
++  }
++
++  m_is_init = true;
++  return true;
++}
++
++#endif
+diff --git a/rpcs3/Input/evdev_gun_handler.h b/rpcs3/Input/evdev_gun_handler.h
+new file mode 100644
+index 0000000..ace387b
+--- /dev/null
++++ b/rpcs3/Input/evdev_gun_handler.h
+@@ -0,0 +1,61 @@
++#pragma once
++#ifdef HAVE_LIBEVDEV
++
++#include "util/types.hpp"
++#include "util/logs.hpp"
++
++#define EVDEV_GUN_MAX_DEVICES 8
++
++enum evdev_gun_buttons {
++  EVDEV_GUN_BUTTON_LEFT,
++  EVDEV_GUN_BUTTON_RIGHT,
++  EVDEV_GUN_BUTTON_MIDDLE,
++  EVDEV_GUN_BUTTON_BTN1,
++  EVDEV_GUN_BUTTON_BTN2,
++  EVDEV_GUN_BUTTON_BTN3,
++  EVDEV_GUN_BUTTON_BTN4,
++  EVDEV_GUN_BUTTON_BTN5,
++  EVDEV_GUN_BUTTON_BTN6,
++  EVDEV_GUN_BUTTON_BTN7,
++  EVDEV_GUN_BUTTON_BTN8,
++  EVDEV_GUN_BUTTON_MAX,
++};
++
++enum evdev_gun_axis_vals {
++  EVDEV_GUN_AXIS_VALS_MIN,
++  EVDEV_GUN_AXIS_VALS_CURRENT,
++  EVDEV_GUN_AXIS_VALS_MAX,
++};
++
++
++
++class evdev_gun_handler
++{
++public:
++  evdev_gun_handler();
++  ~evdev_gun_handler();
++
++  static evdev_gun_handler* getInstance();
++  static void shutdown();
++
++  bool init();
++
++  int getNumGuns();
++  int getButton(int gunno, int button);
++  int getAxisX(int gunno);
++  int getAxisY(int gunno);
++  int getAxisXMax(int gunno);
++  int getAxisYMax(int gunno);
++
++  void pool();
++
++private:
++  bool m_is_init;
++  struct udev *m_udev = NULL;
++  int m_devices[EVDEV_GUN_MAX_DEVICES];
++  int m_devices_buttons[EVDEV_GUN_MAX_DEVICES][EVDEV_GUN_BUTTON_MAX];
++  int m_devices_axis[EVDEV_GUN_MAX_DEVICES][2][3];
++  int m_ndevices;
++};
++
++#endif
+diff --git a/rpcs3/rpcs3qt/emu_settings.cpp b/rpcs3/rpcs3qt/emu_settings.cpp
+index 06492bd..a2e917e 100644
+--- a/rpcs3/rpcs3qt/emu_settings.cpp
++++ b/rpcs3/rpcs3qt/emu_settings.cpp
+@@ -1057,6 +1057,7 @@ QString emu_settings::GetLocalizedSetting(const QString& original, emu_settings_
+ 		case move_handler::null: return tr("Null", "Move handler");
+ 		case move_handler::fake: return tr("Fake", "Move handler");
+ 		case move_handler::mouse: return tr("Mouse", "Move handler");
++		case move_handler::gun: return tr("Gun", "Gun handler");
+ 		}
+ 		break;
+ 	case emu_settings_type::Buzz:
+diff --git a/rpcs3/rpcs3qt/gs_frame.cpp b/rpcs3/rpcs3qt/gs_frame.cpp
+index 53a60e7..03b20e5 100644
+--- a/rpcs3/rpcs3qt/gs_frame.cpp
++++ b/rpcs3/rpcs3qt/gs_frame.cpp
+@@ -808,7 +808,7 @@ void gs_frame::take_screenshot(std::vector<u8> data, const u32 sshot_width, cons
+ 
+ void gs_frame::mouseDoubleClickEvent(QMouseEvent* ev)
+ {
+-	if (m_disable_mouse || g_cfg.io.move == move_handler::mouse) return;
++	if (m_disable_mouse || g_cfg.io.move == move_handler::mouse || g_cfg.io.move == move_handler::gun) return;
+ 
+ 	if (ev->button() == Qt::LeftButton)
+ 	{
+-- 
+2.34.1
+

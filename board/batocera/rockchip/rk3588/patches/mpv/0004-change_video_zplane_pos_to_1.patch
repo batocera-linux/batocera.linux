@@ -1,0 +1,32 @@
+From 1e56883f010c911d4f57dc887d68410f09396f9e Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Thu, 23 Mar 2023 14:16:12 +0100
+Subject: [PATCH] vo_gpu: hwdec_drmprime_drm: Change video plane zpos to 1
+
+The behavior of having same zpos with primary plane is undefined.
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+
+Adapted to new mkv version.
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ video/out/hwdec/hwdec_drmprime_overlay.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/video/out/hwdec/hwdec_drmprime_overlay.c b/video/out/hwdec/hwdec_drmprime_overlay.c
+index f2eaba7..707b205 100644
+--- a/video/out/hwdec/hwdec_drmprime_overlay.c
++++ b/video/out/hwdec/hwdec_drmprime_overlay.c
+@@ -200,7 +200,7 @@ static int overlay_frame(struct ra_hwdec *hw, struct mp_image *hw_image,
+                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_Y",  MP_ALIGN_DOWN(p->dst.y0, 2));
+                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_W",  dstw);
+                 drm_object_set_property(request, p->ctx->drmprime_video_plane, "CRTC_H",  dsth);
+-                drm_object_set_property(request, p->ctx->drmprime_video_plane, "ZPOS",    0);
++                drm_object_set_property(request, p->ctx->drmprime_video_plane, "ZPOS",    1);
+             } else {
+                 ret = drmModeSetPlane(p->ctx->fd, p->ctx->drmprime_video_plane->id, p->ctx->crtc->id, next_frame.fb.fb_id, 0,
+                                       MP_ALIGN_DOWN(p->dst.x0, 2), MP_ALIGN_DOWN(p->dst.y0, 2), dstw, dsth,
+-- 
+2.30.2
+

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI19_RESOURCE_LANGUAGE_ES_ES_VERSION = 9.0.43
+KODI19_RESOURCE_LANGUAGE_ES_ES_VERSION = 9.0.44
 KODI19_RESOURCE_LANGUAGE_ES_ES_SOURCE = resource.language.es_es-$(KODI19_RESOURCE_LANGUAGE_ES_ES_VERSION).zip
 KODI19_RESOURCE_LANGUAGE_ES_ES_SITE = http://mirrors.kodi.tv/addons/matrix/resource.language.es_es
 KODI19_RESOURCE_LANGUAGE_ES_ES_PLUGINNAME=resource.language.es_es

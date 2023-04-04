@@ -1,0 +1,166 @@
+import pygame
+import time
+import pyudev
+import evdev
+from evdev import ecodes
+import re
+import glob
+import random
+
+def redraw(screen, media, bullets, warning = False, nogun = False):
+
+    pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(0, 0, screen.get_width(), screen.get_height()))
+
+    bg = media["images"]["background_scaled"]
+    offsetx = (screen.get_width()-bg.get_width())//2
+    offsety = (screen.get_height()-bg.get_height())//2
+    screen.blit(bg, (offsetx, offsety))
+
+    bullet_ratio = 1/100
+    for b in bullets:
+        pygame.draw.circle(screen, (0, 0, 0), b, screen.get_width()*bullet_ratio)
+
+    if nogun:
+        screen.blit(media["texts"]["nogun"], (5, 5))
+    elif warning:
+        screen.blit(media["texts"]["warning"], (5, 5))
+
+    pygame.display.flip()
+
+def getGunsDevices():
+    context = pyudev.Context()
+    devices = context.list_devices(subsystem='input')
+    guns = []
+
+    for dev in devices:
+        matches = re.match(r"^/dev/input/event([0-9]*)$", str(dev.device_node))
+        if matches != None:
+            if ("ID_INPUT_GUN" in dev.properties and dev.properties["ID_INPUT_GUN"]) == '1':
+                guns.append({ "device": dev.device_node, "x": { "value": None, "min": None, "max": None}, "y": { "value": None, "min": None, "max": None} })
+    return guns
+
+def loadMedia_init():
+    media = { "images": {}, "audio": {}, "fonts": {}, "texts": {} }
+    media["audio"]["gun"]     = pygame.mixer.Sound('audio/gun.mp3')
+    media["audio"]["reload0"] = pygame.mixer.Sound('audio/reload0.mp3')
+    media["audio"]["reload1"] = pygame.mixer.Sound('audio/reload1.mp3')
+    media["fonts"]["default"] = pygame.font.Font('freesansbold.ttf', 32)
+    media["texts"]["warning"] = media["fonts"]["default"].render('Put your backgrounds in the roms/pygame/pygun/images folder', True, (255, 0, 0), (255, 255, 255))
+    media["texts"]["nogun"]   = media["fonts"]["default"].render('No gun detected.', True, (255, 0, 0), (255, 255, 255))
+    return media
+
+def loadMedia_background(screen, media, imagepath):
+    media["images"]["background"]        = pygame.image.load(imagepath)
+
+    img = media["images"]["background"]
+    ratio_x = img.get_width() / screen.get_width()
+    ratio_y = img.get_height() / screen.get_height()
+    ratio = ratio_x
+    if ratio_y > ratio_x:
+        ratio = ratio_y
+    tx = img.get_width() / ratio
+    ty = img.get_height() / ratio
+    media["images"]["background_scaled"] = pygame.transform.scale(media["images"]["background"], (tx, ty))
+
+def gun2screen(screen, gun):
+    if gun["x"]["value"] is None or gun["y"]["value"] is None or gun["x"]["min"] is None or gun["y"]["min"] is None or gun["x"]["max"] is None or gun["y"]["max"] is None:
+        return []
+    x = int(screen.get_width()  * (gun["x"]["value"]-gun["x"]["min"]) / (gun["x"]["max"]-gun["x"]["min"]))
+    y = int(screen.get_height() * (gun["y"]["value"]-gun["y"]["min"]) / (gun["y"]["max"]-gun["y"]["min"]))
+    return [[x, y]]
+
+def openGuns(guns):
+    for ngun, gun in enumerate(guns):
+        guns[ngun]["fd"] = evdev.InputDevice(gun["device"])
+        caps = guns[ngun]["fd"].capabilities()
+        for code, absinfos in caps[ecodes.EV_ABS]:
+            if code == ecodes.ABS_X:
+                guns[ngun]["x"]["min"] = absinfos.min
+                guns[ngun]["x"]["max"] = absinfos.max
+            elif code == ecodes.ABS_Y:
+                guns[ngun]["y"]["min"] = absinfos.min
+                guns[ngun]["y"]["max"] = absinfos.max
+    return guns
+
+def onShoot(screen, media, bullets, gun):
+    media["audio"]["gun"].play()
+    bullets.extend(gun2screen(screen, gun))
+    redraw(screen, media, bullets)
+
+def getBackgroundsPathes():
+    bgs = []
+    for ext in ["png", "jpg"]:
+        bgs.extend(glob.glob('images/*.'+ext))
+
+    return bgs
+
+def updateBackground(screen, media, bg_list, bullets, current_bg, warning = False, nogun = False):
+    loadMedia_background(screen, media, bg_list[current_bg])
+    redraw(screen, media, bullets, warning, nogun)
+
+def run():
+    pygame.init()
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    pygame.mouse.set_visible(False)
+    media = loadMedia_init()
+    running = True
+    bullets = []
+    reloaded = True
+    current_bg = 0
+
+    bg_list = getBackgroundsPathes()
+    random.shuffle(bg_list)
+
+    warning = False
+    if len(bg_list) == 0:
+        bg_list.append("/usr/share/batocera/splash/boot-logo.png")
+        warning = True
+
+    # open guns
+    guns = openGuns(getGunsDevices())
+
+    # initial draw
+    updateBackground(screen, media, bg_list, bullets, current_bg, warning, len(guns) == 0)
+
+    # events
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        for ngun, gun in enumerate(guns):
+            event = gun["fd"].read_one()
+            while event != None:
+                if event.type == ecodes.EV_ABS:
+                    if event.code == ecodes.ABS_X:
+                        guns[ngun]["x"]["value"] = event.value
+                    elif event.code == ecodes.ABS_Y:
+                        guns[ngun]["y"]["value"] = event.value
+                elif event.type == ecodes.EV_KEY:
+                    if event.code == ecodes.BTN_LEFT:
+                        if event.value == 1:
+                            if reloaded:
+                                onShoot(screen, media, bullets, gun)
+                                reloaded = False
+                    if event.code == ecodes.BTN_RIGHT:
+                        if event.value == 0:
+                            media["audio"]["reload0"].play()
+                        elif event.value == 1:
+                            media["audio"]["reload1"].play()
+                            reloaded = True
+                    elif event.code == ecodes.BTN_5 or event.code == ecodes.BTN_8:
+                        if event.value == 1:
+                            current_bg = (current_bg + 1) % len(bg_list)
+                            bullets = []
+                            updateBackground(screen, media, bg_list, bullets, current_bg)
+                    elif event.code == ecodes.BTN_6 or event.code == ecodes.BTN_7:
+                        if event.value == 1:
+                            current_bg = (current_bg - 1 + len(bg_list)) % len(bg_list)
+                            bullets = []
+                            updateBackground(screen, media, bg_list, bullets, current_bg)
+                event = gun["fd"].read_one()
+        # keep cpu cool
+        time.sleep(0.01)
+
+if __name__ == "__main__":
+    run()

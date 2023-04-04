@@ -1,0 +1,15 @@
+diff --git a/udev/89-joycond.rules b/udev/89-joycond.rules
+index b931ec2..bbfb084 100644
+--- a/udev/89-joycond.rules
++++ b/udev/89-joycond.rules
+@@ -1,8 +1,8 @@
+ # Keep steam from accessing hidraw for pro controller
+ # Nintendo Switch Pro Controller over USB hidraw
+-KERNEL=="hidraw*", ATTRS{idVendor}=="057e", ATTRS{idProduct}=="2009", MODE="0600", TAG-="uaccess", RUN+="/bin/setfacl -b /dev/%k"
++KERNEL=="hidraw*", ATTRS{idVendor}=="057e", ATTRS{idProduct}=="2009", GROUP="input", MODE="0660", TAG-="uaccess", RUN+="/usr/bin/setfacl -b /dev/%k"
+ # Nintendo Switch Pro Controller over bluetooth hidraw
+-KERNEL=="hidraw*", KERNELS=="*057E:2009*", MODE="0600", TAG-="uaccess", RUN+="/bin/setfacl -b /dev/%k"
++KERNEL=="hidraw*", KERNELS=="*057E:2009*", GROUP="input", MODE="0660", TAG-="uaccess", RUN+="/usr/bin/setfacl -b /dev/%k"
+ 
+ 
+ ACTION!="add", GOTO="joycond_end"

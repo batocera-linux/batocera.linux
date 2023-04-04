@@ -1,0 +1,69 @@
+diff --git a/src/config/LaunchSettings.cpp b/src/config/LaunchSettings.cpp
+index 4447f9b..a567953 100644
+--- a/src/config/LaunchSettings.cpp
++++ b/src/config/LaunchSettings.cpp
+@@ -69,6 +69,8 @@ bool LaunchSettings::HandleCommandline(const std::vector<std::wstring>& args)
+ 
+ 		("force-interpreter", po::value<bool>()->implicit_value(true), "Force interpreter CPU emulation, disables recompiler")
+ 
++		("force-no-menubar", po::value<bool>()->implicit_value(true), "Force no menubar (cosmetic)")
++
+ 		("act-url", po::value<std::string>(), "URL prefix for account server")
+ 		("ecs-url", po::value<std::string>(), "URL for ECS service");
+ 
+@@ -163,6 +165,9 @@ bool LaunchSettings::HandleCommandline(const std::vector<std::wstring>& args)
+ 		if(vm.count("force-interpreter"))
+ 			s_force_interpreter = vm["force-interpreter"].as<bool>();
+ 
++		if(vm.count("force-no-menubar"))
++			s_force_no_menubar = vm["force-no-menubar"].as<bool>();
++
+ 		std::wstring extract_path, log_path;
+ 		std::string output_path;
+ 		if (vm.count("extract"))
+diff --git a/src/config/LaunchSettings.h b/src/config/LaunchSettings.h
+index b42523c..5f7e4d8 100644
+--- a/src/config/LaunchSettings.h
++++ b/src/config/LaunchSettings.h
+@@ -26,6 +26,8 @@ public:
+ 
+ 	static bool ForceInterpreter() { return s_force_interpreter; };
+ 
++  	static bool ForceNoMenuBar() { return s_force_no_menubar; };
++
+ 	static std::optional<uint32> GetPersistentId() { return s_persistent_id; }
+ 
+ 	static std::string GetActURLPrefix() { return serviceURL_ACT; }
+@@ -43,6 +45,8 @@ private:
+ 	inline static bool s_force_intel_legacy = false;
+ 
+ 	inline static bool s_force_interpreter = false;
++
++  	inline static bool s_force_no_menubar = false;
+ 	
+ 	inline static std::optional<uint32> s_persistent_id{};
+ 
+diff --git a/src/gui/MainWindow.cpp b/src/gui/MainWindow.cpp
+index 3291f3b..97d7243 100644
+--- a/src/gui/MainWindow.cpp
++++ b/src/gui/MainWindow.cpp
+@@ -1664,7 +1664,8 @@ void MainWindow::SetMenuVisible(bool state)
+ 	if (m_menu_visible == state)
+ 		return;
+ 
+-	SetMenuBar(state ? m_menuBar : nullptr);
++	if(LaunchSettings::ForceNoMenuBar() == false)
++	  SetMenuBar(state ? m_menuBar : nullptr);
+ 	m_menu_visible = state;
+ }
+ 
+@@ -2226,7 +2227,8 @@ void MainWindow::RecreateMenu()
+ 
+ 	m_menuBar->Append(helpMenu, _("&Help"));
+ 
+-	SetMenuBar(m_menuBar);
++	if(LaunchSettings::ForceNoMenuBar() == false)
++	  SetMenuBar(m_menuBar);
+ 	m_menu_visible = true;
+ 
+ 	if (m_game_launched)

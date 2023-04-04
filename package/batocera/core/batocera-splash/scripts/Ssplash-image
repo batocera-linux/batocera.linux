@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DAEMON="splash-image"
-DEFAULT="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
+DEFAULT="/usr/share/batocera/splash/logo-version-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
 SPLASH_DIR=/userdata/splash
 
 FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
@@ -10,7 +10,7 @@ do_filerandomize ()
 {
     local array
     [[ -d "$SPLASH_DIR" ]] || return 1
-    readarray -t array < <(find "$SPLASH_DIR" -regex "$1" -maxdepth 1 -type f)
+    readarray -t array < <(find "$SPLASH_DIR" -maxdepth 1 -regex "$1" -type f)
     if [[ ${#array[@]} -gt 0 ]]; then
         echo "${array[$RANDOM % ${#array[@]}]}"
     fi

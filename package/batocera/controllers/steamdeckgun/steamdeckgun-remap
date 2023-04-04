@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for EVT in /dev/input/event*
+do
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Steam Controller"$'
+    then
+	echo "remapping ${EVT}"
+	ACTION=add DEVNAME=${EVT} steamdeckgun-add
+    fi
+done
+
+exit 0

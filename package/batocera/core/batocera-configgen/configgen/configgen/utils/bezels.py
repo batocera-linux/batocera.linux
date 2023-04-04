@@ -117,6 +117,7 @@ def fast_image_size(image_file):
 
 def resizeImage(input_png, output_png, screen_width, screen_height, bezel_stretch=False):
     imgin = Image.open(input_png)
+    fillcolor = 'black'
     eslog.debug(f"Resizing bezel: image mode {imgin.mode}")
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
@@ -125,29 +126,17 @@ def resizeImage(input_png, output_png, screen_width, screen_height, bezel_stretc
         imgout.save(output_png, mode="RGBA", format="PNG")
 
 def padImage(input_png, output_png, screen_width, screen_height, bezel_width, bezel_height, bezel_stretch=False):
-  fillcolor = 'black'
-
-  wratio = screen_width / float(bezel_width)
-  hratio = screen_height / float(bezel_height)
-
-  xoffset = screen_width  - bezel_width
-  yoffset = screen_height - bezel_height
-
-  borderw = 0
-  borderh = 0
-  if wratio > 1:
-      borderw = xoffset // 2
-  if hratio > 1:
-      borderh = yoffset // 2
-  imgin = Image.open(input_png)
-  if imgin.mode != "RGBA":
-      alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
-  else:
-      if bezel_stretch:
+    imgin = Image.open(input_png)
+    fillcolor = 'black'
+    eslog.debug(f"Padding bezel: image mode {imgin.mode}")
+    if imgin.mode != "RGBA":
+        alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
+    else:
+        if bezel_stretch:
           imgout = ImageOps.fit(imgin, (screen_width, screen_height))
-      else:
+        else:
           imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
-      imgout.save(output_png, mode="RGBA", format="PNG")
+        imgout.save(output_png, mode="RGBA", format="PNG")
 
 def tatooImage(input_png, output_png, system):
   if system.config['bezel.tattoo'] == 'system':
@@ -225,6 +214,19 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretc
       raise Exception("no transparent pixels in the image, abort")
   alpha = imgin.split()[-1]  # alpha from original palette + alpha
   ix,iy = fast_image_size(input_png)
+  sx,sy = screensize
+  i_ratio = (float(ix) / float(iy))
+  s_ratio = (float(sx) / float(sy))
+
+  if (i_ratio - s_ratio > 0.01):
+      # cut off bezel sides for 16:10 screens
+      new_x = int(ix*s_ratio/i_ratio)
+      delta = int(ix-new_x)
+      borderx = delta//2
+      ix = new_x
+      alpha_new = alpha.crop((borderx, 0, new_x+borderx, iy))
+      alpha = alpha_new
+
   imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
   imgnew.paste(alpha, (0,0,ix,iy))
   if bezel_stretch:
@@ -233,7 +235,16 @@ def alphaPaste(input_png, output_png, imgin, fillcolor, screensize, bezel_stretc
       imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
   imgout.save(output_png, mode="RGBA", format="PNG")
 
-def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, innerBorderColor = "#ffffff", outerBorderSizePer = 3, outerBorderColor = "#000000"):
+def gunBordersSize(bordersSize):
+    if bordersSize == "thin":
+        return 1, 0
+    if bordersSize == "medium":
+        return 2, 0
+    if bordersSize == "big":
+        return 2, 1
+    return 0, 0
+
+def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSizePer = 3, innerBorderColor = "#ffffff", outerBorderColor = "#000000"):
     # good default border that works in most circumstances is:
     # 
     # 2% of the screen width in white.  Surrounded by 3% screen width of
@@ -282,6 +293,18 @@ def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, innerBorderCol
 
 def gunsBorderSize(w, h, innerBorderSizePer = 2, outerBorderSizePer = 3):
     return (h * (innerBorderSizePer + outerBorderSizePer)) // 100
+
+def gunsBordersColorFomConfig(config):
+    if "controllers.guns.borderscolor" in config:
+        if config["controllers.guns.borderscolor"] == "red":
+            return "#ff0000"
+        if config["controllers.guns.borderscolor"] == "green":
+            return "#00ff00"
+        if config["controllers.guns.borderscolor"] == "blue":
+            return "#0000ff"
+        if config["controllers.guns.borderscolor"] == "white":
+            return "#ffffff"
+    return "#ffffff"
 
 def createTransparentBezel(output_png, width, height):
     from PIL import ImageDraw

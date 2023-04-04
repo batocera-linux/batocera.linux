@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = proton-wine-7.0-2
+WINE_PROTON_VERSION = proton-wine-7.0-6e
 WINE_PROTON_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_VERSION))
 WINE_PROTON_LICENSE = LGPL-2.1+
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton
@@ -28,6 +28,8 @@ WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 WINE_PROTON_CONF_OPTS = CPPFLAGS="-DMPG123_NO_LARGENAME=1" \
 	--with-wine-tools=../host-wine-proton-$(WINE_PROTON_VERSION) \
 	--disable-tests \
+	--disable-win16 \
+	--disable-winemenubuilder \
 	--without-capi \
 	--without-coreaudio \
 	--without-faudio \
@@ -40,6 +42,7 @@ WINE_PROTON_CONF_OPTS = CPPFLAGS="-DMPG123_NO_LARGENAME=1" \
 	--without-oss \
 	--without-vkd3d \
 	--without-vulkan \
+	--without-ldap \
 	--prefix=/usr/wine/proton \
 	--exec-prefix=/usr/wine/proton
 
@@ -412,6 +415,7 @@ endef
 HOST_WINE_PROTON_CONF_OPTS += \
 	--disable-tests \
 	--disable-win16 \
+	--disable-winemenubuilder \
 	--without-alsa \
 	--without-capi \
 	--without-cms \

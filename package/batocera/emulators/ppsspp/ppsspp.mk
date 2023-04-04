@@ -3,8 +3,8 @@
 # ppsspp
 #
 ################################################################################
-# Version: Commits on Jun 26, 2022
-PPSSPP_VERSION = 04affb19582eb2294a63b2b4c6d5421dcfdbb832
+
+PPSSPP_VERSION = v1.14.1
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -33,7 +33,7 @@ else
     PPSSPP_CONF_OPTS += -DVULKAN=OFF
 endif
 # enable x11/vulkan interface only if xorg
-ifeq ($(BR2_PACKAGE_XORG7),y)
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
     PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
 else
     PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
@@ -60,19 +60,13 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
     PPSSPP_CONF_OPTS += -DX86=ON
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     PPSSPP_CONF_OPTS += -DX86_64=ON
 endif
 
 # rpi4 and panfrost vulkan support
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_PANFROST_MESA3D),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_PANFROST_MESA3D),y)
     PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
-endif
-
-# rockchip
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-    # In order to support the custom resolution patch, permissive compile is needed
-    PPSSPP_TARGET_CFLAGS += -fpermissive
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)

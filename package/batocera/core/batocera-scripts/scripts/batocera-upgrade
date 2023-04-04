@@ -81,7 +81,7 @@ url="${DWD_HTTP_DIR}/boot.tar.xz"
 echo "url: ${url}"
 headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
 test $? -eq 0 || exit 1
-size=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
+size=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
 size=$((size / 1024 / 1024))
 test $? -eq 0 || exit 1
 echo "need to download ${size}mb"
@@ -141,7 +141,7 @@ fi
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
 do_upgmsg "Backing up config files ..." 0.5
-BOOTFILES="config.txt userconfig.txt batocera-boot.conf"
+BOOTFILES="config.txt batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"
@@ -155,7 +155,7 @@ done
 
 # extract file on /boot
 do_upgmsg "Extracting files ..."
-if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf -)
+if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf - --no-same-owner)
 then
     exit 1
 fi

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# at the time of the event, outputs are not always completly initialized ;-( add a 2 seconds delay before querying the switch
+(sleep 2 && /usr/bin/batocera-switch-screen-checker) >/dev/null 2>/dev/null &

@@ -109,6 +109,8 @@ class DuckstationGenerator(Generator):
         # Backend - Default OpenGL
         if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':  # Using Gun, you'll have the Aiming ONLY in Vulkan. Duckstation Issue
             settings.set("GPU", "Renderer", "Vulkan")
+        elif system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Software':
+            settings.set("GPU", "Renderer", "Software")
         else:
             settings.set("GPU", "Renderer", "OpenGL")
         # Multisampling force (MSAA or SSAA)
@@ -252,7 +254,7 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
         ## [CONTROLLERS]
-        configurePads(settings, playersControllers, system)
+        configurePads(settings, playersControllers, system, guns)
 
         ## [HOTKEYS]
         if not settings.has_section("Hotkeys"):
@@ -280,12 +282,20 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
 
+        ## [CDROM]
+        if not settings.has_section("CDROM"):
+            settings.add_section("CDROM")
+        if system.isOptSet("duckstation_boot_without_sbi"):
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", system.config["duckstation_boot_without_sbi"])
+        else:
+            settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
+
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        
+
         env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
 
@@ -305,7 +315,7 @@ def getGfxRatioFromConfig(config, gameResolution):
 
     return "4:3"
 
-def configurePads(settings, playersControllers, system):
+def configurePads(settings, playersControllers, system, guns):
     mappings = {
         "ButtonUp":       "up",
         "ButtonDown":     "down",
@@ -348,6 +358,11 @@ def configurePads(settings, playersControllers, system):
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
             ctrlType = system.config["duckstation_" + controller]
+
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if nplayer == 1 and len(guns) >= 1:
+                settings.set(controller, "Type", "NamcoGunCon")
+                ctrlType = "NamcoGunCon"
 
         # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};

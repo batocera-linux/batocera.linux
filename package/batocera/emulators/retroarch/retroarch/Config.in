@@ -5,17 +5,11 @@ config BR2_PACKAGE_RETROARCH
 	select BR2_PACKAGE_RETROARCH_ASSETS
 	select BR2_PACKAGE_LIBRETRO_CORE_INFO
 	select BR2_PACKAGE_FLAC
+    select BR2_PACKAGE_SLANG_SHADERS        if BR2_PACKAGE_VULKAN_TOOLS
       help
         A multi emulator frontend.
 
 	  http://www.libretro.com
-
-#if BR2_PACKAGE_RETROARCH
-#config BR2_PACKAGE_RETROARCH_RPI1
-#        bool "Compile for RPI1"
-#        help
-#		Compile for rpi1
-#endif
 
 comment "Retroarch depends on EGL or OpenGLES"
 	depends on !(BR2_PACKAGE_HAS_LIBEGL || BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBGL)

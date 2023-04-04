@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# when the program is called from a non X environment, handle the mouse
-# maybe an other choice is better
-
 if test -z "${DISPLAY}"
 then
     export DISPLAY=:0.0
 fi
 
-#XDG_CONFIG_HOME="/userdata/system/configs" XDG_DATA_HOME="/userdata/system/configs" XDG_CACHE_HOME="/userdata/system/cache" QT_QPA_PLATFORM="xcb" /usr/ryujinx/Ryujinx
+emulatorlauncher -system switch -rom config -emulator ryujinx

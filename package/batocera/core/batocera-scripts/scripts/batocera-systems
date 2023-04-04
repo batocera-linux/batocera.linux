@@ -7,16 +7,19 @@ from os.path import isfile
 from collections import OrderedDict
 import sys
 import zipfile
+import xml.etree.ElementTree as elementTree
 
 systems = {
 
     # ---------- Atari ---------- #
     # https://docs.libretro.com/library/atari800/#bios
-    "atari5200": { "name": "Atari 5200 / Atari 800", "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"    },
-                                                                    { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM" },
-                                                                    { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"},
-                                                                    { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"},
-                                                                    { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"} ] },
+    "atari800": { "name": "Atari 800", "biosFiles": [ { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"},
+                                                      { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"},
+                                                      { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM" },
+                                                      # The BASIC cart came with all Atari computers. On the XL and XE, it was built-in, so it's required by those models.
+                                                      { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"} ] },
+
+    "atari5200": { "name": "Atari 5200", "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"    } ] },
 
     # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
     "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"}, # TOS 1.02 US
@@ -82,9 +85,10 @@ systems = {
     # ---------- Magnavox and Philips ---------- #
     # https://docs.libretro.com/library/o2em/#bios
     "o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
-                                                  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   },
-                                                  { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
-                                                  { "md5": "279008e4a0db2dc5f1c048853b033828", "file": "bios/jopac.bin" } ] },
+                                                  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   } ] },
+
+    "videopacplus": { "name": "Videopac+ G7400", "biosFiles": [ { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
+                                                                { "md5": "279008e4a0db2dc5f1c048853b033828", "file": "bios/jopac.bin" } ] },
 
     # ---------- Mattel ---------- #
     # https://docs.libretro.com/library/freeintv/#bios
@@ -133,7 +137,7 @@ systems = {
     # https://github.com/libretro/libretro-super/blob/master/dist/info/flycast_libretro.info
     "naomi":        { "name": "Naomi", "biosFiles":       [ { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/dc/naomi.zip"   } ] },
 
-    "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/dc/awbios.zip"  } ] },
+    "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "85254fbe320ca82a768ec2c26bb08def", "file": "bios/dc/awbios.zip"  } ] },
 
     "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
@@ -172,20 +176,20 @@ systems = {
                                             { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN"      } ] },
 
     # https://www.playstation.com/en-us/support/system-updates/ps3/
-    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "a0b63a3e4ae92ed176d6b9a67ce447f0", "file": "bios/PS3UPDAT.PUP" } ] },
+    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
 
     # ---------- Nintendo ---------- #
     # https://docs.libretro.com/library/fceumm/#bios
     "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
 
     # https://docs.libretro.com/library/melonds/#bios
-    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "94bc5094607c5e6598d50472c52f27f2", "file": "bios/dsfirmware.bin" },
-                                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/biosnds7.bin" },
-                                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/biosnds9.bin" },
-                                            { "md5": "87b665fce118f76251271c3732532777", "file": "bios/biosdsi9.bin" },
-                                            { "md5": "559dae4ea78eb9d67702c56c1d791e81", "file": "bios/biosdsi7.bin" },
-                                            { "md5": "74f23348012d7b3e1cc216c47192ffeb", "file": "bios/dsifirmware.bin" },
-                                            { "md5": "d71edf897ddd06bf335feeb68edeb272", "file": "bios/dsinand.bin" }, ] },
+    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "94bc5094607c5e6598d50472c52f27f2", "file": "bios/firmware.bin" },
+                                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin" },
+                                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin" },
+                                            { "md5": "559dae4ea78eb9d67702c56c1d791e81", "file": "bios/dsi_bios7.bin" },
+                                            { "md5": "87b665fce118f76251271c3732532777", "file": "bios/dsi_bios9.bin" },
+                                            { "md5": "74f23348012d7b3e1cc216c47192ffeb", "file": "bios/dsi_firmware.bin" },
+                                            { "md5": "d71edf897ddd06bf335feeb68edeb272", "file": "bios/dsi_nand.bin" }, ] },
 
     # https://docs.libretro.com/library/mgba/#bios
     "gba": { "name": "Nintendo Gameboy Advance", "biosFiles": [  { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" },
@@ -204,11 +208,13 @@ systems = {
                                             { "md5": "8ecd73eb4edf7ed7e81aef1be80031d5", "file": "bios/SGB2.sfc" } ] },
     # ---------- Microsoft ---------- #
     # https://docs.libretro.com/library/fmsx/#bios
-    "msx": { "name": "MSX", "biosFiles": [  { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
-                                            { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/MSX2.ROM"     },
-                                            { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/MSX2EXT.ROM"  },
-                                            { "md5": "847cc025ffae665487940ff2639540e5", "file": "bios/MSX2P.ROM"    },
-                                            { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" } ] },
+    "msx": { "name": "MSX", "biosFiles": [  { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      } ] },
+
+    "msx2": { "name": "MSX2", "biosFiles": [ { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/MSX2.ROM"     },
+                                            { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/MSX2EXT.ROM"  } ] },
+
+    "msx2+": { "name": "MSX2+", "biosFiles": [ { "md5": "847cc025ffae665487940ff2639540e5", "file": "bios/MSX2P.ROM"    },
+                                               { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" } ] },
 
     "xbox": { "name": "Xbox", "biosFiles": [{ "md5": "d49c52a4102f6df7bcf8d0617ac475ed", "file": "bios/mcpx_1.0.bin" },
                                             { "md5": "39cee882148a87f93cb440b99dde3ceb", "file": "bios/Complex_4627.bin" }] },
@@ -216,33 +222,49 @@ systems = {
     # ---------- Commodore ---------- #
     # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
     # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
-    "amiga":  { "name": "Amiga",    "biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
-                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
-                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
-                                                    { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/kick34005.CDTV"      },
-                                                    { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
-                                                    { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"     },
-                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"     },
-                                                    { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"     },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"      },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"  },
-                                                    # https://fs-uae.net/docs/kickstarts
-                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
-                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
-                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"        },
-                                                    { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"        },
-                                                    { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
-                                                    { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        },
-                                                    { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"        },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  },
-                                                    { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+    # https://fs-uae.net/docs/kickstarts
+    "amiga500": { "name": "Amiga 500",     "biosFiles": [  { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
+                                                           # Amiga 600 kickstart. Not really needed but maybe someone out there will want to switch their model to Amiga 600.
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/kick37350.A600"      },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
+                                                           # The Amiga Forever equivalents. Really are these actually needed? Just so people don't have to rename their stuff?
+                                                           { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"    },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"    },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"    },
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"    },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga-os-310-a600.rom" }] },
+
+    "amigacdtv": { "name": "Amiga CDTV",   "biosFiles": [  { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"          },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/kick34005.CDTV"          },
+                                                           # CDTV requires both the Amiga 500 kickstart and its own extended kickstart.
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+
+    "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"         },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"         },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"         },
+                                                           # The Amiga Forever equivalents. a3000 seems to not have a kickstart equivalent. amiga-os-310.rom doesn't match libretro's docs.
+                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga-os-300-a1200.rom"  },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
+                                                           { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga-os-310-a4000.rom"  },
+                                                           { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        }] },
+
+    "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"          },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"      },
+                                                           # Unlike the CDTV, CD32 does not need the Amiga 1200 kickstart.
+                                                           # But, it has its own unique "base" anyway, which is required in addition to its extended.
+                                                           { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  }] },
 
     # ---------- NEC PC-8800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
     "pc88":       { "name": "NEC PC-8800", "biosFiles": [   { "md5": "4f984e04a99d56c4cfe36115415d6eb8", "file": "bios/quasi88/N88.ROM"     },
                                                             { "md5": "793f86784e5608352a5d7f03f03e0858", "file": "bios/quasi88/N88SUB.ROM"  },
                                                             { "md5": "2ff07b8769367321128e03924af668a0", "file": "bios/quasi88/N88N.ROM"    },
+                                                            { "md5": "d81c6d5d7ad1a4bbbd6ae22a01257603", "file": "bios/quasi88/N88KNJ1.ROM"    },
                                                             { "md5": "d675a2ca186c6efcd6277b835de4c7e5", "file": "bios/quasi88/N88EXT0.ROM" },
                                                             { "md5": "e844534dfe5744b381444dbe61ef1b66", "file": "bios/quasi88/N88EXT1.ROM" },
                                                             { "md5": "6548fa45061274dee1ea8ae1e9e93910", "file": "bios/quasi88/N88EXT2.ROM" },
@@ -296,6 +318,12 @@ systems = {
                                   { "md5": "cac4b56c0db80922cae75403faef40af", "zippedFile": "gp32100k.bin", "file": "bios/gp32.zip"},
                                   { "md5": "d4af2bc352bdaf4972ea40902feda114", "zippedFile": "gp32mfv2.bin", "file": "bios/gp32.zip"} ] },
 
+    # ---------- VTech Laser 310 ---------- #
+    "laser310":  { "name": "VTech Laser 310", "biosFiles": [  { "md5": "", "file": "bios/laser310.zip" },
+                                  { "md5": "42c8f9e6c2133ae0e953b89ccbbdb7e2", "zippedFile": "vtechv20.u12", "file": "bios/laser310.zip"},
+                                  { "md5": "f7e5d9a3eb2b57bf5f4e2a4565318a8f", "zippedFile": "vtechv21.u12", "file": "bios/laser310.zip"} ] },
+
+
     # ---------- Future Pinball ---------- #
     "fpinball":   { "name": "Future Pinball", "biosFiles":  [ { "md5": "65a8ebf870420316a939ac44fd4c731d", "file": "bios/wsh57/scripten.exe"  } ] },
 
@@ -306,57 +334,70 @@ systems = {
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
 
     # ---------- Zelda Classic ---------- #
-    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
-                                                  { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zc210/zcdata.dat"  },
+                                                          { "md5": "39e5bc84ce9aac3a2d297d8aeb2a0d05", "file": "bios/zc210/sf2/default.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zc210/sf2/custom0.sf2" },
+                                                          { "md5": "c1dc781c34cff8f9a023c0192754dc6c", "file": "bios/zc210/sf2/custom1.sf2" },
+                                                          { "md5": "144fcdbb6a30f1f916f6963006c2da97", "file": "bios/zc210/sf2/custom2.sf2" },
+                                                          { "md5": "134d217fb99c3be1e89cfaf8f28280d8", "file": "bios/zc210/sf2/custom3.sf2" },
+                                                          { "md5": "b37366199c6df9ee5316f031755aa821", "file": "bios/zc210/sf2/custom4.sf2" },
+                                                          { "md5": "64068b84eb88dc85b75148bbe9b393fb", "file": "bios/zc210/sf2/custom5.sf2" },
+                                                          { "md5": "1241986de5b1d00b02d34f1e6651a1d1", "file": "bios/zc210/sf2/custom6.sf2" },
+                                                          { "md5": "386db0d538f372a9f1af622d1e934abf", "file": "bios/zc210/sf2/custom7.sf2" },
+                                                          { "md5": "6f68e4baf89c8ee4623c19617319184b", "file": "bios/zc210/sf2/custom8.sf2" },
+                                                          { "md5": "2010e5b85f9e1d60685ccb3d84a17115", "file": "bios/zc210/sf2/custom9.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
-    "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM"  },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM" },
-                                                  { "md5": "", "file": "bios/mac128k.zip" },
-                                                  { "md5": "bc04a4252ee96826c1f41f927c145225", "zippedFile": "342-0220-a.u6d", "file": "bios/mac128k.zip"},
-                                                  { "md5": "409d8b9a04db15b7bfbbd5fcb931bf2e", "zippedFile": "342-0221-a.u8d", "file": "bios/mac128k.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0110.zip" },
-                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0110.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0120.zip" },
-                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0120.zip"},
-                                                  { "md5": "", "file": "bios/mac512k.zip" },
-                                                  { "md5": "b4118b89fa68a913a225f0cf9a751fae", "zippedFile": "342-0220-b.u6d", "file": "bios/mac512k.zip"},
-                                                  { "md5": "ab4e461833e98ef7106f24455a07769d", "zippedFile": "342-0221-b.u8d", "file": "bios/mac512k.zip"},
-                                                  { "md5": "", "file": "bios/macplus.zip" },
-                                                  { "md5": "1467a42dee57ac265d063b3f351189fc", "zippedFile": "342-0341-a.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "25b1bf85b3b072d957499cef4d7e313f", "zippedFile": "342-0341-b.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "cf7c3259844245a8967556fa40d81243", "zippedFile": "342-0341-c.u6d", "file": "bios/macplus.zip"},
-                                                  { "md5": "d5584762b43a9b1cb24a981f9b9b4198", "zippedFile": "342-0342-a.u8d", "file": "bios/macplus.zip"},
-                                                  { "md5": "f83069fd7ff1fb011958f819cbff4c88", "zippedFile": "342-0342-b.u8d", "file": "bios/macplus.zip"},
-                                                  { "md5": "875919e2544644cd628f44b5c11db036", "zippedFile": "modplus-harp2.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "efcefe8f11c10541a503d48a07878201", "zippedFile": "rominator-20150225-hi.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "f4b06da98500df0747a764dfbf1862b9", "zippedFile": "rominator-20150225-lo.bin", "file": "bios/macplus.zip"},
-                                                  { "md5": "", "file": "bios/macse.zip" },
-                                                  { "md5": "9fb38bdcc0d53d9d380897ee53dc1322", "zippedFile": "macse.rom", "file": "bios/macse.zip"},
-                                                  { "md5": "", "file": "bios/macclasc.zip" },
-                                                  { "md5": "c229bb677cb41b84b780c9e38a09173e", "zippedFile": "341-0813__=c=1983-90_apple__japan__910d_d.27c4096_be.ue1", "file": "bios/macclasc.zip"},
-                                                  { "md5": "", "file": "bios/mac2fdhd.zip" },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/mac2fdhd.zip"},
-                                                  { "md5": "", "file": "bios/nb_48gc.zip" },
-                                                  { "md5": "1bf16eefb23a1bea02f031f1ef1de528", "zippedFile": "3410801.bin", "file": "bios/nb_48gc.zip"},
-                                                  { "md5": "", "file": "bios/maciix.zip" },
-                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/maciix.zip"},
-                                                  { "md5": "", "file": "bios/maclc3.zip" },
-                                                  { "md5": "fa16d49527c4e6e9c0d9e46904133d39", "zippedFile": "ecbbc41c.rom", "file": "bios/maclc3.zip"},
-                                                  { "md5": "", "file": "bios/mackbd_m0110a.zip" },
-                                                  { "md5": "9e8ea1552153c5e0f895e247e7d3ec1c", "zippedFile": "341-0332-a.bin", "file": "bios/mackbd_m0110a.zip"},
-                                                  { "md5": "", "file": "bios/nb_image.zip" },
-                                                  { "md5": "93155ac7bad0fec36837252bb1e408f2", "zippedFile": "nb_fake.bin", "file": "bios/nb_image.zip"},
-                                                  { "md5": "", "file": "bios/egret.zip" },
-                                                  { "md5": "96665499f5cf2bb5b4aae6fdaf0a9fb5", "zippedFile": "341s0850.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "b955ecbdf6d2f979f3683dd1d6884643", "zippedFile": "341s0851.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "5035d321c5d5fa1eab5ce6bf986676e4", "zippedFile": "344s0100.bin", "file": "bios/egret.zip"},
-                                                  { "md5": "", "file": "bios/macos3.img" },
-                                                  { "md5": "", "file": "bios/macos608.img" },
-                                                  { "md5": "", "file": "bios/macos701.img" },
-                                                  { "md5": "", "file": "bios/macos75.img" },
-                                                  { "md5": "", "file": "bios/mac608.chd" },
-                                                  { "md5": "", "file": "bios/mac701.chd" },
-                                                  { "md5": "", "file": "bios/mac755.chd" } ] },
+    "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM", "emulator": "libretro", "core": "minivmac" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM", "emulator": "libretro", "core": "minivmac" },
+                                                  { "md5": "", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "bc04a4252ee96826c1f41f927c145225", "zippedFile": "342-0220-a.u6d", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "409d8b9a04db15b7bfbbd5fcb931bf2e", "zippedFile": "342-0221-a.u8d", "file": "bios/mac128k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0110.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0110.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0120.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9d09a9a51c9ef3ea5719e19db22e7901", "zippedFile": "ip8021h_2173.bin", "file": "bios/mackbd_m0120.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "b4118b89fa68a913a225f0cf9a751fae", "zippedFile": "342-0220-b.u6d", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "ab4e461833e98ef7106f24455a07769d", "zippedFile": "342-0221-b.u8d", "file": "bios/mac512k.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "1467a42dee57ac265d063b3f351189fc", "zippedFile": "342-0341-a.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "25b1bf85b3b072d957499cef4d7e313f", "zippedFile": "342-0341-b.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "cf7c3259844245a8967556fa40d81243", "zippedFile": "342-0341-c.u6d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "d5584762b43a9b1cb24a981f9b9b4198", "zippedFile": "342-0342-a.u8d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "f83069fd7ff1fb011958f819cbff4c88", "zippedFile": "342-0342-b.u8d", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "875919e2544644cd628f44b5c11db036", "zippedFile": "modplus-harp2.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "efcefe8f11c10541a503d48a07878201", "zippedFile": "rominator-20150225-hi.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "f4b06da98500df0747a764dfbf1862b9", "zippedFile": "rominator-20150225-lo.bin", "file": "bios/macplus.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macse.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9fb38bdcc0d53d9d380897ee53dc1322", "zippedFile": "macse.rom", "file": "bios/macse.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macclasc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "c229bb677cb41b84b780c9e38a09173e", "zippedFile": "341-0813__=c=1983-90_apple__japan__910d_d.27c4096_be.ue1", "file": "bios/macclasc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/nb_mdc824.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "7500a6a958247ee6e092f08715f2fff8", "zippedFile": "3410868.bin", "file": "bios/nb_mdc824.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/maclc3.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "fa16d49527c4e6e9c0d9e46904133d39", "zippedFile": "ecbbc41c.rom", "file": "bios/maclc3.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mackbd_m0110a.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "9e8ea1552153c5e0f895e247e7d3ec1c", "zippedFile": "341-0332-a.bin", "file": "bios/mackbd_m0110a.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/nb_image.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "93155ac7bad0fec36837252bb1e408f2", "zippedFile": "nb_fake.bin", "file": "bios/nb_image.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "96665499f5cf2bb5b4aae6fdaf0a9fb5", "zippedFile": "341s0850.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "b955ecbdf6d2f979f3683dd1d6884643", "zippedFile": "341s0851.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "5035d321c5d5fa1eab5ce6bf986676e4", "zippedFile": "344s0100.bin", "file": "bios/egret.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/adbmodem.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "862b8598cecdbc934658c4cb599a8142", "zippedFile": "342s0440-b.bin", "file": "bios/adbmodem.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos3.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos608.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos701.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/macos75.img", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac608.chd", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac701.chd", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/mac755.chd", "emulator": "libretro", "core": "mame" } ] },
 
     # ---------- Tandy Color Conputer ---------- #
     "coco":   { "name": "Tandy Color Computer", "biosFiles":  [ { "md5": "", "file": "bios/coco.zip"  },
@@ -550,13 +591,28 @@ systems = {
                                                 { "md5": "5c39baa89fe8a40a5167a53cc5ae7791", "zippedFile": "pres_adfs_115.rom", "file": "bios/electron_plus3.zip"} ] },
 
     # ---------- Apple ][ ---------- #
-    "apple2":   { "name": "Apple II", "biosFiles":  [ { "md5": "", "file": "bios/apple2e.zip"  },
+    "apple2":   { "name": "Apple II", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/apple2e.zip"  },
                                                 { "md5": "4431aea380185e3f509285540d7cb418", "zippedFile": "342-0132-c.e12", "file": "bios/apple2e.zip"},
                                                 { "md5": "e6d453d8738e6df4f73df8c8051df3e8", "zippedFile": "342-0133-a.chr", "file": "bios/apple2e.zip"},
                                                 { "md5": "72924019cf1719765e4fde35e59c1c7d", "zippedFile": "342-0134-a.64", "file": "bios/apple2e.zip"},
                                                 { "md5": "0b150f4bfa090770a866cc5d214703f4", "zippedFile": "342-0135-b.64", "file": "bios/apple2e.zip"},
+                                                { "md5": "", "file": "bios/apple2ee.zip" },
+                                                { "md5": "b956c537e7b6b85ffa5c3493b1490d8a", "zippedFile": "341-0132-d.e12", "file": "bios/apple2ee.zip"},
+                                                { "md5": "9123fff3442c0e688cc6816be88dd4ab", "zippedFile": "342-0265-a.chr", "file": "bios/apple2ee.zip"},
+                                                { "md5": "6ac9338f6972eea01604f90d9a581f18", "zippedFile": "342-0303-a.e8", "file": "bios/apple2ee.zip"},
+                                                { "md5": "6b11018a14668a7e3904319d2097dddc", "zippedFile": "342-0304-a.e10", "file": "bios/apple2ee.zip"},
+                                                { "md5": "", "file": "bios/apple2p.zip" },
+                                                { "md5": "89ca5cd551ffad9a557652a97dcb6627", "zippedFile": "341-0011.d0", "file": "bios/apple2p.zip"},
+                                                { "md5": "42333f24cd6e70696b212b042f3166aa", "zippedFile": "341-0012.d8", "file": "bios/apple2p.zip"},
+                                                { "md5": "5de50bebc41e59ae4eb27be4c24b6814", "zippedFile": "341-0013.e0", "file": "bios/apple2p.zip"},
+                                                { "md5": "56d9bb6730735a3b2bbcc75d1da7a8de", "zippedFile": "341-0014.e8", "file": "bios/apple2p.zip"},
+                                                { "md5": "cb63c41c5e72b5fda54feb5490efdefb", "zippedFile": "341-0015.f0", "file": "bios/apple2p.zip"},
+                                                { "md5": "8925b695ae0177dd3919dbea2f2f202b", "zippedFile": "341-0020-00.f8", "file": "bios/apple2p.zip"},
+                                                { "md5": "9ac0dc8c4d0002eb45b0b84be0bde5ec", "zippedFile": "341-0036.chr", "file": "bios/apple2p.zip"},
                                                 { "md5": "", "file": "bios/a2diskiing.zip" },
                                                 { "md5": "2020aa1413ff77fe29353f3ee72dc295", "zippedFile": "341-0027-a.p5", "file": "bios/a2diskiing.zip"},
+                                                { "md5": "", "file": "bios/a2cffa02.zip" },
+                                                { "md5": "80adbc2d79f347ec63f4b771ea32984d", "zippedFile": "cffa20ee02.bin", "file": "bios/a2cffa02.zip"},
                                                 { "md5": "", "file": "bios/votrax.zip" },
                                                 { "md5": "95b91e4a2fe7d6f13d353ba1827d37f9", "zippedFile": "sc01a.bin", "file": "bios/votrax.zip"},
                                                 { "md5": "", "file": "bios/d2fdc.zip" },
@@ -645,7 +701,7 @@ systems = {
                                                 { "md5": "ac0d468be366779c9df633be98da250a", "zippedFile": "cdi220b.rom", "file": "bios/cdimono1.zip"},
                                                 { "md5": "3e59b8a9a423d3ecd612a32fe4e2d748", "zippedFile": "zx405037p__cdi_servo_2.1__b43t__llek9215.mc68hc705c8a_withtestrom.7201", "file": "bios/cdimono1.zip"},
                                                 { "md5": "3d20cf7550f1b723158b42a1fd5bac62", "zippedFile": "zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206", "file": "bios/cdimono1.zip"} ] },
-    
+
     # ---------- Naomi 2 ---------- #
     "naomi2":   { "name": "Naomi 2", "biosFiles":  [ { "md5": "", "file": "bios/dc/naomi2.zip"  },
                                                 { "md5": "728bfe038ce280872057e365ebfc0fee", "zippedFile": "315-6146.bin", "file": "bios/dc/naomi2.zip"},
@@ -674,11 +730,21 @@ systems = {
     "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "aac601811a25d7b31a3d5f3f1f82f338", "file": "bios/hikaru.zip" },
                                                 { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip"} ] },
 
+    # ---------- Playstation Vita ---------- #
+    # https://www.playstation.com/en-us/support/hardware/psvita/system-software/
+    # http://dus01.psp2.update.playstation.net/update/psp2/image/2022_0209/sd_59dcf059d3328fb67be7e51f8aa33418/PSP2UPDAT.PUP?dest=us
+    "psvita":   { "name": "PS Vita", "biosFiles":  [ { "md5": "59dcf059d3328fb67be7e51f8aa33418", "file": "bios/psvita/PSP2UPDAT.PUP" },
+                                                { "md5": "f2c7b12fe85496ec88a0391b514d6e3b", "file": "bios/psvita/PSVUPDAT.PUP"} ] },
+
     # ---------- GCE Vectrex ---------- #
     # Not required for libretro-vecx, the default emulator
-    # "vectrex":   { "name": "GCE Vectrex", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
-    #                                            { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
-    #                                            { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
+                                                { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
+                                                { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    
+    # ---------- ScummVM ---------- #
+    "scummvm":   { "name": "ScummVM", "biosFiles":  [ { "md5": "89e42e386e82e0cacb4a2704a03706ca", "file": "bios/scummvm/extra/MT32_PCM.ROM" },
+                                                      { "md5": "5626206284b22c2734f3e9efefcd2675", "file": "bios/scummvm/extra/MT32_CONTROL.ROM" } ] },
 }
 
 class BiosStatus:
@@ -721,34 +787,86 @@ def checkInsideZip(container, fileName, md5sum):
     print('Missing file inside .zip: File {} not found in {}'.format(fileName, container))
     return False
 
-def checkBios(systems, prefix):
+def coreExists(checkMe, emuDict):
+    if "emulator" in checkMe:
+        if checkMe["emulator"] in emuDict.keys():
+            hasEmu = True
+        else:
+            hasEmu = False
+    else:
+        # Emulator not defined, check BIOS
+        hasEmu = True
+    if hasEmu and "core" in checkMe:
+        if checkMe["core"] in emuDict[checkMe["emulator"]]:
+            hasCore = True
+        else:
+            hasCore = False
+    else:
+        # Either core is undefined or emulator is not installed.
+        # Set core presence to emulator presence, we'll assume there's only one core or it applies to all.
+        hasCore = hasEmu
+    return hasCore
+
+def checkBios(systems, prefix, filterROMs):
+    systemDict = {}
+    emuDict = {}
+    systemName = ""
+    configFile = "/usr/share/emulationstation/es_systems.cfg"
+    configData = elementTree.parse(configFile)
+    configRoot = configData.getroot()
+
+    if filterROMs:
+        # Load systems & emulators from es_systems.cfg
+        # System full name stored but not currently used, may be useful for the readme function.
+        for activeSystem in configRoot:
+            for systemTag in activeSystem:
+                if systemTag.tag == "fullname":
+                    systemName = systemTag.text
+                elif systemTag.tag == "name":
+                    systemDict[systemTag.text] = systemName
+                    systemName = ""
+                elif systemTag.tag == "emulators":
+                    for emulatorTag in systemTag:
+                        emulatorName = emulatorTag.attrib['name']
+                        for coreTag in emulatorTag[0]:
+                            if emulatorName in emuDict.keys():
+                                if not coreTag.text in emuDict[emulatorName]:
+                                    emuDict[emulatorName].append(coreTag.text)
+                            else:
+                                emuDict[emulatorName] = [coreTag.text]
+    else:
+        for system in systems.keys():
+            systemDict[system] = systems[system]['name']
+
     missingBios = {}
     for system in systems.keys():
-        for file in systems[system]["biosFiles"]:
-            filepath = prefix + "/" + file["file"]
-            if isfile(filepath):
-                if not "zippedFile" in file:
-                    md5 = md5sum(filepath)
-                    if md5 != file["md5"] and file["md5"] != "":
-                        if system not in missingBios:
-                            missingBios[system] = {}
-                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-                else:
-                    if 'altmd5' in file:
-                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
-                            print('Debug: Alternate MD5 Exists')
+        if system in systemDict.keys():
+            if coreExists(systems[system], emuDict) or filterROMs == False:
+                for file in systems[system]["biosFiles"]:
+                    if coreExists(file, emuDict) or filterROMs == False:
+                        filepath = prefix + "/" + file["file"]
+                        if isfile(filepath):
+                            if not "zippedFile" in file:
+                                md5 = md5sum(filepath)
+                                if md5 != file["md5"] and file["md5"] != "":
+                                    if system not in missingBios:
+                                        missingBios[system] = {}
+                                    missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                            else:
+                                if 'altmd5' in file:
+                                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"], file["altmd5"]):
+                                        if system not in missingBios:
+                                            missingBios[system] = {}
+                                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                                else:
+                                    if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
+                                        if system not in missingBios:
+                                            missingBios[system] = {}
+                                        missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
+                        else:
                             if system not in missingBios:
                                 missingBios[system] = {}
-                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-                    else:
-                        if not checkInsideZip(filepath, file["zippedFile"], file["md5"]):
-                            if system not in missingBios:
-                                missingBios[system] = {}
-                            missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-            else:
-                if system not in missingBios:
-                    missingBios[system] = {}
-                missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
+                            missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
     return missingBios
 
 def displayMissingBios(systems, missingBios):
@@ -774,7 +892,10 @@ def createReadme(systems):
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         prefix = "/userdata"
-        displayMissingBios(systems, checkBios(systems, prefix))
+        displayMissingBios(systems, checkBios(systems, prefix, True))
+    elif sys.argv[1] == "--noFilter":
+        prefix = "/userdata"
+        displayMissingBios(systems, checkBios(systems, prefix, False))
     elif sys.argv[1] == "--createReadme":
         createReadme(systems)
     elif len(sys.argv) == 3 and sys.argv[1] == "--filter":
@@ -790,4 +911,4 @@ if __name__ == '__main__':
             print("No system named {} found".format(sys.argv[2]))
             exit(1)
 
-        displayMissingBios(filtered_systems, checkBios(filtered_systems, prefix))
+        displayMissingBios(filtered_systems, checkBios(filtered_systems, prefix, True))

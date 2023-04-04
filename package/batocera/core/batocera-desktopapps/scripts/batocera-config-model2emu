@@ -5,10 +5,6 @@ then
 	export DISPLAY=:0.0
 fi
 
-PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
-cd /userdata/saves/model2/model2emu/
-
-# hum pw 0.2 and 0.3 are hardcoded, not nice
-LD_LIBRARY_PATH=/lib32:/usr/wine/lutris/lib/wine LIBGL_DRIVERS_PATH=/lib32/dri SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2" PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3" WINEPREFIX=/userdata/saves/model2 wine /userdata/saves/model2/model2emu/emulator_multicpu.exe
+emulatorlauncher -system model2 -rom config
 
 exit 0

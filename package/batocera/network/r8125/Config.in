@@ -1,0 +1,10 @@
+comment "r8125 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_R8125
+	bool "r8125"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux Driver for the Realtek r8125 driver, which supports 2.5 GbE.
+
+	  https://github.com/awesometic/realtek-r8125-dkms

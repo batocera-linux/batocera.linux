@@ -1,0 +1,91 @@
+#!/bin/bash 
+#
+# Suspend or shutdown
+#
+
+SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
+# because on rg552, it is too easy to push on the shutdown button
+SHUTDOWNDELAY="$(/usr/bin/batocera-settings-get-master system.shutdowndelay)"
+if test "${SHUTDOWNDELAY}" = ""
+then
+    SHUTDOWNDELAY=0
+fi
+
+###############################
+# 1 when pressed
+# 0 when released
+SETACTION=$1
+
+do_es_menu() {
+    # display the menu only when es is up and no game is running
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+    test $? != 0                 && return 0
+    test "${HTTP_STATUS}" != 201 && return 0 # 201 when not game
+
+    curl "http://localhost:1234/quit?confirm=menu"
+}
+
+if test "${SETACTION}" = 1
+then
+    ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
+    if test "${SUSPEND_MODE}" = "" -a "${SHUTDOWNDELAY}" = ""
+    then
+	/sbin/shutdown -h now
+    else
+	touch "/var/run/shutdown-delay.flag"
+	SLEEPTIME=$(expr "${SHUTDOWNDELAY}" + 1)
+	sleep ${SLEEPTIME}
+	if test -e "/var/run/shutdown-delay.flag"
+	then
+	    # the one who manage to remove the file can do the action
+	    if rm "/var/run/shutdown-delay.flag" 2>/dev/null
+	    then
+		touch "/var/run/shutdown-delay.last"
+		do_es_menu
+	    fi
+	fi
+    fi
+else
+    # the one who manage to remove the file can do the action
+    FLAG_DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.flag"))))
+    if rm "/var/run/shutdown-delay.flag" 2>/dev/null
+    then
+	# if there is a delay, check it first
+	if test "${SHUTDOWNDELAY}" != ""
+	then
+	    if test "${FLAG_DELAY}" -lt "${SHUTDOWNDELAY}"
+	    then
+		# no action if the delay didn't elapsed
+		exit 0
+	    fi
+	fi
+
+	### callable only once every 7 seconds
+	### because some boards (steamdeck) have 2 events reacting to the KEY_POWER
+	### this is mainly for suspend to not call it 2 times
+	if test -e "/var/run/shutdown-delay.last"
+	then
+	    DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.last"))))
+	    if test "${DELAY}" -lt 5
+	    then
+		echo "wait between 2 calls" >2&
+		exit 0
+	    fi
+	fi
+	touch "/var/run/shutdown-delay.last"
+	########
+
+	# shutdown / suspend
+	case "${SUSPEND_MODE}" in
+	    "suspend")
+		pm-is-supported --suspend && pm-suspend
+	    ;;
+	    "hybrid")
+		# pm-hibernate is not supported on the Win600 at the moment
+		pm-is-supported --suspend-hybrid && pm-suspend-hybrid
+	    ;;
+	    *)
+		/sbin/shutdown -h now
+	esac
+    fi
+fi

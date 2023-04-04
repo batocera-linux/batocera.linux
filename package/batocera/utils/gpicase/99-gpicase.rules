@@ -1,1 +1,0 @@
-SUBSYSTEM=="usb", ATTR{manufacturer}=="RetroFlag", ATTR{product}=="GPi Case", RUN+="/usr/bin/batocera-gpicase-install", RUN+="/bin/sh -c '/bin/echo RETROFLAG_GPI > /var/run/powerswitch-by-udevrule'"

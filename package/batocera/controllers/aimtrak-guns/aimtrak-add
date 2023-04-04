@@ -1,41 +1,52 @@
 #!/bin/bash
 
-# store the first 2 inputs into
-# /var/run/aimtrak-devs
-# then for the 3rd one, join
-# supports multi guns
-
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
-USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+BASEFILE="/var/run/virtual-aimtrak-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
 
-cleanAndExit() {
-    rmdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
     exit "${1}"
 }
 
-# lock
-N=0
-while ! mkdir "/var/run/aimtrak-devices.${USBPATHHASH}.lock"
-do
-    sleep 1
-    let N++
-    test "${N}" -gt 30 && exit 1 # give up
-done
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
 
-NDEVS=$(cat "/var/run/aimtrak-devices.${USBPATHHASH}" | wc -l)
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
 
-if test "${NDEVS}" = 2
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+if test "${NDEVS}" = 3
 then
-    DEV1=$(head -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
-    DEV2=$(tail -1 "/var/run/aimtrak-devices.${USBPATHHASH}")
-    rm "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
-
-    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEVNAME}" persist=exit --map btn:trigger btn:middle --map btn:thumb btn:right --output name="Aimtrak ATRAK" &
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+    DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map btn:trigger btn:middle --map btn:thumb btn:right --output name="Aimtrak ATRAK" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
 else
-    echo "${DEVNAME}" >> "/var/run/aimtrak-devices.${USBPATHHASH}" || cleanAndExit 1
+    unlockAndExit 1
 fi
 
-# unlock
-cleanAndExit 0
+unlockAndExit 0

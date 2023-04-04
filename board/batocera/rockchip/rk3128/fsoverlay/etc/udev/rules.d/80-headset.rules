@@ -1,0 +1,1 @@
+SUBSYSTEM=="switch", ACTION=="add|change", ENV{SWITCH_NAME}=="Headset", RUN+="/usr/bin/headset-hotplug.sh"

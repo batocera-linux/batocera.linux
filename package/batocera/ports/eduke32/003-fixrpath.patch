@@ -1,0 +1,14 @@
+diff --git a/Common.mak b/Common.mak
+index 7fba3da..4a87a4a 100644
+--- a/Common.mak
++++ b/Common.mak
+@@ -530,9 +530,6 @@ else ifeq ($(PLATFORM),WII)
+     LIBDIRS += -L$(LIBOGC_LIB)
+ else ifeq ($(PLATFORM),$(filter $(PLATFORM),DINGOO GCW))
+     COMPILERFLAGS += -D__OPENDINGUX__
+-else ifeq ($(SUBPLATFORM),LINUX)
+-    # Locate .so files
+-    LINKERFLAGS += -Wl,-rpath,'$$ORIGIN' -Wl,-z,origin
+ endif
+ ASFLAGS += -f $(ASFORMAT)
+ 

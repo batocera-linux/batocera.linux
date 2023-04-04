@@ -33,7 +33,7 @@ def logging_status(msg):
   with open("/var/run/bt_status", "w") as file:
     file.write(msg + "\n")
 
-def connect_device(path, address, properties, forceConnect, typeInput, typeAudio, typeDevice):
+def connect_device(path, address, properties, forceConnect, filter):
   global gdiscovering
   global gadapter
 
@@ -41,10 +41,17 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
   trusted = False
   connected = False
 
+  #
+  if filter is None:
+    logging.info("skipping {}. No filter.".format(address))
+    return
+
   # avoid devices without interesting information
   if "Trusted" not in properties:
+    logging.info("skipping {}. No Trusted property.".format(address))
     return
   if "Connected" not in properties:
+    logging.info("skipping {}. No Connected property.".format(address))
     return
 
   trusted   = prop2str(properties["Trusted"])
@@ -58,16 +65,10 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
     logging.info("Skipping device {} (no type)".format(getDevName(properties)));
     return
 
-  logging.info("typeInput={}, typeAudio={}, typeDevice={}, Icon={}, Address={}".format(typeInput, typeAudio, typeDevice, prop2str(properties["Icon"]), prop2str(properties["Address"])))
+  logging.info("filter={}, Icon={}, Address={}".format(filter, prop2str(properties["Icon"]), prop2str(properties["Address"])))
 
-  if not ( (typeDevice is None and typeInput and prop2str(properties["Icon"]).startswith("input")) or (typeDevice is None and typeAudio and prop2str(properties["Icon"]).startswith("audio-card")) or (typeDevice is not None and typeDevice == prop2str(properties["Address"])) ):
-    if (typeInput or typeAudio) and typeDevice is None:
-      logging.info("Skipping device {} because of type {}".format(getDevName(properties), prop2str(properties["Icon"])));
-    else:
-      if typeDevice:
-        logging.info("Skipping device {} (not {})".format(getDevName(properties), typeDevice));
-      else:
-        logging.info("Skipping device {} (no target)".format(getDevName(properties)));
+  if not (filter is not None and (filter == prop2str(properties["Address"]) or (filter == "input" and prop2str(properties["Icon"]).startswith("input")) )):
+    logging.info("Skipping device {} (not {})".format(getDevName(properties), filter));
     return
 
   logging.info("event for " + devName + "(paired=" + bool2str(paired, "paired", "not paired") + ", trusted=" + bool2str(trusted, "trusted", "untrusted") + ", connected=" + bool2str(connected, "connected", "disconnected") + ")")
@@ -79,8 +80,8 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
   
   if not paired:
     if connected == False and gdiscovering:
-      doParing(address, devName, shortDevName)
-    return
+      doPairing(address, devName, shortDevName)
+    #return
 
   # now it is paired
   if not trusted and (gdiscovering or forceConnect):
@@ -94,7 +95,7 @@ def connect_device(path, address, properties, forceConnect, typeInput, typeAudio
   if not connected or forceConnect:
     doConnect(address, devName, shortDevName)
 
-def doParing(address, devName, shortDevName):
+def doPairing(address, devName, shortDevName):
   logging.info("Pairing... (" + devName + ")")
   logging_status("Pairing " + shortDevName + "...")
   device = bluezutils.find_device(address)
@@ -196,41 +197,29 @@ def getShortDevName(properties):
 
   return "unknown"
 
-def getDevAddressName(properties):
+def getDevAddressNameType(properties):
   if "Address" not in properties:
-    return None, None
+    return None, None, None
 
+  vaddr = prop2str(properties["Address"])
+  vname = None
   if "Name" in properties:
-    return prop2str(properties["Address"]), prop2str(properties["Name"])
-  return prop2str(properties["Address"]), None
+    vname = prop2str(properties["Name"])
+  vtype = None
+  if "Icon" in properties:
+    vtype = prop2str(properties["Icon"])
 
-def getBluetoothWantedTypes():
-  typeDevice = None
-  typePad = False
-  typeAudio = False
+  return vaddr, vname, vtype
 
+def getBluetoothWantedAddr():
+  addrDevice = None
   if os.path.isfile("/var/run/bt_device"):
     with open("/var/run/bt_device", "r") as file:
-      typeDevice = file.read().strip()
-      if typeDevice == "":
-        typeDevice = None
-      logging.info("bt_dev: {}".format(typeDevice))
-  
-  if os.path.isfile("/var/run/bt_types"):
-    btype = ""
-    with open("/var/run/bt_types", "r") as file:
-      btype = file.read().strip()
-      logging.info("bt_type: {}".format(btype))
-    
-    if btype == "":
-      typePad   = True
-      typeAudio = True
-    if btype == "pad":
-      typePad   = True
-    if btype == "audio":
-      typeAudio = True
-
-  return typeDevice, typePad, typeAudio
+      addrDevice = file.read().strip()
+      if addrDevice == "":
+        addrDevice = None
+      logging.info("bt_dev: {}".format(addrDevice))
+  return addrDevice
 
 def interfaces_added(path, interfaces):
   global gdevices
@@ -248,13 +237,15 @@ def interfaces_added(path, interfaces):
   else:
     gdevices[path] = properties
 
+  logging.info("Interface added: {}".format(propertiesToStr(properties)))
+
   if glisting_mode:
     listing_dev_event(path, gdevices[path], True)
-    return
 
   if "Address" in gdevices[path]:
-    typeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, prop2str(properties["Address"]), gdevices[path], False, typeInput, typeAudio, typeDevice)
+    connect_device(path, prop2str(properties["Address"]), gdevices[path], False, getBluetoothWantedAddr())
+  else:
+    logging.info("No address. skip.")
 
 def interfaces_removed(path, interfaces):
   global gdevices
@@ -264,6 +255,15 @@ def interfaces_removed(path, interfaces):
 
   if path in gdevices:
     del gdevices[path]
+
+def propertiesToStr(properties):
+  str = ""
+  for p in properties:
+    if p not in ["ServiceData", "RSSI", "UUIDs", "Adapter", "AddressType", "Alias", "Bonded", "ServicesResolved"]:
+      if str != "":
+        str = str + ", "
+      str = str + "{}={}".format(p, properties[p])
+  return str
 
 def properties_changed(interface, changed, invalidated, path):
   global gdevices
@@ -279,16 +279,14 @@ def properties_changed(interface, changed, invalidated, path):
 
   if glisting_mode:
     listing_dev_event(path, gdevices[path], True)
-    return
 
-  #logging.info("Properties changed:")
-  #logging.info(changed)
-  #logging.info(invalidated)
+  propstr = propertiesToStr(changed)
+  if propstr != "":
+    logging.info("Properties changed: {}".format(propstr))
 
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
-    typdeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, gdevices[path]["Address"], gdevices[path], True, typeInput, typeAudio, typdeDevice)
+    connect_device(path, gdevices[path]["Address"], gdevices[path], True, getBluetoothWantedAddr())
     return
   
   # ok, it is now connected, what else ?
@@ -300,8 +298,7 @@ def properties_changed(interface, changed, invalidated, path):
     return
 
   if "Address" in gdevices[path]:
-    typeDevice, typeInput, typeAudio = getBluetoothWantedTypes()
-    connect_device(path, gdevices[path]["Address"], gdevices[path], False, typeInput, typeAudio, typeDevice)
+    connect_device(path, gdevices[path]["Address"], gdevices[path], False, getBluetoothWantedAddr())
 
 def merge2dicts(d1, d2):
   res = d1.copy()
@@ -329,8 +326,17 @@ def listing_dev_event(path, properties, adding):
   if not adding:
     devstatus = "removed"
   with open("/var/run/bt_listing", "a") as file:
-    devaddress, devname = getDevAddressName(properties)
-    file.write("<device id=\"{}\" name=\"{}\" status=\"{}\"/>\n".format(devaddress, devname, devstatus));
+    devaddress, devname, devtype = getDevAddressNameType(properties)
+    file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(devaddress, devname, devstatus, icon2basicname(devtype)));
+
+def icon2basicname(str):
+  if str is None:
+    return "unknown"
+  if str == "input-gaming":
+    return "joystick"
+  if str.startswith("audio-"):
+    return "audio"
+  return str
 
 def user_signal_start_discovery(signum, frame):
   global gdiscovering
@@ -461,6 +467,7 @@ def do_main_loop(dev_id):
   # use events while i manage to stop discovery only from the process having started it
   signal.signal(signal.SIGUSR1, user_signal_start_discovery)
   signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
+  logging.info("signals set")
   
   mainloop = GLib.MainLoop()
   mainloop.run()

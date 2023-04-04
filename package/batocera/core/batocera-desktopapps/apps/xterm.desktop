@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Icon=xterm-color_48x48
-Exec=xterm -e /bin/bash
+Exec=xterm -fs 14 -fg white -bg black -fa "Monospace" -en UTF-8 -sb -rightbar -e bash -c "PS1='[\u@\h \$PWD]# ' /bin/bash $@"
 Terminal=false
 Type=Application
 Categories=System;batocera.linux;

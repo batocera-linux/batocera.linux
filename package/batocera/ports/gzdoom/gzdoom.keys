@@ -23,27 +23,16 @@
         {
             "trigger": "start",
             "type": "key",
-            "target": "KEY_ENTER"
+            "target": "KEY_ESC"
         },
         {
             "trigger": "select",
             "type": "key",
-            "target": "KEY_ESC"
+            "target": "KEY_TAB"
         },
         {
             "trigger": "joystick2",
             "type": "mouse"
-        },
-        {
-            "trigger": [
-                "hotkey",
-                "start"
-            ],
-            "type": "key",
-            "target": [
-                "KEY_RIGHTALT",
-                "KEY_F4"
-            ]
         },
         {
             "trigger": "joystick1up",
@@ -81,30 +70,6 @@
             "target": "BTN_LEFT"
         },
         {
-            "trigger": [
-                "hotkey",
-                "x"
-            ],
-            "type": "key",
-            "target": "KEY_F3"
-        },
-        {
-            "trigger": [
-                "hotkey",
-                "y"
-            ],
-            "type": "key",
-            "target": "KEY_F2"
-        },
-        {
-            "trigger": [
-                "b",
-                "hotkey"
-            ],
-            "type": "key",
-            "target": "KEY_F4"
-        },
-        {
             "trigger": "a",
             "type": "key",
             "target": "KEY_E"
@@ -125,14 +90,6 @@
             "target": "KEY_END"
         },
         {
-            "trigger": [
-                "a",
-                "hotkey"
-            ],
-            "type": "key",
-            "target": "KEY_F10"
-        },
-        {
             "trigger": "l3",
             "type": "key",
             "target": "KEY_LEFTCTRL"
@@ -140,12 +97,35 @@
         {
             "trigger": "pagedown",
             "type": "key",
-            "target": "KEY_TAB"
+            "target": "KEY_PAGEDOWN"
         },
         {
             "trigger": "pageup",
             "type": "key",
-            "target": "BTN_RIGHT"
+            "target": "KEY_PAGEUP"
+        },
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "exec",
+            "target": "killall -9 gzdoom"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": "KEY_F6",
+            "description": "quicksave"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "quickload"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_SYSRQ",
+            "description": "screenshot"
         }
     ]
 }

@@ -10,6 +10,10 @@ BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
 BATOCERA_DESKTOPAPPS_APPS  = xterm.desktop
 BATOCERA_DESKTOPAPPS_ICONS =
 
+# wiimote
+BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
+BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
+
 # pcsx2
 ifneq ($(BR2_PACKAGE_PCSX2_X86)$(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2
@@ -139,6 +143,27 @@ ifeq ($(BR2_PACKAGE_XENIA),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-xenia
   BATOCERA_DESKTOPAPPS_APPS    += xenia-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += xenia.png
+endif
+
+# xenia-canary
+ifeq ($(BR2_PACKAGE_XENIA_CANARY),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-xenia-canary
+  BATOCERA_DESKTOPAPPS_APPS    += xenia-canary-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += xenia-canary.png
+endif
+
+# vita3k
+ifeq ($(BR2_PACKAGE_VITA3K),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-vita3k
+  BATOCERA_DESKTOPAPPS_APPS    += vita3k-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
+endif
+
+# BigPEmu
+ifeq ($(BR2_PACKAGE_BIGPEMU),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-bigpemu
+  BATOCERA_DESKTOPAPPS_APPS    += bigpemu-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += bigpemu.png
 endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS

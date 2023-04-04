@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# "opfor" branch
-HLSDK_XASH3D_OPFOR_VERSION = 660e21df
+# "opforfixed" branch on 26 Oct 2022
+HLSDK_XASH3D_OPFOR_VERSION = 79ff4903
 HLSDK_XASH3D_OPFOR_SITE = $(call github,FWGS,hlsdk-xash3d,$(HLSDK_XASH3D_OPFOR_VERSION))
 HLSDK_XASH3D_OPFOR_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium
 HLSDK_XASH3D_OPFOR_LICENSE = Half Life 1 SDK LICENSE

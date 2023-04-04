@@ -4,19 +4,14 @@
 #
 ################################################################################
 
-RCLONE_VERSION = v1.58.0
+# 21 Oct 2022
+RCLONE_VERSION = v1.60.0
 RCLONE_SITE = $(call github,rclone,rclone,$(RCLONE_VERSION))
 RCLONE_LICENSE = GPLv2
-RCLONE_DEPENDENCIES = 
-
-RCLONE_TARGET_ENV = \
-	PATH=$(BR_PATH) \
-	GOROOT="$(HOST_GO_ROOT)" \
-	GOPATH="$(HOST_GO_GOPATH)" \
-	GOCACHE="$(HOST_GO_TARGET_CACHE)"
+RCLONE_DEPENDENCIES =
 
 define RCLONE_BUILD_CMDS
-	cd $(@D) && $(RCLONE_TARGET_ENV) $(GO_BIN) build
+	cd $(@D) && $(HOST_GO_TARGET_ENV) $(GO_BIN) build
 endef
 
 define RCLONE_INSTALL_TARGET_CMDS

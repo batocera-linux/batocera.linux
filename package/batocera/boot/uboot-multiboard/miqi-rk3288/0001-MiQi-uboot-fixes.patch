@@ -1,0 +1,60 @@
+From 215c3c5d3e0ce4ec447c8b37b8e50656709b15a8 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Mon, 10 Oct 2022 23:15:12 +0300
+Subject: [PATCH 1/3] MiQi uboot fixes
+
+---
+ arch/arm/dts/rk3288-miqi-u-boot.dtsi  | 5 +++++
+ arch/arm/mach-rockchip/rk3288/Kconfig | 1 +
+ include/configs/miqi_rk3288.h         | 9 +++++++++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/arch/arm/dts/rk3288-miqi-u-boot.dtsi b/arch/arm/dts/rk3288-miqi-u-boot.dtsi
+index 2a74fdd15f..e04ab12cac 100644
+--- a/arch/arm/dts/rk3288-miqi-u-boot.dtsi
++++ b/arch/arm/dts/rk3288-miqi-u-boot.dtsi
+@@ -5,6 +5,11 @@
+ 
+ #include "rk3288-u-boot.dtsi"
+ / {
++	chosen {
++		u-boot,spl-boot-order = \
++			"same-as-spl", &sdmmc, &emmc;
++	};
++
+ 	leds {
+ 		u-boot,dm-pre-reloc;
+ 
+diff --git a/arch/arm/mach-rockchip/rk3288/Kconfig b/arch/arm/mach-rockchip/rk3288/Kconfig
+index e8c57843a3..2078146d6e 100644
+--- a/arch/arm/mach-rockchip/rk3288/Kconfig
++++ b/arch/arm/mach-rockchip/rk3288/Kconfig
+@@ -80,6 +80,7 @@ config TARGET_FIREFLY_RK3288
+ config TARGET_MIQI_RK3288
+ 	bool "MiQi-RK3288"
+ 	select BOARD_LATE_INIT
++	select TPL
+ 	help
+ 	  MiQi-RK3288 is a RK3288-based development board with 4 USB 2.0
+ 	  ports, HDMI, micro-SD card, 16 GB eMMC and Gigabit Ethernet. It
+diff --git a/include/configs/miqi_rk3288.h b/include/configs/miqi_rk3288.h
+index 053c9032e2..269ec529a3 100644
+--- a/include/configs/miqi_rk3288.h
++++ b/include/configs/miqi_rk3288.h
+@@ -13,4 +13,13 @@
+ 
+ #include <configs/rk3288_common.h>
+ 
++#undef BOOT_TARGET_DEVICES
++
++#define BOOT_TARGET_DEVICES(func) \
++	func(MMC, mmc, 0) \
++	func(MMC, mmc, 1) \
++	func(USB, usb, 0) \
++	func(PXE, pxe, na) \
++	func(DHCP, dchp, na)
++
+ #endif
+-- 
+2.38.0
+

@@ -3,27 +3,24 @@
 # libretro-o2em
 #
 ################################################################################
-# Version: Commits on Nov 30, 2021
-LIBRETRO_O2EM_VERSION = f1050243e0d5285e7769e94a882b0cf39d2b7370
+# Version: Commits on Nov 3, 2021
+# Do not upgrade this commit: https://github.com/libretro/libretro-o2em/issues/57
+LIBRETRO_O2EM_VERSION = c039e83f2589cb9d21b9aa5dc211954234ab8c97
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 LIBRETRO_O2EM_LICENSE = Artistic License
 
 LIBRETRO_O2EM_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_O2EM_PLATFORM = rpi1
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_O2EM_PLATFORM = rpi2
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
-    ifeq ($(BR2_arm),y)
-        LIBRETRO_O2EM_PLATFORM = rpi3
-    else
-        LIBRETRO_O2EM_PLATFORM = rpi3_64
-    endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
+LIBRETRO_O2EM_PLATFORM = rpi3_64
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_O2EM_PLATFORM = rpi4_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)

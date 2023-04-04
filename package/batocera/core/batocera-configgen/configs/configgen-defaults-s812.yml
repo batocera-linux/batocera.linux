@@ -1,8 +1,9 @@
 default:
   options:
+    hud_support: false
     video_threaded: true
     retroarch.menu_driver: xmb
-    retroarch.audio_driver: sdl2
+    retroarch.audio_driver: alsathread
     retroarch.audio_out_rate: 44100
 
 amiga500:
@@ -38,6 +39,6 @@ pet:
 cplus4:
   emulator: vice
   core:     xplus4
-dos:
-  emulator: dosbox
-  core:     dosbox
+fmtowns:
+  emulator: libretro
+  core:     mame

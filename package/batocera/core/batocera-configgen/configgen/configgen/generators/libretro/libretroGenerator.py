@@ -25,6 +25,10 @@ class LibretroGenerator(Generator):
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
+        # Fix for the removed MESS/MAMEVirtual cores
+        if system.config['core'] in [ 'mess', 'mamevirtual' ]:
+            system.config['core'] = 'mame'
+
         # Get the graphics backend first
         gfxBackend = getGFXBackend(system)
 
@@ -71,7 +75,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
+                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi', 'mame078plus', 'mame0139' ]:
                     lightgun = False
                 else:
                     lightgun = True
@@ -211,11 +215,19 @@ class LibretroGenerator(Generator):
         elif system.name == 'dos':
             romDOSName, romExtension = os.path.splitext(romName)
             if (romExtension == '.dos' or romExtension == '.pc'):
-                if os.path.exists(os.path.join(rom, romDOSName + ".bat")):
+                if os.path.exists(os.path.join(rom, romDOSName + ".bat")) and not " " in romDOSName:
                     exe = os.path.join(rom, romDOSName + ".bat")
-                else:
+                elif os.path.exists(os.path.join(rom, "dosbox.bat")) and not os.path.exists(os.path.join(rom, romDOSName + ".bat")):
                     exe = os.path.join(rom, "dosbox.bat")
+                else:
+                    exe = '/tmp/'+ romDOSName # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
+                    try:
+                        os.remove(exe)
+                    except OSError:
+                        pass
+                    os.symlink(rom, exe)
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
+                dontAppendROM = True
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         # Pico-8 multi-carts (might work only with official Lexaloffe engine right now)
@@ -285,7 +297,7 @@ class LibretroGenerator(Generator):
                 corePath = 'lr-' + system.config['core']
             else:
                 corePath = system.config['core']
-            commandArray.append("/var/run/{}.cmd".format(corePath))
+            commandArray.append(f'/var/run/cmdfiles/{os.path.splitext(os.path.basename(rom))[0]}.cmd')
 
         if dontAppendROM == False:
             commandArray.append(rom)

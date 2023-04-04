@@ -270,10 +270,10 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-index 95fedcf56e4a..38e75b275bb6 100644
+index ef53a2578824..d4c53074154a 100644
 --- a/drivers/mmc/core/core.c
 +++ b/drivers/mmc/core/core.c
-@@ -1355,6 +1355,14 @@ void mmc_power_off(struct mmc_host *host)
+@@ -1358,6 +1358,14 @@ void mmc_power_off(struct mmc_host *host)
  	if (host->ios.power_mode == MMC_POWER_OFF)
  		return;
  
@@ -305,10 +305,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 5b2020590f53..df46edbec82c 100644
+index 49ae15708a0b..60348d517efb 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -975,6 +975,20 @@ usb_host0_ohci: usb@ff5d0000 {
+@@ -993,6 +993,20 @@ usb_host0_ohci: usb@ff5d0000 {
  		status = "disabled";
  	};
  
@@ -346,10 +346,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index df46edbec82c..cfc57be009a6 100644
+index 60348d517efb..d7e44d174d7b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -853,6 +853,8 @@ sdmmc: mmc@ff500000 {
+@@ -871,6 +871,8 @@ sdmmc: mmc@ff500000 {
  		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
  		fifo-depth = <0x100>;
  		max-frequency = <150000000>;
@@ -358,7 +358,7 @@ index df46edbec82c..cfc57be009a6 100644
  		status = "disabled";
  	};
  
-@@ -865,6 +867,8 @@ sdio: mmc@ff510000 {
+@@ -883,6 +885,8 @@ sdio: mmc@ff510000 {
  		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
  		fifo-depth = <0x100>;
  		max-frequency = <150000000>;
@@ -367,7 +367,7 @@ index df46edbec82c..cfc57be009a6 100644
  		status = "disabled";
  	};
  
-@@ -877,6 +881,8 @@ emmc: mmc@ff520000 {
+@@ -895,6 +899,8 @@ emmc: mmc@ff520000 {
  		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
  		fifo-depth = <0x100>;
  		max-frequency = <150000000>;
@@ -375,161 +375,4 @@ index df46edbec82c..cfc57be009a6 100644
 +		reset-names = "reset";
  		status = "disabled";
  	};
- 
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Sat, 21 Aug 2021 19:13:31 +0200
-Subject: [PATCH] Commit a728c10dd62a ("arm64: dts: rockchip: remove
- interrupt-names from iommu nodes") intended to remove the interrupt-names
- property for the mmu nodes. It also removed them for the vpu node in
- rk3399.dtsi which currently results in a non-working driver. Fix this by
- re-adding them.
-
-Fixes: a728c10dd62a ("arm64: dts: rockchip: remove interrupt-names from iommu nodes")
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 9db9484ca38f..44def886b391 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1240,6 +1240,7 @@ vpu: video-codec@ff650000 {
- 		reg = <0x0 0xff650000 0x0 0x800>;
- 		interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH 0>,
- 			     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "vepu", "vdpu";
- 		clocks = <&cru ACLK_VCODEC>, <&cru HCLK_VCODEC>;
- 		clock-names = "aclk", "hclk";
- 		iommus = <&vpu_mmu>;
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 27 Oct 2021 14:43:40 +0200
-Subject: [PATCH] arm64: dts: rockchip: add interrupt and headphone-detection
- for Rock Pi4's audio codec
-
-As Schematics at [1] and [2] show C- and plus-revisions have interrupt and
-headphone detection lines of ES8316 codec connected.
-
-Add them to the respective device trees.
-
-[1] https://dl.radxa.com/rockpi4/docs/hw/rockpi4/rockpi_4c_v12_sch_20200620.pdf
-[2] https://dl.radxa.com/rockpi4/docs/hw/rockpi4/rockpi4b_plus_v16_sch_20200628.pdf
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi   | 12 +++++++++++-
- .../boot/dts/rockchip/rk3399-rock-pi-4a-plus.dts     | 11 +++++++++++
- .../boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts     | 11 +++++++++++
- arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts   | 11 +++++++++++
- 4 files changed, 44 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
-index 6a434be62819..92acf6ea299b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
-@@ -36,7 +36,7 @@ sdio_pwrseq: sdio-pwrseq {
- 		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
- 	};
- 
--	sound {
-+	sound: sound {
- 		compatible = "audio-graph-card";
- 		label = "Analog";
- 		dais = <&i2s0_p0>;
-@@ -543,6 +543,16 @@ bt_wake_l: bt-wake-l {
- 		};
- 	};
- 
-+	es8316 {
-+		hp_detect: hp-detect {
-+			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+
-+		hp_int: hp-int {
-+			rockchip,pins = <1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+	};
-+
- 	pcie {
- 		pcie_pwr_en: pcie-pwr-en {
- 			rockchip,pins = <2 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a-plus.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a-plus.dts
-index 281a04b2f5e9..f5a68d8d072d 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a-plus.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a-plus.dts
-@@ -12,3 +12,14 @@ / {
- 	model = "Radxa ROCK Pi 4A+";
- 	compatible = "radxa,rockpi4a-plus", "radxa,rockpi4", "rockchip,rk3399";
- };
-+
-+&es8316 {
-+	pinctrl-0 = <&hp_detect &hp_int>;
-+	pinctrl-names = "default";
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&sound {
-+	hp-det-gpio = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+};
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
-index dfad13d2ab24..81bea953c891 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4b-plus.dts
-@@ -17,6 +17,13 @@ aliases {
- 	};
- };
- 
-+&es8316 {
-+	pinctrl-0 = <&hp_detect &hp_int>;
-+	pinctrl-names = "default";
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
- &sdio0 {
- 	status = "okay";
- 
-@@ -31,6 +38,10 @@ brcmf: wifi@1 {
- 	};
- };
- 
-+&sound {
-+	hp-det-gpio = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+};
-+
- &uart0 {
- 	status = "okay";
- 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
-index 99169bcd51c0..0ad7b6e22f70 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4c.dts
-@@ -17,6 +17,13 @@ aliases {
- 	};
- };
- 
-+&es8316 {
-+	pinctrl-0 = <&hp_detect &hp_int>;
-+	pinctrl-names = "default";
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
- &sdio0 {
- 	status = "okay";
- 
-@@ -31,6 +38,10 @@ brcmf: wifi@1 {
- 	};
- };
- 
-+&sound {
-+	hp-det-gpio = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+};
-+
- &uart0 {
- 	status = "okay";
  

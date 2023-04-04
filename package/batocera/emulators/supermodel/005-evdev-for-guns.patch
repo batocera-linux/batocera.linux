@@ -1,0 +1,417 @@
+From b4e3c3acdaaff33e6012199a6fffb8b36c76afa4 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Sat, 25 Mar 2023 19:24:58 +0000
+Subject: [PATCH] evdev for guns
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ Makefiles/Makefile.UNIX            |   2 +-
+ Makefiles/Rules.inc                |   1 +
+ Src/OSD/SDL/Main.cpp               |   5 +
+ Src/OSD/evdev/EvdevInputSystem.cpp | 287 +++++++++++++++++++++++++++++
+ Src/OSD/evdev/EvdevInputSystem.h   |  51 +++++
+ 5 files changed, 345 insertions(+), 1 deletion(-)
+ create mode 100644 Src/OSD/evdev/EvdevInputSystem.cpp
+ create mode 100644 Src/OSD/evdev/EvdevInputSystem.h
+
+diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
+index d499234..51c5b63 100644
+--- a/Makefiles/Makefile.UNIX
++++ b/Makefiles/Makefile.UNIX
+@@ -63,7 +63,7 @@ SDL2_LIBS = `sdl2-config --libs`
+ #
+ 
+ PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) -O3
+-PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -lSDL2_net
++PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -lSDL2_net -ludev
+ 
+ 
+ ###############################################################################
+diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
+index 52f2b6a..7f1d91a 100644
+--- a/Makefiles/Rules.inc
++++ b/Makefiles/Rules.inc
+@@ -149,6 +149,7 @@ SRC_FILES = \
+ 	Src/Inputs/InputTypes.cpp \
+ 	Src/Inputs/MultiInputSource.cpp \
+ 	Src/OSD/SDL/SDLInputSystem.cpp \
++	Src/OSD/evdev/EvdevInputSystem.cpp \
+ 	Src/OSD/SDL/Crosshair.cpp \
+ 	Src/OSD/Outputs.cpp \
+ 	Src/Sound/MPEG/MpegAudio.cpp \
+diff --git a/Src/OSD/SDL/Main.cpp b/Src/OSD/SDL/Main.cpp
+index 8033d7e..427b5cf 100644
+--- a/Src/OSD/SDL/Main.cpp
++++ b/Src/OSD/SDL/Main.cpp
+@@ -68,6 +68,7 @@
+ #include "Util/ConfigBuilders.h"
+ #include "GameLoader.h"
+ #include "SDLInputSystem.h"
++#include "EvdevInputSystem.h"
+ #include "SDLIncludes.h"
+ #include "Debugger/SupermodelDebugger.h"
+ #include "Graphics/Legacy3D/Legacy3D.h"
+@@ -2048,6 +2049,10 @@ int main(int argc, char **argv)
+   // Create input system
+   if (selectedInputSystem == "sdl")
+     InputSystem = new CSDLInputSystem(s_runtime_config);
++// ifdef udev
++  else if (selectedInputSystem == "evdev")
++    InputSystem = new CEvdevInputSystem(s_runtime_config);
++//
+ #ifdef SUPERMODEL_WIN32
+   else if (selectedInputSystem == "dinput")
+     InputSystem = new CDirectInputSystem(s_runtime_config, s_window, false, false);
+diff --git a/Src/OSD/evdev/EvdevInputSystem.cpp b/Src/OSD/evdev/EvdevInputSystem.cpp
+new file mode 100644
+index 0000000..66b5196
+--- /dev/null
++++ b/Src/OSD/evdev/EvdevInputSystem.cpp
+@@ -0,0 +1,287 @@
++#include "EvdevInputSystem.h"
++#include "Supermodel.h"
++#include "Inputs/Input.h"
++
++#include <fcntl.h>
++#include <unistd.h>
++#include <linux/input.h>
++
++struct event_udev_entry
++{
++   const char *devnode;
++   struct udev_list_entry *item;
++};
++
++int event_isNumber(const char *s) {
++  int n;
++
++  if(strlen(s) == 0) {
++    return 0;
++  }
++
++  for(n=0; n<strlen(s); n++) {
++    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
++         s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++      return 0;
++  }
++  return 1;
++}
++
++// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
++int event_strcmp_events(const char* x, const char* y) {
++
++  // find a common string
++  int n, common, is_number;
++  int a, b;
++
++  n=0;
++  while(x[n] == y[n] && x[n] != '\0' && y[n] != '\0') {
++    n++;
++  }
++  common = n;
++
++  // check if remaining string is a number
++  is_number = 1;
++  if(event_isNumber(x+common) == 0) is_number = 0;
++  if(event_isNumber(y+common) == 0) is_number = 0;
++
++  if(is_number == 1) {
++    a = atoi(x+common);
++    b = atoi(y+common);
++
++    if(a == b) return  0;
++    if(a < b)  return -1;
++    return 1;
++  } else {
++    return strcmp(x, y);
++  }
++}
++
++/* Used for sorting devnodes to appear in the correct order */
++static int sort_devnodes(const void *a, const void *b)
++{
++  const struct event_udev_entry *aa = (const struct event_udev_entry*)a;
++  const struct event_udev_entry *bb = (const struct event_udev_entry*)b;
++  return event_strcmp_events(aa->devnode, bb->devnode);
++}
++
++CEvdevInputSystem::CEvdevInputSystem(const Util::Config::Node& config) : CSDLInputSystem(config) {
++  m_ndevices = 0;
++  m_udev = NULL;
++
++  for(unsigned int i=0; i<EVDEV_MAXPLAYERS; i++) {
++    for(unsigned int j=0; j<EVDEV_MAXBUTTONS; j++) {
++      m_devices_btn[i][j] = 0;
++    }
++    for(unsigned int j=0; j<2; j++) {
++      m_devices_axes[i][j] = 0;
++    }
++  }
++}
++
++CEvdevInputSystem::~CEvdevInputSystem() {
++  InfoLog("evdev: unloading");
++  
++  for(unsigned int i=0; i<m_ndevices; i++) {
++    close(m_devices[i]);
++  }
++  if (m_udev != NULL) udev_unref(m_udev);
++}
++
++bool CEvdevInputSystem::InitializeSystem() {
++    struct udev_enumerate *enumerate;
++    struct udev_list_entry     *devs = NULL;
++    struct udev_list_entry     *item = NULL;
++    unsigned sorted_count = 0;
++    struct event_udev_entry sorted[8]; // max devices
++    unsigned int i;
++
++    InfoLog("evdev: loading");
++
++    m_udev = udev_new();
++
++    if(m_udev == NULL) return false;
++
++    enumerate = udev_enumerate_new(m_udev);
++
++    if (enumerate != NULL) {
++      udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++      udev_enumerate_add_match_subsystem(enumerate, "input");
++      udev_enumerate_scan_devices(enumerate);
++      devs = udev_enumerate_get_list_entry(enumerate);
++
++      for (item = devs; item; item = udev_list_entry_get_next(item)) {
++	const char         *name = udev_list_entry_get_name(item);
++	struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
++	const char      *devnode = udev_device_get_devnode(dev);
++	
++	if (devnode != NULL && sorted_count < 8) {
++	  sorted[sorted_count].devnode = devnode;
++	  sorted[sorted_count].item = item;
++	  sorted_count++;
++	} else {
++	  udev_device_unref(dev);
++	}
++      }
++
++      /* Sort the udev entries by devnode name so that they are
++       * created in the proper order */
++      qsort(sorted, sorted_count,
++	    sizeof(struct event_udev_entry), sort_devnodes);
++
++      for (i = 0; i < sorted_count; i++) {
++	const char *name = udev_list_entry_get_name(sorted[i].item);
++
++	/* Get the filename of the /sys entry for the device
++	 * and create a udev_device object (dev) representing it. */
++	struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
++	const char *devnode     = udev_device_get_devnode(dev);
++
++	if (devnode) {
++	  int fd = open(devnode, O_RDONLY | O_NONBLOCK);
++	  if (fd != -1) {
++	    struct input_absinfo absx, absy;
++	    MouseDetails mseDetails;
++	    char name[64];
++	    if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) {
++	      strcpy(mseDetails.name, devnode);
++	    } else {
++	      strcpy(mseDetails.name, name);
++	    }
++	    mseDetails.isAbsolute = true;
++	    InfoLog("evdev: found gun %i (%s)", m_ndevices+1, mseDetails.name);
++	    m_mseDetails.push_back(mseDetails);
++
++	    m_devices_axes_minmax[m_ndevices][0][0] = 0;
++	    m_devices_axes_minmax[m_ndevices][0][1] = 0;
++	    m_devices_axes_minmax[m_ndevices][1][0] = 0;
++	    m_devices_axes_minmax[m_ndevices][1][1] = 0;
++	    if (ioctl(fd, EVIOCGABS(ABS_X), &absx) >= 0) {
++	      if (ioctl(fd, EVIOCGABS(ABS_Y), &absy) >= 0) {
++		m_devices_axes_minmax[m_ndevices][0][0] = absx.minimum;
++		m_devices_axes_minmax[m_ndevices][0][1] = absx.maximum;
++		m_devices_axes_minmax[m_ndevices][1][0] = absy.minimum;
++		m_devices_axes_minmax[m_ndevices][1][1] = absy.maximum;
++	      }
++	    }
++	    
++	    m_devices[m_ndevices++] = fd;
++	  }
++	}
++	udev_device_unref(dev);
++      }
++      udev_enumerate_unref(enumerate);
++    }
++
++    return CSDLInputSystem::InitializeSystem();
++}
++
++const MouseDetails *CEvdevInputSystem::GetMouseDetails(int mseNum) {
++  return &m_mseDetails[mseNum];
++}
++
++bool CEvdevInputSystem::Poll() {
++  bool res = false;
++  struct input_event input_events[32];
++  int j, len;
++
++  for(unsigned int i=0; i<m_ndevices; i++) {
++    while ((len = read(m_devices[i], input_events, sizeof(input_events))) > 0) {
++      len /= sizeof(*input_events);
++      for (j = 0; j < len; j++) {
++	handle_event(i, input_events[j]);
++      }
++      res = true;
++    }
++  }
++  if(CSDLInputSystem::Poll()) {
++    res = true;
++  }
++  return res;
++}
++
++void CEvdevInputSystem::handle_event(unsigned int idx, struct input_event& event) {
++  int gun_width, gun_pos;
++  float per_game_start;
++  int gun_withmargin_position, gun_withmargin_width;
++    switch (event.type) {
++    case EV_KEY:
++      switch (event.code) {
++      case BTN_LEFT:
++	m_devices_btn[idx][0] = event.value;
++	break;
++      case BTN_RIGHT:
++	m_devices_btn[idx][2] = event.value;
++	break;
++      case BTN_MIDDLE:
++	m_devices_btn[idx][1] = event.value;
++	break;
++      case BTN_1:
++	m_devices_btn[idx][3] = event.value;
++	break;
++      case BTN_2:
++	m_devices_btn[idx][4] = event.value;
++	break;
++      default:
++	break;
++      }
++      break;
++
++    case EV_ABS:
++      switch (event.code) {
++      case ABS_X:
++	gun_withmargin_width = m_devices_axes_minmax[idx][0][1] - m_devices_axes_minmax[idx][0][0];
++	gun_withmargin_position = event.value - m_devices_axes_minmax[idx][0][0];
++	m_devices_axes[idx][0] = ((m_dispW+m_dispX+m_dispX) * gun_withmargin_position) / gun_withmargin_width;
++	break;
++      case ABS_Y:
++	gun_withmargin_width = m_devices_axes_minmax[idx][1][1] - m_devices_axes_minmax[idx][1][0];
++	gun_withmargin_position = event.value - m_devices_axes_minmax[idx][1][0];
++	m_devices_axes[idx][1] = ((m_dispH+m_dispY+m_dispY) * gun_withmargin_position) / gun_withmargin_width;
++
++	break;
++      }
++      break;
++    }
++}
++
++void CEvdevInputSystem::SetMouseVisibility(bool visible) {
++  // nothing
++}
++
++int CEvdevInputSystem::GetMouseAxisValue(int mseNum, int axisNum) {
++  // Return value for given mouse axis
++  switch (axisNum)
++    {
++    case AXIS_X:
++      return m_devices_axes[mseNum][0];
++      break;
++    case AXIS_Y:
++      return m_devices_axes[mseNum][1];
++      break;
++    case AXIS_Z:
++      return 0;
++      break;
++    default:
++      return 0;
++    }
++}
++
++int CEvdevInputSystem::GetMouseWheelDir(int mseNum) {
++  return 0;
++}
++
++bool CEvdevInputSystem::IsMouseButPressed(int mseNum, int butNum) {
++  if(butNum < 0 && butNum >= EVDEV_MAXBUTTONS) return false;
++  return m_devices_btn[mseNum][butNum] == 1;
++  return false;
++}
++
++int CEvdevInputSystem::GetNumMice() {
++  return m_ndevices;
++}
++
++CInputSource *CEvdevInputSystem::CreateAnyMouseSource(EMousePart msePart)
++{
++  return CreateMouseSource(ANY_MOUSE, msePart);
++}
+diff --git a/Src/OSD/evdev/EvdevInputSystem.h b/Src/OSD/evdev/EvdevInputSystem.h
+new file mode 100644
+index 0000000..6f8a2b2
+--- /dev/null
++++ b/Src/OSD/evdev/EvdevInputSystem.h
+@@ -0,0 +1,51 @@
++#ifndef INCLUDED_EVDEVINPUTSYSTEM_H
++#define INCLUDED_EVDEVINPUTSYSTEM_H
++
++#include "SDLInputSystem.h"
++#include <libudev.h>
++
++#define EVDEV_MAXPLAYERS 8
++#define EVDEV_MAXBUTTONS 16
++
++class CEvdevInputSystem : public CSDLInputSystem
++{
++  public:
++        /*
++         * Constructs an evdev input system.
++         */
++        CEvdevInputSystem(const Util::Config::Node& config);
++
++        ~CEvdevInputSystem();
++
++  	int GetNumMice();
++	const MouseDetails *GetMouseDetails(int mseNum);
++
++	bool Poll();
++
++	void SetMouseVisibility(bool visible);
++
++  protected:
++
++  	bool InitializeSystem();
++
++  	int GetMouseAxisValue(int mseNum, int axisNum);
++
++	int GetMouseWheelDir(int mseNum);
++
++	bool IsMouseButPressed(int mseNum, int butNum);
++
++  	CInputSource *CreateAnyMouseSource(EMousePart msePart);
++
++  private:
++    struct udev *m_udev;
++    int m_devices[EVDEV_MAXPLAYERS];
++    int m_devices_btn[EVDEV_MAXPLAYERS][EVDEV_MAXBUTTONS];
++    int m_devices_axes[EVDEV_MAXPLAYERS][2];
++    int m_devices_axes_minmax[EVDEV_MAXPLAYERS][2][2];
++    int m_ndevices;
++    std::vector<MouseDetails> m_mseDetails;
++
++    void handle_event(unsigned int idx, struct input_event& event);
++};
++
++#endif  // INCLUDED_EVDEVINPUTSYSTEM_H
+-- 
+2.34.1
+

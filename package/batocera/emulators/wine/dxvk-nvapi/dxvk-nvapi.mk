@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DXVK_NVAPI_VERSION = 0.5.4
+DXVK_NVAPI_VERSION = 0.6.2
 DXVK_NVAPI_SOURCE = dxvk-nvapi-v$(DXVK_NVAPI_VERSION).tar.gz
 DXVK_NVAPI_SITE = https://github.com/jp7677/dxvk-nvapi/releases/download/v$(DXVK_NVAPI_VERSION)
 DXVK_NVAPI_LICENSE = zlib/libpng

@@ -3,12 +3,12 @@ import Command
 import controllersConfig
 from generators.Generator import Generator
 import os
+from utils.buildargs import parse_args
 
 
 class RazeGenerator(Generator):
     config_dir = f"{batoceraFiles.CONF}/raze"
     saves_dir = f"{batoceraFiles.SAVES}/raze"
-    screenshots_dir = f"{batoceraFiles.SCREENSHOTS}/raze"
     # The main config file, which is emitted with duplicate keys and makes working with ConfigParser very annoying
     config_file = f"{config_dir}/raze.ini"
     # A script file with console commands that are always ran when a game starts
@@ -70,7 +70,7 @@ class RazeGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        for path in [self.config_dir, self.saves_dir, self.screenshots_dir]:
+        for path in [self.config_dir, self.saves_dir]:
             if not os.path.exists(path):
                 os.mkdir(path)
         if not os.path.exists(self.config_file):
@@ -87,14 +87,9 @@ class RazeGenerator(Generator):
                 "echo BATOCERA\n"  # easy check that script ran in console
             )
         launch_args = ["raze"]
-        with open(rom, "r") as raze_file:
-            paths = raze_file.readlines()
-        for i, path in enumerate(paths):
-            path = path.strip()
-            if len(path) == 0:
-                continue
-            option = "-gamegrp" if i == 0 else "-file"
-            launch_args += [option, f"{os.path.dirname(rom)}/{path}"]
+        result = parse_args(launch_args, rom)
+        if not result.okay:
+            raise Exception(result.message)
         launch_args += [
             "-exec", self.script_file,
             # Disable controllers because support is poor; use evmapy instead

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# required for x
+export DISPLAY=:0
+# required for wayland
+. /etc/profile.d/04-sway.sh
+
+if test "${1}" == "--init"
+then
+    batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
+    exit 0
+fi
+
+DELTANEW=$(batocera-resolution listOutputs | sort | diff -u /var/run/batocera-switch-screen-checker-status - | tail -n +3 | grep -E '^\+' | sed -e s/"^\+"//)
+NDELTANEW=$(echo "${DELTANEW}" | wc -l)
+
+# reinit status
+batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
+
+# 1 new screen, switch on it
+if test "${NDELTANEW}" == 1 -a "${DELTANEW}" != ""
+then
+    # es not running or running game, exit
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
+    test $? != 0                 && exit 0
+    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle
+    
+    if echo "${DELTANEW}" > "/var/run/switch_screen_request"
+    then
+	# restart es
+	curl http://localhost:1234/quit
+    fi
+else
+    # es not (yet) running exit
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
+    test $? != 0                 && exit 0
+    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle # don't exit when es is not idle, it could be scrapping. and some screen shuts down after some time.
+
+    # seems that when the screen is no more available, es exists automatically
+    SUPPOSED_OUTPUT=$(cat /var/run/switch_screen_current)
+    CURRENT_OUTPUT=$(batocera-resolution currentOutput)
+    # current output no more available ?
+    if test "${SUPPOSED_OUTPUT}" != "${CURRENT_OUTPUT}"
+    then
+	# in case the game is running, the restart will happen once the game is exited manually
+	# this is not perfect, but at least, it leaves a last chance to the user to replug the screen to save
+	touch /var/run/switch_screen_request # request to the default one
+    	curl http://localhost:1234/quit
+    fi
+fi

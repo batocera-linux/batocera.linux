@@ -1,0 +1,15 @@
+--- a/Makefile	2023-01-04 23:48:15.775542743 +0000
++++ b/Makefile	2023-01-04 23:48:39.531878343 +0000
+@@ -199,6 +199,12 @@
+ 	CPPFLAGS += $(CPPFLAGS64)
+ 	AARCH64 = 1
+ 
++# AYN RK3588 target (SDL2, 64-bit)
++else ifeq ($(PLATFORM),RK3588)
++	CPUFLAGS ?= -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++	CPPFLAGS += $(CPPFLAGS64)
++	AARCH64 = 1
++
+ # Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
+ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+ 	CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8

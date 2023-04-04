@@ -16,11 +16,11 @@
     <add key="CameraRes" value="640,480" />
     <add key="SaveEachFrameToFile" value="0" />
     <add key="OffscreenReload" value="0" />
-    <add key="CameraExposureAuto" value="1" />
-    <add key="CameraExposure" value="" />
-    <add key="CameraBrightness" value="100" />
+    <add key="CameraExposureAuto" value="" />
+    <add key="CameraExposure" value="-7" />
+    <add key="CameraBrightness" value="120" />
     <add key="CameraZoom" value="0" />
-    <add key="CameraContrast" value="50" />
+    <add key="CameraContrast" value="60" />
     <add key="CameraSaturation" value="40" />
     <add key="CameraHue" value="0" />
     <add key="CameraWhiteBalanceAuto" value="0" />
@@ -35,8 +35,8 @@
     <add key="ButtonPumpAction" value="3" />
     <add key="ButtonFrontLeft" value="3" />
     <add key="ButtonRearLeft" value="2" />
-    <add key="ButtonFrontRight" value="9" />
-    <add key="ButtonRearRight" value="7" />
+    <add key="ButtonFrontRight" value="10" />
+    <add key="ButtonRearRight" value="9" />
     <add key="ButtonUp" value="74" />
     <add key="ButtonDown" value="75" />
     <add key="ButtonLeft" value="76" />
@@ -90,6 +90,9 @@
     <add key="AutoRecoilStrength" value="80"/>
     <add key="AutoRecoilStartDelay" value="5"/>
     <add key="AutoRecoilDelayBetweenPulses" value="13"/>
+
+    <add key="EnableCalibration" value="1"/>
+    <add key="AutoSaveCalibrationInLightgun" value="1"/>
 
   </appSettings>
 </configuration>

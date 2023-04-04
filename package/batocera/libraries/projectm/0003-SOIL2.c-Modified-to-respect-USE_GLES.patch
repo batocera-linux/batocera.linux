@@ -1,0 +1,30 @@
+From 481c78934ba754d914c5a18fa036f324d8bba582 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Fri, 31 Mar 2023 13:19:22 +0200
+Subject: [PATCH] SOIL2.c / Modified to respect USE_GLES
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ src/libprojectM/Renderer/SOIL2/SOIL2.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/libprojectM/Renderer/SOIL2/SOIL2.c b/src/libprojectM/Renderer/SOIL2/SOIL2.c
+index 64dbf27..5971196 100644
+--- a/src/libprojectM/Renderer/SOIL2/SOIL2.c
++++ b/src/libprojectM/Renderer/SOIL2/SOIL2.c
+@@ -30,7 +30,11 @@
+ #elif defined( __ANDROID__ ) || defined( ANDROID )
+ 	#define SOIL_PLATFORM_ANDROID
+ #elif ( defined ( linux ) || defined( __linux__ ) || defined( __FreeBSD__ ) || defined(__OpenBSD__) || defined( __NetBSD__ ) || defined( __DragonFly__ ) || defined( __SVR4 ) )
+-	#define SOIL_X11_PLATFORM
++	#if defined( USE_GLES )
++		#define SOIL_PLATFORM_ANDROID
++	#else
++		#define SOIL_X11_PLATFORM
++	#endif
+ #endif
+ 
+ #if ( defined( SOIL_PLATFORM_IOS ) || defined( SOIL_PLATFORM_ANDROID ) ) && ( !defined( SOIL_GLES1 ) && !defined( SOIL_GLES2 ) )
+-- 
+2.30.2
+

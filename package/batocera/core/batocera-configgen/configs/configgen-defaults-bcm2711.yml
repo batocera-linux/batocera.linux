@@ -1,0 +1,18 @@
+default:
+  options:
+    hud_support: true
+
+nds:
+  emulator: drastic
+  core:     drastic
+flash:
+  emulator: lightspark
+  core:     lightspark
+fmtowns:
+  emulator: libretro
+  core:     mame
+model3:
+  options:
+    videomode: max-720x576
+    decorations: none
+    hud_support: none

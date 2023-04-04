@@ -1,0 +1,29 @@
+From 4aca48cc2517dcd5abab9b0cca22c65c54d75a03 Mon Sep 17 00:00:00 2001
+From: Pavel Golikov <Paullo612@ya.ru>
+Date: Fri, 24 Jun 2022 15:42:59 +0000
+Subject: [PATCH 02/21] WIP: media: videobuf2: always enable
+ V4L2_MEMORY_FLAG_NON_COHERENT
+
+Always enable V4L2_MEMORY_FLAG_NON_COHERENT for all V4L queues.
+
+Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
+---
+ drivers/media/common/videobuf2/videobuf2-v4l2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/common/videobuf2/videobuf2-v4l2.c b/drivers/media/common/videobuf2/videobuf2-v4l2.c
+index 075d24ebf44c..ecbb5f7d3f23 100644
+--- a/drivers/media/common/videobuf2/videobuf2-v4l2.c
++++ b/drivers/media/common/videobuf2/videobuf2-v4l2.c
+@@ -704,7 +704,7 @@ static void validate_memory_flags(struct vb2_queue *q,
+ 		*flags = 0;
+ 	} else {
+ 		/* Clear all unknown flags. */
+-		*flags &= V4L2_MEMORY_FLAG_NON_COHERENT;
++		*flags |= V4L2_MEMORY_FLAG_NON_COHERENT;
+ 	}
+ }
+ 
+-- 
+2.17.1
+

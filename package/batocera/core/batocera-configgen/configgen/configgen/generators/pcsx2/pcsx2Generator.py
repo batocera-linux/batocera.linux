@@ -46,7 +46,7 @@ class Pcsx2Generator(Generator):
             eslog.debug("Fast Boot and skip BIOS")
         else:
             commandArray.append("--fullboot")
-        
+
         # Arch
         arch = "x86"
         with open('/usr/share/batocera/batocera.arch', 'r') as content_file:
@@ -74,10 +74,10 @@ class Pcsx2Generator(Generator):
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9
-    if "pcsx2_tv_mode" in config:
-        if config["pcsx2_tv_mode"] == "16/9":
+    if "ratio" in config:
+        if config["ratio"] == "16/9":
             return "16:9"
-        elif config["pcsx2_tv_mode"] == "Stretch":
+        elif config["ratio"] == "full":
             return "Stretch"
     return "4:3"
 
@@ -97,29 +97,28 @@ def configureReg(config_directory):
 def configureVM(config_directory, system):
 
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_vm.ini")
-    
+
     if not os.path.exists(config_directory + "/inis"):
         os.makedirs(config_directory + "/inis")
-        
+
     if not os.path.isfile(configFileName):
         f = open(configFileName, "w")
         f.write("[EmuCore]\n")
         f.close()
-    
+
     # This file looks like a .ini
     pcsx2VMConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
-    pcsx2VMConfig.optionxform = str   
-    
-    if os.path.isfile(configFileName):  
+    pcsx2VMConfig.optionxform = str
+
+    if os.path.isfile(configFileName):
         pcsx2VMConfig.read(configFileName)
-    
+
     ## [EMUCORE/GS]
     if not pcsx2VMConfig.has_section("EmuCore/GS"):
         pcsx2VMConfig.add_section("EmuCore/GS")
 
-    # Some defaults needed on first run 
-    pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
+    # Some defaults needed on first run
     pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
     pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
     pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")
@@ -133,7 +132,13 @@ def configureVM(config_directory, system):
     if system.isOptSet('vsync'):
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
     else:
-        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
+        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")
+
+    # Vsyncs in MTGS Queue
+    if system.isOptSet('VsyncQueueSize'):
+        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", system.config['VsyncQueueSize'])
+    else:
+        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
 
     if not pcsx2VMConfig.has_section("EmuCore/Speedhacks"):
         pcsx2VMConfig.add_section("EmuCore/Speedhacks")
@@ -227,18 +232,22 @@ def configureGFX(config_directory, system):
     configFileName = "{}/{}".format(config_directory + "/inis", "GS.ini")
     if not os.path.exists(config_directory):
         os.makedirs(config_directory + "/inis")
-    
+
     # Create the config file if it doesn't exist
     if not os.path.exists(configFileName):
         f = open(configFileName, "w")
         f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
         f.close()
-    
+
     # Update settings
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
     pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     pcsx2GFXSettings.save("osd_indicator_enabled", 1)
-    pcsx2GFXSettings.save("UserHacks", 1)
+
+    if system.isOptSet('ManualHWHacks'):
+        pcsx2GFXSettings.save("UserHacks", system.config["ManualHWHacks"])
+    else:
+        pcsx2GFXSettings.save("UserHacks", 0)
 
     # Internal resolution
     if system.isOptSet('internal_resolution'):
@@ -327,7 +336,7 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     for section in [ "ProgramLog", "Filenames", "GSWindow", "NO_SECTION" ]:
         if not iniConfig.has_section(section):
             iniConfig.add_section(section)
-    
+
     iniConfig.set("NO_SECTION","EnablePresets","disabled")
     # manually allow speed hacks
     iniConfig.set("NO_SECTION","EnableSpeedHacks","enabled")

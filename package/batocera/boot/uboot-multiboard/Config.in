@@ -1,0 +1,37 @@
+config BR2_PACKAGE_UBOOT_MULTIBOARD
+  bool "U-Boot for multiple boards"
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_LATEST_VERSION
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL32 \
+    if BR2_PACKAGE_BATOCERA_TARGET_RK3288
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL31 if \
+    !BR2_PACKAGE_BATOCERA_TARGET_RK3288
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_NEEDS_ARM32_TOOLCHAIN \
+    if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+  help
+    U-Boot for multiple boards. NOTE: some related configs, like
+    BR2_TARGET_ARM_TRUSTED_FIRMWARE_PLATFORM have to be set in
+    xxx.board files.
+
+if BR2_PACKAGE_UBOOT_MULTIBOARD
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
+  string "U-Boot configs"
+  default "miqi-rk3288 tinker-s-rk3288" if BR2_PACKAGE_BATOCERA_TARGET_RK3288
+  default "orangepi-rk3399 rock960-rk3399 rock-pi-4-rk3399 rockpro64-rk3399" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+  default ""
+  help
+    Names of U-Boot defconfigs to build without the _defconfig part.
+    These also define the directory to search for board specific
+    patches and config fragment files, and they also define the
+    install directory name.
+
+config BR2_PACKAGE_UBOOT_MULTIBOARD_BINARIES
+  string "U-Boot binaries"
+  default "idbloader.img u-boot.img" if BR2_PACKAGE_BATOCERA_TARGET_RK3288
+  default "idbloader.img u-boot.itb" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+  default ""
+  help
+    List of U-Boot binaries to be collected.
+
+endif # BR2_PACKAGE_UBOOT_MULTIBOARD

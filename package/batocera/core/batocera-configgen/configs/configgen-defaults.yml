@@ -2,15 +2,16 @@ default:
   emulator:
   core:
   options:
-    hud_support:    true
-    videomode:      default
-    ratio:          auto
-    video_threaded: false
-    smooth:         true
-    shaderset:      sharp-bilinear-simple
-    rewind:         false
-    bezel:          consoles
-    forceNoBezel:   false
+    hud_support:        true
+    videomode:          default
+    ratio:              auto
+    video_threaded:     false
+    smooth:             true
+    shaderset:          sharp-bilinear-simple
+    rewind:             false
+    bezel:              consoles
+    forceNoBezel:       false
+    gamemode_enable:    false
 
 # 0-C
 
@@ -25,10 +26,10 @@ abuse:
   core:     abuse
 adam:
   emulator: libretro
-  core:     mess
+  core:     mame
 advision:
   emulator: libretro
-  core:     mess
+  core:     mame
 amiga500:
   emulator: libretro
   core:     puae
@@ -46,7 +47,7 @@ amstradcpc:
   core:     cap32
 apfm1000:
   emulator: libretro
-  core:     mess
+  core:     mame
 apple2:
   emulator: gsplus
   core:     gsplus
@@ -55,19 +56,22 @@ apple2gs:
   core:     gsplus
 arcadia:
   emulator: libretro
-  core:     mess
+  core:     mame
 archimedes:
   emulator: libretro
-  core:     mess
+  core:     mame
+arduboy:
+  emulator: libretro
+  core:     arduous
 astrocde:
   emulator: libretro
-  core:     mess
+  core:     mame
 atari2600:
   emulator: libretro
   core:     stella
 atari5200:
   emulator: libretro
-  core:     atari800
+  core:     a5200
 atari7800:
   emulator: libretro
   core:     prosystem
@@ -79,13 +83,13 @@ atarist:
   core:     hatari
 atom:
   emulator: libretro
-  core:     mess
+  core:     mame
 atomiswave:
   emulator: libretro
   core:     flycast
 bbc:
   emulator: libretro
-  core:     mess
+  core:     mame
 c64:
   emulator: libretro
   core:     vice_x64
@@ -100,7 +104,7 @@ c20:
   core:     xvic
 camplynx:
   emulator: libretro
-  core:     mess
+  core:     mame
 cannonball:
   emulator: cannonball
   core:     cannonball
@@ -124,13 +128,13 @@ channelf:
   core:     freechaf
 coco:
   emulator: libretro
-  core:     mess
+  core:     mame
 colecovision:
   emulator: libretro
   core:     bluemsx
 crvision:
   emulator: libretro
-  core:     mess
+  core:     mame
 
 # D-L
 
@@ -154,9 +158,12 @@ easyrpg:
 ecwolf:
   emulator: ecwolf
   core:     ecwolf
+eduke32:
+  emulator: eduke32
+  core:     eduke32
 electron:
   emulator: libretro
-  core:     mess
+  core:     mame
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -167,26 +174,27 @@ flash:
   emulator: ruffle
   core:     ruffle
   options:
-    forceNoBezel: true
     hud_support: false
 flatpak:
   emulator: flatpak
   core:     flatpak
   options:
-    forceNoBezel: true
     hud_support: false
 fm7:
   emulator: libretro
-  core:     mess
+  core:     mame
 fmtowns:
   emulator: tsugaru
   core:     tsugaru
+fury:
+  emulator: eduke32
+  core:     fury
 gaelco:
   emulator: demul
   core:     demul
 gamate:
   emulator: libretro
-  core:     mess
+  core:     mame
 gameandwatch:
   emulator: libretro
   core:     gw
@@ -194,7 +202,7 @@ gameandwatch:
     forceNoBezel: true
 gamecom:
   emulator: libretro
-  core:     mess
+  core:     mame
 gamecube:
   emulator: dolphin
   core:     dolphin
@@ -203,7 +211,7 @@ gamegear:
   core:     genesisplusgx
 gamepock:
   emulator: libretro
-  core:     mess
+  core:     mame
 gb:
   emulator: libretro
   core:     gambatte
@@ -221,13 +229,13 @@ gbc2players:
   core:     tgbdual
 gmaster:
   emulator: libretro
-  core:     mess
+  core:     mame
 gong:
   emulator: libretro
   core:     gong
 gp32:
   emulator: libretro
-  core:     mess
+  core:     mame
 gx4000:
   emulator: libretro
   core:     cap32
@@ -237,12 +245,14 @@ gzdoom:
 hikaru:
   emulator: demul
   core:     demul
+ikemen:
+  emulator: ikemen
+  core:     ikemen
+  options:
+    videomode: max-720x480
 intellivision:
   emulator: libretro
   core:     freeintv
-ionfury:
-  emulator: ionfury
-  core:     ionfury
 jaguar:
   emulator: libretro
   core:     virtualjaguar
@@ -250,11 +260,17 @@ kodi:
   emulator: kodi
   options:
     videomode: default
+laser310:
+  emulator: libretro
+  core:     mame
 lcdgames:
   emulator: libretro
-  core:     gw
+  core:     mame
   options:
     forceNoBezel: true
+lowresnx:
+  emulator: libretro
+  core:     lowresnx
 lutro:
   emulator: libretro
   core:     lutro
@@ -278,12 +294,11 @@ megadrive:
   core:     genesisplusgx
 megaduck:
   emulator: libretro
-  core:     mess
+  core:     mame
 model2:
   emulator: model2emu
   core:     model2emu
   options:
-    forceNoBezel: true
     hud_support: false
 model3:
   emulator: supermodel
@@ -350,7 +365,7 @@ odcommander:
   core:     odcommander
   options:
     hud_support: false
-odyssey2:
+o2em:
   emulator: libretro
   core:     o2em
 openbor:
@@ -379,7 +394,7 @@ pcfx:
   core:     pcfx
 pdp1:
   emulator: libretro
-  core:     mess
+  core:     mame
 pet:
   emulator: vice
   core:     xpet
@@ -388,7 +403,7 @@ pico8:
   core:     retro8
 plugnplay:
   emulator: libretro
-  core:     mess
+  core:     mame
 pokemini:
   emulator: libretro
   core:     pokemini
@@ -411,15 +426,21 @@ ps3:
 psp:
   emulator: ppsspp
   core: ppsspp
+psvita:
+  emulator: vita3k
+  core:     vita3k
 psx:
   emulator: libretro
   core:     pcsx_rearmed
 pv1000:
   emulator: libretro
-  core:     mess
+  core:     mame
 pygame:
   emulator: pygame
   core:     pygame
+pyxel:
+  emulator: pyxel
+  core:     pyxel
 raze:
   emulator: raze
   core:     raze
@@ -460,7 +481,7 @@ sgb:
   core:     mgba
 socrates:
   emulator: libretro
-  core:     mess
+  core:     mame
 solarus:
   emulator: solarus
   core:     solarus
@@ -478,7 +499,7 @@ sufami:
   core:     snes9x
 supracan:
   emulator: libretro
-  core:     mess
+  core:     mame
 snes:
   emulator: libretro
   core:     snes9x
@@ -495,7 +516,6 @@ switch:
   emulator: yuzu
   core:     yuzu
   options:
-    forceNoBezel: true
     hud_support: false
 
 # T-Z
@@ -505,7 +525,7 @@ thomson:
   core:     theodore
 ti99:
   emulator: libretro
-  core:     mess
+  core:     mame
 tic80:
   emulator: libretro
   core:     tic80
@@ -514,7 +534,7 @@ triforce:
   core:     dolphin_triforce
 tutor:
   emulator: libretro
-  core:     mess
+  core:     mame
 tyrquake:
   emulator: libretro
   core:     tyrquake
@@ -523,13 +543,13 @@ uzebox:
   core:     uzem
 vc4000:
   emulator: libretro
-  core:     mess
+  core:     mame
 vectrex:
   emulator: libretro
   core:     vecx
 vgmplay:
   emulator: libretro
-  core:     mamevirtual
+  core:     mame
 videopacplus:
   emulator: libretro
   core:     o2em
@@ -541,7 +561,10 @@ vitaquake2:
   core:     vitaquake2
 vsmile:
   emulator: libretro
-  core:     mess
+  core:     mame
+wasm4:
+  emulator: libretro
+  core:     wasm4
 wii:
   emulator: dolphin
   core:     dolphin
@@ -552,13 +575,11 @@ windows:
   emulator: wine
   core:     proton
   options:
-    forceNoBezel: true
     hud_support: false
 windows_installers:
   emulator: wine
   core:     proton
   options:
-    forceNoBezel: true
     hud_support: false
 wswan:
   emulator: libretro
@@ -576,11 +597,10 @@ xash3d_fwgs:
   emulator: xash3d_fwgs
   core:     xash3d_fwgs
   options:
-    forceNoBezel: true
     hud_support: false
 xegs:
   emulator: libretro
-  core:     mess
+  core:     mame
 xrick:
   emulator: libretro
   core:     xrick
@@ -591,7 +611,6 @@ xbox360:
   emulator: xenia
   core:     xenia
   options:
-    forceNoBezel: true
     hud_support: false
 zc210:
   emulator: libretro

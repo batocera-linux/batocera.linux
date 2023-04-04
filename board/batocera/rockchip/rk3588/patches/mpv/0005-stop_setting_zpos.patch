@@ -1,0 +1,53 @@
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Date: Fri, 20 Aug 2021 18:59:31 +0800
+Subject: [PATCH] HACK: vo/drm: Stop setting ZPOS
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+---
+
+diff --git a/video/out/drm_atomic.c b/video/out/drm_atomic.c
+index bf7012c..f6c8466 100644
+--- a/video/out/drm_atomic.c
++++ b/video/out/drm_atomic.c
+@@ -332,8 +332,6 @@ static bool drm_atomic_save_plane_state(struct drm_object *plane,
+         ret = false;
+     if (0 > drm_object_get_property(plane, "CRTC_H", &plane_state->crtc_h))
+         ret = false;
+-    // ZPOS might not exist, so ignore whether or not this succeeds
+-    drm_object_get_property(plane, "ZPOS", &plane_state->zpos);
+ 
+     return ret;
+ }
+@@ -367,8 +365,6 @@ static bool drm_atomic_restore_plane_state(drmModeAtomicReq *request,
+         ret = false;
+     if (0 > drm_object_set_property(request, plane, "CRTC_H", plane_state->crtc_h))
+         ret = false;
+-    // ZPOS might not exist, or be immutable, so ignore whether or not this succeeds
+-    drm_object_set_property(request, plane, "ZPOS", plane_state->zpos);
+ 
+     return ret;
+ }
+diff --git a/video/out/drm_atomic.h b/video/out/drm_atomic.h
+index 5b2dc59..26c902c 100644
+--- a/video/out/drm_atomic.h
++++ b/video/out/drm_atomic.h
+@@ -44,7 +44,6 @@ struct drm_atomic_plane_state {
+     uint64_t crtc_y;
+     uint64_t crtc_w;
+     uint64_t crtc_h;
+-    uint64_t zpos;
+ };
+ 
+ // Used to store the restore state for VT switching and uninit
+diff --git a/video/out/opengl/context_drm_egl.c b/video/out/opengl/context_drm_egl.c
+index 99cc611..2b153f1 100644
+--- a/video/out/opengl/context_drm_egl.c
++++ b/video/out/opengl/context_drm_egl.c
+@@ -462,7 +462,6 @@ static void queue_flip(struct ra_ctx *ctx, struct gbm_frame *frame)
+     if (atomic_ctx) {
+         drm_object_set_property(atomic_ctx->request, atomic_ctx->draw_plane, "FB_ID", p->fb->id);
+         drm_object_set_property(atomic_ctx->request, atomic_ctx->draw_plane, "CRTC_ID", atomic_ctx->crtc->id);
+-        drm_object_set_property(atomic_ctx->request, atomic_ctx->draw_plane, "ZPOS", 1);
+ 
+         ret = drmModeAtomicCommit(p->kms->fd, atomic_ctx->request,
+                                   DRM_MODE_ATOMIC_NONBLOCK | DRM_MODE_PAGE_FLIP_EVENT, data);

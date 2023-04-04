@@ -11,26 +11,26 @@ CANNONBALL_DEPENDENCIES = sdl2 boost
 
 CANNONBALL_TARGET = sdl2gles
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -mcpu=arm1176jzf-s -mfloat-abi=hard
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -march=armv8-a+crc -mcpu=cortex-a53
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 CANNONBALL_TARGET = sdl2gles_rpi
 CANNONBALL_RPI = -march=armv8-a+crc -mcpu=cortex-a72
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 CANNONBALL_TARGET = sdl2gl
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 CANNONBALL_TARGET = sdl2gl
 endif
 
@@ -42,6 +42,7 @@ CANNONBALL_CONF_OPTS += -Droms_directory=/userdata/roms/cannonball/ -Dxml_direct
 # Cannonball cmake files are hopelessly broken.
 # Link libmali manually. Ideally we should fix cannonball to use pkg-config instead.
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+CANNONBALL_DEPENDENCIES += libmali
 CANNONBALL_EXE_LINKER_FLAGS += -lmali
 CANNONBALL_SHARED_LINKER_FLAGS += -lmali
 endif

@@ -1,27 +1,24 @@
 diff --git a/Makefile.am b/Makefile.am
-index 52842aa..ad6d6bf 100644
+index 80b4fa8f8c..f25e52f169 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -73,15 +73,15 @@ AM_LDFLAGS += -no-pie
- endif
+@@ -106,15 +106,15 @@ endif
+ # endif
  endif
  
 -if STATIC_BUILD
 -AM_LDFLAGS += -static
 -AM_CPPFLAGS += -DGLEW_STATIC
 -AM_CPPFLAGS += -DAL_LIBTYPE_STATIC
--# Hack for OpenAL static missing libcommon.a
--LIBS += ../openal-soft/libcommon.a
--# One or more .pc files are missing -liconv
--LIBS += -liconv
--endif
 +#if STATIC_BUILD
 +#AM_LDFLAGS += -static
 +#AM_CPPFLAGS += -DGLEW_STATIC
 +#AM_CPPFLAGS += -DAL_LIBTYPE_STATIC
-+## Hack for OpenAL static missing libcommon.a
-+#LIBS += ../openal-soft/libcommon.a
-+## One or more .pc files are missing -liconv
+ # Hack for OpenAL static missing libcommon.a
+ # LIBS += ../openal-soft/libcommon.a
+ # One or more .pc files are missing -liconv
+-LIBS += -liconv
+-endif
 +#LIBS += -liconv
 +#endif
  
