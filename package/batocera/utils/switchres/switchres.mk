@@ -1,12 +1,12 @@
 ################################################################################
 #
-# SwitchRes
+# switchres
 #
 ################################################################################
-# Version: Commits on Jan 10, 2023
-SWITCHRES_VERSION = f5b7bdec66b71c69a3465088cbf43b699e32cc1d
+# Version: Commits on Feb 23, 2023
+SWITCHRES_VERSION = ca72648b3253eca8c5addf64d1e4aa1c43f5db94
 SWITCHRES_SITE = $(call github,antonioginer,switchres,$(SWITCHRES_VERSION))
-
+SWITCHRES_LICENSE = GPL-2.0+
 SWITCHRES_DEPENDENCIES = libdrm
 SWITCHRES_INSTALL_STAGING = YES
 
@@ -38,7 +38,9 @@ define SWITCHRES_INSTALL_STAGING_CMDS
 endef
 
 define SWITCHRES_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0644 $(@D)/libswitchres.so $(TARGET_DIR)/usr/lib/libswitchres.so
+	$(INSTALL) -D -m 0644 $(@D)/libswitchres.so.2.1.0 $(TARGET_DIR)/usr/lib/libswitchres.so.2.1.0
+	ln -sf $(TARGET_DIR)/usr/lib/libswitchres.so.2.1.0 $(TARGET_DIR)/usr/lib/libswitchres.so.2
+	ln -sf $(TARGET_DIR)/usr/lib/libswitchres.so.2 $(TARGET_DIR)/usr/lib/libswitchres.so
 	$(INSTALL) -D -m 0755 $(@D)/switchres $(TARGET_DIR)/usr/bin/switchres
 	$(INSTALL) -D -m 0755 $(@D)/grid $(TARGET_DIR)/usr/bin/grid
 
