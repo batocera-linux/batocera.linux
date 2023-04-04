@@ -382,25 +382,25 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     ## PS1 Swanstation and Duckstation
     if (system.config['core'] == 'swanstation'):               # Swanstation
         # Controller 1 Type
-        if system.isOptSet('duckstation_Controller1'):
-            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
+        if system.isOptSet('swanstation_Controller1'):
+            coreSettings.save('swanstation_Controller1.Type', system.config['swanstation_Controller1'])
         else:
-            coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
+            coreSettings.save('swanstation_Controller1.Type', '"DigitalController"')
         # Controller 2 Type
-        if system.isOptSet('duckstation_Controller2'):
-            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
+        if system.isOptSet('swanstation_Controller2'):
+            coreSettings.save('swanstation_Controller2.Type', system.config['swanstation_Controller2'])
         else:
-            coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
+            coreSettings.save('swanstation_Controller2.Type', '"DigitalController"')
     if (system.config['core'] == 'duckstation'):               # Duckstation
-        if system.isOptSet('duckstation_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
-            if system.config['duckstation_Controller1'] != '1':
+        if system.isOptSet('swanstation_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['swanstation_Controller1']
+            if system.config['swanstation_Controller1'] != '1':
                 retroarchConfig['input_player1_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-        if system.isOptSet('duckstation_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
-            if system.config['duckstation_Controller2'] != '1':
+        if system.isOptSet('swanstation_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['swanstation_Controller2']
+            if system.config['swanstation_Controller2'] != '1':
                 retroarchConfig['input_player2_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '3'
