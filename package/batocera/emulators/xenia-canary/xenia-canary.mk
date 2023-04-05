@@ -14,7 +14,9 @@ XENIA_CANARY_DEPENDENCIES = python-toml
 
 # ugly hack becuase the is no version in the source file
 define XENIA_CANARY_CLEAR_DL
-    rm $(DL_DIR)/$(XENIA_CANARY_DL_SUBDIR)/$(XENIA_CANARY_SOURCE)
+    if [ -f "$(DL_DIR)/$(XENIA_CANARY_DL_SUBDIR)/$(XENIA_CANARY_SOURCE)" ]; then \
+        rm $(DL_DIR)/$(XENIA_CANARY_DL_SUBDIR)/$(XENIA_CANARY_SOURCE); \
+    fi
 endef
 
 define XENIA_CANARY_EXTRACT_CMDS

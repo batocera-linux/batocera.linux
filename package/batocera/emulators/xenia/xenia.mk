@@ -14,7 +14,9 @@ XENIA_DEPENDENCIES = python-toml
 
 # ugly hack becuase the is no version in the source file
 define XENIA_CLEAR_DL
-	rm $(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE)
+    if [ -f "$(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE)" ]; then \
+        rm $(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE); \
+    fi
 endef
 
 define XENIA_EXTRACT_CMDS
