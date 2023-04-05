@@ -44,7 +44,7 @@ class BatoceraTest():
                 print("Status: \033[01;32mSUCCESS\033[00;37m\n")
                 results.append({"system": system, "game": games[system], "status": True})
             else:
-                print("Status: \033[01;31mKO\033[00;37m\n")
+                print("Status: \033[01;31mFAILED\033[00;37m\n")
                 results.append({"system": system, "game": games[system], "status": False})
 
         # generate report
