@@ -41,13 +41,17 @@ class BatoceraTest():
         results = []
         for system in games:
             if BatoceraTest.runTest(system, games[system], resultDir):
-                print("SUCCESS")
+                print("Status: \033[01;32mSUCCESS\033[00;37m\n")
                 results.append({"system": system, "game": games[system], "status": True})
             else:
-                print("KO")
+                print("Status: \033[01;31mKO\033[00;37m\n")
                 results.append({"system": system, "game": games[system], "status": False})
 
         # generate report
+        BatoceraTest.report(resultDir, results)
+
+    @staticmethod
+    def report(resultDir, results):
         with open(resultDir+"/index.html", "w") as f:
             f.write("<html>\n")
             f.write(" <head>\n")
@@ -76,7 +80,8 @@ class BatoceraTest():
 
     @staticmethod
     def runTest(system, game, resultDir):
-        print("testing system {} with {}".format(system, os.path.basename(game)))
+        print("System: {}".format(system))
+        print("Game: {}".format(os.path.basename(game)))
 
         # start the game
         # curl http://localhost:1234/launch -d "/userdata/roms/gamecube/Super Mario Sunshine.iso"
