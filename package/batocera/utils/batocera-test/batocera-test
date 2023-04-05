@@ -48,6 +48,10 @@ class BatoceraTest():
                 results.append({"system": system, "game": games[system], "status": False})
 
         # generate report
+        BatoceraTest.report(resultDir, results)
+
+    @staticmethod
+    def report(resultDir, results):
         with open(resultDir+"/index.html", "w") as f:
             f.write("<html>\n")
             f.write(" <head>\n")
