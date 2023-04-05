@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DAPHNE_VERSION = v2.10.2
+DAPHNE_VERSION = v2.10.3
 DAPHNE_SITE = https://github.com/DirtBagXon/hypseus-singe
 DAPHNE_SITE_METHOD=git
 DAPHNE_LICENSE = GPLv3
