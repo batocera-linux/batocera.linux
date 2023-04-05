@@ -52,31 +52,14 @@ class BatoceraTest():
 
     @staticmethod
     def report(resultDir, results):
-        with open(resultDir+"/index.html", "w") as f:
-            f.write("<html>\n")
-            f.write(" <head>\n")
-            f.write("  <meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\" />\n")
-            f.write("  <title>batocera-test</title>\n")
-            f.write("  <style>\n")
-            f.write("    table, th, td {\n")
-            f.write("      border: 1px solid;\n")
-            f.write("    }\n")
-            f.write("  </style>\n")
-            f.write(" </head>\n")
-            f.write(" <body>\n")
-            f.write(" <table>\n")
+        with open(resultDir+"/report.txt", "w") as f:
+            f.write("  Status      System            Game\n")
+            f.write("=======================================================================\n")
             for result in results:
-                f.write("  <tr>\n")
-                f.write("  <td>" + result["system"] + "</td>\n")
-                f.write("  <td>" + os.path.basename(result["game"]) + "</td>\n")
                 if result["status"]:
-                    f.write("  <td style=\"background-color: green;\">OK</td>\n")
+                    f.write("[SUCCESS]   {:17} {}\n".format(result["system"], os.path.basename(result["game"])))
                 else:
-                    f.write("  <td style=\"background-color: red;\">FAILED</td>\n")
-                f.write("  </tr>\n")
-            f.write(" </table>\n")
-            f.write(" </body>\n")
-            f.write("</html>\n")
+                    f.write("[FAILED]    {:17} {}\n".format(result["system"], os.path.basename(result["game"])))
 
     @staticmethod
     def runTest(system, game, resultDir):
