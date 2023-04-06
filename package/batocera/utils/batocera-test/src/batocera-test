@@ -127,10 +127,11 @@ class BatoceraTest():
     @staticmethod
     def findGamesForEmulator(emulator, infos):
         for root, dirs, files in os.walk(infos["path"]):
-            for file in files:
-                for extension in infos["extensions"]:
-                    if file.endswith(extension):
-                        return os.path.join(root, file)
+            if "/roms/" in root:
+                for file in files:
+                    for extension in infos["extensions"]:
+                        if file.endswith(extension):
+                            return os.path.join(root, file)
         return None
 
     @staticmethod
