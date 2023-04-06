@@ -15,24 +15,24 @@ from datetime import datetime
 #   /userdata/roms/snes/Micro Machines 2 - Turbo Tournament.7z
 #
 # output:
-# /tmp/batocera-test_22-07-03_18h34.42/index.html
+# /userdata/reportTest/batocera-test_22-07-03_18h34.42/report.txt
 
 class BatoceraTest():
 
     @staticmethod
     def run():
+        outputDir = "/userdata/reportTest/"
+        configFile = "/userdata/system/gamesToTest.yml"
+
         emulators = BatoceraTest.findEmulators()
 
-        # games to test : from file by configuration, or from automatic list one by system
-        configFile = "/userdata/system/gamesToTest.yml"
         if os.path.exists(configFile):
             games = BatoceraTest.findGamesForEmulatorsFromFile(emulators, configFile)
         else:
             games = BatoceraTest.findGamesForEmulators(emulators)
 
         resultName = "batocera-test_" + datetime.now().strftime('%y-%m-%d_%Hh%M.%S')
-        resultDir = "/tmp/" + resultName
-        print(f"directory: {resultDir}")
+        resultDir = outputDir + resultName
         try:
             os.makedirs(resultDir)
         except:
