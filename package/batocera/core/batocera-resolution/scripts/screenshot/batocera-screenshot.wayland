@@ -1,7 +1,10 @@
 #!/bin/sh
 
+FILE=$1
+if [ -z ${FILE} ]; then
+    FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+fi
+
 OUTPUT=$(batocera-resolution currentOutput)
-FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
-mkdir -p /userdata/screenshots || exit 1
 
 grim -o "$OUTPUT" "$FILE" 2>/dev/null || exit 1

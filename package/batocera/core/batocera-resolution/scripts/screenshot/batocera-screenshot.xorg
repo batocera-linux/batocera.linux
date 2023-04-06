@@ -1,8 +1,10 @@
 #!/bin/sh
-
 export DISPLAY=:0.0
-OUTPUT="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
-mkdir -p /userdata/screenshots || exit 1
 
-ffmpeg -f x11grab -i :0.0 -vframes 1 "${OUTPUT}" 2>/dev/null || exit 1
-echo "${OUTPUT}"
+FILE=$1
+if [ -z ${FILE} ]; then
+    FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+fi
+
+ffmpeg -f x11grab -i :0.0 -vframes 1 "${FILE}" 2>/dev/null || exit 1
+echo "${FILE}"
