@@ -84,11 +84,11 @@ class BatoceraTest():
         except:
             stillRunning = False
 
+        if stillRunning:
+            BatoceraTest.screenshot(resultDir, system)
+
         # stop the game
         code = os.system("batocera-es-swissknife --emukill")
-
-        # batocera-screenshot
-        # logs in case of failure
 
         return stillRunning
 
@@ -143,6 +143,12 @@ class BatoceraTest():
             if system in emulators:
                 games[system] = testgames[system]
         return games
+
+    @staticmethod
+    def screenshot(resultDir, name):
+        name = os.path.splitext(name)[0]
+        pathScreenshot = "batocera-screenshot {}/{}.png".format(resultDir, name)
+        os.system(pathScreenshot)
 
 if __name__ == '__main__':
    BatoceraTest.run()
