@@ -204,6 +204,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_AUDIO                       # batocera audio
 	select BR2_PACKAGE_BATOCERA_BLUETOOTH                   # batocera bluetooth
 	select BR2_PACKAGE_BATOCERA_NOTICE                      # boot pdf notice
+    select BR2_PACKAGE_BATOCERA_TEST                        # batocera test script
 	select BR2_PACKAGE_WGET                                 # download tools
 	select BR2_PACKAGE_LIBCURL_CURL                         # download tools
 	select BR2_PACKAGE_NGHTTP2                              # required for curl http2
@@ -380,7 +381,6 @@ config BR2_PACKAGE_BATOCERA_DEV
 
 	select BR2_PACKAGE_TMUX
 	select BR2_PACKAGE_X11VNC   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    select BR2_PACKAGE_BATOCERA_TEST # WIP
 
 	help
 		Install dev packages for batocera.linux
