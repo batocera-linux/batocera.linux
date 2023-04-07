@@ -53,6 +53,7 @@
 - Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 - Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
 - dosbox to v2023.03.31
+- citra to nightly-1877
 ### Dev
 - buildroot upgrade to 2023.02
 - dxvk to 2.1
