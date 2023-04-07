@@ -1,23 +1,27 @@
-From 6ce08ea7e9ad78c877fa2cb74c9f00a6ba67e653 Mon Sep 17 00:00:00 2001
-From: Maccraft123 <maccraft123mc@gmail.com>
-Date: Fri, 22 Apr 2022 18:54:39 +0200
-Subject: [PATCH 2/7] drivers/gpu/drm/panel: add rg552's panel
+From bacc194e84f6a478f640f6826573dbff0b80a130 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Sun, 5 Feb 2023 19:41:42 +0200
+Subject: [PATCH] From 6ce08ea7e9ad78c877fa2cb74c9f00a6ba67e653 Mon Sep 17
+ 00:00:00 2001 From: Maccraft123 <maccraft123mc@gmail.com> Date: Fri, 22 Apr
+ 2022 18:54:39 +0200 Subject: [PATCH 2/7] drivers/gpu/drm/panel: add rg552's
+ panel - Revised to add 60hz refresh rate & - DRM_MODE_FLAG_NHSYNC and
+ DRM_MODE_FLAG_NVSYNC flags set.
 
 ---
  drivers/gpu/drm/panel/Kconfig                 |   9 +
  drivers/gpu/drm/panel/Makefile                |   1 +
- .../gpu/drm/panel/panel-sharp-ls054b3sx01.c   | 369 ++++++++++++++++++
- 3 files changed, 379 insertions(+)
+ .../gpu/drm/panel/panel-sharp-ls054b3sx01.c   | 366 ++++++++++++++++++
+ 3 files changed, 376 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index a582ddd..65618a7 100644
+index a582ddd58..0e1052ac2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
 @@ -588,6 +588,15 @@ config DRM_PANEL_SHARP_LS043T1LE01
  	  Say Y here if you want to enable support for Sharp LS043T1LE01 qHD
  	  (540x960) DSI panel as found on the Qualcomm APQ8074 Dragonboard
-
+ 
 +config DRM_PANEL_SHARP_LS054B3SX01
 +	bool "Sharp LS054B3SX01 1152x1920 video mode panel"
 +	depends on OF
@@ -31,7 +35,7 @@ index a582ddd..65618a7 100644
  	tristate "Sharp LS060T1SX01 FullHD video mode panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 34e7173..b99d095 100644
+index 34e717382..b99d0950c 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
 @@ -59,6 +59,7 @@ obj-$(CONFIG_DRM_PANEL_SEIKO_43WVF1G) += panel-seiko-43wvf1g.o
@@ -43,8 +47,9 @@ index 34e7173..b99d095 100644
  obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7701) += panel-sitronix-st7701.o
  obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7703) += panel-sitronix-st7703.o
 diff --git a/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c b/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
-index e69de29..3f01928 100644
---- a/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
+new file mode 100644
+index 000000000..d10c0a2bb
+--- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-sharp-ls054b3sx01.c
 @@ -0,0 +1,366 @@
 +// SPDX-License-Identifier: GPL-2.0-only
@@ -281,19 +286,19 @@ index e69de29..3f01928 100644
 +	return 0;
 +}
 +
-+// FIXME: should we strive for perfect 60hz?
 +static const struct drm_display_mode sharp_ls054_mode = {
-+	.clock		= ((1152 + 64 + 8 + 28) * (1920 + 56 + 3 + 6) * 60) / 1000,
++	.clock		= ((1152 + 64 + 4 + 32) * (1920 + 56 + 3 + 6) * 60) / 1000,
 +	.hdisplay	= 1152,
 +	.hsync_start	= 1152 + 64,
-+	.hsync_end	= 1152 + 64 + 8,
-+	.htotal		= 1152 + 64 + 8 + 28,
++	.hsync_end	= 1152 + 64 + 4,
++	.htotal		= 1152 + 64 + 4 + 32,
 +	.vdisplay	= 1920,
 +	.vsync_start	= 1920 + 56,
 +	.vsync_end	= 1920 + 56 + 3,
 +	.vtotal		= 1920 + 56 + 3 + 6,
 +	.width_mm	= 75,
 +	.height_mm	= 132,
++	.flags		= DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 +};
 +
 +static int sharp_ls054_get_modes(struct drm_panel *panel,
@@ -413,4 +418,6 @@ index e69de29..3f01928 100644
 +MODULE_AUTHOR("Maya Matuszczyk <maccraft123mc@gmail.com>");
 +MODULE_DESCRIPTION("Panel driver for Sharp LS054B3SX01 1152x1920 Video Mode DSI Panel");
 +MODULE_LICENSE("GPL v2");
-\ No newline at end of file
+-- 
+2.34.1
+

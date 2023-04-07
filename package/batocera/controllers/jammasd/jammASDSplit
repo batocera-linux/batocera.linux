@@ -1,0 +1,46 @@
+#!/bin/sh
+
+nohup evsieve --input "${1}" persist=exit \
+--map key:f2        btn:base     \
+--map key:5         btn:select   \
+--map key:1         btn:start    \
+--map key:up:1      abs:hat0y:-1 \
+--map key:up:0      abs:hat0y:0  \
+--block key:up:2                 \
+--map key:down:1    abs:hat0y:1  \
+--map key:down:0    abs:hat0y:0  \
+--block key:down:2               \
+--map key:left:1    abs:hat0x:-1 \
+--map key:left:0    abs:hat0x:0  \
+--block key:left:2               \
+--map key:right:1   abs:hat0x:1  \
+--map key:right:0   abs:hat0x:0  \
+--block key:right:2              \
+--map key:leftshift btn:north    \
+--map key:z         btn:west     \
+--map key:x         btn:tl       \
+--map key:leftctrl  btn:south    \
+--map key:leftalt   btn:east     \
+--map key:space     btn:tr       \
+--output name="ASD JammASD Player 1" btn:base btn:select btn:start abs:hat0y abs:hat0x btn:north btn:west btn:tl btn:south btn:east btn:tr \
+--map key:9         btn:select   \
+--map key:2         btn:start    \
+--map key:r:1       abs:hat0y:-1 \
+--map key:r:0       abs:hat0y:0  \
+--block key:r:2                  \
+--map key:f:1       abs:hat0y:1  \
+--map key:f:0       abs:hat0y:0  \
+--block key:f:2                  \
+--map key:d:1       abs:hat0x:-1 \
+--map key:d:0       abs:hat0x:0  \
+--block key:d:2                  \
+--map key:g:1       abs:hat0x:1  \
+--map key:g:0       abs:hat0x:0  \
+--block key:g:2                  \
+--map key:w         btn:north    \
+--map key:i         btn:west     \
+--map key:k         btn:tl       \
+--map key:a         btn:south    \
+--map key:s         btn:east     \
+--map key:q         btn:tr       \
+--output name="ASD JammASD Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:north btn:west btn:tl btn:south btn:east btn:tr &

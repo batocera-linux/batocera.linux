@@ -1,0 +1,45 @@
+From 0f662d14ebee360dfe0d4f87235b7ba5a587b6db Mon Sep 17 00:00:00 2001
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Date: Mon, 13 Dec 2021 16:10:36 +0800
+Subject: [PATCH] video/out/drm_atomic: Fix NV12_10 create framebuffer error
+
+The newer kernel would use NV15 instead of NV12_10.
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+---
+ video/out/drm_prime.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/video/out/drm_prime.c b/video/out/drm_prime.c
+index 25a38ef..db2ff13 100644
+--- a/video/out/drm_prime.c
++++ b/video/out/drm_prime.c
+@@ -26,6 +26,15 @@
+ #include "drm_common.h"
+ #include "drm_prime.h"
+ 
++#include <drm_fourcc.h>
++
++#ifndef DRM_FORMAT_NV12_10
++#define DRM_FORMAT_NV12_10 fourcc_code('N', 'A', '1', '2')
++#endif
++#ifndef DRM_FORMAT_NV15
++#define DRM_FORMAT_NV15 fourcc_code('N', 'V', '1', '5')
++#endif
++
+ int drm_prime_create_framebuffer(struct mp_log *log, int fd,
+                                  AVDRMFrameDescriptor *descriptor, int width,
+                                  int height, struct drm_prime_framebuffer *framebuffer,
+@@ -76,6 +85,11 @@ int drm_prime_create_framebuffer(struct mp_log *log, int fd,
+             ret = drmModeAddFB2(fd, width, height, layer->format,
+                                 handles, pitches, offsets,
+                                 &framebuffer->fb_id, 0);
++            if (ret < 0 && layer->format == DRM_FORMAT_NV12_10) {
++                ret = drmModeAddFB2(fd, width, height, DRM_FORMAT_NV15,
++                                    handles, pitches, offsets,
++                                    &framebuffer->fb_id, 0);
++            }
+             if (ret < 0) {
+                 mp_err(log, "Failed to create framebuffer with drmModeAddFB2 on layer %d: %s\n",
+                         0, mp_strerror(errno));
+

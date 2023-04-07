@@ -86,7 +86,13 @@ f_minTomaxResolution() {
 
 	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
 	then
-	    exit 0
+	    # hack for the rpi4 => need to avoid resolution 1360x768 (see batocera-drminfo-no-1360x768.c)
+	    # i don't like this hack, but this is to avoid a duplication of the file for the rpi4 #specific issue
+	    ARCH=$(cat /usr/share/batocera/batocera.arch)
+	    if ! test "${ARCH}" = "bcm2711" -a "${CURRENTWIDTH}" = 1360 -a "${CURRENTHEIGHT}" = 768
+	    then
+		exit 0
+	    fi
 	fi
 
 	# select a new one
@@ -181,7 +187,7 @@ case "${ACTION}" in
         ;;
 esac
 
-if which batocera-resolution-post >/dev/null
+if command -v batocera-resolution-post >/dev/null
 then
     batocera-resolution-post "${ACTION}" "${1}"
 fi

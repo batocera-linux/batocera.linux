@@ -5,45 +5,37 @@ BR2_aarch64=y
 BR2_cortex_a73_a53=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_S922X=y
-
-# Toolchain definition
-BR2_GCC_VERSION_11_X=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53"
 BR2_TARGET_GENERIC_GETTY_PORT="ttyAML0"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s922x/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s922x/fsoverlay"
 
+# Linux headers same as kernel, a 6.1 series
+BR2_KERNEL_HEADERS_AS_KERNEL=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
+
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.134"
-BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.1.21"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux-meson64-current.config"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s922x/linux-defconfig-fragment.config"
-BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-g12b-odroid-n2 amlogic/meson-g12b-odroid-n2-plus amlogic/meson-g12b-a311d-khadas-vim3 amlogic/meson-g12b-gtking amlogic/meson-g12b-gtking-pro amlogic/meson-g12b-radxa-zero2"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
+# Build the DTB from the kernel sources
+BR2_LINUX_KERNEL_DTS_SUPPORT=y
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-g12b-odroid-n2 amlogic/meson-g12b-odroid-n2-plus amlogic/meson-g12b-odroid-n2l amlogic/meson-g12b-a311d-khadas-vim3 amlogic/meson-g12b-gtking amlogic/meson-g12b-gtking-pro amlogic/meson-g12b-radxa-zero2" # meson-g12b-odroid-go-ultra
+
 # System
-BR2_PACKAGE_BATOCERA_KODI19=y
+BR2_PACKAGE_BATOCERA_KODI20=y
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
 # GPU
 BR2_PACKAGE_BATOCERA_PANFROST_MESA3D=y
 BR2_PACKAGE_BATOCERA_WAYLAND=y
-
-# Bootloader for vim3
-BR2_TARGET_UBOOT=y
-BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
-BR2_TARGET_UBOOT_CUSTOM_VERSION=y
-BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2021.10"
-BR2_TARGET_UBOOT_BOARD_DEFCONFIG="khadas-vim3"
-BR2_PACKAGE_UBOOT_AMLOGIC=y
-BR2_PACKAGE_UBOOT_ODROID_N2=y
 
 # Required tools to create the SD image
 BR2_PACKAGE_HOST_DOSFSTOOLS=y

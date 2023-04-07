@@ -1,0 +1,88 @@
+From bf68bf044efa2fc93720778bd5a4be4aa4758a39 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Tue, 4 Apr 2023 23:44:37 +0200
+Subject: [PATCH] system/addon-manifeset.xml / Enable default plugins
+
+Signed-off-by: Steve Hay <me@stevenhay.com>
+---
+ system/addon-manifest.xml | 62 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+
+diff --git a/system/addon-manifest.xml b/system/addon-manifest.xml
+index 7df13a6..1091f0b 100644
+--- a/system/addon-manifest.xml
++++ b/system/addon-manifest.xml
+@@ -53,7 +53,70 @@
+   <addon>xbmc.metadata</addon>
+   <addon>xbmc.python</addon>
+   <addon>xbmc.webinterface</addon>
++  <addon optional="true">service.xbmc.versioncheck</addon>
++  <addon optional="true">audiodecoder.nosefart</addon>
++  <addon optional="true">audiodecoder.openmpt</addon>
++  <addon optional="true">audiodecoder.sidplay</addon>
++  <addon optional="true">audiodecoder.snesapu</addon>
++  <addon optional="true">audiodecoder.stsound</addon>
++  <addon optional="true">audiodecoder.timidity</addon>
++  <addon optional="true">audiodecoder.vgmstream</addon>
++  <addon optional="true">audioencoder.flac</addon>
++  <addon optional="true">audioencoder.lame</addon>
++  <addon optional="true">audioencoder.vorbis</addon>
++  <addon optional="true">audioencoder.wav</addon>
++  <addon optional="true">imagedecoder.heif</addon>
++  <addon optional="true">imagedecoder.raw</addon>
+   <addon optional="true">inputstream.adaptive</addon>
++  <addon optional="true">inputstream.ffmpegdirect</addon>
++  <addon optional="true">inputstream.rtmp</addon>
+   <addon optional="true">peripheral.joystick</addon>
++  <addon optional="true">peripheral.xarcade</addon>
++  <addon optional="true">screensaver.asteroids</addon>
++  <addon optional="true">screensaver.asterwave</addon>
++  <addon optional="true">screensaver.biogenesis</addon>
++  <addon optional="true">screensaver.cpblobs</addon>
++  <addon optional="true">screensaver.greynetic</addon>
++  <addon optional="true">screensaver.matrixtrails</addon>
++  <addon optional="true">screensaver.pingpong</addon>
++  <addon optional="true">screensaver.pyro</addon>
++  <addon optional="true">screensaver.shadertoy</addon>
++  <addon optional="true">screensaver.stars</addon>
++  <addon optional="true">screensavers.rsxs</addon>
++  <addon optional="true">screensaver.rsxs.biof</addon>
++  <addon optional="true">screensaver.rsxs.busyspheres</addon>
++  <addon optional="true">screensaver.rsxs.colorfire</addon>
++  <addon optional="true">screensaver.rsxs.cyclone</addon>
++  <addon optional="true">screensaver.rsxs.drempels</addon>
++  <addon optional="true">screensaver.rsxs.euphoria</addon>
++  <addon optional="true">screensaver.rsxs.feedback</addon>
++  <addon optional="true">screensaver.rsxs.fieldlines</addon>
++  <addon optional="true">screensaver.rsxs.flocks</addon>
++  <addon optional="true">screensaver.rsxs.flux</addon>
++  <addon optional="true">screensaver.rsxs.helios</addon>
++  <addon optional="true">screensaver.rsxs.hufosmoke</addon>
++  <addon optional="true">screensaver.rsxs.hufotunnel</addon>
++  <addon optional="true">screensaver.rsxs.hyperspace</addon>
++  <addon optional="true">screensaver.rsxs.lattice</addon>
++  <addon optional="true">screensaver.rsxs.lorenz</addon>
++  <addon optional="true">screensaver.rsxs.matrixview</addon>
++  <addon optional="true">screensaver.rsxs.microcosm</addon>
++  <addon optional="true">screensaver.rsxs.plasma</addon>
++  <addon optional="true">screensaver.rsxs.skyrocket</addon>
++  <addon optional="true">screensaver.rsxs.solarwinds</addon>
++  <addon optional="true">screensaver.rsxs.spirographx</addon>
++  <addon optional="true">screensaver.rsxs.sundancer2</addon>
+   <addon optional="true">service.xbmc.versioncheck</addon>
++  <addon optional="true">vfs.libarchive</addon>
++  <addon optional="true">vfs.rar</addon>
++  <addon optional="true">vfs.sftp</addon>
++  <addon optional="true">visualization.fishbmc</addon>
++  <addon optional="true">visualization.goom</addon>
++  <addon optional="true">visualization.matrix</addon>
++  <addon optional="true">visualization.pictureit</addon>
++  <addon optional="true">visualization.projectm</addon>
++  <addon optional="true">visualization.shadertoy</addon>
++  <addon optional="true">visualization.spectrum</addon>
++  <addon optional="true">visualization.starburst</addon>
++  <addon optional="true">visualization.waveform</addon>
+ </addons>
+-- 
+2.30.2
+

@@ -1286,6 +1286,8 @@ index e69de29..e5ab241 100644
 +	}
 +	amux = joypad->amux;
 +	amux->iio_ch = devm_iio_channel_get(dev, "amux_adc");
++	if (PTR_ERR(amux->iio_ch) == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
 +	if (IS_ERR(amux->iio_ch)) {
 +		dev_err(dev, "iio channel get error\n");
 +		return -EINVAL;

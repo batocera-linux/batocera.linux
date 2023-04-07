@@ -3,8 +3,8 @@
 # moonlight-embedded
 #
 ################################################################################
-
-MOONLIGHT_EMBEDDED_VERSION = v2.5.3
+# Version: Commits on Mar 13, 2023
+MOONLIGHT_EMBEDDED_VERSION = 5bb47ce8b64480048c58d6453bdb16d8742638fa
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -25,14 +25,17 @@ ifeq ($(BR2_PACKAGE_LIBVA),y)
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
+    MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
+    MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
 endif
 
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
+    mkdir -p $(TARGET_DIR)/usr/share/moonlight-embedded
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/moonlight.conf \
+        $(TARGET_DIR)/usr/share/moonlight-embedded/
     install -m 0755 \
 	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/batocera-moonlight \
 	    $(TARGET_DIR)/usr/bin/

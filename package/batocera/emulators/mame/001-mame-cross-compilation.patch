@@ -131,10 +131,10 @@ diff -ur ./scripts/genie.lua /home/romain/batocera.linux/output/odroidn2/build/m
 diff -ur ./scripts/src/3rdparty.lua /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/scripts/src/3rdparty.lua
 --- a/scripts/src/3rdparty.lua	2020-10-27 02:00:36.000000000 +0100
 +++ b/scripts/src/3rdparty.lua	2020-11-09 18:03:17.288620257 +0100
-@@ -1263,9 +1263,14 @@
+@@ -1346,9 +1346,14 @@ end
  		MAME_DIR .. "3rdparty/bx/include",
  		MAME_DIR .. "3rdparty/bimg/include",
- 		MAME_DIR .. "3rdparty/bgfx/3rdparty/dxsdk/include",
+ 		MAME_DIR .. "3rdparty/bgfx/3rdparty/directx-headers/include/directx",
 -		MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
  	}
  
@@ -147,20 +147,6 @@ diff -ur ./scripts/src/3rdparty.lua /home/romain/batocera.linux/output/odroidn2/
  	configuration { "android-*"}
  		buildoptions {
  			"-Wno-macro-redefined",
-@@ -2121,8 +2123,12 @@
- 	configuration { "mingw*"}
- 		includedirs {
- 			MAME_DIR .. "3rdparty/SDL2-override/mingw",
--			MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
- 		}
-+                if not _OPTIONS["NO_USE_BGFX_KHRONOS"] then
-+			includedirs {
-+				MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
-+			}
-+		end
- 		buildoptions_c {
- 			"-Wno-undef",
- 			"-Wno-format",
 diff -ur ./scripts/src/osd/modules.lua /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/scripts/src/osd/modules.lua
 --- a/scripts/src/osd/modules.lua	2020-10-27 02:00:36.000000000 +0100
 +++ b/scripts/src/osd/modules.lua	2020-11-09 17:59:35.068394429 +0100
@@ -217,20 +203,6 @@ diff -ur ./scripts/toolchain.lua /home/romain/batocera.linux/output/odroidn2/bui
  	configuration { "linux-clang", "x32" }
  		objdir (_buildDir .. "linux_clang" .. "/obj")
  		buildoptions {
-@@ -860,8 +876,12 @@
- 
- 	configuration { "android-*" }
- 		objdir (_buildDir .. "android/obj/" .. _OPTIONS["PLATFORM"])
-+	        if not _OPTIONS["NO_USE_BGFX_KHRONOS"] then
-+			includedirs {
-+				MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
-+			}
-+		end
- 		includedirs {
--			MAME_DIR .. "3rdparty/bgfx/3rdparty/khronos",
- 			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/libcxx/include",
- 			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/include",
- 			"$(ANDROID_NDK_ROOT)/sysroot/usr/include",
 @@ -712,10 +712,17 @@
  		}
  

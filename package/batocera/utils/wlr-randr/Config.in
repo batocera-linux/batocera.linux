@@ -1,0 +1,8 @@
+config BR2_PACKAGE_WLR_RANDR
+    bool "wlr-randr"
+    depends on BR2_PACKAGE_WAYLAND
+
+    help
+        Utility to manage outputs of a Wayland compositor.
+
+	    https://git.sr.ht/~emersion/wlr-randr

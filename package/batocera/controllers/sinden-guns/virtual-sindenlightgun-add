@@ -3,29 +3,56 @@
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
-USBPATHHASH=$(echo "${ID_PATH}" | sed -e s+"\.[0-9]*$"++ | md5sum | cut -c 0-8)
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+BASEFILE="/var/run/virtual-sindenlightgun-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+LOGFILE2="${BASEFILE}.log2"
 
-cleanAndExit() {
-    rmdir "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.lock"
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
     exit "${1}"
 }
 
-# lock
-N=0
-while ! mkdir "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.lock"
-do
-    sleep 1
-    let N++
-    test "${N}" -gt 30 && exit 1 # give up
-done
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
 
-NDEVS=$(cat "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}" | wc -l)
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
 
-if test "${NDEVS}" = 1
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "sindengun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+if test "${NDEVS}" = 2
 then
-    DEV1=$(head -1 "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}")
-    rm "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}" || cleanAndExit 1
-
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
     # 1:     left     / b
     # 2:     right    / a
     # 3:     middle   / home
@@ -37,26 +64,26 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEVNAME}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Sinden lightgun" >/dev/null 2>"/var/log/virtual-sindenlightgun-devices.${USBPATHHASH}.log" &
-    echo $! > "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}.pid"
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Sinden lightgun" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
 
     # ttyACM
-    ACMSEARCHDIR=/sys$(echo "${DEVPATH}" | cut -d / -f 1-7) # 1-7 ? sure ? no, not sure
+    ACMSEARCHDIR=/sys$(evsieve-helper parent-raw "${DEVNAME}")
     ACM=$(find "${ACMSEARCHDIR}" -name "ttyACM*" | head -1)
     ACMDEV=/dev/$(basename "${ACM}")
     if test -n "${ACMDEV}"
     then
-    	mkdir -p "/var/run/sinden" || cleanAndExit 1
+    	mkdir -p "/var/run/sinden" || unlockAndExit 1
 
-	CONFIGFILE="/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe.config"
+	CONFIGFILE="/var/run/sinden/p${PARENTHASH}/LightgunMono-${PARENTHASH}.exe.config"
 
-	if ! test -e "/var/run/sinden/p${USBPATHHASH}"
+	if ! test -e "/var/run/sinden/p${PARENTHASH}"
 	then
-    	    cp -pr /usr/share/sinden "/var/run/sinden/p${USBPATHHASH}" || cleanAndExit 1
+    	    cp -pr /usr/share/sinden "/var/run/sinden/p${PARENTHASH}" || unlockAndExit 1
 	    # mono-service seems to be needed (otherwise, udev won't release, and at batocera statup, it takes long)
 	    # but mono-service seems to want a distinguish exe name
-	    mv "/var/run/sinden/p${USBPATHHASH}/LightgunMono.exe" "/var/run/sinden/p${USBPATHHASH}/LightgunMono-${USBPATHHASH}.exe" || cleanAndExit 1
-	    mv "/var/run/sinden/p${USBPATHHASH}/LightgunMono.exe.config" "${CONFIGFILE}" || cleanAndExit 1
+	    mv "/var/run/sinden/p${PARENTHASH}/LightgunMono.exe" "/var/run/sinden/p${PARENTHASH}/LightgunMono-${PARENTHASH}.exe" || unlockAndExit 1
+	    mv "/var/run/sinden/p${PARENTHASH}/LightgunMono.exe.config" "${CONFIGFILE}" || unlockAndExit 1
 	fi
 
 	# parameters
@@ -99,6 +126,14 @@ then
 	    ;;
 	esac
 
+	# camera
+	OPT_CONTRAST=$(batocera-settings-get controllers.guns.sinden.contrast)
+	OPT_BRIGHTNESS=$(batocera-settings-get controllers.guns.sinden.brightness)
+	OPT_EXPOSURE=$(batocera-settings-get controllers.guns.sinden.exposure)
+	test -z "${OPT_CONTRAST}"   && OPT_CONTRAST=60
+	test -z "${OPT_BRIGHTNESS}" && OPT_BRIGHTNESS=120
+	test -z "${OPT_EXPOSURE}"   && OPT_EXPOSURE=-7
+
 	# recoil
 	sed -i -e s+'\(key="EnableRecoil"[ ]*value="\)[^"]*"'+'\1'${RECOIL_ENABLED}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="TriggerRecoilNormalOrRepeat"[ ]*value="\)[^"]*"'+'\1'${RECOIL_NORMALORREPEAT}'"'+ "${CONFIGFILE}" # no exit for that
@@ -106,14 +141,17 @@ then
 	sed -i -e s+'\(key="AutoRecoilStartDelay"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STARTDELAY}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilDelayBetweenPulses"[ ]*value="\)[^"]*"'+'\1'${RECOIL_PULSEDELAY}'"'+ "${CONFIGFILE}" # no exit for that
 
-	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || cleanAndExit 1
-	rm -f "/var/run/sinden/p${USBPATHHASH}/lockfile"
-	PATH=/bin:/sbin:/usr/bin:/usr/sbin nohup mono-service -l:"/var/run/sinden/p${USBPATHHASH}/lockfile" -d:"/var/run/sinden/p${USBPATHHASH}" --no-daemon "./LightgunMono-${USBPATHHASH}.exe" > "/var/run/sinden/p${USBPATHHASH}/sinden-${USBPATHHASH}.log" &
+	# camera
+	sed -i -e s+'\(key="CameraContrast"[ ]*value="\)[^"]*"'+'\1'${OPT_CONTRAST}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="CameraBrightness"[ ]*value="\)[^"]*"'+'\1'${OPT_BRIGHTNESS}'"'+ "${CONFIGFILE}" # no exit for that
+	sed -i -e s+'\(key="CameraExposure"[ ]*value="\)[^"]*"'+'\1'${OPT_EXPOSURE}'"'+ "${CONFIGFILE}" # no exit for that
+
+	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || unlockAndExit 1
+	rm -f "/var/run/sinden/p${PARENTHASH}/lockfile"
+	PATH=/bin:/sbin:/usr/bin:/usr/sbin nohup mono-service -l:"/var/run/sinden/p${PARENTHASH}/lockfile" -d:"/var/run/sinden/p${PARENTHASH}" --no-daemon "./LightgunMono-${PARENTHASH}.exe" > "${LOGFILE2}" &
     fi
-    
 else
-    echo "${DEVNAME}" >> "/var/run/virtual-sindenlightgun-devices.${USBPATHHASH}" || cleanAndExit 1
+    unlockAndExit 1
 fi
 
-# unlock
-cleanAndExit 0
+unlockAndExit 0

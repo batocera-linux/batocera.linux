@@ -216,6 +216,7 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Source = 2\n")
         nplayer += 1
+    f.write("[BalanceBoard]\nSource = 2\n")
     f.write
     f.close()
 
@@ -263,41 +264,36 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
 
             # extra buttons
             mappings = {
-                "Home": "4",
-                "-": "1",
-                "1": "2",
-                "2": "3",
-                "+": "middle"
-            }
-
-            mapping_words = {
-                "middle": "BTN_MIDDLE"
+                "Home": { "code": "BTN_4", "button": "4" },
+                "-":    { "code": "BTN_1", "button": "1" },
+                "1":    { "code": "BTN_2", "button": "2" },
+                "2":    { "code": "BTN_3", "button": "3" },
+                "+":    { "code": "BTN_MIDDLE", "button": "middle" },
             }
 
             # for a button for + because it is an important button
-            if mappings["+"] not in buttons:
+            if mappings["+"]["button"] not in buttons:
                 for key in mappings:
-                    if mappings[key] in buttons:
-                        mappings["+"] = mappings[key]
-                        mappings[key] = None
+                    if mappings[key]["button"] in buttons:
+                        mappings["+"]["code"]   = mappings[key]["code"]
+                        mappings["+"]["button"] = mappings[key]["button"]
+                        mappings[key]["code"] = None
+                        mappings[key]["button"] = None
                         break
 
             for mapping in mappings:
-                if mappings[mapping] in buttons:
-                    if mappings[mapping] in mapping_words:
-                        f.write("Buttons/" + mapping + " = `" + mapping_words[mappings[mapping]] + "`\n")
-                    else:
-                        f.write("Buttons/" + mapping + " = `" + mappings[mapping] + "`\n")
+                if mappings[mapping]["button"] in buttons:
+                    f.write("Buttons/" + mapping + " = `" + mappings[mapping]["code"] + "`\n")
 
             # directions
             if "5" in buttons:
-                f.write("D-Pad/Up = `5`\n")
+                f.write("D-Pad/Up = `BTN_5`\n")
             if "6" in buttons:
-                f.write("D-Pad/Down = `6`\n")
+                f.write("D-Pad/Down = `BTN_6`\n")
             if "7" in buttons:
-                f.write("D-Pad/Left = `7`\n")
+                f.write("D-Pad/Left = `BTN_7`\n")
             if "8" in buttons:
-                f.write("D-Pad/Right = `8`\n")
+                f.write("D-Pad/Right = `BTN_8`\n")
 
             if "ir_up" not in gunsmetadata:
                 f.write("IR/Up = `Axis 1-`\n")

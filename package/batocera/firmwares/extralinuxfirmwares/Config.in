@@ -1,0 +1,6 @@
+config BR2_PACKAGE_EXTRALINUXFIRMWARES
+	bool "extralinuxfirmwares"
+    select BR2_PACKAGE_ALLLINUXFIRMWARES
+
+	help
+	  Batocera extra linux firmwares

@@ -1,0 +1,24 @@
+From c44f6e56fd215bbcfcf56b6841e7316e451dec07 Mon Sep 17 00:00:00 2001
+From: Steve Hay <me@stevenhay.com>
+Date: Fri, 31 Mar 2023 07:33:49 +0200
+Subject: [PATCH] Makefile.am / skip the sdl tests
+
+These tests are causing a compile issue with buildroot.
+---
+ src/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 6d5e6e7..6a651f0 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -1,5 +1,5 @@
+ if ENABLE_SDL
+-  PROJECTM_SDL_SUBDIR = projectM-test projectM-sdl
++  PROJECTM_SDL_SUBDIR = projectM-sdl
+ endif
+ 
+ if ENABLE_QT
+-- 
+2.30.2
+

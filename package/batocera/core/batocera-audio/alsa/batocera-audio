@@ -17,15 +17,15 @@ export XDG_RUNTIME_DIR=/var/run
 
 # Set variables
 MAX_VOLUME="$(/usr/bin/batocera-settings-get audio.volume.boost)" || MAX_VOLUME=100
-DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
-DETECT_VOLUME=$(pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+)
+DEFAULT_SINK=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
+DETECT_VOLUME=$(LANG=C pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+)
 
 ACTION="$1"
 
 case "${ACTION}" in
 	list)
 	    echo "auto auto"
-	    pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .* description=\(.*\)$"+"\1 \2"+
+	    LANG=C pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .* description=\(.*\)$"+"\1 \2"+
 	;;
 
 	get)
@@ -38,22 +38,26 @@ case "${ACTION}" in
 			auto)
 			    ARCH=$(cat /usr/share/batocera/batocera.arch)
 			    case "${ARCH}" in
-				"rk3399|rk3288") # defaults to HDMI
+				"rk3399") # defaults to HDMI
 				    MODE=alsa_output.platform-hdmi-sound.stereo-fallback
-				    pactl set-default-sink "${MODE}" || exit 1
+				    LANG=C pactl set-default-sink "${MODE}" || exit 1
 				    ;;
 				*)
 				    # do nothing!
 			    esac
 			;;
 			*)
-			    pactl set-default-sink "${MODE}" || exit 1
+			    LANG=C pactl set-default-sink "${MODE}" || exit 1
+					if [[ $(LANG=C pactl get-default-sink) != "${MODE}" ]]; then
+						# default-sink didn't switch right away for some reason, try again later
+						exit 1
+					fi
 		esac
 		;;
 
 	list-profiles)
 	    echo "auto auto"
-	    pactl list cards-profiles-raw | grep "available=1" | sed -e s+"^card=[0-9]* name=\([^ ]*\) profile=\([^ ]*\) available=[01] active=[01] description=\(.*\)$"+"\2@\1 \3"+
+	    LANG=C pactl list cards-profiles-raw | grep "available=1" | sed -e s+"^card=[0-9]* name=\([^ ]*\) profile=\([^ ]*\) available=[01] active=[01] description=\(.*\)$"+"\2@\1 \3"+
 	    ;;
 
 	get-profile)
@@ -63,10 +67,15 @@ case "${ACTION}" in
 	set-profile)
 	    MODE="$2"
 	    if test "${MODE}" != "auto"
-	    then
-		PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
-		CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
-		pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+	    then			
+				if [[ $(batocera-audio list-profiles) =~ "${MODE}" ]]; then
+					PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
+					CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
+					LANG=C pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+				else
+					# the profile isn't available yet, try again later
+					exit 1
+				fi		
 	    fi
 	    ;;
 
@@ -78,20 +87,20 @@ case "${ACTION}" in
 	    VOLUME="$2"
 	    case "${VOLUME}" in
 		"mute")
-		    pactl set-sink-mute @DEFAULT_SINK@ 1 || exit 1
+		    LANG=C pactl set-sink-mute @DEFAULT_SINK@ 1 || exit 1
 		    ;;
 		"unmute")
-		    pactl set-sink-mute @DEFAULT_SINK@ 0 || exit 1
+		    LANG=C pactl set-sink-mute @DEFAULT_SINK@ 0 || exit 1
 		    ;;
 		"mute-toggle")
-		    pactl set-sink-mute @DEFAULT_SINK@ toggle || exit 1
+		    LANG=C pactl set-sink-mute @DEFAULT_SINK@ toggle || exit 1
 		    ;;
 		*)
 		    if echo "${VOLUME}" | grep -qE '^[0-9]+$'
 		    then
 		      if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
 		      then
-		        pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%" || exit 1
+		        LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%" || exit 1
 		        exit 0
 		      fi
 		    else
@@ -100,7 +109,7 @@ case "${ACTION}" in
 		        let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
 		        test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
 		        test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
-		        pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%" || exit 1
+		        LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%" || exit 1
 		        exit 0
 		      fi
 		      echo "invalid volume value" >&2

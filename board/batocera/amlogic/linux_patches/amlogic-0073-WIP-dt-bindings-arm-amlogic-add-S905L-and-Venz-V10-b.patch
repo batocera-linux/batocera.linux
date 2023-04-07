@@ -1,0 +1,34 @@
+From eaa08478f34e3ab816fe2aafdaccb204ef40bf27 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 9 Apr 2022 06:27:50 +0000
+Subject: [PATCH 73/92] WIP: dt-bindings: arm: amlogic: add S905L and Venz V10
+ bindings
+
+Add SOC bindings for S905L devices and the board binding for Venz V10.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 0061cec1995e..cadb9b2377f2 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -83,6 +83,13 @@ properties:
+           - const: amlogic,s805x
+           - const: amlogic,meson-gxl
+ 
++      - description: Boards with the Amlogic Meson GXL S905L SoC
++        items:
++          - enum:
++              - venz,v10
++          - const: amlogic,s905l
++          - const: amlogic,meson-gxl
++
+       - description: Boards with the Amlogic Meson GXL S905W SoC
+         items:
+           - enum:
+-- 
+2.34.1
+

@@ -2,7 +2,7 @@
 
 GAME=$1
 
-DISPLAY=:0.0 unclutter-remote -s
+batocera-mouse show
 
 # bad hack in a first time to get audio for user batocera                                                                                                                                          
 chown -R root:audio /var/run/pulse
@@ -23,4 +23,5 @@ else
 	    fi
 	done
 fi
-DISPLAY=:0.0 unclutter-remote -h
+
+batocera-mouse hide

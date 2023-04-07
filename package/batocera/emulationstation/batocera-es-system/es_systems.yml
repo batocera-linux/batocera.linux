@@ -44,12 +44,13 @@ c64:
   group:      c64
   emulators:
     vice:
-      x64:         { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      x64:          { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      x64dtv:       { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      xscpu64:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
-      vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64sc:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_xscpu64: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 cplus4:
   name:       Commodore Plus4
@@ -84,7 +85,7 @@ c20:
   release: 1980
   hardware: computer
   extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
-  platform:   c64
+  platform:   c20
   emulators:
     vice:
       xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
@@ -395,7 +396,6 @@ lcdgames:
   group:      lcdgames
   emulators:
     libretro:
-      gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
@@ -656,14 +656,14 @@ scummvm:
     libretro:
       scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
-    Put scummvm games foders in this folder.
+    Put scummvm games in this folder.
 
     For each game, you must create a file named from the short name of the game and with the extension ".scummvm"
 
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
 
-    If you wish to use Midi ROM's i.e. the MT-32 synth, put you files in /userdata/roms/scummvm/extras
+    If you wish to use Midi ROM's i.e. the MT-32 synth, put you files in /userdata/bios/scummvm/extra
 
     For more info: https://wiki.batocera.org/systems:scummvm
   comment_fr: |
@@ -674,7 +674,7 @@ scummvm:
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
 
-    Si vous souhaitez utiliser des Midi ROM, c'est-à-dire le synthé MT-32, mettez vos fichiers dans /userdata/roms/scummvm/extras
+    Si vous souhaitez utiliser des Midi ROM, c'est-à-dire le synthé MT-32, mettez vos fichiers dans /userdata/bios/scummvm/extra
 
     Trouvez la documentation ici: https://wiki.batocera.org/systems:scummvm
   comment_br: |
@@ -685,7 +685,7 @@ scummvm:
     Nomes curtos de jogos podem ser encontrados em http://scummvm.org/compatibility/
     Por exemplo, para "Broken Sword" crie o arquivo "Broken Sword/sword1.scummvm"
 
-    Se você deseja usar Midi ROM, ou seja, o sintetizador MT-32, coloque seus arquivos em /userdata/roms/scummvm/extras
+    Se você deseja usar Midi ROM, ou seja, o sintetizador MT-32, coloque seus arquivos em /userdata/bios/scummvm/extra
 
     Para mais informações: https://wiki.batocera.org/systems:scummvm
 
@@ -707,7 +707,7 @@ dos:
     libretro:
       dosbox_pure:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX_PURE] }
   comment_en: |
-    Each game (files) must be placed its own directory having the ".pc .dos" extension.
+    Each game (files) must be placed in its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
 
     For example:
@@ -716,7 +716,7 @@ dos:
     miniputt.pc/MP.DAT
     miniputt.pc/MP.EXE
 
-    WHere dosbox.bat contains: MP.EXE
+    Where dosbox.bat contains: MP.EXE
 
     With pure-dosbox you can also use zip files.
 
@@ -848,7 +848,7 @@ mame:
 
   comment_en: |
     The system uses libretro mame2003+ as default core: compatible ROMs must come from set 0.78+
-    Depending on your hardawre, other mame cores are included :
+    Depending on your hardware, other mame cores are included:
       - latest mame core (0.228 currently)
       - imame4all based on 0.37b5 romset
       - mame2010 based on 0.139 romset
@@ -919,8 +919,13 @@ colecovision:
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
+
+    - OpenMSX:
+    coleco.rom must be in /userdata/system/configs/openmsx/share/systemroms to run Coleco SGM roms.
 
     - BlueMSX:
     You must download the BlueMSX standalone version, available to this URL:
@@ -1008,11 +1013,11 @@ xegs:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file xegs.zip
-          Software list mode recommended
+    Requires MAME BIOS file xegs.zip
+    Software list mode recommended
   comment_br: |
-          Requer o arquivo xegs.zip da BIOS do MAME
-          Modo de lista de software recomendado
+    Requer o arquivo xegs.zip da BIOS do MAME
+    Modo de lista de software recomendado
 
 atari2600:
   name:       Atari 2600
@@ -1224,6 +1229,16 @@ wasm4:
     libretro:
       wasm4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WASM4] }
 
+pyxel:
+  name:       pyxel
+  manufacturer: Fantasy
+  release: 2021
+  hardware: console
+  extensions: [py, pyxapp]
+  emulators:
+    pyxel:
+      pyxel: { requireAnyOf: [BR2_PACKAGE_PYTHON_PYXEL] }
+
 channelf:
   name:       Channel-F
   manufacturer: Fairchild
@@ -1337,7 +1352,7 @@ cavestory:
     Download the game from the following URL and uncompress it in this folder.
     http://www.cavestory.org/downloads/cavestoryen.zip
 
-    It is recommended to use the english version.
+    It is recommended to use the English version.
     Other versions may freeze the system.
   comment_fr: |
     Télécharger le jeu de l'adresse suivante et décompresser le fichier dans ce dossier.
@@ -1702,7 +1717,7 @@ zxspectrum:
   manufacturer: Sinclair
   release: 1982
   hardware: computer
-  extensions: [tzx, tap, z80, rzx, scl, trd, zip, 7z]
+  extensions: [tzx, tap, z80, rzx, scl, trd, dsk, zip, 7z]
   emulators:
     libretro:
       fuse: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FUSE] }
@@ -1783,7 +1798,7 @@ apple2:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [chd, hdv, 2mg] }
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
 
@@ -1804,7 +1819,7 @@ jaguar:
   manufacturer: Atari
   release: 1993
   hardware: console
-  extensions: [j64, jag, zip, 7z]
+  extensions: [cue, j64, jag, cof, abs, cdi, rom, zip, 7z]
   theme:      atarijaguar
   emulators:
     libretro:
@@ -2123,7 +2138,7 @@ ports:
   extensions: [sh, squashfs]
   platform: pc
   group: ports
-  path:       /userdata/roms/ports
+  path: ports
   emulators:
     sh:
       sh:  { requireAnyOf: [] }
@@ -2243,7 +2258,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wua, wup, wud, wux, rpx, squashfs]
+  extensions: [wua, wup, wud, rpx, squashfs]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -2278,7 +2293,7 @@ easyrpg:
     libretro:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
   comment_en: |
-          The EasyRPG engine supports RPG Maker 2000 and 2003 games, you have to put the game's entire folder inside, and add .easyrpg to it's name the game folder is the one containing the RPG_RT.ldb file.
+          The EasyRPG engine supports RPG Maker 2000 and 2003 games, you have to put the game's entire folder inside, and add .easyrpg to its name. The game folder is the one containing the RPG_RT.ldb file.
   comment_br: |
           A engine do EasyRPG suporta jogos RPG Maker 2000 e 2003, você deve colocar a pasta inteira do jogo dentro do diretório, e adicionar .easyrpg ao final do nome da pasta do jogo, aquela que contém o arquivo RPG_RT.ldb.
 
@@ -2305,7 +2320,7 @@ pygame:
     pygame:
       pygame:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_PYGAME] }
   comment_en: |
-          Create your game yourself ! Pygame helps you to create games in only some lines. Find a lot of example on internet.
+          Create your game yourself! Pygame helps you to create games in only some lines. Find a lot of example on internet.
   comment_fr: |
           Créez vos jeux vous-même ! Pygame vous aide à créer vos propres jeux en quelques lignes de code seulement. Vous trouvez sur internet plein d'exemples et de tutoriaux.
   comment_br: |
@@ -2794,7 +2809,7 @@ scv:
   manufacturer: Epoch
   release: 1984
   hardware: console
-  extensions: [bin, "0"]
+  extensions: [bin, zip, "0"]
   emulators:
     libretro:
       emuscv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
@@ -3405,9 +3420,9 @@ hurrican:
     hurrican:
       hurrican: { requireAnyOf: [BR2_PACKAGE_HURRICAN] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3423,9 +3438,9 @@ hcl:
     hcl:
       hcl: { requireAnyOf: [BR2_PACKAGE_HCL] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3451,9 +3466,11 @@ abuse:
     abuse:
       abuse: { requireAnyOf: [BR2_PACKAGE_ABUSE] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
+    You can add the game data files directly from the Batocera content downloader.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
+    Vous pouvez ajouter les fichiers de données du jeu depuis le menu de téléchargement de contenu Batocera.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3469,9 +3486,9 @@ cdogs:
     cdogs:
       cdogs: { requireAnyOf: [BR2_PACKAGE_CDOGS] }
   comment_en: |
-    This system is a standalone  game. No rom required.
+    This system is a standalone game. No rom required.
   comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3487,9 +3504,11 @@ xrick:
     libretro:
       xrick: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XRICK] }
   comment_en: |
-    Put the data.zip in this directory.
+    Put the data.zip file in this directory.
+    Or you can add the game data files directly from the Batocera content downloader.
   comment_fr: |
     Placez ici vos fichiers data.zip pour xrick.
+    Vous pouvez ajouter les fichiers de données du jeu depuis le menu de téléchargement de contenu Batocera.
   comment_br: |
     Coloque o data.zip do jogo xrick neste diretório.
 
@@ -3958,7 +3977,7 @@ xbox360:
   comment_en: |
     Currently Xenia runs under Wine and therefore is currently restricted to run using Vulkan only.
     Unfortunately the Vulkan implementation for Xenia is somewhat behind D3D12 in terms on graphics compatibility.
-    Therefore only a few games will run using Xenia util either Vulkan improves or VKD3D works with Xenia.
+    Therefore only a few games will run using Xenia until either Vulkan improves or VKD3D works with Xenia.
 
     You therefore need a GPU that supports Vulkan well.
 
@@ -4016,32 +4035,38 @@ arduboy:
       arduous: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ARDUOUS] }
 
 gzdoom:
-  name:         GZDoom
+  name: GZDoom
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [wad, iwad, pwad, gz]
+  extensions: [wad, iwad, pwad, gzdoom]
   platform: pc
   group: ports
   emulators:
     gzdoom:
       gzdoom: { requireAnyOf: [BR2_PACKAGE_GZDOOM] }
   comment_en: |
-    Put your WAD files in this directory.
-    The gz extension allow you to add customer mods - blah blah (tbd)
-    i.e. Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    Custom mods can be used by creating a new text file named after the game with the extension ''.gzdoom''. For example:
+    Aliens Eradication.gzdoom, which contains this single line of text:
+    -iwad DOOM2.WAD -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Additional music can be added to /userdata/system/configs/gzdoom in fm_banks & soundfonts respectively
+    Note: The command must be on one line and the casing of the filenames and extensions must match exactly.
 
-    More info: https://wiki.batocera.org/systems:eduke32
+    Additional music can be added to /userdata/system/configs/gzdoom in the fm_banks & soundfonts folders respectively.
+
+    More info: https://wiki.batocera.org/systems:gzdoom
   comment_pt: |
-    Coloque seus arquivos .WAD neste diretório.
-    A extensão .gz permite adicionar mods de customização - blah blah (tbd)
-    ou seja, Aliens Eradication.gz = -iwad DOOM2.wad -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
+    Mettez vos fichiers rom et mod dans ce répertoire.
 
-    Músicas adicionais podem ser adicionadas a /userdata/system/configs/gzdoom em fm_banks & soundfonts respectivamente
+    L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
+    c'est-à-dire que Aliens Eradication.gzdoom doit contenir une ligne comme celle-ci :
+    -iwad DOOM2.WAD -fichier ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Mais informações em: https://wiki.batocera.org/systems:gzdoom
+    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
+
+    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
+
+    Plus d'infos : https://wiki.batocera.org/systems:gzdoom
 
 eduke32:
   name: EDuke32

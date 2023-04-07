@@ -3,6 +3,7 @@ default:
     # menu retroarch
     retroarch.audio_latency:   64
     retroarch.video_hard_sync: 0
+    retroarch.audio_driver: alsathread
 dreamcast:
   options:
     # menu retroarch
@@ -28,3 +29,6 @@ n64:
 nds:
   emulator: drastic
   core:     drastic
+fmtowns:
+  emulator: libretro
+  core:     mame

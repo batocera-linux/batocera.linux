@@ -1,0 +1,39 @@
+From f6a6de93b358c808972fd86095ab871b0965e84f Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Thu, 2 Mar 2023 10:08:45 -0400
+Subject: [PATCH] Makefile
+
+---
+ yabause/src/libretro/Makefile | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+index 961154a9f..27bfbb628 100644
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -147,19 +147,20 @@ else ifneq (,$(findstring RK,$(platform)))
+ 	endif
+ 	FLAGS += -mfloat-abi=hard -mvectorize-with-neon-quad
+
+-# RockPro64
++# RockPro64 (64-bit)
+ else ifneq (,$(findstring rockpro64,$(platform)))
+ 	override platform += unix
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+ 	LDFLAGS += -lpthread
++	FLAGS += -DAARCH64
+ 	ARCH_IS_LINUX = 1
+ 	HAVE_SSE = 0
+ 	FORCE_GLES = 1
+ 	USE_ARM_DRC = 1
+ 	DYNAREC_DEVMIYAX = 1
+-	FLAGS += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfloat-abi=hard -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
++	FLAGS += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
+
+ # Rpi4 (64-bit)
+ else ifeq ($(platform), rpi4)
+--
+2.39.2
+

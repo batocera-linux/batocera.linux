@@ -1,6 +1,6 @@
-From 99c77eaf5e603b5756dc20cf57e441e3994e2911 Mon Sep 17 00:00:00 2001
+From f50087582c14e8dbfbe59d490740a499dc4682a6 Mon Sep 17 00:00:00 2001
 From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Sat, 12 Nov 2022 19:02:13 +0000
+Date: Fri, 3 Feb 2023 07:31:24 +0000
 Subject: [PATCH] gun support
 
 Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
@@ -10,11 +10,11 @@ Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
  rpcs3/Emu/System.cpp               |   4 +
  rpcs3/Emu/system_config_types.cpp  |   1 +
  rpcs3/Emu/system_config_types.h    |   1 +
- rpcs3/Input/evdev_gun_handler.cpp  | 273 +++++++++++++++++++++++++++++
- rpcs3/Input/evdev_gun_handler.h    |  58 ++++++
+ rpcs3/Input/evdev_gun_handler.cpp  | 282 +++++++++++++++++++++++++++++
+ rpcs3/Input/evdev_gun_handler.h    |  61 +++++++
  rpcs3/rpcs3qt/emu_settings.cpp     |   1 +
  rpcs3/rpcs3qt/gs_frame.cpp         |   2 +-
- 9 files changed, 434 insertions(+), 4 deletions(-)
+ 9 files changed, 446 insertions(+), 4 deletions(-)
  create mode 100644 rpcs3/Input/evdev_gun_handler.cpp
  create mode 100644 rpcs3/Input/evdev_gun_handler.h
 
@@ -31,7 +31,7 @@ index a7cb0f8..355a1ae 100644
      Input/keyboard_pad_handler.cpp
      Input/mm_joystick_handler.cpp
 diff --git a/rpcs3/Emu/Cell/Modules/cellGem.cpp b/rpcs3/Emu/Cell/Modules/cellGem.cpp
-index 111c05c..4368d82 100644
+index 111c05c..e42edd9 100644
 --- a/rpcs3/Emu/Cell/Modules/cellGem.cpp
 +++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp
 @@ -11,6 +11,7 @@
@@ -79,24 +79,24 @@ index 111c05c..4368d82 100644
 +    digital_buttons |= CELL_GEM_CTRL_MOVE;
 +
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_MIDDLE) == 1)
-+    digital_buttons |= CELL_GEM_CTRL_SELECT;
-+
-+  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN1) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_START;
 +
-+  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN2) == 1)
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN1) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_CROSS;
 +
-+  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN3) == 1)
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN2) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_CIRCLE;
-+
-+  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN4) == 1)
-+    digital_buttons |= CELL_GEM_CTRL_SQUARE;
 +
 +  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN5) == 1)
 +    digital_buttons |= CELL_GEM_CTRL_TRIANGLE;
 +
-+  //analog_t = (mouse_data.buttons & CELL_MOUSE_BUTTON_1) ? 0xFFFF : 0;
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN6) == 1)
++    digital_buttons |= CELL_GEM_CTRL_SQUARE;
++
++  if(gh->getButton(gem_no, EVDEV_GUN_BUTTON_BTN7) == 1)
++    digital_buttons |= CELL_GEM_CTRL_SELECT;
++
++  analog_t = (gh->getButton(gem_no, EVDEV_GUN_BUTTON_LEFT) == 1) ? 0xFFFF : 0;
 +  return true;
 +}
 +
@@ -242,10 +242,10 @@ index b708fce..f649447 100644
  enum class buzz_handler
 diff --git a/rpcs3/Input/evdev_gun_handler.cpp b/rpcs3/Input/evdev_gun_handler.cpp
 new file mode 100644
-index 0000000..ae2f398
+index 0000000..87f536f
 --- /dev/null
 +++ b/rpcs3/Input/evdev_gun_handler.cpp
-@@ -0,0 +1,273 @@
+@@ -0,0 +1,282 @@
 +// This makes debugging on windows less painful
 +//#define HAVE_LIBEVDEV
 +
@@ -397,6 +397,15 @@ index 0000000..ae2f398
 +	  case BTN_5:
 +	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN5] = input_events[j].value;
 +	    break;
++	  case BTN_6:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN6] = input_events[j].value;
++	    break;
++	  case BTN_7:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN7] = input_events[j].value;
++	    break;
++	  case BTN_8:
++	    m_devices_buttons[i][EVDEV_GUN_BUTTON_BTN8] = input_events[j].value;
++	    break;
 +	  }
 +	} else if(input_events[j].type == EV_ABS) {
 +	  if(input_events[j].code == ABS_X) {
@@ -521,10 +530,10 @@ index 0000000..ae2f398
 +#endif
 diff --git a/rpcs3/Input/evdev_gun_handler.h b/rpcs3/Input/evdev_gun_handler.h
 new file mode 100644
-index 0000000..d6d4148
+index 0000000..ace387b
 --- /dev/null
 +++ b/rpcs3/Input/evdev_gun_handler.h
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,61 @@
 +#pragma once
 +#ifdef HAVE_LIBEVDEV
 +
@@ -542,6 +551,9 @@ index 0000000..d6d4148
 +  EVDEV_GUN_BUTTON_BTN3,
 +  EVDEV_GUN_BUTTON_BTN4,
 +  EVDEV_GUN_BUTTON_BTN5,
++  EVDEV_GUN_BUTTON_BTN6,
++  EVDEV_GUN_BUTTON_BTN7,
++  EVDEV_GUN_BUTTON_BTN8,
 +  EVDEV_GUN_BUTTON_MAX,
 +};
 +
@@ -551,7 +563,7 @@ index 0000000..d6d4148
 +  EVDEV_GUN_AXIS_VALS_MAX,
 +};
 +
-+#define EVDEV_GUN_BUTTON_LEFT 1
++
 +
 +class evdev_gun_handler
 +{

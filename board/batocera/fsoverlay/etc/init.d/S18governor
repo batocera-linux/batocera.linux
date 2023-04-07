@@ -23,7 +23,7 @@ case "$1" in
   start|restart|reload)
 
     # check if governor is set
-    if ! governor="$(/usr/bin/batocera-settings-get system.cpu.governor)"
+    if ! governor="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
     then
       save_governor
       exit 0

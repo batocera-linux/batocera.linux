@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#by cyperghost 11.11.2019
+
 #v1.0 // ol style script
 #Notes:
 #WittyPi makes use of wiringPi (gpio) which may be dropped from further dev
@@ -20,7 +22,7 @@
 #v2.0 - add DESKPIPRO for Dekpi Pro case (RPi4) - @dmanlfc
 #v2.1 - added config switch to avoid double reboots - @dmanlfc
 #v2.2 - add PISTATION_LCD support - @dmanlfc
-#by cyperghost 11.11.2019
+#v2.3 - add ELEMENT14_PI_DESKTOP support - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -41,7 +43,8 @@ powerdevices=(
               PIN356ONOFFRESET "py: Power button and reset button" \
               DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case" \
               PIBOY "Fan & power & pads for Piboy DMG" \
-              PISTATION_LCD "Config.txt tweaks to get the display to work"
+              PISTATION_LCD "Config.txt tweaks to get the display to work" \
+              ELEMENT14_PI_DESKTOP "Adds on/off button support"
              )
 
 #dialog for selecting your switch or power device
@@ -689,6 +692,23 @@ function piboy_config()
     echo "Nothing to do"
 }
 
+#https://au.element14.com/element14/pi-desktop/element-14-pi-desktop-hatencl/dp/2687142?ICID=I-HP-STM7REC-RP-1
+function element14_start()
+{
+    /usr/bin/element14/restart.py &
+}
+
+function element14_stop()
+{
+    # emulationstartion stop in the python script above
+    echo "Nothing to do"
+}
+
+function element14_config()
+{
+    echo "Nothing to do"
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -756,6 +776,9 @@ case "$CONFVALUE" in
     ;;
     "PISTATION_LCD")
         pistation_$1
+    ;;
+    "ELEMENT14_PI_DESKTOP")
+        element14_$1
     ;;
     "--DIALOG")
         # Go to selection dialog

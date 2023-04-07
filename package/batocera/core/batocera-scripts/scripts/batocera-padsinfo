@@ -1,25 +1,55 @@
 #!/bin/sh
 
-SDLINFOS=$(sdl2-jstest --infopath)
+read_value() {
+  local key="${1}" file="${2}"
+  sed -nE "s/^${key}=(.+)/\1/p" "${file}"
+}
 
-echo "<?xml version=\"1.0\"?>"
-echo "<pads>"
-for PADBAT in /sys/class/power_supply/*/device/input/input*/event*
-do
-    if test -e "${PADBAT}"
-    then
-	DEVICE_PATH="/dev/"$(grep -E '^DEVNAME=' "${PADBAT}/uevent" | sed -e s+"^DEVNAME="++)
-	SDLPAD=$(echo "${SDLINFOS}" | grep -E "^${DEVICE_PATH} " | cut -d ' ' -f 2)
-	if test -n "${SDLPAD}"
-	then
-	    DEVICE_NAME=$(cat "${PADBAT}/device/name")
-	    BATTERYPATH=$(echo "${PADBAT}" | sed -e s+"device/input/input[0-9]*/event[0-9]*$"+""+)
-	    BATTERYINFO=${BATTERYPATH}/uevent
-	    BATTERY_CAPATICY=$(grep -E "^POWER_SUPPLY_CAPACITY=" "${BATTERYINFO}" | sed -e s+'^POWER_SUPPLY_CAPACITY='++)
-	    BATTERY_STATUS=$(grep -E "^POWER_SUPPLY_STATUS=" "${BATTERYINFO}" | sed -e s+'^POWER_SUPPLY_STATUS='++)
-	    echo "  <pad device=\"${DEVICE_PATH}\" name=\"${DEVICE_NAME}\" id=\"${SDLPAD}\" battery=\"${BATTERY_CAPATICY}\" status=\"${BATTERY_STATUS}\" />"
-	fi
+read_battery_capacity() {
+  for infofile in "${@}"; do
+    capacity=$(read_value POWER_SUPPLY_CAPACITY "${infofile}")
+    if [ -z "${capacity}" ]; then
+      level=$(read_value POWER_SUPPLY_CAPACITY_LEVEL "${infofile}" | tr '[:upper:]' '[:lower:]')
+      case "${level}" in
+        critical) capacity=5   ;;
+        low)      capacity=25  ;;
+        normal)   capacity=50  ;;
+        high)     capacity=75  ;;
+        full)     capacity=100 ;;
+        *)
+      esac
     fi
-done 2>/dev/null
-echo "</pads>"
-exit 0
+    if [ "${capacity}" ]; then echo "${capacity}"; fi
+  done
+}
+
+print_xml() {
+  sdl_info=$(sdl2-jstest --infopath)
+
+  printf '<?xml version="1.0"?>\n'
+  printf '<pads>\n'
+  for padbat in /sys/class/power_supply/*/device/input/input*/event*; do
+      device_path="/dev/$(read_value DEVNAME "${padbat}/uevent")"
+      sdlpad="$(printf "${sdl_info}" | grep -E "^${device_path} " | cut -d ' ' -f 2)"
+      if [ "${sdlpad}" ]; then
+        battery_info="$(echo "${padbat}" | sed -e s+"device/input/input[0-9]*/event[0-9]*$"+""+)/uevent"
+        device_name=$(cat "${padbat}/device/name")
+        battery_capacity=$(read_battery_capacity "${battery_info}")
+        battery_status=$(read_value POWER_SUPPLY_STATUS "${battery_info}")
+        printf '  <pad device="%s" name="%s" id="%s" battery="%s" status="%s" />\n' \
+        "${device_path}" "${device_name}" "${sdlpad}" "${battery_capacity}" "${battery_status}"
+      fi
+  done 2>/dev/null
+  printf '</pads>\n'
+  return 0
+}
+
+main() {
+  if [ "${#}" -eq 0 ]; then
+    print_xml
+  else
+    read_battery_capacity "${@}"
+  fi
+}
+
+main "${@}"

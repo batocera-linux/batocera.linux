@@ -46,7 +46,6 @@ endef
 define LIBRETRO_DOSBOX_PURE_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/dosbox_pure_libretro.so \
 	  $(TARGET_DIR)/usr/lib/libretro/dosbox_pure_libretro.so
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-dosbox-pure/dos.keys $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(generic-package))

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-which batocera-brightness >/dev/null || exit 0
+command -v batocera-brightness >/dev/null || exit 0
 
 case $1 in
     start)

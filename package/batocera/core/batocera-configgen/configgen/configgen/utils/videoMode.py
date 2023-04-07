@@ -14,10 +14,19 @@ eslog = get_logger(__name__)
 # Set a specific video mode
 def changeMode(videomode):
     if checkModeExists(videomode):
-        cmd = f"batocera-resolution setMode \"{videomode}\""
-        if cmd is not None:
-            eslog.debug(f"setVideoMode({videomode}): {cmd} ")
-            os.system(cmd)
+        cmd = ["batocera-resolution", "setMode", videomode]
+        eslog.debug(f"setVideoMode({videomode}): {cmd}")
+        max_tries = 2  # maximum number of tries to set the mode
+        for i in range(max_tries):
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                eslog.debug(result.stdout.strip())
+                return
+            except subprocess.CalledProcessError as e:
+                eslog.error(f"Error setting video mode: {e.stderr}")
+                if i == max_tries - 1:
+                    raise
+                time.sleep(1)
 
 def getCurrentMode():
     proc = subprocess.Popen(["batocera-resolution currentMode"], stdout=subprocess.PIPE, shell=True)
@@ -64,9 +73,9 @@ def checkModeExists(videomode):
 def changeMouse(mode):
     eslog.debug(f"changeMouseMode({mode})")
     if mode:
-        cmd = "unclutter-remote -s"
+        cmd = "batocera-mouse show"
     else:
-        cmd = "unclutter-remote -h"
+        cmd = "batocera-mouse hide"
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 

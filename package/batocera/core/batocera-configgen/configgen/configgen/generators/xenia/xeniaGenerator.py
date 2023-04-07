@@ -72,10 +72,8 @@ class XeniaGenerator(Generator):
         if os.path.isfile(toml_file):
             with open(toml_file) as f:
                 config = toml.load(f)
-        # in case the file is empty
-        if config is None:
-            config = {}
-        # [ Now adjust the config file default we want ]
+        
+        # [ Now adjust the config file defaults & options we want ]
         # add node CPU
         if 'CPU' not in config:
             config['CPU'] = {}
@@ -84,13 +82,21 @@ class XeniaGenerator(Generator):
         # add node Content
         if 'Content' not in config:
             config['Content'] = {}
-        # 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
-        config['Content'] = {'license_mask': 1}
+        # Default 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
+        if system.isOptSet('xeniaLicense'):
+            config['Content'] = {'license_mask': int(system.config['xeniaLicense'])}
+        else:
+            config['Content'] = {'license_mask': 1}
         # add node Display
         if 'Display' not in config:
             config['Display'] = {}
-        # always run fullscreen
-        config['Display'] = {'fullscreen': True}
+        # always run fullscreen & set internal resolution - default 1280x720
+        displayRes = 8
+        if system.isOptSet('xeniaResolution'):
+            displayRes = int(system.config['xeniaResolution'])
+        config['Display'] = {
+            'fullscreen': True,
+            'internal_display_resolution': displayRes}
         # add node GPU
         if 'GPU' not in config:
             config['GPU'] = {}
@@ -119,12 +125,23 @@ class XeniaGenerator(Generator):
         # add node UI
         if 'UI' not in config:
             config['UI'] = {}
-        # run headless
-        config['UI'] = {'headless': True}
+        # run headless ?
+        if system.isOptSet('xeniaHeadless') and system.getOptBoolean('xeniaHeadless') == True:
+            config['UI'] = {'headless': True}
+        else:
+            config['UI'] = {'headless': False}
         # add node Vulkan
         if 'Vulkan' not in config:
             config['Vulkan'] = {}
         config['Vulkan'] = {'vulkan_sparse_shared_memory': False}
+        # add node XConfig
+        if 'XConfig' not in config:
+            config['XConfig'] = {}
+        # language
+        if system.isOptSet('xeniaLanguage'):
+            config['XConfig'] = {'user_language': int(system.config['xeniaLanguage'])}
+        else:
+            config['XConfig'] = {'user_language': 1}
         
         # now write the updated toml
         with open(toml_file, 'w') as f:

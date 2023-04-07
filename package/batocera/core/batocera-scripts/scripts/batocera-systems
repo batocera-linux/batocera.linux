@@ -137,7 +137,7 @@ systems = {
     # https://github.com/libretro/libretro-super/blob/master/dist/info/flycast_libretro.info
     "naomi":        { "name": "Naomi", "biosFiles":       [ { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/dc/naomi.zip"   } ] },
 
-    "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/dc/awbios.zip"  } ] },
+    "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "85254fbe320ca82a768ec2c26bb08def", "file": "bios/dc/awbios.zip"  } ] },
 
     "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
@@ -176,7 +176,7 @@ systems = {
                                             { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN"      } ] },
 
     # https://www.playstation.com/en-us/support/system-updates/ps3/
-    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "a0b63a3e4ae92ed176d6b9a67ce447f0", "file": "bios/PS3UPDAT.PUP" } ] },
+    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
 
     # ---------- Nintendo ---------- #
     # https://docs.libretro.com/library/fceumm/#bios
@@ -264,6 +264,7 @@ systems = {
     "pc88":       { "name": "NEC PC-8800", "biosFiles": [   { "md5": "4f984e04a99d56c4cfe36115415d6eb8", "file": "bios/quasi88/N88.ROM"     },
                                                             { "md5": "793f86784e5608352a5d7f03f03e0858", "file": "bios/quasi88/N88SUB.ROM"  },
                                                             { "md5": "2ff07b8769367321128e03924af668a0", "file": "bios/quasi88/N88N.ROM"    },
+                                                            { "md5": "d81c6d5d7ad1a4bbbd6ae22a01257603", "file": "bios/quasi88/N88KNJ1.ROM"    },
                                                             { "md5": "d675a2ca186c6efcd6277b835de4c7e5", "file": "bios/quasi88/N88EXT0.ROM" },
                                                             { "md5": "e844534dfe5744b381444dbe61ef1b66", "file": "bios/quasi88/N88EXT1.ROM" },
                                                             { "md5": "6548fa45061274dee1ea8ae1e9e93910", "file": "bios/quasi88/N88EXT2.ROM" },
@@ -333,8 +334,19 @@ systems = {
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
 
     # ---------- Zelda Classic ---------- #
-    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.dat"  },
-                                                  { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zc210/zcdata.dat"  },
+                                                          { "md5": "39e5bc84ce9aac3a2d297d8aeb2a0d05", "file": "bios/zc210/sf2/default.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zc210/sf2/custom0.sf2" },
+                                                          { "md5": "c1dc781c34cff8f9a023c0192754dc6c", "file": "bios/zc210/sf2/custom1.sf2" },
+                                                          { "md5": "144fcdbb6a30f1f916f6963006c2da97", "file": "bios/zc210/sf2/custom2.sf2" },
+                                                          { "md5": "134d217fb99c3be1e89cfaf8f28280d8", "file": "bios/zc210/sf2/custom3.sf2" },
+                                                          { "md5": "b37366199c6df9ee5316f031755aa821", "file": "bios/zc210/sf2/custom4.sf2" },
+                                                          { "md5": "64068b84eb88dc85b75148bbe9b393fb", "file": "bios/zc210/sf2/custom5.sf2" },
+                                                          { "md5": "1241986de5b1d00b02d34f1e6651a1d1", "file": "bios/zc210/sf2/custom6.sf2" },
+                                                          { "md5": "386db0d538f372a9f1af622d1e934abf", "file": "bios/zc210/sf2/custom7.sf2" },
+                                                          { "md5": "6f68e4baf89c8ee4623c19617319184b", "file": "bios/zc210/sf2/custom8.sf2" },
+                                                          { "md5": "2010e5b85f9e1d60685ccb3d84a17115", "file": "bios/zc210/sf2/custom9.sf2" },
+                                                          { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
     # ---------- Apple Mac ---------- #
     "macintosh":   { "name": "Apple Macintosh", "biosFiles":  [ { "md5": "66223be1497460f1e60885eeb35e03cc", "file": "bios/MacII.ROM", "emulator": "libretro", "core": "minivmac" },
                                                   { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "file": "bios/MacIIx.ROM", "emulator": "libretro", "core": "minivmac" },
@@ -363,8 +375,8 @@ systems = {
                                                   { "md5": "c229bb677cb41b84b780c9e38a09173e", "zippedFile": "341-0813__=c=1983-90_apple__japan__910d_d.27c4096_be.ue1", "file": "bios/macclasc.zip", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/mac2fdhd.zip", "emulator": "libretro", "core": "mame" },
-                                                  { "md5": "", "file": "bios/nb_48gc.zip", "emulator": "libretro", "core": "mame" },
-                                                  { "md5": "1bf16eefb23a1bea02f031f1ef1de528", "zippedFile": "3410801.bin", "file": "bios/nb_48gc.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "", "file": "bios/nb_mdc824.zip", "emulator": "libretro", "core": "mame" },
+                                                  { "md5": "7500a6a958247ee6e092f08715f2fff8", "zippedFile": "3410868.bin", "file": "bios/nb_mdc824.zip", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "2a8a4c7f2a38e0ab0771f59a9a0f1ee4", "zippedFile": "97221136.rom", "file": "bios/maciix.zip", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "", "file": "bios/maclc3.zip", "emulator": "libretro", "core": "mame" },
@@ -729,6 +741,10 @@ systems = {
     "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
                                                 { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
                                                 { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+    
+    # ---------- ScummVM ---------- #
+    "scummvm":   { "name": "ScummVM", "biosFiles":  [ { "md5": "89e42e386e82e0cacb4a2704a03706ca", "file": "bios/scummvm/extra/MT32_PCM.ROM" },
+                                                      { "md5": "5626206284b22c2734f3e9efefcd2675", "file": "bios/scummvm/extra/MT32_CONTROL.ROM" } ] },
 }
 
 class BiosStatus:

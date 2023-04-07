@@ -1,38 +1,15 @@
 diff --git a/makefile b/makefile
-index 93f215f..051a4c1 100644
+index 89f52e0a78..cf2682972e 100644
 --- a/makefile
 +++ b/makefile
-@@ -10,7 +10,8 @@ OBJS = $(SRC:.cpp=.o)
- CROSS_COMPILE ?=
- CXX ?= g++
- AR ?= ar
--LDFLAGS = -shared
-+LDFLAGS ?=
-+LDFLAGS += -shared
- FINAL_CXX=$(CROSS_COMPILE)$(CXX)
- FINAL_AR=$(CROSS_COMPILE)$(AR)
- CPPFLAGS = -O3 -Wall -Wextra
-@@ -20,9 +21,9 @@ INSTALL=install
- 
- DESTDIR ?=
- PREFIX ?= /usr
--INCDIR = $(DESTDIR)$(PREFIX)/include
--LIBDIR = $(DESTDIR)$(PREFIX)/lib
--BINDIR = $(DESTDIR)$(PREFIX)/bin
-+INCDIR = $(PREFIX)/include
-+LIBDIR = $(PREFIX)/lib
-+BINDIR = $(PREFIX)/bin
- PKGDIR = $(LIBDIR)/pkgconfig
- 
- ifneq ($(DEBUG),)
-@@ -68,8 +69,8 @@ CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
- CPPFLAGS += $(shell $(PKG_CONFIG) --libs $(EXTRA_LIBS))
+@@ -150,8 +150,8 @@ install:
+ 	$(INSTALL) -Dm644 switchres.h $(INCDIR)/switchres/switchres.h
+ 	$(INSTALL) -Dm644 switchres.pc $(PKGDIR)/switchres.pc
+ ifneq ($(SO_NAME),)
+-	$(LN) -s $(REAL_SO_NAME) $(LIBDIR)/$(SO_NAME)
+-	$(LN) -s $(SO_NAME) $(LIBDIR)/$(LINKER_NAME)
++	$(LN) -sf $(REAL_SO_NAME) $(LIBDIR)/$(SO_NAME)
++	$(LN) -sf $(SO_NAME) $(LIBDIR)/$(LINKER_NAME)
  endif
  
--CPPFLAGS += -fPIC
--LIBS += -ldl
-+CPPFLAGS += -fPIC -I$(INCDIR) -I$(INCDIR)/libdrm
-+LIBS = -ldl -lm -lrt -lstdc++
- 
- REMOVE = rm -f
- STATIC_LIB_EXT = a
+ uninstall:

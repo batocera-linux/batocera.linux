@@ -3,11 +3,10 @@
 # libretro-mame
 #
 ################################################################################
-# Version: Commits on Sep 29, 2022 (v0.248)
-LIBRETRO_MAME_VERSION = fcacbc7811a9b69874fd09b91e7217e44c6a0980
+# Version: Commits on Jan 13, 2023 (v0.251)
+LIBRETRO_MAME_VERSION = f7761a9902d59030882c58d4482446196e748c50
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
-LIBRETRO_MAME_DEPENDENCIES = retroarch
 
 # Limit number of jobs not to eat too much RAM....
 LIBRETRO_MAME_MAX_JOBS = 16

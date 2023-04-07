@@ -25,7 +25,7 @@ cp "${BINARIES_DIR}/meson8m2-mxiii-plus.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot
 cp "${BINARIES_DIR}/meson8m2-m8s.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BINARIES_DIR}/meson8-minix-neo-x8.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BINARIES_DIR}/meson8-tronsmart-s82.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
-cp "${BINARIES_DIR}/meson8m2-wetek-core.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
+# cp "${BINARIES_DIR}/meson8m2-wetek-core.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 
 "${HOST_DIR}/bin/mkimage" -C none -A arm -T script -d "${BOARD_DIR}/boot/s805_autoscript.cmd" "${BATOCERA_BINARIES_DIR}/boot/s805_autoscript" || exit 1
 "${HOST_DIR}/bin/mkimage" -C none -A arm -T script -d "${BOARD_DIR}/boot/aml_autoscript.scr"  "${BATOCERA_BINARIES_DIR}/boot/aml_autoscript"  || exit 1

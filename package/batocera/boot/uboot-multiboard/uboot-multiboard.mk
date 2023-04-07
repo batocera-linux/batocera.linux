@@ -3,14 +3,13 @@
 # uboot multiboard
 #
 ################################################################################
-UBOOT_MULTIBOARD_VERSION = 2022.10
+UBOOT_MULTIBOARD_VERSION = 2023.01
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
 UBOOT_MULTIBOARD_DEPENDENCIES = arm-trusted-firmware
 UBOOT_MULTIBOARD_DEPENDENCIES += host-python3 host-python-setuptools
-UBOOT_MULTIBOARD_DEPENDENCIES += host-swig
-UBOOT_MULTIBOARD_DEPENDENCIES += host-openssl
+UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
 
 # Default make opts, adaptation of buildroot uboot's opts. "-I $(HOST_DIR)/include"
 # prevents mixing openssl headers from docker (currently 3.0.2) and

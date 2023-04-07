@@ -56,7 +56,6 @@ class CitraGenerator(Generator):
         citraConfig = configparser.RawConfigParser(strict=False)
         citraConfig.optionxform=str             # Add Case Sensitive comportement
         if os.path.exists(citraConfigFile):
-            os.remove(citraConfigFile)          # Force removing qt-config.ini
             citraConfig.read(citraConfigFile)
 
         ## [LAYOUT]
@@ -198,18 +197,21 @@ class CitraGenerator(Generator):
 
     @staticmethod
     def setAxis(key, padGuid, padInputs):
-        inputx = -1
-        inputy = -1
+        inputx = None
+        inputy = None
 
-        if key == "joystick1":
+        if key == "joystick1" and "joystick1left" in padInputs:
             inputx = padInputs["joystick1left"]
-        elif key == "joystick2":
+        elif key == "joystick2" and "joystick2left" in padInputs:
             inputx = padInputs["joystick2left"]
 
-        if key == "joystick1":
+        if key == "joystick1" and "joystick1up" in padInputs:
             inputy = padInputs["joystick1up"]
-        elif key == "joystick2":
+        elif key == "joystick2" and "joystick2up" in padInputs:
             inputy = padInputs["joystick2up"]
+
+        if inputx is None or inputy is None:
+            return "";
 
         return ("axis_x:{},guid:{},axis_y:{},engine:sdl").format(inputx.id, padGuid, inputy.id)
 
@@ -225,11 +227,26 @@ class CitraGenerator(Generator):
             return "left"
         return "unknown"
 
-# Lauguage auto setting
+# Language auto setting
 def getCitraLangFromEnvironment():
+    region = { "AUTO": -1, "JPN": 0, "USA": 1, "EUR": 2, "AUS": 3, "CHN": 4, "KOR": 5, "TWN": 6 }
+    availableLanguages = {
+        "ja_JP": "JPN",
+        "en_US": "USA",
+        "de_DE": "EUR",
+        "es_ES": "EUR",
+        "fr_FR": "EUR",
+        "it_IT": "EUR",
+        "hu_HU": "EUR",
+        "pt_PT": "EUR",
+        "ru_RU": "EUR",
+        "en_AU": "AUS",
+        "zh_CN": "CHN",
+        "ko_KR": "KOR",
+        "zh_TW": "TWN"
+    }
     lang = environ['LANG'][:5]
-    availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "hu_HU": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
-        return availableLanguages[lang]
+        return region[availableLanguages[lang]]
     else:
-        return availableLanguages["en_US"]
+        return region["AUTO"]

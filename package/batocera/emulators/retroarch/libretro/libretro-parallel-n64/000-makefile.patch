@@ -2,11 +2,13 @@ diff --git a/Makefile b/Makefile
 index 3269005..a215089 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -58,6 +58,12 @@ else ifneq (,$(findstring rpi,$(platform)))
+@@ -58,6 +58,14 @@ else ifneq (,$(findstring rpi,$(platform)))
     override platform += unix
  else ifneq (,$(findstring odroid,$(platform)))
     override platform += unix
 +else ifneq (,$(findstring rockpro64,$(platform)))
++   override platform += unix
++else ifneq (,$(findstring rk3588,$(platform)))
 +   override platform += unix
 +else ifneq (,$(findstring n2,$(platform)))
 +   override platform += unix
@@ -26,7 +28,7 @@ index 3269005..a215089 100644
        # Raspberry pi 4 in 64bit mode with VULKAN
        else ifneq (,$(findstring rpi4_64,$(platform)))
           CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
-@@ -166,6 +176,37 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -166,6 +176,47 @@ ifneq (,$(findstring unix,$(platform)))
  
     endif
     
@@ -49,6 +51,16 @@ index 3269005..a215089 100644
 +      HAVE_NEON = 1
 +      WITH_DYNAREC=aarch64
 +      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++   endif
++
++   # RK3588
++   ifneq (,$(findstring rk3588,$(platform)))
++      GLES = 1
++      GL_LIB := -lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali
++      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
++      HAVE_NEON = 1
++      WITH_DYNAREC=aarch64
++      CPUFLAGS += -D__NEON_OPT -march=armv8.2-a+crypto+dotprod+rcpc+sb+ssbs -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
 +   endif
 +   
 +      # Allwinner H5

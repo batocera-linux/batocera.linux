@@ -1,0 +1,38 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "steamdeckgun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
+
+SDGUN_HAND=$(batocera-settings-get controllers.steamdeckmouse.hand)
+SDGUN_GUN=$(batocera-settings-get controllers.steamdeckmouse.gun)
+
+SDGUN_NAME="Steam Mouse"
+test "${SDGUN_GUN}" = 1 && SDGUN_NAME="Steam Gun"
+
+SDHAT0=hat0
+SDHAT1=hat1
+test "${SDGUN_HAND}" = "right" && SDHAT0=hat1 && SDHAT1=hat0
+
+SDLEFT=btn:base2
+SDRIGHT=btn:gear_up
+test "${SDGUN_HAND}" = "right" && SDLEFT=btn:base && SDRIGHT=btn:gear_down
+
+if test -e /var/run/steamdeckgun.pid
+then
+    LASTPID=$(cat /var/run/steamdeckgun.pid)
+    kill -15 "${LASTPID}"
+fi
+
+evsieve --input "${DEVNAME}" persist=exit --block abs:x abs:y --map abs:${SDHAT0}x abs:x --map abs:${SDHAT0}y abs:y --map btn:0 key:f1 --map "${SDLEFT}" btn:left --map "${SDRIGHT}" btn:right --block btn:base btn:base2 btn:south btn:east btn:north btn:west btn:tl btn:tr btn:tl2 btn:tr2 btn:select btn:start btn:mode btn:thumbl btn:thumbr btn:gear_up btn:gear_down btn:dpad_up btn:dpad_down btn:dpad_left btn:dpad_right abs:rx abs:ry abs:z abs:rz abs:hat0x abs:hat0y abs:hat1x abs:hat1y btn:thumb btn:thumb2 --output name="${SDGUN_NAME}" >/dev/null 2>/var/log/steamdeckgun.log &
+echo $! > /var/run/steamdeckgun.pid

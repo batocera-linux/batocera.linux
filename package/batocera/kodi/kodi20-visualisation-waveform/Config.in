@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_VISUALISATION_WAVEFORM
+	bool "kodi20-visualisation-waveform"
+	select BR2_PACKAGE_GLM
+	help
+	  Waveform visualiser for Kodi
+
+	  https://github.com/notspiff/visualization.waveform

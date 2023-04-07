@@ -32,13 +32,16 @@ def generateMoonlightConfig(system):
             elif system.config["moonlight_resolution"] == "2":
                 moonlightConfig.save('width', '3840')
                 moonlightConfig.save('height', '2160')
-            else:
-                moonlightConfig.save('width', '1280')
-                moonlightConfig.save('height', '720')
         else:
             moonlightConfig.save('width', '1280')
             moonlightConfig.save('height', '720')
-
+        
+        # rotate
+        if system.isOptSet('moonlight_rotate'):
+            moonlightConfig.save('rotate', system.config["moonlight_rotate"])
+        else:
+            moonlightConfig.save('rotate', '0')
+        
         # framerate
         if system.isOptSet('moonlight_framerate'):
             if system.config["moonlight_framerate"] == "0":
@@ -47,10 +50,8 @@ def generateMoonlightConfig(system):
                 moonlightConfig.save('fps', '60')
             elif system.config["moonlight_framerate"] == "2":
                 moonlightConfig.save('fps', '120')
-            else:
-                moonlightConfig.save('fps', '30')
         else:
-            moonlightConfig.save('fps', '30')
+            moonlightConfig.save('fps', '60')
 
         # bitrate
         if system.isOptSet('moonlight_bitrate'):
@@ -62,52 +63,52 @@ def generateMoonlightConfig(system):
                 moonlightConfig.save('bitrate', '20000')
             elif system.config["moonlight_bitrate"] == "3":
                 moonlightConfig.save('bitrate', '50000')
-            else:
-                moonlightConfig.save('bitrate', '-1') #-1 sets Moonlight default
         else:
             moonlightConfig.save('bitrate', '-1') #-1 sets Moonlight default
 
         # codec
         if system.isOptSet('moonlight_codec'):
-            if system.config["moonlight_codec"] == "0":
-                moonlightConfig.save('codec', 'h264')
-            elif system.config["moonlight_codec"] == "1":
-                moonlightConfig.save('codec', 'h265')
-            else:
-                moonlightConfig.save('codec', 'auto')
+            moonlightConfig.save('codec',system.config["moonlight_codec"])
         else:
             moonlightConfig.save('codec', 'auto')
 
         # sops (Streaming Optimal Playable Settings)
         if system.isOptSet('moonlight_sops'):
-            if system.config["moonlight_sops"] == "0":
-                moonlightConfig.save('sops', 'true')
-            elif system.config["moonlight_sops"] == "1":
-                moonlightConfig.save('sops', 'false')
-            else:
-                moonlightConfig.save('sops', 'true')
+            moonlightConfig.save('sops', system.config["moonlight_sops"].lower())
         else:
             moonlightConfig.save('sops', 'true')
 
         # quit remote app on exit
         if system.isOptSet('moonlight_quitapp'):
-            if system.config["moonlight_quitapp"] == "0":
-                moonlightConfig.save('quitappafter', 'true')
-            else:
-                moonlightConfig.save('quitappafter', 'false')
+            moonlightConfig.save('quitappafter', system.config["moonlight_quitapp"].lower())
         else:
             moonlightConfig.save('quitappafter', 'false')
+        
+        # view only
+        if system.isOptSet('moonlight_viewonly'):
+            moonlightConfig.save('viewonly', system.config["moonlight_viewonly"].lower())
+        else:
+            moonlightConfig.save('viewonly', 'false')
 
         # av decoder
         if system.isOptSet('moonlight_avdecoder'):
-            if system.config["moonlight_avdecoder"] == "sdl": 
-                moonlightConfig.save('platform', 'sdl')
-            else:
-                moonlightConfig.save('platform', 'auto')
+            moonlightConfig.save('platform', system.config["moonlight_avdecoder"])
         else:
-            moonlightConfig.save('platform', 'auto')
+            moonlightConfig.save('platform', 'default')
 
         ## Directory to store encryption keys
         moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
+
+        # lan or wan streaming - ideally lan
+        if system.isOptSet('moonlight_remote'):
+            moonlightConfig.save('remote', system.config["moonlight_remote"])
+        else:
+            moonlightConfig.save('remote', 'no')
+        
+        ## Enable 5.1/7.1 surround sound
+        if system.isOptSet('moonlight_surround'):
+            moonlightConfig.save('surround', system.config["moonlight_surround"])
+        else:
+            moonlightConfig.save('#surround', '5.1')
 
         moonlightConfig.write()

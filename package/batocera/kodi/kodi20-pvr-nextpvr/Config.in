@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_PVR_NEXTPVR
+	bool "kodi20-pvr-nextpvr"
+	select BR2_PACKAGE_TINYXML2
+	help
+	  Kodi's NextPVR client addon
+
+	  https://github.com/kodi20-pvr/pvr.nextpvr

@@ -34,12 +34,13 @@ function smart_wait() {
         sleep 0.25
         ((watchdog++))
         [[ $disablekill9 -eq 1 ]] && [[ watchdog -gt 12 ]] && kill -9 $PID
+        [[ watchdog -gt 12 ]] && return
     done
 }
 
 # Emulator currently running?
 function check_emurun() {
-    local RC_PID="$(pgrep -f -n emulatorlauncher)"
+    local RC_PID="$(pgrep -f -n 'sh -c emulatorlauncher')"
     echo $RC_PID
 }
 
@@ -49,6 +50,12 @@ function check_esrun() {
     echo $ES_PID
 }
 
+# Wine processes currently running?
+function check_winerun() {
+    local EXE=$1
+    local ES_PID="$(pgrep -f -n $EXE)"
+    echo $ES_PID
+}
 
 # Kill emulators running in a proper way! (SAVE SRM STATE!)
 function emu_kill() {
@@ -61,6 +68,13 @@ function emu_kill() {
         done
         unset pidarray
     fi
+    WINE_PID=$(check_winerun winedevice.exe)
+    if [[ -n $WINE_PID ]]; then
+            for P in winedevice.exe plugplay.exe svchost.exe tabtip.exe services.exe explorer.exe rpcss.exe wineserver ; do
+                # the usual (gentle) way keeps Zombie processes, blame wine.
+                killall -9 "$P" 2>/dev/null
+            done
+    fi
 }
 
 # Future proof update check, depends just on build-date and build-time
@@ -72,8 +86,8 @@ function version_update() {
 
 case ${1,,} in
     --restart)
-        /etc/init.d/S31emulationstation stop
         ES_PID=$(check_esrun)
+        /etc/init.d/S31emulationstation stop
         [[ -z $ES_PID ]] || smart_wait 0 $ES_PID
         /etc/init.d/S31emulationstation start
     ;;

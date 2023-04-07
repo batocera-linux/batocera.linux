@@ -3,7 +3,7 @@
 # guncon
 #
 ################################################################################
-GUNCON_VERSION = b73e65b537da3ffa68d8aebe6fbd10830930cc16
+GUNCON_VERSION = 7e2999ad0abc9da1dae48432c2c5e6aa1e888aa4
 GUNCON_SITE = $(call github,Redemp,guncon2,$(GUNCON_VERSION))
 
 define GUNCON_INSTALL_TARGET_CMDS

@@ -1,0 +1,1 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Arduino LLC Arduino Leonardo", ENV{ID_INPUT_GUN}="1"

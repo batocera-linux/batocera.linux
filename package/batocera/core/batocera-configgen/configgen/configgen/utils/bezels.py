@@ -294,6 +294,18 @@ def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSiz
 def gunsBorderSize(w, h, innerBorderSizePer = 2, outerBorderSizePer = 3):
     return (h * (innerBorderSizePer + outerBorderSizePer)) // 100
 
+def gunsBordersColorFomConfig(config):
+    if "controllers.guns.borderscolor" in config:
+        if config["controllers.guns.borderscolor"] == "red":
+            return "#ff0000"
+        if config["controllers.guns.borderscolor"] == "green":
+            return "#00ff00"
+        if config["controllers.guns.borderscolor"] == "blue":
+            return "#0000ff"
+        if config["controllers.guns.borderscolor"] == "white":
+            return "#ffffff"
+    return "#ffffff"
+
 def createTransparentBezel(output_png, width, height):
     from PIL import ImageDraw
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))

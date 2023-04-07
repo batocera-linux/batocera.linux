@@ -1,0 +1,24 @@
+--- a/Makefile	2022-12-31 10:30:51
++++ b/Makefile	2022-12-31 10:32:09
+@@ -293,6 +293,20 @@
+    HAVE_THREADS = 1
+    JIT_ARCH = aarch64
+ 
++# Rockchip RK3588
++else ifeq ($(platform), RK3588)
++   EXT ?= so
++   CPUFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++   HAVE_NEON = 1
++   TARGET := $(TARGET_NAME)_libretro.$(EXT)
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++   LIBS += -lpthread -lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali
++   HAVE_OPENGLES3 = 1
++   HAVE_OPENGL = 0
++   HAVE_THREADS = 1
++   JIT_ARCH = aarch64
++
+ # Orange Pi Zero 2
+ else ifeq ($(platform), orangepizero2)
+    EXT ?= so
+

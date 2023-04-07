@@ -90,12 +90,25 @@ class DaphneGenerator(Generator):
 
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
             if bordersSize is not None:
+
+                borderColor = "w"
+                if "controllers.guns.borderscolor" in system.config:
+                    borderColorOpt = system.config["controllers.guns.borderscolor"]
+                    if borderColorOpt == "white":
+                        borderColor = "w"
+                    elif borderColorOpt == "red":
+                        borderColor = "r"
+                    elif borderColorOpt == "green":
+                        borderColor = "g"
+                    elif borderColorOpt == "blue":
+                        borderColor = "b"
+
                 if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "3", "w"])
+                    commandArray.extend(["-sinden", "2", borderColor])
                 elif bordersSize == "medium":
-                    commandArray.extend(["-sinden", "6", "w"])
+                    commandArray.extend(["-sinden", "4", borderColor])
                 else:
-                    commandArray.extend(["-sinden", "9", "w"])
+                    commandArray.extend(["-sinden", "6", borderColor])
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse

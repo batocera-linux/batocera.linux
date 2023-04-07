@@ -1,0 +1,13 @@
+config BR2_PACKAGE_KODI20_SCREENSAVERS_RSXS
+	bool "kodi20-screensavers-rsxs"
+	# depends on BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL
+	select BR2_PACKAGE_BZIP2
+	select BR2_PACKAGE_GLI
+	select BR2_PACKAGE_GLM
+	help
+	  RSXS screensaver add-ons for Kodi
+
+	  https://github.com/xbmc/screensavers.rsxs
+
+# comment "kodi20-screensaver-rsxs needs OpenGL as Kodi render system"
+# 	depends on !BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL

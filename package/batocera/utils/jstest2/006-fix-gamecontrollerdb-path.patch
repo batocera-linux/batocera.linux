@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3946dc2..a798706 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -105,7 +105,7 @@ if(BUILD_SDL2_JSTEST)
+   file(COPY sdl2-jstest.1
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ 
+-  file(COPY gamecontrollerdb.txt
++  file(COPY external/sdl_gamecontrollerdb/gamecontrollerdb.txt
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ 
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gamecontrollerdb.txt
