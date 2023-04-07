@@ -13,6 +13,7 @@ f_usage() {
     echo "${0} setDPI" >&2
     echo "${0} forceMode <horizontal>x<vertical>:<refresh>" >&2
     echo "${0} setRotation (0|1|2|3)" >&2
+    echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
 }
 
@@ -193,6 +194,9 @@ case "${ACTION}" in
                 xrandr --output "${OUTPUT}" --rotate normal
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
         esac
+    ;;
+    "getRotation")
+	    xrandr --currentRotation
     ;;
     "getDisplayMode")
         echo "xorg"
