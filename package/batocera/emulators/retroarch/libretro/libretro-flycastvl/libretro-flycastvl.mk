@@ -22,6 +22,7 @@ LIBRETRO_FLYCASTVL_EXTRA_ARGS += FORCE_GLES=1 ARCH=arm64 LDFLAGS=-lrt
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_FLYCASTVL_PLATFORM = rpi2
 LIBRETRO_FLYCASTVL_EXTRA_ARGS += FORCE_GLES=1 ARCH=arm LDFLAGS=-lrt
+endif
 
 define LIBRETRO_FLYCASTVL_BUILD_CMDS
     $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile \
@@ -32,7 +33,6 @@ endef
 define LIBRETRO_FLYCASTVL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/flycast_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/flycastvl_libretro.so
-	cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-flycastvl/$(LIBRETRO_FLYCASTVL_INFO_FILE)" "$(TARGET_DIR)/usr/share/libretro/info/flycastvl_libretro.info"
 endef
 
 $(eval $(generic-package))
