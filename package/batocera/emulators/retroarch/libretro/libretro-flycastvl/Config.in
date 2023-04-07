@@ -1,5 +1,5 @@
-config BR2_PACKAGE_LIBRETRO_FLYCASTV1_1
-        bool "libretro-flycastv1-1"
+config BR2_PACKAGE_LIBRETRO_FLYCASTVL
+        bool "libretro-flycastvl"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_GCC_ENABLE_OPENMP
