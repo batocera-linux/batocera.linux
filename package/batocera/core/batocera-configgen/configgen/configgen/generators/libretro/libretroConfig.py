@@ -37,7 +37,7 @@ systemToRetroachievements = {'amstradcpc', 'atari2600', 'arduboy', 'atari7800', 
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
-coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
+coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'flycastv1-1', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
 
 # Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
@@ -724,6 +724,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame0139"      : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "flycast"       : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
+        "flycastv1-1"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mednafen_psx"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "pcsx_rearmed"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "swanstation"   : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
