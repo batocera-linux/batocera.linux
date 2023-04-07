@@ -3,6 +3,7 @@ default:
     video_threaded: true
     videomode: max-1280x720
     hud_support: true
+
 amiga500:
   emulator: libretro
   core:     uae4arm
@@ -28,3 +29,12 @@ psx:
   options:
     gpu_software: true
     gfxbackend: Software
+atomiswave:
+  emulator: libretro
+  core:     flycastvl
+dreamcast:
+  emulator: libretro
+  core:     flycastvl
+naomi:
+  emulator: libretro
+  core:     flycastvl
