@@ -422,8 +422,8 @@ dreamcast:
   extensions: [cdi, cue, gdi, chd, m3u]
   emulators:
     libretro:
-      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
-      flycastv1-1:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTV1_1] }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     redream:
@@ -446,8 +446,8 @@ naomi:
   platform:   naomi, arcade
   emulators:
     libretro:
-      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
-      flycastv1-1:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTV1_1] }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
     demul:
@@ -462,8 +462,8 @@ atomiswave:
   platform:   atomiswave, arcade
   emulators:
     libretro:
-      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
-      flycastv1-1:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTV1_1] }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     demul:
