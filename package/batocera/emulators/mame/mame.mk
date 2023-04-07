@@ -173,6 +173,10 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy data plugin information
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/dats			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/history			$(TARGET_DIR)/usr/bin/mame/
+
+	# gameStop script when exiting a rotated screen
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
 endef
 
 define MAME_EVMAPY
