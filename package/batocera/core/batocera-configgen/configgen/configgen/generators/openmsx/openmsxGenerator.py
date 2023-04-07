@@ -28,6 +28,11 @@ class OpenmsxGenerator(Generator):
             copy_tree(openMSX_Config, share_dir)
 
         commandArray = ["/usr/bin/openmsx", "-cart", rom ]
+
+        if system.name == "colecovision" and system.isOptSet('openmsx_machine'):
+            commandArray[1:1] = ["-machine", system.config["openmsx_machine"]]
+
         if system.isOptSet('hud') and system.config["hud"] != "":
-               commandArray.insert(0, "mangohud")
+            commandArray.insert(0, "mangohud")
+
         return Command.Command(array=commandArray)
