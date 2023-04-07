@@ -965,19 +965,19 @@ msgctxt "game_options"
 msgid "DISPLAY ROTATION"
 msgstr "디스플레이 회전"
 
-#. TRANSLATION: libretro/mesen, daphne, flycast, melonds
+#. TRANSLATION: libretro/mesen, daphne, flycast, melonds, moonlight
 #, fuzzy
 msgctxt "game_options"
 msgid "90 degrees"
 msgstr "90도"
 
-#. TRANSLATION: libretro/mesen, melonds
+#. TRANSLATION: libretro/mesen, melonds, moonlight
 #, fuzzy
 msgctxt "game_options"
 msgid "180 degrees"
 msgstr "180도"
 
-#. TRANSLATION: libretro/mesen, daphne, melonds
+#. TRANSLATION: libretro/mesen, daphne, melonds, moonlight
 #, fuzzy
 msgctxt "game_options"
 msgid "270 degrees"
@@ -7990,7 +7990,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "화면 회전"
 
-#. TRANSLATION: daphne, flycast, melonds
+#. TRANSLATION: daphne, flycast, melonds, moonlight
 #, fuzzy
 msgctxt "game_options"
 msgid "0 degrees"
@@ -9190,6 +9190,16 @@ msgid "4K (3840x2160)"
 msgstr "4K (3840x2160)"
 
 #. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "Output rotation independent of xrandr or framebuffer settings."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "ROTATE"
+msgstr ""
+
+#. TRANSLATION: moonlight
 #, fuzzy
 msgctxt "game_options"
 msgid "VIDEO STREAM FRAME RATE"
@@ -9263,16 +9273,6 @@ msgctxt "game_options"
 msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
 msgstr "최적의 설정을 동적으로 계산"
 
-#. TRANSLATION: moonlight, moonlight
-msgctxt "game_options"
-msgid "on"
-msgstr "켜기"
-
-#. TRANSLATION: moonlight, moonlight
-msgctxt "game_options"
-msgid "off"
-msgstr "끄기"
-
 #. TRANSLATION: moonlight
 #, fuzzy
 msgctxt "game_options"
@@ -9286,10 +9286,19 @@ msgid "QUIT ON HOST"
 msgstr "호스트에서 종료"
 
 #. TRANSLATION: moonlight
-#, fuzzy
 msgctxt "game_options"
-msgid "If screen is rotated by 90 degrees, select SDL."
-msgstr "화면이 90도 회전된 경우 SDL을 선택합니다."
+msgid "Disable all input processing (view-only mode)."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIEW ONLY"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "May have an impact on performance."
+msgstr ""
 
 #. TRANSLATION: moonlight
 #, fuzzy
@@ -9299,8 +9308,50 @@ msgstr "선호하는 AV 디코더"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
+msgid "Autodetect (Default)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
 msgid "SDL"
 msgstr "SDL"
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "X11"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "Enable QOS settings to optimize for internet or local network."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "LAN / WAN STREAMING"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "WAN"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "LAN (Default)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid ""
+"Enables surround sound if your audio card supports it (Consumes more "
+"bandwidth)."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "SURROUND SOUND"
+msgstr ""
 
 #. TRANSLATION: mupen64plus
 #, fuzzy
@@ -12019,6 +12070,19 @@ msgstr "표시(기본값)"
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr "앤티앨리어싱은 들쭉날쭉한 가장자리를 매끄럽게 하는 기술입니다."
+
+#~ msgctxt "game_options"
+#~ msgid "on"
+#~ msgstr "켜기"
+
+#~ msgctxt "game_options"
+#~ msgid "off"
+#~ msgstr "끄기"
+
+#, fuzzy
+#~ msgctxt "game_options"
+#~ msgid "If screen is rotated by 90 degrees, select SDL."
+#~ msgstr "화면이 90도 회전된 경우 SDL을 선택합니다."
 
 #, fuzzy
 #~ msgctxt "game_options"
