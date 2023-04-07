@@ -48,10 +48,10 @@ class BatoceraTest():
                 results.append({"system": system, "game": games[system], "status": False})
 
         # generate report
-        BatoceraTest.report(resultDir, results)
+        BatoceraTest.gameReport(resultDir, results)
 
     @staticmethod
-    def report(resultDir, results):
+    def gameReport(resultDir, results):
         with open(resultDir+"/report.txt", "w") as f:
             f.write("  Status      System            Game\n")
             f.write("=======================================================================\n")
@@ -71,9 +71,7 @@ class BatoceraTest():
         x = requests.post("http://localhost:1234/launch", data = game)
         if not x.ok:
             raise Exception("fail call es")
-
-        # wait 20s
-        time.sleep(20)
+        time.sleep(5)
 
         try:
             x = requests.get("http://localhost:1234/runningGame")
@@ -81,11 +79,13 @@ class BatoceraTest():
                 raise Exception("fail call es")
             xj = x.json()
             stillRunning = (xj["systemName"] == system)
+            time.sleep(20)
         except:
             stillRunning = False
 
         if stillRunning:
             BatoceraTest.screenshot(resultDir, system)
+            time.sleep(5)
 
         # stop the game
         code = os.system("batocera-es-swissknife --emukill")
@@ -146,6 +146,10 @@ class BatoceraTest():
 
     @staticmethod
     def screenshot(resultDir, name):
+        resultDir = "{}/screenshots/".format(resultDir)
+        if not os.path.exists(resultDir):
+            os.makedirs(resultDir)
+
         name = os.path.splitext(name)[0]
         pathScreenshot = "batocera-screenshot {}/{}.png".format(resultDir, name)
         os.system(pathScreenshot)
