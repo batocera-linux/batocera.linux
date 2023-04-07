@@ -45,7 +45,8 @@
 - libretro-wasm4 to 2.5.4
 - simcoupe to 1.2.12
 - ikemen-go to 0.99rc1
-- flycast emulators to 2.1
+- flycast emulators to Apr 4, 2023 build
+- libretro-flycast emulators to Apr 4, 2023 build
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
