@@ -845,17 +845,17 @@ msgctxt "game_options"
 msgid "DISPLAY ROTATION"
 msgstr "ROTATION DE L'AFFICHAGE"
 
-#. TRANSLATION: libretro/mesen, daphne, flycast, melonds
+#. TRANSLATION: libretro/mesen, daphne, flycast, melonds, moonlight
 msgctxt "game_options"
 msgid "90 degrees"
 msgstr "90 degrés"
 
-#. TRANSLATION: libretro/mesen, melonds
+#. TRANSLATION: libretro/mesen, melonds, moonlight
 msgctxt "game_options"
 msgid "180 degrees"
 msgstr "180 degrés"
 
-#. TRANSLATION: libretro/mesen, daphne, melonds
+#. TRANSLATION: libretro/mesen, daphne, melonds, moonlight
 msgctxt "game_options"
 msgid "270 degrees"
 msgstr "270 degrés"
@@ -6909,7 +6909,7 @@ msgctxt "game_options"
 msgid "SCREEN ROTATION"
 msgstr "ROTATION DE L'ÉCRAN"
 
-#. TRANSLATION: daphne, flycast, melonds
+#. TRANSLATION: daphne, flycast, melonds, moonlight
 msgctxt "game_options"
 msgid "0 degrees"
 msgstr "0 degrés"
@@ -7964,6 +7964,16 @@ msgstr "4K (3840x2160)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
+msgid "Output rotation independent of xrandr or framebuffer settings."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "ROTATE"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
 msgid "VIDEO STREAM FRAME RATE"
 msgstr "TAUX DE RAFRAÎCHISSEMENT DU FLUX VIDÉO"
 
@@ -8024,16 +8034,6 @@ msgctxt "game_options"
 msgid "DYNAMICALLY CALCULATE OPTIMAL SETTINGS"
 msgstr "CALCULER DYNAMIQUEMENT LES PARAMÈTRES OPTIMAUX"
 
-#. TRANSLATION: moonlight, moonlight
-msgctxt "game_options"
-msgid "on"
-msgstr "activé"
-
-#. TRANSLATION: moonlight, moonlight
-msgctxt "game_options"
-msgid "off"
-msgstr "désactivé"
-
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
@@ -8046,8 +8046,18 @@ msgstr "QUITTER DEPUIS LA MACHINE"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
-msgid "If screen is rotated by 90 degrees, select SDL."
-msgstr "Si l'écran est tournée de 90 degrés, choisir SDL."
+msgid "Disable all input processing (view-only mode)."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "VIEW ONLY"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "May have an impact on performance."
+msgstr ""
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8056,8 +8066,50 @@ msgstr "DÉCODEUR AV PRÉFÉRÉ"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
+msgid "Autodetect (Default)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
 msgid "SDL"
 msgstr "SDL"
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "X11"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "Enable QOS settings to optimize for internet or local network."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "LAN / WAN STREAMING"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "WAN"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "LAN (Default)"
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid ""
+"Enables surround sound if your audio card supports it (Consumes more "
+"bandwidth)."
+msgstr ""
+
+#. TRANSLATION: moonlight
+msgctxt "game_options"
+msgid "SURROUND SOUND"
+msgstr ""
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -10462,6 +10514,18 @@ msgstr "Montre (par défaut)"
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr "L'anti-crénelage est une méthode pour diminuer l'effet d'escalier."
+
+#~ msgctxt "game_options"
+#~ msgid "on"
+#~ msgstr "activé"
+
+#~ msgctxt "game_options"
+#~ msgid "off"
+#~ msgstr "désactivé"
+
+#~ msgctxt "game_options"
+#~ msgid "If screen is rotated by 90 degrees, select SDL."
+#~ msgstr "Si l'écran est tournée de 90 degrés, choisir SDL."
 
 #~ msgctxt "game_options"
 #~ msgid ""
