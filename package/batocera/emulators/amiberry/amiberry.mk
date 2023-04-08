@@ -3,11 +3,11 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Release on Oct 01, 2022
-AMIBERRY_VERSION = v5.4
+
+AMIBERRY_VERSION = v5.6.0
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
-AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng
+AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng libserialport
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	AMIBERRY_DEPENDENCIES += rpi-userland
