@@ -56,6 +56,7 @@
 - dosbox to v2023.03.31
 - citra to nightly-1877
 - amiberry to v5.6.0
+- ppsspp to v1.14.4
 ### Dev
 - buildroot upgrade to 2023.02
 - mesa3d update to 23.0.2
