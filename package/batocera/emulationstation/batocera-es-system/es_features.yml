@@ -7043,7 +7043,7 @@ melonds:
                 "DSi (experiemental)": 1
 
 moonlight:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio]
   cfeatures:
         moonlight_codec:
             group: ADVANCED OPTIONS
@@ -7102,9 +7102,9 @@ moonlight:
             prompt:      PREFERRED AV DECODER
             description: May have an impact on performance.
             choices:
-                "Autodetect (Default)": "auto"
-                "SDL":                  "sdl"
-                "X11":                  "x11"
+                "SDL":                               "sdl"
+                "X11 (Default)":                     "x11"
+                "X11 - Nvidia Hardware Accelerated": "x11_vdpau"
         moonlight_remote:
             prompt:      LAN / WAN STREAMING
             description: Enable QOS settings to optimize for internet or local network.
