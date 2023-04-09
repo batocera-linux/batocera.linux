@@ -1,0 +1,60 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+BASEFILE="/var/run/virtual-fusion-lightguns-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+# trigger                  : BTN_LEFT
+# front trigger            : KEY_ESCAPE
+# L side button1 (reload)  : BTN_RIGHT
+# L Side Button 2 (Start)  : KEY_1
+# R side button 1 (A)      : KEY_ENTER
+# R side button (Select)   : KEY_5
+# front button (Calibrate) : KEY_F4
+# way rocker on back       : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, A?
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:esc btn:left --map key:1 btn:middle --map key:enter btn:1 --map key:5 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0
