@@ -90,11 +90,9 @@ def generateMoonlightConfig(system):
         else:
             moonlightConfig.save('viewonly', 'false')
 
-        # av decoder
-        if system.isOptSet('moonlight_avdecoder'):
-            moonlightConfig.save('platform', system.config["moonlight_avdecoder"])
-        else:
-            moonlightConfig.save('platform', 'x11')
+        # platform - we only select sdl (best compatibility)
+        # required for controllers to work
+        moonlightConfig.save('platform', 'sdl')
 
         ## Directory to store encryption keys
         moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
