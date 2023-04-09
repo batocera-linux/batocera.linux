@@ -1,0 +1,35 @@
+diff --git a/deps/libgo2/src/display.c b/deps/libgo2/src/display.c
+index cedf3c4..69ad609 100644
+--- a/deps/libgo2/src/display.c
++++ b/deps/libgo2/src/display.c
+@@ -164,13 +164,29 @@ go2_display_t* go2_display_create()
+ 
+     result->connector_id = connector->connector_id;
+ 
++   // batocera - set resolution
++    int drmMode = 0;
++    {
++      FILE* fdDrmMode;
++      int readDrmMode;
++      if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++	if(fscanf(fdDrmMode, "%i", &readDrmMode) == 1) {
++	  if(readDrmMode>=0 && readDrmMode<connector->count_modes) {
++	    drmMode = readDrmMode;
++	  }
++	}
++	fclose(fdDrmMode);
++      }
++    }
++   //
+ 
+     // Find prefered mode
+     drmModeModeInfo* mode;
+     for (i = 0; i < connector->count_modes; i++)
+     {
+         drmModeModeInfo *current_mode = &connector->modes[i];
+-        if (current_mode->type & DRM_MODE_TYPE_PREFERRED)
++        //if (current_mode->type & DRM_MODE_TYPE_PREFERRED)
++	if(i == drmMode)
+         {
+             mode = current_mode;
+             break;
