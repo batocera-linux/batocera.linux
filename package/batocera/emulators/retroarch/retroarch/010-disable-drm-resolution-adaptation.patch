@@ -1,8 +1,8 @@
 diff --git a/gfx/drivers_context/drm_ctx.c b/gfx/drivers_context/drm_ctx.c
-index 182d0b4..66d063c 100644
+index 5b59e4c..6ecaa72 100644
 --- a/gfx/drivers_context/drm_ctx.c
 +++ b/gfx/drivers_context/drm_ctx.c
-@@ -698,6 +698,8 @@
+@@ -807,6 +807,8 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
     settings_t *settings            = config_get_ptr();
     unsigned black_frame_insertion  = settings->uints.video_black_frame_insertion;
     float video_refresh_rate        = settings->floats.video_refresh_rate;
@@ -11,10 +11,20 @@ index 182d0b4..66d063c 100644
  
     if (!drm)
        return false;
-@@ -712,47 +712,17 @@
+@@ -820,58 +822,16 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
     /* Find desired video mode, and use that.
      * If not fullscreen, we get desired windowed size,
      * which is not appropriate. */
+-   if(gfx_ctx_drm_get_mode_from_video_state(&gfx_ctx_crt_switch_mode))
+-   {
+-      RARCH_DBG("[KMS]: New mode detected: %dx%d\n", gfx_ctx_crt_switch_mode.hdisplay, gfx_ctx_crt_switch_mode.vdisplay);
+-      g_drm_mode = &gfx_ctx_crt_switch_mode;
+-      drm->fb_width  = gfx_ctx_crt_switch_mode.hdisplay;
+-      drm->fb_height = gfx_ctx_crt_switch_mode.vdisplay;
+-      switch_mode = true;
+-      /* Let's exit, since modeswitching will happen while swapping buffers */
+-      return true;
+-   }
 -   if ((width == 0 && height == 0) || !fullscreen)
 -      g_drm_mode                   = &g_drm_connector->modes[0];
 -   else
@@ -35,17 +45,8 @@ index 182d0b4..66d063c 100644
 -         drmModeModeInfo *mode     = NULL;
 -         float minimum_fps_diff    = 0.0f;
 -         float mode_vrefresh       = 0.0f;
-+   //if ((width == 0 && height == 0) || !fullscreen)
-+   g_drm_mode = &g_drm_connector->modes[0];
-+   // batocera - set resolution
-+   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
-+     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
-+       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
-+         g_drm_mode = &g_drm_connector->modes[drmMode];
-+       }
-+     }
-+     fclose(fdDrmMode);
-
+-         g_drm_mode                = 0;
+-
 -         /* Find best match. */
 -         for (i = 0; i < g_drm_connector->count_modes; i++)
 -         {
@@ -66,6 +67,16 @@ index 182d0b4..66d063c 100644
 -            }
 -         }
 -      }
++   // on batocera, we won't guess a mode ; we want the one set by drmMode
++   g_drm_mode = &g_drm_connector->modes[0];
++   // batocera - set resolution
++   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++         g_drm_mode = &g_drm_connector->modes[drmMode];
++       }
++     }
++     fclose(fdDrmMode);
     }
-
+ 
     if (!g_drm_mode)
