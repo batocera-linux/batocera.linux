@@ -7097,14 +7097,7 @@ moonlight:
             description: Disable all input processing (view-only mode).
             choices:
                 "Off": False
-                "On":  True            
-        moonlight_avdecoder:
-            prompt:      PREFERRED AV DECODER
-            description: May have an impact on performance.
-            choices:
-                "SDL":                               "sdl"
-                "X11 (Default)":                     "x11"
-                "X11 - Nvidia Hardware Accelerated": "x11_vdpau"
+                "On":  True
         moonlight_remote:
             prompt:      LAN / WAN STREAMING
             description: Enable QOS settings to optimize for internet or local network.
