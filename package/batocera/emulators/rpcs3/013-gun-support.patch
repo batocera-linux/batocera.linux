@@ -1,0 +1,13 @@
+diff --git a/rpcs3/Input/evdev_gun_handler.cpp b/rpcs3/Input/evdev_gun_handler.cpp
+index e506920..293b9cb 100644
+--- a/rpcs3/Input/evdev_gun_handler.cpp
++++ b/rpcs3/Input/evdev_gun_handler.cpp
+@@ -214,7 +214,7 @@ bool evdev_gun_handler::init()
+ 
+ 	if (udev_enumerate* enumerate = udev_enumerate_new(m_udev))
+ 	{
+-		udev_enumerate_add_match_property(enumerate, "ID_INPUT_MOUSE", "1");
++		udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
+ 		udev_enumerate_add_match_subsystem(enumerate, "input");
+ 		udev_enumerate_scan_devices(enumerate);
+ 		udev_list_entry* devs = udev_enumerate_get_list_entry(enumerate);
