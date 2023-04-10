@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PLAYER=$1
+
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
@@ -51,7 +53,17 @@ if test "${NDEVS}" = 2
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:esc btn:left --map key:1 btn:middle --map key:enter btn:1 --map key:5 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+
+    if test "${PLAYER}" = "1"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:esc btn:left --map key:1 btn:middle --map key:enter btn:1 --map key:5 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "2"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:leftshift btn:left --map key:2 btn:middle --map key:leftctrl btn:1 --map key:6 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
