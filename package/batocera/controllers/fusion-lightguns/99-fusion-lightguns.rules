@@ -1,0 +1,6 @@
+# disable raw devices to merge them
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Fusion Mini P1 Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/fusion-lightguns-add"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Fusion Mini P1 Mouse", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/fusion-lightguns-add"
+
+# virtual lightgun
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Fusion Lightgun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1"
