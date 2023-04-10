@@ -1,1 +1,2 @@
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Arduino LLC Arduino Leonardo", ENV{ID_INPUT_GUN}="1"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Arduino LLC Arduino Leonardo",    ENV{ID_INPUT_GUN}="1"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Adafruit ItsyBitsy 32u4 3V 8MHz", ENV{ID_INPUT_GUN}="1"
