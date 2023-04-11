@@ -1201,7 +1201,7 @@ pico8:
   extensions: [p8, png, m3u]
   emulators:
     libretro:
-      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+      fake08: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FAKE08] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:pico-8
   comment_fr: |

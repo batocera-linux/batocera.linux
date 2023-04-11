@@ -5,5 +5,5 @@ config BR2_PACKAGE_LIBRETRO_TIC80
       help
         A libretro TIC-80 engine
 
-comment "LIBRETRO_RETRO8 needs a toolchain w/ C++"
+comment "LIBRETRO_TIC80 needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
