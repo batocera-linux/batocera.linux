@@ -20,6 +20,7 @@
 - supermodel now supports start and coin buttons on the gun
 - samco guns support (https://github.com/samuelballantyne/IR-Light-Gun)
 - fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
+- wiimote+nunchuk as a zapper gun support
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
