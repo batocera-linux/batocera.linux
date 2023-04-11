@@ -9,6 +9,7 @@
 - Added SAM Coupe for ARM-based SBC
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
 - Added Pyxel fantasy console (x86_64)
+- Added Fake-08 (more accurate libretro-based Pico-8 emulator)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - sinden gun border colors modifiable via es menu (white, red, green, blue)
@@ -37,6 +38,7 @@
 - move from busybox linux commands to more standard linux commands
 - supermodel nvram files & ini file based on Warped Polygon's work
 - ScummVM now will use extra files here - /userdata/bios/scummvm/extra (consistent with LR-ScummVM)
+- Pico-8: libretro-retro8 is deprecated in favor of libretro-fake08
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)
