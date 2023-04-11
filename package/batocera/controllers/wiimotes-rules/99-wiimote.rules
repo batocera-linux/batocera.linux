@@ -5,4 +5,8 @@ SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote IR", MODE="
 SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote Accelerometer", ENV{ID_INPUT_JOYSTICK}="0"
 SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Nintendo Wii Remote Motion Plus", ENV{ID_INPUT_JOYSTICK}="0"
 
-SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="wiigun", MODE="0666", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-gun-calibrator-daemon $env{DEVNAME} 260"
+SUBSYSTEM=="input", ACTION=="add",    ATTRS{name}=="Nintendo Wii Remote Nunchuk", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/virtual-wii-mouse-bar-add"
+SUBSYSTEM=="input", ACTION=="remove", ATTRS{name}=="Nintendo Wii Remote Nunchuk",                                          RUN+="/usr/bin/virtual-wii-mouse-bar-add"
+
+SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Wii Gun", MODE="0666", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-gun-calibrator-daemon $env{DEVNAME} 260"
+SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Wii Zapper", MODE="0666", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-gun-calibrator-daemon $env{DEVNAME} 260"

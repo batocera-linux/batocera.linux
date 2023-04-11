@@ -1,16 +1,37 @@
 #!/bin/bash
 
-test "${ACTION}" = "add" || exit 0
+test "${ACTION}" = "add" -o "${ACTION}" = "remove" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 WIIMOTEMODE=$(batocera-settings-get controllers.wiimote.mode)
 test "${WIIMOTEMODE}" != 'gun' -a "${WIIMOTEMODE}" != "" && exit 0 # gun mode not enabled
+
+# if case a nunchuk is removed, try to transform into a wiigun
+if test "${ACTION}" = "remove"
+then
+    DEVSFILE=$(grep -REl '^'${DEVNAME}'$' /var/run/virtual-wiigun-devices.*.devs 2>/dev/null | head -1)
+    if test -n "${DEVSFILE}"
+    then
+	# kill the evdev if still here
+	PIDFILE=$(echo "${DEVSFILE}" | sed -e s+"\.devs$"+".pid"+)
+	LPID=$(cat "${PIDFILE}")
+	kill -15 "${LPID}"
+	echo -1 > "${PIDFILE}"
+	# fake to add one of the other device
+	DEVNAME=$(grep -vE '^'${DEVNAME}'$' "${DEVSFILE}" | head -1)
+    else
+	exit 0
+    fi
+fi
+# ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
 
 PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
 BASEFILE="/var/run/virtual-wiigun-devices.${PARENTHASH}"
 PIDFILE="${BASEFILE}.pid"
 LOCKFILE="${BASEFILE}.lock"
 LOGFILE="${BASEFILE}.log"
+MODEFILE="${BASEFILE}.mode"
+DEVSFILE="${BASEFILE}.devs"
 
 unlockAndExit() {
     rmdir "${LOCKFILE}"
@@ -35,16 +56,39 @@ trylock() {
     done
 }
 
+breakVirtualGunOnDifferentMode() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+
+    # break
+    CURRENT_MODE=$(cat "${MODEFILE}")
+    HASNUN=$(if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote Nunchuk$'; then echo 1; else echo 0; fi)
+    if test "${HASNUN}" = 1 -a "${CURRENT_MODE}" = "gun"
+    then
+	kill -15 "${LPID}"
+	echo -1 > "${PIDFILE}"
+    fi
+    # the zapper will be dead automatically, when the device nunchuk is removed
+}
+
 trylock
+CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+
+breakVirtualGunOnDifferentMode
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}")
-NDEVS=$(echo "${CHILDREN}" | wc -l)
+HASIR=$( if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote IR$';      then echo 1; else echo 0; fi)
+HASJOY=$(if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote$';         then echo 1; else echo 0; fi)
+HASNUN=$(if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote Nunchuk$'; then echo 1; else echo 0; fi)
 
-HASIR=$(if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote IR$'; then echo 1; else echo 0; fi)
-HASJOY=$(if echo "${CHILDREN}" | grep -qE 'Nintendo Wii Remote$'; then echo 1; else echo 0; fi)
+MODEGUN=0
+MODEZAPPER=0
 
-if test "${HASIR}" = 1 -a "${HASJOY}" = 1
+test "${HASIR}" = 1 -a "${HASJOY}" = 1 -a "${HASNUN}" = 0 && MODEGUN=1
+test "${HASIR}" = 1 -a "${HASJOY}" = 1 -a "${HASNUN}" = 1 && MODEZAPPER=1
+
+if test "${MODEGUN}" = 1
 then
     DEV1=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote IR$' | head -1 | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote$'    | head -1 | cut -f 1)
@@ -59,10 +103,24 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="wiigun" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Wii Gun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
+    echo "gun" > "${MODEFILE}"
 else
-    unlockAndExit 1
+    if test "${MODEZAPPER}" = 1
+    then
+	DEV1=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote IR$'      | head -1 | cut -f 1)
+	DEV2=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote$'         | head -1 | cut -f 1)
+	DEV3=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote Nunchuk$' | head -1 | cut -f 1)
+	nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --map btn:c btn:right --map btn:z btn:left --output name="Wii Zapper" >/dev/null 2>"${LOGFILE}" &
+	echo $! > "${PIDFILE}"
+	echo "zapper" > "${MODEFILE}"
+	echo "${DEV1}"  > "${DEVSFILE}"
+	echo "${DEV2}" >> "${DEVSFILE}"
+	echo "${DEV3}" >> "${DEVSFILE}"
+    else
+	unlockAndExit 1
+    fi
 fi
 
 unlockAndExit 0
