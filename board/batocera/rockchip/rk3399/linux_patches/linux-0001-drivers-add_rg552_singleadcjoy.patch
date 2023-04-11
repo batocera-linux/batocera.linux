@@ -1,11 +1,29 @@
+From d42d2d9c08148c11d985293e010be51c7c98648b Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Tue, 11 Apr 2023 23:36:07 +0300
+Subject: [PATCH] singleadcjoy fix
+
+---
+ drivers/input/Kconfig                 |   13 +
+ drivers/input/Makefile                |    1 +
+ drivers/input/input-polldev.c         |  362 ++++++++
+ drivers/input/joystick/Kconfig        |    6 +
+ drivers/input/joystick/Makefile       |    1 +
+ drivers/input/joystick/singleadcjoy.c | 1160 +++++++++++++++++++++++++
+ include/linux/input-polldev.h         |   58 ++
+ 7 files changed, 1601 insertions(+)
+ create mode 100644 drivers/input/input-polldev.c
+ create mode 100644 drivers/input/joystick/singleadcjoy.c
+ create mode 100644 include/linux/input-polldev.h
+
 diff --git a/drivers/input/Kconfig b/drivers/input/Kconfig
-index e2752f7..061b5de 100644
+index e2752f736..061b5de1f 100644
 --- a/drivers/input/Kconfig
 +++ b/drivers/input/Kconfig
 @@ -51,6 +51,19 @@ config INPUT_FF_MEMLESS
  	  To compile this driver as a module, choose M here: the
  	  module will be called ff-memless.
-
+ 
 +config INPUT_POLLDEV
 +	tristate "Polled input device skeleton"
 +	help
@@ -23,20 +41,21 @@ index e2752f7..061b5de 100644
  	tristate "Sparse keymap support library"
  	help
 diff --git a/drivers/input/Makefile b/drivers/input/Makefile
-index 2266c7d..bf1c654 100644
+index 2266c7d01..bf1c654d3 100644
 --- a/drivers/input/Makefile
 +++ b/drivers/input/Makefile
 @@ -10,6 +10,7 @@ input-core-y := input.o input-compat.o input-mt.o input-poller.o ff-core.o
  input-core-y += touchscreen.o
-
+ 
  obj-$(CONFIG_INPUT_FF_MEMLESS)	+= ff-memless.o
 +obj-$(CONFIG_INPUT_POLLDEV)		+= input-polldev.o
  obj-$(CONFIG_INPUT_SPARSEKMAP)	+= sparse-keymap.o
  obj-$(CONFIG_INPUT_MATRIXKMAP)	+= matrix-keymap.o
  obj-$(CONFIG_INPUT_VIVALDIFMAP)	+= vivaldi-fmap.o
 diff --git a/drivers/input/input-polldev.c b/drivers/input/input-polldev.c
-index e69de29..f9b5891 100644
---- a/drivers/input/input-polldev.c
+new file mode 100644
+index 000000000..f9b5891b6
+--- /dev/null
 +++ b/drivers/input/input-polldev.c
 @@ -0,0 +1,362 @@
 +// SPDX-License-Identifier: GPL-2.0-only
@@ -403,13 +422,13 @@ index e69de29..f9b5891 100644
 +EXPORT_SYMBOL(input_unregister_polled_device);
 \ No newline at end of file
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 9dcf3f5..42eba36 100644
+index 04ca3d1c2..c140e8c16 100644
 --- a/drivers/input/joystick/Kconfig
 +++ b/drivers/input/joystick/Kconfig
-@@ -392,6 +392,12 @@ config JOYSTICK_FSIA6B
+@@ -393,6 +393,12 @@ config JOYSTICK_FSIA6B
  	  To compile this driver as a module, choose M here: the
  	  module will be called fsia6b.
-
+ 
 +config JOYSTICK_SINGLEADCJOY
 +	tristate "Single SARADC dual-joystick gamepad driver"
 +	select INPUT_POLLDEV
@@ -420,7 +439,7 @@ index 9dcf3f5..42eba36 100644
  	bool "N64 controller"
  	depends on MACH_NINTENDO64
 diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 3937535..d0aaa1a 100644
+index 3937535f0..d0aaa1a01 100644
 --- a/drivers/input/joystick/Makefile
 +++ b/drivers/input/joystick/Makefile
 @@ -30,6 +30,7 @@ obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
@@ -432,14 +451,15 @@ index 3937535..d0aaa1a 100644
  obj-$(CONFIG_JOYSTICK_SPACEORB)		+= spaceorb.o
  obj-$(CONFIG_JOYSTICK_STINGER)		+= stinger.o
 diff --git a/drivers/input/joystick/singleadcjoy.c b/drivers/input/joystick/singleadcjoy.c
-index e69de29..e5ab241 100644
---- a/drivers/input/joystick/singleadcjoy.c
+new file mode 100644
+index 000000000..f0a24a24a
+--- /dev/null
 +++ b/drivers/input/joystick/singleadcjoy.c
-@@ -0,0 +1,1416 @@
+@@ -0,0 +1,1160 @@
 +/*----------------------------------------------------------------------------*/
 +
 +/*
-+ * Copyright (c) 2008-2021 Anbernic
++ * Copyright (c) 2008-2021 Anbernic 
 + */
 +
 +/*
@@ -462,16 +482,15 @@ index e69de29..e5ab241 100644
 +#include <linux/property.h>
 +#include <linux/of_gpio.h>
 +#include <linux/delay.h>
-+#include <linux/pwm.h>
 +
 +/*----------------------------------------------------------------------------*/
 +#define DRV_NAME "retrogame_joypad"
-+
++#define __LEFT_JOYSTICK_INVERT__
++#define __MURMUR__
 +/*----------------------------------------------------------------------------*/
 +#define	ADC_MAX_VOLTAGE		1800
 +#define	ADC_DATA_TUNING(x, p)	((x * p) / 100)
 +#define	ADC_TUNING_DEFAULT	180
-+#define	CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 +
 +struct bt_adc {
 +	/* report value (mV) */
@@ -530,12 +549,6 @@ index e69de29..e5ab241 100644
 +	/* analog button */
 +	struct bt_adc *adcs;
 +
-+	/* report reference point */
-+	bool invert_absx;
-+	bool invert_absy;
-+	bool invert_absrx;
-+	bool invert_absry;
-+
 +	/* report interval (ms) */
 +	int bt_gpio_count;
 +	struct bt_gpio *gpios;
@@ -554,50 +567,7 @@ index e69de29..e5ab241 100644
 +
 +	/* amux debug channel */
 +	int debug_ch;
-+
-+	/* pwm device for rumble*/
-+	struct input_dev *input;
-+	struct pwm_device *pwm;
-+	struct work_struct play_work;
-+	u16 level;
-+	u16 boost_weak;
-+	u16 boost_strong;
 +};
-+
-+static int pwm_vibrator_start(struct joypad *joypad)
-+{
-+	struct device *pdev = joypad->input->dev.parent;
-+	struct pwm_state state;
-+	int err;
-+
-+	pwm_get_state(joypad->pwm, &state);
-+	pwm_set_relative_duty_cycle(&state, joypad->level, 0xffff);
-+	state.enabled = true;
-+
-+	err = pwm_apply_state(joypad->pwm, &state);
-+	if (err) {
-+		dev_err(pdev, "failed to apply pwm state: %d", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void pwm_vibrator_stop(struct joypad *joypad)
-+{
-+	pwm_disable(joypad->pwm);
-+}
-+
-+static void pwm_vibrator_play_work(struct work_struct *work)
-+{
-+	struct joypad *joypad = container_of(work,
-+					struct joypad, play_work);
-+
-+	if (joypad->level)
-+		pwm_vibrator_start(joypad);
-+	else
-+		pwm_vibrator_stop(joypad);
-+}
 +
 +/*----------------------------------------------------------------------------*/
 +//
@@ -691,8 +661,11 @@ index e69de29..e5ab241 100644
 +	iio_read_channel_raw(amux->iio_ch, &value);
 +
 +	value *= adc->scale;
-+
++#ifdef __LEFT_JOYSTICK_INVERT__
 +	return value;
++#else
++	return (adc->invert ? (adc->max - value) : value);
++#endif
 +}
 +
 +/*----------------------------------------------------------------------------*/
@@ -946,165 +919,66 @@ index e69de29..e5ab241 100644
 +		   joypad_store_amux_debug);
 +
 +/*----------------------------------------------------------------------------*/
++#ifdef __MURMUR__
 +/*----------------------------------------------------------------------------*/
 +/*
 + * ATTRIBUTES:
 + *
-+ * /sys/devices/platform/odroidgo2_joypad/rumble_period [rw]
-+ */
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_store_period(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t count)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	mutex_lock(&joypad->lock);
-+	pwm_set_period(joypad->pwm, simple_strtoul(buf, NULL, 21));
-+	mutex_unlock(&joypad->lock);
-+
-+	return count;
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_show_period(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	return sprintf(buf, "%lld\n", pwm_get_period(joypad->pwm));
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static DEVICE_ATTR(rumble_period, S_IWUSR | S_IRUGO,
-+		   joypad_show_period,
-+		   joypad_store_period);
-+
-+
-+/*----------------------------------------------------------------------------*/
-+/*----------------------------------------------------------------------------*/
-+/*
-+ * ATTRIBUTES:
++ * /sys/bus/platform/devices/singleadc-joypad/vol [rw]
 + *
-+ * /sys/devices/platform/odroidgo2_joypad/rumble_boost_strong [rw]
++ * echo [debug channel] > vol
++ * cat vol : debug channel mux set & adc read
 + */
 +/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_store_boost_strong(struct device *dev,
++
++extern int rk817_hp_inserted;
++
++int rk817_pa_power_on=1;
++EXPORT_SYMBOL(rk817_pa_power_on);
++
++int vol_temp=100;
++
++static ssize_t joypad_store_vol(struct device *dev,
 +				      struct device_attribute *attr,
 +				      const char *buf,
 +				      size_t count)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
++{	
 +
-+	mutex_lock(&joypad->lock);
-+	joypad->boost_strong = simple_strtoul(buf, NULL, 10);
-+	mutex_unlock(&joypad->lock);
++	vol_temp = simple_strtoul(buf, NULL, 10);
 +
-+	return count;
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_show_boost_strong(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	return sprintf(buf, "%d\n", joypad->boost_strong);
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static DEVICE_ATTR(rumble_boost_strong, S_IWUSR | S_IRUGO,
-+		   joypad_show_boost_strong,
-+		   joypad_store_boost_strong);
-+
-+/*----------------------------------------------------------------------------*/
-+/*
-+ * ATTRIBUTES:
-+ *
-+ * /sys/devices/platform/odroidgo2_joypad/rumble_boost_weak [rw]
-+ */
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_store_boost_weak(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t count)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	mutex_lock(&joypad->lock);
-+	joypad->boost_weak = simple_strtoul(buf, NULL, 10);
-+	mutex_unlock(&joypad->lock);
-+
-+	return count;
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_show_boost_weak(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	return sprintf(buf, "%d\n", joypad->boost_weak);
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static DEVICE_ATTR(rumble_boost_weak, S_IWUSR | S_IRUGO,
-+		   joypad_show_boost_weak,
-+		   joypad_store_boost_weak);
-+
-+#define __HDMI__
-+
-+#ifdef __HDMI__
-+/*----------------------------------------------------------------------------*/
-+/*
-+ * ATTRIBUTES:
-+ *
-+ * /sys/devices/platform/singleadc-joypad/hdst [rw]
-+ */
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_store_hdst(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t count)
-+{
-+	return count;
-+}
-+
-+/*----------------------------------------------------------------------------*/
-+static ssize_t joypad_show_hdst(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+	//int stcon;
-+	ssize_t pos=0;
-+	if(gpio_get_value(54)==1)
-+	{
-+		pos += sprintf(&buf[pos], "disconnected\n");
++	if(vol_temp>=15){
++		rk817_pa_power_on=1;
++		if(rk817_hp_inserted==0){
++			gpio_direction_output(146,1);	
++		}
++		
 +	}else{
-+		pos += sprintf(&buf[pos], "connected\n");
++		rk817_pa_power_on=0;
++
++		if(rk817_hp_inserted==0){
++			gpio_direction_output(146,0);	
++		}
 +	}
++
++	return count;
++}
++
++/*----------------------------------------------------------------------------*/
++static ssize_t joypad_show_vol(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	ssize_t pos;
++	pos = sprintf(buf, "%d\n",vol_temp);
 +	return pos;
 +}
 +
 +/*----------------------------------------------------------------------------*/
-+static DEVICE_ATTR(hdst, S_IWUSR | S_IRUGO,
-+		   joypad_show_hdst,
-+		   joypad_store_hdst);
-+#endif
++static DEVICE_ATTR(vol, S_IWUSR | S_IRUGO,joypad_show_vol, joypad_store_vol);
 +
-+#ifdef __HDMI__
++/*----------------------------------------------------------------------------*/
++#endif
++#ifdef __MURMUR__
 +/*----------------------------------------------------------------------------*/
 +static struct attribute *joypad_attrs[] = {
 +	&dev_attr_poll_interval.attr,
@@ -1113,10 +987,7 @@ index e69de29..e5ab241 100644
 +	&dev_attr_enable.attr,
 +	&dev_attr_adc_cal.attr,
 +	&dev_attr_amux_debug.attr,
-+	&dev_attr_hdst.attr,
-+	&dev_attr_rumble_period.attr,
-+	&dev_attr_rumble_boost_strong.attr,
-+	&dev_attr_rumble_boost_weak.attr,
++	&dev_attr_vol.attr,
 +	NULL,
 +};
 +#else
@@ -1128,12 +999,10 @@ index e69de29..e5ab241 100644
 +	&dev_attr_enable.attr,
 +	&dev_attr_adc_cal.attr,
 +	&dev_attr_amux_debug.attr,
-+	&dev_attr_rumble_period.attr,
-+	&dev_attr_rumble_boost_strong.attr,
-+	&dev_attr_rumble_boost_weak.attr,
 +	NULL,
 +};
 +#endif
++
 +static struct attribute_group joypad_attr_group = {
 +	.attrs = joypad_attrs,
 +};
@@ -1263,9 +1132,6 @@ index e69de29..e5ab241 100644
 +	joypad->enable = false;
 +	mutex_unlock(&joypad->lock);
 +
-+	cancel_work_sync(&joypad->play_work);
-+	pwm_vibrator_stop(joypad);
-+
 +	dev_info(joypad->dev, "%s : closed\n", __func__);
 +}
 +
@@ -1286,6 +1152,8 @@ index e69de29..e5ab241 100644
 +	}
 +	amux = joypad->amux;
 +	amux->iio_ch = devm_iio_channel_get(dev, "amux_adc");
++	if (PTR_ERR(amux->iio_ch) == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
 +	if (IS_ERR(amux->iio_ch)) {
 +		dev_err(dev, "iio channel get error\n");
 +		return -EINVAL;
@@ -1364,7 +1232,7 @@ index e69de29..e5ab241 100644
 +		struct bt_adc *adc = &joypad->adcs[nbtn];
 +
 +		adc->scale = joypad->bt_adc_scale;
-+
++		
 +		adc->max = (ADC_MAX_VOLTAGE / 2);
 +		adc->min = (ADC_MAX_VOLTAGE / 2) * (-1);
 +		if (adc->scale) {
@@ -1376,8 +1244,6 @@ index e69de29..e5ab241 100644
 +
 +		switch (nbtn) {
 +			case 0:
-+				if (joypad->invert_absry)
-+					adc->invert = true;
 +				adc->report_type = ABS_RY;
 +				if (device_property_read_u32(dev,
 +					"abs_ry-p-tuning",
@@ -1389,8 +1255,6 @@ index e69de29..e5ab241 100644
 +					adc->tuning_n = ADC_TUNING_DEFAULT;
 +				break;
 +			case 1:
-+				if (joypad->invert_absrx)
-+					adc->invert = true;
 +				adc->report_type = ABS_RX;
 +				if (device_property_read_u32(dev,
 +					"abs_rx-p-tuning",
@@ -1402,8 +1266,9 @@ index e69de29..e5ab241 100644
 +					adc->tuning_n = ADC_TUNING_DEFAULT;
 +				break;
 +			case 2:
-+				if (joypad->invert_absy)
-+					adc->invert = true;
++			#ifdef __LEFT_JOYSTICK_INVERT__
++				adc->invert = true;	
++			#endif
 +				adc->report_type = ABS_Y;
 +				if (device_property_read_u32(dev,
 +					"abs_y-p-tuning",
@@ -1415,8 +1280,9 @@ index e69de29..e5ab241 100644
 +					adc->tuning_n = ADC_TUNING_DEFAULT;
 +				break;
 +			case 3:
-+				if (joypad->invert_absx)
-+					adc->invert = true;
++			#ifdef __LEFT_JOYSTICK_INVERT__
++				adc->invert = true;	
++			#endif
 +				adc->report_type = ABS_X;
 +				if (device_property_read_u32(dev,
 +					"abs_x-p-tuning",
@@ -1523,51 +1389,6 @@ index e69de29..e5ab241 100644
 +}
 +EXPORT_SYMBOL(rk_send_key_f_key_down);
 +
-+static int rumble_play_effect(struct input_dev *dev, void *data, struct ff_effect *effect)
-+{
-+	struct joypad *joypad = data;
-+	u32 boosted_level;
-+	if (effect->type != FF_RUMBLE)
-+		return 0;
-+
-+	if (effect->u.rumble.strong_magnitude)
-+		boosted_level = effect->u.rumble.strong_magnitude + joypad->boost_strong;
-+	else
-+		boosted_level = effect->u.rumble.weak_magnitude + joypad->boost_weak;
-+
-+	joypad->level = (u16)CLAMP(boosted_level, 0, 0xffff);
-+
-+	dev_info(joypad->dev,"joypad->level = %d",  joypad->level);
-+	schedule_work(&joypad->play_work);
-+	return 0;
-+}
-+/*----------------------------------------------------------------------------*/
-+static int joypad_rumble_setup(struct device *dev, struct joypad *joypad)
-+{
-+	int err;
-+	struct pwm_state state;
-+
-+	joypad->pwm = devm_pwm_get(dev, "enable");
-+	if (IS_ERR(joypad->pwm))
-+	{
-+		dev_err(dev, "rumble get error\n");
-+		return -EINVAL;
-+	}
-+
-+	INIT_WORK(&joypad->play_work, pwm_vibrator_play_work);
-+
-+	/* Sync up PWM state and ensure it is off. */
-+	pwm_init_state(joypad->pwm, &state);
-+	state.enabled = false;
-+	err = pwm_apply_state(joypad->pwm, &state);
-+	if (err) {
-+		dev_err(dev, "failed to apply initial PWM state: %d",
-+			err);
-+		return err;
-+	}
-+	dev_info(dev, "rumble setup success!\n");
-+	return 0;
-+}
 +
 +static int joypad_input_setup(struct device *dev, struct joypad *joypad)
 +{
@@ -1576,8 +1397,7 @@ index e69de29..e5ab241 100644
 +	int nbtn, error;
 +	u32 joypad_revision = 0;
 +	u32 joypad_product = 0;
-+	u32 boost_weak = 0;
-+	u32 boost_strong = 0;
++
 +	poll_dev = devm_input_allocate_polled_device(dev);
 +	if (!poll_dev) {
 +		dev_err(dev, "no memory for polled device\n");
@@ -1591,7 +1411,7 @@ index e69de29..e5ab241 100644
 +	poll_dev->close		= joypad_close;
 +
 +	input = poll_dev->input;
-+	joypad->input = poll_dev->input;
++	joypad_input_g=input;
 +
 +	device_property_read_string(dev, "joypad-name", &input->name);
 +	input->phys = DRV_NAME"/input0";
@@ -1621,21 +1441,6 @@ index e69de29..e5ab241 100644
 +			"%s : adc tuning_p = %d, adc_tuning_n = %d\n\n",
 +			__func__, adc->tuning_p, adc->tuning_n);
 +	}
-+
-+	/* Rumble setip*/
-+	device_property_read_u32(dev, "rumble-boost-weak", &boost_weak);
-+	device_property_read_u32(dev, "rumble-boost-strong", &boost_strong);
-+	joypad->boost_weak = boost_weak;
-+	joypad->boost_strong = boost_strong;
-+	dev_info(dev, "Boost = %d, %d",boost_weak, boost_strong);
-+	input_set_capability(input, EV_FF, FF_RUMBLE);
-+	error = input_ff_create_memless(input, joypad, rumble_play_effect);
-+	if (error) {
-+		dev_err(dev, "unable to register rumble, err=%d\n",
-+			error);
-+		return error;
-+	}
-+
 +
 +	/* GPIO key setup */
 +	__set_bit(EV_KEY, input->evbit);
@@ -1713,14 +1518,6 @@ index e69de29..e5ab241 100644
 +
 +	joypad->auto_repeat = device_property_present(dev, "autorepeat");
 +
-+	/* change the report reference point? (ADC MAX - read value) */
-+	joypad->invert_absx = device_property_present(dev, "invert-absx");
-+	joypad->invert_absy = device_property_present(dev, "invert-absy");
-+	joypad->invert_absrx = device_property_present(dev, "invert-absrx");
-+	joypad->invert_absry = device_property_present(dev, "invert-absry");
-+	dev_info(dev, "%s : invert-absx = %d, inveret-absy = %d, invert-absrx = %d, inveret-absry = %d\n",
-+		__func__, joypad->invert_absx, joypad->invert_absy, joypad->invert_absrx, joypad->invert_absry);
-+
 +	joypad->bt_gpio_count = device_get_child_node_count(dev);
 +
 +	if ((joypad->amux_count == 0) || (joypad->bt_gpio_count == 0)) {
@@ -1746,31 +1543,7 @@ index e69de29..e5ab241 100644
 +
 +	return error;
 +}
-+static int __maybe_unused joypad_suspend(struct device *dev)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
 +
-+	cancel_work_sync(&joypad->play_work);
-+	if (joypad->level)
-+		pwm_vibrator_stop(joypad);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused joypad_resume(struct device *dev)
-+{
-+	struct platform_device *pdev  = to_platform_device(dev);
-+	struct joypad *joypad = platform_get_drvdata(pdev);
-+
-+	if (joypad->level)
-+		pwm_vibrator_start(joypad);
-+
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(joypad_pm_ops,
-+			 joypad_suspend, joypad_resume);
 +/*----------------------------------------------------------------------------*/
 +static int joypad_probe(struct platform_device *pdev)
 +{
@@ -1807,14 +1580,6 @@ index e69de29..e5ab241 100644
 +		dev_err(dev, "input setup failed!(err = %d)\n", error);
 +		return error;
 +	}
-+
-+	/* rumble setup */
-+	error = joypad_rumble_setup(dev, joypad);
-+	if (error) {
-+		dev_err(dev, "rumble setup failed!(err = %d)\n", error);
-+		return error;
-+	}
-+
 +	dev_info(dev, "%s : probe success\n", __func__);
 +	return 0;
 +}
@@ -1832,7 +1597,6 @@ index e69de29..e5ab241 100644
 +	.probe = joypad_probe,
 +	.driver = {
 +		.name = DRV_NAME,
-+		.pm = &joypad_pm_ops,
 +		.of_match_table = of_match_ptr(joypad_of_match),
 +	},
 +};
@@ -1852,10 +1616,10 @@ index e69de29..e5ab241 100644
 +/*----------------------------------------------------------------------------*/
 +late_initcall(joypad_init);
 +module_exit(joypad_exit);
-\ No newline at end of file
 diff --git a/include/linux/input-polldev.h b/include/linux/input-polldev.h
-index e69de29..0687994 100644
---- a/include/linux/input-polldev.h
+new file mode 100644
+index 000000000..0687994b6
+--- /dev/null
 +++ b/include/linux/input-polldev.h
 @@ -0,0 +1,58 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
@@ -1917,3 +1681,6 @@ index e69de29..0687994 100644
 +
 +#endif
 \ No newline at end of file
+-- 
+2.34.1
+
