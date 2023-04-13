@@ -63,6 +63,7 @@
 - ppsspp to v1.14.4
 - libretro-ppsspp to v1.14.4
 - scummvm to v2.7.0
+- libretro-scummvm to Apr 12, 2023 build
 ### Dev
 - buildroot upgrade to 2023.02
 - mesa3d update to 23.0.2
