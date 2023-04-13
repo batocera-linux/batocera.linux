@@ -11,6 +11,9 @@ import os
 import shutil
 from collections import OrderedDict
 from operator import itemgetter
+import glob
+import json
+from os.path import basename
 
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
     class OrderedLoader(Loader):
@@ -30,7 +33,7 @@ class EsSystemConf:
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
-    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, esBlacklistedWordsFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
+    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, esKeysTranslationFile, esKeysParentFolder, esBlacklistedWordsFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
         rules = yaml.safe_load(open(rulesYaml, "r"))
         config = EsSystemConf.loadConfig(configFile)
         es_system = ""
@@ -82,6 +85,7 @@ class EsSystemConf:
         ###
 
         EsSystemConf.createEsTranslations(esTranslationFile, toTranslate)
+        EsSystemConf.createEsKeysTranslations(esKeysTranslationFile, esKeysParentFolder)
 
         print("removing the " + romsdirtarget + " folder...")
         if os.path.isdir(romsdirtarget):
@@ -250,6 +254,43 @@ class EsSystemConf:
         es_systems = open(esSystemFile, "w")
         es_systems.write(essystem)
         es_systems.close()
+
+    # generate the fake translations from *.keys files
+    @staticmethod
+    def createEsKeysTranslations(esKeysTranslationFile, esKeysParentFolder):
+        print("generating {}...".format(esKeysTranslationFile))
+        files = glob.glob(esKeysParentFolder+'/**/*.keys', recursive=True)
+        vals = {}
+        for file in files:
+            print("... {}".format(file))
+            content = json.load(open(file))
+            for device in content:
+                for action in content[device]:
+                    if "description" in action:
+                        if action["description"] not in vals:
+                            vals[action["description"]] = { basename(file): {} }
+                        else:
+                            vals[action["description"]][basename(file)] = {}
+        
+        fd = open(esKeysTranslationFile, 'w')
+        fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
+        n = 0
+        for tr in vals:
+            vcomment = ""
+            vn = 0
+            for v in vals[tr]:
+                if vn < 5:
+                    if vcomment != "":
+                        vcomment = vcomment + ", "
+                    vcomment = vcomment + v
+                else:
+                    if vn == 5:
+                        vcomment = vcomment + ", ..."
+                vn = vn+1
+            fd.write("/* TRANSLATION: " + vcomment + " */\n");
+            fd.write("#define fake_gettext_external_" + str(n) + " pgettext(\"keys_files\", \"" + tr.replace("\"", "\\\"") + "\")\n")
+            n = n+1
+        fd.close()
 
     # generate the fake translations from external options
     @staticmethod
@@ -655,6 +696,8 @@ if __name__ == "__main__":
     parser.add_argument("yml",           help="es_systems.yml definition file")
     parser.add_argument("features",      help="es_features.yml file")
     parser.add_argument("es_translations",  help="es_translations.h file")
+    parser.add_argument("es_keys_translations", help="es_keys_translations.h file")
+    parser.add_argument("es_keys_parent_folder", help="es_keys files parent folder (where to search for .keys files)")
     parser.add_argument("blacklisted_words",  help="blacklisted_words.txt file")
     parser.add_argument("config",        help=".config buildroot file")
     parser.add_argument("es_systems",    help="es_systems.cfg emulationstation file")
@@ -665,4 +708,4 @@ if __name__ == "__main__":
     parser.add_argument("romsdirtarget", help="emulationstation roms directory")
     parser.add_argument("arch", help="arch")
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.blacklisted_words, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
+    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.es_keys_translations, args.es_keys_parent_folder, args.blacklisted_words, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
