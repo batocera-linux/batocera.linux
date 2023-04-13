@@ -1,18 +1,27 @@
+From 92dc2d5be4a34b8cf96f54f67cac1b6f770e0be9 Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Wed, 12 Apr 2023 20:06:25 -0400
+Subject: [PATCH] rpi configure
+
+---
+ configure | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
 diff --git a/configure b/configure
-index d2dc502b84..ec6dc19e6d 100644
+index 00554044..8714ee74 100755
 --- a/configure
 +++ b/configure
-@@ -1491,9 +1491,6 @@ for ac_option in $@; do
+@@ -1583,9 +1583,6 @@ for ac_option in $@; do
  			engine_disable ${engine_name}
  		done
  		;;
 -	*)
 -		option_error
 -		;;
- 	esac;
- done;
- 
-@@ -3230,13 +3227,13 @@ if test -n "$_host"; then
+ 	esac
+ done
+
+@@ -3485,13 +3482,13 @@ if test -n "$_host"; then
  			# but Raspbian does.
  			# Be careful as it's the linker (LDFLAGS) which must know about sysroot.
  			# These are needed to build against Raspbian's libSDL.
@@ -23,13 +32,16 @@ index d2dc502b84..ec6dc19e6d 100644
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
 -			append_var CXXFLAGS "-isystem $RPI_ROOT/usr/include/arm-linux-gnueabihf"
 -			append_var CXXFLAGS "-I$RPI_ROOT/usr/include"
-+			#append_var LDFLAGS "--sysroot=$RPI_ROOT"
-+			#append_var LDFLAGS "-B$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pulseaudio"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
-+			#append_var CXXFLAGS "-isystem $RPI_ROOT/usr/include/arm-linux-gnueabihf"
-+			#append_var CXXFLAGS "-I$RPI_ROOT/usr/include"
++			# append_var LDFLAGS "--sysroot=$RPI_ROOT"
++			# append_var LDFLAGS "-B$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
++			# append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pulseaudio"
++			# append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
++			# append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
++			# append_var CXXFLAGS "-isystem $RPI_ROOT/usr/include/arm-linux-gnueabihf"
++			# append_var CXXFLAGS "-I$RPI_ROOT/usr/include"
  			# We prefer SDL2 on the Raspberry Pi: acceleration now depends on it
  			# since SDL2 manages dispmanx/GLES2 very well internally.
  			# SDL1 is bit-rotten on this platform.
+--
+2.40.0
+

@@ -3,8 +3,8 @@
 # libretro-scummvm
 #
 ################################################################################
-# Version: Commits on Jan 6, 2023
-LIBRETRO_SCUMMVM_VERSION = 5ce8142a0339ff7eda78f515b6d12d72a1732a31
+# Version: Commits on Apr 12, 2023
+LIBRETRO_SCUMMVM_VERSION = 059781c89c7a7485a705f62b91ccd17179c52551
 LIBRETRO_SCUMMVM_SITE = https://github.com/libretro/scummvm
 LIBRETRO_SCUMMVM_SITE_METHOD=git
 LIBRETRO_SCUMMVM_GIT_SUBMODULES=YES
@@ -33,11 +33,12 @@ LIBRETRO_SCUMMVM_MAKE_OPTS += TARGET_64BIT=1
 endif
 
 define LIBRETRO_SCUMMVM_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ platform="$(LIBRETRO_SCUMMVM_PLATFORM)" $(LIBRETRO_SCUMMVM_MAKE_OPTS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/backends/platform/libretro
+        platform="$(LIBRETRO_SCUMMVM_PLATFORM)" $(LIBRETRO_SCUMMVM_MAKE_OPTS)
 endef
 
 define LIBRETRO_SCUMMVM_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/scummvm_libretro.so \
+	$(INSTALL) -D $(@D)/backends/platform/libretro/scummvm_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/scummvm_libretro.so
 endef
 
