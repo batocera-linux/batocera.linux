@@ -2220,50 +2220,50 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
         if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
-            coreSettings.save('swanstation_GPU.Renderer', '"Software"')
+            coreSettings.save('swanstation_GPU_Renderer', '"Software"')
         else:
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
-                    coreSettings.save('swanstation_GPU.Renderer', '"Vulkan"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Vulkan"')
                 elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
-                    coreSettings.save('swanstation_GPU.Renderer', "OpenGL")
+                    coreSettings.save('swanstation_GPU_Renderer', "OpenGL")
                 else:
-                    coreSettings.save('swanstation_GPU.Renderer', '"Auto"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
             else:
-                coreSettings.save('swanstation_GPU.Renderer', '"Auto"')
+                coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
 
         # Show official Bootlogo
         if system.isOptSet('swanstation_PatchFastBoot'):
-            coreSettings.save('swanstation_BIOS.PatchFastBoot', '"' + system.config['swanstation_PatchFastBoot'] + '"')
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"' + system.config['swanstation_PatchFastBoot'] + '"')
         else:
-            coreSettings.save('swanstation_BIOS.PatchFastBoot', '"false"')
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"false"')
         # Video Resolution
         if system.isOptSet('swanstation_resolution_scale'):
-            coreSettings.save('swanstation_GPU.ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
         else:
-            coreSettings.save('swanstation_GPU.ResolutionScale', '"1"')
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"1"')
         # Anti-aliasing (MSAA/SSAA)
         if system.isOptSet('swanstation_antialiasing'):
-            coreSettings.save('swanstation_GPU.MSAA', '"' + system.config['swanstation_antialiasing'] + '"')
+            coreSettings.save('swanstation_GPU_MSAA', '"' + system.config['swanstation_antialiasing'] + '"')
         else:
-            coreSettings.save('swanstation_GPU.MSAA', '"1"')
+            coreSettings.save('swanstation_GPU_MSAA', '"1"')
         # Texture Filtering
         if system.isOptSet('swanstation_texture_filtering'):
-            coreSettings.save('swanstation_GPU.TextureFilter', '"' + system.config['swanstation_texture_filtering'] + '"')
+            coreSettings.save('swanstation_GPU_TextureFilter', '"' + system.config['swanstation_texture_filtering'] + '"')
         else:
-            coreSettings.save('swanstation_GPU.TextureFilter', '"Nearest"')
+            coreSettings.save('swanstation_GPU_TextureFilter', '"Nearest"')
         # Widescreen Hack
         if system.isOptSet('swanstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['swanstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
-            coreSettings.save('swanstation_GPU.WidescreenHack',  '"true"')
-            coreSettings.save('swanstation_Display.AspectRatio', '"16:9"')
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"true"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"16:9"')
         else:
-            coreSettings.save('swanstation_GPU.WidescreenHack',  '"false"')
-            coreSettings.save('swanstation_Display.AspectRatio', '"4:3"')
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"false"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"4:3"')
          # Crop Mode
         if system.isOptSet('swanstation_CropMode'):
-            coreSettings.save('swanstation_Display.CropMode', '"' + system.config['swanstation_CropMode'] + '"')
+            coreSettings.save('swanstation_Display_CropMode', '"' + system.config['swanstation_CropMode'] + '"')
         else:
-            coreSettings.save('swanstation_Display.CropMode', '"Overscan"')
+            coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options
