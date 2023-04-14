@@ -667,19 +667,22 @@ config BR2_PACKAGE_BATOCERA_SEGADC
     select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2836	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
     select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2836	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5 && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
 
     select BR2_PACKAGE_LIBRETRO_FLYCASTVL   if  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2837 || \
-                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
                                             # Redream not working with RPi4 & XWayland || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
