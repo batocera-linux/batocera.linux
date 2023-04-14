@@ -508,11 +508,9 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         mappings[controlDef] = controlDict['default'][controlDef]
 
     # Buttons that change based on game/setting
-    if altButtons not in controlDict:
-        altButtons = 'default'
-    for controlDef in controlDict[altButtons].keys():
-        mappings.update({controlDef: controlDict[altButtons][controlDef]})
-    
+    if altButtons in controlDict:
+        for controlDef in controlDict[altButtons].keys():
+            mappings.update({controlDef: controlDict[altButtons][controlDef]})
 
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)

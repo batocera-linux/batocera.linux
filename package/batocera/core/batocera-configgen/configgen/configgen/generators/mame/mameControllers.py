@@ -64,7 +64,7 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
             mousemappings[controlDef] = controlDict['mousebuttons'][controlDef]
 
     # Buttons that change based on game/setting
-    if altButtons != "":
+    if altButtons in controlDict:
         for controlDef in controlDict[altButtons].keys():
             mappings.update({controlDef: controlDict[altButtons][controlDef]})
 
