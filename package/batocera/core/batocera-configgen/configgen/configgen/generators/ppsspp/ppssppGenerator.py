@@ -4,15 +4,10 @@ import Command
 import batoceraFiles
 from generators.Generator import Generator
 import shutil
-import os.path
+import os
 import configparser
-# TODO: python3 - delete me!
-import codecs
+import controllersConfig
 from . import ppssppConfig
-from . import ppssppControllers
-
-ppssppControls = batoceraFiles.CONF + '/ppsspp/gamecontrollerdb.txt'
-
 
 class PPSSPPGenerator(Generator):
 
@@ -20,18 +15,11 @@ class PPSSPPGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         ppssppConfig.writePPSSPPConfig(system)
-        # For each pad detected
-        for index in playersControllers :
-            controller = playersControllers[index]
-            # We only care about player 1
-            if controller.player != "1":
-                continue
-            ppssppControllers.generateControllerConfig(controller)
-            # TODO: python 3 - workawround to encode files in utf-8
-            cfgFile = codecs.open(ppssppControls, "w", "utf-8")
-            cfgFile.write(controller.generateSDLGameDBLine())
-            cfgFile.close()
-            break
+
+        # Remove the old gamecontrollerdb.txt file
+        dbpath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt"
+        if os.path.exists(dbpath):
+            os.remove(dbpath)
 
         # The command to run
         commandArray = ['/usr/bin/PPSSPP']
@@ -49,7 +37,12 @@ class PPSSPPGenerator(Generator):
 
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_RUNTIME_DIR":batoceraFiles.HOME_INIT, "PPSSPP_GAME_CONTROLLER_DB_PATH": ppssppControls})
+        return Command.Command(
+            array=commandArray, 
+            env={"XDG_CONFIG_HOME":batoceraFiles.CONF, 
+            "XDG_RUNTIME_DIR":batoceraFiles.HOME_INIT,
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)}
+        )
 
     @staticmethod
     def isLowResolution(gameResolution):
