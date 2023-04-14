@@ -1,0 +1,42 @@
+From abb4028ca41f0cf9098e8983968a162ff94de138 Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Fri, 14 Apr 2023 14:16:56 -0400
+Subject: [PATCH] makefile
+
+---
+ Makefile | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index f2e4f8b..8855929 100644
+--- a/Makefile
++++ b/Makefile
+@@ -517,6 +517,25 @@ else ifneq (,$(findstring AMLG,$(platform)))
+   WITH_DYNAREC=arm
+   HAVE_GENERIC_JIT = 0
+ 
++# Rockchip RK3326 (64-bit)
++else ifneq (,$(findstring RK3326,$(platform)))
++  EXT ?= so
++  TARGET := $(TARGET_NAME)_libretro.$(EXT)
++  SHARED += -shared -Wl,--version-script=link.T
++  LDFLAGS +=  -Wl,--no-undefined
++  fpic = -fPIC
++  LIBS += -lrt
++  ARM_FLOAT_ABI_HARD = 0
++  FORCE_GLES = 1
++  SINGLE_PREC_FLAGS = 1
++  PLATFORM_EXT := unix
++  WITH_DYNAREC=arm64
++  HAVE_GENERIC_JIT = 0
++  HAVE_LTCG = 0
++  
++  CFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
++  CXXFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
++
+ # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
+   EXT ?= so
+-- 
+2.40.0
+
