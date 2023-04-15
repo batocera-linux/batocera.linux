@@ -1,12 +1,12 @@
-From 8cc1a94c9abb2f8b8c3cb23a5ea5df8d607e8ecf Mon Sep 17 00:00:00 2001
+From ddd1484cd681f0e4160d792a6396cc0963991e90 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Mon, 10 Apr 2023 09:05:58 -0400
+Date: Sat, 15 Apr 2023 18:06:49 -0400
 Subject: [PATCH] gameforce dts
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../dts/rockchip/rk3326-golden-gameforce.dts  | 737 ++++++++++++++++++
- 2 files changed, 738 insertions(+)
+ .../dts/rockchip/rk3326-golden-gameforce.dts  | 741 ++++++++++++++++++
+ 2 files changed, 742 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3326-golden-gameforce.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -23,10 +23,10 @@ index 0a76a2ebb..d191b5b78 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-odroid-go3.dtb
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-golden-gameforce.dts b/arch/arm64/boot/dts/rockchip/rk3326-golden-gameforce.dts
 new file mode 100644
-index 000000000..5bdb53ab3
+index 000000000..55d713028
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-golden-gameforce.dts
-@@ -0,0 +1,737 @@
+@@ -0,0 +1,741 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2020 Hardkernel Co., Ltd
@@ -233,30 +233,34 @@ index 000000000..5bdb53ab3
 +    };
 +
 +    rk817-sound {
-+        compatible = "simple-audio-card";
-+        simple-audio-card,name = "rk817_int";
-+        simple-audio-card,format = "i2s";
-+        simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
-+        simple-audio-card,mclk-fs = <256>;
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "rk817_int";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
++		simple-audio-card,mclk-fs = <256>;
 +
-+        simple-audio-card,widgets =
-+            "Microphone", "Mic Jack",
-+            "Headphone", "Headphones",
-+            "Speaker", "Speaker";
-+        simple-audio-card,routing =
-+            "MICL", "Mic Jack",
-+            "Headphones", "HPOL",
-+            "Headphones", "HPOR",
-+            "Speaker", "SPKO";
++		simple-audio-card,widgets =
++			"Microphone", "Mic Jack",
++			"Headphone", "Headphones",
++			"Speaker", "Speaker";
++		simple-audio-card,routing =
++			"MICL", "Mic Jack",
++			"Headphones", "HPOL",
++			"Headphones", "HPOR",
++			"Speaker", "SPKO";
 +
-+        simple-audio-card,codec {
-+            sound-dai = <&rk817>;
-+        };
++        pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++		simple-audio-card,codec-hp-det = <1>;
 +
-+        simple-audio-card,cpu {
-+            sound-dai = <&i2s1_2ch>;
-+        };
-+    };
++		simple-audio-card,codec {
++			sound-dai = <&rk817>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1_2ch>;
++		};
++	};
 +
 +    wifi_pwrseq: wifi-pwrseq {
 +		compatible = "mmc-pwrseq-simple";
@@ -723,7 +727,7 @@ index 000000000..5bdb53ab3
 +
 +    headphone {
 +        hp_det: hp-det {
-+            rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_down>;
++            rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 +        };
 +    };
 +
@@ -764,6 +768,6 @@ index 000000000..5bdb53ab3
 +		};
 +	};
 +};
---
+-- 
 2.40.0
 
