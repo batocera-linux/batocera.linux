@@ -1,0 +1,33 @@
+diff --git a/SDL/SDLJoystick.cpp b/SDL/SDLJoystick.cpp
+index 0a53ef80b..22f48f01e 100644
+--- a/SDL/SDLJoystick.cpp
++++ b/SDL/SDLJoystick.cpp
+@@ -50,7 +50,7 @@ void SDLJoystick::setUpControllers() {
+ 		setUpController(i);
+ 	}
+ 	if (controllers.size() > 0) {
+-		cout << "pad 1 has been assigned to control pad: " << SDL_GameControllerName(controllers.front()) << endl;
++		cout << "pad 1 has been assigned to control pad: " << SDL_JoystickNameForIndex(0) << endl;
+ 	}
+ }
+ 
+@@ -87,8 +87,8 @@ void SDLJoystick::setUpController(int deviceIndex) {
+ 		if (SDL_GameControllerGetAttached(controller)) {
+ 			controllers.push_back(controller);
+ 			controllerDeviceMap[SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))] = deviceIndex;
+-			cout << "found control pad: " << SDL_GameControllerName(controller) << ", loading mapping: ";
+-			KeyMap::NotifyPadConnected(deviceIndex, std::string(pszGUID) + ": " + SDL_GameControllerName(controller));
++			cout << "found control pad: " << SDL_JoystickNameForIndex(deviceIndex) << ", loading mapping: ";
++			KeyMap::NotifyPadConnected(deviceIndex, std::string(pszGUID) + ": " + SDL_JoystickNameForIndex(deviceIndex));
+ 			auto mapping = SDL_GameControllerMapping(controller);
+ 			if (mapping == NULL) {
+ 				//cout << "FAILED" << endl;
+@@ -205,7 +205,7 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
+ 		int prevNumControllers = controllers.size();
+ 		setUpController(event.cdevice.which);
+ 		if (prevNumControllers == 0 && controllers.size() > 0) {
+-			cout << "pad 1 has been assigned to control pad: " << SDL_GameControllerName(controllers.front()) << endl;
++                       cout << "pad 1 has been assigned to control pad: " << SDL_JoystickNameForIndex(0) << endl;
+ 		}
+ 		break;
+ 	}
