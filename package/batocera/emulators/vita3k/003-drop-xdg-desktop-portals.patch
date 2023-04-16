@@ -94,7 +94,7 @@ index ef7de553..811ee661 100644
 @@ -51,5 +51,5 @@ add_library(
  
  target_include_directories(gui PUBLIC include ${CMAKE_SOURCE_DIR}/vita3k)
- target_link_libraries(gui PUBLIC app config dialog emuenv ime imgui glutil lang np)
+ target_link_libraries(gui PUBLIC app compat config dialog emuenv https ime imgui glutil lang np)
 -target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil host::dialog)
 +target_link_libraries(gui PRIVATE audio ctrl kernel miniz nativefiledialog psvpfsparser pugixml::pugixml stb renderer packages sdl2 vkutil)
  target_link_libraries(gui PUBLIC tracy)
@@ -125,7 +125,7 @@ index 67832991..5d724637 100644
  static float global_progress = 0.f;
  static float archives_count = 0.f;
  
-@@ -103,19 +104,12 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -104,20 +104,12 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
              gui.file_menu.archive_install_dialog = false;
      } else {
          if (state.empty()) {
@@ -133,6 +133,7 @@ index 67832991..5d724637 100644
 -            if (type == "file") {
 -                // Set file filters for the file picking dialog
 -                std::vector<host::dialog::filesystem::FileFilter> file_filters = {
+-                    { "PlayStation Vita commercial software package (NoNpDrm/FAGDec) / PlayStation Vita homebrew software package", { "zip", "vpk" } },
 -                    { "PlayStation Vita commercial software package (NoNpDrm/FAGDec)", { "zip" } },
 -                    { "PlayStation Vita homebrew software package", { "vpk" } },
 -                };
@@ -195,20 +196,20 @@ index 1b7208e6..f29150f7 100644
  
  static void get_firmware_version(EmuEnvState &emuenv) {
      fs::ifstream versionFile(emuenv.pref_path + L"/PUP_DEC/PUP/version.txt");
-@@ -46,7 +47,7 @@ static void get_firmware_version(EmuEnvState &emuenv) {
+@@ -50,7 +50,7 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+     auto firmware_installation = lang["firmware_installation"].c_str();
+     auto common = emuenv.common_dialog.lang.common;
  
- void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-     auto lang = gui.lang.install_dialog;
 -    host::dialog::filesystem::Result result = host::dialog::filesystem::Result::CANCEL;
 +    nfdresult_t result = NFD_CANCEL;
  
      static std::mutex install_mutex;
      static bool draw_file_dialog = true;
-@@ -58,23 +59,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -62,23 +62,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
      std::lock_guard<std::mutex> lock(install_mutex);
  
      if (draw_file_dialog) {
--        result = host::dialog::filesystem::open_file(pup_path, { { "PlayStation Update Package", { "PUP" } } });
+-        result = host::dialog::filesystem::open_file(pup_path, { { "PlayStation Vita Firmware Package", { "PUP" } } });
 +        result = NFD_OpenDialog("PUP", nullptr, &pup_path);
          draw_file_dialog = false;
          finished_installing = false;
@@ -316,7 +317,7 @@ index beabedb8..7eb910a5 100644
                  state = "success";
              else
                  state = "fail";
-@@ -104,12 +105,12 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -106,12 +106,12 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
          ImGui::Spacing();
          ImGui::Separator();
          ImGui::Spacing();
@@ -324,7 +325,7 @@ index beabedb8..7eb910a5 100644
 +        if (work_path)
              ImGui::Checkbox(lang["delete_bin_rif"].c_str(), &delete_work_file);
          ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
-         if (ImGui::Button("OK", BUTTON_SIZE)) {
+         if (ImGui::Button(common["ok"].c_str(), BUTTON_SIZE)) {
              if (delete_work_file) {
 -                fs::remove(fs::path(work_path.wstring()));
 +                fs::remove(fs::path(string_utils::utf_to_wide(std::string(work_path))));
@@ -417,7 +418,7 @@ index 75c11214..46fcf6f8 100644
                  ImGui::Checkbox(lang["delete_work"].c_str(), &delete_work_file);
              ImGui::Spacing();
              ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
-             if (ImGui::Button("OK", BUTTON_SIZE)) {
+             if (ImGui::Button(common["ok"].c_str(), BUTTON_SIZE)) {
                  if (delete_pkg_file) {
 -                    fs::remove(fs::path(pkg_path.wstring()));
 +                    fs::remove(fs::path(string_utils::utf_to_wide(std::string(pkg_path))));
