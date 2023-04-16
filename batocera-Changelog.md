@@ -21,6 +21,7 @@
 - samco guns support (https://github.com/samuelballantyne/IR-Light-Gun)
 - fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
 - wiimote+nunchuk as a zapper gun support
+- added back Commander Genius at version 3.3.0
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
