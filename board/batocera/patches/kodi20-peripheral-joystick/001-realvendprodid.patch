@@ -20,10 +20,10 @@ index 3c0c611..2ef41a2 100644
 +  if(ioctl(m_fd, EVIOCGID, id) == 0) {
 +    sprintf(val, "%x", id[ID_VENDOR]);
 +    SetVendorID(strtol(val, NULL, 16));
-+    esyslog("joystick information vendorid=%s for %s", val, m_path.c_str());
++    //esyslog("joystick information vendorid=%s for %s", val, m_path.c_str());
 +    sprintf(val, "%x", id[ID_PRODUCT]);
 +    SetProductID(strtol(val, NULL, 16));
-+    esyslog("joystick information productid=%s for %s", val, m_path.c_str());
++    //esyslog("joystick information productid=%s for %s", val, m_path.c_str());
 +  }
  
    struct stat st;
