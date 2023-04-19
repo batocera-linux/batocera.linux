@@ -1,0 +1,15 @@
+diff --git a/gfx/video_crt_switch.c b/gfx/video_crt_switch.c
+index 4464823..2e87ae0 100644
+--- a/gfx/video_crt_switch.c
++++ b/gfx/video_crt_switch.c
+@@ -33,10 +33,8 @@
+ #include "../paths.h"
+ #include "gfx_display.h"
+ 
+-#if !defined(HAVE_VIDEOCORE)
+ #include "../deps/switchres/switchres_wrapper.h"
+ static sr_mode srm;
+-#endif
+ 
+ #ifdef HAVE_CONFIG_H
+ #include "../config.h"

@@ -39,6 +39,12 @@ else
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+    RETROARCH_CONF_OPTS += --enable-videocore
+else
+    RETROARCH_CONF_OPTS += --disable-videocore
+endif
+
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
     RETROARCH_CONF_OPTS += --enable-kms
 endif
