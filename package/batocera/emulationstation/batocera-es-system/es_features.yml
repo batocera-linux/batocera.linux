@@ -9856,13 +9856,12 @@ openmsx:
   features: [padtokeyboard]
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        openmsx_machine:
-            group: ADVANCED OPTIONS
-            prompt:      COLECOVISION MACHINE
-            description: Choose machine type only when playing ColecoVision roms.
+        openmsx_loading:
+            prompt: LOADING SPEED
+            description: This can be convenient if you're using laserdiscs.
             choices:
-                "ColecoVision":          "ColecoVision"
-                "ColecoVision with SGM": "ColecoVision_SGM"
+                "Realistic Loading":    "false"
+                "Full Speed (Default)": "true"
 
 demul:
   shared: [videomode]

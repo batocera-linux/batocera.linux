@@ -1403,13 +1403,13 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u]
+  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [ogv] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [ogv] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
@@ -1436,6 +1436,13 @@ msx1:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+    
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
+
   comment_fr: |
     ## BIOS ##
 
@@ -1485,6 +1492,12 @@ msx1:
     PAINTER.ROM
     RS232.ROM
 
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
+
 msx2:
   name:       MSX2
   manufacturer: Microsoft
@@ -1523,6 +1536,12 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_fr: |
     ## BIOS ##
 
@@ -1547,6 +1566,12 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_br: |
     ## BIOS ##
 
@@ -1610,6 +1635,12 @@ msx2+:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_fr: |
     ## BIOS ##
 
@@ -1634,6 +1665,12 @@ msx2+:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_br: |
     ## BIOS ##
 
