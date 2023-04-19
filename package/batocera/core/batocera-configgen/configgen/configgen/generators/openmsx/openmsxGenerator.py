@@ -7,6 +7,7 @@ from distutils.dir_util import copy_tree
 import xml.etree.ElementTree as ET
 import shutil
 import xml.dom.minidom as minidom
+import re
 
 openMSX_Homedir = '/userdata/system/configs/openmsx'
 openMSX_Config = '/usr/share/openmsx/'
@@ -74,9 +75,12 @@ class OpenmsxGenerator(Generator):
         with open(settings_tcl, "a") as file:
             file.write("filepool add -path /userdata/bios/Machines -types system_rom -position 1\n")
             file.write("filepool add -path /userdata/bios/openmsx -types system_rom -position 2\n")
-            # get the rom name for the savestate
+            # get the rom name (no extension) for the savestate name
             save_name = os.path.basename(rom)
             save_name = os.path.splitext(save_name)[0]
+            # simplify the rom name, remove content between brackets () & []
+            save_name = re.sub(r"\([^)]*\)", "", save_name)
+            save_name = re.sub(r"\[[^]]*\]", "", save_name)
             file.write("\n")
             file.write("# -= Save state =-\n")
             file.write('savestate "{}"\n'.format(save_name))
