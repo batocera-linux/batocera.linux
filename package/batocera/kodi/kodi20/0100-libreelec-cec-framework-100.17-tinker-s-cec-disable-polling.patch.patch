@@ -1,0 +1,13 @@
+--- a/xbmc/peripherals/bus/virtual/PeripheralBusCEC.cpp
++++ b/xbmc/peripherals/bus/virtual/PeripheralBusCEC.cpp
+@@ -45,6 +45,10 @@ bool CPeripheralBusCEC::PerformDeviceSca
+       case ADAPTERTYPE_P8_DAUGHTERBOARD:
+         result.m_mappedBusType = PERIPHERAL_BUS_USB;
+         break;
++      case ADAPTERTYPE_LINUX:
++        /** the Linux adapter cannot be removed, no need to rescan */
++        m_bNeedsPolling = false;
++        break;
+       default:
+         break;
+     }

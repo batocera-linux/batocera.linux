@@ -683,7 +683,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Audio Filter
         if system.isOptSet('o2em_low_pass_range') and system.config['o2em_low_pass_range'] != "0":
             coreSettings.save('o2em_low_pass_filter', '"enabled"')
-            coreSettings.save('o2em_low_pass_range',  system.config['o2em_low_pass_range'] + '"')
+            coreSettings.save('o2em_low_pass_range', '"' + system.config['o2em_low_pass_range'] + '"')
         else:
             coreSettings.save('o2em_low_pass_filter', '"disabled"')
             coreSettings.save('o2em_low_pass_range',  '"0"')
@@ -1526,12 +1526,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mesen_hdpacks', '"enabled"')
         # FDS Auto-insert side A
         if system.isOptSet('mesen_fdsautoinsertdisk'):
-            coreSettings.save('mesen_fdsautoinsertdisk', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsautoinsertdisk', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsautoinsertdisk', '"disabled"')
         # FDS Fast forward floppy disk loading
         if system.isOptSet('mesen_fdsfastforwardload'):
-            coreSettings.save('mesen_fdsfastforwardload', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsfastforwardload', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsfastforwardload', '"disabled"')
         # RAM init state (speedrunning)
@@ -2166,104 +2166,104 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Sony PSX
     if (system.config['core'] == 'mednafen_psx'):
         # CPU Frequency Scaling (Overclock)
-        if system.isOptSet('beetle_psx_cpu_freq_scale'):
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"' + system.config['beetle_psx_cpu_freq_scale'] + '"')
+        if system.isOptSet('beetle_psx_hw_cpu_freq_scale'):
+            coreSettings.save('beetle_psx_hw_cpu_freq_scale', '"' + system.config['beetle_psx_hw_cpu_freq_scale'] + '"')
         else:
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
+            coreSettings.save('beetle_psx_hw_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
         # Show official Bootlogo
-        if system.isOptSet('beetle_psx_skip_bios'):
-            coreSettings.save('beetle_psx_skip_bios', '"' + system.config['beetle_psx_skip_bios'] + '"')
+        if system.isOptSet('beetle_psx_hw_skip_bios'):
+            coreSettings.save('beetle_psx_hw_skip_bios', '"' + system.config['beetle_psx_hw_skip_bios'] + '"')
         else:
-            coreSettings.save('beetle_psx_skip_bios', '"disabled"')
+            coreSettings.save('beetle_psx_hw_skip_bios', '"disabled"')
         # Video Resolution
-        if system.isOptSet('beetle_psx_internal_resolution'):
-            coreSettings.save('beetle_psx_internal_resolution', '"' + system.config['beetle_psx_internal_resolution'] + '"')
+        if system.isOptSet('beetle_psx_hw_internal_resolution'):
+            coreSettings.save('beetle_psx_hw_internal_resolution', '"' + system.config['beetle_psx_hw_internal_resolution'] + '"')
         else:
-            coreSettings.save('beetle_psx_internal_resolution', '"1x(native)"')
+            coreSettings.save('beetle_psx_hw_internal_resolution', '"1x(native)"')
         # Widescreen Hack
-        if system.isOptSet('beetle_psx_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['beetle_psx_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
-            coreSettings.save('beetle_psx_widescreen_hack', '"enabled"')
+        if system.isOptSet('beetle_psx_hw_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['beetle_psx_hw_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('beetle_psx_hw_widescreen_hack', '"enabled"')
         else:
-            coreSettings.save('beetle_psx_widescreen_hack', '"disabled"')
+            coreSettings.save('beetle_psx_hw_widescreen_hack', '"disabled"')
         # Frame Duping (Speedup)
-        if system.isOptSet('beetle_psx_frame_duping'):
-            coreSettings.save('beetle_psx_frame_duping', '"' + system.config['beetle_psx_frame_duping'] + '"')
+        if system.isOptSet('beetle_psx_hw_frame_duping'):
+            coreSettings.save('beetle_psx_hw_frame_duping', '"' + system.config['beetle_psx_hw_frame_duping'] + '"')
         else:
-            coreSettings.save('beetle_psx_frame_duping', '"disabled"')
+            coreSettings.save('beetle_psx_hw_frame_duping', '"disabled"')
         # CPU Dynarec (Speedup)
-        if system.isOptSet('beetle_psx_cpu_dynarec'):
-            coreSettings.save('beetle_psx_cpu_dynarec', '"' + system.config['beetle_psx_cpu_dynarec'] + '"')
+        if system.isOptSet('beetle_psx_hw_cpu_dynarec'):
+            coreSettings.save('beetle_psx_hw_cpu_dynarec', '"' + system.config['beetle_psx_hw_cpu_dynarec'] + '"')
         else:
-            coreSettings.save('beetle_psx_cpu_dynarec', '"disabled"')
+            coreSettings.save('beetle_psx_hw_cpu_dynarec', '"disabled"')
         # Dynarec Code Invalidation
-        if system.isOptSet('beetle_psx_dynarec_invalidate'):
-            coreSettings.save('beetle_psx_dynarec_invalidate', '"' + system.config['beetle_psx_dynarec_invalidate'] + '"')
+        if system.isOptSet('beetle_psx_hw_dynarec_invalidate'):
+            coreSettings.save('beetle_psx_hw_dynarec_invalidate', '"' + system.config['beetle_psx_hw_dynarec_invalidate'] + '"')
         else:
-            coreSettings.save('beetle_psx_dynarec_invalidate', '"full"')
+            coreSettings.save('beetle_psx_hw_dynarec_invalidate', '"full"')
         # Analog Stick self calibration
-        coreSettings.save('beetle_psx_analog_calibration', '"enabled"')
+        coreSettings.save('beetle_psx_hw_analog_calibration', '"enabled"')
         # Multitap
         if system.isOptSet('multitap_mednafen') and system.config['multitap_mednafen'] != 'disabled':
             if system.config['multitap_mednafen'] == 'port1':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"enabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"disabled"')
             elif system.config['multitap_mednafen'] == 'port2':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"disabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"enabled"')
             elif system.config['multitap_mednafen'] == 'port12':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"enabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"enabled"')
         else:
-            coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
-            coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
+            coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"disabled"')
+            coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"disabled"')
 
     if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
         if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
-            coreSettings.save('duckstation_GPU.Renderer', '"Software"')
+            coreSettings.save('swanstation_GPU_Renderer', '"Software"')
         else:
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
-                    coreSettings.save('duckstation_GPU.Renderer', '"Vulkan"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Vulkan"')
                 elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
-                    coreSettings.save('duckstation_GPU.Renderer', "OpenGL")
+                    coreSettings.save('swanstation_GPU_Renderer', "OpenGL")
                 else:
-                    coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
             else:
-                coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
+                coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
 
         # Show official Bootlogo
-        if system.isOptSet('duckstation_PatchFastBoot'):
-            coreSettings.save('duckstation_BIOS.PatchFastBoot', '"' + system.config['duckstation_PatchFastBoot'] + '"')
+        if system.isOptSet('swanstation_PatchFastBoot'):
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"' + system.config['swanstation_PatchFastBoot'] + '"')
         else:
-            coreSettings.save('duckstation_BIOS.PatchFastBoot', '"false"')
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"false"')
         # Video Resolution
-        if system.isOptSet('duckstation_resolution_scale'):
-            coreSettings.save('duckstation_GPU.ResolutionScale', '"' + system.config['duckstation_resolution_scale'] + '"')
+        if system.isOptSet('swanstation_resolution_scale'):
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.ResolutionScale', '"1"')
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"1"')
         # Anti-aliasing (MSAA/SSAA)
-        if system.isOptSet('duckstation_antialiasing'):
-            coreSettings.save('duckstation_GPU.MSAA', '"' + system.config['duckstation_antialiasing'] + '"')
+        if system.isOptSet('swanstation_antialiasing'):
+            coreSettings.save('swanstation_GPU_MSAA', '"' + system.config['swanstation_antialiasing'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.MSAA', '"1"')
+            coreSettings.save('swanstation_GPU_MSAA', '"1"')
         # Texture Filtering
-        if system.isOptSet('duckstation_texture_filtering'):
-            coreSettings.save('duckstation_GPU.TextureFilter', '"' + system.config['duckstation_texture_filtering'] + '"')
+        if system.isOptSet('swanstation_texture_filtering'):
+            coreSettings.save('swanstation_GPU_TextureFilter', '"' + system.config['swanstation_texture_filtering'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.TextureFilter', '"Nearest"')
+            coreSettings.save('swanstation_GPU_TextureFilter', '"Nearest"')
         # Widescreen Hack
-        if system.isOptSet('duckstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['duckstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
-            coreSettings.save('duckstation_GPU.WidescreenHack',  '"true"')
-            coreSettings.save('duckstation_Display.AspectRatio', '"16:9"')
+        if system.isOptSet('swanstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['swanstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"true"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"16:9"')
         else:
-            coreSettings.save('duckstation_GPU.WidescreenHack',  '"false"')
-            coreSettings.save('duckstation_Display.AspectRatio', '"4:3"')
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"false"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"4:3"')
          # Crop Mode
-        if system.isOptSet('duckstation_CropMode'):
-            coreSettings.save('duckstation_Display.CropMode', '"' + system.config['duckstation_CropMode'] + '"')
+        if system.isOptSet('swanstation_CropMode'):
+            coreSettings.save('swanstation_Display_CropMode', '"' + system.config['swanstation_CropMode'] + '"')
         else:
-            coreSettings.save('duckstation_Display.CropMode', '"Overscan"')
+            coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options
@@ -2391,7 +2391,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
-            coreSettings.save(user_config[14:], '"' + system.config[user_config])
+            coreSettings.save(user_config[14:], '"' + system.config[user_config] + '"')
 
 def generateHatariConf(hatariConf):
     hatariConfig = configparser.ConfigParser(interpolation=None)

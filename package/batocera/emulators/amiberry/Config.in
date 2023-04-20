@@ -8,5 +8,6 @@ config BR2_PACKAGE_AMIBERRY
 	select BR2_PACKAGE_LIBMPEG2
 	select BR2_PACKAGE_FLAC
 	select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_LIBSERIALPORT
     help
     	An amiga emulator for arm

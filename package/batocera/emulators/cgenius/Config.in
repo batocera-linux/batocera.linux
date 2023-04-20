@@ -5,6 +5,8 @@ config BR2_PACKAGE_CGENIUS
 	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_SDL2_MIXER
 	select BR2_PACKAGE_BOOST
+	select BR2_PACKAGE_XXD
+	select BR2_PACKAGE_PYTHON3_CONFIGOBJ
 	help
 	  Commander Genius - Commander Keen Engine
 	  

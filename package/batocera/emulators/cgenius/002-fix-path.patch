@@ -1,0 +1,13 @@
+diff --git a/GsKit/base/interface/FindFile.cpp b/GsKit/base/interface/FindFile.cpp
+index 212d4152bf..42271841c0 100644
+--- a/GsKit/base/interface/FindFile.cpp
++++ b/GsKit/base/interface/FindFile.cpp
+@@ -505,7 +505,7 @@ void InitBaseSearchPaths()
+     AddToFileList(&basesearchpaths, SDL_AndroidGetInternalStoragePath());
+     AddToFileList(&basesearchpaths, "/storage/emulated/0/Android/data/net.sourceforge.clonekeenplus/files/SaveData");
+ #else
+-    AddToFileList(&basesearchpaths, "${HOME}/.CommanderGenius");
++    AddToFileList(&basesearchpaths, "${HOME}/configs/cgenius");
+ #endif
+     AddToFileList(&basesearchpaths, ".");
+     AddToFileList(&basesearchpaths, SYSTEM_DATA_DIR"/commandergenius"); // no use of ${SYSTEM_DATA}, because it is uncommon and could cause confusion to the user

@@ -1,0 +1,9 @@
+config BR2_PACKAGE_KODI20_IMAGEDECODER_HEIF
+	bool "kodi20-imagedecoder-heif"
+	select BR2_PACKAGE_LIBDE265
+	select BR2_PACKAGE_LIBHEIF
+	select BR2_PACKAGE_LIBXML2
+	help
+	  Kodi .heif imagedecoder
+
+	  https://github.com/xbmc/imagedecoder.heif

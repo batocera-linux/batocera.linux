@@ -13,7 +13,7 @@ moonlight_gamesnames="$moonlight_config_dir/gamelist.txt"
 SEPERATOR=";"
 
 listGames() {
-  batocera-moonlight list 2>/dev/null | grep '^[0-9][0-9.]' | cut -d '.' -f 2, | sed 's/^ \(.*\)$/\1/'
+  batocera-moonlight list 2>/dev/null | grep '^[0-9][0-9.]' | cut -d '.' -f 1- | sed 's/^[0-9]*\. //'
 }
 
 createRomLinks () {

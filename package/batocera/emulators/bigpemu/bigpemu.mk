@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BIGPEMU_VERSION = v1051
+BIGPEMU_VERSION = v1054
 BIGPEMU_SOURCE = BigPEmu_$(BIGPEMU_VERSION).zip
 BIGPEMU_SITE = https://www.richwhitehouse.com/jaguar/builds
 

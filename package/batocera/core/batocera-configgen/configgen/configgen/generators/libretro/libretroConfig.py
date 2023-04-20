@@ -37,7 +37,7 @@ systemToRetroachievements = {'amstradcpc', 'atari2600', 'arduboy', 'atari7800', 
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
-coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
+coreToRetroachievements = {'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'flycastvl', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'vb', 'vba-m', 'vecx', 'virtualjaguar'}
 
 # Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
@@ -256,15 +256,15 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
-        if system.isOptSet('beetle_psx_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
-            if system.config['beetle_psx_Controller1'] != '1':
+        if system.isOptSet('beetle_psx_hw_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_hw_Controller1']
+            if system.config['beetle_psx_hw_Controller1'] != '1':
                 retroarchConfig['input_player1_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        if system.isOptSet('beetle_psx_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
-            if system.config['beetle_psx_Controller2'] != '1':
+        if system.isOptSet('beetle_psx_hw_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_hw_Controller2']
+            if system.config['beetle_psx_hw_Controller2'] != '1':
                 retroarchConfig['input_player2_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '1'
@@ -382,25 +382,25 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     ## PS1 Swanstation and Duckstation
     if (system.config['core'] == 'swanstation'):               # Swanstation
         # Controller 1 Type
-        if system.isOptSet('duckstation_Controller1'):
-            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
+        if system.isOptSet('swanstation_Controller1'):
+            coreSettings.save('swanstation_Controller1.Type', system.config['swanstation_Controller1'])
         else:
-            coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
+            coreSettings.save('swanstation_Controller1.Type', '"DigitalController"')
         # Controller 2 Type
-        if system.isOptSet('duckstation_Controller2'):
-            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
+        if system.isOptSet('swanstation_Controller2'):
+            coreSettings.save('swanstation_Controller2.Type', system.config['swanstation_Controller2'])
         else:
-            coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
+            coreSettings.save('swanstation_Controller2.Type', '"DigitalController"')
     if (system.config['core'] == 'duckstation'):               # Duckstation
-        if system.isOptSet('duckstation_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
-            if system.config['duckstation_Controller1'] != '1':
+        if system.isOptSet('swanstation_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['swanstation_Controller1']
+            if system.config['swanstation_Controller1'] != '1':
                 retroarchConfig['input_player1_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-        if system.isOptSet('duckstation_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
-            if system.config['duckstation_Controller2'] != '1':
+        if system.isOptSet('swanstation_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['swanstation_Controller2']
+            if system.config['swanstation_Controller2'] != '1':
                 retroarchConfig['input_player2_analog_dpad_mode'] = '0'
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '3'
@@ -724,6 +724,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame0139"      : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "flycast"       : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
+        "flycastvl"     : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mednafen_psx"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "pcsx_rearmed"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "swanstation"   : { "default" : { "device": 260, "p1": 0, "p2": 1 } },

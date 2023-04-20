@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KODI20_SCREENSAVER_GREYNETIC
+	bool "kodi20-screensaver-greynetic"
+	select BR2_PACKAGE_GLM
+	help
+	  Greynetic screensaver for Kodi
+
+	  https://github.com/xbmc/screensaver.greynetic

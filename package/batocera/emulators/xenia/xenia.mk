@@ -5,7 +5,7 @@
 ################################################################################
 
 XENIA_SOURCE = xenia_master.zip
-XENIA_VERSION = v1.0.2786-master
+XENIA_VERSION = v1.0.2791-master
 XENIA_SITE = https://github.com/xenia-project/release-builds-windows/releases/download/$(XENIA_VERSION)
 XENIA_LICENSE = BSD
 XENIA_LICENSE_FILE = LICENSE
@@ -14,7 +14,9 @@ XENIA_DEPENDENCIES = python-toml
 
 # ugly hack becuase the is no version in the source file
 define XENIA_CLEAR_DL
-	rm $(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE)
+    if [ -f "$(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE)" ]; then \
+        rm $(DL_DIR)/$(XENIA_DL_SUBDIR)/$(XENIA_SOURCE); \
+    fi
 endef
 
 define XENIA_EXTRACT_CMDS

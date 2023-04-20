@@ -3,8 +3,8 @@
 # vita3k
 #
 ################################################################################
-# Version: Commits on Jan 12, 2023
-VITA3K_VERSION = eb9baefe462e8ecbc4b65ac596c574756d8d67c0
+# Version: Commits on Apr 14, 2023
+VITA3K_VERSION = 8623b51653f85f34766fe51499a9f622bc2cf26b
 VITA3K_SITE = https://github.com/vita3k/vita3k
 VITA3K_SITE_METHOD=git
 VITA3K_GIT_SUBMODULES=YES
@@ -13,8 +13,10 @@ VITA3K_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis python-ruam
 
 VITA3K_SUPPORTS_IN_SOURCE_BUILD = NO
 
-VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
-                   -DUSE_DISCORD_RICH_PRESENCE=OFF -DUSE_VITA3K_UPDATE=OFF
+VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
+                   -DBUILD_SHARED_LIBS=OFF \
+                   -DUSE_DISCORD_RICH_PRESENCE=OFF \
+                   -DUSE_VITA3K_UPDATE=OFF
 
 define VITA3K_GET_SUBMODULE
     mkdir -p $(@D)/external

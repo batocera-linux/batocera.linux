@@ -1,5 +1,7 @@
 #!/bin/sh
 
+log="/userdata/system/logs/nvidia.log"
+
 # hide mouse cursor
 unclutter --noevents -b
 
@@ -18,9 +20,16 @@ eval `dbus-launch --sh-syntax --exit-with-session`
 nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
 if test "${nvidia_prime}" = "true"
 then
-  export __NV_PRIME_RENDER_OFFLOAD=1
-  export __VK_LAYER_NV_optimus=NVIDIA_only
-  export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    # Check if there are two GPUs in the system
+    gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+    if [ $gpu_count -ne 2 ]
+    then
+        echo "There are not two GPUs in the system for Nvidia Prime." >> $log
+    else
+        export __NV_PRIME_RENDER_OFFLOAD=1
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    fi
 fi
 
 ### radeon ###

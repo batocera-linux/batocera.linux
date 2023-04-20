@@ -1,16 +1,18 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index d4e26fd..a297d57 100644
+index 10be6d8..bab0f99 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -22,6 +22,7 @@
+@@ -22,6 +22,9 @@
  #include "Common/StringUtil.h"
  #include "Common/Thread.h"
  #include "InputCommon/ControllerInterface/ControllerInterface.h"
 +#include "VideoCommon/RenderBase.h"
++#include "VideoCommon/Present.h"
++#include "VideoCommon/FramebufferManager.h"
  
  namespace ciface::evdev
  {
-@@ -52,15 +53,7 @@ protected:
+@@ -89,15 +92,7 @@ protected:
    {
      if (const char* code_name = libevdev_event_code_get_name(EV_KEY, m_code))
      {
@@ -27,7 +29,7 @@ index d4e26fd..a297d57 100644
      }
      else
      {
-@@ -111,9 +104,30 @@ public:
+@@ -148,9 +143,30 @@ public:
    ControlState GetState() const final override
    {
      int value = 0;
@@ -37,20 +39,20 @@ index d4e26fd..a297d57 100644
 -    return (value - m_base) / m_range;
 +    // margins
 +    if(g_renderer != NULL) {
-+      if( ((float) g_renderer->GetTargetWidth()) / ((float) g_renderer->GetTargetHeight()) > ((float) g_renderer->GetTargetRectangle().GetWidth()) / ((float) g_renderer->GetTargetRectangle().GetHeight())) {
++      if( ((float) g_framebuffer_manager->GetEFBWidth()) / ((float) g_framebuffer_manager->GetEFBHeight()) > ((float) g_presenter->GetTargetRectangle().GetWidth()) / ((float) g_presenter->GetTargetRectangle().GetHeight())) {
 +	if(m_code == ABS_Y) {
-+	  int sw = g_renderer->GetTargetRectangle().GetWidth();
-+	  int sh = g_renderer->GetTargetRectangle().GetHeight();
-+	  int tw = g_renderer->GetBackbufferWidth();
-+	  int th = g_renderer->GetBackbufferHeight();
++	  int sw = g_presenter->GetTargetRectangle().GetWidth();
++	  int sh = g_presenter->GetTargetRectangle().GetHeight();
++	  int tw = g_presenter->GetBackbufferWidth();
++	  int th = g_presenter->GetBackbufferHeight();
 +	  ratio = ((float)sw) / ((float)sh) / ((float)tw) * ((float)th);
 +	}
 +      } else {
 +	if(m_code == ABS_X) {
-+	  int sw = g_renderer->GetTargetRectangle().GetWidth();
-+	  int sh = g_renderer->GetTargetRectangle().GetHeight();
-+	  int tw = g_renderer->GetBackbufferWidth();
-+	  int th = g_renderer->GetBackbufferHeight();
++	  int sw = g_presenter->GetTargetRectangle().GetWidth();
++	  int sh = g_presenter->GetTargetRectangle().GetHeight();
++	  int tw = g_presenter->GetBackbufferWidth();
++	  int th = g_presenter->GetBackbufferHeight();
 +	  ratio = ((float)sh) / ((float)sw) / ((float)th) * ((float)tw);
 +	}
 +      }
@@ -59,7 +61,7 @@ index d4e26fd..a297d57 100644
    }
  
  protected:
-@@ -524,7 +538,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -552,7 +568,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
      m_name = potential_new_name;
  
    const bool is_motion_device = libevdev_has_property(dev, INPUT_PROP_ACCELEROMETER);
@@ -67,7 +69,7 @@ index d4e26fd..a297d57 100644
  
    // If a device has BTN_JOYSTICK it probably uses event codes counting up from 0x120
    // which have very useless and wrong names.
-@@ -537,21 +550,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -565,21 +580,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
    {
      if (libevdev_has_event_code(dev, EV_KEY, key))
      {
@@ -90,7 +92,7 @@ index d4e26fd..a297d57 100644
        ++num_buttons;
      }
    }
-@@ -587,24 +586,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -615,24 +616,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
      return true;
    }
  

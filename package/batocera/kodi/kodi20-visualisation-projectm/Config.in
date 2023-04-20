@@ -1,0 +1,8 @@
+config BR2_PACKAGE_KODI20_VISUALISATION_PROJECTM
+	bool "kodi20-visualisation-projectm"
+	select BR2_PACKAGE_GLM
+	select BR2_PACKAGE_PROJECTM
+	help
+	  ProjectM visualization addon for Kodi
+
+	  https://github.com/xbmc/visualization.projectm

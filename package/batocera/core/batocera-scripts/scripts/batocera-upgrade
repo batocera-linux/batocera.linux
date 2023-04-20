@@ -81,7 +81,7 @@ url="${DWD_HTTP_DIR}/boot.tar.xz"
 echo "url: ${url}"
 headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
 test $? -eq 0 || exit 1
-size=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
+size=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
 size=$((size / 1024 / 1024))
 test $? -eq 0 || exit 1
 echo "need to download ${size}mb"

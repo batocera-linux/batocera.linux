@@ -695,7 +695,7 @@ function piboy_config()
 #https://au.element14.com/element14/pi-desktop/element-14-pi-desktop-hatencl/dp/2687142?ICID=I-HP-STM7REC-RP-1
 function element14_start()
 {
-    /usr/bin/element14/restart.py &
+    python /usr/bin/element14/restart.py &
 }
 
 function element14_stop()

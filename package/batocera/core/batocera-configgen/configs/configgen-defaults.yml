@@ -306,6 +306,9 @@ model3:
 moonlight:
   emulator: moonlight
   core:     moonlight
+  options:
+    bezel: none
+    hud_support: false
 mrboom:
   emulator: libretro
   core:     mrboom
@@ -400,7 +403,7 @@ pet:
   core:     xpet
 pico8:
   emulator: libretro
-  core:     retro8
+  core:     fake08
 plugnplay:
   emulator: libretro
   core:     mame

@@ -1,0 +1,55 @@
+diff -uri xapp_xrandr-lbrpdx/xrandr.c xapp_xrandr-1.5.2/xrandr.c
+--- xapp_xrandr-lbrpdx/xrandr.c	2023-04-05 01:18:46.799357807 -0700
++++ xapp_xrandr-1.5.2/xrandr.c	2023-04-07 14:00:27.541594124 -0700
+@@ -2619,6 +2619,7 @@
+     Bool	query_1 = False;
+     Bool	listModes = False;
+     Bool	currentResolution = False;
++    Bool	currentRotation = False;
+     Bool        listConnectedOutputs = False;
+     Bool	list_providers = False;
+     Bool        provsetoutsource = False;
+@@ -3099,6 +3100,11 @@
+ 	    currentResolution = True;
+ 	    continue;
+ 	}
++	if (!strcmp ("--currentRotation", argv[i]))
++	{
++	    currentRotation = True;
++	    continue;
++	}
+ 	if (!strcmp ("--newmode", argv[i]))
+ 	{
+ 	    umode_t  *m = calloc (1, sizeof (umode_t));
+@@ -3730,6 +3736,31 @@
+ 	}
+       exit (0);
+     }
++    if (currentRotation)
++    {
++	output_t    *output;
++	get_screen (current);
++	get_crtcs ();
++	get_outputs ();
++
++	for (output = all_outputs; output; output = output->next)
++	{
++		XRROutputInfo   *output_info = output->output_info;
++		int out = 0;
++		if(strcmp(connection[output_info->connection], "connected") == 0) {
++			if ((output->rotation & 0xf) == 0)
++				out = 0;
++			// Respond with Batocera rotation values
++			for (int i = 0; i < 4; i++)
++				if (output->rotation & (1 << i))
++					out = i;
++			if (out & 1)
++				out = (out+2)%4;
++			printf ("%i", out);
++		}
++	}
++	exit (0);
++    }
+ 
+     if (query_1_2 || (query && has_1_2 && !query_1))
+     {

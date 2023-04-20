@@ -1021,7 +1021,7 @@ libretro:
       features: [cheevos]
       shared: [autosave, use_guns]
       cfeatures:
-            duckstation_PatchFastBoot:
+            swanstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
@@ -1033,7 +1033,7 @@ libretro:
                 choices:
                     "Off":        "false"
                     "On":         "true"
-            duckstation_resolution_scale:
+            swanstation_resolution_scale:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
@@ -1046,7 +1046,7 @@ libretro:
                     "7x (2240x1680)": 7
                     "8x (2560x1920)": 8
                     "9x (2880x2160)": 9
-            duckstation_antialiasing:
+            swanstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
                 description: Enhancement. Smooth out jagged edges on 3D object polygons.
@@ -1062,7 +1062,7 @@ libretro:
                     "8x SSAA":    8-ssaa
                     "16x SSAA":   16-ssaa
                     "32x SSAA":   32-ssaa
-            duckstation_texture_filtering:
+            swanstation_texture_filtering:
                 prompt:      TEXTURE FILTERING
                 description: Enhancement. Smooth/upscale textures.
                 choices:
@@ -1070,13 +1070,13 @@ libretro:
                     "Bilinear":   Bilinear
                     "JINC2":      JINC2
                     "xBR":        xBR
-            duckstation_widescreen_hack:
+            swanstation_widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        "false"
                     "On":         "true"
-            duckstation_CropMode:
+            swanstation_CropMode:
                 group: ADVANCED OPTIONS
                 prompt:      CROP OVERSCAN
                 description: Zooms in to hide black borders. Borders are different per game.
@@ -1084,7 +1084,7 @@ libretro:
                     "Off":                "None"
                     "Only Overscan Area": "Overscan"
                     "All Borders":        "Borders"
-            duckstation_Controller1:
+            swanstation_Controller1:
                 prompt:      CONTROLLER 1 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -1094,7 +1094,7 @@ libretro:
                     "Namco GunCon":                  NamcoGunCon
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
-            duckstation_Controller2:
+            swanstation_Controller2:
                 prompt:      CONTROLLER 2 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -1108,7 +1108,7 @@ libretro:
       features: [cheevos]
       shared: [autosave]
       cfeatures:
-            duckstation_PatchFastBoot:
+            swanstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
@@ -1120,7 +1120,7 @@ libretro:
                 choices:
                     "Off":        "false"
                     "On":         "true"
-            duckstation_resolution_scale:
+            swanstation_resolution_scale:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
@@ -1133,7 +1133,7 @@ libretro:
                     "7x (2240x1680)": 7
                     "8x (2560x1920)": 8
                     "9x (2880x2160)": 9
-            duckstation_antialiasing:
+            swanstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
                 description: Enhancement. Smooth out jagged edges on 3D object polygons.
@@ -1149,7 +1149,7 @@ libretro:
                     "8x SSAA":    8-ssaa
                     "16x SSAA":   16-ssaa
                     "32x SSAA":   32-ssaa
-            duckstation_texture_filtering:
+            swanstation_texture_filtering:
                 prompt:      TEXTURE FILTERING
                 description: Enhancement. Smooth/upscale textures.
                 choices:
@@ -1157,13 +1157,13 @@ libretro:
                     "Bilinear":   Bilinear
                     "JINC2":      JINC2
                     "xBR":        xBR
-            duckstation_widescreen_hack:
+            swanstation_widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        "false"
                     "On":         "true"
-            duckstation_CropMode:
+            swanstation_CropMode:
                 group: ADVANCED OPTIONS
                 prompt:      CROP OVERSCAN
                 description: Zooms in to hide black borders. Borders are different per game.
@@ -1171,7 +1171,7 @@ libretro:
                     "Off":                "None"
                     "Only Overscan Area": "Overscan"
                     "All Borders":        "Borders"
-            duckstation_Controller1:
+            swanstation_Controller1:
                 prompt:      CONTROLLER 1 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -1182,7 +1182,7 @@ libretro:
                     "Namco GunCon":                  260
                     "PlayStation Mouse":             258
                     "NeGcon":                        773
-            duckstation_Controller2:
+            swanstation_Controller2:
                 prompt:      CONTROLLER 2 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -3195,13 +3195,13 @@ libretro:
       features: [cheevos]
       shared: [autosave, use_guns]
       cfeatures:
-            beetle_psx_skip_bios:
+            beetle_psx_hw_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
                 description: Enhancement. Skipping it can break some games.
                 choices:
                     "Show":         disabled
                     "Skip":         enabled
-            beetle_psx_cpu_freq_scale:
+            beetle_psx_hw_cpu_freq_scale:
                 group: ADVANCED OPTIONS
                 prompt:      OVERCLOCK (UNSTABLE)
                 description: Enhancement. Reduces system slowdown. Causes issues in some games.
@@ -3233,7 +3233,7 @@ libretro:
                     "650%":         650%
                     "700%":         700%
                     "750%":         750%
-            beetle_psx_internal_resolution:
+            beetle_psx_hw_internal_resolution:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
@@ -3242,20 +3242,20 @@ libretro:
                     "4x (1280x960)":   4x
                     "8x (2560x1920)":  8x
                     "16x (5120x3840)": 16x
-            beetle_psx_widescreen_hack:
+            beetle_psx_hw_widescreen_hack:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off":        disabled
                     "On":         enabled
-            beetle_psx_frame_duping:
+            beetle_psx_hw_frame_duping:
                 group: ADVANCED OPTIONS
                 prompt:      FRAME DUPING (SPEED UP)
                 description: Small performance increase (may drop frames).
                 choices:
                     "Off":        disabled
                     "On":         enabled
-            beetle_psx_cpu_dynarec:
+            beetle_psx_hw_cpu_dynarec:
                 group: ADVANCED OPTIONS
                 prompt:      CPU DYNAREC (SPEED UP)
                 description: Much faster than interpreter (but may have issues).
@@ -3264,7 +3264,7 @@ libretro:
                     "Max Performance":               execute
                     "Cycle Timing Check":            execute_once
                     "Lightrec Interpreter":          run_interpreter
-            beetle_psx_dynarec_invalidate:
+            beetle_psx_hw_dynarec_invalidate:
                 group: ADVANCED OPTIONS
                 prompt:      DYNAREC CODE INVALIDATION
                 choices:
@@ -3278,7 +3278,7 @@ libretro:
                     "Port 1":           port1
                     "Port 2":           port2
                     "Port 1+2":         port12
-            beetle_psx_Controller1:
+            beetle_psx_hw_Controller1:
                 prompt:      CONTROLLER 1 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -3291,7 +3291,7 @@ libretro:
                     "NeGcon":                        1029
                     #"Justifier":                     516
                     "PlayStation Mouse":             258
-            beetle_psx_Controller2:
+            beetle_psx_hw_Controller2:
                 prompt:      CONTROLLER 2 TYPE
                 description: DualShock has rumble support. Not all games support DualShock.
                 choices:
@@ -7074,21 +7074,29 @@ melonds:
                 "DSi (experiemental)": 1
 
 moonlight:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, ratio]
   cfeatures:
         moonlight_codec:
             group: ADVANCED OPTIONS
             prompt:      VIDEO STREAM CODEC
             description: h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth efficient.
             choices:
-                "h264 (less latency)":                                 0
-                "h265 (HEVC) (higher quality at lower bitrates)":      1
+                "h264 (less latency)":                            "h264"
+                "h265 (HEVC) (higher quality at lower bitrates)": "h265"
         moonlight_resolution:
             prompt:      VIDEO STREAM RESOLUTION
             choices:
                 "720p (1280x720)":       0
                 "1080p (1920x1080)":     1
                 "4K (3840x2160)":        2
+        moonlight_rotate:
+            prompt:      ROTATE
+            description: Output rotation independent of xrandr or framebuffer settings.
+            choices:
+                "0 degrees":   "0"
+                "90 degrees":  "90"
+                "180 degrees": "180"
+                "270 degrees": "270"
         moonlight_framerate:
             prompt:      VIDEO STREAM FRAME RATE
             choices:
@@ -7096,7 +7104,6 @@ moonlight:
                 "60FPS":                    1
                 "120FPS":                   2
         moonlight_bitrate:
-            group: ADVANCED OPTIONS
             prompt:      VIDEO STREAM BITRATE
             description: Higher number for higher picture quality, but requires more bandwidth.
             choices:
@@ -7105,25 +7112,35 @@ moonlight:
                 "20Mbps (not supported by some routers)": 2
                 "50Mbps (highest quality available)":     3
         moonlight_sops:
-            group: ADVANCED OPTIONS
             prompt:      DYNAMICALLY CALCULATE OPTIMAL SETTINGS
             description: Streaming Optimal Playable Settings, overrides other settings if enabled.
             choices:
-                "on":                    0
-                "off":                   1
+                "Off": False
+                "On":  True
         moonlight_quitapp:
             prompt:      QUIT ON HOST
             description: Close app on the remote host when quitting Moonlight.
             choices:
-                "on":                    0
-                "off":                   1
-        moonlight_avdecoder:
-            group: ADVANCED OPTIONS
-            prompt:      PREFERRED AV DECODER
-            description: If screen is rotated by 90 degrees, select SDL.
+                "Off": False
+                "On":  True
+        moonlight_viewonly:
+            prompt:      VIEW ONLY
+            description: Disable all input processing (view-only mode).
             choices:
-                "None":                  "none"
-                "SDL":                   "sdl"
+                "Off": False
+                "On":  True
+        moonlight_remote:
+            prompt:      LAN / WAN STREAMING
+            description: Enable QOS settings to optimize for internet or local network.
+            choices:
+                "WAN":           "yes"
+                "LAN (Default)": "no"
+        moonlight_surround:
+            prompt:      SURROUND SOUND
+            description: Enables surround sound if your audio card supports it (Consumes more bandwidth).
+            choices:
+                "5.1": "5.1"
+                "7.1": "7.1"       
 
 mupen64plus:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -7823,7 +7840,47 @@ supermodel:
                 "150":          150
 
 cgenius:
+  features: [padtokeyboard]
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        cgenius_aspect:
+            prompt: ASPECT RATIO
+            description: Choose your preferred aspect ratio..
+            choices:
+                "4x3 (Default)": "4:3"
+                "5x4":           "5:4"
+                "16x9":          "16:9"
+                "16x10":         "16:10"
+                "disabled":      "0:0"
+        cgenius_filter:
+            prompt: VIDEO FILTER
+            description: Choose your preferred video filter.
+            choices:
+                "None (Default)": 1
+                "Scale2x":        2
+                "Scale3x":        3
+                "Scale4x":        4
+        cgenius_quality:
+            prompt: VIDEO QUALITY
+            description: Choose your preferred video quality.
+            choices:
+                "nearest": "nearest"
+                "linear":  "linear"
+                "best":    "best"
+        cgenius_render:
+            prompt: RENDER RESOLUTION
+            description: Choose your preferred render resolution.
+            choices:
+                "320x200": "200"
+                "320x240": "240"
+                "640x360": "360"
+                "640x480": "480"
+        cgenius_cursor:
+            prompt: CURSOR
+            description: Enabled or disbale the mouse cursor. Useful for CG's menus.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
 
 vice:
   features: [padtokeyboard]
@@ -9829,6 +9886,13 @@ cdogs:
 openmsx:
   features: [padtokeyboard]
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+        openmsx_loading:
+            prompt: LOADING SPEED
+            description: This can be convenient if you're using laserdiscs.
+            choices:
+                "Realistic Loading":    "false"
+                "Full Speed (Default)": "true"
 
 demul:
   shared: [videomode]
@@ -9862,6 +9926,12 @@ xenia:
                 "No licenses enabled":                     0
                 "XBLA license enabled (Default)":          1
                 "All possible licenses (Not recommended)": -1
+        xeniaHeadless:
+            prompt: UI PROMPTS
+            description: Choose to display UI prompts or accept defaults.
+            choices:
+                "Enabled UI prompts (Default)": 0
+                "Disable UI prompts":           1
         xeniaLanguage:
             prompt: LANGUAGE
             description: Change the game's language.
@@ -9913,6 +9983,12 @@ xenia-canary:
                 "1680x1050":          14
                 "1920x540":           15
                 "1920x1080":          16
+        xeniaHeadless:
+            prompt: UI PROMPTS
+            description: Choose to display UI prompts or accept defaults.
+            choices:
+                "Enabled UI prompts (Default)": 0
+                "Disable UI prompts":           1
         xeniaLanguage:
             prompt: LANGUAGE
             description: Change the game's language.
@@ -10026,3 +10102,7 @@ vita3k:
 bigpemu:
   features: [padtokeyboard]
   shared: [videomode]
+
+pyxel:
+  features: [padtokeyboard]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

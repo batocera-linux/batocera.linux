@@ -1,0 +1,38 @@
+From 0d4343988194a8336f2df8d2df766074a733b2c8 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Thu, 1 Dec 2022 14:36:52 -0600
+Subject: arm64: dts: rockchip: Change audio card name for Odroid Go
+
+Change the audio card name for the Odroid Go Advance series to
+rk817_int. This matches the audio card name of the Anbernic RG353V.
+This is done to provide a consistent card name so that a single ALSA
+UCM file can be used for all (identical) implementations of this codec
+and configuration combo. The rk817_int configuration is for when the
+internal speaker amplifier of the rk817 is used. The other Anbernic
+devices have the name as rk817_ext for when an external speaker
+amplifier is used.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Link: https://lore.kernel.org/r/20221201203655.1245-2-macroalpha82@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+(limited to 'arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi')
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+index fbc6bfbaa5c15..60063f4bb3667 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+@@ -127,7 +127,7 @@
+
+ 	rk817-sound {
+ 		compatible = "simple-audio-card";
+-		simple-audio-card,name = "Analog";
++		simple-audio-card,name = "rk817_int";
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+ 		simple-audio-card,mclk-fs = <256>;
+--
+cgit

@@ -3,8 +3,8 @@
 # mame (Groovy Mame)
 #
 ################################################################################
-# Version: GroovyMAME 0.251 - Switchres 2.002o
-MAME_VERSION = gm0251sr002o
+# Version: GroovyMAME 0.253 - Switchres 2.002r
+MAME_VERSION = gm0253sr002r
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -173,6 +173,10 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy data plugin information
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/dats			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/history			$(TARGET_DIR)/usr/bin/mame/
+
+	# gameStop script when exiting a rotated screen
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
 endef
 
 define MAME_EVMAPY

@@ -3,13 +3,13 @@
 # flycast
 #
 ################################################################################
-
-FLYCAST_VERSION = V2.1
+# Version: Commits on Apr 4, 2023
+FLYCAST_VERSION = 187674ddac84038922bb29a0f89e99ecf3135e52
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
-FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc
+FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc elfutils
 
 FLYCAST_SUPPORTS_IN_SOURCE_BUILD = NO
 

@@ -1,0 +1,44 @@
+diff --git a/Makefile b/Makefile
+index 93ef345..57f9e63 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,11 +23,7 @@ export SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
+ 
+ CPPFLAGS = -MD -MT $@ -MF $(@:%.o=%.d) $(SDL_CFLAGS) -Iexternal/libguisan/include -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers -Isrc/floppybridge -DAMIBERRY -D_FILE_OFFSET_BITS=64
+ CFLAGS=-pipe -Wno-shift-overflow -Wno-narrowing
+-USE_LD ?= gold
+ LDFLAGS = $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lserialport -lguisan -Lexternal/libguisan/lib
+-ifneq ($(strip $(USE_LD)),)
+-	LDFLAGS += -fuse-ld=$(USE_LD)
+-endif
+ LDFLAGS += -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -lpthread -lz -lpng -lrt -lFLAC -lmpg123 -ldl -lmpeg2convert -lmpeg2 -lstdc++fs
+ 
+ ifdef USE_OPENGL
+@@ -193,12 +189,14 @@ else ifeq ($(PLATFORM),vero4k)
+ 	LDFLAGS += -L/opt/vero3/lib
+ 	HAVE_NEON = 1
+ 
++# AYN Odin target (SDL2, 64-bit)
++else ifeq ($(PLATFORM),odin)
++	CPUFLAGS ?= -mcpu=cortex-a75
++	CPPFLAGS += $(CPPFLAGS64)
++	AARCH64 = 1
++
+ # Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
+ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+-	CPUFLAGS = -mfloat-abi=hard -mfpu=neon-fp-armv8
+-	CPPFLAGS += $(CPPFLAGS32) $(NEON_FLAGS)
+-	HAVE_NEON = 1
+-
+ 	ifneq (,$(findstring AMLG12,$(PLATFORM)))
+ 	  ifneq (,$(findstring AMLG12B,$(PLATFORM)))
+ 		CPUFLAGS = -mcpu=cortex-a73
+@@ -209,6 +207,8 @@ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+ 	  CPUFLAGS = -mcpu=cortex-a53
+ 	  CPPFLAGS += -DUSE_RENDER_THREAD
+ 	endif
++	CPPFLAGS += $(CPPFLAGS64)
++	AARCH64 = 1
+ 
+ # Amlogic S905D3/S905X3/S905Y3 (AMLSM1) e.g. HardKernel ODroid C4 & Khadas VIM3L (SDL2 64-bit)
+ else ifneq (,$(findstring AMLSM1,$(PLATFORM)))

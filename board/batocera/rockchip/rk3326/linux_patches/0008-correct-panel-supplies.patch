@@ -1,0 +1,88 @@
+From 32d17ac227c2678160bb32a665c560fbc37c6050 Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Sun, 9 Apr 2023 09:23:45 -0400
+Subject: [PATCH] correct panel supplies
+
+---
+ arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts | 2 ++
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi      | 4 +---
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts  | 2 ++
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts      | 2 ++
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts      | 5 ++++-
+ 5 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts
+index 61b31688b..ce318e05f 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts
+@@ -24,6 +24,8 @@ vibrator {
+ 
+ &internal_display {
+ 	compatible = "elida,kd35t133";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
+ };
+ 
+ &pwm0 {
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+index fbc6bfbaa..c07c1a736 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
+@@ -222,11 +222,9 @@ mipi_out_panel: endpoint {
+ 	internal_display: panel@0 {
+ 		reg = <0>;
+ 		backlight = <&backlight>;
+-		iovcc-supply = <&vcc_lcd>;
+ 		reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
+ 		rotation = <270>;
+-		vdd-supply = <&vcc_lcd>;
+-
++		
+ 		port {
+ 			mipi_in_panel: endpoint {
+ 				remote-endpoint = <&mipi_out_panel>;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
+index 843b115de..216f95516 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
+@@ -162,6 +162,8 @@ wifi_pwrseq: wifi-pwrseq {
+ 
+ &internal_display {
+ 	compatible = "elida,kd35t133";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
+ };
+ 
+ &rk817 {
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
+index 84000e491..404a93a16 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
+@@ -143,6 +143,8 @@ battery: battery {
+ 
+ &internal_display {
+ 	compatible = "elida,kd35t133";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
+ };
+ 
+ &rk817_charger {
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+index 45fbcd071..827da301a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+@@ -184,7 +184,10 @@ battery: battery {
+ /delete-node/ &builtin_gamepad;
+ 
+ &internal_display {
+-	status = "disabled";
++	compatible = "elida,kd50t048a", "sitronix,st7701";
++	reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
++	IOVCC-supply = <&vcc_lcd>;
++	VCC-supply = <&vcc_lcd>;
+ };
+ 
+ &rk817_charger {
+-- 
+2.40.0
+

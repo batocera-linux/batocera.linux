@@ -1,0 +1,6 @@
+config BR2_PACKAGE_FUSION_LIGHTGUNS
+	bool "fusion-lightguns"
+	select BR2_PACKAGE_EVSIEVE
+
+	help
+	  fusion lightguns support

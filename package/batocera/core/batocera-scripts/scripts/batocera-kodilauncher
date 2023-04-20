@@ -39,8 +39,11 @@ then
     exit 1 # code for error
 fi
 
+# Kodi complains about these directories not existing in the logs
+mkdir -p /userdata/system/.kodi/userdata/addon_data/pvr.{iptvsimple,nextpvr,vbox,vuplus}
+
 (
-    LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs -l /var/run/lirc/lircd 
+    LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs
     echo "Kodi process ended." >&2
     echo "EXIT" >> /var/run/kodi.msg # in case of normal, but mainly anormal end of kodi, send a message to signal the end
 )&

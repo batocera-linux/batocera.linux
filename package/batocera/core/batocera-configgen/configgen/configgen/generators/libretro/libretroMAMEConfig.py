@@ -508,7 +508,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         mappings[controlDef] = controlDict['default'][controlDef]
 
     # Buttons that change based on game/setting
-    if altButtons != "":
+    if altButtons in controlDict:
         for controlDef in controlDict[altButtons].keys():
             mappings.update({controlDef: controlDict[altButtons][controlDef]})
 

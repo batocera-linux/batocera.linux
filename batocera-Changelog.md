@@ -9,6 +9,7 @@
 - Added SAM Coupe for ARM-based SBC
 - Added Abuse port for ARM-based SBC (game files available through content downloader)
 - Added Pyxel fantasy console (x86_64)
+- Added Fake-08 (more accurate libretro-based Pico-8 emulator)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
 - Re-added GameCube-GBA link capability including eReader
@@ -20,6 +21,10 @@
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
 - supermodel now supports multi guns.
 - supermodel now supports start and coin buttons on the gun
+- samco guns support (https://github.com/samuelballantyne/IR-Light-Gun)
+- fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
+- wiimote+nunchuk as a zapper gun support
+- added back Commander Genius at version 3.3.0
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -38,15 +43,18 @@
 - Flatpak emulators can now use a Switch Pro Controller
 - move from busybox linux commands to more standard linux commands
 - supermodel nvram files & ini file based on Warped Polygon's work
+- ScummVM now will use extra files here - /userdata/bios/scummvm/extra (consistent with LR-ScummVM)
+- Pico-8: libretro-retro8 is deprecated in favor of libretro-fake08
 ### Updated
 - xenia to 1.0.2786
 - xenia canary to 8678bec (Commits on Mar 13, 2023)
-- cemu to 2.0-29
+- cemu to 2.0-32
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
 - simcoupe to 1.2.12
 - ikemen-go to 0.99rc1
-- flycast emulators to 2.1
+- flycast emulators to Apr 4, 2023 build
+- libretro-flycast emulators to Apr 4, 2023 build
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
@@ -54,11 +62,19 @@
 - supermodel to Mar 19, 2023 build
 - Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 - Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
+- dosbox to v2023.03.31
+- citra to nightly-1877
+- amiberry to v5.6.0
+- ppsspp to v1.14.4
+- libretro-ppsspp to v1.14.4
+- scummvm to Apr 19, 2023 build
+- libretro-scummvm to Apr 19, 2023 build
 ### Dev
 - buildroot upgrade to 2023.02
+- mesa3d update to 23.0.2
 - dxvk to 2.1
 - linux firmware to 20230310
-- linux kernel for x86_64 to 6.2.8
+- linux kernel for x86_64 to 6.2.10
 - nvidia production driver to 530.41.03
 - llvm to 15.0.7
 

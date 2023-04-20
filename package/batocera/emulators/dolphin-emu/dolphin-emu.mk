@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version: 5.0-17995 - Commits on Dec 4, 2022
-DOLPHIN_EMU_VERSION = 8bad821019721b9b72701b495da95656ace5fea5
+# Version: 5.0-19230 - Commits on Apr 16, 2023
+DOLPHIN_EMU_VERSION = 1a2dcc53f2d7a85b0d49e9d2b12d819a2f57b835
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+

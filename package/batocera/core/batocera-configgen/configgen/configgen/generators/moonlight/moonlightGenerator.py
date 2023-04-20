@@ -7,7 +7,6 @@ from generators.Generator import Generator
 import shutil
 import os.path
 
-
 class MoonlightGenerator(Generator):
 
     def getResolutionMode(self, config):
@@ -17,13 +16,19 @@ class MoonlightGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         moonlightConfig.generateMoonlightConfig(system)
-        outputFile = batoceraFiles.moonlightCustom + '/gamecontrollerdb.txt'
-        configFile = controllersConfig.writeSDLGameDBAllControllers(playersControllers, outputFile)
         gameName,confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 'stream','-config',  confFile]
         commandArray.append('-app')
         commandArray.append(gameName)
-        return Command.Command(array=commandArray, env={"XDG_DATA_DIRS": batoceraFiles.CONF})
+        commandArray.append('-debug')
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_DATA_DIRS": batoceraFiles.CONF,
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+                }
+        )
 
     def getRealGameNameAndConfigFile(self, rom):
         # Rom's basename without extension
