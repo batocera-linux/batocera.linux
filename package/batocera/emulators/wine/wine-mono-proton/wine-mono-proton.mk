@@ -5,7 +5,7 @@
 ################################################################################
 
 # Wine Mono addon (required)
-WINE_MONO_PROTON_VERSION = 7.4.0
+WINE_MONO_PROTON_VERSION = 7.4.1
 WINE_MONO_PROTON_SOURCE = wine-mono-$(WINE_MONO_PROTON_VERSION)-x86.tar.xz
 WINE_MONO_PROTON_SITE = https://github.com/madewokherd/wine-mono/releases/download/wine-mono-$(WINE_MONO_PROTON_VERSION)
 
