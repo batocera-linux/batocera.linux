@@ -67,7 +67,7 @@
 - libretro-scummvm to Apr 19, 2023 build
 ### Dev
 - buildroot upgrade to 2023.02
-- mesa3d update to 23.0.2
+- mesa3d update to 23.0.3
 - dxvk to 2.1
 - linux firmware to 20230310
 - linux kernel for x86_64 to 6.2.10
