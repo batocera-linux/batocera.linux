@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-16 12:57+0100\n"
-"PO-Revision-Date: 2023-01-29 20:25+0100\n"
+"PO-Revision-Date: 2023-04-20 22:08+0200\n"
 "Last-Translator: pajarorrojo\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -3470,7 +3470,7 @@ msgstr "MODELO DE ELECTRON"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "Electron w/64k Master RAM Board (default)"
-msgstr "Electron w/64k Master RAM Board (defecto)"
+msgstr "Electron w/64k Master RAM Board (predeterminado)"
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -3525,7 +3525,7 @@ msgstr "FM Towns II UX"
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
 msgid "How much RAM the emulated FM Towns will have installed"
-msgstr ""
+msgstr "Cuanta RAM tendrá instalada el emulador de FM Towns"
 
 #. TRANSLATION: libretro/mame, libretro/mame, mame/uzem, mame/uzem
 msgctxt "game_options"
@@ -3726,6 +3726,8 @@ msgid ""
 "Install the image reader card to read disk image files (Mac IIx only). "
 "Minimum 4MB ram size recommended."
 msgstr ""
+"Instale la tarjeta de lector de imágenes para leer archivos de imagen de "
+"disco (solo para Mac IIx). Se recomienda un mínimo de de 4 MB de ram."
 
 #. TRANSLATION: libretro/mame, mame/uzem
 msgctxt "game_options"
@@ -7199,7 +7201,7 @@ msgstr "MODO ANTI-ALIASING"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "MSAA (default)"
-msgstr "MSAA (defecto)"
+msgstr "MSAA (predeterminado)"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7624,12 +7626,12 @@ msgstr "Gira la pantalla con el emulador."
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per pixel is the most accurate, but also the most demanding."
-msgstr ""
+msgstr "El modo “per pixel” es el más preciso, pero también el más exigente."
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "ALPHA SORTING"
-msgstr ""
+msgstr "ORDEN ALFABÉTICO"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -7649,12 +7651,12 @@ msgstr "Por Pixel"
 #. TRANSLATION: fpinball
 msgctxt "game_options"
 msgid "Allow mapping Future Pinabll with Pad to Keyboard."
-msgstr ""
+msgstr "Permite asignar el mapeado de Future Pinball con un Pad a teclado."
 
 #. TRANSLATION: fpinball
 msgctxt "game_options"
 msgid "CONTROLLER CONFIGURATION"
-msgstr ""
+msgstr "CONFIGURACIÓN DEL MANDO"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7954,11 +7956,13 @@ msgstr "4K (3840x2160)"
 msgctxt "game_options"
 msgid "Output rotation independent of xrandr or framebuffer settings."
 msgstr ""
+"Rotación de la salida independiente de la configuración de xrandr o "
+"framebuffer."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "ROTATE"
-msgstr ""
+msgstr "GIRAR"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8038,31 +8042,33 @@ msgstr "SALIR DEL HOST"
 msgctxt "game_options"
 msgid "Disable all input processing (view-only mode)."
 msgstr ""
+"Deshabilita todo el procesamiento de entrada (modo solo visualización)."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIEW ONLY"
-msgstr ""
+msgstr "SOLO VISUALIZACIÓN"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Enable QOS settings to optimize for internet or local network."
 msgstr ""
+"Habilitar las opciones de QoS para optimizar para internet o red local."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "LAN / WAN STREAMING"
-msgstr ""
+msgstr "TRANSMISIÓN LAN/WAN"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "WAN"
-msgstr ""
+msgstr "WAN"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "LAN (Default)"
-msgstr ""
+msgstr "LAN (Predeterminado)"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8070,11 +8076,13 @@ msgid ""
 "Enables surround sound if your audio card supports it (Consumes more "
 "bandwidth)."
 msgstr ""
+"Activa el sonido envolvente si su tarjeta de sonido lo admite (consume más "
+"ancho de banda)."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "SURROUND SOUND"
-msgstr ""
+msgstr "SONIDO ENVOLVENTE"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -8470,7 +8478,7 @@ msgstr "HACKS DE HARDWARE DE GRÁFICOS AUTOMÁTICOS"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "On (default)"
-msgstr "On (defecto)"
+msgstr "On (predeterminado)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8608,7 +8616,7 @@ msgstr "MODO DE TV"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "16:9 (default)"
-msgstr "16:9 (defecto)"
+msgstr "16:9 (predeterminado)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9142,67 +9150,68 @@ msgstr "50 (Defecto)"
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred aspect ratio.."
-msgstr ""
+msgstr "Elige tu relación de aspecto preferida."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "4x3 (Default)"
-msgstr ""
+msgstr "4:3 (predeterminado)"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred video filter."
-msgstr ""
+msgstr "Elige tu filtro de video preferido."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale2x"
-msgstr ""
+msgstr "Scale2x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale3x"
-msgstr ""
+msgstr "Scale3x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale4x"
-msgstr ""
+msgstr "Scale4x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred video quality."
-msgstr ""
+msgstr "Elige tu calidad de video preferida."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "VIDEO QUALITY"
-msgstr ""
+msgstr "CALIDAD DE VIDEO"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "linear"
-msgstr ""
+msgstr "lineal"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "best"
-msgstr ""
+msgstr "Mejor"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred render resolution."
-msgstr ""
+msgstr "Elige tu resolución de renderizado preferida."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Enabled or disbale the mouse cursor. Useful for CG's menus."
 msgstr ""
+"Habilita o deshabilita el cursor del mouse. Útil para los menús de los CG."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "CURSOR"
-msgstr ""
+msgstr "CURSOR"
 
 #. TRANSLATION: vice, tsugaru
 msgctxt "game_options"
@@ -10433,22 +10442,22 @@ msgstr "UTC+12"
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "This can be convenient if you're using laserdiscs."
-msgstr ""
+msgstr "Puede ser conveniente si estás usando discos láser."
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "LOADING SPEED"
-msgstr ""
+msgstr "VELOCIDAD DE CARGA"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Realistic Loading"
-msgstr ""
+msgstr "Carga realista"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Full Speed (Default)"
-msgstr ""
+msgstr "A toda velocidad (predeterminado)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -10456,61 +10465,65 @@ msgid ""
 "This option enables the ability to play Xbox Live Arcacde games. May cause "
 "compatibility issues with non-XBLA games."
 msgstr ""
+"Esta opción habilita la capacidad de jugar a juegos de Xbox Live Arcade. "
+"Puede causar problemas de compatibilidad con juegos que no sean de XBLA."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
-msgstr ""
+msgstr "XBOX LIVE ARCADE"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "No licenses enabled"
-msgstr ""
+msgstr "No hay licencias habilitadas"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "XBLA license enabled (Default)"
-msgstr ""
+msgstr "Licencia de XBLA habilitada (predeterminado)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "All possible licenses (Not recommended)"
-msgstr ""
+msgstr "Todas las licencias posibles (no recomendado)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Choose to display UI prompts or accept defaults."
 msgstr ""
+"Elige para mostrar las indicaciones de la interfaz de usuario o aceptar las "
+"opciones predeterminadas."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "UI PROMPTS"
-msgstr ""
+msgstr "INDICACIONES DE LA INTERFAZ DE USUARIO"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Enabled UI prompts (Default)"
-msgstr ""
+msgstr "Indicaciones de la interfaz de usuario habilitadas (predeterminado)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Disable UI prompts"
-msgstr ""
+msgstr "Desactivar las indicaciones de la interfaz de usuario"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Polish"
-msgstr ""
+msgstr "Polaco"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Swedish"
-msgstr ""
+msgstr "Sueco"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Norwegian"
-msgstr ""
+msgstr "Noruego"
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
@@ -10518,21 +10531,23 @@ msgid ""
 "Allow game that support different resolutions to be rendered in specific "
 "resolution."
 msgstr ""
+"Permite que los juegos que admiten diferentes resoluciones renderizen en una "
+"resolución específica."
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
 msgid "INTERNAL DISPLAY RESOLUTION"
-msgstr ""
+msgstr "RESOLUCIÓN DE PANTALLA INTERNA"
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
 msgid "1280x720 (Default)"
-msgstr ""
+msgstr "1280x720 (predeterminado)"
 
 #. TRANSLATION: gzdoom
 msgctxt "game_options"
 msgid "Configuring controllers in GZDoom can cause problems."
-msgstr "Configurando controles en GZDoom puede causar problemas"
+msgstr "Configurar los mandos en GZDoom puede causar problemas."
 
 #. TRANSLATION: gzdoom
 msgctxt "game_options"
@@ -10559,57 +10574,57 @@ msgstr ""
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
-msgstr ""
+msgstr "Guardar estado rápido"
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quickload"
-msgstr ""
+msgstr "Cargar estado rápido"
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "screenshot"
-msgstr ""
+msgstr "Captura de pantalla"
 
 #. TRANSLATION: switch.ryujinx.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, ...
 msgctxt "keys_files"
 msgid "Exit the emulator"
-msgstr ""
+msgstr "Salir del emulador"
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
 msgid "Exit emulator using SDL"
-msgstr ""
+msgstr "Salir del emulador usando SDL"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Exit Duckstation"
-msgstr ""
+msgstr "Salir de Duckstation"
 
 #. TRANSLATION: psx.duckstation.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Load State"
-msgstr ""
+msgstr "Cargar estado"
 
 #. TRANSLATION: psx.duckstation.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Save State"
-msgstr ""
+msgstr "Guardar estado"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Open DuckStation Quick Menu"
-msgstr ""
+msgstr "Abrir el menú rápido de DuckStation"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Restart Game"
-msgstr ""
+msgstr "Reiniciar juego"
 
 #. TRANSLATION: psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Screenshot"
-msgstr ""
+msgstr "Captura de pantalla"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
@@ -10624,17 +10639,17 @@ msgstr ""
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Rewind"
-msgstr ""
+msgstr "Rebobinar"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Next Disc (m3u)"
-msgstr ""
+msgstr "Siguiente disco (m3u)"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Fast Forward"
-msgstr ""
+msgstr "Avance Rápido"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
@@ -10674,7 +10689,7 @@ msgstr ""
 #. TRANSLATION: xbox360.xenia.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, atomiswave.flycast.keys, ...
 msgctxt "keys_files"
 msgid "Exit emulator"
-msgstr ""
+msgstr "Salir del emulador"
 
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
@@ -10694,17 +10709,17 @@ msgstr ""
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
 msgid "Set to full screen"
-msgstr ""
+msgstr "Ajustar a pantalla completa"
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
 msgctxt "keys_files"
 msgid "Start"
-msgstr ""
+msgstr "Iniciar"
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
 msgctxt "keys_files"
 msgid "Coin"
-msgstr ""
+msgstr "Moneda"
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
 msgctxt "keys_files"
@@ -10809,7 +10824,7 @@ msgstr ""
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
@@ -10819,7 +10834,7 @@ msgstr ""
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
-msgstr ""
+msgstr "Filtros gráficos on/off"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
@@ -10834,12 +10849,12 @@ msgstr ""
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Restart Emulation"
-msgstr ""
+msgstr "Reiniciar Emulación"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Continue/Pause emulation"
-msgstr ""
+msgstr "Continuar/Pausar emulación"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
@@ -10859,12 +10874,12 @@ msgstr ""
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Mouse Click"
-msgstr ""
+msgstr "Click de ratón"
 
 #. TRANSLATION: atomiswave.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, dreamcast.flycast.keys, dreamcast.redream.keys
 msgctxt "keys_files"
 msgid "Hide the bezel"
-msgstr ""
+msgstr "Ocultar el bisel"
 
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
@@ -10874,7 +10889,7 @@ msgstr ""
 #. TRANSLATION: wii.dolphin.keys, gamecube.dolphin.keys
 msgctxt "keys_files"
 msgid "Alternative exit the emulator for guns"
-msgstr ""
+msgstr "Salida alternativa de los emuladores para pistolas lightgun"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
@@ -10919,42 +10934,42 @@ msgstr ""
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button A"
-msgstr ""
+msgstr "Botón A"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button B"
-msgstr ""
+msgstr "Botón B"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button X"
-msgstr ""
+msgstr "Botón X"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button Y"
-msgstr ""
+msgstr "Botón Y"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button Start"
-msgstr ""
+msgstr "Botón Start"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button Select"
-msgstr ""
+msgstr "Botón Select"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button L"
-msgstr ""
+msgstr "Botón L"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Button R"
-msgstr ""
+msgstr "Botón R"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
@@ -10969,12 +10984,12 @@ msgstr ""
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "Microphone"
-msgstr ""
+msgstr "Micrófono"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "TouchScreen"
-msgstr ""
+msgstr "Pantalla táctil"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
@@ -10989,12 +11004,12 @@ msgstr ""
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "QuickMenu"
-msgstr ""
+msgstr "Menú Rápido"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
 msgid "FastForward"
-msgstr ""
+msgstr "Avance Rápido"
 
 #~ msgctxt "game_options"
 #~ msgid "PREFERRED AV DECODER"
