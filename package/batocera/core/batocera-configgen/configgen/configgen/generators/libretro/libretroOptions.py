@@ -1195,6 +1195,21 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('desmume_screens_layout', '"top/bottom"')
 
     if (system.config['core'] == 'melonds'):
+        # Console Mode
+        if system.isOptSet('melonds_console_mode'):
+            coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
+        else:
+            coreSettings.save('melonds_console_mode', '"DS"')
+        # Language
+        if system.isOptSet('melonds_language'):
+            coreSettings.save('melonds_language', '"' + system.config['melonds_language'] + '"')
+        else:
+            coreSettings.save('melonds_language', '"English"')
+        # External Firmware
+        if system.isOptSet('melonds_use_fw_settings'):
+            coreSettings.save('melonds_use_fw_settings', '"' + system.config['melonds_use_fw_settings'] + '"')
+        else:
+            coreSettings.save('melonds_use_fw_settings', '"disable"')
         # Enable threaded rendering
         coreSettings.save('melonds_threaded_renderer', '"enabled"')
         # Emulate Stylus on Right Stick
@@ -1224,7 +1239,6 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('melonds_screen_layout', '"' + system.config['melonds_screen_layout'] + '"')
         else:
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
-
 
     # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen)
     if (system.config['core'] == 'tgbdual'):
