@@ -9884,6 +9884,12 @@ openmsx:
             choices:
                 "Realistic Loading":    "false"
                 "Full Speed (Default)": "true"
+        openmsx_disk:
+            prompt: DISK TYPE
+            description: Choose the appropriate media for disk image.
+            choices:
+                "Floppy Disk Image": "disk"
+                "Hard Disk Image":   "hda"
 
 demul:
   shared: [videomode]

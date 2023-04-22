@@ -1403,15 +1403,15 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv]
+  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv, openmsx]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [ogv] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [ogv] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [ogv, openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [ogv, openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1503,15 +1503,15 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1602,15 +1602,15 @@ msx2+:
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1701,12 +1701,12 @@ msxturbor:
   manufacturer: Microsoft
   release: 1990
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z, openmsx]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
