@@ -22,6 +22,9 @@
 - fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
 - wiimote+nunchuk as a zapper gun support
 - added back Commander Genius at version 3.3.0
+- intel video media decoding acceleration for Gen 9+ GPUs
+- openmsx laserdisc support
+- element 14 case support
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -30,6 +33,14 @@
 - Battery levels for various controller are now displayed correctly
 - Second partition resizing with ext4 should now consume the rest of the disk
 - glibc library issue causing problems with Nvidia & Wine
+- retroarch gamemode error
+- mame controller exception
+- swanstation options
+- moonlight crashing with ogg
+- lr-mGBA no audio
+- mame exit causing settings not to save
+- mednafen_psx settings
+- a bunch of libretro emulator settings not applying
 ### Changed
 - Samba now allows wide symbolic links
 - Unicode support for x86 files systems
@@ -42,9 +53,10 @@
 - supermodel nvram files & ini file based on Warped Polygon's work
 - ScummVM now will use extra files here - /userdata/bios/scummvm/extra (consistent with LR-ScummVM)
 - Pico-8: libretro-retro8 is deprecated in favor of libretro-fake08
+- ppsspp now fully uses SDL2 controller config
 ### Updated
-- xenia to 1.0.2786
-- xenia canary to 8678bec (Commits on Mar 13, 2023)
+- xenia to v1.0.2791
+- xenia canary to 5e0c674 (Commits on Apr 10, 2023)
 - cemu to 2.0-32
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
@@ -65,11 +77,21 @@
 - libretro-ppsspp to v1.14.4
 - scummvm to Apr 19, 2023 build
 - libretro-scummvm to Apr 19, 2023 build
+- wine proton to 8.0-1c
+- openmsx configuration improvements
+- dolphin-emu to 5.0-19230
+- vita3k to April 14 build
+- bigpemu to v1054
+- xpadneo to 15th April
+- moonlight options
+- lr-mGBA to April 7th build
+- vice to v3.7.1
+- rpcs3 to v0.0.27
 ### Dev
 - buildroot upgrade to 2023.02
 - mesa3d update to 23.0.3
 - dxvk to 2.1
-- linux firmware to 20230310
+- linux firmware to 20230404
 - linux kernel for x86_64 to 6.2.10
 - nvidia production driver to 530.41.03
 - llvm to 15.0.7
