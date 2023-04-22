@@ -25,6 +25,7 @@
 - intel video media decoding acceleration for Gen 9+ GPUs
 - openmsx laserdisc support
 - element 14 case support
+- more lr-melonds configuration options
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
