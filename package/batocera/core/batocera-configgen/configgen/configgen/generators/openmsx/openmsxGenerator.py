@@ -8,6 +8,10 @@ import xml.etree.ElementTree as ET
 import shutil
 import xml.dom.minidom as minidom
 import re
+import zipfile
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 openMSX_Homedir = '/userdata/system/configs/openmsx'
 openMSX_Config = '/usr/share/openmsx/'
@@ -121,13 +125,7 @@ class OpenmsxGenerator(Generator):
 
         # set the best machine based on the system
         if system.name == "msx1":
-            if file_extension == ".ogv":
-                commandArray[1:1] = ["-machine", "Pioneer_PX-7"]
-                for i in range(len(commandArray)):
-                    if commandArray[i] == "-cart":
-                        commandArray[i] = "-laserdisc"
-            else:
-                commandArray[1:1] = ["-machine", "Boosted_MSX2_EN"]
+            commandArray[1:1] = ["-machine", "Boosted_MSX2_EN"]
         
         if system.name == "msx2":
             commandArray[1:1] = ["-machine", "Boosted_MSX2_EN"]
@@ -143,6 +141,36 @@ class OpenmsxGenerator(Generator):
 
         if system.isOptSet("hud") and system.config["hud"] != "":
             commandArray.insert(0, "mangohud")
+        
+        # setup the media types
+        if file_extension == ".zip":
+            with zipfile.ZipFile(rom, "r") as zip_file:
+                for zip_info in zip_file.infolist():
+                    file_extension = os.path.splitext(zip_info.filename)[1]
+                    # usually zip files only contain 1 file however break loop if file extension found
+                    if file_extension in [".cas", ".dsk", ".ogv"]:
+                        eslog.debug(f"Zip file contains: {file_extension}")
+                        break
+        
+        if file_extension == ".ogv":
+            eslog.debug("File is a laserdisc")
+            for i in range(len(commandArray)):
+                if commandArray[i] == "-machine":
+                    commandArray[i+1] = "Pioneer_PX-7"
+                elif commandArray[i] == "-cart":
+                    commandArray[i] = "-laserdisc"
+        
+        if file_extension == ".cas":
+            eslog.debug("File is a cassette")
+            for i in range(len(commandArray)):
+                if commandArray[i] == "-cart":
+                    commandArray[i] = "-cassetteplayer"
+        
+        if file_extension == ".dsk":
+            eslog.debug("File is a disk")
+            for i in range(len(commandArray)):
+                if commandArray[i] == "-cart":
+                    commandArray[i] = "-diska"
 
         return Command.Command(
             array=commandArray,
