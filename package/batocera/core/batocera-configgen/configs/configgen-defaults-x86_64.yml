@@ -82,8 +82,10 @@ adam:
   emulator: mame
   core:     mame
 arcadia:
-  emulator: mame
+  emulator: libretro
   core:     mame
+  options:
+    sharemameart: 0
 gmaster:
   emulator: mame
   core:     mame
@@ -145,5 +147,10 @@ hikaru:
   options:
     videomode: max-640x480
 psvita:
+  options:
+    hud_support: false
+jaguar:
+  emulator: bigpemu
+  core:    bigpemu
   options:
     hud_support: false
