@@ -537,6 +537,7 @@ mastersystem:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
       smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 gamegear:
   name:       Game Gear
@@ -549,6 +550,7 @@ gamegear:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
       smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 sg1000:
   name:       SG-1000
@@ -561,6 +563,18 @@ sg1000:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
+
+multivision:
+  name:       Othello Multivision
+  manufacturer: Tsukuda Original
+  release: 1983
+  hardware: console
+  extensions: [bin, sg, zip, 7z]
+  theme:      multivision
+  emulators:
+    libretro:
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 psp:
   name:       PlayStation Portable
@@ -1436,7 +1450,7 @@ msx1:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
-    
+
     - OpenMSX
     Various BIOS files for OpenMSX should be in either folder below:
         1. userdata/system/configs/openmsx/share/systemroms
@@ -2349,7 +2363,7 @@ cgenius:
           Commander Genius is a software piece that interprets the Commander Keen and Cosmos the Cosmic Adventure series.
 
           Requirements:
-          
+
           You need the original DOS game files in a directory under /userdata/roms/cgenius in order to play on Commander Genius games.
           `Commander Keen: Marooned on Mars` and `Secret of the Oracle` are shareware. They can also be downloaded from Commander Genius.
           `Commander Keen: The Earth Explodes` and `Commander Keen: Keen Must Die!` are registered versions which can be purchased from 3D Realms or Apogee.

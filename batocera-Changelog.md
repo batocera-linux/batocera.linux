@@ -26,6 +26,7 @@
 - openmsx laserdisc support
 - element 14 case support
 - more lr-melonds configuration options
+- Othello Multivision (libretro-gearsystem)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
