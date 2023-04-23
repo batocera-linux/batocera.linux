@@ -9,10 +9,18 @@ from datetime import datetime
 
 # input:
 # no input required, one game by system will be tested. you can choose a list if you create a file /userdata/system/gamesToTest.yml, example:
-# nes:
-#   /userdata/roms/nes/Super_mario_brothers3.nes
-# snes:
-#   /userdata/roms/snes/Micro Machines 2 - Turbo Tournament.7z
+# fbneo: [
+#     "/userdata/roms/fbneo/dino.zip",
+#     "/userdata/roms/fbneo/sfa3.zip"
+#   ]
+# megadrive: [
+#     "/userdata/roms/megadrive/Sonic The Hedgehog.md",
+#     "/userdata/roms/megadrive/Bonanza Bros.md",
+#     "/userdata/roms/megadrive/Comix Zone.md"
+#   ]
+# psx: [
+#     "/userdata/roms/psx/Road Rash.PBP"
+#   ]
 #
 # output:
 # /userdata/reportTest/batocera-test_22-07-03_18h34.42/report.txt
@@ -40,12 +48,13 @@ class BatoceraTest():
 
         results = []
         for system in games:
-            if BatoceraTest.runTest(system, games[system], resultDir):
-                print("Status: \033[01;32mSUCCESS\033[00;37m\n")
-                results.append({"system": system, "game": games[system], "status": True})
-            else:
-                print("Status: \033[01;31mFAILED\033[00;37m\n")
-                results.append({"system": system, "game": games[system], "status": False})
+            for game in games[system]:
+                if BatoceraTest.runTest(system, game, resultDir):
+                    print("Status: \033[01;32mSUCCESS\033[00;37m\n")
+                    results.append({"system": system, "game": game, "status": True})
+                else:
+                    print("Status: \033[01;31mFAILED\033[00;37m\n")
+                    results.append({"system": system, "game": game, "status": False})
 
         # generate report
         BatoceraTest.gameReport(resultDir, results)
@@ -71,7 +80,7 @@ class BatoceraTest():
         x = requests.post("http://localhost:1234/launch", data = game)
         if not x.ok:
             raise Exception("fail call es")
-        time.sleep(5)
+        time.sleep(10)
 
         try:
             x = requests.get("http://localhost:1234/runningGame")
@@ -79,13 +88,13 @@ class BatoceraTest():
                 raise Exception("fail call es")
             xj = x.json()
             stillRunning = (xj["systemName"] == system)
-            time.sleep(20)
+            time.sleep(10)
         except:
             stillRunning = False
 
         if stillRunning:
             BatoceraTest.screenshot(resultDir, system)
-            time.sleep(5)
+            time.sleep(2)
 
         # stop the game
         code = os.system("batocera-es-swissknife --emukill")
@@ -121,7 +130,7 @@ class BatoceraTest():
         for emulator in emulators:
             game = BatoceraTest.findGamesForEmulator(emulator, emulators[emulator])
             if game is not None:
-                games[emulator] = game
+                games[emulator] = [game]
         return games
 
     @staticmethod
@@ -140,8 +149,7 @@ class BatoceraTest():
             testgames = yaml.load(f, Loader=yaml.CLoader)
         games = {}
         for system in testgames:
-            if system in emulators:
-                games[system] = testgames[system]
+            games[system] = testgames[system]
         return games
 
     @staticmethod
