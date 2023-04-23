@@ -93,7 +93,7 @@
 - mesa3d update to 23.0.3
 - dxvk to 2.1
 - linux firmware to 20230404
-- linux kernel for x86_64 to 6.2.10
+- linux kernel for x86_64 to 6.2.12
 - nvidia production driver to 530.41.03
 - llvm to 15.0.7
 
