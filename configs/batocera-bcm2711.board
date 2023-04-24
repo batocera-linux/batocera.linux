@@ -1,9 +1,6 @@
 include batocera-board.common
 
 # Target definition
-# revert back to gcc 11 for lr-yabasanshiro
-BR2_GCC_VERSION_11_X=y
-#
 BR2_aarch64=y
 BR2_cortex_a72=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
