@@ -34,12 +34,7 @@ class RedreamGenerator(Generator):
         # force fullscreen
         f.write("mode=borderless fullscreen\n")
         f.write("fullmode=borderless fullscreen\n")
-        
         # configure controller
-        # examples:
-        # port - port0=dev:4,desc:03000000c82d00000660000011010000,type:controller
-        # ctrl - profile0=name:03000000c82d00000660000011010000,type:controller,deadzone:12,crosshair:1,a:joy1,b:joy0,x:joy4,y:joy3,start:joy11,dpad_up:hat0,dpad_down:hat1,dpad_left:hat2,dpad_right:hat3,ljoy_up:-axis1,ljoy_down:+axis1,ljoy_left:-axis0,ljoy_right:+axis0,ltrig:axis2,rtrig:axis3,turbo:joy10,turbo:f6,menu:escape,lcd:f5,screenshot:f12,exit:joy12
-        
         ButtonMap = {
             "a":      "b",
             "b":      "a",
@@ -49,14 +44,12 @@ class RedreamGenerator(Generator):
             "select": "menu",
             "pageup": "turbo"
         }
-
         HatMap = {
             "up":    0,
             "down":  1,
             "left":  2,
             "right": 3
         }
-
         AxisMap = {
             "joystick1left": 0,
             "joystick1up":   1,
@@ -64,59 +57,77 @@ class RedreamGenerator(Generator):
             "l2":            2,
             "r2":            3
         }
-
+        # because aparently nintendo is special :-/
+        nintendoMap = {
+            "a":             [ "b", "joy1" ],
+            "b":             [ "a", "joy0" ],
+            "x":             [ "y", "joy2" ],
+            "y":             [ "x", "joy3" ],
+            "start":         [ "start", "joy9" ],
+            "select":        [ "turbo", "joy8" ],
+            "up":            [ "dpad_up", "hat0" ],
+            "down":          [ "dpad_down", "hat1" ],
+            "left":          [ "dpad_left", "hat2" ],
+            "right":         [ "dpad_right", "hat3" ],
+            "joystick1left": [ "ljoy_left", "-axis0", "ljoy_right", "+axis0"],
+            "joystick1up":   [ "ljoy_up", "-axis1", "ljoy_down", "+axis1" ],
+            "l2":            [ "ltrig", "joy6" ],
+            "r2":            [ "rtrig", "joy7" ]
+        }
         nplayer = 1
         for index in playersControllers:
             controller = playersControllers[index]
             if nplayer <= 4:
-                # dev = ? seems to be 4+
                 ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
                 f.write((ctrlport)+ "\n")
-                
                 ctrlprofile = "profile{}=name:{},type:controller,deadzone:12,crosshair:1,".format(controller.index, controller.guid)
                 fullprofile = ctrlprofile
-                
-                eslog.debug(f"CONTROLLER: {controller.index} - {controller.guid}")
-                
                 for index in controller.inputs:
                     input = controller.inputs[index]
-                    eslog.debug(f"Name: {input.name}, Type: {input.type}, ID: {input.id}, Code: {input.code}")
-                    
-                    # [buttons]
-                    if input.type == "button" and input.name in ButtonMap:
-                        buttonname = ButtonMap[input.name]
-                        fullprofile = fullprofile + "{}:joy{},".format(buttonname, input.id)
-                    #on rare occassions when triggers are buttons
-                    if input.type == "button" and input.name == "l2":
-                        fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
-                    if input.type == "button" and input.name == "r2":
-                        fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
-                    #on occassions when dpad directions are buttons
-                    if input.type == "button":
-                        if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
-                            fullprofile = fullprofile + "dpad_{}:joy{},".format(input.name, input.id)
-                    
-                    # [hats]
-                    if input.type == "hat" and input.name in HatMap:
-                        hatid = HatMap[input.name]
-                        fullprofile = fullprofile + "dpad_{}:hat{},".format(input.name, hatid)
-                    
-                    # [axis]
-                    if input.type == "axis" and input.name in AxisMap:
-                        axisid = AxisMap[input.name]
-                        #l2/r2 as axis triggers
-                        if input.name == "l2":
-                            fullprofile = fullprofile + "ltrig:+axis{},".format(input.id)
-                        if input.name == "r2":
-                            fullprofile = fullprofile + "rtrig:+axis{},".format(input.id)
-                        #handle axis l,r,u,d
-                        if input.name == "joystick1left":
-                            fullprofile = fullprofile + "ljoy_left:-axis{},".format(axisid)
-                            fullprofile = fullprofile + "ljoy_right:+axis{},".format(axisid)
-                        if input.name == "joystick1up":
-                            fullprofile = fullprofile + "ljoy_up:-axis{},".format(axisid)
-                            fullprofile = fullprofile + "ljoy_down:+axis{},".format(axisid)
-                    
+                    # special nintendo workaround since redream makes no sense...
+                    if controller.guid == "030000007e0500000920000011810000":
+                        eslog.debug("Nintendo Switch Pro Controller detected")
+                        eslog.debug("Using special sauce...")
+                        if input.name in nintendoMap:
+                            buttonname = nintendoMap[input.name]
+                            for i in range(0, len(buttonname), 2):
+                                keyname = buttonname[i]
+                                buttonvalue = buttonname[i+1]
+                                fullprofile = fullprofile + f"{keyname}:{buttonvalue},"
+                    else:
+                        # [buttons]
+                        if input.type == "button" and input.name in ButtonMap:
+                            buttonname = ButtonMap[input.name]
+                            fullprofile = fullprofile + "{}:joy{},".format(buttonname, input.id)
+                            # on rare occassions when triggers are buttons
+                            if input.type == "button" and input.name == "l2":
+                                fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
+                                if input.type == "button" and input.name == "r2":
+                                    fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
+                                    # on occassions when dpad directions are buttons
+                                    if input.type == "button":
+                                        if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
+                                            fullprofile = fullprofile + "dpad_{}:joy{},".format(input.name, input.id)
+                        # [hats]
+                        if input.type == "hat" and input.name in HatMap:
+                            hatid = HatMap[input.name]
+                            fullprofile = fullprofile + "dpad_{}:hat{},".format(input.name, hatid)
+                        # [axis]
+                        if input.type == "axis" and input.name in AxisMap:
+                            axisid = AxisMap[input.name]
+                            # l2/r2 as axis triggers
+                            if input.name == "l2":
+                                fullprofile = fullprofile + "ltrig:+axis{},".format(input.id)
+                                if input.name == "r2":
+                                    fullprofile = fullprofile + "rtrig:+axis{},".format(input.id)
+                            #handle axis l,r,u,d
+                            if input.name == "joystick1left":
+                                fullprofile = fullprofile + "ljoy_left:-axis{},".format(axisid)
+                                fullprofile = fullprofile + "ljoy_right:+axis{},".format(axisid)
+                            if input.name == "joystick1up":
+                                fullprofile = fullprofile + "ljoy_up:-axis{},".format(axisid)
+                                fullprofile = fullprofile + "ljoy_down:+axis{},".format(axisid)
+                
                 # add key to exit for evmapy to the end
                 fullprofile = fullprofile + "exit:f10"
                 f.write((fullprofile)+ "\n")
