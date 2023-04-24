@@ -3,13 +3,14 @@
 # libretro-virtualjaguar
 #
 ################################################################################
-# Version: Commits on Nov 20, 2022
+# Version: Commits on Nov 19, 2022
 LIBRETRO_VIRTUALJAGUAR_VERSION = 2cc06899b839639397b8b30384a191424b6f529d
 LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,$(LIBRETRO_VIRTUALJAGUAR_VERSION))
 LIBRETRO_VIRTUALJAGUAR_LICENSE = GPLv3
 
 define LIBRETRO_VIRTUALJAGUAR_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile \
+        platform="unix" GIT_VERSION="-$(shell echo $(LIBRETRO_VIRTUALJAGUAR_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_VIRTUALJAGUAR_INSTALL_TARGET_CMDS
