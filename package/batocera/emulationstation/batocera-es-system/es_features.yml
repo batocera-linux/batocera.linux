@@ -7686,8 +7686,7 @@ redream:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
       redreamResolution:
-          submenu: VIDEO
-          prompt: RENDERING RESOLUTION
+          prompt:      RENDERING RESOLUTION
           description: Choose your render resolution (Requires personal redream.key file).
           choices:
               "1x (640x480)":            1
@@ -7697,44 +7696,42 @@ redream:
               "5x (3200x2400)":          5
               "6x (3840x2880)":          6
       redreamRatio:
-          submenu: VIDEO
-          prompt: ASPECT RATIO
+          prompt:      ASPECT RATIO
           description: Choose your preferred aspect ratio.
           choices:
               "4:3 (Default)": "4:3"
               "16:9":          "16:9"
               "Stretch":       stretch
       redreamFrameSkip:
-          submenu: VIDEO
-          prompt: FRAMESKIP
+          prompt:      FRAMESKIP
           description: Enable auto frameskipping for performance on lower-end systems.
           choices:
               "Off (Default)" : 0
               "On"            : 1
       redreamVsync:
-          submenu: VIDEO
-          prompt: VSYNC
+          group: ADVANCED OPTIONS
+          prompt:      VSYNC
           description: Enable vertical sync to avoid tearing in some cases.
           choices:
               "Off (Default)": 0
               "On"           : 1
       redreamPolygon:
-          submenu: VIDEO
-          prompt: POLYGON SORT ACCURACY
+          group: ADVANCED OPTIONS
+          prompt:      POLYGON SORT ACCURACY
           description: Choose the amount of polygon sort accuracy (Higher may cause artifacts).
           choices:
               "Per-strip (Default)":   0
               "Per-pixel (32 layers)": 32
               "Per-pixel (64 layers)": 64
       redreamRegion:
-          prompt: REGION
+          prompt:      REGION
           description: Choose the Dreamcast console region.
           choices:
               "USA (Default)": usa
               "Europe":        europe
               "Japan":         japan
       redreamLanguage:
-          prompt: LANGUAGE
+          prompt:      LANGUAGE
           description: Choose the Dreamcast console language.
           choices:
               "English (Default)": english
@@ -7744,7 +7741,7 @@ redream:
               "Italian":           italian
               "Japanese":          japanese
       redreamBroadcast:
-          prompt: BROADCAST
+          prompt:      BROADCAST
           description: Choose broadcast standard (for older TV's).
           choices:
               "NTSC (Default)": ntsc
@@ -7752,7 +7749,7 @@ redream:
               "PAL_M":          pal_m
               "PAL_N":          pal_n
       redreamCable:
-          prompt: CABLE
+          prompt:      CABLE
           description: Choose cable type for the TV.
           choices:
               "VGA (Default)": vga
