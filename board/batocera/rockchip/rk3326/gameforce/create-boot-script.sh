@@ -18,10 +18,10 @@ BATOCERA_BINARIES_DIR=$6
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot" || exit 1
 
 "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BATOCERA_BINARIES_DIR}/boot/boot/linux" || exit 1
-cp "${BINARIES_DIR}/uInitrd"                "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
-cp "${BINARIES_DIR}/rootfs.squashfs"        "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"        || exit 1
+cp "${BINARIES_DIR}/uInitrd"                        "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"                            || exit 1
+cp "${BINARIES_DIR}/rootfs.squashfs"                "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"                    || exit 1
 
-cp "${BINARIES_DIR}/rk3326-golden-gameforce.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/"   || exit 1
-cp "${BOARD_DIR}/boot/boot.ini"                     "${BATOCERA_BINARIES_DIR}/boot/"        || exit 1
+cp "${BINARIES_DIR}/rk3326-gameforce-linux.dtb"     "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-gameforce-linux.dtb"         || exit 1
+cp "${BOARD_DIR}/boot/boot.ini"                     "${BATOCERA_BINARIES_DIR}/boot/"                                        || exit 1
 
 exit 0

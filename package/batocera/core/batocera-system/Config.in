@@ -209,7 +209,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIBCURL_CURL                         # download tools
     select BR2_PACKAGE_NGHTTP2                              # required for curl http2
     select BR2_PACKAGE_CA_CERTIFICATES                      # ssl certificates
-    select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3128 # Used for screen rotation (SDL, Retroarch, Moonlight)
+    select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_RK3128 # Used for screen rotation (SDL, Retroarch, Moonlight)
 
     select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
@@ -309,9 +309,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RK3128			&& \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RK3588
-
-    # do NOT remove this one for OGA/GameForce
-    select BR2_PACKAGE_RTL8723DS		if  BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
     select BR2_PACKAGE_RTL8189ES		if  BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
