@@ -24,8 +24,9 @@ then
     gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
     if [ $gpu_count -ne 2 ]
     then
-        echo "There are not two GPUs in the system for Nvidia Prime." >> $log
+        echo "There are not two GPUs in the system for Nvidia Prime... remove the setting in batocera-boot.conf" >> $log
     else
+        echo "There are two GPUs in the system, using Nvidia Prime!" >> $log
         export __NV_PRIME_RENDER_OFFLOAD=1
         export __VK_LAYER_NV_optimus=NVIDIA_only
         export __GLX_VENDOR_LIBRARY_NAME=nvidia
