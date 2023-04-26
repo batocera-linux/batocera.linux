@@ -95,6 +95,7 @@
 - dxvk to 2.1
 - linux firmware to 20230404
 - linux kernel for x86_64 to 6.3
+- linux kernel for RPI to 6.1.25
 - nvidia production driver to 530.41.03
 - llvm to 15.0.7
 - vulkan stack to v1.3.248
