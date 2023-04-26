@@ -7,4 +7,3 @@ if [ -z ${FILE} ]; then
 fi
 
 ffmpeg -f x11grab -i :0.0 -vframes 1 "${FILE}" 2>/dev/null || exit 1
-echo "${FILE}"

@@ -6,4 +6,3 @@ if [ -z ${FILE} ]; then
 fi
 
 raspi2png -p "${FILE}" 2>/dev/null || exit 1
-echo "${FILE}"
