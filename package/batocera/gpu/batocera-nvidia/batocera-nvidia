@@ -3,13 +3,12 @@
 # batocera-nvidia applies either the installed production or legacy driver(s)
 # driver can be detected 'auto' or also set using batoceta-boot.conf
 
+# try to create the log dir
+mkdir -p "/userdata/system/logs"
 log="/userdata/system/logs/nvidia.log"
 
 MODE=$1
 LISTDIR=/usr/share/nvidia
-
-# try to create the log dir
-mkdir -p "/userdata/system/logs"
 
 if test "${MODE}" = "auto"
 then
@@ -71,7 +70,8 @@ then
             if grep -q -i $CARDNAME $LISTDIR/legacy340.list 2>/dev/null
             then
                 echo "Detected card name: $CARDNAME in legacy340 list too, yay!" >> $log
-                MODE=legacy340
+                echo "Using Mesa Nouveau driver, currently the legacy 340 driver doesn't work" >> $log
+                MODE=nouveau
                 break
             else
                 echo "Card name: $CARDNAME not detected in legacy340 list" >> $log
@@ -228,13 +228,13 @@ then
     # finally link kernel modules & run them
     mkdir -p /var/run/nvidia/modules
     ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
-    ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+    ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
     ln -sf /usr/share/nvidia/modules/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
-    ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+    ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
     ln -sf /usr/share/nvidia/modules/nvidia-drm-production.ko /var/run/nvidia/modules/nvidia-drm.ko
-    ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
     ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
-    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
     for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
 
 elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'
@@ -436,9 +436,9 @@ then
         # finally copy kernel modules & run them
 	    mkdir -p /var/run/nvidia/modules
 	    ln -sf /usr/share/nvidia/modules/nvidia340-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
 	    ln -sf /usr/share/nvidia/modules/nvidia340-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
 	    
         for m in ipmi_devintf nvidia nvidia_uvm ; do modprobe $m ; done
     # 390 version
@@ -470,13 +470,13 @@ then
         # finally copy kernel modules & run them
 	    mkdir -p /var/run/nvidia/modules
 	    ln -sf /usr/share/nvidia/modules/nvidia390-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
 	    ln -sf /usr/share/nvidia/modules/nvidia390-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
 	    ln -sf /usr/share/nvidia/modules/nvidia390-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
 	    ln -sf /usr/share/nvidia/modules/nvidia390-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
 	    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
     else
         # 470 version
@@ -502,13 +502,13 @@ then
         # finally link the kernel modules & run them
         mkdir -p /var/run/nvidia/modules
         ln -sf /usr/share/nvidia/modules/nvidia-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/extra/nvidia.ko
+        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
         ln -sf /usr/share/nvidia/modules/nvidia-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/extra/nvidia-modeset.ko
+        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
         ln -sf /usr/share/nvidia/modules/nvidia-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/extra/nvidia-drm.ko
+        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
         ln -sf /usr/share/nvidia/modules/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/extra/nvidia-uvm.ko
+        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
         for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
     fi
 
