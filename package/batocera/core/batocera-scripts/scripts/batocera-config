@@ -157,18 +157,35 @@ if [ "$command" = "gpiocontrollers" ];then
 	extra2="map=1,2"
 fi
 
-if [ "$command" = "module" ];then
-	modulename="$extra1"
-	map="$extra2"
-	# remove in all cases
-	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
+if [ "$command" = "module" ]; then
+    modulename="$extra1"
+    map="$extra2"
+    log="/var/log/myapp.log"
+    kernel_version="$(uname -r)"
+    module_path=""
+    # Check if the module is present in updates directory (Kernel 6.3+)
+    if [ -f "/lib/modules/$kernel_version/updates/${modulename}.ko" ]; then
+        module_path="/lib/modules/$kernel_version/updates/${modulename}.ko"
+    # Check if the module is present in extra directory (Kernel < 6.3)
+    elif [ -f "/lib/modules/$kernel_version/extra/${modulename}.ko" ]; then
+        module_path="/lib/modules/$kernel_version/extra/${modulename}.ko"
+    else
+        echo "Error: Module ${modulename} not found in /lib/modules/$kernel_version/updates or /lib/modules/$kernel_version/extra directory." >> $log
+        exit 1
+    fi
 
-        if [ "$mode" = "load" ];then
-	        echo "loading module $modulename args = $map" >> $log
-		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
-		[ "$?" ] || exit 1
+    # Remove the module
+    rmmod "$module_path" >> $log
+
+    if [ "$mode" = "load" ]; then
+        echo "Loading module $modulename with args $map" >> $log
+        insmod "$module_path" "$map" >> $log
+        if [ "$?" -ne 0 ]; then
+            echo "Error: Failed to load module ${modulename} with args ${map}" >> $log
+            exit 1
         fi
-	exit 0
+    fi
+    exit 0
 fi
 
 if [ "$command" = "canupdate" ];then

@@ -1,0 +1,25 @@
+From 6b745b72e4259b19d7548a2ce440bcfddbf6f506 Mon Sep 17 00:00:00 2001
+From: Vicki Pfau <vi@endrift.com>
+Date: Fri, 10 Mar 2023 17:21:51 -0800
+Subject: [PATCH] Fix build on 6.3
+
+---
+ bus/bus.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/bus/bus.c b/bus/bus.c
+index 7fde922..b129d6f 100644
+--- a/bus/bus.c
++++ b/bus/bus.c
+@@ -67,7 +67,11 @@ static void gip_client_state_changed(struct work_struct *work)
+ 	}
+ }
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0)
+ static int gip_client_uevent(struct device *dev, struct kobj_uevent_env *env)
++#else
++static int gip_client_uevent(const struct device *dev, struct kobj_uevent_env *env)
++#endif
+ {
+ 	struct gip_client *client = to_gip_client(dev);
+ 	struct gip_classes *classes = client->classes;

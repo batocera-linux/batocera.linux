@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mkdir -p "/userdata/system/logs"
 log="/userdata/system/logs/nvidia.log"
 
 # detect the appropriate Nvidia driver
@@ -17,8 +18,8 @@ then
     batocera-nvidia legacy390
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf
 then
-    echo "Manual setting to legacy 340 driver" > $log
-    batocera-nvidia legacy340
+    echo "Manual setting to legacy 340 driver, however it's broken, using nouveau" > $log
+    batocera-nvidia nouveau
 elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
 then
     echo "Manual setting to nouveau driver" > $log
