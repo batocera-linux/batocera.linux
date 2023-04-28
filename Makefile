@@ -189,7 +189,9 @@ dl-dir:
 %-webserver: output-dir-%
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
 	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
-	@python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+	@mkdir -p $(OUTPUT_DIR)/webserver/$*/beta
+	@ln -fs ../../../$*/images/batocera/images/$* $(OUTPUT_DIR)/webserver/$*/beta/last
+	@python3 -m http.server --directory $(OUTPUT_DIR)/webserver/
 
 %-rsync: output-dir-%
 	$(eval TMP := $(call UC, $*)_IP)
