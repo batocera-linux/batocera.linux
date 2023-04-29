@@ -13,14 +13,7 @@ if [[ -x /usr/bin/dolphin-emu ]]; then
         XDG_DATA_HOME=/userdata/saves \
         QT_QPA_PLATFORM=xcb \
         /usr/bin/dolphin-emu
-elif [[ -x /usr/bin/dolphin-emu-nogui ]]; then
-    # fall back to nogui
-    XDG_CONFIG_HOME=/userdata/system/configs \
-        XDG_DATA_HOME=/userdata/saves \
-        QT_QPA_PLATFORM=xcb \
-        /usr/bin/dolphin-emu-nogui --platform=drm
 else
     echo "System not found."
     exit 1
 fi
-
