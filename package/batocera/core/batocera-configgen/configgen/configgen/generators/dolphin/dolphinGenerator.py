@@ -279,7 +279,7 @@ class DolphinGenerator(Generator):
         if os.path.isfile("/usr/bin/dolphin-emu"):
             commandArray = ["dolphin-emu", "-e", rom]
         else:
-            commandArray = ["dolphin-emu-nogui", "-p", "drm", "-e", rom]
+            commandArray = ["dolphin-emu-nogui", "-e", rom]
         
         return Command.Command(array=commandArray, \
             env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \

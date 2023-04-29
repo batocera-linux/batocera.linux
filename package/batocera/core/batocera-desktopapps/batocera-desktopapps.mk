@@ -21,12 +21,12 @@ ifneq ($(BR2_PACKAGE_PCSX2_X86)$(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),)
   BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
 endif
 
-# dolphin
-ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
-  BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
-endif
+# dolphin - disabled until QT6 added
+#ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
+#  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
+#  BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
+#  BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
+#endif
 
 # dolphin-triforce
 ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
