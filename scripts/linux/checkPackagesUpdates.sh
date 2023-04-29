@@ -165,7 +165,6 @@ PACKAGES_EMULATORS="amiberry
                     moonlight-embedded
                     openmsx
                     pcsx2
-                    pcsx2-avx2
                     pifba
                     play
                     ppsspp
