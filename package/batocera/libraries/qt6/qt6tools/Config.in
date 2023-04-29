@@ -1,0 +1,11 @@
+config BR2_PACKAGE_QT6TOOLS
+    bool "qt6tools"
+    depends on BR2_PACKAGE_QT6
+    depends on BR2_PACKAGE_QT6BASE
+    help
+      Qt is a cross-platform application and UI framework for
+      developers using C++.
+      
+      This package corresponds to the qt6tools module
+      
+      https://doc.qt.io/qt-6/index.html

@@ -1,0 +1,14 @@
+config BR2_PACKAGE_QT6DECLARATIVE
+    bool "qt6declarative"
+    depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6 # CAN FD
+    select BR2_PACKAGE_QT6BASE
+    help
+        Qt is a cross-platform application and UI framework for
+        developers using C++.
+        
+        This package corresponds to the qt6declarative module.
+        
+        https://doc.qt.io/qt-6/qtmodules.html
+
+comment "qt6declarative needs headers >= 3.6"
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6
