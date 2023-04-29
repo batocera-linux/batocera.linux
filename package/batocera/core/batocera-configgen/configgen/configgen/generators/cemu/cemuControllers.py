@@ -19,7 +19,7 @@ cemuConfig  = batoceraFiles.CONF + '/cemu'
 def generateControllerConfig(system, playersControllers):
     # -= Wii U controller types =-
 
-    # Wii U GamePad Controller (excludes blow mic & show screen)
+    # Wii U GamePad Controller (excludes show screen)
     wiiUGamePadButtons = {
             "1":  "1",
             "2":  "0",
@@ -44,7 +44,8 @@ def generateControllerConfig(system, playersControllers):
             "21": "47",
             "22": "41",
             "23": "46",
-            "24": "40"
+            "24": "40",
+            "25": "7"
     }
     # Wii U Pro Controller (no mapping 11)
     wiiUProButtons = {
