@@ -35,7 +35,7 @@ msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
 msgstr "ゲーム画面比率"
 
-#. TRANSLATION: shared, pcsx2
+#. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Full"
 msgstr "フルモード"
@@ -755,12 +755,12 @@ msgctxt "game_options"
 msgid "Low"
 msgstr "小"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus, pcsx2
 msgctxt "game_options"
 msgid "Medium"
 msgstr "中"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
 msgid "High"
 msgstr "大"
@@ -1959,7 +1959,7 @@ msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "テクスチャフィルタリング"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, ppsspp
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, pcsx2, ppsspp
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "最近傍"
@@ -4019,12 +4019,12 @@ msgctxt "game_options"
 msgid "DMA Only (Slightly Faster)"
 msgstr "DMAのみ（微高速）"
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, duckstation, pcsx2
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, duckstation
 msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "多人数対応ゲームで5～8のコントローラーを使用できます"
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, duckstation, pcsx2
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, duckstation
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "マルチタップ"
@@ -4803,17 +4803,17 @@ msgctxt "game_options"
 msgid "On (Speed hack)"
 msgstr "使用する（スピードハック）"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port1"
 msgstr "ポート1"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port2"
 msgstr "ポート2"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port1+2"
 msgstr "ポート1+2"
@@ -7860,7 +7860,7 @@ msgctxt "game_options"
 msgid "Bottom only"
 msgstr "下画面のみ"
 
-#. TRANSLATION: melonds
+#. TRANSLATION: melonds, pcsx2
 msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "整数スケーリング"
@@ -8175,15 +8175,287 @@ msgctxt "game_options"
 msgid "Simple 2x"
 msgstr "シンプル 2x"
 
+#. TRANSLATION: pcsx2, pcsx2, pcsx2, pcsx2, pcsx2, ...
+msgctxt "game_options"
+msgid "DISPLAY"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Fit to Window / Fullscreen"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Auto Standard (4:3 interlaced / 3:2 progressive)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Standard (4:3)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Widescreen (16:9)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adjusts Full Motion Video movies aspect ratio."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "FMV ASPECT RATIO"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "FMV movie deinterlacing."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "DEINTERLACING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Weave (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Weave (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bob (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bob (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Blend (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Blend (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adaptive (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adaptive (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Smooths the overall picture as it is displayed on the screen. Corrects "
+"positioning between pixels."
+msgstr ""
+
+#. TRANSLATION: pcsx2, model2emu
+msgctxt "game_options"
+msgid "BILINEAR FILTERING"
+msgstr "バイリニアフィルタリング"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Smooth)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Sharp)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "ENABLE WIDESCREEN PATCHES"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Enable to improve bluriness."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "ANTI-BLUR"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Enable No-interlacing Patches."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "INTERLACING PATCHES"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Can sharpen images in lower resolutions."
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2, pcsx2, pcsx2, pcsx2, ...
+msgctxt "game_options"
+msgid "RENDERING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Choose mipmapping type."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "MIPMAPPING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Basic (generated Mipmaps)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (PS2 Mipmaps)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Control the texture filtering of the emulation."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Forced)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (PS2)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Forced excluding sprite)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Control the texture's trilinear filtering of the emulation."
+msgstr ""
+
+#. TRANSLATION: pcsx2, model2emu
+msgctxt "game_options"
+msgid "TRILINEAR FILTERING"
+msgstr "トリリニアフィルタリング"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Off (None)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Trilinear (PS2)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Trilinear (Forced)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Reduces banding between colours and improves the preceived colour depth."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "DITHERING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Unscaled (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Basic (Recommended)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"The higher the setting, the more blending is emulated in the shader "
+"accurately, and the higher the speed penalty will be."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "BLENDING ACCURACY"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Minimum"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (Slow)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum (Very Slow)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Uploads entire textures at once instead of small pieces. Improves "
+"performance in most games."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE PRELOADING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Partial"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (Hash Cache)"
+msgstr ""
+
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Some games have issues when the animation is shown, others require it."
 msgstr "アニメ表示で問題が出る場合とアニメ表示が必須の場合があります"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Show (specific games)"
-msgstr "表示(特定のゲーム)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8192,235 +8464,35 @@ msgstr "スキップ(安全)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "Skip drawing screen effects. Cumulative."
-msgstr "画面効果の描画をスキップします。累計"
+msgid "Show (specific games)"
+msgstr "表示(特定のゲーム)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "SKIPDRAW HACK"
-msgstr "スキップドロー ハック"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "1 (post FX)"
-msgstr "1 (post FX)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "2 (shadows)"
-msgstr "2 (影)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "3 (shadows)"
-msgstr "3 (影)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "4 (special FX)"
-msgstr "4 (special FX)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "5 (other)"
-msgstr "5 (その他)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Remove lines in internal resolution (fixes Soul Calibur)."
-msgstr "内部解像度のライン(線)を削除します（ソウルキャリバー修正）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "ALIGN SPRITE (HACK)"
-msgstr "アラインスプライト（ハック）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Render this many frames ahead to improve performance at the cost of input "
-"lag."
+msgid "ACHIEVEMENTS"
 msgstr ""
-"入力遅延を犠牲にして動作向上のために、多くのフレームを先にレンダリングします"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VSYNCS IN MTGS QUEUE"
-msgstr "垂直同期マルチスレッドGS要求"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Good speedup and high compatibility; recommended but may cause issues."
-msgstr "推奨:優れたスピードアップと高い互換性、問題が発生する可能性があります"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "MICRO VU SPEED HACKS"
-msgstr "MICRO VU スピードハック"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack. May cause bad graphics (recommended)"
-msgstr "mVUフラグハック -グラフィック不良になる可能性（推奨）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "MTVU. May cause hanging (recommended on 3+ cores)"
-msgstr "MTVU -問題がでる可能性 (3コア以上のCPUで推奨)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Instant VU1. May cause some graphical errors"
-msgstr "インスタントVU1-いくつかのグラフィックエラーが出る可能性"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack + MTVU"
-msgstr "mVUフラグハック + MTVU"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack + Instant VU1"
-msgstr "mVUフラグハック + インスタントVU1"
-
-#. TRANSLATION: pcsx2, ppsspp
-msgctxt "game_options"
-msgid "Enables Action Replay cheats."
-msgstr "アクションリプレイ(チート)を有効にします"
-
-#. TRANSLATION: pcsx2, ppsspp
-msgctxt "game_options"
-msgid "GAME CHEATS"
-msgstr "ゲーム チート"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "WIDESCREEN PATCHES"
-msgstr "ワイドスクリーン パッチ"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid ""
-"Automatically use gamefixes as appropriate. Stacks with manual gamefixes."
-msgstr "必要があれば自動的にゲーム修正をします。手動ゲーム修正は後順です"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "AUTOMATIC GAMEFIXES"
-msgstr "自動ゲーム修正"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Stacks with auto gamefixes."
-msgstr "自動ゲーム修正を含む"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "MANUAL GAMEFIXES"
-msgstr "ゲーム修正を個別選択"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU Add hack (Fixes Tri-Ace games boot crash)"
-msgstr "VU 追加ハック（Tri-Aceゲームのブートクラッシュを修正）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Compare hack (For Digimon Rumble Arena 2)"
-msgstr "FPU比較ハック（デジモンランブルアリーナ2用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Multiply hack (For Tales of Destiny)"
-msgstr "FPUマルチプライハック（テイルズオブデスティニー用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Negative Div hack (For Gundam Games)"
-msgstr "FPUネガティブディビジョンハック（ガンダムゲーム用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU XGkick hack (For Eremental Gerad)"
-msgstr "VU XGkickハック（Eremental Gerad用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FFX videos fix (Fixes bad graphic overlays)"
-msgstr "FFX映像の修正（悪いグラフィックオーバーレイを修正）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "EE timing hack (Try if all else fails)"
-msgstr "EEタイミングハック（他の方法が失敗した場合）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Skip MPEG hack (Skips videos/FMVs that freeze)"
-msgstr "MPEGハックスキップ（不具合ある映像をスキップ）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OPH Flag hack (Try if game freezes)"
-msgstr "OPHフラグハック（ゲームがフリーズした場合用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Handle DMAC writes when it busy"
-msgstr "ビジー時にDMAC書き込みを処理する"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Simulate VIF1 FIFO read (Fix slow loading)"
-msgstr "VIF1 FIFO読み取りをシミュレートします（低速読込を修正）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Delay VIF1 Stalls (For SOCOM2 & Spy Hunter)"
-msgstr "VIF1ストールの遅延（SOCOM2 & Spy Hunter用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Enable the GIF FIFO (Wallace and Gromit, DJ Hero)"
-msgstr "GIF FIFOを有効にします（Wallace, Gromit、DJ Hero用）"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Preload TLB hack to avoid tlb miss on Goemon"
-msgstr "TLBミスを回避するための、TLBハック(ゴエモン用)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU I bit hack - Scarface The World is Yours"
-msgstr "VU I ビットハック - Scarface: The World is Yours"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU I bit hack - Crash Tag Team Racing"
-msgstr "VU I ビットハック - Crash Tag Team Racing"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU0 Kickstart to avoid sync problems with VU1"
-msgstr "VU1との同期の問題を回避するために、VU0から開始"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Automatically use hardware hacks as appropriate. Refer to pcsx2-config for "
-"individual hacks."
+"Applies the FXAA anti-aliasing algorithm to improve the visual quality of "
+"games."
 msgstr ""
-"必要があればHwハックを自動的に使用します(個々のハックは pcsx2-config を参照)"
+
+#. TRANSLATION: pcsx2, yuzu, vita3k
+msgctxt "game_options"
+msgid "FXAA"
+msgstr "FXAA"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
-msgstr "自動グラフィック ハードウェア ハック"
+msgid "Automatically loads and applies cheats on game start."
+msgstr ""
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "On (default)"
-msgstr "使用する (通常)"
+msgid "CHEATS"
+msgstr ""
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8519,6 +8591,16 @@ msgstr "リニア"
 msgctxt "game_options"
 msgid "Auto Max Quality"
 msgstr "自動最高品質"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Enables Action Replay cheats."
+msgstr "アクションリプレイ(チート)を有効にします"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "GAME CHEATS"
+msgstr "ゲーム チート"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9772,20 +9854,10 @@ msgstr "滑らかなテクスチャ"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
-msgid "BILINEAR FILTERING"
-msgstr "バイリニアフィルタリング"
-
-#. TRANSLATION: model2emu
-msgctxt "game_options"
 msgid ""
 "Enables mipmap usage and trilinear filtering. Doesn't work with some games."
 msgstr ""
 "ミップマップとトリリニアフィルタリングを有効にします(一部のゲームでは非対応)"
-
-#. TRANSLATION: model2emu
-msgctxt "game_options"
-msgid "TRILINEAR FILTERING"
-msgstr "トリリニアフィルタリング"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -10188,11 +10260,6 @@ msgstr "非同期シェーダーのコンパイル"
 msgctxt "game_options"
 msgid "ANTI-ALIASING METHOD"
 msgstr "アンチエイリアシング方法"
-
-#. TRANSLATION: yuzu, vita3k
-msgctxt "game_options"
-msgid "FXAA"
-msgstr "FXAA"
 
 #. TRANSLATION: yuzu
 msgctxt "game_options"
@@ -10932,6 +10999,189 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "game_options"
+#~ msgid "Skip drawing screen effects. Cumulative."
+#~ msgstr "画面効果の描画をスキップします。累計"
+
+#~ msgctxt "game_options"
+#~ msgid "SKIPDRAW HACK"
+#~ msgstr "スキップドロー ハック"
+
+#~ msgctxt "game_options"
+#~ msgid "1 (post FX)"
+#~ msgstr "1 (post FX)"
+
+#~ msgctxt "game_options"
+#~ msgid "2 (shadows)"
+#~ msgstr "2 (影)"
+
+#~ msgctxt "game_options"
+#~ msgid "3 (shadows)"
+#~ msgstr "3 (影)"
+
+#~ msgctxt "game_options"
+#~ msgid "4 (special FX)"
+#~ msgstr "4 (special FX)"
+
+#~ msgctxt "game_options"
+#~ msgid "5 (other)"
+#~ msgstr "5 (その他)"
+
+#~ msgctxt "game_options"
+#~ msgid "Remove lines in internal resolution (fixes Soul Calibur)."
+#~ msgstr "内部解像度のライン(線)を削除します（ソウルキャリバー修正）"
+
+#~ msgctxt "game_options"
+#~ msgid "ALIGN SPRITE (HACK)"
+#~ msgstr "アラインスプライト（ハック）"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Render this many frames ahead to improve performance at the cost of input "
+#~ "lag."
+#~ msgstr ""
+#~ "入力遅延を犠牲にして動作向上のために、多くのフレームを先にレンダリングしま"
+#~ "す"
+
+#~ msgctxt "game_options"
+#~ msgid "VSYNCS IN MTGS QUEUE"
+#~ msgstr "垂直同期マルチスレッドGS要求"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Good speedup and high compatibility; recommended but may cause issues."
+#~ msgstr ""
+#~ "推奨:優れたスピードアップと高い互換性、問題が発生する可能性があります"
+
+#~ msgctxt "game_options"
+#~ msgid "MICRO VU SPEED HACKS"
+#~ msgstr "MICRO VU スピードハック"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack. May cause bad graphics (recommended)"
+#~ msgstr "mVUフラグハック -グラフィック不良になる可能性（推奨）"
+
+#~ msgctxt "game_options"
+#~ msgid "MTVU. May cause hanging (recommended on 3+ cores)"
+#~ msgstr "MTVU -問題がでる可能性 (3コア以上のCPUで推奨)"
+
+#~ msgctxt "game_options"
+#~ msgid "Instant VU1. May cause some graphical errors"
+#~ msgstr "インスタントVU1-いくつかのグラフィックエラーが出る可能性"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack + MTVU"
+#~ msgstr "mVUフラグハック + MTVU"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack + Instant VU1"
+#~ msgstr "mVUフラグハック + インスタントVU1"
+
+#~ msgctxt "game_options"
+#~ msgid "WIDESCREEN PATCHES"
+#~ msgstr "ワイドスクリーン パッチ"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Automatically use gamefixes as appropriate. Stacks with manual gamefixes."
+#~ msgstr "必要があれば自動的にゲーム修正をします。手動ゲーム修正は後順です"
+
+#~ msgctxt "game_options"
+#~ msgid "AUTOMATIC GAMEFIXES"
+#~ msgstr "自動ゲーム修正"
+
+#~ msgctxt "game_options"
+#~ msgid "Stacks with auto gamefixes."
+#~ msgstr "自動ゲーム修正を含む"
+
+#~ msgctxt "game_options"
+#~ msgid "MANUAL GAMEFIXES"
+#~ msgstr "ゲーム修正を個別選択"
+
+#~ msgctxt "game_options"
+#~ msgid "VU Add hack (Fixes Tri-Ace games boot crash)"
+#~ msgstr "VU 追加ハック（Tri-Aceゲームのブートクラッシュを修正）"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Compare hack (For Digimon Rumble Arena 2)"
+#~ msgstr "FPU比較ハック（デジモンランブルアリーナ2用）"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Multiply hack (For Tales of Destiny)"
+#~ msgstr "FPUマルチプライハック（テイルズオブデスティニー用）"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Negative Div hack (For Gundam Games)"
+#~ msgstr "FPUネガティブディビジョンハック（ガンダムゲーム用）"
+
+#~ msgctxt "game_options"
+#~ msgid "VU XGkick hack (For Eremental Gerad)"
+#~ msgstr "VU XGkickハック（Eremental Gerad用）"
+
+#~ msgctxt "game_options"
+#~ msgid "FFX videos fix (Fixes bad graphic overlays)"
+#~ msgstr "FFX映像の修正（悪いグラフィックオーバーレイを修正）"
+
+#~ msgctxt "game_options"
+#~ msgid "EE timing hack (Try if all else fails)"
+#~ msgstr "EEタイミングハック（他の方法が失敗した場合）"
+
+#~ msgctxt "game_options"
+#~ msgid "Skip MPEG hack (Skips videos/FMVs that freeze)"
+#~ msgstr "MPEGハックスキップ（不具合ある映像をスキップ）"
+
+#~ msgctxt "game_options"
+#~ msgid "OPH Flag hack (Try if game freezes)"
+#~ msgstr "OPHフラグハック（ゲームがフリーズした場合用）"
+
+#~ msgctxt "game_options"
+#~ msgid "Handle DMAC writes when it busy"
+#~ msgstr "ビジー時にDMAC書き込みを処理する"
+
+#~ msgctxt "game_options"
+#~ msgid "Simulate VIF1 FIFO read (Fix slow loading)"
+#~ msgstr "VIF1 FIFO読み取りをシミュレートします（低速読込を修正）"
+
+#~ msgctxt "game_options"
+#~ msgid "Delay VIF1 Stalls (For SOCOM2 & Spy Hunter)"
+#~ msgstr "VIF1ストールの遅延（SOCOM2 & Spy Hunter用）"
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the GIF FIFO (Wallace and Gromit, DJ Hero)"
+#~ msgstr "GIF FIFOを有効にします（Wallace, Gromit、DJ Hero用）"
+
+#~ msgctxt "game_options"
+#~ msgid "Preload TLB hack to avoid tlb miss on Goemon"
+#~ msgstr "TLBミスを回避するための、TLBハック(ゴエモン用)"
+
+#~ msgctxt "game_options"
+#~ msgid "VU I bit hack - Scarface The World is Yours"
+#~ msgstr "VU I ビットハック - Scarface: The World is Yours"
+
+#~ msgctxt "game_options"
+#~ msgid "VU I bit hack - Crash Tag Team Racing"
+#~ msgstr "VU I ビットハック - Crash Tag Team Racing"
+
+#~ msgctxt "game_options"
+#~ msgid "VU0 Kickstart to avoid sync problems with VU1"
+#~ msgstr "VU1との同期の問題を回避するために、VU0から開始"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Automatically use hardware hacks as appropriate. Refer to pcsx2-config "
+#~ "for individual hacks."
+#~ msgstr ""
+#~ "必要があればHwハックを自動的に使用します(個々のハックは pcsx2-config を参"
+#~ "照)"
+
+#~ msgctxt "game_options"
+#~ msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
+#~ msgstr "自動グラフィック ハードウェア ハック"
+
+#~ msgctxt "game_options"
+#~ msgid "On (default)"
+#~ msgstr "使用する (通常)"
 
 #~ msgctxt "game_options"
 #~ msgid "Choose machine type only when playing ColecoVision roms."
