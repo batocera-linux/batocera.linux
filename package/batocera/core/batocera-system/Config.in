@@ -1022,7 +1022,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S912        || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X
+                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
+                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     # Gamecube / Wii
     select BR2_PACKAGE_DOLPHIN_EMU                  if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
