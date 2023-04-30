@@ -44,7 +44,7 @@ msgctxt "game_options"
 msgid "GAME ASPECT RATIO"
 msgstr "RELACIÓ D’ASPECTE"
 
-#. TRANSLATION: shared, pcsx2
+#. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Full"
 msgstr "Complet"
@@ -777,12 +777,12 @@ msgctxt "game_options"
 msgid "Low"
 msgstr "Baix"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus, pcsx2
 msgctxt "game_options"
 msgid "Medium"
 msgstr "Mitjà"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
 msgid "High"
 msgstr "Alt"
@@ -1989,7 +1989,7 @@ msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTRATGE DE TEXTURA"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, ppsspp
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, pcsx2, ppsspp
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "Mes proper"
@@ -4061,12 +4061,12 @@ msgctxt "game_options"
 msgid "DMA Only (Slightly Faster)"
 msgstr "Només DMA (Lleugerament més ràpid)"
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, duckstation, pcsx2
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, duckstation
 msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "Permet fins a 5 o 8 comandaments als jocs que ho suportin."
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, duckstation, pcsx2
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, duckstation
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "MULTITAP"
@@ -4848,17 +4848,17 @@ msgctxt "game_options"
 msgid "On (Speed hack)"
 msgstr "Engegat (Truc de velocitat)"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port1"
 msgstr "Port1"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port2"
 msgstr "Port2"
 
-#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
+#. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Port1+2"
 msgstr "Port1+2"
@@ -7929,7 +7929,7 @@ msgctxt "game_options"
 msgid "Bottom only"
 msgstr "Només inferior"
 
-#. TRANSLATION: melonds
+#. TRANSLATION: melonds, pcsx2
 msgctxt "game_options"
 msgid "INTEGER SCALING"
 msgstr "ESCALAT SENCER"
@@ -8255,6 +8255,283 @@ msgctxt "game_options"
 msgid "Simple 2x"
 msgstr "Simple 2x"
 
+#. TRANSLATION: pcsx2, pcsx2, pcsx2, pcsx2, pcsx2, ...
+msgctxt "game_options"
+msgid "DISPLAY"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Fit to Window / Fullscreen"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Auto Standard (4:3 interlaced / 3:2 progressive)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Standard (4:3)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Widescreen (16:9)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adjusts Full Motion Video movies aspect ratio."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "FMV ASPECT RATIO"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "FMV movie deinterlacing."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "DEINTERLACING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Weave (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Weave (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bob (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bob (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Blend (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Blend (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adaptive (Top Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Adaptive (Bottom Field First)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Smooths the overall picture as it is displayed on the screen. Corrects "
+"positioning between pixels."
+msgstr ""
+
+#. TRANSLATION: pcsx2, model2emu
+msgctxt "game_options"
+msgid "BILINEAR FILTERING"
+msgstr "FILTRATGE BILINEAL"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Smooth)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Sharp)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "ENABLE WIDESCREEN PATCHES"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Enable to improve bluriness."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "ANTI-BLUR"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Enable No-interlacing Patches."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "INTERLACING PATCHES"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Can sharpen images in lower resolutions."
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2, pcsx2, pcsx2, pcsx2, ...
+msgctxt "game_options"
+msgid "RENDERING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Choose mipmapping type."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "MIPMAPPING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Basic (generated Mipmaps)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (PS2 Mipmaps)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Control the texture filtering of the emulation."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Forced)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (PS2)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bilinear (Forced excluding sprite)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Control the texture's trilinear filtering of the emulation."
+msgstr ""
+
+#. TRANSLATION: pcsx2, model2emu
+msgctxt "game_options"
+msgid "TRILINEAR FILTERING"
+msgstr "FILTRATGE TRILINEAL"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Off (None)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Trilinear (PS2)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Trilinear (Forced)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Reduces banding between colours and improves the preceived colour depth."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "DITHERING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Unscaled (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2, pcsx2
+msgctxt "game_options"
+msgid "Basic (Recommended)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"The higher the setting, the more blending is emulated in the shader "
+"accurately, and the higher the speed penalty will be."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "BLENDING ACCURACY"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Minimum"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (Slow)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum (Very Slow)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Uploads entire textures at once instead of small pieces. Improves "
+"performance in most games."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE PRELOADING"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Partial"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Full (Hash Cache)"
+msgstr ""
+
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Some games have issues when the animation is shown, others require it."
@@ -8264,251 +8541,40 @@ msgstr ""
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "Show (specific games)"
-msgstr "Mostrar (jocs específics)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
 msgid "Skip (safer)"
 msgstr "Ometre (segur)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "Skip drawing screen effects. Cumulative."
-msgstr "Ometre efectes de dibuixat de pantalla. Acumulatiu."
+msgid "Show (specific games)"
+msgstr "Mostrar (jocs específics)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "SKIPDRAW HACK"
-msgstr "TRUC D’OMETRE DIBUIXAT"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "1 (post FX)"
-msgstr "1 (post FX)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "2 (shadows)"
-msgstr "2 (ombres)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "3 (shadows)"
-msgstr "3 (ombres)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "4 (special FX)"
-msgstr "4 (Efectes especials)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "5 (other)"
-msgstr "5 (altres)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Remove lines in internal resolution (fixes Soul Calibur)."
-msgstr "Eliminar línies de resolució interna (corregeix Soul Calibur)."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "ALIGN SPRITE (HACK)"
-msgstr "ALINIAR IMATGE (TRUC)"
+msgid "ACHIEVEMENTS"
+msgstr ""
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid ""
-"Render this many frames ahead to improve performance at the cost of input "
-"lag."
+"Applies the FXAA anti-aliasing algorithm to improve the visual quality of "
+"games."
 msgstr ""
-"Representeu tants fotogrames per endavant per millorar el rendiment a costa "
-"del retard d'entrada."
+
+#. TRANSLATION: pcsx2, yuzu, vita3k
+msgctxt "game_options"
+msgid "FXAA"
+msgstr "FXAA"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "VSYNCS IN MTGS QUEUE"
-msgstr "VSYNCS A LA CUA MTGS"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Good speedup and high compatibility; recommended but may cause issues."
+msgid "Automatically loads and applies cheats on game start."
 msgstr ""
-"Bona acceleració i alta compatibilitat; recomanat però pot causar problemes."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
-msgid "MICRO VU SPEED HACKS"
-msgstr "TRUCS DE VELOCITAT MICRO VU"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack. May cause bad graphics (recommended)"
-msgstr "mVU Flag Hack. Poc causar gràfics dolents (recomanat)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "MTVU. May cause hanging (recommended on 3+ cores)"
-msgstr "MTVU. Pot causar penjades (recomanat en 3 o més nuclis)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Instant VU1. May cause some graphical errors"
-msgstr "VU1 instantani. Pot causar defectes gràfics"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack + MTVU"
-msgstr "mVU Flag Hack + MTVU"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "mVU Flag Hack + Instant VU1"
-msgstr "mVU Flag Hack + VU1 instantani"
-
-#. TRANSLATION: pcsx2, ppsspp
-msgctxt "game_options"
-msgid "Enables Action Replay cheats."
-msgstr "Activa els trucs Action Replay."
-
-#. TRANSLATION: pcsx2, ppsspp
-msgctxt "game_options"
-msgid "GAME CHEATS"
-msgstr "TRUCS"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "WIDESCREEN PATCHES"
-msgstr "CORRECCIONS DE PANTALLA AMPLA"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Automatically use gamefixes as appropriate. Stacks with manual gamefixes."
+msgid "CHEATS"
 msgstr ""
-"Usar correccions de joc automàticament com apropiat. S’acumula amb les "
-"correccions manuals."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "AUTOMATIC GAMEFIXES"
-msgstr "CORRECCIÓ DE JOCS AUTOMÀTICA"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Stacks with auto gamefixes."
-msgstr "S’acumula amb correccions automàtiques de jocs."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "MANUAL GAMEFIXES"
-msgstr "CORRECCIONS DE JOC MANUALS"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU Add hack (Fixes Tri-Ace games boot crash)"
-msgstr "Truc VU Add (Corregeix l’arrencada en jocs Tri-Ace)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Compare hack (For Digimon Rumble Arena 2)"
-msgstr "FPU Compare hack (Per Digimon Rumble Arena 2)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Multiply hack (For Tales of Destiny)"
-msgstr "FPU Multiply hack (Per Tales of Destiny)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FPU Negative Div hack (For Gundam Games)"
-msgstr "FPU Negative Div hack (Per jocs Gundam)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU XGkick hack (For Eremental Gerad)"
-msgstr "Truc VU XGkick (Per Eremental Gerad)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "FFX videos fix (Fixes bad graphic overlays)"
-msgstr ""
-"Correcció de vídeos FFX (Corregeix superposicions gràfiques defectuoses)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "EE timing hack (Try if all else fails)"
-msgstr "Truc de temporització EE (Provar abans si la resta falla)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Skip MPEG hack (Skips videos/FMVs that freeze)"
-msgstr "Ometre truc MPEG (Omet vídeos/FMV que bloquegen)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OPH Flag hack (Try if game freezes)"
-msgstr "Truc OPH Flag (Provar si el joc es penja)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Handle DMAC writes when it busy"
-msgstr "Controla les escriptures DMAC mentre està ocupat"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Simulate VIF1 FIFO read (Fix slow loading)"
-msgstr "Simular lectura VIF1 FIFO (Correcció càrrega lenta)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Delay VIF1 Stalls (For SOCOM2 & Spy Hunter)"
-msgstr "Retardar parades VIF1 (Per SOCOM2 i Spy Hunter)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Enable the GIF FIFO (Wallace and Gromit, DJ Hero)"
-msgstr "Habilitar el GIF FIFO (Wallace i Gromit, DJ Hero)"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Preload TLB hack to avoid tlb miss on Goemon"
-msgstr "Precarregar truc TLB per evitar errades a Goemon"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU I bit hack - Scarface The World is Yours"
-msgstr "Truc VU I bit - Scarface: The World is Yours"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU I bit hack - Crash Tag Team Racing"
-msgstr "Truc VU I bit - Crash Tag Team racing"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "VU0 Kickstart to avoid sync problems with VU1"
-msgstr "VU0 Kickstart per evitar problemes de sincronia amb VU1"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Automatically use hardware hacks as appropriate. Refer to pcsx2-config for "
-"individual hacks."
-msgstr ""
-"Usar trucs de maquinari com apropiat. Referir-se a pcsx2-config per a trucs "
-"individuals."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
-msgstr "TRUCS DE MAQUINÀRI GRÀFIC AUTOMÀTIC"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "On (default)"
-msgstr "Engegat (per defecte)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8608,6 +8674,16 @@ msgstr "Linial"
 msgctxt "game_options"
 msgid "Auto Max Quality"
 msgstr "Qualitat Màx Auto"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Enables Action Replay cheats."
+msgstr "Activa els trucs Action Replay."
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "GAME CHEATS"
+msgstr "TRUCS"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9882,21 +9958,11 @@ msgstr "Suavitzar textures."
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
-msgid "BILINEAR FILTERING"
-msgstr "FILTRATGE BILINEAL"
-
-#. TRANSLATION: model2emu
-msgctxt "game_options"
 msgid ""
 "Enables mipmap usage and trilinear filtering. Doesn't work with some games."
 msgstr ""
 "Habilita ús de mip-mapping i filtratge tri-linear. No funciona en alguns "
 "jocs."
-
-#. TRANSLATION: model2emu
-msgctxt "game_options"
-msgid "TRILINEAR FILTERING"
-msgstr "FILTRATGE TRILINEAL"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -10303,11 +10369,6 @@ msgstr "COMPILACIÓ ASSÍNCRONA DE SHADERS"
 msgctxt "game_options"
 msgid "ANTI-ALIASING METHOD"
 msgstr "MÈTODE D’ANTIALIÀSING"
-
-#. TRANSLATION: yuzu, vita3k
-msgctxt "game_options"
-msgid "FXAA"
-msgstr "FXAA"
 
 #. TRANSLATION: yuzu
 msgctxt "game_options"
@@ -11048,6 +11109,193 @@ msgstr ""
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "Skip drawing screen effects. Cumulative."
+#~ msgstr "Ometre efectes de dibuixat de pantalla. Acumulatiu."
+
+#~ msgctxt "game_options"
+#~ msgid "SKIPDRAW HACK"
+#~ msgstr "TRUC D’OMETRE DIBUIXAT"
+
+#~ msgctxt "game_options"
+#~ msgid "1 (post FX)"
+#~ msgstr "1 (post FX)"
+
+#~ msgctxt "game_options"
+#~ msgid "2 (shadows)"
+#~ msgstr "2 (ombres)"
+
+#~ msgctxt "game_options"
+#~ msgid "3 (shadows)"
+#~ msgstr "3 (ombres)"
+
+#~ msgctxt "game_options"
+#~ msgid "4 (special FX)"
+#~ msgstr "4 (Efectes especials)"
+
+#~ msgctxt "game_options"
+#~ msgid "5 (other)"
+#~ msgstr "5 (altres)"
+
+#~ msgctxt "game_options"
+#~ msgid "Remove lines in internal resolution (fixes Soul Calibur)."
+#~ msgstr "Eliminar línies de resolució interna (corregeix Soul Calibur)."
+
+#~ msgctxt "game_options"
+#~ msgid "ALIGN SPRITE (HACK)"
+#~ msgstr "ALINIAR IMATGE (TRUC)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Render this many frames ahead to improve performance at the cost of input "
+#~ "lag."
+#~ msgstr ""
+#~ "Representeu tants fotogrames per endavant per millorar el rendiment a "
+#~ "costa del retard d'entrada."
+
+#~ msgctxt "game_options"
+#~ msgid "VSYNCS IN MTGS QUEUE"
+#~ msgstr "VSYNCS A LA CUA MTGS"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Good speedup and high compatibility; recommended but may cause issues."
+#~ msgstr ""
+#~ "Bona acceleració i alta compatibilitat; recomanat però pot causar "
+#~ "problemes."
+
+#~ msgctxt "game_options"
+#~ msgid "MICRO VU SPEED HACKS"
+#~ msgstr "TRUCS DE VELOCITAT MICRO VU"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack. May cause bad graphics (recommended)"
+#~ msgstr "mVU Flag Hack. Poc causar gràfics dolents (recomanat)"
+
+#~ msgctxt "game_options"
+#~ msgid "MTVU. May cause hanging (recommended on 3+ cores)"
+#~ msgstr "MTVU. Pot causar penjades (recomanat en 3 o més nuclis)"
+
+#~ msgctxt "game_options"
+#~ msgid "Instant VU1. May cause some graphical errors"
+#~ msgstr "VU1 instantani. Pot causar defectes gràfics"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack + MTVU"
+#~ msgstr "mVU Flag Hack + MTVU"
+
+#~ msgctxt "game_options"
+#~ msgid "mVU Flag Hack + Instant VU1"
+#~ msgstr "mVU Flag Hack + VU1 instantani"
+
+#~ msgctxt "game_options"
+#~ msgid "WIDESCREEN PATCHES"
+#~ msgstr "CORRECCIONS DE PANTALLA AMPLA"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Automatically use gamefixes as appropriate. Stacks with manual gamefixes."
+#~ msgstr ""
+#~ "Usar correccions de joc automàticament com apropiat. S’acumula amb les "
+#~ "correccions manuals."
+
+#~ msgctxt "game_options"
+#~ msgid "AUTOMATIC GAMEFIXES"
+#~ msgstr "CORRECCIÓ DE JOCS AUTOMÀTICA"
+
+#~ msgctxt "game_options"
+#~ msgid "Stacks with auto gamefixes."
+#~ msgstr "S’acumula amb correccions automàtiques de jocs."
+
+#~ msgctxt "game_options"
+#~ msgid "MANUAL GAMEFIXES"
+#~ msgstr "CORRECCIONS DE JOC MANUALS"
+
+#~ msgctxt "game_options"
+#~ msgid "VU Add hack (Fixes Tri-Ace games boot crash)"
+#~ msgstr "Truc VU Add (Corregeix l’arrencada en jocs Tri-Ace)"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Compare hack (For Digimon Rumble Arena 2)"
+#~ msgstr "FPU Compare hack (Per Digimon Rumble Arena 2)"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Multiply hack (For Tales of Destiny)"
+#~ msgstr "FPU Multiply hack (Per Tales of Destiny)"
+
+#~ msgctxt "game_options"
+#~ msgid "FPU Negative Div hack (For Gundam Games)"
+#~ msgstr "FPU Negative Div hack (Per jocs Gundam)"
+
+#~ msgctxt "game_options"
+#~ msgid "VU XGkick hack (For Eremental Gerad)"
+#~ msgstr "Truc VU XGkick (Per Eremental Gerad)"
+
+#~ msgctxt "game_options"
+#~ msgid "FFX videos fix (Fixes bad graphic overlays)"
+#~ msgstr ""
+#~ "Correcció de vídeos FFX (Corregeix superposicions gràfiques defectuoses)"
+
+#~ msgctxt "game_options"
+#~ msgid "EE timing hack (Try if all else fails)"
+#~ msgstr "Truc de temporització EE (Provar abans si la resta falla)"
+
+#~ msgctxt "game_options"
+#~ msgid "Skip MPEG hack (Skips videos/FMVs that freeze)"
+#~ msgstr "Ometre truc MPEG (Omet vídeos/FMV que bloquegen)"
+
+#~ msgctxt "game_options"
+#~ msgid "OPH Flag hack (Try if game freezes)"
+#~ msgstr "Truc OPH Flag (Provar si el joc es penja)"
+
+#~ msgctxt "game_options"
+#~ msgid "Handle DMAC writes when it busy"
+#~ msgstr "Controla les escriptures DMAC mentre està ocupat"
+
+#~ msgctxt "game_options"
+#~ msgid "Simulate VIF1 FIFO read (Fix slow loading)"
+#~ msgstr "Simular lectura VIF1 FIFO (Correcció càrrega lenta)"
+
+#~ msgctxt "game_options"
+#~ msgid "Delay VIF1 Stalls (For SOCOM2 & Spy Hunter)"
+#~ msgstr "Retardar parades VIF1 (Per SOCOM2 i Spy Hunter)"
+
+#~ msgctxt "game_options"
+#~ msgid "Enable the GIF FIFO (Wallace and Gromit, DJ Hero)"
+#~ msgstr "Habilitar el GIF FIFO (Wallace i Gromit, DJ Hero)"
+
+#~ msgctxt "game_options"
+#~ msgid "Preload TLB hack to avoid tlb miss on Goemon"
+#~ msgstr "Precarregar truc TLB per evitar errades a Goemon"
+
+#~ msgctxt "game_options"
+#~ msgid "VU I bit hack - Scarface The World is Yours"
+#~ msgstr "Truc VU I bit - Scarface: The World is Yours"
+
+#~ msgctxt "game_options"
+#~ msgid "VU I bit hack - Crash Tag Team Racing"
+#~ msgstr "Truc VU I bit - Crash Tag Team racing"
+
+#~ msgctxt "game_options"
+#~ msgid "VU0 Kickstart to avoid sync problems with VU1"
+#~ msgstr "VU0 Kickstart per evitar problemes de sincronia amb VU1"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Automatically use hardware hacks as appropriate. Refer to pcsx2-config "
+#~ "for individual hacks."
+#~ msgstr ""
+#~ "Usar trucs de maquinari com apropiat. Referir-se a pcsx2-config per a "
+#~ "trucs individuals."
+
+#~ msgctxt "game_options"
+#~ msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
+#~ msgstr "TRUCS DE MAQUINÀRI GRÀFIC AUTOMÀTIC"
+
+#~ msgctxt "game_options"
+#~ msgid "On (default)"
+#~ msgstr "Engegat (per defecte)"
 
 #~ msgctxt "game_options"
 #~ msgid "Choose machine type only when playing ColecoVision roms."
