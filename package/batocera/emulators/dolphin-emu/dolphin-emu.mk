@@ -50,4 +50,6 @@ define DOLPHIN_EMU_EVMAPY
         $(TARGET_DIR)/usr/share/evmapy
 endef
 
+DOLPHIN_EMU_POST_INSTALL_TARGET_HOOKS = DOLPHIN_EMU_EVMAPY
+
 $(eval $(cmake-package))
