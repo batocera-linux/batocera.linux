@@ -1962,15 +1962,15 @@ ps2:
   manufacturer: Sony
   release: 2000
   hardware: console
-  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd]
+  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2], incompatible_extensions: [m3u]  }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
-      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY] }
+      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
     play:
-      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:ps2
   comment_fr: |
