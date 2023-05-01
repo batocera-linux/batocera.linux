@@ -742,12 +742,12 @@ libretro:
                         prompt:      RENDERING RESOLUTION
                         description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                         choices:
-                            "1x native (640x528)":  x1 (640 x 528)
-                            "2x 720p (1280x1056)":  x2 (1280 x 1056)
-                            "3x 1080p (1920x1584)": x3 (1920 x 1584)
-                            "4x 1440p (2560x2112)": x4 (2560 x 2112)
-                            "5x (3200x2640)":       x5 (3200 x 2640)
-                            "6x 4K (3840x3168)":    x6 (3840 x 3168)
+                            "1x native (640x528)":  'x1 (640 x 528)'
+                            "2x 720p (1280x1056)":  'x2 (1280 x 1056)'
+                            "3x 1080p (1920x1584)": 'x3 (1920 x 1584)'
+                            "4x 1440p (2560x2112)": 'x4 (2560 x 2112)'
+                            "5x (3200x2640)":       'x5 (3200 x 2640)'
+                            "6x 4K (3840x3168)":    'x6 (3840 x 3168)'
                     wii_language:
                         prompt:      LANGUAGE
                         description: Wii NAND's language setting.
@@ -773,10 +773,10 @@ libretro:
                         prompt:      UBERSHADERS
                         description: May not work well on all hardware. Hybrid is preferred, where supported.
                         choices:
-                            "No Ubershaders":        sync
-                            "Exclusive Ubershaders": sync UberShaders
-                            "Hybrid Ubershaders":    a-sync UberShaders
-                            "Skip Drawing":          a-sync Skip Rendering
+                            "No Ubershaders":        'sync'
+                            "Exclusive Ubershaders": 'sync UberShaders'
+                            "Hybrid Ubershaders":    'a-sync UberShaders'
+                            "Skip Drawing":          'a-sync Skip Rendering'
                     wii_anisotropic:
                         group: ADVANCED OPTIONS
                         prompt:      ANISOTROPIC FILTERING
