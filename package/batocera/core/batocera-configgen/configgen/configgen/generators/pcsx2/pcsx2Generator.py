@@ -215,12 +215,12 @@ def configureINI(config_directory, bios_directory, system, controllers):
     if system.isOptSet('pcsx2_ratio'):
         pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", system.config["pcsx2_ratio"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", "4:3")
+        pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", "Auto 4:3/3:2")
     # Vsync
     if system.isOptSet('pcsx2_vsync'):
         pcsx2INIConfig.set("EmuCore/GS","VsyncEnable", system.config["pcsx2_vsync"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS","VsyncEnable", "1")
+        pcsx2INIConfig.set("EmuCore/GS","VsyncEnable", "0")
     # Resolution
     if system.isOptSet('pcsx2_resolution'):
         pcsx2INIConfig.set("EmuCore/GS", "upscale_multiplier", system.config["pcsx2_resolution"])
@@ -235,7 +235,7 @@ def configureINI(config_directory, bios_directory, system, controllers):
     if system.isOptSet('pcsx2_fmv_ratio'):
         pcsx2INIConfig.set("EmuCore/GS", "FMVAspectRatioSwitch", system.config["pcsx2_fmv_ratio"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS", "FMVAspectRatioSwitch", "4:3")
+        pcsx2INIConfig.set("EmuCore/GS", "FMVAspectRatioSwitch", "Auto 4:3/3:2")
     # Mipmapping
     if system.isOptSet('pcsx2_mipmapping'):
         pcsx2INIConfig.set("EmuCore/GS", "mipmap_hw", system.config["pcsx2_mipmapping"])
@@ -255,7 +255,7 @@ def configureINI(config_directory, bios_directory, system, controllers):
     if system.isOptSet('pcsx2_dithering'):
         pcsx2INIConfig.set("EmuCore/GS", "dithering_ps2", system.config["pcsx2_dithering"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS", "dithering_ps2", "0")
+        pcsx2INIConfig.set("EmuCore/GS", "dithering_ps2", "2")
     # Texture Preloading
     if system.isOptSet('pcsx2_texture_loading'):
         pcsx2INIConfig.set("EmuCore/GS", "texture_preloading", system.config["pcsx2_texture_loading"])
@@ -270,7 +270,7 @@ def configureINI(config_directory, bios_directory, system, controllers):
     if system.isOptSet('pcsx2_blur'):
         pcsx2INIConfig.set("EmuCore/GS", "pcrtc_antiblur", system.config["pcsx2_blur"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS", "pcrtc_antiblur", "false")
+        pcsx2INIConfig.set("EmuCore/GS", "pcrtc_antiblur", "true")
     # Integer Scaling
     if system.isOptSet('pcsx2_scaling'):
         pcsx2INIConfig.set("EmuCore/GS", "IntegerScaling", system.config["pcsx2_scaling"])
@@ -290,7 +290,7 @@ def configureINI(config_directory, bios_directory, system, controllers):
     if system.isOptSet('pcsx2_bilinear_filtering'):
         pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", system.config["pcsx2_bilinear_filtering"])
     else:
-        pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", "0")
+        pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", "1")
         
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
