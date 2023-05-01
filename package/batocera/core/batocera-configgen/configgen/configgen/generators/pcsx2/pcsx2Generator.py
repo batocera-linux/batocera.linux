@@ -21,6 +21,14 @@ class Pcsx2Generator(Generator):
 
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
 
+        # Remove older config files if present
+        inisDir = os.path.join(pcsx2ConfigDir, "inis")
+        files_to_remove = ["PCSX2_ui.ini", "PCSX2_vm.ini", "GS.ini"]
+        for filename in files_to_remove:
+            file_path = os.path.join(inisDir, filename)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
         # Config files
         configureReg(pcsx2ConfigDir)
         configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, playersControllers)
