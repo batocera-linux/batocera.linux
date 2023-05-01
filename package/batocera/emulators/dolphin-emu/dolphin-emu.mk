@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version: 5.0-19316 - Commits on Apr 29, 2023
-DOLPHIN_EMU_VERSION = 8e6e6f3c4ac691f3db9c045945a61ecf271afdd7
+# Version: 5.0-19343 - Commits on May 1, 2023
+DOLPHIN_EMU_VERSION = b514df1227f89fcc6f8e6a2cdd2abae8a100d054
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
@@ -24,9 +24,7 @@ DOLPHIN_EMU_CONF_OPTS += -DUSE_UPNP=OFF
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_TESTS=OFF
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_AUTOUPDATE=OFF
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_ANALYTICS=OFF
-# Disable QT until we fully support QT6, enable OpenGL as a result.
-DOLPHIN_EMU_CONF_OPTS += -DENABLE_QT=OFF
-DOLPHIN_EMU_CONF_OPTS += -DENABLE_EGL=ON
+DOLPHIN_EMU_CONF_OPTS += -DENABLE_QT=ON
 
 DOLPHIN_EMU_MAKE_ENV += LDFLAGS="-Wl,--copy-dt-needed-entries"
 DOLPHIN_EMU_CONF_ENV += LDFLAGS="-Wl,--copy-dt-needed-entries"

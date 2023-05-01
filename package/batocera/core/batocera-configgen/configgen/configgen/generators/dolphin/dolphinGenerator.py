@@ -68,9 +68,9 @@ class DolphinGenerator(Generator):
         # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", "False")
 
-        # only 1 window (fixes exit and gui display)
-        dolphinSettings.set("Display", "RenderToMain", "True")
-        dolphinSettings.set("Display", "Fullscreen", "True")
+        # fixes exit and gui display
+        dolphinSettings.remove_option("Display", "RenderToMain")
+        dolphinSettings.remove_option("Display", "Fullscreen")
 
         # Enable Cheats
         if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats"):
@@ -277,7 +277,8 @@ class DolphinGenerator(Generator):
 
         # Check what version we've got
         if os.path.isfile("/usr/bin/dolphin-emu"):
-            commandArray = ["dolphin-emu", "-e", rom]
+            # use the -b 'batch' option for nicer exit
+            commandArray = ["dolphin-emu", "-b", "-e", rom]
         else:
             commandArray = ["dolphin-emu-nogui", "-e", rom]
         

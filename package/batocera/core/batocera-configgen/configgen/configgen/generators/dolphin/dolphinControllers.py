@@ -16,7 +16,7 @@ eslog = get_logger(__name__)
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom, guns):
 
-    generateHotkeys(playersControllers)
+    #generateHotkeys(playersControllers)
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns, system, rom)
