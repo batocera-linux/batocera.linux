@@ -1,5 +1,5 @@
-config BR2_PACKAGE_PCSX2
-    bool "pcsx2"
+config BR2_PACKAGE_PCSX2_AVX2
+    bool "pcsx2-avx2"
     depends on BR2_x86_64
     depends on BR2_PACKAGE_XORG7
     select BR2_PACKAGE_QT6
@@ -35,5 +35,6 @@ config BR2_PACKAGE_PCSX2
     select BR2_PACKAGE_QT6SVG
     help
       PCSX2 is a free and open-source PlayStation 2 (PS2) emulator.
+      This version requires a CPU with AVX2 support.
       
       https://github.com/PCSX2/pcsx2
