@@ -7352,13 +7352,21 @@ pcsx2:
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x (640x480)":   1
-                "2x (1280x960)":  2
-                "3x (1920x1440)": 3
-                "4x (2560x1920)": 4
-                "5x (3200x2400)": 5
-                "6x (3840x2880)": 6
-                "7x (4480x3360)": 7
+                "Native (PS2)(Default)": 1
+                "1.25x Native":          1.25
+                "1.5x Native":           1.5
+                "1.75x Native":          1.75
+                "2x Native (~720p)":     2
+                "2.25x Native":          2.25
+                "2.5x Native":           2.5
+                "2.75x Native":          2.75
+                "3x Native (~1080p)":    3
+                "3.5x Native":           3.5
+                "4x Native (~1440p/2K)": 4
+                "5x Native (~1620p)":    5
+                "6x Native (~2160p/4K)": 6
+                "7x Native (~2520p)":    7
+                "8x Native (~2880p/5K)": 8
         pcsx2_mipmapping:
             submenu: RENDERING
             prompt: MIPMAPPING
