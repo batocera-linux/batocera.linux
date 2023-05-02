@@ -32,6 +32,7 @@ config BR2_PACKAGE_PCSX2
     select BR2_PACKAGE_QT6BASE_DBUS
     select BR2_PACKAGE_QT6BASE_FONTCONFIG
     select BR2_PACKAGE_QT6TOOLS
+    select BR2_PACKAGE_QT6SVG
     help
       PCSX2 is a free and open-source PlayStation 2 (PS2) emulator.
       This version requires a CPU with AVX2 support.

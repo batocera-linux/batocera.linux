@@ -41,7 +41,7 @@ class Pcsx2Generator(Generator):
         if rom == "config":
             commandArray = ["/usr/pcsx2/bin/pcsx2-qt"]
         else:
-            commandArray = ["/usr/pcsx2/bin/pcsx2-qt", rom]
+            commandArray = ["/usr/pcsx2/bin/pcsx2-qt", "-nogui", rom]
         
         return Command.Command(
             array=commandArray,
@@ -309,6 +309,32 @@ def configureINI(config_directory, bios_directory, system, controllers):
     pcsx2INIConfig.set("InputSources", "SDL", "true")
     pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
     
+    ## [Hotkeys]
+    if not pcsx2INIConfig.has_section("Hotkeys"):
+        pcsx2INIConfig.add_section("Hotkeys")
+    
+    pcsx2INIConfig.set("Hotkeys", "ToggleFullscreen", "Keyboard/Alt & Keyboard/Return")
+    pcsx2INIConfig.set("Hotkeys", "CycleAspectRatio", "Keyboard/F6")
+    pcsx2INIConfig.set("Hotkeys", "CycleInterlaceMode", "Keyboard/F5")
+    pcsx2INIConfig.set("Hotkeys", "CycleMipmapMode", "Keyboard/Insert")
+    pcsx2INIConfig.set("Hotkeys", "GSDumpMultiFrame", "Keyboard/Control & Keyboard/Shift & Keyboard/F8")
+    pcsx2INIConfig.set("Hotkeys", "Screenshot", "Keyboard/F8")
+    pcsx2INIConfig.set("Hotkeys", "GSDumpSingleFrame", "Keyboard/Shift & Keyboard/F8")
+    pcsx2INIConfig.set("Hotkeys", "ToggleSoftwareRendering", "Keyboard/F9")
+    pcsx2INIConfig.set("Hotkeys", "ZoomIn", "Keyboard/Control & Keyboard/Plus")
+    pcsx2INIConfig.set("Hotkeys", "ZoomOut", "Keyboard/Control & Keyboard/Minus")
+    pcsx2INIConfig.set("Hotkeys", "InputRecToggleMode", "Keyboard/Shift & Keyboard/R")
+    pcsx2INIConfig.set("Hotkeys", "LoadStateFromSlot", "Keyboard/F3")
+    pcsx2INIConfig.set("Hotkeys", "SaveStateToSlot", "Keyboard/F1")
+    pcsx2INIConfig.set("Hotkeys", "NextSaveStateSlot", "Keyboard/F2")
+    pcsx2INIConfig.set("Hotkeys", "PreviousSaveStateSlot", "Keyboard/Shift & Keyboard/F2")
+    pcsx2INIConfig.set("Hotkeys", "OpenPauseMenu", "Keyboard/Escape")
+    pcsx2INIConfig.set("Hotkeys", "ToggleFrameLimit", "Keyboard/F4")
+    pcsx2INIConfig.set("Hotkeys", "TogglePause", "Keyboard/Space")
+    pcsx2INIConfig.set("Hotkeys", "ToggleSlowMotion", "Keyboard/Shift & Keyboard/Backtab")
+    pcsx2INIConfig.set("Hotkeys", "ToggleTurbo", "Keyboard/Tab")
+    pcsx2INIConfig.set("Hotkeys", "HoldTurbo", "Keyboard/Period")
+
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
         pcsx2INIConfig.add_section("Pad")
