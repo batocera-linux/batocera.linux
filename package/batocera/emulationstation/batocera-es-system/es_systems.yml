@@ -1961,7 +1961,7 @@ ps2:
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2] }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY] }
