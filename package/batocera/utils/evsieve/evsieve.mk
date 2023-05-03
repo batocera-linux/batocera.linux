@@ -4,7 +4,9 @@
 #
 ################################################################################
 
-EVSIEVE_VERSION = v1.3.1
+#EVSIEVE_VERSION = v1.3.1
+# 7e3aab06f43cef3ee8772f0da98624ced9f59bf2 minimum required for the revert axis feature
+EVSIEVE_VERSION=7e3aab06f43cef3ee8772f0da98624ced9f59bf2
 EVSIEVE_SOURCE = foo-$(EVSIEVE_VERSION).tar.gz
 EVSIEVE_SITE = $(call github,KarsMulder,evsieve,$(EVSIEVE_VERSION))
 EVSIEVE_LICENSE = GPLv2
