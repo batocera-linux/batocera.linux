@@ -49,25 +49,27 @@ index 0064d85..a4289f3 100644
    if (card < 0)
    {
      for (int try_card = 0; try_card < MAX_CARDS_TO_TRY; try_card++)
-@@ -304,12 +326,27 @@ bool DRMDisplay::GetCurrentMode(u32* width, u32* height, float* refresh_rate, in
+@@ -325,7 +325,21 @@ bool DRMDisplay::GetCurrentMode(u32* width, u32* height, float* refresh_rate, in
+     Log_ErrorPrintf("drmModeGetResources() failed: %d (%s)", errno, strerror(errno));
      return false;
    }
- 
+-
++  
 +  // batocera
 +  {
 +    FILE* fdDrmConn;
 +    int drmConnRead;
 +    if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
 +      if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	if(drmConnRead>=0 && drmConn<resources->count_connectors) {
-+	  drmConn = drmConnRead;
-+	}
++        if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++          drmConn = drmConnRead;
++        }
 +      }
 +    }
 +  }
 +  //
-+
-   Common::ScopeGuard resources_guard([resources]() { drmModeFreeResources(resources); });
++  
+   ScopedGuard resources_guard([resources]() { drmModeFreeResources(resources); });
    drmModeConnector* connector_ptr = nullptr;
    if (connector < 0)
    {

@@ -1,20 +1,20 @@
 diff -u -r /home/romain/duckstation/CMakeLists.txt ./CMakeLists.txt
 --- /home/romain/duckstation/CMakeLists.txt	2021-02-13 00:29:48.693304818 +0100
 +++ ./CMakeLists.txt	2021-02-13 00:52:42.082500283 +0100
-@@ -35,6 +35,7 @@
+@@ -49,6 +49,7 @@
  endif()
- if(LINUX OR ANDROID)
+ if((LINUX OR FREEBSD) OR ANDROID)
    option(USE_EGL "Support EGL OpenGL context creation" ON)
 +  option(USE_MALI "Link with libmali for EGL support" OFF)
  endif()
  if(LINUX AND NOT ANDROID)
    option(USE_DRMKMS "Support DRM/KMS display and contexts" OFF)
 @@ -254,7 +254,7 @@
- elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
-   set(CPU_ARCH "aarch64")
- elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a" OR
--       ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
-+       ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv8l")
+ elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+  set(CPU_ARCH "aarch64")
+ elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv7-a" OR
+-       "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv7l")
++       "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv7l" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv8l")
    set(CPU_ARCH "aarch32")
    if(ANDROID)
      # Force ARM mode, since apparently ANDROID_ARM_MODE isn't working..
@@ -81,21 +81,21 @@ diff -u -r /home/romain/duckstation/dep/glad/CMakeLists.txt ./dep/glad/CMakeList
 diff -u -r /home/romain/duckstation/src/common/CMakeLists.txt ./src/common/CMakeLists.txt
 --- /home/romain/duckstation/src/common/CMakeLists.txt	2021-02-13 00:29:48.885298307 +0100
 +++ ./src/common/CMakeLists.txt	2021-02-13 00:42:20.848512028 +0100
-@@ -175,12 +175,13 @@
-     )
-   endif()
-   if(USE_DRMKMS)
-+    target_compile_definitions(common PRIVATE "-DEGL_NO_X11=1")
-     target_compile_definitions(common PRIVATE "-DUSE_GBM=1")
-     target_sources(common PRIVATE
-       gl/context_egl_gbm.cpp
-       gl/context_egl_gbm.h
-     )
--    target_link_libraries(common PUBLIC GBM::GBM)
-+    target_link_libraries(common PUBLIC gbm EGL)
-   endif()
- endif()
- 
+@@ -183,12 +183,13 @@ if(ENABLE_OPENGL)
+       )
+     endif()
+     if(USE_DRMKMS)
++      target_compile_definitions(common PRIVATE "-DEGL_NO_X11=1")
+       target_compile_definitions(common PRIVATE "-DUSE_GBM=1")
+       target_sources(common PRIVATE
+         gl/context_egl_gbm.cpp
+         gl/context_egl_gbm.h
+       )
+-      target_link_libraries(common PUBLIC GBM::GBM)
++      target_link_libraries(common PUBLIC gbm EGL)
+     endif()
+     if(USE_FBDEV)
+       target_compile_definitions(common PRIVATE "-DUSE_FBDEV=1")
 diff -u -r /home/romain/duckstation/src/duckstation-nogui/CMakeLists.txt ./src/duckstation-nogui/CMakeLists.txt
 --- /home/romain/duckstation/src/duckstation-nogui/CMakeLists.txt	2021-02-13 00:29:48.901297765 +0100
 +++ ./src/duckstation-nogui/CMakeLists.txt	2021-02-13 00:56:19.913224314 +0100
