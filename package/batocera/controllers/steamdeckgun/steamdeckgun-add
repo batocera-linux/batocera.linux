@@ -24,9 +24,9 @@ SDHAT0=hat0
 SDHAT1=hat1
 test "${SDGUN_HAND}" = "right" && SDHAT0=hat1 && SDHAT1=hat0
 
-SDLEFT=btn:base2
-SDRIGHT=btn:gear_up
-test "${SDGUN_HAND}" = "right" && SDLEFT=btn:base && SDRIGHT=btn:gear_down
+SDLEFT=btn:trigger_happy2
+SDRIGHT=btn:trigger_happy4
+test "${SDGUN_HAND}" = "right" && SDLEFT=btn:trigger_happy1 && SDRIGHT=btn:trigger_happy3
 
 if test -e /var/run/steamdeckgun.pid
 then
@@ -34,5 +34,13 @@ then
     kill -15 "${LASTPID}"
 fi
 
-evsieve --input "${DEVNAME}" persist=exit --block abs:x abs:y --map abs:${SDHAT0}x abs:x --map abs:${SDHAT0}y abs:y --map btn:0 key:f1 --map "${SDLEFT}" btn:left --map "${SDRIGHT}" btn:right --block btn:base btn:base2 btn:south btn:east btn:north btn:west btn:tl btn:tr btn:tl2 btn:tr2 btn:select btn:start btn:mode btn:thumbl btn:thumbr btn:gear_up btn:gear_down btn:dpad_up btn:dpad_down btn:dpad_left btn:dpad_right abs:rx abs:ry abs:z abs:rz abs:hat0x abs:hat0y abs:hat1x abs:hat1y btn:thumb btn:thumb2 --output name="${SDGUN_NAME}" >/dev/null 2>/var/log/steamdeckgun.log &
+evsieve --input "${DEVNAME}" persist=exit \
+	--block abs:x abs:y \
+	--map abs:${SDHAT0}x abs:x --map abs:${SDHAT0}y abs:y:32767-x \
+	--map btn:base key:f1 \
+	--map "${SDLEFT}" btn:left --map "${SDRIGHT}" btn:right \
+	--block btn:thumb btn:thumb2 btn:south btn:east btn:north btn:west btn:tl btn:tr btn:tl2 btn:tr2 \
+	btn:select btn:start btn:mode btn:thumbl btn:thumbr btn:dpad_up btn:dpad_down btn:dpad_left btn:dpad_right \
+	btn:trigger_happy1 btn:trigger_happy2 btn:trigger_happy3 btn:trigger_happy4 \
+	--output name="${SDGUN_NAME}" >/dev/null 2>/var/log/steamdeckgun.log &
 echo $! > /var/run/steamdeckgun.pid
