@@ -2,13 +2,12 @@ diff --git a/src/common/file_system.cpp b/src/common/file_system.cpp
 index ceb2f08..0fa5a04 100644
 --- a/src/common/file_system.cpp
 +++ b/src/common/file_system.cpp
-@@ -683,6 +683,9 @@ std::string GetDisplayNameFromPath(const std::string_view& path)
+@@ -344,7 +344,7 @@ static std::string_view::size_type GetLastSeperatorPosition(const std::string_vi
  
- std::string_view GetPathDirectory(const std::string_view& path)
+ std::string FileSystem::GetDisplayNameFromPath(const std::string_view& path)
  {
-+
+-  return std::string(Path::GetFileName(path));
 +  return "/usr/share/duckstation";
-+
-   std::string::size_type pos = GetLastSeperatorPosition(path, false);
-   if (pos == std::string_view::npos)
-     return {};
+ }
+ 
+ std::string_view Path::GetDirectory(const std::string_view& path)

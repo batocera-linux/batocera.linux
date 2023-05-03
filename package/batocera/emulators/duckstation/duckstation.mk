@@ -3,19 +3,21 @@
 # duckstation
 #
 ################################################################################
-# Version.: Commits on Jul 08, 2022
-DUCKSTATION_VERSION = 82965f741e81e4d2f7e1b2abdc011e1f266bfe7f
+# Version: Commits on May 2, 2023
+DUCKSTATION_VERSION = 4cbb6e224787b5ae90b38d3cadffc4ccbe5754f0
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
 DUCKSTATION_LICENSE = GPLv2
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg libcurl ecm
+
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DUCKSTATION_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 DUCKSTATION_CONF_OPTS += -DENABLE_DISCORD_PRESENCE=OFF
 DUCKSTATION_CONF_OPTS += -DUSE_DRMKMS=ON
+
 DUCKSTATION_CONF_ENV += LDFLAGS=-lpthread
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
@@ -40,9 +42,9 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_QT5),y)
+ifeq ($(BR2_PACKAGE_QT6),y)
     DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON -DBUILD_SDL_FRONTEND=OFF
-    DUCKSTATION_DEPENDENCIES += qt5base qt5tools qt5multimedia
+    DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg
 else
     DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=OFF -DBUILD_SDL_FRONTEND=OFF -DBUILD_NOGUI_FRONTEND=ON
     DUCKSTATION_DEPENDENCIES += libdrm sdl2 libevdev
@@ -67,11 +69,8 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/share/duckstation
 
     $(INSTALL) -D $(@D)/buildroot-build/bin/duckstation* $(TARGET_DIR)/usr/bin/
-    cp -R $(@D)/buildroot-build/bin/database      $(TARGET_DIR)/usr/share/duckstation/
-    rm -f $(TARGET_DIR)/usr/share/duckstation/database/gamecontrollerdb.txt
-    cp -R $(@D)/buildroot-build/bin/inputprofiles $(TARGET_DIR)/usr/share/duckstation/
-    cp -R $(@D)/buildroot-build/bin/resources     $(TARGET_DIR)/usr/share/duckstation/
-    cp -R $(@D)/buildroot-build/bin/shaders       $(TARGET_DIR)/usr/share/duckstation/
+    cp -R $(@D)/buildroot-build/bin/resources $(TARGET_DIR)/usr/share/duckstation/
+    rm -f $(TARGET_DIR)/usr/share/duckstation/resources/gamecontrollerdb.txt
 
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
     cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys $(TARGET_DIR)/usr/share/evmapy
