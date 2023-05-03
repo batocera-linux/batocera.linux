@@ -103,7 +103,7 @@ then
     # down:  button_6 / down
     # left:  button_7 / left
     # right: button_8 / right
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map abs:hat0x abs:x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Wii Gun" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map abs:hat0x abs:x:1023-x --map abs:hat0y abs:y --map key:next btn:middle --map btn:east btn:left --map btn:south btn:right --map btn:2 btn:3 --map btn:1 btn:2 --map key:previous btn:1  --map btn:mode btn:4 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Wii Gun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
     echo "gun" > "${MODEFILE}"
 else
@@ -112,7 +112,7 @@ else
 	DEV1=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote IR$'      | head -1 | cut -f 1)
 	DEV2=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote$'         | head -1 | cut -f 1)
 	DEV3=$(echo "${CHILDREN}" | grep -E 'Nintendo Wii Remote Nunchuk$' | head -1 | cut -f 1)
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield abs:hat0x abs:x --map yield abs:hat0y abs:y --map yield key:next btn:middle --map yield btn:east btn:left --map yield btn:south btn:right --map yield btn:2 btn:3 --map yield btn:1 btn:2 --map yield key:previous btn:1  --map yield btn:mode btn:4 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --input "${DEV3}" --map yield btn:c btn:right --map yield btn:z btn:left --block abs:rx abs:ry abs:rz --map yield abs:hat0x:-30~..~-31 btn:7:1 --map yield abs:hat0x:~-31..-30~ btn:7:0 --map yield abs:hat0x:~30..31~ btn:8:1 --map yield abs:hat0x:31~..~30 btn:8:0 --block abs:hat0x --map yield abs:hat0y:-30~..~-31 btn:6:1 --map yield abs:hat0y:~-31..-30~ btn:6:0 --map yield abs:hat0y:~30..31~ btn:5:1 --map yield abs:hat0y:31~..~30 btn:5:0 --block abs:hat0x abs:hat0y --output name="Wii Zapper" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield abs:hat0x abs:x:1023-x --map yield abs:hat0y abs:y --map yield key:next btn:middle --map yield btn:east btn:left --map yield btn:south btn:right --map yield btn:2 btn:3 --map yield btn:1 btn:2 --map yield key:previous btn:1  --map yield btn:mode btn:4 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --input "${DEV3}" --map yield btn:c btn:right --map yield btn:z btn:left --block abs:rx abs:ry abs:rz --map yield abs:hat0x:-30~..~-31 btn:7:1 --map yield abs:hat0x:~-31..-30~ btn:7:0 --map yield abs:hat0x:~30..31~ btn:8:1 --map yield abs:hat0x:31~..~30 btn:8:0 --block abs:hat0x --map yield abs:hat0y:-30~..~-31 btn:6:1 --map yield abs:hat0y:~-31..-30~ btn:6:0 --map yield abs:hat0y:~30..31~ btn:5:1 --map yield abs:hat0y:31~..~30 btn:5:0 --block abs:hat0x abs:hat0y --output name="Wii Zapper" >/dev/null 2>"${LOGFILE}" &
 	echo $! > "${PIDFILE}"
 	echo "zapper" > "${MODEFILE}"
 	echo "${DEV1}"  > "${DEVSFILE}"
