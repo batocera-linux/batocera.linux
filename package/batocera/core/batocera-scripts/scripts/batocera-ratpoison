@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+import os
+import sys
+import re
+import time
+import subprocess
+
+def launchRatpoison():
+	if os.path.exists('/var/run/rpready'):
+		os.remove('/var/run/rpready')
+	subprocess.call(f'LC_ALL=C startx /usr/bin/ratpoison -- :1', shell=True)
+
+def killRatpoison():
+	runRatpoisonCommand('quit')
+	if os.path.exists('/var/run/rpready'):
+		os.remove('/var/run/rpready')
+
+def doScreenshot():
+	screenshotFolder = '/userdata/screenshots'
+	if not os.path.exists(screenshotFolder):
+		os.makedirs(screenshotFolder)
+	screenshotFile=f'{screenshotFolder}/screenshot-{time.strftime("%Y.%m.%d-%Hh%M.%S", time.localtime())}.png'
+	subprocess.call(f'ffmpeg -f x11grab -i :1.0 -vframes 1 "{screenshotFile}" 2>/dev/null', shell=True)
+
+def showMessage(message):
+	runRatpoisonCommand(f'echo {message}')
+
+def setReady():
+	with open('/var/run/rpready', "w") as readyFile:
+		readyFile.write("")
+
+def runRatpoisonCommand(command):
+	print(f'Running ratpoison command {command}')
+	try:
+		subprocess.call(f'LC_ALL=C ratpoison -d :1 -c "{command}"', shell=True)
+	except:
+		print('Command returned an error.')
+		return False
+
+def getRatpoisonCommand(command):
+	print(f'Running ratpoison command {command} (Expecting output)')
+	try:
+		tempVar = subprocess.check_output(f'LC_ALL=C ratpoison -d :1 -c "{command}"', shell=True).decode(sys.stdout.encoding)
+	except:
+		return False
+	print(f'Ratpoison Output = {tempVar}')
+	return tempVar.strip()
+
+if __name__ == '__main__':
+	if len(sys.argv) == 1:
+		print('Error, command needed.')
+	elif sys.argv[1] == 'launch':
+		launchRatpoison()
+	elif sys.argv[1] == 'reset':
+		killRatpoison()
+	elif sys.argv[1] == 'switchapp':
+		altTab()
+	elif sys.argv[1] == 'message':
+		showMessage(sys.argv[2])
+	elif sys.argv[1] == 'ready':
+		setReady()
+	elif sys.argv[1] == 'screenshot':
+		doScreenshot()

@@ -12,6 +12,9 @@
 - Added Fake-08 (more accurate libretro-based Pico-8 emulator)
 - Mame additional MacIntosh options
 - Libretro Vice core xscpu64
+- Re-added GameCube-GBA link capability including eReader
+- Re-added Cemu multi-screen display
+- Added new screenshot function when in multi-window mode (Hotkey + L1)
 - sinden gun border colors modifiable via es menu (white, red, green, blue)
 - sinden gun options to control camera contrast, brightness and exposure
 - pad2keys for guns (use actions_gun1, actions_gun2, ... and "left", "right", "middle", "1", "2", ... for trigger)
@@ -70,6 +73,7 @@
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
+- dolphin to 5.0-17995
 - supermodel to Mar 19, 2023 build
 - Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 - Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)

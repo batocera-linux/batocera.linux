@@ -226,6 +226,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             mouseChanged = True
             videoMode.changeMouse(True)
 
+        useRatpoison = generator.useRatpoison(system.config)
+
         # SDL VSync is a big deal on OGA and RPi4
         if system.isOptSet('sdlvsync') and system.getOptBoolean('sdlvsync') == False:
             system.config["sdlvsync"] = '0'
@@ -240,7 +242,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         # run the emulator
         try:
             from Evmapy import Evmapy
-            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns)
+            Evmapy.start(systemName, system.config, effectiveCore, effectiveRomConfiguration, playersControllers, guns)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
             if executionDirectory is not None:
@@ -260,6 +262,9 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                     if generator.hasInternalMangoHUDCall() == False:
                         cmd.array.insert(0, "mangohud")
 
+            if useRatpoison:
+                cmd.env["ALTDISPLAY"] = ":1"
+
             if profiler:
                 profiler.disable()
             exitCode = runCommand(cmd)
@@ -268,6 +273,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         finally:
             Evmapy.stop()
 
+        if useRatpoison:
+            subprocess.Popen('batocera-ratpoison reset', shell=True)
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -515,6 +522,9 @@ def runCommand(command):
     global proc
 
     command.env.update(os.environ)
+    # Send to alternate display for ratpoison or future use
+    if "ALTDISPLAY" in command.env:
+        command.env["DISPLAY"] = command.env["ALTDISPLAY"]
     eslog.debug(f"command: {str(command)}")
     eslog.debug(f"command: {str(command.array)}")
     eslog.debug(f"env: {str(command.env)}")

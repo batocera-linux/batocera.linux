@@ -188,6 +188,13 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
         'l2':             'pageup',
         'r2':             'pagedown'
     }
+    gbaMapping = {
+        'b':        'Buttons/B',        'a':        'Buttons/A',
+        'pageup':   'Buttons/L',        'pagedown': 'Buttons/R',
+        'select':   'Buttons/SELECT',   'start':    'Buttons/START',
+        'up':       'D-Pad/Up',         'down':     'D-Pad/Down',
+        'left':     'D-Pad/Left',       'right':    'D-Pad/Right'
+    }
 
     # This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"       # Define ROM configuration name
@@ -202,6 +209,7 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 line = cconfig.readline()
 
     generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "GBA.ini", "GBA", gbaMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")

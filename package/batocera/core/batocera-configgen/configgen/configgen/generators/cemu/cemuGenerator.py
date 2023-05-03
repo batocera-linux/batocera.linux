@@ -14,6 +14,7 @@ import filecmp
 import subprocess
 import glob
 from . import cemuControllers
+import utils.videoMode as videoMode
 
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -60,7 +61,19 @@ class CemuGenerator(Generator):
             commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rpxrom]
             # force no menubar
             commandArray.append("--force-no-menubar")
-        
+
+        # Dual view option
+        if system.isOptSet("cemu_dualview") and system.config["cemu_dualview"] != "none":
+            if system.config["cemu_dualview"].startswith('vert'):
+                dualviewOrientation = 'vert'
+            else:
+                dualviewOrientation = 'horiz'
+            if system.config["cemu_dualview"].endswith('1'):
+                dualviewSize = .5
+            else:
+                dualviewSize = .67
+            videoMode.setupRatpoisonFrames(dualviewOrientation, dualviewSize, 1, True)
+
         return Command.Command(
             array=commandArray,
             env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.CACHE,
@@ -114,7 +127,8 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, window_size, "y", "480")
 
         ## [GAMEPAD]
-        if system.isOptSet("cemu_gamepad") and system.config["cemu_gamepad"] == "True":
+        if (system.isOptSet("cemu_dualview") and system.config["cemu_dualview"] != "none") or \
+            (system.isOptSet("cemu_gamepad") and system.config["cemu_gamepad"] == "True"):
             CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "true")
         else:
             CemuGenerator.setSectionConfig(config, xml_root, "open_pad", "false")
@@ -248,7 +262,22 @@ class CemuGenerator(Generator):
     
     # Show mouse for touchscreen actions    
     def getMouseMode(self, config):
-        if "cemu_touchpad" in config and config["cemu_touchpad"] == "1":
+        if ("cemu_touchpad" in config and config["cemu_touchpad"] == "1") or \
+            ("cemu_dualview" in config and config["cemu_dualview"] != "none"):
+            return True
+        else:
+            return False
+
+    def useRatpoison(self, config):
+        if ("cemu_touchpad" in config and config["cemu_touchpad"] == "1") or \
+            ("cemu_dualview" in config and config["cemu_dualview"] != "none"):
+            return True
+        else:
+            return False
+
+    def useRatpoison(self, config):
+        if ("cemu_touchpad" in config and config["cemu_touchpad"] == "1") or \
+            ("cemu_dualview" in config and config["cemu_dualview"] != "none"):
             return True
         else:
             return False

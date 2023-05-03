@@ -1,0 +1,13 @@
+diff --git a/Source/Core/DolphinQt/GBAWidget.cpp b/Source/Core/DolphinQt/GBAWidget.cpp
+index f009f42..a81277c 100644
+--- a/Source/Core/DolphinQt/GBAWidget.cpp
++++ b/Source/Core/DolphinQt/GBAWidget.cpp
+@@ -186,7 +186,7 @@ void GBAWidget::UnloadROM()
+ void GBAWidget::PromptForEReaderCards()
+ {
+   const QStringList card_paths = DolphinFileDialog::getOpenFileNames(
+-      this, tr("Select e-Reader Cards"), QString(), tr("e-Reader Cards (*.raw);;All Files (*)"),
++      this, QString::fromUtf8("Select e-Reader Cards"), QString(), tr("e-Reader Cards (*.raw);;All Files (*)"),
+       nullptr, QFileDialog::Options());
+ 
+   for (const QString& card_path : card_paths)
