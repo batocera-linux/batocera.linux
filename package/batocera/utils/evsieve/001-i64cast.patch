@@ -1,0 +1,26 @@
+diff --git a/src/time.rs b/src/time.rs
+index 973c0f3..a3e8946 100644
+--- a/src/time.rs
++++ b/src/time.rs
+@@ -63,8 +63,8 @@ impl Instant {
+ impl From<libc::timespec> for Instant {
+     fn from(timespec: libc::timespec) -> Self {
+         Self {
+-            sec: timespec.tv_sec,
+-            nsec: timespec.tv_nsec,
++            sec: timespec.tv_sec as i64,
++            nsec: timespec.tv_nsec as i64,
+         }
+     }
+ }
+@@ -72,8 +72,8 @@ impl From<libc::timespec> for Instant {
+ impl From<libevdev::timeval> for Instant {
+     fn from(timeval: libevdev::timeval) -> Self {
+         Self {
+-            sec: timeval.tv_sec,
+-            nsec: NANOSECONDS_PER_MICROSECOND * timeval.tv_usec,
++            sec: timeval.tv_sec as i64,
++            nsec: NANOSECONDS_PER_MICROSECOND * timeval.tv_usec as i64,
+         }
+     }
+ }
