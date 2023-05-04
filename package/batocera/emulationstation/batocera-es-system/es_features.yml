@@ -6585,162 +6585,127 @@ dosbox-x:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 duckstation:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        duckstation_rewind:
-            prompt:      REWIND
-            description: System requirements at native; (RAM|VRAM).
-            choices:
-                "Off":                                "false"
-                "Per 0.05s, 5s total (550MB|100MB)":  5
-                "Per 0.1s, 10s total (1100MB|200MB)": 10
-                "Per 1s, 15s total (165MB|30MB)":     15
-                "Per 1s, 30s total (330MB|60MB)":     30
-                "Per 1s, 60s total (660MB|120MB)":    60
-                "Per 1s, 90s total (990MB|180MB)":    90
-                "Per 1s, 120s total (1320MB|240MB)":  120
-        gfxbackend:
+        duckstation_gfxbackend:
+            submenu: DISPLAY
             archs_include: [x86, x86_64, bcm2711, rk3326]
-            prompt:      GRAPHICS API
+            prompt: GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
-                "OpenGL":                        OpenGL
-                "Vulkan":                        Vulkan
-        duckstation_osd:
-            prompt:      SHOW ON-SCREEN DISPLAY MESSAGES
-            choices:
-                "Disabled (Default)": "false"
-                "Enabled":            "true"
-        duckstation_executionmode:
-            group: ADVANCED OPTIONS
-            prompt:      CPU EXECUTION MODE
-            description: Interpreter is the most accurate, but is the slowest.
-            choices:
-                "Recompiler (Fastest)":              Recompiler
-                "Cached Interpreter (Faster)":       CachedInterpreter
-                "Interpreter (Slowest)":             Interpreter
-        duckstation_threadedpresentation:
-            group: ADVANCED OPTIONS
-            prompt:      THREADED PRESENTATION
-            description: Improve performance if VSync is disabled and using Vulkan.
-            choices:
-                "Off":                           0
-                "On":                            1
+                "Vulkan":   Vulkan
+                "OpenGL":   OpenGL
+                "Software": Software                
         duckstation_vsync:
-            group: ADVANCED OPTIONS
-            prompt:      VSYNC
+            submenu: DISPLAY
+            prompt: VSYNC
             description: Fix screen tearing. CPU heavy.
             choices:
-                "Off":                           0
-                "On":                            1
-        duckstation_frameskip:
-            prompt:      FRAMESKIP
-            description: Skip frames to improve performance, at the cost of choppy motion.
+                "Off": "false"
+                "On":  "true"
+        duckstation_threadedpresentation:
+            submenu: DISPLAY
+            prompt: THREADED PRESENTATION
+            description: Improve performance if VSync is disabled and using Vulkan.
             choices:
-                "Off":                           0
-                "On":                            1
-        duckstation_PatchFastBoot:
-            prompt:      SHOW BIOS BOOTLOGO
-            description: Skipping it can break some games.
+                "Off": "false"
+                "On":  "true"
+        duckstation_ratio:
+            submenu: DISPLAY
+            prompt: ASPECT RATIO
+            description: Change the output resolution ratio.
             choices:
-                "Show":                            0
-                "Skip":                            1
-        duckstation_resolution_scale:
-            prompt:      RENDERING RESOLUTION
-            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
-            choices:
-                "1x native (320x240)":                       1
-                "2x (640x480)":                              2
-                "3x 720p (960x720)":                         3
-                "4x (1280x960)":                             4
-                "5x 1080p (1600x1200)":                      5
-                "6x 1440p (1920x1440)":                      6
-                "7x (2240x1680)":                            7
-                "8x (2560x1920)":                            8
-                "9x 4K (2880x2160)":                         9
-                "10x (3200x2400)":                           10
-                "11x (3520x2640)":                           11
-                "12x (3840x2880)":                           12
-                "13x (4160x3120)":                           13
-                "14x (4480x3360)":                           14
-                "15x (4800x3600)":                           15
-                "16x (5120x3840)":                           16
-        duckstation_antialiasing:
-            group: ADVANCED OPTIONS
-            prompt:      ANTI-ALIASING (MSAA/SSAA)
-            description: Enhancement. Smooth out jagged edges on 3D object polygons.
-            choices:
-                "Off":                           1
-                "2x MSAA":                       2
-                "4x MSAA":                       4
-                "8x MSAA":                       8
-                "16x MSAA":                      16
-                "32x MSAA":                      32
-                "2x SSAA":                       2-ssaa
-                "4x SSAA":                       4-ssaa
-                "8x SSAA":                       8-ssaa
-                "16x SSAA":                      16-ssaa
-                "32x SSAA":                      32-ssaa
-        duckstation_texture_filtering:
-            group: ADVANCED OPTIONS
-            prompt:      TEXTURE FILTERING
-            description: Enhancement. Smooth/upscale textures on 3D objects.
-            choices:
-                "Nearest-Neighbor":              Nearest
-                "Bilinear":                      Bilinear
-                "Bilinear (no edge blending)":   BilinearBinAlpha
-                "JINC2":                         Jinc2
-                "JINC2 (no edge blending)":      Jinc2BinAlpha
-                "xBR":                           xBR
-                "xBR (no edge blending)":        xBRBinAlpha
+                "Auto (Match Window)": "Auto (Match Window)"
+                "4:3":                 "4:3"
+                "16:9":                "16:9"
+                "19:9":                "19:9"
+                "20:9":                "20:9"
+                "PAR 1:1":             "PAR 1:1"
         duckstation_CropMode:
-            group: ADVANCED OPTIONS
-            prompt:      CROP OVERSCAN
+            submenu: DISPLAY
+            prompt: CROP OVERSCAN
             description: Zooms in to hide black borders. Borders are different per game.
             choices:
-                "Off":                           "None"
-                "Only Overscan Area":            "Overscan"
-                "All Borders":                   "Borders"
+                "Off":                "None"
+                "Only Overscan Area": "Overscan"
+                "All Borders":        "Borders"
+        duckstation_resolution_scale:
+            submenu: RENDERING
+            prompt: RENDERING RESOLUTION
+            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+            choices:
+                "1x native (320x240)":  1
+                "2x (640x480)":         2
+                "3x 720p (960x720)":    3
+                "4x (1280x960)":        4
+                "5x 1080p (1600x1200)": 5
+                "6x 1440p (1920x1440)": 6
+                "7x (2240x1680)":       7
+                "8x (2560x1920)":       8
+                "9x 4K (2880x2160)":    9
+                "10x (3200x2400)":      10
+                "11x (3520x2640)":      11
+                "12x (3840x2880)":      12
+                "13x (4160x3120)":      13
+                "14x (4480x3360)":      14
+                "15x (4800x3600)":      15
+                "16x (5120x3840)":      16
+        duckstation_texture_filtering:
+            submenu: RENDERING
+            prompt: TEXTURE FILTERING
+            description: Enhancement. Smooth/upscale textures on 3D objects.
+            choices:
+                "Nearest-Neighbor":                  Nearest
+                "Bilinear":                          Bilinear
+                "Bilinear (No Edge Blending)":       BilinearBinAlpha
+                "JINC2 (Slow)":                      Jinc2
+                "JINC2 (Slow, No Edge Blending)":    Jinc2BinAlpha
+                "xBR (Very Slow)":                   xBR
+                "xBR (Very Slow, No Edge Blending)": xBRBinAlpha
         duckstation_widescreen_hack:
-            prompt:      WIDESCREEN HACK (GLITCHY)
+            submenu: RENDERING
+            prompt: WIDESCREEN HACK (GLITCHY)
             description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
-                "Off":                           0
-                "On":                            1
-        duckstation_region:
-            prompt:      CONSOLE REGION
-            choices:
-                "PAL":                           PAL
-                "NTSC-U/C":                      NTSC-U
-                "NTSC-J":                        NTSC-J
+                "Off": "false"
+                "On":  "true"
         duckstation_60hz:
-            group: ADVANCED OPTIONS
-            prompt:      FORCE NTSC TIMINGS ON PAL
+            submenu: RENDERING
+            prompt: FORCE NTSC TIMINGS ON PAL
             description: Hack. Increases most PAL games' speed by 17%.
             choices:
-                "Off":                           0
-                "On":                            1
+                "Off": "false"
+                "On":  "true"
+        duckstation_region:
+            prompt: CONSOLE REGION
+            choices:
+                "PAL":      PAL
+                "NTSC-U/C": NTSC-U
+                "NTSC-J":   NTSC-J
         duckstation_custom_textures:
             group: ADVANCED OPTIONS
-            prompt:      LOAD CUSTOM TEXTURES
+            prompt: LOAD CUSTOM TEXTURES
             description: Preload requires more RAM.
             choices:
-                "Off":                           0
-                "Normal":                        normal
-                "Preload":                       preload
+                "Off":     "false"
+                "Normal":  "normal"
+                "Preload": "preload"
         duckstation_rumble:
+            submenu: CONTROLLERS
             prompt:      RUMBLE
             description: Activate rumble on supported controllers.
             choices:
                 "Off":                           0
                 "On":                            1
         duckstation_digitalmode:
+            submenu: CONTROLLERS
             prompt:      JOYSTICK TO DPAD
             description: For digital controller mode.
             choices:
                 "Off":                           0
                 "On":                            1
         duckstation_multitap:
+            submenu: CONTROLLERS
             prompt:      MULTITAP
             description: Allows up to 5 or 8 controllers in supported games.
             choices:
@@ -6749,7 +6714,8 @@ duckstation:
                 "Port 2":                        Port2Only
                 "Port 1+2":                      BothPorts
         duckstation_Controller1:
-            prompt:      CONTROLLER 1 TYPE
+            submenu: CONTROLLERS
+            prompt: CONTROLLER 1 TYPE
             description: DualShock has rumble support. Not all games support DualShock.
             choices:
                 "None":                          None
@@ -6760,7 +6726,8 @@ duckstation:
                 "PlayStation Mouse":             PlayStationMouse
                 "NeGcon (Rumble)":               NeGcon
         duckstation_Controller2:
-            prompt:      CONTROLLER 2 TYPE
+            submenu: CONTROLLERS
+            prompt: CONTROLLER 2 TYPE
             description: DualShock has rumble support. Not all games support DualShock.
             choices:
                 "None":                          None
@@ -6772,18 +6739,55 @@ duckstation:
                 "NeGcon (Rumble)":               NeGcon
         duckstation_pgxp:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE PGXP CORRECTIONS
+            prompt:  ENABLE PGXP CORRECTIONS
             description: Reduces wobbly polygongs & warping textures.
             choices:
                 "Disabled":          "false"
                 "Enabled (Default)": "true"
         duckstation_boot_without_sbi:
             group: ADVANCED OPTIONS
-            prompt:      ALLOW BOOTING WITHOUT SBI FILE
+            prompt: ALLOW BOOTING WITHOUT SBI FILE
             description: Allows loading protected games without subchannel information.
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
+        duckstation_osd:
+            prompt: SHOW ON-SCREEN DISPLAY MESSAGES
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_PatchFastBoot:
+            prompt: SHOW BIOS BOOTLOGO
+            description: Skipping it can break some games.
+            choices:
+                "Show": "false"
+                "Skip": "true"
+        duckstation_executionmode:
+            group: ADVANCED OPTIONS
+            prompt: CPU EXECUTION MODE
+            description: Interpreter is the most accurate, but is the slowest.
+            choices:
+                "Interpreter (Slowest)":         Interpreter
+                "Cached Interpreter (Faster)":   CachedInterpreter
+                "Recompiler (Fastest)(Default)": Recompiler
+        duckstation_rewind:
+            prompt: REWIND
+            description: System requirements at native; (RAM|VRAM).
+            choices:
+                "Off":                                "false"
+                "Per 0.05s, 5s total (550MB|100MB)":  5
+                "Per 0.1s, 10s total (1100MB|200MB)": 10
+                "Per 1s, 15s total (165MB|30MB)":     15
+                "Per 1s, 30s total (330MB|60MB)":     30
+                "Per 1s, 60s total (660MB|120MB)":    60
+                "Per 1s, 90s total (990MB|180MB)":    90
+                "Per 1s, 120s total (1320MB|240MB)":  120
+        duckstation_achievements:
+            prompt: ACHIEVEMENTS
+            decription: Enable achievements for supported games. Enter login details via app in F1 menu.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -7437,7 +7441,7 @@ pcsx2:
                 "Show (specific games)": 1
         pcsx2_achievements:
             prompt: ACHIEVEMENTS
-            decription: Enable achievements for supported games. Enter login details via pcsx2-config.
+            decription: Enable achievements for supported games. Enter login details via app in F1 menu.
             choices:
                 "Disabled": "false"
                 "Enabled":  "true"
