@@ -3,6 +3,7 @@
 from generators.Generator import Generator
 import Command
 import batoceraFiles
+import controllersConfig
 import configparser
 import os.path
 import httplib2
@@ -18,7 +19,10 @@ class DuckstationGenerator(Generator):
         if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)
 
-        commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom ]
+        if os.path.exists('/usr/bin/duckstation-qt'):
+            commandArray = ["duckstation-qt", "-batch", "-nogui", rom ]
+        else:
+            commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom ]
 
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
@@ -27,22 +31,20 @@ class DuckstationGenerator(Generator):
         if os.path.exists(settings_path):
             settings.read(settings_path)
 
-        ## [MAIN]
+        ## [Main]
         if not settings.has_section("Main"):
             settings.add_section("Main")
-
         # Settings, Language and ConfirmPowerOff
         settings.set("Main", "SettingsVersion", "3") # Probably to be updated in the future
-        settings.set("Main", "Language", getLangFromEnvironment())
-        settings.set("Main", "ConfirmPowerOff", "false")
+        settings.set("Main", "InhibitScreensaver", "true")
+        settings.set("Main", "StartPaused", "false")
         # Force Fullscreen
-        settings.set("Main", "EnableFullscreenUI", "true")
         settings.set("Main", "StartFullscreen", "true")
-        # Controller backend
-        settings.set("Main","ControllerBackend", "SDL")
+        settings.set("Main", "PauseOnFocusLoss", "false")
+        settings.set("Main", "PauseOnMenu", "true")
+        settings.set("Main", "ConfirmPowerOff", "false")
         # Force applying game Settings fixes
         settings.set("Main","ApplyGameSettings", "true")
-
         # Rewind
         #if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         settings.set("Main","RewindEnable",    "true")
@@ -65,40 +67,45 @@ class DuckstationGenerator(Generator):
             settings.set("Main","RewindFrequency", "0.050000")
         else:
             settings.set("Main","RewindEnable", "false")
+        # Discord
+        settings.set("Main","EnableDiscordPresence", "false")
+        # Language
+        settings.set("Main", "Language", getLangFromEnvironment())
 
-        ## [UI]
-        if not settings.has_section("UI"):
-            settings.add_section("UI")
-
-        ## [CONSOLE]
+        ## [ControllerPorts]
+        if not settings.has_section("ControllerPorts"):
+            settings.add_section("ControllerPorts")
+        settings.set("ControllerPorts", "ControllerSettingsMigrated", "true")
+        settings.set("ControllerPorts", "MultitapMode", "Disabled")
+        settings.set("ControllerPorts", "PointerXScale", "8")
+        settings.set("ControllerPorts", "PointerYScale", "8")
+        settings.set("ControllerPorts", "PointerXInvert", "false")
+        settings.set("ControllerPorts", "PointerYInvert", "false")
+        
+        ## [Console]
         if not settings.has_section("Console"):
             settings.add_section("Console")
         # Region
-        if system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'PAL':
-            settings.set("Console", "Region", "PAL")
-        elif system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'NTSC-J':
-            settings.set("Console", "Region", "NTSC-J")
-        elif system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'NTSC-U':
-            settings.set("Console", "Region", "NTSC-U")
+        if system.isOptSet("duckstation_region"):
+            settings.set("Console", "Region", system.config["duckstation_region"])
         else:
             settings.set("Console", "Region", "Auto")
-
+        
         ## [BIOS]
         if not settings.has_section("BIOS"):
             settings.add_section("BIOS")
         settings.set("BIOS", "SearchDirectory", "/userdata/bios") # Path
         # Boot Logo
-        if system.isOptSet("duckstation_PatchFastBoot") and system.config["duckstation_PatchFastBoot"] != '0':
-            settings.set("BIOS", "PatchFastBoot", "true")
+        if system.isOptSet("duckstation_PatchFastBoot"):
+            settings.set("BIOS", "PatchFastBoot", system.config["duckstation_PatchFastBoot"])
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
 
         ## [CPU]
         if not settings.has_section("CPU"):
             settings.add_section("CPU")
-
         # ExecutionMode
-        if system.isOptSet("duckstation_executionmode") and system.config["duckstation_executionmode"] != 'Recompiler':
+        if system.isOptSet("duckstation_executionmode"):
             settings.set("CPU", "ExecutionMode", system.config["duckstation_executionmode"])
         else:
             settings.set("CPU", "ExecutionMode", "Recompiler")
@@ -106,40 +113,32 @@ class DuckstationGenerator(Generator):
         ## [GPU]
         if not settings.has_section("GPU"):
             settings.add_section("GPU")
-        # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':  # Using Gun, you'll have the Aiming ONLY in Vulkan. Duckstation Issue
-            settings.set("GPU", "Renderer", "Vulkan")
-        elif system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Software':
-            settings.set("GPU", "Renderer", "Software")
+        # Renderer
+        if system.isOptSet("duckstation_gfxbackend"):
+            settings.set("GPU", "Renderer", system.config["duckstation_gfxbackend"])
         else:
             settings.set("GPU", "Renderer", "OpenGL")
-        # Multisampling force (MSAA or SSAA)
+        # Multisampling force (MSAA or SSAA) - no GUI option anymore...
         settings.set("GPU", "PerSampleShading", "false")
-        if system.isOptSet("duckstation_antialiasing") and system.config["duckstation_antialiasing"] != '1':
-            tab = system.config["duckstation_antialiasing"].split('-')
-            settings.set("GPU", "Multisamples", tab[0])
-            if len(tab) > 1:
-                settings.set("GPU", "PerSampleShading", "true")
-        else:
-            settings.set("GPU", "Multisamples", "1")
+        settings.set("GPU", "Multisamples", "1")
         # Threaded Presentation (Vulkan Improve)
-        if system.isOptSet("duckstation_threadedpresentation") and system.config["duckstation_threadedpresentation"] != '0':
-            settings.set("GPU", "ThreadedPresentation", "true")
+        if system.isOptSet("duckstation_threadedpresentation"):
+            settings.set("GPU", "ThreadedPresentation", system.config["duckstation_threadedpresentation"])
         else:
             settings.set("GPU", "ThreadedPresentation", "false")
         # Internal resolution
-        if system.isOptSet("duckstation_resolution_scale") and system.config["duckstation_resolution_scale"] != '1':
+        if system.isOptSet("duckstation_resolution_scale"):
             settings.set("GPU", "ResolutionScale", system.config["duckstation_resolution_scale"])
         else:
             settings.set("GPU", "ResolutionScale", "1")
         # WideScreen Hack
-        if system.isOptSet('duckstation_widescreen_hack') and system.config["duckstation_widescreen_hack"] != '0' and system.config["ratio"] == "16/9": # and system.config["bezel"] == "none"::
-            settings.set("GPU", "WidescreenHack", "true")
+        if system.isOptSet('duckstation_widescreen_hack'):
+            settings.set("GPU", "WidescreenHack", system.config["duckstation_widescreen_hack"])
         else:
             settings.set("GPU", "WidescreenHack", "false")
         # Force 60hz
-        if system.isOptSet("duckstation_60hz") and system.config["duckstation_60hz"] == '1':
-           settings.set("GPU", "ForceNTSCTimings", "true")
+        if system.isOptSet("duckstation_60hz"):
+           settings.set("GPU", "ForceNTSCTimings", system.config["duckstation_60hz"])
         else:
            settings.set("GPU", "ForceNTSCTimings", "false")
         # TextureFiltering
@@ -163,27 +162,32 @@ class DuckstationGenerator(Generator):
         if not settings.has_section("Display"):
             settings.add_section("Display")
         # Aspect Ratio
-        settings.set("Display", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
-        # Vsync
-        if system.isOptSet("duckstation_vsync") and system.config["duckstation_vsync"] != '1':
-            settings.set("Display", "Vsync", "false")
+        if system.isOptSet("duckstation_ratio"):
+            settings.set("Display", "AspectRatio", system.config["duckstation_ratio"])
         else:
-            settings.set("Display", "Vsync", "true")
+            settings.set("Display", "AspectRatio", "Auto (Game Native)")
+        # Vsync
+        if system.isOptSet("duckstation_vsync"):
+            settings.set("Display", "VSync", system.config["duckstation_vsync"])
+        else:
+            settings.set("Display", "VSync", "false")
         # CropMode
-        if system.isOptSet("duckstation_CropMode") and system.config["duckstation_CropMode"] != 'None':
+        if system.isOptSet("duckstation_CropMode"):
            settings.set("Display", "CropMode", system.config["duckstation_CropMode"])
         else:
             settings.set("Display", "CropMode", "Overscan")
-        # Enable Frameskipping
-        if system.isOptSet('duckstation_frameskip') and system.config["duckstation_frameskip"] != '0':
-            settings.set("Display", "DisplayAllFrames", "true")
-        else:
-            settings.set("Display", "DisplayAllFrames", "false")
+        # Enable Frameskipping = option missing
+        settings.set("Display", "DisplayAllFrames", "false")
         # OSD Messages
         if system.isOptSet("duckstation_osd"):
             settings.set("Display", "ShowOSDMessages", system.config["duckstation_osd"])
         else:
             settings.set("Display", "ShowOSDMessages", "false")
+        
+        ## [GameList]
+        if not settings.has_section("GameList"):
+            settings.add_section("GameList")
+        settings.set("GameList" , "RecursivePaths", "/userdata/roms/psx")
 
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
@@ -226,20 +230,20 @@ class DuckstationGenerator(Generator):
                     eslog.debug(f"Duckstation RetroAchievements enabled for {username}")
             except Exception as e:
                 eslog.error(f"ERROR: Impossible to get a RetroAchievements token ({e})")
-                settings.set("Cheevos", "Enabled",           "false")
+                settings.set("Cheevos", "Enabled", "false")
         else:
-            settings.set("Cheevos", "Enabled",               "false")
+            settings.set("Cheevos", "Enabled", "false")
 
-        ## [CONTROLLERPORTS]
+        ## [ControllerPorts]
         if not settings.has_section("ControllerPorts"):
             settings.add_section("ControllerPorts")
         # Multitap
-        if system.isOptSet("duckstation_multitap") and system.config["duckstation_multitap"] != 'Disabled':
+        if system.isOptSet("duckstation_multitap"):
             settings.set("ControllerPorts", "MultitapMode", system.config["duckstation_multitap"])
         else:
             settings.set("ControllerPorts", "MultitapMode", "Disabled")
 
-        ## [TEXTURE REPLACEMENT]
+        ## [TextureReplacements]
         if not settings.has_section("TextureReplacements"):
             settings.add_section("TextureReplacements")
         # Texture Replacement saves\textures\psx game id - by default in Normal
@@ -253,10 +257,18 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
+        if not settings.has_section("InputSources"):
+            settings.add_section("InputSources")
+        settings.set("InputSources", "SDL", "true")
+        settings.set("InputSources", "SDLControllerEnhancedMode", "false")
+        settings.set("InputSources", "Evdev", "false")
+        settings.set("InputSources", "XInput", "false")
+        settings.set("InputSources", "RawInput", "false")
+        
         ## [CONTROLLERS]
         configurePads(settings, playersControllers, system, guns)
 
-        ## [HOTKEYS]
+        ## [Hotkeys]
         if not settings.has_section("Hotkeys"):
             settings.add_section("Hotkeys")
         # Force defaults to be aligned with evmapy
@@ -270,17 +282,6 @@ class DuckstationGenerator(Generator):
         settings.set("Hotkeys", "Screenshot",                  "Keyboard/F10")
         settings.set("Hotkeys", "Rewind",                      "Keyboard/F5")
         settings.set("Hotkeys", "OpenQuickMenu",               "Keyboard/F7")
-        # Show FPS (Debug)
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            settings.set("Display", "ShowFPS",        "true")
-            settings.set("Display", "ShowSpeed",      "true")
-            settings.set("Display", "ShowVPS",        "true")
-            settings.set("Display", "ShowResolution", "true")
-        else:
-            settings.set("Display", "ShowFPS",        "false")
-            settings.set("Display", "ShowSpeed",      "false")
-            settings.set("Display", "ShowVPS",        "false")
-            settings.set("Display", "ShowResolution", "false")
 
         ## [CDROM]
         if not settings.has_section("CDROM"):
@@ -295,25 +296,16 @@ class DuckstationGenerator(Generator):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-
-        env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
-        return Command.Command(array=commandArray, env=env)
-
-def getGfxRatioFromConfig(config, gameResolution):
-    #ratioIndexes = ["Auto (Game Native)", "Auto (Match Window)", "4:3", "16:9", "1:1", "1:1 PAR", "2:1 (VRAM 1:1)", "3:2", "5:4", "8:7", "16:10", "19:9", "20:9", "32:9"]
-    # 2: 4:3 ; 1: 16:9  ; 0: auto
-    if "ratio" in config:
-        if config["ratio"] == "2/1":
-            return "2:1 (VRAM 1:1)"
-        elif config["ratio"] == "full":
-            return "Auto (Match Window)"
-        else:
-            return config["ratio"].replace("/",":")
-
-    if ("ratio" not in config or ("ratio" in config and config["ratio"] == "auto")) and gameResolution["width"] / float(gameResolution["height"]) >= (16.0 / 9.0) - 0.1: # let a marge
-        return "16:9"
-
-    return "4:3"
+         
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_CONFIG_HOME": batoceraFiles.CONF,
+                "QT_QPA_PLATFORM": "xcb",
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )
 
 def configurePads(settings, playersControllers, system, guns):
     mappings = {
