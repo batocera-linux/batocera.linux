@@ -1,112 +1,70 @@
 {
     "actions_player1": [
 	{
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ],
-            "description": "Exit Duckstation"
+        "trigger": ["hotkey", "start"],
+        "type": "key",
+        "target": [ "KEY_ESC" ],
+        "description": "Exit Duckstation"
 	},
 	{
-            "trigger": ["hotkey", "x"],
-            "type": "key",
-            "target": [ "KEY_F1" ],
+        "trigger": ["hotkey", "x"],
+        "type": "key",
+        "target": [ "KEY_F1" ],
 	    "description": "Load State"
 	},
 	{
-            "trigger": ["hotkey", "y"],
-            "type": "key",
-            "target": [ "KEY_F2" ],
+        "trigger": ["hotkey", "y"],
+        "type": "key",
+        "target": [ "KEY_F2" ],
 	    "description": "Save State"
 	},
 	{
-            "trigger": ["hotkey", "b"],
-            "type": "key",
-            "target": [ "KEY_F7" ],
+        "trigger": ["hotkey", "b"],
+        "type": "key",
+        "target": [ "KEY_F7" ],
 	    "description": "Open DuckStation Quick Menu"
 	},
 	{
-            "trigger": ["hotkey", "a"],
-            "type": "key",
-            "target": [ "KEY_F6" ],
+        "trigger": ["hotkey", "a"],
+        "type": "key",
+        "target": [ "KEY_F6" ],
 	    "description": "Restart Game"
 	},
 	{
-            "trigger": ["hotkey", "pageup"],
-            "type": "key",
-            "target": [ "KEY_F10" ],
+        "trigger": ["hotkey", "pageup"],
+        "type": "key",
+        "target": [ "KEY_F10" ],
 	    "description": "Screenshot"
 	},
 	{
-            "trigger": ["hotkey", "up"],
-            "type": "key",
-            "target": [ "KEY_F3" ],
+        "trigger": ["hotkey", "up"],
+        "type": "key",
+        "target": [ "KEY_F3" ],
 	    "description": "Slot -"
 	},
 	{
-            "trigger": ["hotkey", "down"],
-            "type": "key",
-            "target": [ "KEY_F4" ],
+        "trigger": ["hotkey", "down"],
+        "type": "key",
+        "target": [ "KEY_F4" ],
 	    "description": "Slot +"
 	},
 	{
-            "trigger": ["hotkey", "left"],
-            "type": "key",
-            "target": [ "KEY_F5" ],
+        "trigger": ["hotkey", "left"],
+        "type": "key",
+        "target": [ "KEY_F5" ],
 	    "description": "Rewind"
 	},
 	{
-            "trigger": ["hotkey", "pagedown"],
-            "type": "key",
-            "target": [ "KEY_F8" ],
+        "trigger": ["hotkey", "pagedown"],
+        "type": "key",
+        "target": [ "KEY_F8" ],
 	    "description": "Next Disc (m3u)"
 	},
 	{
-            "trigger": ["hotkey", "right"],
-            "type": "key",
-            "target": [ "KEY_TAB" ],
+        "trigger": ["hotkey", "right"],
+        "type": "key",
+        "target": [ "KEY_TAB" ],
 	    "description": "Fast Forward"
-	},
-    {
-            "trigger": "up",
-            "type": "key",
-            "target": [ "KEY_UP" ],
-        "description": "Navigate menu up"
-    },
-    {
-            "trigger": "down",
-            "type": "key",
-            "target": [ "KEY_DOWN" ],
-        "description": "Navigate menu down"
-    },
-    {
-            "trigger": "left",
-            "type": "key",
-            "target": [ "KEY_LEFT" ],
-        "description": "Navigate menu left"
-    },
-    {
-            "trigger": "right",
-            "type": "key",
-            "target": [ "KEY_RIGHT" ],
-        "description": "Navigate menu right"
-    },
-    {
-            "trigger": "a",
-            "type": "key",
-            "target": [ "KEY_SPACE" ],
-        "description": "Navigate menu confirm"
-    },
-    {
-            "trigger": "pageup",
-            "type": "key",
-            "target": [ "KEY_PAGEUP" ],
-        "description": "Navigate menu page up"
-    },
-    {
-            "trigger": "pagedown",
-            "type": "key",
-            "target": [ "KEY_PAGEDOWN" ],
-        "description": "Navigate menu page down"
-    }
+	}
     ]
 }
