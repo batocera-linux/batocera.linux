@@ -1,0 +1,9 @@
+#!/bin/sh
+
+for L in ${DEVLINKS}
+do
+    if echo "${L}" | grep -qE "^/dev/v4l/by-id/"
+    then
+	ln -sf "${L}" "/dev/input/by-id/"$(basename "${L}")
+    fi
+done
