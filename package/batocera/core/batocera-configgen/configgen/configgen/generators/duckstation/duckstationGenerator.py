@@ -295,10 +295,14 @@ class DuckstationGenerator(Generator):
         settings.set("InputSources", "RawInput", "false")
 
         ## [MemoryCards]
+        if not settings.has_section("MemoryCards"):
+            settings.add_section("MemoryCards")
         # Set memory card location
         settings.set("MemoryCards", "Directory", "../../../saves/duckstation/memcards")
 
         ## [Folders]
+        if not settings.has_section("Folders"):
+            settings.add_section("Folders")
         # Set other folder locations too
         settings.set("Folders", "Cache", "../../cache/duckstation")
         settings.set("Folders", "Screenshots", "../../../screenshots")
