@@ -9,7 +9,7 @@ then
 fi
 
 # We don't have QT library installed on SBC
-if [-e /usr/bin/duckstation-qt] ; then
+if [ -f /usr/bin/duckstation-qt ]; then
     XDG_CONFIG_HOME=/userdata/system/configs QT_QPA_PLATFORM=xcb /usr/bin/duckstation-qt
 else
     XDG_CONFIG_HOME=/userdata/system/configs /usr/bin/duckstation-nogui
