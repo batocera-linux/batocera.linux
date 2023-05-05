@@ -6587,6 +6587,51 @@ dosbox-x:
 duckstation:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        duckstation_clocking:
+            submenu: EMULATION
+            prompt: EMULATION SPEED
+            description: Determines the speed and the runahead behaviour of the system.
+            choices:
+                "Unlimited": "0"
+                "10%":       ".1"
+                "20%":       ".2"
+                "30%":       ".3"
+                "40%":       ".4"
+                "50%":       ".5"
+                "60%":       ".6"
+                "70%":       ".7"
+                "80%":       ".8"
+                "90%":       ".9"
+                "100%":      "1"
+                "125%":      "1.25"
+                "150%":      "1.5"
+                "175%":      "1.75"
+                "200%":      "2"
+                "250%":      "2.5"
+                "300%":      "3"
+                "350%":      "3.5"
+                "400%":      "4"
+                "450%":      "4.5"
+                "500%":      "5"
+                "600%":      "6"
+                "700%":      "7"
+                "800%":      "8"
+                "900%":      "9"
+                "1000%":     "10"
+        duckstation_hrr:
+            submenu: EMULATION
+            prompt: SYNC TO HOST REFRESH RATE
+            description: VSync and Audio Resampling need to be enabled.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_ofp:
+            submenu: EMULATION
+            prompt: OPTIMAL FRAME PACING
+            description: Ensure every frame the console renders is displayed to screen.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_gfxbackend:
             submenu: DISPLAY
             archs_include: [x86, x86_64, bcm2711, rk3326]
@@ -6629,6 +6674,27 @@ duckstation:
                 "Off":                "None"
                 "Only Overscan Area": "Overscan"
                 "All Borders":        "Borders"
+        duckstation_integer:
+            submenu: DISPLAY
+            prompt: INTEGER UPSCALING
+            description: May result in a sharper image in some 2D games.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_linear:
+            submenu: DISPLAY
+            prompt: LINEAR UPSCALING
+            description: ENabling will smooth out the image.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_stretch:
+            submenu: DISPLAY
+            prompt: STRETCH TO FILL
+            description: Fills the screen regardless of the aspect ratio.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_resolution_scale:
             submenu: RENDERING
             prompt: RENDERING RESOLUTION
@@ -6662,20 +6728,51 @@ duckstation:
                 "JINC2 (Slow, No Edge Blending)":    Jinc2BinAlpha
                 "xBR (Very Slow)":                   xBR
                 "xBR (Very Slow, No Edge Blending)": xBRBinAlpha
+        duckstation_truecolour:
+            submenu: RENDERING
+            prompt: TRUE COLOUR RENDERING
+            description: 24-bit, disables dithering.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_dithering:
+            submenu: RENDERING
+            prompt: SCALED DITHERING
+            description: Makes the dither pattern much less obvious at higher resolutions.
+            choices:
+                "Disabled":          "false"
+                "Enabled (Default)": "true"
         duckstation_widescreen_hack:
             submenu: RENDERING
             prompt: WIDESCREEN HACK (GLITCHY)
             description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
             choices:
-                "Off": "false"
-                "On":  "true"
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
+        duckstation_audio_mode:
+            group: AUDIO
+            prompt: STRETCH MODE
+            description: When running outside of 100%, adjusts the temp instead of dropping frames.
+            choices:
+                "Off (Noisy)":                             "None"
+                "Resampling (Pirch Shift)":                "Resample"
+                "Time Stretch (Tempo Change, Best Sound)": "TimeStretch"
+        duckstation_interlacing:
+            submenu: DISPLAY
+            group: ADVANCED OPTIONS
+            prompt: DISABLE INTERLACING
+            description: Force progressive render / scan.
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_60hz:
-            submenu: RENDERING
+            submenu: DISPLAY
+            group: ADVANCED OPTIONS
             prompt: FORCE NTSC TIMINGS ON PAL
             description: Hack. Increases most PAL games' speed by 17%.
             choices:
-                "Off": "false"
-                "On":  "true"
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_region:
             prompt: CONSOLE REGION
             choices:
@@ -6720,10 +6817,10 @@ duckstation:
                 "DualShock / Xbox Type":  AnalogController
                 "Namco GunCon (Rumble)":  NamcoGunCon
                 "PlayStation Mouse":      PlayStationMouse
-                "NeGcon (Rumble)":        NeGcon
+                "NeGcon (Rumble)":        NeGcon  
         duckstation_pgxp:
             group: ADVANCED OPTIONS
-            prompt:  ENABLE PGXP CORRECTIONS
+            prompt: ENABLE PGXP CORRECTIONS
             description: Reduces wobbly polygongs & warping textures.
             choices:
                 "Disabled":          "false"
@@ -6759,19 +6856,36 @@ duckstation:
             description: System requirements at native; (RAM|VRAM).
             choices:
                 "Off":                                "false"
-                "Per 0.05s, 5s total (550MB|100MB)":  5
-                "Per 0.1s, 10s total (1100MB|200MB)": 10
-                "Per 1s, 15s total (165MB|30MB)":     15
-                "Per 1s, 30s total (330MB|60MB)":     30
-                "Per 1s, 60s total (660MB|120MB)":    60
-                "Per 1s, 90s total (990MB|180MB)":    90
-                "Per 1s, 120s total (1320MB|240MB)":  120
+                "Per 0.05s, 5s total (550MB|100MB)":  "5"
+                "Per 0.1s, 10s total (1100MB|200MB)": "10"
+                "Per 1s, 15s total (165MB|30MB)":     "15"
+                "Per 1s, 30s total (330MB|60MB)":     "30"
+                "Per 1s, 60s total (660MB|120MB)":    "60"
+                "Per 1s, 90s total (990MB|180MB)":    "90"
+                "Per 1s, 120s total (1320MB|240MB)":  "120"
         duckstation_achievements:
             prompt: ACHIEVEMENTS
             decription: Enable achievements for supported games. Enter login details via app in F1 menu.
             choices:
                 "Disabled": "false"
                 "Enabled":  "true"
+        duckstation_antialiasing:
+            submenu: RENDERING
+            group: ADVANCED OPTIONS
+            prompt: ANTI-ALIASING (MSAA/SSAA)
+            description: Enhancement. Smooth out jagged edges on 3D object polygons.
+            choices:
+                "Disabled (Default)": "1"
+                "2x MSAA":            "2"
+                "4x MSAA":            "4"
+                "8x MSAA":            "8"
+                "16x MSAA":           "16"
+                "32x MSAA":           "32"
+                "2x SSAA":            "2-ssaa"
+                "4x SSAA":            "4-ssaa"
+                "8x SSAA":            "8-ssaa"
+                "16x SSAA":           "16-ssaa"
+                "32x SSAA":           "32-ssaa"
 
 flycast:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
