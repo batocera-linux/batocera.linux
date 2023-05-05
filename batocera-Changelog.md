@@ -76,7 +76,7 @@
 - dosbox to v2023.03.31
 - citra to nightly-1877
 - amiberry to v5.6.0
-- ppsspp to v1.14.4
+- ppsspp to v1.15.2
 - libretro-ppsspp to v1.15.2
 - scummvm to Apr 19, 2023 build
 - libretro-scummvm to Apr 19, 2023 build
