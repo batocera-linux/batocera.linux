@@ -6690,53 +6690,37 @@ duckstation:
                 "Off":     "false"
                 "Normal":  "normal"
                 "Preload": "preload"
-        duckstation_rumble:
-            submenu: CONTROLLERS
-            prompt:      RUMBLE
-            description: Activate rumble on supported controllers.
-            choices:
-                "Off":                           0
-                "On":                            1
         duckstation_digitalmode:
             submenu: CONTROLLERS
-            prompt:      JOYSTICK TO DPAD
-            description: For digital controller mode.
+            prompt: JOYSTICK TO DPAD
+            description: Use Analog joysticks in addition to D-Pad for DualShock controllers.
             choices:
-                "Off":                           0
-                "On":                            1
-        duckstation_multitap:
-            submenu: CONTROLLERS
-            prompt:      MULTITAP
-            description: Allows up to 5 or 8 controllers in supported games.
-            choices:
-                "Off":                           Disabled
-                "Port 1":                        Port1Only
-                "Port 2":                        Port2Only
-                "Port 1+2":                      BothPorts
+                "Off": "false"
+                "On":  "true"
         duckstation_Controller1:
             submenu: CONTROLLERS
             prompt: CONTROLLER 1 TYPE
             description: DualShock has rumble support. Not all games support DualShock.
             choices:
-                "None":                          None
-                "PS1 Digital Controller":        DigitalController
-                "PS1 Analog Joystick":           AnalogJoystick
-                "DualShock / Xbox Type":         AnalogController
-                "Namco GunCon (Rumble)":         NamcoGunCon
-                "PlayStation Mouse":             PlayStationMouse
-                "NeGcon (Rumble)":               NeGcon
+                "Not Connected":          None
+                "PS1 Digital Controller": DigitalController
+                "PS1 Analog Joystick":    AnalogJoystick
+                "DualShock / Xbox Type":  AnalogController
+                "Namco GunCon (Rumble)":  NamcoGunCon
+                "PlayStation Mouse":      PlayStationMouse
+                "NeGcon (Rumble)":        NeGcon
         duckstation_Controller2:
             submenu: CONTROLLERS
             prompt: CONTROLLER 2 TYPE
             description: DualShock has rumble support. Not all games support DualShock.
             choices:
-                "None":                          None
-                "PS1 Digital Controller":        DigitalController
-                "PS1 Analog Joystick":           AnalogJoystick
-                "DualShock / Xbox Type":         AnalogController
-                "Namco GunCon (Rumble)":         NamcoGunCon
-                "PlayStation Mouse":             PlayStationMouse
-                "NeGcon (Rumble)":               NeGcon
+                "Not Connected":          None
+                "PS1 Digital Controller": DigitalController
+                "PS1 Analog Joystick":    AnalogJoystick
+                "DualShock / Xbox Type":  AnalogController
+                "Namco GunCon (Rumble)":  NamcoGunCon
+                "PlayStation Mouse":      PlayStationMouse
+                "NeGcon (Rumble)":        NeGcon
         duckstation_pgxp:
             group: ADVANCED OPTIONS
             prompt:  ENABLE PGXP CORRECTIONS

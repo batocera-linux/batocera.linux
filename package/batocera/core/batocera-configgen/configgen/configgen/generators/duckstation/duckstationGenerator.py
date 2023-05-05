@@ -94,12 +94,41 @@ class DuckstationGenerator(Generator):
         ## [BIOS]
         if not settings.has_section("BIOS"):
             settings.add_section("BIOS")
-        settings.set("BIOS", "SearchDirectory", "/userdata/bios") # Path
+        settings.set("BIOS", "SearchDirectory", "/userdata/bios")
         # Boot Logo
         if system.isOptSet("duckstation_PatchFastBoot"):
             settings.set("BIOS", "PatchFastBoot", system.config["duckstation_PatchFastBoot"])
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
+        # Find & populate BIOS
+        USbios = [ "scph101.bin", "scph1001.bin", "scph5501.bin", "scph7001.bin", "scph7501.bin" ]
+        EUbios = [ "scph1002.bin", "scph5502.bin", "scph5552.bin", "scph7002.bin", "scph7502.bin", "scph9002.bin", "scph102a.bin", "scph102b.bin" ]
+        JPbios = [ "scph100.bin", "scph1000.bin", "scph3000.bin", "scph3500.bin", "scph5500.bin", "scph7000.bin", "scph7003.bin" ]
+        biosFound = False
+        USbiosFile = EUbiosFile = JPbiosFile = None
+        for bio in USbios:
+            if os.path.exists("/userdata/bios/" + bio):
+                USbiosFile = bio
+                biosFound = True
+                break
+        for bio in EUbios:
+            if os.path.exists("/userdata/bios/" + bio):
+                EUbiosFile = bio
+                biosFound = True
+                break
+        for bio in JPbios:
+            if os.path.exists("/userdata/bios/" + bio):
+                JPbiosFile = bio
+                biosFound = True
+                break      
+        if not biosFound:
+            raise Exception("No PSX1 BIOS found")
+        if USbiosFile is not None:
+            settings.set("BIOS", "PathNTSCU", USbiosFile)
+        if EUbiosFile is not None:
+            settings.set("BIOS", "PathPAL", EUbiosFile)
+        if JPbiosFile is not None:
+            settings.set("BIOS", "PathNTSCJ", JPbiosFile)
 
         ## [CPU]
         if not settings.has_section("CPU"):
@@ -158,7 +187,7 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "PGXPTextureCorrection", "true")
            settings.set("GPU", "PGXPPreserveProjFP", "true")
 
-        ## [DISPLAY]
+        ## [Display]
         if not settings.has_section("Display"):
             settings.add_section("Display")
         # Aspect Ratio
@@ -189,7 +218,7 @@ class DuckstationGenerator(Generator):
             settings.add_section("GameList")
         settings.set("GameList" , "RecursivePaths", "/userdata/roms/psx")
 
-        ## [CHEEVOS]
+        ## [Cheevos]
         if not settings.has_section("Cheevos"):
             settings.add_section("Cheevos")
         # RetroAchievements
@@ -264,10 +293,105 @@ class DuckstationGenerator(Generator):
         settings.set("InputSources", "Evdev", "false")
         settings.set("InputSources", "XInput", "false")
         settings.set("InputSources", "RawInput", "false")
-        
-        ## [CONTROLLERS]
-        configurePads(settings, playersControllers, system, guns)
 
+        ## [MemoryCards]
+        # Set memory card location
+        settings.set("MemoryCards", "Directory", "../../../saves/duckstation/memcards")
+
+        ## [Folders]
+        # Set other folder locations too
+        settings.set("Folders", "Cache", "../../cache/duckstation")
+        settings.set("Folders", "Screenshots", "../../../screenshots")
+        settings.set("Folders", "SaveStates", "../../../saves/duckstation")
+        settings.set("Folders", "Cheats", "../../../cheats/duckstation")
+        
+        ## [Pad]
+        # Clear existing Pad(x) configs
+        for i in range(1, 9):
+            if settings.has_section("Pad" + str(i)):
+                settings.remove_section("Pad" + str(i))
+        # Now create Pad1 - 8 None to start
+        for i in range(1, 9):
+            settings.add_section("Pad" + str(i))
+            settings.set("Pad" + str(i), "Type", "None")
+        # Start with mutitap disabled
+        settings.set("ControllerPorts", "MultitapMode", "Disabled")
+        # Now add the controller config based on the ES type & number connected
+        nplayer = 1
+        for controller, pad in sorted(playersControllers.items()):
+            if nplayer <= 8:
+                # automatically add the multi-tap
+                if nplayer > 2:
+                    settings.set("ControllerPorts", "MultitapMode", "Port1Only")
+                    if nplayer > 4:
+                        settings.set("ControllerPorts", "MultitapMode", "BothPorts")
+                pad_num = "Pad{}".format(nplayer)
+                sdl_num = "SDL-{}".format(nplayer - 1)
+                ctrl_num = "Controller" + str(nplayer)
+                # SDL2 configs are always the same for controllers
+                if system.isOptSet("duckstation_" + ctrl_num):
+                    settings.set(pad_num, "Type", system.config["duckstation_" + ctrl_num])
+                else:
+                    settings.set(pad_num, "Type", "DigitalController")
+                settings.set(pad_num, "Up", sdl_num+"/DPadUp")
+                settings.set(pad_num, "Right", sdl_num+"/DPadRight")
+                settings.set(pad_num, "Down", sdl_num+"/DPadDown")
+                settings.set(pad_num, "Left", sdl_num+"/DPadLeft")
+                settings.set(pad_num, "Triangle", sdl_num+"/Y")
+                settings.set(pad_num, "Circle", sdl_num+"/B")
+                settings.set(pad_num, "Cross", sdl_num+"/A")
+                settings.set(pad_num, "Square", sdl_num+"/X")
+                settings.set(pad_num, "Select", sdl_num+"/Back")
+                settings.set(pad_num, "Start", sdl_num+"/Start")
+                settings.set(pad_num, "L1", sdl_num+"/LeftShoulder")
+                settings.set(pad_num, "R1", sdl_num+"/RightShoulder")
+                settings.set(pad_num, "L2", sdl_num+"/+LeftTrigger")
+                settings.set(pad_num, "R2", sdl_num+"/+RightTrigger")
+                settings.set(pad_num, "Mode", sdl_num+"/Guide")
+                settings.set(pad_num, "L3", sdl_num+"/LeftStick")
+                settings.set(pad_num, "R3", sdl_num+"/RightStick")
+                settings.set(pad_num, "LLeft", sdl_num+"/-LeftX")
+                settings.set(pad_num, "LRight", sdl_num+"/+LeftX")
+                settings.set(pad_num, "LDown", sdl_num+"/+LeftY")
+                settings.set(pad_num, "LUp", sdl_num+"/-LeftY")
+                settings.set(pad_num, "RLeft", sdl_num+"/-RightX")
+                settings.set(pad_num, "RRight", sdl_num+"/+RightX")
+                settings.set(pad_num, "RDown", sdl_num+"/+RightY")
+                settings.set(pad_num, "RUp", sdl_num+"/-RightY")
+                settings.set(pad_num, "SmallMotor", sdl_num+"/SmallMotor")
+                settings.set(pad_num, "LargeMotor", sdl_num+"/LargeMotor")
+                settings.set(pad_num, "VibrationBias", "8")
+                # D-Pad to Joystick
+                if system.isOptSet("duckstation_digitalmode"):
+                    settings.set(pad_num, "AnalogDPadInDigitalMode", system.config["duckstation_digitalmode"])
+                    if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "AnalogController":
+                        settings.set(pad_num, "Analog", sdl_num+"/Guide")
+                else:
+                    settings.set(pad_num, "AnalogDPadInDigitalMode", "false")
+                # NeGcon ?
+                if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "NeGcon":
+                    settings.set(pad_num, "A", sdl_num+"/B")
+                    settings.set(pad_num, "B", sdl_num+"/Y")
+                    settings.set(pad_num, "I", sdl_num+"/+RightTrigger")
+                    settings.set(pad_num, "II", sdl_num+"/+LeftTrigger")
+                    settings.set(pad_num, "L", sdl_num+"/LeftShoulder")
+                    settings.set(pad_num, "R", sdl_num+"/RightShoulder")
+                    settings.set(pad_num, "SteeringLeft", sdl_num+"/-LeftX")
+                    settings.set(pad_num, "SteeringRight", sdl_num+"/+LeftX")
+                # Guns - GunCon
+                if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "GunCon":
+                    settings.set(pad_num, "Trigger", sdl_num+"/+RightTrigger")
+                    settings.set(pad_num, "ShootOffscreen", sdl_num+"/+LeftTrigger")
+                    settings.set(pad_num, "A", sdl_num+"/A")
+                    settings.set(pad_num, "B", sdl_num+"/B")
+                # Mouse
+                if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "PlayStationMouse":
+                    settings.set(pad_num, "Right", sdl_num+"/B")
+                    settings.set(pad_num, "Left", sdl_num+"/A")
+                    settings.set(pad_num, "RelativeMouseMode", sdl_num+"true")
+            # Next controller
+            nplayer += 1
+        
         ## [Hotkeys]
         if not settings.has_section("Hotkeys"):
             settings.add_section("Hotkeys")
@@ -282,6 +406,7 @@ class DuckstationGenerator(Generator):
         settings.set("Hotkeys", "Screenshot",                  "Keyboard/F10")
         settings.set("Hotkeys", "Rewind",                      "Keyboard/F5")
         settings.set("Hotkeys", "OpenQuickMenu",               "Keyboard/F7")
+        settings.set("Hotkeys", "ChangeDisc",                  "Keyboard/F8")
 
         ## [CDROM]
         if not settings.has_section("CDROM"):
@@ -296,6 +421,10 @@ class DuckstationGenerator(Generator):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
+        
+        # write our own gamecontrollerdb.txt file before launching the game
+        dbfile = "/usr/share/duckstation/resources/gamecontrollerdb.txt"
+        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
          
         return Command.Command(
             array=commandArray,
@@ -306,119 +435,6 @@ class DuckstationGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
-
-def configurePads(settings, playersControllers, system, guns):
-    mappings = {
-        "ButtonUp":       "up",
-        "ButtonDown":     "down",
-        "ButtonLeft":     "left",
-        "ButtonRight":    "right",
-        "ButtonSelect":   "select",
-        "ButtonStart":    "start",
-        "ButtonTriangle": "x",
-        "ButtonCross":    "b",
-        "ButtonSquare":   "y",
-        "ButtonCircle":   "a",
-        "ButtonL1":       "pageup",
-        "ButtonL2":       "l2",
-        "ButtonR1":       "pagedown",
-        "ButtonR2":       "r2",
-        "ButtonL3":       "l3",
-        "ButtonR3":       "r3",
-        "AxisLeftX":      "joystick1left",
-        "AxisLeftY":      "joystick1up",
-        "AxisRightX":     "joystick2left",
-        "AxisRightY":     "joystick2up"
-        }
-
-    # Clear existing config
-    for i in range(1, 8):
-        if settings.has_section("Controller" + str(i)):
-            settings.remove_section("Controller" + str(i))
-
-    nplayer = 1
-    for playercontroller, pad in sorted(playersControllers.items()):
-        controller = "Controller" + str(nplayer)
-
-        ## [SECTION]
-        if not settings.has_section(controller):
-            settings.add_section(controller)
-
-        # Controller Type
-        ctrlType = "AnalogController"
-        settings.set(controller, "Type", "AnalogController") # defaults to AnalogController to make dpad to joystick work by default
-        if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
-            settings.set(controller, "Type", system.config["duckstation_" + controller])
-            ctrlType = system.config["duckstation_" + controller]
-
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-            if nplayer == 1 and len(guns) >= 1:
-                settings.set(controller, "Type", "NamcoGunCon")
-                ctrlType = "NamcoGunCon"
-
-        # Rumble
-        controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};
-
-        if system.isOptSet("duckstation_rumble") and system.config["duckstation_rumble"] != '0':
-            if system.isOptSet("duckstation_" + controller) and (system.config["duckstation_" + controller] in controllerRumbleList):
-                settings.set(controller, "Rumble", "Controller" + str(pad.index))
-        else:
-            settings.set(controller, "Rumble", "false")
-
-        # Dpad to Joystick
-        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] == '0':
-            settings.set(controller, "AnalogDPadInDigitalMode", "false")
-        else:
-            settings.set(controller, "AnalogDPadInDigitalMode", "true")
-
-        for mapping in mappings:
-            if mappings[mapping] in pad.inputs:
-                # mapping workaround - for l2 & r2 if axis, require positive value
-                if mappings[mapping] == "l2" or mappings[mapping] == "r2" and ctrlType == "AnalogController":
-                    trigger=input2definition(pad.inputs[mappings[mapping]])
-                    if "Axis" in trigger:
-                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/+" + input2definition(pad.inputs[mappings[mapping]]))
-                    else:
-                        settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
-                else:
-                    settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
-
-        controllerGunList = {'NamcoGunCon', 'NeGcon'};
-        # Testing if Gun, add specific keys
-        if system.isOptSet("duckstation_" + controller) and system.config["duckstation_" + controller] in controllerGunList:
-            settings.set(controller, "ButtonTrigger"       ,"Mouse/Button1")
-            settings.set(controller, "ButtonShootOffscreen","Mouse/Button2")
-            settings.set(controller, "ButtonA"             ,"Keyboard/VolumeUp")
-            settings.set(controller, "ButtonB"             ,"Keyboard/VolumeDown")
-            settings.set(controller, "AxisSteering"       ,"")
-            settings.set(controller, "AxisI"              ,"")
-            settings.set(controller, "AxisII"             ,"")
-            settings.set(controller, "AxisL"              ,"")
-            #settings.set(controller, "CrosshairImagePath" ,"/userdata/saves/duckstation/aimP1.png")     TO BE DISCUSSED LATER FOR CUSTOM AIMING
-            #settings.set(controller, "CrosshairScale"     ,"0.3")                                       TO BE DISCUSSED LATER FOR CUSTOM AIMING
-
-        # Testing if Mouse, add specific keys
-        elif system.isOptSet("duckstation_" + controller) and system.config["duckstation_" + controller] == "PlayStationMouse":
-            settings.set(controller, "Left"                ,"Mouse/Button1")
-            settings.set(controller, "Right"               ,"Mouse/Button2")
-
-        nplayer = nplayer + 1
-
-def input2definition(input):
-    if input.type == "button":
-        return "Button" + str(input.id)
-    elif input.type == "hat":
-        if input.value == "1":
-            return "Hat0 Up"
-        elif input.value == "2":
-            return "Hat0 Right"
-        elif input.value == "4":
-            return "Hat0 Down"
-        elif input.value == "8":
-            return "Hat0 Left"
-    elif input.type == "axis":
-        return "Axis" + str(input.id)
-    return "unknown"
 
 def getLangFromEnvironment():
     lang = environ['LANG'][:5]
@@ -436,7 +452,6 @@ def getLangFromEnvironment():
                            "ru_RU": "ru",
                            "zh_CN": "zh-cn"
     }
-
     if lang in availableLanguages:
         return availableLanguages[lang]
     return availableLanguages["en_US"]
