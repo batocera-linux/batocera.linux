@@ -8,4 +8,4 @@ then
     export DISPLAY=:0.0
 fi
 
-XDG_CONFIG_HOME=/userdata/system/configs XDG_CACHE_HOME=/userdata/saves QT_QPA_PLATFORM=xcb XDG_RUNTIME_DIR=/userdata /usr/bin/rpcs3 -platform xcb
+XDG_CONFIG_HOME=/userdata/system/configs XDG_CACHE_HOME=/userdata/cache QT_QPA_PLATFORM=xcb /usr/bin/rpcs3
