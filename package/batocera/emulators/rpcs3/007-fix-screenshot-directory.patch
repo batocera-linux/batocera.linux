@@ -2,12 +2,12 @@ diff --git a/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp b/rpcs3/rpcs3qt/screens
 index 92645bb3a..cf102971f 100644
 --- a/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp
 +++ b/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp
-@@ -34,7 +34,7 @@ screenshot_manager_dialog::screenshot_manager_dialog(QWidget* parent) : QDialog(
- 	// Make sure the directory is mounted
- 	vfs::mount("/dev_hdd0", rpcs3::utils::get_hdd0_dir());
+@@ -82,7 +82,7 @@ void screenshot_manager_dialog::reload()
+ 	m_abort_parsing = true;
+ 	gui::utils::stop_future_watcher(m_parsing_watcher, true);
  
 -	const std::string screenshot_path_qt   = fs::get_config_dir() + "screenshots/";
 +	const std::string screenshot_path_qt   = "/userdata/screenshots/";
- 	const std::string screenshot_path_cell = vfs::get("/dev_hdd0/photo/");
- 	const QStringList filter{ QStringLiteral("*.png") };
+ 	const std::string screenshot_path_cell = rpcs3::utils::get_hdd0_dir() + "/photo/";
  
+ 	m_flow_widget->clear();
