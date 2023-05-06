@@ -80,7 +80,7 @@
 - libretro-ppsspp to v1.15.2
 - scummvm to Apr 19, 2023 build
 - libretro-scummvm to Apr 19, 2023 build
-- wine proton to 8.0-1c
+- wine proton to 8.0-2c
 - openmsx configuration improvements
 - dolphin-emu to 5.0-19230
 - vita3k to April 14 build
