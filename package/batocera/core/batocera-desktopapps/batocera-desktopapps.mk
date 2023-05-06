@@ -15,7 +15,7 @@ BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
 
 # pcsx2
-ifeq ($(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),y)
+ifeq ($(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),yy)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2
   BATOCERA_DESKTOPAPPS_APPS    += pcsx2-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
