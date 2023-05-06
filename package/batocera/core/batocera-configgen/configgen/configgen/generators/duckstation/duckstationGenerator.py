@@ -45,6 +45,17 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "ConfirmPowerOff", "false")
         # Force applying game Settings fixes
         settings.set("Main","ApplyGameSettings", "true")
+        # overclock
+        if system.isOptSet("duckstation_clocking"):
+            settings.set("Main","EmulationSpeed", system.config["duckstation_clocking"])
+        else:
+            settings.set("Main","EmulationSpeed", "0")
+        # host refresh rate
+        if system.isOptSet("duckstation_hrr"):
+            settings.set("Main","SyncToHostRefreshRate", system.config["duckstation_hrr"])
+        else:
+            settings.set("Main","SyncToHostRefreshRate", "false")
+
         # Rewind
         #if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         settings.set("Main","RewindEnable",    "true")
@@ -186,7 +197,32 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "PGXPCulling", "true")
            settings.set("GPU", "PGXPTextureCorrection", "true")
            settings.set("GPU", "PGXPPreserveProjFP", "true")
-
+        # True Color
+        if system.isOptSet("duckstation_truecolour"):
+           settings.set("GPU", "TrueColor", system.config["duckstation_truecolour"])
+        else:
+           settings.set("GPU", "TrueColor", "false")
+        # Scaled Dithering
+        if system.isOptSet("duckstation_dithering"):
+           settings.set("GPU", "ScaledDithering", system.config["duckstation_dithering"])
+        else:
+           settings.set("GPU", "ScaledDithering", "true")
+        # Disable Interlacing
+        if system.isOptSet("duckstation_interlacing"):
+           settings.set("GPU", "DisableInterlacing", system.config["duckstation_interlacing"])
+        else:
+           settings.set("GPU", "DisableInterlacing", "false")
+        # Anti-Aliasing
+        if system.isOptSet("duckstation_antialiasing"):
+            if 'ssaa' in system.config["duckstation_antialiasing"]:
+                settings.set("GPU", "PerSampleShading", "true")
+                parts = system.config["duckstation_antialiasing"].split('-')
+                multisamples = parts[0]
+                settings.set("GPU", "Multisamples", multisamples)
+            else:
+                settings.set("GPU", "Multisamples", system.config["duckstation_antialiasing"])
+                settings.set("GPU", "PerSampleShading", "false")
+        
         ## [Display]
         if not settings.has_section("Display"):
             settings.add_section("Display")
@@ -212,7 +248,35 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowOSDMessages", system.config["duckstation_osd"])
         else:
             settings.set("Display", "ShowOSDMessages", "false")
+        # Optimal frame pacing
+        if system.isOptSet("duckstation_ofp"):
+            settings.set("Display","DisplayAllFrames", system.config["duckstation_ofp"])
+        else:
+            settings.set("Display","DisplayAllFrames", "false")
+        # Integer Scaling
+        if system.isOptSet("duckstation_integer"):
+            settings.set("Display","IntegerScaling", system.config["duckstation_integer"])
+        else:
+            settings.set("Display","IntegerScaling", "false")
+        # Linear Filtering
+        if system.isOptSet("duckstation_linear"):
+            settings.set("Display","LinearFiltering", system.config["duckstation_linear"])
+        else:
+            settings.set("Display","LinearFiltering", "false")
+        # Stretch
+        if system.isOptSet("duckstation_stretch"):
+            settings.set("Display","Stretch", system.config["duckstation_stretch"])
+        else:
+            settings.set("Display","Stretch", "false")
         
+        ## [Audio]
+        if not settings.has_section("Audio"):
+            settings.add_section("Audio")
+        if system.isOptSet("duckstation_audio_mode"):
+            settings.set("Audio","StretchMode", system.config["duckstation_audio_mode"])
+        else:
+            settings.set("Audio","StretchMode", "TimeStretch")
+                
         ## [GameList]
         if not settings.has_section("GameList"):
             settings.add_section("GameList")
@@ -266,12 +330,8 @@ class DuckstationGenerator(Generator):
         ## [ControllerPorts]
         if not settings.has_section("ControllerPorts"):
             settings.add_section("ControllerPorts")
-        # Multitap
-        if system.isOptSet("duckstation_multitap"):
-            settings.set("ControllerPorts", "MultitapMode", system.config["duckstation_multitap"])
-        else:
-            settings.set("ControllerPorts", "MultitapMode", "Disabled")
-
+        # setting get applied later
+        
         ## [TextureReplacements]
         if not settings.has_section("TextureReplacements"):
             settings.add_section("TextureReplacements")
