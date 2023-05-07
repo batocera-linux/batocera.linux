@@ -2,6 +2,15 @@ config BR2_PACKAGE_QT6DECLARATIVE
     bool "qt6declarative"
     depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6 # CAN FD
     select BR2_PACKAGE_QT6BASE
+    select BR2_PACKAGE_QT6BASE_GUI
+    select BR2_PACKAGE_QT6BASE_NETWORK
+    select BR2_PACKAGE_QT6BASE_WIDGETS
+    select BR2_PACKAGE_QT6BASE_OPENGL_DESKTOP
+    select BR2_PACKAGE_QT6BASE_SQL
+    select BR2_PACKAGE_QT6BASE_CONCURRENT
+    select BR2_PACKAGE_QT6BASE_TEST
+    select BR2_PACKAGE_QT6BASE_WIDGETS
+    select BR2_PACKAGE_QT6SHADERTOOLS
     help
         Qt is a cross-platform application and UI framework for
         developers using C++.
