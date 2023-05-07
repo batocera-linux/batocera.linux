@@ -7675,41 +7675,16 @@ reicast:
 rpcs3:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
-        gui:
-            group: ADVANCED OPTIONS
-            prompt: GRAPHICAL USER INTERFACE
-            description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
-            choices:
-                "Off": 0
-                "On":  1
-        gfxbackend:
-            prompt: GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
-            choices:
-                "OpenGL": OpenGL
-                "Vulkan": Vulkan
-        stretchtodisplayarea:
-            prompt: STRETCH TO DISPLAY AREA
-            description: Distorts the output to fill the display fully.
-            choices:
-                "Off": False
-                "On":  True
-        tv_mode:
-            prompt: TV MODE
-            description: PS3's internal ratio setting. Some games only support 16/9.
-            choices:
-                "16:9 (default)": "16:9"
-                "4:3":            "4:3"
-        ppudecoder:
-            group: ADVANCED OPTIONS
+        rpcs3_ppudecoder:
+            submenu: CPU
             prompt: PPU DECODER
             description: LLVM is fastest, use the Interpreter settings if there are issues.
             choices:
                 "LLVM Recompiler":     Recompiler (LLVM)
                 "Dynamic Interpreter": Interpreter (dynamic)
                 "Static Interpreter":  Interpreter (static)
-        spudecoder:
-            group: ADVANCED OPTIONS
+        rpcs3_spudecoder:
+            submenu: CPU
             prompt: SPU DECODER
             description: If game crashes, try ASMJIT. If still crashing, try Fast Interpreter.
             choices:
@@ -7717,16 +7692,41 @@ rpcs3:
                 "ASMJIT Recompiler":   Recompiler (ASMJIT)
                 "Fast Interpreter":    Interpreter (fast)
                 "Precise Interpreter": Interpreter (precise)
-        spuxfloataccuracy:
-            group: ADVANCED OPTIONS
+        rpcs3_spuxfloataccuracy:
+            submenu: CPU
             prompt: SPU XFloat Accuracy
             description: Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder.
             choices:
                 "Accurate XFloat":    accurate
                 "Approximate XFloat": approximate
                 "Relaxed XFloat":     relaxed
-        framelimit:
-            group: ADVANCED OPTIONS
+        rpcs3_sputhreads:
+            submenu: CPU
+            prompt: PREFERRED SPU THREADS
+            description: Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. Leave on automatic if slowdown occurs.
+            choices:
+                "1 thread":  1
+                "2 threads": 2
+                "3 threads": 3
+                "4 threads": 4
+                "5 threads": 5
+                "6 threads": 6
+        rpcs3_ratio:
+            submenu: VIDEO
+            prompt: ASPECT RATIO
+            description: PS3's internal ratio setting. Some games only support 16/9.
+            choices:
+                "16:9 (default)": "16:9"
+                "4:3":            "4:3"
+        rpcs3_gfxbackend:
+            submenu: RENDER
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            choices:
+                "OpenGL": OpenGL
+                "Vulkan": Vulkan
+        rpcs3_framelimit:
+            submenu: VIDEO
             prompt: ADDITIONAL FRAMELIMIT
             description: Most games already have an internal framelimit. Minor performance cost.
             choices:
@@ -7735,69 +7735,168 @@ rpcs3:
                 "50":                     50
                 "59.94":                  59.94
                 "60":                     60
-        shadermode:
-            group: ADVANCED OPTIONS
+        rpcs3_anisotropic:
+            submenu: RENDER
+            prompt: ANISOTROPIC FILTER
+            description: Improves clarity of distant textures.
+            choices:
+                "2x":  2
+                "4x":  4
+                "8x":  8
+                "16x": 16
+        rpcs3_aa:
+            submenu: RENDER
+            prompt: ANTI-ALIASING
+            description: Enhancement. Smooth out jagged edges on 3D object polygons.
+            choices:
+                # Auto is Auto
+                "Disabled": Disabled
+        rpcs3_zcull:
+            submenu: RENDER
+            prompt: ZCULL ACCURACY
+            description: Can improve performance at the expense of graphics accuracy.
+            choices:
+                "Precise (Slowest)(Default)": Precise     # Accurate ZCULL stats: true
+                "Approximate (Fast)":         Approximate # Both false
+                "Relaxed (Fastest)":          Relaxed     # Relaxed ZCULL Sync: true
+        rpcs3_shader:
+            submenu: RENDER
+            prompt: SHADER QUALITY
+            description: Controls precision of generated shaders. Low quality can improved performance.
+            choices:
+                "Ultra":          Ultra
+                "High (Default)": High
+                "Low":            Low
+                "Automatic":      Auto
+        rpcs3_resolution:
+            submenu: VIDEO
+            prompt: RENDER RESOLUTION
+            description: Choose your preferred render resolution.
+            choices:
+                "720x480":            720x480
+                "720x576":            720x576
+                "1280x720 (Default)": 1280x720
+                "960x1080":           960x1080
+                "1280x1080":          1280x1080
+                "1440x1080":          1440x1080
+                "1600x1080":          1600x1080
+                "1920x1080":          1920x1080
+        rpcs3_scaling:
+            submenu: RENDER
+            prompt: OUTPUT SCALING
+            description: Final image filtering.
+            choices:
+                "Nearest":                     Nearest
+                "Bilinear (Default)":          Bilinear
+                "FidelityFX Super Resolution": FidelityFX Super Resolution
+        rpcs3_shadermode:
+            submenu: RENDER
             prompt: SHADER MODE
             description: Only Async (skip draw) avoids freezing while compiling shaders.
             choices:
-                "Legacy (laggy)":                  Shader Recompiler
-                "Async (skip draw, recommended)":  Async Shader Recompiler
-                "Async with interp. (hybrid)":     Async with Shader Interpreter
-                "Interpreter only (experimental)": Shader Interpreter only
-        vsync:
-            group: ADVANCED OPTIONS
-            prompt: VSYNC
-            description: Can fix screen tearing on unorthodox displays (most LCDs don't need this).
+                "Legacy (single threaded)":        Shader Recompiler
+                "Async (multi threaded)(Deafult)": Async Shader Recompiler
+                "Async with Shader Interpreter":   Async with Shader Interpreter
+                "Shader Interpreter only":         Shader Interpreter only
+        rpcs3_num_compilers:
+            submenu: RENDER
+            prompt: NUMBER OF SHADER COMPILER THREADS
+            description: Only applicable when either Async Shader mode is set.
             choices:
-                "Off (Default)": False
-                "On":            True
-        colorbuffers:
-            group: ADVANCED OPTIONS
+                "1":  1
+                "2":  2
+                "3":  3
+                "4":  4
+                "5":  5
+                "6":  6
+                "7":  7
+                "8":  8
+                "9":  9
+                "10": 10
+                "11": 11
+                "12": 12
+                "13": 13
+                "14": 14
+                "15": 15
+                "16": 16
+        rpcs3_colorbuffers:
+            submenu: RENDER
             prompt: WRITE COLOR BUFFERS
             description: May fix missing graphics and broken lighting at the cost of performance.
             choices:
                 "Off (Default)": False
                 "On":            True
-        vertexcache:
-            group: ADVANCED OPTIONS
+        rpcs3_strict:
+            submenu: RENDER
+            prompt: STRICT RENDERING MODE
+            description: Straict API specification. Can resolve rare cases of missing graphics and flickering.
+            choices:
+                "Off (Default)": False
+                "On":            True
+        rpcs3_vsync:
+            submenu: VIDEO
+            prompt: VSYNC
+            description: Can fix screen tearing on unorthodox displays (most LCDs don't need this).
+            choices:
+                "Off (Default)": False
+                "On":            True
+        rpcs3_stretchdisplay:
+            submenu: VIDEO
+            prompt: STRETCH TO DISPLAY AREA
+            description: Distorts the output to fill the display fully Overrides aspect ratio.
+            choices:
+                "Off": False
+                "On":  True
+        rpcs3_vertexcache:
+            submenu: RENDER
             prompt: DISABLE VERTEX CACHE
             description: Disables the vertex cache. Might resolve missing or flickering graphics output but degrade performance.
             choices:
                 "Off (Default)": False
                 "On":            True
-        depthbuffer:
-            group: ADVANCED OPTIONS
-            prompt: WRITE DEPTH BUFFER
-            description: May fix broken graphics in some games.
+        rpcs3_rsx:
+            submenu: RENDER
+            prompt: MULTITHREADED RSX
+            description: Offloads some RSX operations to a secondary thread. Improves performance in high-core processors.
             choices:
                 "Off (Default)": False
                 "On":            True
-        sputhreads:
-            group: ADVANCED OPTIONS
-            prompt: PREFERRED SPU THREADS
-            description: Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. Leave on automatic if slowdown occurs.
+        rpcs3_async_texture:
+            submenu: RENDER
+            prompt: ASYNCHRONOUS TEXTURE STREAMING
+            description: Stream texture to GPU in parrallel. Can improve performance on more powerful GPU's.
             choices:
-                "Automatic": 0
-                "1 thread":  1
-                "2 threads": 2
-                "3 threads": 3
-                "4 threads": 4
-                "5 threads": 5
-                "6 threads": 6
-        audiobuffer:
-            group: ADVANCED OPTIONS
+                "Off (Default)": False
+                "On":            True
+        rpcs3_audio_format:
+            group: AUDIO
+            prompt: AUDIO FORMAT
+            description: Choose number of audio channels.
+            choices:
+                "Stereo":       Stereo
+                "Surround 5.1": Surround 5.1
+                "Surround 7.1": Surround 7.1      
+        rpcs3_audiobuffer:
+            group: AUDIO
             prompt: ENABLE AUDIO BUFFERING
             description: Can reduce crackle and stutter but increases audio latency.
             choices:
                 "Off":          False
                 "On (Default)": True
-        timestretch:
-            group: ADVANCED OPTIONS
+        rpcs3_timestretch:
+            group: AUDIO
             prompt: ENABLE TIME STRETCHING
             description: Reduces crackle and stutter further, but may cause a very noticeable reduction in audio quality on slower CPUs.
             choices:
                 "Off (Default)": False
                 "On":            True
+        rpcs3_gui:
+            group: ADVANCED OPTIONS
+            prompt: GRAPHICAL USER INTERFACE
+            description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
+            choices:
+                "Off": 0
+                "On":  1
 
 scummvm:
   features: [padtokeyboard]
