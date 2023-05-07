@@ -100,9 +100,7 @@ class Rpcs3Generator(Generator):
                 rpcs3ymlconfig["Core"]["Accurate xfloat"] = False
                 rpcs3ymlconfig["Core"]["Approximate xfloat"] = False
         # Set the Default Core Values we need
-        rpcs3ymlconfig["Core"]["Lower SPU thread priority"] = False
         rpcs3ymlconfig["Core"]["SPU Cache"] = False # When SPU Cache is True, game performance decreases signficantly. Force it to off.
-        rpcs3ymlconfig["Core"]["PPU LLVM Accurate Vector NaN values"] = True
         # Preferred SPU Threads
         if system.isOptSet("sputhreads"):
             rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = system.config["sputhreads"]
