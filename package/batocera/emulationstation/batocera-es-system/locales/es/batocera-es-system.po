@@ -772,7 +772,7 @@ msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
 msgstr "OVERCLOCK (INESTABLE)"
 
-#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus
+#. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
 msgid "Low"
 msgstr "Bajo"
@@ -1988,7 +1988,7 @@ msgctxt "game_options"
 msgid "TEXTURE FILTERING"
 msgstr "FILTRADO DE TEXTURAS"
 
-#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, pcsx2, ppsspp
+#. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/parallel_n64, pcsx2, ppsspp, ...
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "Más cercano"
@@ -6801,7 +6801,7 @@ msgctxt "game_options"
 msgid "DOWNSCALE FILTER"
 msgstr "FILTRO DE REDUCCIÓN"
 
-#. TRANSLATION: cemu
+#. TRANSLATION: cemu, rpcs3
 msgctxt "game_options"
 msgid "Bilinear (Default)"
 msgstr "Bilineal (Defecto)"
@@ -7220,7 +7220,7 @@ msgctxt "game_options"
 msgid "GPU SYNC"
 msgstr "SINCRONIZACIÓN DE GPU"
 
-#. TRANSLATION: dolphin, dolphin_triforce
+#. TRANSLATION: dolphin, dolphin_triforce, rpcs3
 msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "ANTI-ALIASING"
@@ -7518,7 +7518,7 @@ msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr ""
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "AUDIO"
 msgstr ""
@@ -7811,7 +7811,7 @@ msgctxt "game_options"
 msgid "Force the game to render in this aspect ratio."
 msgstr "Obliga a renderizar el juego en esta relación de aspecto."
 
-#. TRANSLATION: flycast, cgenius
+#. TRANSLATION: flycast, rpcs3, cgenius
 msgctxt "game_options"
 msgid "RENDER RESOLUTION"
 msgstr "RESOLUCIÓN DE RENDERIZADO"
@@ -8926,46 +8926,13 @@ msgstr "TRUCOS DE JUEGOS"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
-msgstr ""
-"Permite Alt+Tab en el menú de RPCS3. Útil para el cambio manual de discos."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "GRAPHICAL USER INTERFACE"
-msgstr "INTERFAZ GRÁFICA DEL USUARIO"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Distorts the output to fill the display fully."
-msgstr "Distorsiona la salida para llenar la pantalla por completo."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "STRETCH TO DISPLAY AREA"
-msgstr "EXTENDER AL ÁREA DE VISUALIZACIÓN"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "PS3's internal ratio setting. Some games only support 16/9."
-msgstr ""
-"Config. de la relación de aspecto interna de PS2. Algunos juegos solo "
-"admiten 16:9."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "TV MODE"
-msgstr "MODO DE TV"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "16:9 (default)"
-msgstr "16:9 (predeterminado)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM es más rápido, usa el ajuste “interpreter” si hay problemas."
+
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3
+msgctxt "game_options"
+msgid "CPU"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9043,100 +9010,6 @@ msgstr "XFloat relajado"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Most games already have an internal framelimit. Minor performance cost."
-msgstr ""
-"La mayoría de juegos ya tienen un límite de frames interno. Menos coste de "
-"rendimiento."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "ADDITIONAL FRAMELIMIT"
-msgstr "LÍMITE DE FRAMES ADICIONAL"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Off (faster, unstable)"
-msgstr "Off (más rápido, inestable)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Only Async (skip draw) avoids freezing while compiling shaders."
-msgstr ""
-"Solo Async (omitir dibujo) evita la congelación mientras se compilan los "
-"shaders."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "SHADER MODE"
-msgstr "MODO DE SHADER"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Legacy (laggy)"
-msgstr "Legacy"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Async (skip draw, recommended)"
-msgstr "Async (omitir dibujo)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Async with interp. (hybrid)"
-msgstr "Async con interp. (híbrido)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Interpreter only (experimental)"
-msgstr "Solo interpreter (experimental)"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Can fix screen tearing on unorthodox displays (most LCDs don't need this)."
-msgstr ""
-"Puede corregir fallos en pantallas poco comunes (la mayoría de las pantallas "
-"LCD no lo necesitan)."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"May fix missing graphics and broken lighting at the cost of performance."
-msgstr ""
-"Puede solucionar los problemas de gráficos e iluminación a costa del "
-"rendimiento."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE COLOR BUFFERS"
-msgstr "ESCRIBIR BUFFERS DE COLOR"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Disables the vertex cache. Might resolve missing or flickering graphics "
-"output but degrade performance."
-msgstr ""
-"Desactiva la caché de vértices. Podría resolver problemas de gráficos o los "
-"parpadeos, pero empeora el rendimiento."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "DISABLE VERTEX CACHE"
-msgstr "DESACTIVAR LA CACHE DE VÉRTICE"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "May fix broken graphics in some games."
-msgstr "Puede solucionar problemas gráficos en algunos juegos."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "WRITE DEPTH BUFFER"
-msgstr "ACTIVAR BÚFER DE PROFUNDIDAD"
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
 msgid ""
 "Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. "
 "Leave on automatic if slowdown occurs."
@@ -9181,6 +9054,270 @@ msgstr "6 hilos"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid "PS3's internal ratio setting. Some games only support 16/9."
+msgstr ""
+"Config. de la relación de aspecto interna de PS2. Algunos juegos solo "
+"admiten 16:9."
+
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3
+msgctxt "game_options"
+msgid "VIDEO"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "16:9 (default)"
+msgstr "16:9 (predeterminado)"
+
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
+msgctxt "game_options"
+msgid "RENDER"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Most games already have an internal framelimit. Minor performance cost."
+msgstr ""
+"La mayoría de juegos ya tienen un límite de frames interno. Menos coste de "
+"rendimiento."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ADDITIONAL FRAMELIMIT"
+msgstr "LÍMITE DE FRAMES ADICIONAL"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Off (faster, unstable)"
+msgstr "Off (más rápido, inestable)"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ANISOTROPIC FILTER"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Can improve performance at the expense of graphics accuracy."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ZCULL ACCURACY"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Precise (Slowest)(Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Approximate (Fast)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Relaxed (Fastest)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Controls precision of generated shaders. Low quality can improved "
+"performance."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SHADER QUALITY"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Ultra"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "High (Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3, cgenius
+msgctxt "game_options"
+msgid "Choose your preferred render resolution."
+msgstr "Elige tu resolución de renderizado preferida."
+
+#. TRANSLATION: rpcs3, xenia-canary
+msgctxt "game_options"
+msgid "1280x720 (Default)"
+msgstr "1280x720 (predeterminado)"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Final image filtering."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "OUTPUT SCALING"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "FidelityFX Super Resolution"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Only Async (skip draw) avoids freezing while compiling shaders."
+msgstr ""
+"Solo Async (omitir dibujo) evita la congelación mientras se compilan los "
+"shaders."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SHADER MODE"
+msgstr "MODO DE SHADER"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Legacy (single threaded)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async (multi threaded)(Deafult)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Async with Shader Interpreter"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Shader Interpreter only"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Only applicable when either Async Shader mode is set."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "NUMBER OF SHADER COMPILER THREADS"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"May fix missing graphics and broken lighting at the cost of performance."
+msgstr ""
+"Puede solucionar los problemas de gráficos e iluminación a costa del "
+"rendimiento."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "WRITE COLOR BUFFERS"
+msgstr "ESCRIBIR BUFFERS DE COLOR"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Straict API specification. Can resolve rare cases of missing graphics and "
+"flickering."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRICT RENDERING MODE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Can fix screen tearing on unorthodox displays (most LCDs don't need this)."
+msgstr ""
+"Puede corregir fallos en pantallas poco comunes (la mayoría de las pantallas "
+"LCD no lo necesitan)."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Distorts the output to fill the display fully Overrides aspect ratio."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "STRETCH TO DISPLAY AREA"
+msgstr "EXTENDER AL ÁREA DE VISUALIZACIÓN"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Disables the vertex cache. Might resolve missing or flickering graphics "
+"output but degrade performance."
+msgstr ""
+"Desactiva la caché de vértices. Podría resolver problemas de gráficos o los "
+"parpadeos, pero empeora el rendimiento."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "DISABLE VERTEX CACHE"
+msgstr "DESACTIVAR LA CACHE DE VÉRTICE"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Offloads some RSX operations to a secondary thread. Improves performance in "
+"high-core processors."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "MULTITHREADED RSX"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Stream texture to GPU in parrallel. Can improve performance on more powerful "
+"GPU's."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "ASYNCHRONOUS TEXTURE STREAMING"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Choose number of audio channels."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "AUDIO FORMAT"
+msgstr ""
+
+#. TRANSLATION: rpcs3, yuzu
+msgctxt "game_options"
+msgid "Stereo"
+msgstr "Stereo"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Surround 5.1"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Surround 7.1"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "Can reduce crackle and stutter but increases audio latency."
 msgstr ""
 "Puede reducir chasquidos y cortes, pero incrementa la latencia de audio."
@@ -9203,6 +9340,17 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "ACTIVAR TIME STRETCH"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
+msgstr ""
+"Permite Alt+Tab en el menú de RPCS3. Útil para el cambio manual de discos."
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "GRAPHICAL USER INTERFACE"
+msgstr "INTERFAZ GRÁFICA DEL USUARIO"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -9540,11 +9688,6 @@ msgstr "lineal"
 msgctxt "game_options"
 msgid "best"
 msgstr "Mejor"
-
-#. TRANSLATION: cgenius
-msgctxt "game_options"
-msgid "Choose your preferred render resolution."
-msgstr "Elige tu resolución de renderizado preferida."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
@@ -10605,11 +10748,6 @@ msgstr "Mono"
 
 #. TRANSLATION: yuzu
 msgctxt "game_options"
-msgid "Stereo"
-msgstr "Stereo"
-
-#. TRANSLATION: yuzu
-msgctxt "game_options"
 msgid "ASYNC SHADER COMPILE"
 msgstr "COMPILACIÓN DE SHADER ASÍNCRONA"
 
@@ -10887,11 +11025,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "INTERNAL DISPLAY RESOLUTION"
 msgstr "RESOLUCIÓN DE PANTALLA INTERNA"
-
-#. TRANSLATION: xenia-canary
-msgctxt "game_options"
-msgid "1280x720 (Default)"
-msgstr "1280x720 (predeterminado)"
 
 #. TRANSLATION: gzdoom
 msgctxt "game_options"
@@ -11319,6 +11452,38 @@ msgstr "Menú Rápido"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Avance Rápido"
+
+#~ msgctxt "game_options"
+#~ msgid "Distorts the output to fill the display fully."
+#~ msgstr "Distorsiona la salida para llenar la pantalla por completo."
+
+#~ msgctxt "game_options"
+#~ msgid "TV MODE"
+#~ msgstr "MODO DE TV"
+
+#~ msgctxt "game_options"
+#~ msgid "Legacy (laggy)"
+#~ msgstr "Legacy"
+
+#~ msgctxt "game_options"
+#~ msgid "Async (skip draw, recommended)"
+#~ msgstr "Async (omitir dibujo)"
+
+#~ msgctxt "game_options"
+#~ msgid "Async with interp. (hybrid)"
+#~ msgstr "Async con interp. (híbrido)"
+
+#~ msgctxt "game_options"
+#~ msgid "Interpreter only (experimental)"
+#~ msgstr "Solo interpreter (experimental)"
+
+#~ msgctxt "game_options"
+#~ msgid "May fix broken graphics in some games."
+#~ msgstr "Puede solucionar problemas gráficos en algunos juegos."
+
+#~ msgctxt "game_options"
+#~ msgid "WRITE DEPTH BUFFER"
+#~ msgstr "ACTIVAR BÚFER DE PROFUNDIDAD"
 
 #~ msgctxt "game_options"
 #~ msgid "Recompiler (Fastest)"
