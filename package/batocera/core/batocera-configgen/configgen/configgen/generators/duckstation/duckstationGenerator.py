@@ -292,6 +292,9 @@ class DuckstationGenerator(Generator):
             username  = system.config.get('retroachievements.username', "")
             password  = system.config.get('retroachievements.password', "")
             hardcore  = system.config.get('retroachievements.hardcore', "")
+            presence  = system.config.get('retroachievements.richpresence', "")
+            indicator = system.config.get('retroachievements.challenge_indicators', "")
+            leaderbd  = system.config.get('retroachievements.leaderboards', "")
             login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
             try:
                 cnx = httplib2.Http()
@@ -311,13 +314,23 @@ class DuckstationGenerator(Generator):
                     settings.set("Cheevos", "Username",      username)
                     settings.set("Cheevos", "Token",         token)
 
-                    # Disables save states, cheats, slowdown functions but you receive 2x achievements points.
                     if hardcore == '1':
-                        settings.set("Cheevos", "ChallengeMode", "true")
+                        settings.set("Cheevos", "ChallengeMode", "true")    # For "hardcore" retroachievement points (no save, no rewind...)
                     else:
                         settings.set("Cheevos", "ChallengeMode", "false")
+                    if presence == '1':
+                        settings.set("Cheevos", "RichPresence",  "true")    # Enable rich presence information will be collected and sent to the server where supported
+                    else:
+                        settings.set("Cheevos", "RichPresence",  "false")
+                    if indicator == '1':
+                        settings.set("Cheevos", "PrimedIndicators",  "true")
+                    else:
+                        settings.set("Cheevos", "PrimedIndicators",  "false")
+                    if leaderbd == '1':
+                        settings.set("Cheevos", "Leaderboards",  "true")
+                    else:
+                        settings.set("Cheevos", "Leaderboards",  "false")
                     #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
-                    #settings.set("Cheevos", "RichPresence",  "true")             # Enable rich presence information will be collected and sent to the server where supported
                     #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
 
                     eslog.debug(f"Duckstation RetroAchievements enabled for {username}")
