@@ -675,6 +675,12 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     # force the assets directory while it was wrong in some beta versions
     retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
 
+    # Adaptation for small resolution (GPICase)
+    if isLowResolution(gameResolution):
+        retroarchConfig['menu_enable_widgets'] = 'false'
+        retroarchConfig['video_msg_bgcolor_enable'] = 'true'
+        retroarchConfig['video_font_size'] = '11'
+
     # AI option (service for game translations)
     if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
         retroarchConfig['ai_service_enable'] = 'true'
@@ -1092,6 +1098,9 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         # Shaders should use this path to find the art.
         os.symlink(overlay_png_file, shaderBezelFile)
         eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
+
+def isLowResolution(gameResolution):
+    return gameResolution["width"] < 480 or gameResolution["height"] < 480
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
