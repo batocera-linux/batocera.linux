@@ -2395,13 +2395,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('mrboom-aspect', '"Native"')
         # Monsters
-        if system.isOptSet('mrboom-nomonster') and system.config['mrboom-nomonster'] == "True":
-            coreSettings.save('mrboom-nomonster', '"ON"')
+        if system.isOptSet('mrboom-nomonster'):
+            coreSettings.save('mrboom-nomonster', '"' + system.config['mrboom-nomonster'] + '"')
         else:
-            coreSettings.save('mrboom-nomonster', '"OFF"')
-
-
-
+            coreSettings.save('mrboom-nomonster', '"ON"')
+    
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
