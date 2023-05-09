@@ -44,6 +44,7 @@
 - mame exit causing settings not to save
 - mednafen_psx settings
 - a bunch of libretro emulator settings not applying
+- multi-light guns for GUN4IR
 ### Changed
 - Samba now allows wide symbolic links
 - Unicode support for x86 files systems
