@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-03 16:14+0200\n"
+"PO-Revision-Date: 2023-05-09 19:04+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -592,7 +592,7 @@ msgstr "Die Limitierung von vier Sprites pro Zeile wird entfernt."
 #. TRANSLATION: libretro/bluemsx, libretro/mesen, libretro/fceumm, libretro/genesisplusgx, libretro/mednafen_supergrafx, ...
 msgctxt "game_options"
 msgid "REDUCE SPRITE FLICKERING"
-msgstr "FLIMMERN VON SPRITES REDUZIEREN"
+msgstr "SPRITE-FLIMMERN REDUZIEREN"
 
 #. TRANSLATION: libretro/cap32
 msgctxt "game_options"
@@ -7393,42 +7393,43 @@ msgstr "BILDSCHIRMBENACHRICHTIGUNGEN DEAKTIVIEREN"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Determines the speed and the runahead behaviour of the system."
-msgstr ""
+msgstr "Festlegen der Systemgeschwindigkeit und der Runahead-Leistung."
 
 #. TRANSLATION: duckstation, duckstation, duckstation
 msgctxt "game_options"
 msgid "EMULATION"
-msgstr ""
+msgstr "EMULATION"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "EMULATION SPEED"
-msgstr ""
+msgstr "EMULATION GESCHWINDIGKEIT"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Unlimited"
-msgstr ""
+msgstr "Unbegrenzt"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "VSync and Audio Resampling need to be enabled."
-msgstr ""
+msgstr "VSync und Audio-Resampling müssen aktiviert werden."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "SYNC TO HOST REFRESH RATE"
-msgstr ""
+msgstr "SYNCHRONISIERUNG MIT HOST-BILDRATE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Ensure every frame the console renders is displayed to screen."
 msgstr ""
+"Die Darstellung von jedem gerenderten Frame auf dem Bildschirm sicherstellen."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
-msgstr ""
+msgstr "OPTIMALES FRAME-PACING"
 
 #. TRANSLATION: duckstation, duckstation, duckstation, duckstation, duckstation, ...
 msgctxt "game_options"
@@ -7454,42 +7455,44 @@ msgstr "THREADED PRESENTATION"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Auto (Match Window)"
-msgstr ""
+msgstr "Auto (Angleichen an Fenster)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "PAR 1:1"
-msgstr ""
+msgstr "PAR 1:1"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr ""
+"Bei einigen 2D-Spielen kann die Funktion zu einem schärferen Bild führen."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "INTEGER UPSCALING"
-msgstr ""
+msgstr "GANZZAHLIGES UPSCALING"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "ENabling will smooth out the image."
-msgstr ""
+msgstr "Aktivierung dieser Funktion führt zu einer Bildglättung."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "LINEAR UPSCALING"
-msgstr ""
+msgstr "LINEARES UPSCALING"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Fills the screen regardless of the aspect ratio."
 msgstr ""
+"Strecken der Anzeige auf Vollbildgröße, unabhängig vom Seitenverhältnis."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "STRETCH TO FILL"
-msgstr ""
+msgstr "ANZEIGE AUF VOLLBILD STRECKEN"
 
 #. TRANSLATION: duckstation, duckstation, duckstation, duckstation, duckstation, ...
 msgctxt "game_options"
@@ -7519,88 +7522,91 @@ msgstr "Nearest-Neighbor"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Bilinear (No Edge Blending)"
-msgstr ""
+msgstr "Bilinear (Keine Kantenüberblendung)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "JINC2 (Slow)"
-msgstr ""
+msgstr "JINC2 (Langsam)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "JINC2 (Slow, No Edge Blending)"
-msgstr ""
+msgstr "JINC2 (Langsam, keine Kantenüberblendung)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "xBR (Very Slow)"
-msgstr ""
+msgstr "xBR (Sehr langsam)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "xBR (Very Slow, No Edge Blending)"
-msgstr ""
+msgstr "xBR (Sehr langsam, keine Kantenüberblendung)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "24-bit, disables dithering."
-msgstr ""
+msgstr "24-bit, Deaktiviert Dithering."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "TRUE COLOUR RENDERING"
-msgstr ""
+msgstr "TRUE-COLOR RENDERING"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Makes the dither pattern much less obvious at higher resolutions."
 msgstr ""
+"Dithering-Muster werden bei höheren Auflösungen weniger deutlich dargestellt."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "SCALED DITHERING"
-msgstr ""
+msgstr "SKALIERTES DITHERING"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr ""
+"Anstelle von Frame-Drops wird die Temperatur angepasst, wenn das System "
+"nicht auf 100% läuft."
 
 #. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "AUDIO"
-msgstr ""
+msgstr "AUDIO"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "STRETCH MODE"
-msgstr ""
+msgstr "STRECK-MODUS"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Off (Noisy)"
-msgstr ""
+msgstr "Aus (Verrauscht)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Resampling (Pirch Shift)"
-msgstr ""
+msgstr "Resampling (Pitch-Shift)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Time Stretch (Tempo Change, Best Sound)"
-msgstr ""
+msgstr "Time-Stretch (Tempowechsel, Bester Ton)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Force progressive render / scan."
-msgstr ""
+msgstr "Progressives Rendern/Scannen erzwingen."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "DISABLE INTERLACING"
-msgstr ""
+msgstr "INTERLACING DEAKTIVIEREN"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7631,11 +7637,13 @@ msgstr "Preload"
 msgctxt "game_options"
 msgid "Use Analog joysticks in addition to D-Pad for DualShock controllers."
 msgstr ""
+"Zusätzlich zum D-Pad die Analog-Joysticks bei DualShock-Controllern "
+"verwenden."
 
 #. TRANSLATION: duckstation, duckstation, duckstation
 msgctxt "game_options"
 msgid "CONTROLLERS"
-msgstr ""
+msgstr "CONTROLLER"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7645,7 +7653,7 @@ msgstr "JOYSTICK ZU D-PAD"
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
 msgid "Not Connected"
-msgstr ""
+msgstr "Nicht verbunden"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
@@ -7725,7 +7733,7 @@ msgstr "Cached Interpreter (Schneller)"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Recompiler (Fastest)(Default)"
-msgstr ""
+msgstr "Recompiler (Am Schnellsten)(Standard)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8474,7 +8482,7 @@ msgstr "Aktivieren"
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
 msgstr ""
-"Bildschirmanzeige ins Vollbild-Format strecken, kann allerdings das "
+"Bildschirmanzeige auf Vollbildgröße strecken, kann allerdings das "
 "Seitenverhältnis verzerren"
 
 #. TRANSLATION: openbor
@@ -8999,7 +9007,7 @@ msgstr ""
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9131,7 +9139,7 @@ msgstr ""
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "VIDEO"
-msgstr ""
+msgstr "VIDEO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9141,7 +9149,7 @@ msgstr "16:9 (Standard)"
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "RENDER"
-msgstr ""
+msgstr "RENDERN"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9163,32 +9171,33 @@ msgstr "Aus (Schneller, instabil)"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ANISOTROPIC FILTER"
-msgstr ""
+msgstr "ANISOTROPE FILTERUNG"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Can improve performance at the expense of graphics accuracy."
 msgstr ""
+"Verbesserung der Leistung, zu Lasten der Genauigkeit bei Grafikdarstellungen."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ZCULL ACCURACY"
-msgstr ""
+msgstr "ZCULL GENAUIGKEIT"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Precise (Slowest)(Default)"
-msgstr ""
+msgstr "Präzise (Am Langsamsten)(Standard)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Approximate (Fast)"
-msgstr ""
+msgstr "Approximate (Schnell)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Relaxed (Fastest)"
-msgstr ""
+msgstr "Relaxed (Am Schnellsten)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9196,21 +9205,23 @@ msgid ""
 "Controls precision of generated shaders. Low quality can improved "
 "performance."
 msgstr ""
+"Präzision und Qualität der erstellten Shaders festlegen. Niedrige Qualität "
+"kann zu einer Leistungssteigerung führen."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "SHADER QUALITY"
-msgstr ""
+msgstr "SHADER-QUALITÄT"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "High (Default)"
-msgstr ""
+msgstr "Hoch (Standard)"
 
 #. TRANSLATION: rpcs3, cgenius
 msgctxt "game_options"
@@ -9225,17 +9236,17 @@ msgstr "1280x720 (Standard)"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Final image filtering."
-msgstr ""
+msgstr "Abschließende Bildfilterung."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "OUTPUT SCALING"
-msgstr ""
+msgstr "VIDEOAUSGABE SKALIERUNG"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "FidelityFX Super Resolution"
-msgstr ""
+msgstr "FidelityFX Super Resolution"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9252,32 +9263,32 @@ msgstr "SHADER-MODUS"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Legacy (single threaded)"
-msgstr ""
+msgstr "Legacy (Single-Threaded)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Async (multi threaded)(Deafult)"
-msgstr ""
+msgstr "Async (Multithreaded)(Standard)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Async with Shader Interpreter"
-msgstr ""
+msgstr "Async mit Shader-Interpreter"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Shader Interpreter only"
-msgstr ""
+msgstr "Nur Shader-Interpreter"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Only applicable when either Async Shader mode is set."
-msgstr ""
+msgstr "Nur anwendbar wenn Async Shader-Modi festgelegt wurden."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
-msgstr ""
+msgstr "SHADER-COMPILER THREADANZAHL"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9298,11 +9309,13 @@ msgid ""
 "Straict API specification. Can resolve rare cases of missing graphics and "
 "flickering."
 msgstr ""
+"Genaue API-Spezifikation. Für Behebung von Fehlern mit flackernden und "
+"fehlenden Grafiken."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRICT RENDERING MODE"
-msgstr ""
+msgstr "GENAUER RENDERING-MODUS"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9316,11 +9329,13 @@ msgstr ""
 msgctxt "game_options"
 msgid "Distorts the output to fill the display fully Overrides aspect ratio."
 msgstr ""
+"Videoausgabe strecken und als Vollbild anzeigen. Seitenverhältnis-"
+"Voreinstellung wird überschrieben."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRETCH TO DISPLAY AREA"
-msgstr "STRECKEN AUF ANZEIGENBEREICH"
+msgstr "ANZEIGEBEREICH STRECKEN"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9342,11 +9357,13 @@ msgid ""
 "Offloads some RSX operations to a secondary thread. Improves performance in "
 "high-core processors."
 msgstr ""
+"Auslagerung von einigen RSX-Operationen in Sekundär-Threads. "
+"Leistungszuwachs bei der Verwendung von Prozessoren mit hoher Kernanzahl."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "MULTITHREADED RSX"
-msgstr ""
+msgstr "MULTITHREADED RSX"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9354,21 +9371,23 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's."
 msgstr ""
+"Paralleles Streamen von Texturen zu GPUs, das bei leistungsstarken "
+"Grafikprozessoren zu Leistungszuwächsen führen kann."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ASYNCHRONOUS TEXTURE STREAMING"
-msgstr ""
+msgstr "ASYNCHRONES TEXTUREN-STREAMING"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Choose number of audio channels."
-msgstr ""
+msgstr "Anzahl der Audiokanäle auswählen."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "AUDIO FORMAT"
-msgstr ""
+msgstr "AUDIOFORMAT"
 
 #. TRANSLATION: rpcs3, yuzu
 msgctxt "game_options"
@@ -9378,12 +9397,12 @@ msgstr "Stereo"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Surround 5.1"
-msgstr ""
+msgstr "Surround 5.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Surround 7.1"
-msgstr ""
+msgstr "Surround 7.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
