@@ -194,6 +194,7 @@ def configureINI(config_directory, bios_directory, system, controllers):
         hardcore  = system.config.get('retroachievements.hardcore', "")
         indicator = system.config.get('retroachievements.challenge_indicators', "")
         presence  = system.config.get('retroachievements.richpresence', "")
+        leaderbd  = system.config.get('retroachievements.leaderboards', "")
         login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
         try:
                 cnx = httplib2.Http()
@@ -225,12 +226,15 @@ def configureINI(config_directory, bios_directory, system, controllers):
                         pcsx2INIConfig.set("Achievements", "RichPresence", "true")
                     else:
                         pcsx2INIConfig.set("Achievements", "RichPresence", "false")
+                    if leaderbd == '1':
+                        pcsx2INIConfig.set("Achievements", "Leaderboards", "true")
+                    else:
+                        pcsx2INIConfig.set("Achievements", "Leaderboards", "false")
         except:
                 eslog.error("ERROR: setting RetroAchievements parameters")
     # set other settings
     pcsx2INIConfig.set("Achievements", "TestMode", "false")
     pcsx2INIConfig.set("Achievements", "UnofficialTestMode", "false")
-    pcsx2INIConfig.set("Achievements", "Leaderboards", "true")
     pcsx2INIConfig.set("Achievements", "Notifications", "true")
     pcsx2INIConfig.set("Achievements", "SoundEffects", "true")
 
