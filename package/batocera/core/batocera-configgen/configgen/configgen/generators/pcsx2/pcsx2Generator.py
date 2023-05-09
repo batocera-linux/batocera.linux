@@ -5,10 +5,16 @@ import batoceraFiles
 import Command
 import os
 from settings.unixSettings import UnixSettings
+from utils.logger import get_logger
 import re
 import configparser
 import io
 import controllersConfig
+import json
+import httplib2
+import time
+
+eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
@@ -179,20 +185,54 @@ def configureINI(config_directory, bios_directory, system, controllers):
     ## [Achievements]
     if not pcsx2INIConfig.has_section("Achievements"):
         pcsx2INIConfig.add_section("Achievements")
-    
-    if system.isOptSet('pcsx2_achievements'):
-        pcsx2INIConfig.set("Achievements", "Enabled", system.config["pcsx2_achievements"])
-    else:
-        pcsx2INIConfig.set("Achievements", "Enabled", "false")
+    pcsx2INIConfig.set("Achievements", "Enabled", "false")
+    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
+        headers   = {"Content-type": "text/plain"}
+        login_url = "https://retroachievements.org/"
+        username  = system.config.get('retroachievements.username', "")
+        password  = system.config.get('retroachievements.password', "")
+        hardcore  = system.config.get('retroachievements.hardcore', "")
+        indicator = system.config.get('retroachievements.challenge_indicators', "")
+        presence  = system.config.get('retroachievements.richpresence', "")
+        login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
+        try:
+                cnx = httplib2.Http()
+        except:
+                eslog.error("ERROR: Unable to connect to " + login_url)
+        try:
+                res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
+                if (res.status != 200):
+                    eslog.warning(f"ERROR: RetroAchievements.org responded with #{res.status} [{res.reason}] {rout}")
+                    settings.set("Cheevos", "Enabled",  "false")
+                else:
+                    parsedout = json.loads(rout.decode('utf-8'))
+                    if not parsedout['Success']:
+                        eslog.warning(f"ERROR: RetroAchievements login failed with ({str(parsedout)})")
+                    token = parsedout['Token']
+                    pcsx2INIConfig.set("Achievements", "Enabled", "true")
+                    pcsx2INIConfig.set("Achievements", "Username", username)
+                    pcsx2INIConfig.set("Achievements", "Token", token)
+                    pcsx2INIConfig.set("Achievements", "LoginTimestamp", str(int(time.time())))
+                    if hardcore == '1':
+                        pcsx2INIConfig.set("Achievements", "ChallengeMode", "true")
+                    else:
+                        pcsx2INIConfig.set("Achievements", "ChallengeMode", "false")
+                    if indicator == '1':
+                        pcsx2INIConfig.set("Achievements", "PrimedIndicators", "true")
+                    else:
+                        pcsx2INIConfig.set("Achievements", "PrimedIndicators", "false")
+                    if presence == '1':
+                        pcsx2INIConfig.set("Achievements", "RichPresence", "true")
+                    else:
+                        pcsx2INIConfig.set("Achievements", "RichPresence", "false")
+        except:
+                eslog.error("ERROR: setting RetroAchievements parameters")
     # set other settings
     pcsx2INIConfig.set("Achievements", "TestMode", "false")
     pcsx2INIConfig.set("Achievements", "UnofficialTestMode", "false")
-    pcsx2INIConfig.set("Achievements", "RichPresence", "true")
-    pcsx2INIConfig.set("Achievements", "ChallengeMode", "false")
     pcsx2INIConfig.set("Achievements", "Leaderboards", "true")
     pcsx2INIConfig.set("Achievements", "Notifications", "true")
     pcsx2INIConfig.set("Achievements", "SoundEffects", "true")
-    pcsx2INIConfig.set("Achievements", "PrimedIndicators", "true")
 
     ## [Filenames]
     if not pcsx2INIConfig.has_section("Filenames"):
