@@ -27,6 +27,7 @@
 - element 14 case support
 - more lr-melonds configuration options
 - Othello Multivision (libretro-gearsystem)
+- Retroachievements for PS2
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
