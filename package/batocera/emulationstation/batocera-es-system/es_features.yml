@@ -7364,8 +7364,11 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
-  cfeatures:
+  cores:
+    'pcsx2':
+      shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+      features: [cheevos]
+      cfeatures:
         pcsx2_ratio:
             submenu: DISPLAY
             prompt: GAME ASPECT RATIO
@@ -7476,7 +7479,7 @@ pcsx2:
             choices:
                 "Off":                       0
                 "Basic (generated Mipmaps)": 1
-                "Full (PS2 Mipmaps)":        2         
+                "Full (PS2 Mipmaps)":        2
         pcsx2_texture_filtering:
             submenu: RENDERING
             prompt: TEXTURE FILTERING
