@@ -135,6 +135,7 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("UI", "HideMouseCursor", "true")
     pcsx2INIConfig.set("UI", "RenderToSeparateWindow", "false")
     pcsx2INIConfig.set("UI", "HideMainWindowWhenRunning", "true")
+    pcsx2INIConfig.set("UI", "DoubleClickTogglesFullscreen", "false")
 
     ## [Folders]
     if not pcsx2INIConfig.has_section("Folders"):
