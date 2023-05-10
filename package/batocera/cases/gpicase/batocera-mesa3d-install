@@ -38,6 +38,17 @@ dtoverlay=pwm-audio-pi-zero_gpicase
         CMDMODIFIED=1
     fi
 
+    # rotate the terminal
+    if ! grep -qE "fbcon=rotate" "${CMDLINE}"
+    then
+        if grep -q "^Raspberry Pi Zero 2" ${RPIMODEL}
+        then
+            mount -o remount,rw /boot
+            sed -i s/$/" fbcon=rotate:1"/ "${CMDLINE}"
+            CMDMODIFIED=1
+        fi
+    fi
+
     # Limit number of active cpus to 2 for rpiZero2
     if ! grep -qE "maxcpus=" "${CMDLINE}"
     then
