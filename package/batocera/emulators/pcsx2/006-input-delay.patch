@@ -1,0 +1,22 @@
+diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
+index f449b17..8a728ab 100644
+--- a/pcsx2/USB/usb-lightgun/guncon2.cpp
++++ b/pcsx2/USB/usb-lightgun/guncon2.cpp
+@@ -39,7 +39,7 @@ namespace usb_lightgun
+ 	{
+ 		GUNCON2_FLAG_PROGRESSIVE = 0x0100,
+ 
+-		GUNCON2_CALIBRATION_DELAY = 9
++		GUNCON2_CALIBRATION_DELAY = 12
+ 	};
+ 
+ 	enum : u32
+@@ -391,7 +391,7 @@ namespace usb_lightgun
+ 						out.pos_y = us->calibration_pos_y;
+ 						us->calibration_timer--;
+ 
+-						if (us->calibration_timer == 0)
++						if (us->calibration_timer < 5)
+ 						{
+ 							out.pos_x = 0;
+ 							out.pos_y = 0;
