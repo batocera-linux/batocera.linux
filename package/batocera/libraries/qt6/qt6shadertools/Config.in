@@ -1,0 +1,17 @@
+config BR2_PACKAGE_QT6SHADERTOOLS
+    bool "qt6shadertools"
+    depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6 # CAN FD
+    select BR2_PACKAGE_QT6BASE
+    select BR2_PACKAGE_QT6BASE_GUI
+    select BR2_PACKAGE_QT6BASE_OPENGL
+    help
+        Qt is a cross-platform application and UI framework for
+        developers using C++.
+        
+        Provides functionality for the shader pipeline that allows Qt Quick to operate
+        on Vulkan, Metal, and Direct3D, in addition to OpenGL.
+        
+        https://doc.qt.io/qt-6/qtshadertools-index.html
+
+comment "qt6shadertools needs headers >= 3.6"
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6

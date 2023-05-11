@@ -95,6 +95,7 @@
 - rpcs3 to v0.0.27
 - pcsx2 to v1.7.4439 (Qt6 build)
 - Pyxel to 1.9.15
+- Cirta to nightly-1903
 ### Dev
 - buildroot upgrade to 2023.02
 - mesa3d update to 23.0.3

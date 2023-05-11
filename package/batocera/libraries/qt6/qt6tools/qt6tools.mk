@@ -16,14 +16,13 @@ QT6TOOLS_DEPENDENCIES = \
 	pcre2 \
 	zlib
 
-# qtdiag requires glibc 2.36
 QT6TOOLS_CONF_OPTS = \
 	-GNinja \
 	-DQT_HOST_PATH=$(HOST_DIR) \
 	-DQT_FEATURE_linguist=ON \
     -DQT_FEATURE_qdbus=ON \
     -DQT_FEATURE_qtattributionsscanner=ON \
-    -DQT_FEATURE_qtdiag=OFF \
+    -DQT_FEATURE_qtdiag=ON \
     -DQT_FEATURE_qtplugininfo=ON
 
 define QT6TOOLS_BUILD_CMDS
@@ -47,14 +46,12 @@ HOST_QT6TOOLS_DEPENDENCIES = \
     host-pcre2 \
     host-zlib
 
-# qtdiag requires glibc 2.36
 HOST_QT6TOOLS_CONF_OPTS = \
     -GNinja \
-    -DCMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
     -DQT_FEATURE_linguist=ON \
     -DQT_FEATURE_qdbus=ON \
     -DQT_FEATURE_qtattributionsscanner=ON \
-    -DQT_FEATURE_qtdiag=OFF \
+    -DQT_FEATURE_qtdiag=ON \
     -DQT_FEATURE_qtplugininfo=ON
 
 define HOST_QT6TOOLS_BUILD_CMDS

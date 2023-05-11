@@ -2,6 +2,10 @@ config BR2_PACKAGE_QT6MULTIMEDIA
     bool "qt6multimedia"
     depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6 # CAN FD
     select BR2_PACKAGE_QT6BASE
+    select BR2_PACKAGE_QT6BASE_GUI
+    select BR2_PACKAGE_QT6BASE_NETWORK
+    select BR2_PACKAGE_QT6SHADERTOOLS
+    select BR2_PACKAGE_QT6DECLARATIVE
     help
         Qt is a cross-platform application and UI framework for
         developers using C++.
