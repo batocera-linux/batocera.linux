@@ -382,6 +382,10 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Hotkeys", "HoldTurbo", "Keyboard/Period")
 
     # guns
+    if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "guncon2":
+        pcsx2INIConfig.remove_option("USB1", "Type")
+    if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "Type") and pcsx2INIConfig.get("USB2", "Type") == "guncon2":
+        pcsx2INIConfig.remove_option("USB2", "Type")
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
         if len(guns) >= 1:
             if not pcsx2INIConfig.has_section("USB1"):
