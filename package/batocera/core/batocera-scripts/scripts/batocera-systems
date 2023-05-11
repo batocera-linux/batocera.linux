@@ -742,11 +742,11 @@ systems = {
     "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
                                                 { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
                                                 { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
-    
+
     # ---------- ScummVM ---------- #
     "scummvm":   { "name": "ScummVM", "biosFiles":  [ { "md5": "89e42e386e82e0cacb4a2704a03706ca", "file": "bios/scummvm/extra/MT32_PCM.ROM" },
                                                       { "md5": "5626206284b22c2734f3e9efefcd2675", "file": "bios/scummvm/extra/MT32_CONTROL.ROM" } ] },
-    
+
     # ---------- MSX1/MSX2 ---------- #
     #https://github.com/openMSX/openMSX/blob/master/share/machines/Boosted_MSX2_EN.txt
     "msx1":   { "name": "MSX1/MS2", "biosFiles":  [ { "md5": "01dd1d72ed9bb6afe8a9b441c198a1cd", "file": "bios/openmsx/nms8250_disk.rom" },
@@ -755,16 +755,16 @@ systems = {
                                                     { "md5": "6f69cc8b5ed761b03afd78000dfb0e19", "file": "bios/openmsx/fmpac.rom" },
                                                     { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
                                                     { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
-    
+
     # ---------- MSX LaserDisc ---------- #
     #https://github.com/openMSX/openMSX/blob/master/share/machines/Pioneer_PX-7.xml
     "msx1":   { "name": "MSX LaserDisc", "biosFiles":  [ { "md5": "281809cafe63437fc4bffb3033fbd0db", "file": "bios/openmsx/px-7_pbasic.rom" },
                                                          { "md5": "9218f6dd89f7ba01e3090d44721b4260", "file": "bios/openmsx/px-7_basic-bios1.rom" } ] },
-    
+
     # ---------- MSX2+  ---------- #
     #https://github.com/openMSX/openMSX/blob/master/share/machines/Boosted_MSX2+_JP.txt
     "msx2+":   { "name": "MSX2+", "biosFiles":  [ { "md5": "acf53887c2d2783dc059a9b442c86b90", "file": "bios/openmsx/fs-a1wsx_kanjifont.rom" },
-                                                  { "md5": "c5c26c3e8bc6c485424818057f0507b9", "file": "bios/openmsx/s-a1wsx_basic-bios2p.rom" },
+                                                  { "md5": "c5c26c3e8bc6c485424818057f0507b9", "file": "bios/openmsx/fs-a1wsx_basic-bios2p.rom" },
                                                   { "md5": "0c40e7db1c1fcc2405e4d0cdd215adb4", "file": "bios/openmsx/fs-a1wsx_fmbasic.rom" },
                                                   { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/openmsx/fs-a1wsx_msx2psub.rom" },
                                                   { "md5": "9dfdebfaa6b547222a40aab8bb2e29f8", "file": "bios/openmsx/fs-a1wsx_kanjibasic.rom" },
@@ -772,7 +772,7 @@ systems = {
                                                   { "md5": "fa8e7d4b999af058fe2864a5f2e014ec", "file": "bios/openmsx/fs-a1wsx_firmware.rom" },
                                                   { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
                                                   { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
-    
+
     # ---------- MSX-Turbo  ---------- #
     #https://github.com/openMSX/openMSX/blob/master/share/machines/Panasonic_FS-A1GT.xml
     "msxturbor":   { "name": "MSX-Turbo", "biosFiles":  [ { "md5": "af17a344bcc177b97a4888c4c559f3ae", "file": "bios/openmsx/fs-a1gt_firmware.rom" },
