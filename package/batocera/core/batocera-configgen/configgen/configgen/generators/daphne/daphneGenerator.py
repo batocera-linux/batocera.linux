@@ -27,13 +27,29 @@ class DaphneGenerator(Generator):
         if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
             shutil.copyfile(batoceraFiles.daphneConfig, batoceraFiles.daphneDatadir + "/custom.ini")
             
-        # copy required resources to config
-        if not os.path.exists(batoceraFiles.daphneDatadir + "/pics"):
-            shutil.copytree("/usr/share/daphne/pics", batoceraFiles.daphneDatadir + "/pics")
-        if not os.path.exists(batoceraFiles.daphneDatadir + "/sound"):
-            shutil.copytree("/usr/share/daphne/sound", batoceraFiles.daphneDatadir + "/sound")
-        if not os.path.exists(batoceraFiles.daphneDatadir + "/fonts"):
-            shutil.copytree("/usr/share/daphne/fonts", batoceraFiles.daphneDatadir + "/fonts")
+        # copy required resources to userdata config folder as needed
+        def copy_resources(source_dir, destination_dir):
+            if not os.path.exists(destination_dir):
+                shutil.copytree(source_dir, destination_dir)
+            else:
+                for item in os.listdir(source_dir):
+                    source_item = os.path.join(source_dir, item)
+                    destination_item = os.path.join(destination_dir, item)
+                    if os.path.isfile(source_item):
+                        if not os.path.exists(destination_item) or os.path.getmtime(source_item) > os.path.getmtime(destination_item):
+                            shutil.copy2(source_item, destination_dir)
+                        elif os.path.isdir(source_item):
+                            copy_resources(source_item, destination_item)
+        
+        directories = [
+            {"source": "/usr/share/daphne/pics", "destination": batoceraFiles.daphneDatadir + "/pics"},
+            {"source": "/usr/share/daphne/sound", "destination": batoceraFiles.daphneDatadir + "/sound"},
+            {"source": "/usr/share/daphne/fonts", "destination": batoceraFiles.daphneDatadir + "/fonts"}
+        ]
+
+        # Copy/update directories
+        for directory in directories:
+            copy_resources(directory["source"], directory["destination"])
         
         # create symbolic link for singe
         if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
@@ -172,8 +188,9 @@ class DaphneGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0'
-            })
-
+            }
+        )
+    
     def getInGameRatio(self, config, gameResolution, rom):
         romName = os.path.splitext(os.path.basename(rom))[0]        
         singeFile = rom + "/" + romName + ".singe"
