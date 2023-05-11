@@ -765,7 +765,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                         retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
                     else:
                         retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig)
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'])
 
             # override core settings
             for key in raguncoreconf:
@@ -796,7 +796,7 @@ def clearGunInputsForPlayer(n, retroarchConfig):
         for type in ["btn", "mbtn"]:
             retroarchConfig['input_player{}_{}_{}'.format(n, key, type)] = ''
 
-def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig):
+def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
     # gun mapping
     retroarchConfig['input_player{}_mouse_index'            .format(n)] = gun["id_mouse"]
     retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = 1
@@ -811,6 +811,13 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig):
     retroarchConfig['input_player{}_gun_dpad_down_mbtn'     .format(n)] = 9
     retroarchConfig['input_player{}_gun_dpad_left_mbtn'     .format(n)] = 10
     retroarchConfig['input_player{}_gun_dpad_right_mbtn'    .format(n)] = 11
+
+    # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
+    if core == "pcsx_rearmed":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
 
     # mapping
     mapping = {
