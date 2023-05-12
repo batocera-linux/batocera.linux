@@ -10317,18 +10317,30 @@ vita3k:
         "6x (5760x3264)": 6
         "7x (6720x3808)": 7
         "8x (7680x4352)": 8
+    vita3k_surface:
+      prompt: DISABLE SURFACE SYNC
+      description: Speed hack, enable to disable surface syncing between CPU and GPU. Surface syncing is needed by a few games.
+      choices:
+        "Disabled":          "false"
+        "Enabled (Default)": "true"    
+    vita3k_linear:
+      prompt: LINEAR FILTERING
+      description: The image will be softer which could help with aliasing.
+      choices:
+        "Disabled (Default)": "false"
+        "Enabled":            "true"
     vita3k_fxaa:
-      prompt:      FXAA
+      prompt: FXAA
       description: Anti-aliasing is a technique for smoothing out jagged edges.
       choices:
-        "Disabled (Default)": False
-        "Enabled":            True
+        "Disabled (Default)": "false"
+        "Enabled":            "true"
     vita3k_vsync:
       prompt: VSYNC
       description: Fix screen tearing.
       choices:
-        "Disabled":          False
-        "Enabled (Default)": True
+        "Disabled":          "false"
+        "Enabled (Default)": "true"
     vita3k_anisotropic:
       prompt:      ANISOTROPIC FILTERING
       description: Improves clarity of distant textures.

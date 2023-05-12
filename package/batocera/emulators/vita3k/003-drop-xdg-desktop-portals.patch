@@ -571,10 +571,10 @@ index e1d23bfb..f0b8a935 100644
  #include <pugixml.hpp>
  #include <stb_image.h>
  
-@@ -357,11 +357,11 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
-         }
-         ImGui::SetCursorPos(ImVec2(AVATAR_POS.x, AVATAR_POS.y + AVATAR_SIZE.y));
-         if (ImGui::Button(lang["change_avatar"].c_str(), ImVec2(AVATAR_SIZE.x, BUTTON_SIZE.y))) {
+@@ -373,11 +373,11 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
+         const auto CHANGE_AVATAR_BTN_SIZE = ImGui::CalcTextSize(lang["change_avatar"].c_str()).x + (ImGui::GetStyle().FramePadding.x * 2.f);
+         ImGui::SetCursorPos(ImVec2(AVATAR_POS.x + (AVATAR_SIZE.x / 2.f) - (CHANGE_AVATAR_BTN_SIZE / 2.f), AVATAR_POS.y + AVATAR_SIZE.y));
+         if (ImGui::Button(lang["change_avatar"].c_str(), ImVec2(CHANGE_AVATAR_BTN_SIZE, BUTTON_SIZE.y))) {
 -            std::filesystem::path avatar_path = "";
 -            host::dialog::filesystem::Result result = host::dialog::filesystem::open_file(avatar_path, { { "Image file", { "bmp", "gif", "jpg", "png", "tif" } } });
 +            nfdchar_t *avatar_path;
