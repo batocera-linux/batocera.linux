@@ -6759,7 +6759,6 @@ duckstation:
                 "Time Stretch (Tempo Change, Best Sound)": "TimeStretch"
         duckstation_interlacing:
             submenu: DISPLAY
-            group: ADVANCED OPTIONS
             prompt: DISABLE INTERLACING
             description: Force progressive render / scan.
             choices:
@@ -6767,7 +6766,6 @@ duckstation:
                 "Enabled":            "true"
         duckstation_60hz:
             submenu: DISPLAY
-            group: ADVANCED OPTIONS
             prompt: FORCE NTSC TIMINGS ON PAL
             description: Hack. Increases most PAL games' speed by 17%.
             choices:
@@ -6871,7 +6869,6 @@ duckstation:
                 "Enabled":  "true"
         duckstation_antialiasing:
             submenu: RENDERING
-            group: ADVANCED OPTIONS
             prompt: ANTI-ALIASING (MSAA/SSAA)
             description: Enhancement. Smooth out jagged edges on 3D object polygons.
             choices:
