@@ -73,7 +73,7 @@
 - redream to 1.5.0-1051
 - hypseus to 2.10.2
 - abuse to 0.9.1
-- supermodel to Mar 19, 2023 build
+- supermodel to May 8, 2023 build
 - Updated libretro cores [#8411](https://github.com/batocera-linux/batocera.linux/pull/8411)
 - Updated mupen64plus cores [#8413](https://github.com/batocera-linux/batocera.linux/pull/8413)
 - dosbox to v2023.03.31
