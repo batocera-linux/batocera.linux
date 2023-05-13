@@ -61,8 +61,8 @@
 - ppsspp now fully uses SDL2 controller config
 ### Updated
 - lr-snes9x to v1.62.3
-- xenia to v1.0.2791
-- xenia canary to 5e0c674 (Commits on Apr 10, 2023)
+- xenia to v1.0.2798
+- xenia canary to 1319ff6 (Commits on May 2, 2023)
 - cemu to 2.0-39
 - retroarch to 1.15.0
 - libretro-wasm4 to 2.5.4
