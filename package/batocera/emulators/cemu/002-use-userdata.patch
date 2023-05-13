@@ -15,15 +15,15 @@ diff --git a/src/Cemu/Logging/CemuLogging.cpp b/src/Cemu/Logging/CemuLogging.cpp
 index 28a86427f6..a4f78b6d94 100644
 --- a/src/Cemu/Logging/CemuLogging.cpp
 +++ b/src/Cemu/Logging/CemuLogging.cpp
-@@ -98,7 +98,7 @@ void cemuLog_createLogFile(bool triggeredByCrash)
- 	if (LogContext.file_stream.is_open())
- 		return;
+@@ -94,7 +94,7 @@ void cemuLog_thread()
  
--	const auto path = ActiveSettings::GetUserDataPath("log.txt");
-+	const auto path = "/userdata/system/logs/cemu-log.txt";
- 	LogContext.file_stream.open(path, std::ios::out);
- 	if (LogContext.file_stream.fail())
- 	{
+ fs::path cemuLog_GetLogFilePath()
+ {
+-    return ActiveSettings::GetUserDataPath("log.txt");
++    return "/userdata/system/logs/cemu-log.txt";
+ }
+ 
+ void cemuLog_createLogFile(bool triggeredByCrash)
 diff --git a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp b/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
 index 565f4f8fc4..00e15c51f3 100644
 --- a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
