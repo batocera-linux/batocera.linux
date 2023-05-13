@@ -819,6 +819,10 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
         retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
         retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
 
+    if core == "fbneo":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+
     # mapping
     mapping = {
         "gun_trigger"        : "b",
