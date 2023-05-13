@@ -73,22 +73,22 @@ index 5b105a1..f449b17 100644
 +		updateState(us, BID_TRIGGER, event->value != 0); // 0: unpressed, 1: pressed, 2: maintained
 +		break;
 +	    case BTN_RIGHT:
-+		updateState(us, BID_SHOOT_OFFSCREEN, event->value != 0);
++		updateState(us, BID_C, event->value != 0);
 +		break;
 +	    case BTN_MIDDLE:
-+		updateState(us, BID_RECALIBRATE, event->value != 0);
-+		break;
-+	    case BTN_1:
-+		updateState(us, BID_START, event->value != 0);
-+		break;
-+	    case BTN_2:
 +		updateState(us, BID_A, event->value != 0);
 +		break;
-+	    case BTN_3:
++	    case BTN_1:
 +		updateState(us, BID_B, event->value != 0);
 +		break;
++	    case BTN_2:
++		updateState(us, BID_RECALIBRATE, event->value != 0);
++		break;
++	    case BTN_3:
++		updateState(us, BID_START, event->value != 0);
++		break;
 +	    case BTN_4:
-+		updateState(us, BID_C, event->value != 0);
++		updateState(us, BID_SELECT, event->value != 0);
 +		break;
 +	    case BTN_5:
 +		updateState(us, BID_DPAD_UP, event->value != 0);
