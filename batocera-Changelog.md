@@ -3,6 +3,10 @@
 - steamdeck virtual mouse/gun support from trackpad (left/right hand options)
 - JAMMAsd support (convert it in 2 pads)
 - AMD RDNA3 support - i.e. 7900 cards
+- steamdeck force feedback support
+- samco guns support (https://github.com/samuelballantyne/IR-Light-Gun)
+- fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
+- wiimote+nunchuk as a zapper gun support
 ### Added
 - Added Lowres-NX for ARM-based SBC
 - Added Zelda Classic 2.10 for ARM-based SBC
@@ -19,16 +23,13 @@
 - virtual devices with options (sinden guns) loading is now delayed once options are available (/userdata available)
 - supermodel now supports multi guns.
 - supermodel now supports start and coin buttons on the gun
-- samco guns support (https://github.com/samuelballantyne/IR-Light-Gun)
-- fusion lightguns support (https://github.com/Fusion-Lightguns/Fusion-Mini)
-- wiimote+nunchuk as a zapper gun support
 - added back Commander Genius at version 3.3.0
 - intel video media decoding acceleration for Gen 9+ GPUs
 - openmsx laserdisc support
 - element 14 case support
 - more lr-melonds configuration options
 - Othello Multivision (libretro-gearsystem)
-- Retroachievements for PS2
+- Retroachievements for PS2 (pcsx2)
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -59,6 +60,8 @@
 - ScummVM now will use extra files here - /userdata/bios/scummvm/extra (consistent with LR-ScummVM)
 - Pico-8: libretro-retro8 is deprecated in favor of libretro-fake08
 - ppsspp now fully uses SDL2 controller config
+- more rpcs3 ES options
+- more pcsx2 options
 ### Updated
 - lr-snes9x to v1.62.3
 - xenia to v1.0.2798
@@ -85,18 +88,21 @@
 - libretro-scummvm to Apr 19, 2023 build
 - wine proton to 8.0-2c
 - openmsx configuration improvements
-- dolphin-emu to 5.0-19230
-- vita3k to April 14 build
+- dolphin-emu to 5.0-19230 (Qt6)
+- vita3k to May 12, 2023 build
 - bigpemu to v1054
 - xpadneo to 15th April
 - moonlight options
 - lr-mGBA to v0.10.2
 - vice to v3.7.1
 - rpcs3 to v0.0.27
-- pcsx2 to v1.7.4439 (Qt6 build)
+- pcsx2 to v1.7.4439 (Qt6)
 - Pyxel to 1.9.15
-- Cirta to nightly-1903
+- Citra to nightly-1903
 - xemu v0.7.88
+- melonDS to May 11, 2023 (Qt6)
+- duckstation to May 07, 2023 build (Qt6)
+- hypseus-singe to v2.10.4
 ### Dev
 - buildroot upgrade to 2023.02.01
 - mesa3d update to 23.1.0
@@ -105,8 +111,9 @@
 - linux kernel for x86_64 to 6.3.2
 - linux kernel for RPI to 6.1.25
 - nvidia production driver to 530.41.03
-- llvm to 15.0.7
+- llvm to 16.0.3
 - vulkan stack to v1.3.248
+- add multiple Qt6 packages
 
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
