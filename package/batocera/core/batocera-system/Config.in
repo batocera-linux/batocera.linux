@@ -1227,6 +1227,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
     bool "batocera guns support"
     select BR2_PACKAGE_AIMTRAK_GUNS     # aimtrak guns
     select BR2_PACKAGE_SAMCO_GUNS       # samco guns
+    select BR2_PACKAGE_FUSION_LIGHTGUNS # fusion lightguns
     select BR2_PACKAGE_DOLPHINBAR_GUNS  # dolphinbar guns
     select BR2_PACKAGE_SINDEN_GUNS      # sinden guns
     select BR2_PACKAGE_AELIGHTGUN       # ae light gun
