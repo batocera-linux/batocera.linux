@@ -995,7 +995,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_DUCKSTATION                  if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3128
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3128     && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
