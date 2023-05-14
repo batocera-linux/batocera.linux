@@ -297,26 +297,14 @@ class DolphinGenerator(Generator):
         hotkeyConfig.set('Hotkeys', 'Wii/Connect Wii Remote 3', '@(Alt+F7)')
         hotkeyConfig.set('Hotkeys', 'Wii/Connect Wii Remote 4', '@(Alt+F8)')
         hotkeyConfig.set('Hotkeys', 'Wii/Connect Balance Board', '@(Alt+F9)')
-        # Load State
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 1', 'F1')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 2', 'F2')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 3', 'F3')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 4', 'F4')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 5', 'F5')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 6', 'F6')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 7', 'F7')
-        hotkeyConfig.set('Hotkeys', 'Load State/Load State Slot 8', 'F8')
+        # Select
+        hotkeyConfig.set('Hotkeys', 'Select State/Select State Slot 1', '@(Shift+F1)')
+        hotkeyConfig.set('Hotkeys', 'Select State/Select State Slot 2', '@(Shift+F2)')
+        # Load
+        hotkeyConfig.set('Hotkeys', 'State/Load from Selected Slot', 'F8')
         # Save State
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 1', '@(Shift+F1)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 2', '@(Shift+F2)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 3', '@(Shift+F3)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 4', '@(Shift+F4)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 5', '@(Shift+F5)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 6', '@(Shift+F6)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 7', '@(Shift+F7)')
-        hotkeyConfig.set('Hotkeys', 'Save State/Save State Slot 8', '@(Shift+F8)')
+        hotkeyConfig.set('Hotkeys', 'Save State/Save to Selected Slot', 'F5')
         # Other State Hotkeys
-        hotkeyConfig.set('Hotkeys', 'Other State Hotkeys/Undo Load State', 'F12')
         hotkeyConfig.set('Hotkeys', 'Other State Hotkeys/Undo Load State', '@(Shift+F12)')
         # GBA Core
         hotkeyConfig.set('Hotkeys', 'GBA Core/Load ROM', '@(`Ctrl`+`Shift`+`O`)')
