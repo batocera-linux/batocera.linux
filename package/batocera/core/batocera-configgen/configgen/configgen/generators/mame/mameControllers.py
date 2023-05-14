@@ -20,7 +20,7 @@ from PIL import Image, ImageOps
 
 eslog = get_logger(__name__)
 
-def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, useMouse, multiMouse):
+def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, guns, useMouse, multiMouse):
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -242,6 +242,13 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
 
         nplayer = nplayer + 1
 
+    # in case there are more guns than pads, configure them
+    if useGuns and len(guns) > len(playersControllers):
+        for gunnum in range(len(playersControllers)+1, len(guns)+1):
+            addCommonPlayerPorts(config, xml_input, gunnum)
+            for mapping in gunmappings:
+                xml_input.appendChild(generateGunPortElement(config, gunnum, mapping, gunmappings))
+
     # save the config file
     #mameXml = open(configFile, "w")
     # TODO: python 3 - workawround to encode files in utf-8
@@ -284,6 +291,25 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
             keyval = keyval + " OR MOUSECODE_{}_{}".format(nplayer, mousemappings[mapping])
         else:
             keyval = keyval + " OR MOUSECODE_1_{}".format(mousemappings[mapping])
+    value = config.createTextNode(keyval)
+    xml_newseq.appendChild(value)
+    return xml_port
+
+def generateGunPortElement(config, nplayer, mapping, gunmappings):
+    # Generic input
+    xml_port = config.createElement("port")
+    if mapping in ["START", "COIN"]:
+        xml_port.setAttribute("type", mapping+str(nplayer))
+    else:
+        xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
+    xml_newseq = config.createElement("newseq")
+    xml_newseq.setAttribute("type", "standard")
+    xml_port.appendChild(xml_newseq)
+    keyval = None
+    if mapping in gunmappings:
+        keyval = "GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+    if keyval is None:
+        return None
     value = config.createTextNode(keyval)
     xml_newseq.appendChild(value)
     return xml_port

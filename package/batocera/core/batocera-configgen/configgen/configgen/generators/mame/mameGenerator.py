@@ -473,9 +473,9 @@ class MameGenerator(Generator):
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useMouse, multiMouse)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useMouse, multiMouse)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
