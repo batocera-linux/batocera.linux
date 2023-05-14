@@ -812,6 +812,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
     retroarchConfig['input_player{}_gun_dpad_left_mbtn'     .format(n)] = 10
     retroarchConfig['input_player{}_gun_dpad_right_mbtn'    .format(n)] = 11
 
+    # custom mapping by core to match more with avaible gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
         retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
@@ -820,6 +821,30 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
         retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
 
     if core == "fbneo":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+
+    if core == "fbneo":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+
+    if core == "snes9x":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
+        retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
+
+    if core == "genesisplusgx":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
+        retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
+
+    if core == "flycast":
         retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
         retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
 
