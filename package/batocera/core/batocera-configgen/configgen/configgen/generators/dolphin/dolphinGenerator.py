@@ -301,7 +301,7 @@ class DolphinGenerator(Generator):
         hotkeyConfig.set('Hotkeys', 'Select State/Select State Slot 1', '@(Shift+F1)')
         hotkeyConfig.set('Hotkeys', 'Select State/Select State Slot 2', '@(Shift+F2)')
         # Load
-        hotkeyConfig.set('Hotkeys', 'State/Load from Selected Slot', 'F8')
+        hotkeyConfig.set('Hotkeys', 'Load State/Load from Selected Slot', 'F8')
         # Save State
         hotkeyConfig.set('Hotkeys', 'Save State/Save to Selected Slot', 'F5')
         # Other State Hotkeys
