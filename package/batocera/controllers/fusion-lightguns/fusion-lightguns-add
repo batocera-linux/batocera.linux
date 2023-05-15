@@ -5,7 +5,7 @@ PLAYER=$1
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
-PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+PARENTHASH=$(evsieve-helper parent-inputs "${DEVNAME}")
 BASEFILE="/var/run/virtual-fusion-lightguns-devices.${PARENTHASH}"
 PIDFILE="${BASEFILE}.pid"
 LOCKFILE="${BASEFILE}.lock"
@@ -37,7 +37,7 @@ trylock() {
 trylock
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+CHILDREN=$(evsieve-helper children-inputs "${PARENTHASH}")
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
 # trigger                  : BTN_LEFT

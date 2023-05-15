@@ -8,13 +8,19 @@ import re
 from os.path import basename
 from os.path import dirname
 
-def findUsbParent(ctx, event):
+def findUsbParentInputs(ctx, event):
     for device in ctx.list_devices(subsystem='input'):
         if basename(device.device_path) == event:
             return device.find_parent('usb')
     raise Exception("unable to find the usb parent for " + event)
 
-def findChildren(ctx, parenthash):
+def findUsbParentVideos(ctx, video):
+    for device in ctx.list_devices(subsystem='video4linux'):
+        if basename(device.device_path) == video:
+            return device.find_parent('usb')
+    raise Exception("unable to find the usb parent for " + video)
+
+def findChildrenInputs(ctx, parenthash):
     children = []
     for device in ctx.list_devices(subsystem='input'):
         if basename(device.device_path)[0:5] == "event":
@@ -25,6 +31,16 @@ def findChildren(ctx, parenthash):
                     children.append({ "event": "/dev/input/"+basename(device.device_path), "name": event.name })
     return children
 
+def findChildrenVideos(ctx, parenthash):
+    children = []
+    for device in ctx.list_devices(subsystem='video4linux'):
+        if basename(device.device_path)[0:5] == "video":
+            curparent = device.find_parent('usb')
+            if curparent is not None:
+                if parent2hash(curparent) == parenthash:
+                    children.append({ "video": "/dev/"+basename(device.device_path)})
+    return children
+
 def parent2hash(parent):
     return hashlib.md5(devicepathWithoutConf(parent.device_path).encode('utf-8')).hexdigest()
 
@@ -32,8 +48,10 @@ def devicepathWithoutConf(path):
     return dirname(path)
 
 def do_help():
-    print("evsieve-helper parent <event>", file=sys.stderr)
-    print("evsieve-helper children <parent>", file=sys.stderr)
+    print("evsieve-helper parent-inputs <event>", file=sys.stderr)
+    print("evsieve-helper parent-videos <event>", file=sys.stderr)
+    print("evsieve-helper children-inputs <parent>", file=sys.stderr)
+    print("evsieve-helper children-videos <parent>", file=sys.stderr)
 
 if len(sys.argv) != 3:
     do_help()
@@ -41,20 +59,36 @@ if len(sys.argv) != 3:
 
 ctx = pyudev.Context()
 
-if sys.argv[1] == "parent":
+if sys.argv[1] == "parent-inputs":
     event = sys.argv[2]
-    print(parent2hash(findUsbParent(ctx, basename(event))))
+    print(parent2hash(findUsbParentInputs(ctx, basename(event))))
     exit(0)
-elif sys.argv[1] == "parent-raw":
+elif sys.argv[1] == "parent-inputs-raw":
     event = sys.argv[2]
-    parent = findUsbParent(ctx, basename(event))
+    parent = findUsbParentInputs(ctx, basename(event))
     print(devicepathWithoutConf(parent.device_path))
     exit(0)
-elif sys.argv[1] == "children":
+elif sys.argv[1] == "parent-videos":
+    event = sys.argv[2]
+    print(parent2hash(findUsbParentVideos(ctx, basename(event))))
+    exit(0)
+elif sys.argv[1] == "parent-videos-raw":
+    event = sys.argv[2]
+    parent = findUsbParentVideos(ctx, basename(event))
+    print(devicepathWithoutConf(parent.device_path))
+    exit(0)
+
+elif sys.argv[1] == "children-inputs":
     parenthash = sys.argv[2]
-    children = findChildren(ctx, parenthash)
+    children = findChildrenInputs(ctx, parenthash)
     for child in children:
         print("{}\t{}".format(child["event"], child["name"]))
+    exit(0)
+elif sys.argv[1] == "children-videos":
+    parenthash = sys.argv[2]
+    children = findChildrenVideos(ctx, parenthash)
+    for child in children:
+        print("{}".format(child["video"]))
     exit(0)
 else:
     do_help()
