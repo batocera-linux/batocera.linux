@@ -25,7 +25,7 @@ then
 fi
 # ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
 
-PARENTHASH=$(evsieve-helper parent "${DEVNAME}")
+PARENTHASH=$(evsieve-helper parent-inputs "${DEVNAME}")
 BASEFILE="/var/run/virtual-wiigun-devices.${PARENTHASH}"
 PIDFILE="${BASEFILE}.pid"
 LOCKFILE="${BASEFILE}.lock"
@@ -73,7 +73,7 @@ breakVirtualGunOnDifferentMode() {
 }
 
 trylock
-CHILDREN=$(evsieve-helper children "${PARENTHASH}")
+CHILDREN=$(evsieve-helper children-inputs "${PARENTHASH}")
 
 breakVirtualGunOnDifferentMode
 checkRunningPIDAndExit1
