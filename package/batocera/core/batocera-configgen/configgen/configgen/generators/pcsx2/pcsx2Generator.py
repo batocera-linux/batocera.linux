@@ -391,10 +391,22 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
             if not pcsx2INIConfig.has_section("USB1"):
                 pcsx2INIConfig.add_section("USB1")
             pcsx2INIConfig.set("USB1", "Type", "guncon2")
+            nc = 1
+            for controller, pad in sorted(controllers.items()):
+                if nc == 1:
+                    if "start" in pad.inputs:
+                        pcsx2INIConfig.set("USB1", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
+                nc = nc + 1
         if len(guns) >= 2:
             if not pcsx2INIConfig.has_section("USB2"):
                 pcsx2INIConfig.add_section("USB2")
             pcsx2INIConfig.set("USB2", "Type", "guncon2")
+            nc = 1
+            for controller, pad in sorted(controllers.items()):
+                if nc == 2:
+                    if "start" in pad.inputs:
+                        pcsx2INIConfig.set("USB2", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
+                nc = nc + 1
 
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
