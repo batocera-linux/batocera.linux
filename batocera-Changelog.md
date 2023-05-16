@@ -155,6 +155,7 @@
 - Retroachievements for Arduboy and WASM4
 - Added RPI2, RPI3_32Bits and RPIZero2 support in bcm2836 image
 - Expanded RTW89 linux driver for Realtek 8852xx devices
+- Addes d8vk - the Direct3D 8 to Vulkan translation layer for older 32bit Windows games
 ### Changed
 - Move to pipewire wireplumber audio
 - Bluetooth modes : automatic and manual (via a list)
