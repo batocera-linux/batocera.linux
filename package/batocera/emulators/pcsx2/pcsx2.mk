@@ -68,4 +68,12 @@ endef
 
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_EVMAPY
 
+define PCSX2_TEXTURES
+	mkdir -p $(TARGET_DIR)/usr/pcsx2/bin/resources/textures
+	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/pcsx2/textures/ $(TARGET_DIR)/usr/pcsx2/bin/resources/
+endef
+
+PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_TEXTURES
+
+
 $(eval $(cmake-package))
