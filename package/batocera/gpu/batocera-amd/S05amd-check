@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# S05amd-check forces the amdgpu over the legacy radeon driver(s)
+# for supported AMD island cards only 
+# function can be turned off using batocera-boot.conf
+
+# try to create the log dir
+mkdir -p "/userdata/system/logs"
+log="/userdata/system/logs/amd.log"
+
+if grep -qE "^[ ]*amdgpu[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+then
+  echo "Detecting AMD or Radeon GPU." > "$log"
+  gpu_name=$(lspci -nn | grep -iE "AMD|Radeon" | grep -iE "VGA|3D")
+
+  if [[ -n $gpu_name ]]; then
+    vid_pid=$(echo "$gpu_name" | awk -F'[][]' '{print $(NF-1)}')
+    # Check the vid:pid is in the list file
+    if grep -q "$vid_pid" /usr/share/amd/islands.list; then
+      # Logging
+      echo "Supported AMD Islands card found - $vid_pid." >> "$log"
+      # Write module changes
+      mkdir -p /var/run/amd/modprobe || exit 1
+      echo "radeon.si_support=0 amdgpu.si_support=1" > /var/run/amd/modprobe/amdgpu.conf
+      echo "radeon.cik_support=0 amdgpu.cik_support=1" >> /var/run/amd/modprobe/amdgpu.conf
+      # Remove radeon module & reload amdgpu module
+      rmmod radeon
+      rmmod amdgpu
+      modprobe amdgpu
+      # Now check if there are multiple GPUs in the system
+      gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+      if [ $gpu_count -ne 2 ]; then
+        export DRI_PRIME=1
+        # Logging
+        echo "AMD Multi-GPU configuration applied. DRI_PRIME set to $DRI_PRIME." >> "$log"
+      fi
+    else
+      # Logging
+      echo "No matching PCI ID found in islands.list." >> "$log"
+    fi
+  else
+    # Logging
+    echo "No AMD or Radeon GPU found." > "$log"
+  fi
+fi
