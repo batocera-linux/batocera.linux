@@ -1,0 +1,6 @@
+config BR2_PACKAGE_BATOCERA_AMD
+    bool "batocera-amd"
+    depends on BR2_PACKAGE_XSERVER_XORG_SERVER
+    select BR2_PACKAGE_MESA3D
+    help
+      This package helps switch between the different mesa amd drivers
