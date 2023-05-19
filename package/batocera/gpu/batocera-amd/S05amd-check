@@ -14,6 +14,7 @@ then
   gpu_name=$(lspci -nn | grep -iE "AMD|Radeon" | grep -iE "VGA|3D")
 
   if [[ -n $gpu_name ]]; then
+    echo "Detected - $gpu_name." > "$log"
     vid_pid=$(echo "$gpu_name" | awk -F'[][]' '{print $(NF-1)}')
     # Check the vid:pid is in the list file
     if grep -q "$vid_pid" /usr/share/amd/islands.list; then
