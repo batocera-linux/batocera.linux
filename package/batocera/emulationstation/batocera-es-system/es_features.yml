@@ -770,7 +770,7 @@ libretro:
                             "On":  enabled
                     wii_shader_mode:
                         group: ADVANCED OPTIONS
-                        prompt:      UBERSHADERS
+                        prompt: UBERSHADERS
                         description: May not work well on all hardware. Hybrid is preferred, where supported.
                         choices:
                             "No Ubershaders":        'sync'
@@ -6221,15 +6221,25 @@ devilutionx:
 dolphin:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        dolphin_aspect_ratio:
+            submenu: DISPLAY
+            prompt: GAME ASPECT RATIO
+            description: The final output image, unrelated to the Wii's emulated NAND setting.
+            choices:
+                "Force 16:9":        1
+                "Force 4:3":         2
+                "Stretch to window": 3
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, rk3326]
-            prompt:      GRAPHICS API
+            submenu: RENDERING
+            prompt:  GRAPHICS API
             description: Choose which graphics API library to use. Vulkan is better, when supported.
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
         internal_resolution:
-            prompt:      RENDERING RESOLUTION
+            submenu: RENDERING
+            prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
                 "1x native (640x528)":  1
@@ -6240,46 +6250,39 @@ dolphin:
                 "6x 4K (3840x3168)":    6
                 "7x (4480x3696)":       7
                 "8x 5K (5120x4224)":    8
-        dolphin_aspect_ratio:
-            prompt:      GAME ASPECT RATIO
-            description: The final output image, unrelated to the Wii's emulated NAND setting.
-            choices:
-                "Force 16:9": 1
-                "Force 4:3": 2
-                "Stretch to window": 3
         ubershaders:
-            group: ADVANCED OPTIONS
-            prompt:      UBERSHADERS
+            submenu: RENDERING
+            prompt: UBERSHADERS
             description: May not work well on all hardware. Hybrid is preferred, where supported.
             choices:
-                "No Ubershaders":                          no_ubershader
-                "Exclusive Ubershaders":                   exclusive_ubershader
-                "Hybrid Ubershaders":                      hybrid_ubershader
-                "Skip Drawing":                            skip_draw
+                "No Ubershaders":        no_ubershader
+                "Exclusive Ubershaders": exclusive_ubershader
+                "Hybrid Ubershaders":    hybrid_ubershader
+                "Skip Drawing":          skip_draw
         wait_for_shaders:
-            group: ADVANCED OPTIONS
-            prompt:      PRE-CACHE SHADERS
+            submenu: RENDERING
+            prompt: PRE-CACHE SHADERS
             description: Compile shaders on next launch of game (one time). Reduces micro-freezes.
             choices:
                 "Off (default)": 0
                 "On":            1
         perf_hacks:
             group: ADVANCED OPTIONS
-            prompt:      PERFORMANCE HACKS
+            prompt: PERFORMANCE HACKS
             description: Increase emulator performance, at the cost of accuracy/stability.
             choices:
                 "Off": 0
                 "On":  1
         use_pad_profiles:
-            group: ADVANCED OPTIONS
-            prompt:      USE PAD PROFILES
+            submenu: CONTROLLERS
+            prompt: USE PAD PROFILES
             description: Search for custom configured joystick profiles.
             choices:
                 "Off": 0
                 "On":  1
         dolphin_port_1_type:
-            group: ADVANCED OPTIONS
-            prompt:      GAMECUBE PORT 1 TYPE
+            submenu: CONTROLLERS
+            prompt: GAMECUBE PORT 1 TYPE
             description: Change what's plugged into the virtual GameCube ports.
             choices:
                 "None":                       0
@@ -6291,8 +6294,8 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_2_type:
-            group: ADVANCED OPTIONS
-            prompt:      GAMECUBE PORT 2 TYPE
+            submenu: CONTROLLERS
+            prompt: GAMECUBE PORT 2 TYPE
             choices:
                 "None":                       0
                 "Standard Controller":        6
@@ -6303,8 +6306,8 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_3_type:
-            group: ADVANCED OPTIONS
-            prompt:      GAMECUBE PORT 3 TYPE
+            submenu: CONTROLLERS
+            prompt: GAMECUBE PORT 3 TYPE
             choices:
                 "None":                       0
                 "Standard Controller":        6
@@ -6315,8 +6318,8 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_4_type:
-            group: ADVANCED OPTIONS
-            prompt:      GAMECUBE PORT 4 TYPE
+            submenu: CONTROLLERS
+            prompt: GAMECUBE PORT 4 TYPE
             choices:
                 "None":                       0
                 "Standard Controller":        6
@@ -6327,8 +6330,8 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         anisotropic_filtering:
-            group: ADVANCED OPTIONS
-            prompt:      ANISOTROPIC FILTERING
+            submenu: RENDERING
+            prompt: ANISOTROPIC FILTERING
             description: Improves clarity of distant textures.
             choices:
                 "Off": 0
@@ -6338,21 +6341,21 @@ dolphin:
                 "16x": 4
         dual_core:
             group: ADVANCED OPTIONS
-            prompt:      DUAL CORE MODE
+            prompt: DUAL CORE MODE
             description: Usually not much faster than single core mode.
             choices:
                 "Off": 0
                 "On":  1
         gpu_sync:
             group: ADVANCED OPTIONS
-            prompt:      GPU SYNC
+            prompt: GPU SYNC
             description: Speed hack for dual core mode to fix some glitches.
             choices:
                 "Off": 0
                 "On":  1
         antialiasing:
-            group: ADVANCED OPTIONS
-            prompt:      ANTI-ALIASING
+            submenu: RENDERING
+            prompt: ANTI-ALIASING
             description: Enhancement. Smooth out jagged edges on 3D object polygons.
             choices:
                 "Off": 0
@@ -6360,71 +6363,80 @@ dolphin:
                 "4x":  4
                 "8x":  8
         use_ssaa:
-            group: ADVANCED OPTIONS
-            prompt:      ANTI-ALIASING MODE
+            submenu: RENDERING
+            prompt: ANTI-ALIASING MODE
             description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
             choices:
                 "MSAA (default)": 0
                 "SSAA":           1
         hires_textures:
-            group: ADVANCED OPTIONS
-            prompt:      LOAD CUSTOM TEXTURES
+            submenu: RENDERING
+            prompt: LOAD CUSTOM TEXTURES
             choices:
                 "Off": 0
                 "On":  1
         enable_cheats:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE CHEATS
+            prompt: ENABLE CHEATS
             description: To use game cheats or 16/9 Aspect Ratio Fix codes.
             choices:
                 "Off": 0
                 "On":  1
         enable_mmu:
             group: ADVANCED OPTIONS
-            prompt:      MEMORY MANAGEMENT UNIT
+            prompt: MEMORY MANAGEMENT UNIT
             description: Required by some games.
             choices:
                 "Off": 0
                 "On":  1
         enable_fastdisc:
             group: ADVANCED OPTIONS
-            prompt:      FAST DISK TRANSFER RATE
+            prompt: FAST DISK TRANSFER RATE
             description: Enhancement. Removes disc loading.
             choices:
                 "Off": 0
                 "On":  1
         vsync:
-            group: ADVANCED OPTIONS
-            prompt:      VSYNC
+            submenu: DISPLAY
+            prompt: VSYNC
             description: Fix screen tearing. CPU heavy.
             choices:
                 "Off": 0
                 "On":  1
         dsmotion:
-            group: ADVANCED OPTIONS
-            prompt:      DUALSHOCK MOTION CONTROL
+            submenu: CONTROLLERS
+            prompt: DUALSHOCK MOTION CONTROL
             description: Emulate the Wiimote pointer with a DS4's gyroscope.
             choices:
                 "Off": 0
                 "On":  1
         mouseir:
-            group: ADVANCED OPTIONS
-            prompt:      MOUSE AS WIIMOTE POINTER
+            submenu: CONTROLLERS
+            prompt: MOUSE AS WIIMOTE POINTER
             description: Emulate the Wiimote pointer with a mouse.
             choices:
                 "Off": 0
                 "On":  1
         rumble:
-            prompt:      RUMBLE
+            submenu: CONTROLLERS
+            prompt: RUMBLE
             choices:
                 "Off": 0
                 "On":  1
+        vbi_hack:
+            group: ADVANCED OPTIONS
+            prompt: VBI SKIP
+            description: Skips Vertical Blank Interrupts when lag is detected, allowing for smooth audio playback when emulation speed is not 100%.
+            choices:
+                "Off": "False"
+                "On":  "True"
 
   systems:
     gamecube:
         cfeatures:
             widescreen_hack:
-                prompt:      WIDESCREEN HACK (GLITCHY)
+                submenu: DISPLAY
+                prompt: WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                 choices:
                     "Off": 0
@@ -6433,19 +6445,22 @@ dolphin:
         shared: [use_guns]
         cfeatures:
             tv_mode:
-                prompt:      WII TV MODE
+                submenu: DISPLAY
+                prompt: WII TV MODE
                 description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
                 choices:
-                    "4:3": 0
+                    "4:3":  0
                     "16:9": 1
             emulatedwiimotes:
-                prompt:      EMULATE WIIMOTE
+                submenu: CONTROLLERS
+                prompt: EMULATE WIIMOTE
                 description: Map your controller to an emulated Wiimote.
                 choices:
                     "Off": 0
-                    "On": 1
+                    "On":  1
             controller_mode:
-                prompt:      CUSTOMIZE EMULATED WIIMOTE & GAMEPAD
+                submenu: CONTROLLERS
+                prompt: CUSTOMIZE EMULATED WIIMOTE & GAMEPAD
                 description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
                 choices:
                     "Off":                       disabled
@@ -6455,8 +6470,9 @@ dolphin:
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
             dolphin-lightgun-hide-crosshair:
+                submenu: CONTROLLERS
                 group: LIGHT GUN
-                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                prompt: SHOW LIGHT GUN CROSSHAIRS
                 choices:
                     "Off": 0
                     "On":  1

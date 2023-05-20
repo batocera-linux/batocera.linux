@@ -234,6 +234,11 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")
+        
+        if system.isOptSet('vbi_hack'):
+            dolphinGFXSettings.set("Hacks", "VISkip", system.config["vbi_hack"])
+        else:
+            dolphinGFXSettings.set("Hacks", "VISkip", "False")
 
         # Internal resolution settings
         if system.isOptSet('internal_resolution'):
