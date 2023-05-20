@@ -88,6 +88,7 @@
 - scummvm to Apr 19, 2023 build
 - libretro-scummvm to Apr 19, 2023 build
 - wine proton to 8.0-2c
+- vkd3d-proton to v2.9
 - openmsx configuration improvements
 - dolphin-emu to 5.0-19230 (Qt6)
 - vita3k to May 12, 2023 build
@@ -110,7 +111,7 @@
 - mesa3d update to 23.1.0
 - dxvk to 2.1
 - linux firmware to 20230404
-- linux kernel for x86_64 to 6.3.2
+- linux kernel for x86_64 to 6.3.3
 - linux kernel for RPI to 6.1.25
 - nvidia production driver to 530.41.03
 - llvm to 16.0.3
