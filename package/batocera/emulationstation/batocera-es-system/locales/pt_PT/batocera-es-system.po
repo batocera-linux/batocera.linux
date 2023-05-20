@@ -7048,10 +7048,20 @@ msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
 msgstr "COMANDO PERSONALIZADO"
 
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, duckstation, ...
+msgctxt "game_options"
+msgid "DISPLAY"
+msgstr "ECRÃ"
+
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "Mapeie o seu comando para um Wiimote emulado."
+
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin, dolphin, ...
+msgctxt "game_options"
+msgid "CONTROLLERS"
+msgstr "COMANDOS"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7087,6 +7097,11 @@ msgstr "Wiimote de lado + Inclinar"
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote de lado + Nunchuk"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, dolphin, ...
+msgctxt "game_options"
+msgid "RENDERING"
+msgstr "RENDERIZAÇÃO"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7294,6 +7309,18 @@ msgctxt "game_options"
 msgid "MOUSE AS WIIMOTE POINTER"
 msgstr "RATO COMO PONTEIRO DO WIIMOTE"
 
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid ""
+"Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
+"audio playback when emulation speed is not 100%."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "VBI SKIP"
+msgstr ""
+
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "1.5x 720p (960x792)"
@@ -7372,17 +7399,14 @@ msgstr "O VSync e a reamostragem de áudio precisam estar ativados."
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Ensure every frame the console renders is displayed to screen."
-msgstr "Certifique-se de que cada frame renderizado pela consola seja exibido no ecrã."
+msgstr ""
+"Certifique-se de que cada frame renderizado pela consola seja exibido no "
+"ecrã."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "OTIMIZAR A PASSAGEM DOS FRAMES"
-
-#. TRANSLATION: duckstation, duckstation, duckstation, duckstation, duckstation, ...
-msgctxt "game_options"
-msgid "DISPLAY"
-msgstr "ECRÃ"
 
 #. TRANSLATION: duckstation, melonds, pcsx2
 msgctxt "game_options"
@@ -7440,11 +7464,6 @@ msgstr "Preenche o ecrã independentemente da proporção."
 msgctxt "game_options"
 msgid "STRETCH TO FILL"
 msgstr "ESTICAR PARA PREENCHER"
-
-#. TRANSLATION: duckstation, duckstation, duckstation, duckstation, duckstation, ...
-msgctxt "game_options"
-msgid "RENDERING"
-msgstr "RENDERIZAÇÃO"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7581,11 +7600,6 @@ msgstr "Pré-carregar"
 msgctxt "game_options"
 msgid "Use Analog joysticks in addition to D-Pad for DualShock controllers."
 msgstr "Use joysticks analógicos além do D-Pad para comandos DualShock."
-
-#. TRANSLATION: duckstation, duckstation, duckstation
-msgctxt "game_options"
-msgid "CONTROLLERS"
-msgstr "COMANDOS"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -9136,7 +9150,8 @@ msgctxt "game_options"
 msgid ""
 "Controls precision of generated shaders. Low quality can improved "
 "performance."
-msgstr "Controla a precisão das sombras criadas. Baixar qualidade pode melhorar"
+msgstr ""
+"Controla a precisão das sombras criadas. Baixar qualidade pode melhorar"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9238,8 +9253,8 @@ msgid ""
 "Straict API specification. Can resolve rare cases of missing graphics and "
 "flickering."
 msgstr ""
-"Especificação de API direta. Pode resolver casos raros de falta de gráficos e "
-"piscar."
+"Especificação de API direta. Pode resolver casos raros de falta de gráficos "
+"e piscar."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9257,7 +9272,8 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Distorts the output to fill the display fully Overrides aspect ratio."
-msgstr "Distorce a saída para preencher totalmente a exibição Substitui a proporção."
+msgstr ""
+"Distorce a saída para preencher totalmente a exibição Substitui a proporção."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9284,8 +9300,8 @@ msgid ""
 "Offloads some RSX operations to a secondary thread. Improves performance in "
 "high-core processors."
 msgstr ""
-"Descarrega algumas operações RSX para um thread secundário. Melhora o desempenho em "
-"processadores de alto núcleo."
+"Descarrega algumas operações RSX para um thread secundário. Melhora o "
+"desempenho em processadores de alto núcleo."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9298,8 +9314,8 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's."
 msgstr ""
-"Transmitir a textura para a GPU em paralelo. Pode melhorar o desempenho em gráficas "
-"mais poderosas."
+"Transmitir a textura para a GPU em paralelo. Pode melhorar o desempenho em "
+"gráficas mais poderosas."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11062,8 +11078,8 @@ msgid ""
 "Speed hack, enable to disable surface syncing between CPU and GPU. Surface "
 "syncing is needed by a few games."
 msgstr ""
-"Hack de velocidade, ativar para desligar a sincronização de superfície entre CPU e GPU. Superfície "
-"a sincronização é necessária para alguns jogos."
+"Hack de velocidade, ativar para desligar a sincronização de superfície entre "
+"CPU e GPU. Superfície a sincronização é necessária para alguns jogos."
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
