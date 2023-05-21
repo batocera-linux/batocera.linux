@@ -408,6 +408,14 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
                         pcsx2INIConfig.set("USB2", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
                 nc = nc + 1
 
+    # hack for the fog bug for guns (time crisis zone)
+    if not pcsx2INIConfig.has_section("Folders"):
+        pcsx2INIConfig.add_section("Folders")
+    if not pcsx2INIConfig.has_section("EmuCore/GS"):
+        pcsx2INIConfig.add_section("EmuCore/GS")
+    pcsx2INIConfig.set("Folders", "Textures", "/usr/pcsx2/bin/resources/textures")
+    pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
+
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
         pcsx2INIConfig.add_section("Pad")
