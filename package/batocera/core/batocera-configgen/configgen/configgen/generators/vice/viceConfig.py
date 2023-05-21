@@ -45,12 +45,11 @@ def setViceConfig(viceConfigFile, system, guns, rom):
 
     if system.isOptSet('noborder') and system.getOptBoolean('noborder') == True:
         viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
-        viceConfig.set(systemCore, "VICIIBorderMode",        "3")
+        viceConfig.set(systemCore, "VICBorderMode",        "3")
     else:
         viceConfig.set(systemCore, "SDLGLAspectMode",        "2")
-        viceConfig.set(systemCore, "VICIIBorderMode",        "0")
-    viceConfig.set(systemCore, "VICIIFullscreen",        "1")
-    viceConfig.set(systemCore, "VICIISDLFullscreenMode", "0")
+        viceConfig.set(systemCore, "VICBorderMode",        "0")
+    viceConfig.set(systemCore, "VICFullscreen",        "1")
     viceConfig.set(systemCore, "WarpMode",               "0")
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
         gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
