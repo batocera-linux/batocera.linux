@@ -83,8 +83,8 @@
 - dosbox to v2023.03.31
 - citra to nightly-1877
 - amiberry to v5.6.0
-- ppsspp to v1.15.3
-- libretro-ppsspp to v1.15.3
+- ppsspp to v1.15.4
+- libretro-ppsspp to v1.15.4
 - scummvm to Apr 19, 2023 build
 - libretro-scummvm to Apr 19, 2023 build
 - wine proton to 8.0-2c
