@@ -48,6 +48,8 @@
 - mednafen_psx settings
 - a bunch of libretro emulator settings not applying
 - P2 gun for GUN4IR now working properly
+- Light gun controls fixes for various cores (SNES9x, Genesis Plus GX, Flycast, PCSX_reARMed, FBNeo)
+- Adstick arcade games for second player now fixed in MAME standalone (ex.: T2, Jurassic Park)
 ### Changed
 - Samba now allows wide symbolic links
 - Unicode support for x86 files systems
