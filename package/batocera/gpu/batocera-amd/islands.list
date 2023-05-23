@@ -1,137 +1,123 @@
 ### Supported AMD Island cards to use the amdgpu vs radeon Mesa driver
 ### As definative as we can make it, may need adjusting for specific models.
 
-## Southern Islands - aka Radeon HD 7000 series
-# Desktop products
-
-1002:6735 Radeon HD 7350 (Cedar)
-1002:6745 Radeon HD 7450 (Caicos)
-1002:6747 Radeon HD 7470 (Caicos)
-1002:6751 Radeon HD 7510 (Turks LE)
-1002:6757 Radeon HD 7570 (Turks Pro-L)
-1002:6767 Radeon HD 7670 (Turks XT)
-1002:6773 Radeon HD 7730 (Cape Verde LE)
-1002:6775 Radeon HD 7750 (Cape Verde Pro)
-1002:6777 Radeon HD 7770 GHz Edition (Cape Verde XT)
-1002:6779 Radeon HD 7790 (Bonaire XT)
-1002:6785 Radeon HD 7850 (Pitcairn Pro)
-1002:6787 Radeon HD 7870 GHz Edition (Pitcairn XT)
-1002:6787 Radeon HD 7870 XT (Tahiti LE)
-1002:6795 Radeon HD 7950 (Tahiti Pro)
-1002:6795 Radeon HD 7950 Boost (Tahiti Pro2)
-1002:6797 Radeon HD 7970 (Tahiti XT)
-1002:6797 Radeon HD 7970 GHz Edition (Tahiti XT2)
-1002:6799 Radeon HD 7990 (New Zealand)
-
-# IGP (HD 7xxx)
-
-1002:6731 Radeon HD 7310
-1002:6734 Radeon HD 7340
-1002:6780 Radeon HD 7480D
-1002:6740 Radeon HD 7540D
-1002:6746 Radeon HD 7560D
-1002:6760 Radeon HD 7660D
-
-# Mobile products
-
-1002:6743 Radeon HD 7430M (Seymour Pro)
-1002:6745 Radeon HD 7450M (Seymour Pro)
-1002:6747 Radeon HD 7470M (Seymour XT)
-1002:6749 Radeon HD 7490M (Seymour XTX)
-1002:6751 Radeon HD 7510M (Thames LE)
-1002:6753 Radeon HD 7530M (Thames LP)
-1002:6755 Radeon HD 7550M (Thames Pro)
-1002:6757 Radeon HD 7570M (Thames Pro)
-1002:6759 Radeon HD 7590M (Thames XT)
-1002:6761 Radeon HD 7610M (Thames LE)
-1002:6763 Radeon HD 7630M (Thames LP)
-1002:6765 Radeon HD 7650M (Thames Pro)
-1002:6767 Radeon HD 7670M (Thames Pro)
-1002:6769 Radeon HD 7690M (Thames XT)
-1002:6771 Radeon HD 7690M XT (Thames XTX)
-1002:6773 Radeon HD 7730M (Chelsea LP)
-1002:6775 Radeon HD 7750M (Chelsea Pro)
-1002:6777 Radeon HD 7770M (Chelsea XT)
-1002:6785 Radeon HD 7850M (Heathrow Pro)
-1002:6787 Radeon HD 7870M (Heathrow XT)
-1002:6797 Radeon HD 7970M (Wimbledon XT)
-
-## Sea Islands - aka Radeon 200 series
-# Desktop products
-
-1002:6722 Radeon R5 220 (Caicos Pro)
-1002:6729 Radeon R5 230 (Caicos Pro)
-1002:6728 Radeon R5 235 (Caicos XT)
-1002:6728 Radeon R5 235X (Caicos XT)
-1002:6728 Radeon R5 240 (Oland)
-1002:6734 Radeon R7 240 (Oland Pro)
-1002:6734 Radeon R7 250 (Oland XT)
-1002:6736 Radeon R7 250E (Cape Verde Pro)
-1002:6734 Radeon R7 250X (Cape Verde XT)
-1002:6734 Radeon R7 260 (Bonaire)
-1002:6734 Radeon R7 260X (Bonaire XTX)
-1002:6734 Radeon R7 265 (Pitcairn Pro)
-1002:6737 Radeon R9 270 (Pitcairn XT)
-1002:6737 Radeon R9 270X (Pitcairn XT)
-1002:6737 Radeon R9 280 (Tahiti Pro)
-1002:6738 Radeon R9 280X (Tahiti XTL)
-1002:6737 Radeon R9 285 (Tonga Pro)
-1002:6737 Radeon R9 285X (Tonga XT)
-1002:6737 Radeon R9 290 (Hawaii Pro)
-1002:6737 Radeon R9 290X (Hawaii XT)
-1002:6737 Radeon R9 295X2 (Vesuvius)
-
-# Mobile models
-
-1002:6723 Radeon R5 M230 (Jet Pro)
-1002:6725 Radeon R5 M255 (Jet Pro)
-1002:6732 Radeon R7 M260 (Topaz)
-1002:6734 Radeon R7 M260X (Opal)
-1002:6735 Radeon R7 M265 (Opal XT)
-1002:6737 Radeon R9 M265X (Venus Pro)
-1002:6738 Radeon R9 M270X (Venus XT)
-1002:6739 Radeon R9 M275X (Venus XTX)
-1002:6740 Radeon R9 M280X (Saturn XT)
-1002:6741 Radeon R9 M290X (Neptune XT)
-1002:6742 Radeon R9 M295X (Amethyst XT)
-
-## Volcanic Islands - aka Radeon 300 series
-# Desktop models
-
-1002:6733 Radeon R5 330 (Oland Pro)
-1002:6734 Radeon R5 340 (Oland XT)
-1002:6734 Radeon R7 340 (Oland XT)
-1002:6735 Radeon R5 340X (Oland XT)
-1002:6736 Radeon R7 350 (Oland XT)
-1002:6737 Radeon R7 350 (Cape Verde XTL)
-1002:6738 Radeon R7 350X (Oland XT)
-1002:6739 Radeon R7 360 (Bonaire Pro)
-1002:6740 Radeon R9 360 (Bonaire Pro)
-1002:6739 Radeon R7 370 (Pitcairn Pro)
-1002:6740 Radeon R9 370 (Pitcairn Pro)
-1002:6741 Radeon R9 370X (Pitcairn XT)
-1002:6742 Radeon R9 380 (Tonga Pro)
-1002:6743 Radeon R9 380 (Tonga Pro)
-1002:6744 Radeon R9 380X (Tonga XT)
-1002:6745 Radeon R9 390 (Grenada Pro)
-1002:6746 Radeon R9 390X (Grenada XT)
-1002:6747 Radeon R9 Fury (Fiji Pro)
-1002:6748 Radeon R9 Nano (Fiji XT)
-1002:6749 Radeon R9 Fury X (Fiji XT)
-1002:6750 Radeon Pro Duo (Fiji XT)
-
-# Mobile models
-
-1002:6723 Radeon R5 M330 (Exo Pro)
-1002:6725 Radeon R5 M335 (Exo Pro)
-1002:6732 Radeon R7 M360 (Meso XT)
-1002:6737 Radeon R9 M365X (Strato Pro)
-1002:6738 Radeon R9 M370X (Strato Pro)
-1002:6739 Radeon R9 M375 (Strato Pro)
-1002:6740 Radeon R9 M375X (Strato Pro)
-1002:6741 Radeon R9 M380 (Strato Pro)
-1002:6742 Radeon R9 M385X (Strato)
-1002:6743 Radeon R9 M390 (Pitcairn)
-1002:6744 Radeon R9 M390X (Amethyst XT)
-1002:6745 Radeon R9 M395 (Amethyst Pro)
-1002:6746 Radeon R9 M395X (Amethyst XT)
+1002:6600 ("Mars [Radeon HD 8670A/8670M/8750M / R7 M370]")
+1002:6601 ("Mars [Radeon HD 8730M]")
+1002:6602
+1002:6603
+1002:6604 ("Opal XT [Radeon R7 M265/M365X/M465]")
+1002:6605 ("Opal PRO [Radeon R7 M260X]")
+1002:6606 ("Mars XTX [Radeon HD 8790M]")
+1002:6607 ("Mars LE [Radeon HD 8530M / R5 M240]")
+1002:6608 ("Oland GL [FirePro W2100]")
+1002:6610 ("Oland XT [Radeon HD 8670 / R5 340X OEM / R7 250/350/350X OEM]")
+1002:6611 ("Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon 520 OEM]")
+1002:6613 ("Oland PRO [Radeon R7 240/340 / Radeon 520]")
+1002:6617 ("Oland LE [Radeon R7 240]")
+1002:6620
+1002:6621
+1002:6623
+1002:6631 ("Oland")
+1002:6640 ("Saturn XT [FirePro M6100]")
+1002:6641 ("Saturn PRO [Radeon HD 8930M]")
+1002:6646 ("Bonaire XT [Radeon R9 M280X]")
+1002:6647 ("Saturn PRO/XT [Radeon R9 M270X/M280X]")
+1002:6649 ("Bonaire [FirePro W5100]")
+1002:6650 ("Bonaire")
+1002:6651 ("Bonaire")
+1002:6658 ("Bonaire XTX [Radeon R7 260X/360]")
+1002:665c ("Bonaire XT [Radeon HD 7790/8770 / R7 360 / R9 260/360 OEM]")
+1002:665d ("Bonaire [Radeon R7 200 Series]")
+1002:665f ("Tobago PRO [Radeon R7 360 / R9 360 OEM]")
+1002:6660 ("Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 / Radeon 520 Mobile]")
+1002:6663 ("Sun PRO [Radeon HD 8570A/8570M]")
+1002:6664 ("Jet XT [Radeon R5 M240]")
+1002:6665 ("Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520/610 Mobile]")
+1002:6667 ("Jet ULT [Radeon R5 M230]")
+1002:666f ("Sun LE [Radeon HD 8550M / R5 M230]")
+1002:6700
+1002:6701
+1002:6702
+1002:6703
+1002:6704 ("Cayman PRO GL [FirePro V7900]")
+1002:6705
+1002:6706
+1002:6707 ("Cayman LE GL [FirePro V5900]")
+1002:6708
+1002:6709
+1002:6718 ("Cayman XT [Radeon HD 6970]")
+1002:6719 ("Cayman PRO [Radeon HD 6950]")
+1002:671c ("Antilles [Radeon HD 6990]")
+1002:671d ("Antilles [Radeon HD 6990]")
+1002:671f ("Cayman CE [Radeon HD 6930]")
+1002:6720 ("Blackcomb [Radeon HD 6970M/6990M]")
+1002:6721
+1002:6722
+1002:6723
+1002:6724
+1002:6725
+1002:6726
+1002:6727
+1002:6728
+1002:6729
+1002:6738 ("Barts XT [Radeon HD 6870]")
+1002:6739 ("Barts PRO [Radeon HD 6850]")
+1002:673e ("Barts LE [Radeon HD 6790]")
+1002:6740 ("Whistler [Radeon HD 6730M/6770M/7690M XT]")
+1002:6741 ("Whistler [Radeon HD 6630M/6650M/6750M/7670M/7690M]")
+1002:6742 ("Whistler LE [Radeon HD 6610M/7610M]")
+1002:6743 ("Whistler [Radeon E6760]")
+1002:6744
+1002:6745
+1002:6746
+1002:6747
+1002:6748
+1002:6749 ("Turks GL [FirePro V4900]")
+1002:674a ("Turks GL [FirePro V3900]")
+1002:6750 ("Onega [Radeon HD 6650A/7650A]")
+1002:6751 ("Turks [Radeon HD 7650A/7670A]")
+1002:6758 ("Turks XT [Radeon HD 6670/7670]")
+1002:6759 ("Turks PRO [Radeon HD 6570/7570/8550 / R5 230]")
+1002:675b ("Turks [Radeon HD 7600 Series]")
+1002:675d ("Turks PRO [Radeon HD 7570]")
+1002:675f ("Turks LE [Radeon HD 5570/6510/7510/8510]")
+1002:6760 ("Seymour [Radeon HD 6400M/7400M Series]")
+1002:6761 ("Seymour LP [Radeon HD 6430M]")
+1002:6762
+1002:6763 ("Seymour [Radeon E6460]")
+1002:6764 ("Seymour [Radeon HD 6400M Series]")
+1002:6765 ("Seymour [Radeon HD 6400M Series]")
+1002:6766 ("Caicos")
+1002:6767 ("Caicos")
+1002:6768 ("Caicos")
+1002:6770 ("Caicos [Radeon HD 6450A/7450A]")
+1002:6771 ("Caicos XTX [Radeon HD 8490 / R5 235X OEM]")
+1002:6772 ("Caicos [Radeon HD 7450A]")
+1002:6778 ("Caicos XT [Radeon HD 7470/8470 / R5 235/310 OEM]")
+1002:6779 ("Caicos [Radeon HD 6450/7450/8450 / R5 230 OEM]")
+1002:677b ("Caicos PRO [Radeon HD 7450]")
+1002:6780 ("Tahiti XT GL [FirePro W9000]")
+1002:6784 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:6788 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:678a ("Tahiti PRO GL [FirePro Series]")
+1002:6790
+1002:6791
+1002:6792
+1002:6798 ("Tahiti XT [Radeon HD 7970/8970 OEM / R9 280X]")
+1002:6799
+1002:679a ("Tahiti PRO [Radeon HD 7950/8950 OEM / R9 280]")
+1002:679b ("Malta [Radeon HD 7990/8990 OEM]")
+1002:679e ("Tahiti LE [Radeon HD 7870 XT]")
+1002:679f ("Tahiti")
+1002:67a0 ("Hawaii XT GL [FirePro W9100]")
+1002:67a1 ("Hawaii PRO GL [FirePro W8100]")
+1002:67a2 ("Hawaii GL")
+1002:67a8 ("Hawaii")
+1002:67a9 ("Hawaii")
+1002:67aa ("Hawaii")
+1002:67b0 ("Hawaii XT / Grenada XT [Radeon R9 290X/390X]")
+1002:67b1 ("Hawaii PRO [Radeon R9 290/390]")
+1002:67b8 ("Hawaii XT [Radeon R9 290X Engineering Sample]")
+1002:67b9 ("Vesuvius [Radeon R9 295X2]")
+1002:67ba
+1002:67be ("Hawaii LE")
