@@ -6,6 +6,7 @@ import os.path
 import glob
 from . import viceConfig
 from . import viceControllers
+import controllersConfig
 
 class ViceGenerator(Generator):
 
@@ -23,8 +24,15 @@ class ViceGenerator(Generator):
         viceConfig.setViceConfig(batoceraFiles.viceConfig, system, guns, rom)
 
         # controller configuration
-        viceControllers.generateControllerConfig(batoceraFiles.viceConfig, playersControllers)
+        viceControllers.generateControllerConfig(system, batoceraFiles.viceConfig, playersControllers)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], "-autostart", rom]
 
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )
