@@ -3580,6 +3580,15 @@ libretro:
                 choices:
                     "Original":   Original
                     "Full speed": Fullspeed
+            mupen64plus-parallel-rdp-upscaling:
+                group: ADVANCED OPTIONS
+                prompt: PARALLEL-RDP UPSCALER
+                description: Only applies when using Parallel-RDP as the chosen RDP Plugin.
+                choices:
+                    "1x (Default)": 1x
+                    "2x":           2x
+                    "4x":           4x
+                    "8x":           8x
     neocd:
       shared: [rewind, autosave]
       cfeatures:
