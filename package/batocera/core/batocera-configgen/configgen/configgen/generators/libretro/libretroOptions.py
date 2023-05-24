@@ -1104,6 +1104,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-Framerate', '"' + system.config['mupen64plus-Framerate'] + '"')
         else:
             coreSettings.save('mupen64plus-Framerate', '"Original"')
+        # Parallel-RDP Upscaling
+        if system.isOptSet('mupen64plus-parallel-rdp-upscaling'):
+            coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"' + system.config['mupen64plus-parallel-rdp-upscaling'] + '"')
+        else:
+            coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"1x"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
