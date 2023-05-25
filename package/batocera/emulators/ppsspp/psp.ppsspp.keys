@@ -3,7 +3,50 @@
         {
             "trigger": [ "hotkey", "start" ],
             "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+	    "description": "Exit emulator"
+        },
+        {
+            "trigger": [ "hotkey", "y" ],
+            "type": "key",
+            "target": [ "KEY_F3" ],
+	    "description": "Save State"
+        },
+        {
+            "trigger": [ "hotkey", "x" ],
+            "type": "key",
+            "target": [ "KEY_F4" ],
+	    "description": "Load State"
+        },
+        {
+            "trigger": [ "hotkey", "down" ],
+            "type": "key",
+            "target": [ "KEY_F5" ],
+	    "description": "Slot -"
+        },
+        {
+            "trigger": [ "hotkey", "up" ],
+            "type": "key",
+            "target": [ "KEY_F6" ],
+	    "description": "Slot +"
+        },
+        {
+            "trigger": [ "hotkey", "left" ],
+            "type": "key",
+            "target": [ "KEY_F1" ],
+	    "description": "Rewind"
+        },
+        {
+            "trigger": [ "hotkey", "right" ],
+            "type": "key",
+            "target": [ "KEY_F2" ],
+	    "description": "Fast Forward"
+        },
+        {
+            "trigger": [ "hotkey", "pageup" ],
+            "type": "key",
+            "target": [ "KEY_F7" ],
+	    "description": "Screenshot"
         }
     ]
 }
