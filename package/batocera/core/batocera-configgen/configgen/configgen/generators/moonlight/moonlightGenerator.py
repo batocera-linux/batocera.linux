@@ -21,13 +21,18 @@ class MoonlightGenerator(Generator):
         commandArray.append('-app')
         commandArray.append(gameName)
         commandArray.append('-debug')
+
+        # write our own gamecontrollerdb.txt file before launching the game
+        dbfile = "/usr/share/moonlight/gamecontrollerdb.txt"
+        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
+
         return Command.Command(
             array=commandArray,
             env={
                 "XDG_DATA_DIRS": batoceraFiles.CONF,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
-                }
+            }
         )
 
     def getRealGameNameAndConfigFile(self, rom):
