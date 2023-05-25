@@ -40,7 +40,7 @@ def setViceConfig(viceConfigFile, system, guns, rom):
     if not viceConfig.has_section(systemCore):
         viceConfig.add_section(systemCore)
 
-    viceConfig.set(systemCore, "SaveResourcesOnExit",    "1")
+    viceConfig.set(systemCore, "SaveResourcesOnExit",    "0")
     viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
     if system.isOptSet('noborder') and system.getOptBoolean('noborder') == True:
@@ -50,7 +50,6 @@ def setViceConfig(viceConfigFile, system, guns, rom):
         viceConfig.set(systemCore, "SDLGLAspectMode",        "2")
         viceConfig.set(systemCore, "VICBorderMode",        "0")
     viceConfig.set(systemCore, "VICFullscreen",        "1")
-    viceConfig.set(systemCore, "WarpMode",               "0")
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
         gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
         if "gun" in gunsmetadata and gunsmetadata["gun"] == "stack_light_rifle":
@@ -60,7 +59,8 @@ def setViceConfig(viceConfigFile, system, guns, rom):
     else:
         viceConfig.set(systemCore, "JoyPort1Device",             "1")
     viceConfig.set(systemCore, "JoyDevice1",             "4")
-    viceConfig.set(systemCore, "JoyDevice2",             "4")
+    if not systemCore == "VIC20":
+        viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  viceController)
 
     # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value
