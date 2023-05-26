@@ -1,6 +1,7 @@
 default:
   options:
     video_threaded: true
+    smooth: false
     retroarch.menu_driver: xmb
     retroarch.audio_driver: alsathread
 
@@ -13,6 +14,9 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+amigacdtv:
+  emulator: libretro
+  core:     uae4arm
 mastersystem:
   emulator: libretro
   core:     picodrive
