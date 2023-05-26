@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-24 00:17+0200\n"
+"PO-Revision-Date: 2023-05-24 23:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -4408,21 +4408,6 @@ msgctxt "game_options"
 msgid "Full speed"
 msgstr "Pełna szybkość"
 
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "Only applies when using Parallel-RDP as the chosen RDP Plugin."
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "PARALLEL-RDP UPSCALER"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "1x (Default)"
-msgstr "1x (domyślnie)"
-
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
 msgid "Can change the language of some games."
@@ -7345,11 +7330,13 @@ msgid ""
 "Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
 "audio playback when emulation speed is not 100%."
 msgstr ""
+"Pomija Vertical Blank Interrupts po wykryciu opóźnienia, umożliwiając płynne "
+"odtwarzanie dźwięku, gdy prędkość emulacji nie wynosi 100%."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "VBI SKIP"
-msgstr "SKOK VBI"
+msgstr "POMIŃ VBI"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -7419,17 +7406,19 @@ msgstr "Bez ograniczeń"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "VSync and Audio Resampling need to be enabled."
-msgstr ""
+msgstr "VSync i Resampling audio muszą być włączone."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "SYNC TO HOST REFRESH RATE"
-msgstr "CZĘSTOTLIWOŚĆ ODŚWIEŻANIA SYNCHRONIZACJI Z HOSTEM"
+msgstr "SYNCHRONIZUJ Z CZĘSTOTLIWOŚCIĄ ODŚWIEŻANIA HOSTA"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Ensure every frame the console renders is displayed to screen."
 msgstr ""
+"Upewnij się, że każda klatka renderowana przez konsolę jest wyświetlana na "
+"ekranie."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7454,7 +7443,7 @@ msgstr "PREZENTACJA WIELOWĄTKOWA"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Auto (Match Window)"
-msgstr ""
+msgstr "Auto (dopasuj do okna)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7464,7 +7453,7 @@ msgstr "PAR 1:1"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
-msgstr ""
+msgstr "Może skutkować ostrzejszym obrazem w niektórych grach 2D."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7474,7 +7463,7 @@ msgstr "PRZESKALOWANIE CAŁKOWITE"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "ENabling will smooth out the image."
-msgstr ""
+msgstr "Włączenie spowoduje wygładzenie obrazu."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7484,7 +7473,7 @@ msgstr "PRZESKALOWANIE LINIOWE"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Fills the screen regardless of the aspect ratio."
-msgstr ""
+msgstr "Wypełnia ekran niezależnie od współczynnika proporcji."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7514,32 +7503,32 @@ msgstr "Najbliższy sąsiad"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Bilinear (No Edge Blending)"
-msgstr ""
+msgstr "Dwuliniowo (bez mieszania krawędzi)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "JINC2 (Slow)"
-msgstr ""
+msgstr "JINC2 (wolno)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "JINC2 (Slow, No Edge Blending)"
-msgstr ""
+msgstr "JINC2 (wolno, bez mieszania krawędzi)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "xBR (Very Slow)"
-msgstr ""
+msgstr "xBR (bardzo wolno)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "xBR (Very Slow, No Edge Blending)"
-msgstr ""
+msgstr "xBR (bardzo wolno, bez mieszania krawędzi)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "24-bit, disables dithering."
-msgstr ""
+msgstr "24-bity, wyłącza dithering."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7550,6 +7539,8 @@ msgstr "WIERNE ODWZOROWANIE KOLORÓW"
 msgctxt "game_options"
 msgid "Makes the dither pattern much less obvious at higher resolutions."
 msgstr ""
+"Sprawia, że wzór ditheringu jest znacznie mniej widoczny w wyższych "
+"rozdzielczościach."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7561,6 +7552,7 @@ msgctxt "game_options"
 msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr ""
+"Podczas pracy poza 100% dostosowuje temperaturę zamiast opuszczać klatki."
 
 #. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
@@ -7575,22 +7567,22 @@ msgstr "TRYB ROZCIĄGANIA"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Off (Noisy)"
-msgstr ""
+msgstr "Wyłączone (szumy)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Resampling (Pirch Shift)"
-msgstr ""
+msgstr "Resampling (przesunięcie tonalne)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Time Stretch (Tempo Change, Best Sound)"
-msgstr ""
+msgstr "Rozciągnięcie w czasie (zmiana tempa, najlepszy dźwięk)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Force progressive render / scan."
-msgstr ""
+msgstr "Wymuś progresywne renderowanie / skanowanie."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7625,7 +7617,7 @@ msgstr "Wstępne ładowanie"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Use Analog joysticks in addition to D-Pad for DualShock controllers."
-msgstr ""
+msgstr "Używaj joysticków analogowych oprócz D-Pad dla kontrolerów DualShock."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7635,7 +7627,7 @@ msgstr "JOYSTICK NA DPAD"
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
 msgid "Not Connected"
-msgstr ""
+msgstr "Niepodłączony"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
@@ -7715,7 +7707,7 @@ msgstr "Interpreter z pamięcią podręczną (szybki)"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Recompiler (Fastest)(Default)"
-msgstr ""
+msgstr "Rekompilator (najszybszy)(domyślnie)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7878,7 +7870,7 @@ msgstr "Obróć ekran za pomocą emulatora."
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "Per pixel is the most accurate, but also the most demanding."
-msgstr ""
+msgstr "Pikselowo jest najdokładniejsze, ale też najbardziej wymagające."
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -7903,7 +7895,7 @@ msgstr "Pikselowo"
 #. TRANSLATION: fpinball
 msgctxt "game_options"
 msgid "Allow mapping Future Pinabll with Pad to Keyboard."
-msgstr ""
+msgstr "Zezwól na mapowanie Future Pinball za pomocą Pada na klawiaturę."
 
 #. TRANSLATION: fpinball
 msgctxt "game_options"
@@ -8202,7 +8194,7 @@ msgstr "4K (3840x2160)"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Output rotation independent of xrandr or framebuffer settings."
-msgstr ""
+msgstr "Rotacja wyjścia niezależna od ustawień xrandr lub bufora ramki."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8288,7 +8280,7 @@ msgstr "ZAKOŃCZ PRACĘ Z HOSTEM"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Disable all input processing (view-only mode)."
-msgstr ""
+msgstr "Wyłączenie przetwarzania danych wejściowych (tryb tylko do podglądu)."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8298,7 +8290,7 @@ msgstr "TYLKO PODGLĄD"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "Enable QOS settings to optimize for internet or local network."
-msgstr ""
+msgstr "Włącz ustawienia QOS, aby zoptymalizować sieć internetową lub lokalną."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -8321,6 +8313,8 @@ msgid ""
 "Enables surround sound if your audio card supports it (Consumes more "
 "bandwidth)."
 msgstr ""
+"Włącza dźwięk przestrzenny, jeśli karta dźwiękowa go obsługuje (zużywa "
+"więcej przepustowości)."
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -9133,7 +9127,7 @@ msgstr "FILTR ANIZOTROPOWY"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Can improve performance at the expense of graphics accuracy."
-msgstr ""
+msgstr "Może poprawić wydajność kosztem dokładności grafiki."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9143,17 +9137,17 @@ msgstr "DOKŁADNOŚĆ ZCULL"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Precise (Slowest)(Default)"
-msgstr ""
+msgstr "Precyzyjne (najwolniejsze)(domyślnie)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Approximate (Fast)"
-msgstr ""
+msgstr "Przybliżone (szybko)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Relaxed (Fastest)"
-msgstr ""
+msgstr "Rozluźnione (najszybsze)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9161,6 +9155,8 @@ msgid ""
 "Controls precision of generated shaders. Low quality can improved "
 "performance."
 msgstr ""
+"Kontroluje precyzję generowanych shaderów. Niska jakość może poprawić "
+"wydajność."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9170,27 +9166,27 @@ msgstr "JAKOŚĆ SHADERA"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "High (Default)"
-msgstr ""
+msgstr "Wysoka (domyślnie)"
 
 #. TRANSLATION: rpcs3, cgenius
 msgctxt "game_options"
 msgid "Choose your preferred render resolution."
-msgstr ""
+msgstr "Wybierz preferowaną rozdzielczość renderowania."
 
 #. TRANSLATION: rpcs3, xenia-canary
 msgctxt "game_options"
 msgid "1280x720 (Default)"
-msgstr ""
+msgstr "1280x720 (domyślnie)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Final image filtering."
-msgstr ""
+msgstr "Końcowe filtrowanie obrazu."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9200,14 +9196,14 @@ msgstr "SKALOWANIE WYJŚCIA"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "FidelityFX Super Resolution"
-msgstr ""
+msgstr "FidelityFX Super Resolution"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Only Async (skip draw) avoids freezing while compiling shaders."
 msgstr ""
-"Tylko funkcja Async (pomiń rysowanie) pozwala uniknąć zamrożenia podczas "
-"kompilacji shaderów."
+"Tylko funkcja Async (pominięcie rysowania) pozwala uniknąć zamrożenia "
+"podczas kompilacji shaderów."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9217,32 +9213,32 @@ msgstr "TRYB SHADERA"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Legacy (single threaded)"
-msgstr ""
+msgstr "Starsze (jednowątkowe)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Async (multi threaded)(Deafult)"
-msgstr ""
+msgstr "Async (wielowątkowe)(domyślnie)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Async with Shader Interpreter"
-msgstr ""
+msgstr "Async z interpreterem shaderów"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Shader Interpreter only"
-msgstr ""
+msgstr "Tylko interpreter shaderów"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Only applicable when either Async Shader mode is set."
-msgstr ""
+msgstr "Dotyczy tylko sytuacji, gdy ustawiony jest tryb Async."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
-msgstr "LICZBA WĄTKÓW KOMPILATORA SHADERA"
+msgstr "LICZBA WĄTKÓW KOMPILATORA SHADERÓW"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9262,6 +9258,8 @@ msgid ""
 "Straict API specification. Can resolve rare cases of missing graphics and "
 "flickering."
 msgstr ""
+"Ścisła specyfikacja API. Może rozwiązać rzadkie przypadki braku grafiki i "
+"migotania."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9280,6 +9278,8 @@ msgstr ""
 msgctxt "game_options"
 msgid "Distorts the output to fill the display fully Overrides aspect ratio."
 msgstr ""
+"Zniekształca obraz wyjściowy w celu pełnego wypełnienia ekranu, zastępując "
+"współczynnik proporcji."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9306,6 +9306,8 @@ msgid ""
 "Offloads some RSX operations to a secondary thread. Improves performance in "
 "high-core processors."
 msgstr ""
+"Odciąża niektóre operacje RSX do wątku pomocniczego. Poprawia wydajność "
+"procesorów wielordzeniowych."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11079,6 +11081,8 @@ msgid ""
 "Speed hack, enable to disable surface syncing between CPU and GPU. Surface "
 "syncing is needed by a few games."
 msgstr ""
+"Hack prędkości, włącz, aby wyłączyć synchronizację powierzchni między CPU i "
+"GPU. Synchronizacja powierzchni jest wymagana przez kilka gier."
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
@@ -11088,7 +11092,7 @@ msgstr "WYŁĄCZ SYNCHRONIZACJĘ POWIERZCHNI"
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "The image will be softer which could help with aliasing."
-msgstr ""
+msgstr "Obraz będzie zmiękczony, co może pomóc z aliasingiem."
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
@@ -11100,405 +11104,405 @@ msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
 msgstr "Antyaliasing to technika wygładzania postrzępionych krawędzi."
 
-#. TRANSLATION: raze.keys, eduke32.keys, gzdoom.keys
+#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
-msgstr ""
+msgstr "szybki zapis"
 
-#. TRANSLATION: raze.keys, eduke32.keys, gzdoom.keys
+#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quickload"
-msgstr ""
+msgstr "szybkie ładowanie"
 
-#. TRANSLATION: raze.keys, eduke32.keys, gzdoom.keys
+#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "screenshot"
-msgstr ""
+msgstr "zrzut ekranu"
 
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Joy2Pad Up"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Joy2Pad Down"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Joy2Pad Left"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Joy2Pad Right"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Hat Up"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Hat Down"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Hat Left"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Hat Right"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button A"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button B"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button X"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button Y"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button Start"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button Select"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button L"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Button R"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Disposition A"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Disposition B"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Microphone"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "TouchScreen"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Exit Drastic"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys, psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Save State"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys, psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Load State"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "Swap Screens"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "QuickMenu"
-msgstr ""
-
-#. TRANSLATION: nds.drastic.keys
-msgctxt "keys_files"
-msgid "FastForward"
-msgstr ""
-
-#. TRANSLATION: switch.ryujinx.keys, dreamcast.redream.keys, naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: switch.ryujinx.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, ...
 msgctxt "keys_files"
 msgid "Exit the emulator"
-msgstr ""
-
-#. TRANSLATION: dreamcast.redream.keys, naomi2.flycast.keys, naomi.flycast.keys, atomiswave.flycast.keys, dreamcast.flycast.keys
-msgctxt "keys_files"
-msgid "Hide the bezel"
-msgstr ""
-
-#. TRANSLATION: xbox360.xenia-canary.keys, 3ds.citra.keys, scummvm.keys, triforce.dolphin_triforce.keys, naomi2.flycast.keys, ...
-msgctxt "keys_files"
-msgid "Exit emulator"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Move Stylet Pointer"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Restart Emulation"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Continue/Pause emulation"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Swap Screen"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Toggle Screen Layout"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys, scummvm.keys, triforce.dolphin_triforce.keys, psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Toggle Speed Limit"
-msgstr ""
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Mouse Click"
-msgstr ""
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Menu"
-msgstr ""
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Aspect ratio correction on/off"
-msgstr ""
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Graphics filtering on/off"
-msgstr ""
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Cycle through stretch modes"
-msgstr ""
-
-#. TRANSLATION: triforce.dolphin_triforce.keys
-msgctxt "keys_files"
-msgid "Open Dolphin-triforce's menu"
-msgstr ""
-
-#. TRANSLATION: triforce.dolphin_triforce.keys
-msgctxt "keys_files"
-msgid "Load State Slot 1"
-msgstr ""
-
-#. TRANSLATION: triforce.dolphin_triforce.keys
-msgctxt "keys_files"
-msgid "Save State Slot 1"
-msgstr ""
+msgstr "Zamknięcie emulatora"
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
 msgid "Exit emulator using SDL"
-msgstr ""
-
-#. TRANSLATION: wiiu.keys
-msgctxt "keys_files"
-msgid "Display the controller screen"
-msgstr ""
-
-#. TRANSLATION: psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Slot -"
-msgstr ""
-
-#. TRANSLATION: psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Slot +"
-msgstr ""
-
-#. TRANSLATION: psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Rewind"
-msgstr ""
-
-#. TRANSLATION: psp.ppsspp.keys, psx.duckstation.keys
-msgctxt "keys_files"
-msgid "Fast Forward"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Start"
-msgstr "Start"
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "Moneta"
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 2"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 1"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 4"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 3"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 5"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 6"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 7"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 8"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Left"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Right"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Up"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Down"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Left"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Right"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Up"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Down"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Left"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Right"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Up"
-msgstr ""
-
-#. TRANSLATION: naomi2.demul.keys, gaelco.demul.keys, dreamcast.demul.keys, cave3rd.demul.keys, naomi.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Down"
-msgstr ""
-
-#. TRANSLATION: gaelco.demul.keys, hikaru.demul.keys
-msgctxt "keys_files"
-msgid "Set to full screen"
-msgstr ""
+msgstr "Zamknięcie emulatora za pomocą SDL"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Exit Duckstation"
-msgstr "Wyjdź z Duckstation"
+msgstr "Zamknięcie Duckstation"
+
+#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys
+msgctxt "keys_files"
+msgid "Load State"
+msgstr "Ładowanie stanu"
+
+#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys
+msgctxt "keys_files"
+msgid "Save State"
+msgstr "Zapisywanie stanu"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Open DuckStation Quick Menu"
-msgstr ""
+msgstr "Otwórz menu podręczne DuckStation"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Restart Game"
-msgstr ""
+msgstr "Restart gry"
+
+#. TRANSLATION: psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "Zrzut ekranu"
+
+#. TRANSLATION: psx.duckstation.keys
+msgctxt "keys_files"
+msgid "Slot -"
+msgstr "Gniazdo -"
+
+#. TRANSLATION: psx.duckstation.keys
+msgctxt "keys_files"
+msgid "Slot +"
+msgstr "Gniazdo +"
+
+#. TRANSLATION: psx.duckstation.keys
+msgctxt "keys_files"
+msgid "Rewind"
+msgstr "Przewijanie do tyłu"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Next Disc (m3u)"
-msgstr ""
+msgstr "Następny dysk (m3u)"
+
+#. TRANSLATION: psx.duckstation.keys
+msgctxt "keys_files"
+msgid "Fast Forward"
+msgstr "Przewijanie do przodu"
+
+#. TRANSLATION: xbox360.xenia.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, atomiswave.flycast.keys, ...
+msgctxt "keys_files"
+msgid "Exit emulator"
+msgstr "Zamknięcie emulatora"
+
+#. TRANSLATION: triforce.dolphin_triforce.keys
+msgctxt "keys_files"
+msgid "Open Dolphin-triforce's menu"
+msgstr "Otwarcie menu Dolphin-triforce"
+
+#. TRANSLATION: triforce.dolphin_triforce.keys
+msgctxt "keys_files"
+msgid "Load State Slot 1"
+msgstr "Ładowanie stanu gniazda 1"
+
+#. TRANSLATION: triforce.dolphin_triforce.keys
+msgctxt "keys_files"
+msgid "Save State Slot 1"
+msgstr "Zapis stanu gniazda 1"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
+msgctxt "keys_files"
+msgid "Set to full screen"
+msgstr "Ustawienie pełnego ekranu"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Start"
+msgstr "Start"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Coin"
+msgstr "Moneta"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 2"
+msgstr "Pchnięcie 2"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 1"
+msgstr "Pchnięcie 1"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 4"
+msgstr "Pchnięcie 4"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 3"
+msgstr "Pchnięcie 4"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 5"
+msgstr "Pchnięcie 5"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 6"
+msgstr "Pchnięcie 6"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 7"
+msgstr "Pchnięcie 7"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 8"
+msgstr "Pchnięcie 8"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Left"
+msgstr "Cyfrowy w lewo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Right"
+msgstr "Cyfrowy w prawo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Up"
+msgstr "Cyfrowy do góry"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Down"
+msgstr "Cyfrowy w dół"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Left"
+msgstr "Analogowy 1 w lewo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Right"
+msgstr "Analogowy 1 w prawo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Up"
+msgstr "Analogowy 1 do góry"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Down"
+msgstr "Analogowy 1 w dół"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Left"
+msgstr "Analogowy 2 w lewo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Right"
+msgstr "Analogowy 2 w prawo"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Up"
+msgstr "Analogowy 2 do góry"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Down"
+msgstr "Analogowy 2 w dół"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Menu"
+msgstr "Menu"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Aspect ratio correction on/off"
+msgstr "Wł./wył. korekty proporcji"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Graphics filtering on/off"
+msgstr "Wł./wył. filtrowania grafiki"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Cycle through stretch modes"
+msgstr "Przechodzenie między trybami rozciągania"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Move Stylet Pointer"
+msgstr "Przesuwanie wskaźnika Stylet"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Restart Emulation"
+msgstr "Ponowne uruchomienie emulacji"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Continue/Pause emulation"
+msgstr "Kontynuacja/wstrzymanie emulacji"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Swap Screen"
+msgstr "Zamiana ekranu"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Toggle Screen Layout"
+msgstr "Przełączanie układu ekranu"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Toggle Speed Limit"
+msgstr "Przełączanie limitu szybkości"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Mouse Click"
+msgstr "Kliknięcie myszą"
+
+#. TRANSLATION: atomiswave.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, dreamcast.flycast.keys, dreamcast.redream.keys
+msgctxt "keys_files"
+msgid "Hide the bezel"
+msgstr "Ukrywanie ramki"
+
+#. TRANSLATION: wiiu.keys
+msgctxt "keys_files"
+msgid "Display the controller screen"
+msgstr "Wyświetlanie ekranu kontrolera"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Joy2Pad Up"
+msgstr "Joy2Pad do góry"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Joy2Pad Down"
+msgstr "Joy2Pad w dół"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Joy2Pad Left"
+msgstr "Joy2Pad w lewo"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Joy2Pad Right"
+msgstr "Joy2Pad w prawo"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Hat Up"
+msgstr "Hat w górę"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Hat Down"
+msgstr "Hat w dół"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Hat Left"
+msgstr "Hat w lewo"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Hat Right"
+msgstr "Hat w prawo"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button A"
+msgstr "Przycisk A"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button B"
+msgstr "Przycisk B"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button X"
+msgstr "Przycisk X"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button Y"
+msgstr "Przycisk Y"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button Start"
+msgstr "Przycisk Start"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button Select"
+msgstr "Przycisk Select"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button L"
+msgstr "Przycisk L"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Button R"
+msgstr "Przycisk R"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Disposition A"
+msgstr "Dyspozycja A"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Disposition B"
+msgstr "Dyspozycja B"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Microphone"
+msgstr "Mikrofon"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "TouchScreen"
+msgstr "Ekran dotykowy"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Exit Drastic"
+msgstr "Zamknięcie Drastic"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "Swap Screens"
+msgstr "Zamiana ekranóW"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "QuickMenu"
+msgstr "Menu podręczne"
+
+#. TRANSLATION: nds.drastic.keys
+msgctxt "keys_files"
+msgid "FastForward"
+msgstr "Przewijanie do przodu"
 
 #~ msgctxt "game_options"
 #~ msgid "Distorts the output to fill the display fully."
@@ -12076,6 +12080,10 @@ msgstr ""
 #~ msgctxt "game_options"
 #~ msgid "Choose the screen size."
 #~ msgstr "Wybierz rozmiar ekranu."
+
+#~ msgctxt "game_options"
+#~ msgid "1x (Default)"
+#~ msgstr "1x (domyślnie)"
 
 #~ msgctxt "game_options"
 #~ msgid "Choose the preferred screen layout."
