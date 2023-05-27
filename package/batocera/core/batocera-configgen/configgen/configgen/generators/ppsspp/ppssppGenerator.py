@@ -8,6 +8,7 @@ import os
 import configparser
 import controllersConfig
 from . import ppssppConfig
+from . import ppssppControllers
 
 class PPSSPPGenerator(Generator):
 
@@ -15,12 +16,20 @@ class PPSSPPGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         ppssppConfig.writePPSSPPConfig(system)
-        ppssppConfig.writePPSSPPControls(system)
 
         # Remove the old gamecontrollerdb.txt file
         dbpath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt"
         if os.path.exists(dbpath):
             os.remove(dbpath)
+        
+        # Generate the controls.ini
+        for index in playersControllers :
+            controller = playersControllers[index]
+            # We only care about player 1
+            if controller.player != "1":
+                continue
+            ppssppControllers.generateControllerConfig(controller)
+            break
 
         # The command to run
         commandArray = ['/usr/bin/PPSSPP']
