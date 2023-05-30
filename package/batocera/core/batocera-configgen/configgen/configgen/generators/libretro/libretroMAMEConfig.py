@@ -360,6 +360,8 @@ def generateMAMEConfigs(playersControllers, system, rom):
     if not os.path.exists("/userdata/saves/mame/plugins/"):
         os.makedirs("/userdata/saves/mame/plugins/")
     commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
+    if not os.path.exists("/userdata/bios/mame/samples/"):
+        os.makedirs("/userdata/bios/mame/samples/")
 
     # Delete old cmd files & prepare path
     cmdPath = "/var/run/cmdfiles/"
