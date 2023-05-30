@@ -17,6 +17,9 @@ BATOCERA_BINARIES_DIR=$6
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
 
+# CHA : Replace splash.mp4 with Capcom.mp4
+cp "${TARGET_DIR}/usr/share/batocera/splash/Capcom.mp4" "${TARGET_DIR}/usr/share/batocera/splash/splash.mp4"
+
 cp "${BINARIES_DIR}/zImage"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
 cp "${BINARIES_DIR}/initrd.lz4"       "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"       || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
