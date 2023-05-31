@@ -354,6 +354,15 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop" ]
                         else:
                             commandArray += [ "-" + system.config["altromtype"] ]
+                    elif system.name == "adam":
+                        # add some logic based on the rom extension
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".ddp":
+                            commandArray += [ "-cass1" ]
+                        elif rom_extension == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart1" ]
                     else:
                         commandArray += [ "-" + messRomType[messMode] ]
                 else:
