@@ -207,6 +207,15 @@ def generateMAMEConfigs(playersControllers, system, rom):
                             commandLine += [ "-flop" ]
                         else:
                             commandLine += [ "-" + system.config["altromtype"] ]
+                    elif system.name == "adam":
+                        # add some logic based on the extension
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".ddp":
+                            commandLine += [ "-cass1" ]
+                        elif rom_extension == ".dsk":
+                            commandLine += [ "-flop1" ]
+                        else:
+                            commandLine += [ "-cart1" ]
                     else:
                         commandLine += [ "-" + messRomType[messMode] ]
                 else:
