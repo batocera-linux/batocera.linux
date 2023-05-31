@@ -382,10 +382,18 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Hotkeys", "HoldTurbo", "Keyboard/Period")
 
     # guns
+
+    # clean gun sections
     if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "guncon2":
         pcsx2INIConfig.remove_option("USB1", "Type")
     if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "Type") and pcsx2INIConfig.get("USB2", "Type") == "guncon2":
         pcsx2INIConfig.remove_option("USB2", "Type")
+    if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "guncon2_Start"):
+        pcsx2INIConfig.remove_option("USB1", "guncon2_Start")
+    if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "guncon2_Start"):
+        pcsx2INIConfig.remove_option("USB2", "guncon2_Start")
+    ###
+
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
         if len(guns) >= 1:
             if not pcsx2INIConfig.has_section("USB1"):
@@ -433,7 +441,7 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
             if nplayer >> 4:
                 pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
             pad_num = "Pad{}".format(nplayer)
-            sdl_num = "SDL-" + "{}".format(nplayer - 1)
+            sdl_num = "SDL-" + "{}".format(pad.index - 1)
             if not pcsx2INIConfig.has_section(pad_num):
                 pcsx2INIConfig.add_section(pad_num)
             
