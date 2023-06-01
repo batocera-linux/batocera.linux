@@ -7575,6 +7575,13 @@ pcsx2:
             choices:
                 "Disabled": "false"
                 "Enabled":  "true"
+        pcsx2_multitap:
+            prompt: MULTITAP
+            description: Allows up to 8 controllers in supported games.
+            choices:
+                "Maximum 2 Players (Default)": 2
+                "Maximum 4 Players":           4
+                "Maximum 8 Players":           8
 
 ppsspp:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
