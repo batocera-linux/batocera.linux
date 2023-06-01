@@ -441,7 +441,7 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
             if nplayer >> 4:
                 pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
             pad_num = "Pad{}".format(nplayer)
-            sdl_num = "SDL-" + "{}".format(pad.index - 1)
+            sdl_num = "SDL-" + "{}".format(pad.index)
             if not pcsx2INIConfig.has_section(pad_num):
                 pcsx2INIConfig.add_section(pad_num)
             
