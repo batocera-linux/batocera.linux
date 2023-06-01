@@ -9,10 +9,7 @@ from os.path import basename
 from os.path import dirname
 
 def findParentAny(device):
-    p = device.find_parent('bluetooth')
-    if p is None:
-        p = device.find_parent('usb')
-    return p
+    return device.find_parent('input')
 
 def findUsbParentInputs(ctx, event):
     for device in ctx.list_devices(subsystem='input'):
