@@ -8,23 +8,29 @@ import re
 from os.path import basename
 from os.path import dirname
 
+def findParentAny(device):
+    p = device.find_parent('bluetooth')
+    if p is None:
+        p = device.find_parent('usb')
+    return p
+
 def findUsbParentInputs(ctx, event):
     for device in ctx.list_devices(subsystem='input'):
         if basename(device.device_path) == event:
-            return device.find_parent('usb')
+            return findParentAny(device)
     raise Exception("unable to find the usb parent for " + event)
 
 def findUsbParentVideos(ctx, video):
     for device in ctx.list_devices(subsystem='video4linux'):
         if basename(device.device_path) == video:
-            return device.find_parent('usb')
+            return findParentAny(device)
     raise Exception("unable to find the usb parent for " + video)
 
 def findChildrenInputs(ctx, parenthash):
     children = []
     for device in ctx.list_devices(subsystem='input'):
         if basename(device.device_path)[0:5] == "event":
-            curparent = device.find_parent('usb')
+            curparent = findParentAny(device)
             if curparent is not None:
                 if parent2hash(curparent) == parenthash:
                     event = evdev.InputDevice('/dev/input/' + basename(device.device_path))
@@ -35,7 +41,7 @@ def findChildrenVideos(ctx, parenthash):
     children = []
     for device in ctx.list_devices(subsystem='video4linux'):
         if basename(device.device_path)[0:5] == "video":
-            curparent = device.find_parent('usb')
+            curparent = findParentAny(device)
             if curparent is not None:
                 if parent2hash(curparent) == parenthash:
                     children.append({ "video": "/dev/"+basename(device.device_path)})
