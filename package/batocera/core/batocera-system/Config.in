@@ -75,7 +75,7 @@ endif
 
 # add platforms that support GLES3 here
 # the GLES3 backend maps to OpenGL 3.3 on desktop, OpenGL ES 3.0 on mobile and WebGL 2.0 on the web.
-if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 \
+if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_RISCV \
     || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 \
     || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3 \
     || BR2_PACKAGE_BATOCERA_TARGET_ODIN
@@ -423,6 +423,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "znver2"																		if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
     default "qualcomm/sd845/odin"															if BR2_PACKAGE_BATOCERA_TARGET_ODIN
     default "allwinner/h6/orangepi-3-lts"													if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+    default "riscv/visionfive2"													            if BR2_PACKAGE_BATOCERA_TARGET_RISCV
     default "amlogic/s922x/gtking amlogic/s922x/gtkingpro amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S922X
     default "amlogic/s905/odroidc2 amlogic/s905/tvboxamlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201" \
@@ -533,6 +534,11 @@ config BR2_PACKAGE_BATOCERA_TARGET_ODIN
 
 config BR2_PACKAGE_BATOCERA_TARGET_XU4
     bool "xu4"
+
+# RISCV
+# -------------------------------------
+config BR2_PACKAGE_BATOCERA_TARGET_RISCV
+    bool "riscv"
 
 endchoice
 
@@ -728,6 +734,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2837     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2711     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_RISCV       || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S812
     select BR2_PACKAGE_LIBRETRO_SAME_CDI        if	BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
