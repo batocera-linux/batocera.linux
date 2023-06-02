@@ -431,17 +431,54 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Pad", "MultitapPort1", "false")
     pcsx2INIConfig.set("Pad", "MultitapPort2", "false")
 
+    # add multitap as needed
+    multiTap = 2
+    joystick_count = len(controllers)
+    eslog.debug("Number of Controllers = {}".format(joystick_count))
+    if system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "4":
+        if joystick_count > 2 and joystick_count < 5:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = int(system.config["pcsx2_multitap"])
+        elif joystick_count > 4:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = 4
+            eslog.debug("*** You have too many connected controllers for this option, restricting to 4 ***")
+        else:
+            multiTap = 2
+            eslog.debug("*** You have the wrong number of connected controllers for this option ***")
+    elif system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "8":
+        if joystick_count > 4:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
+            multiTap = int(system.config["pcsx2_multitap"])
+        elif joystick_count > 2 and joystick_count < 5:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = 4
+            eslog.debug("*** You don't have enough connected controllers for this option, restricting to 4 ***")
+        else:
+            multiTap = 2
+            eslog.debug("*** You don't have enough connected controllers for this option ***")
+    else:
+        multiTap = 2
+    
+    # remove the previous [Padx] sections to avoid phantom controllers
+    section_names = ["Pad1", "Pad2", "Pad3", "Pad4", "Pad5", "Pad6", "Pad7", "Pad8"]
+    for section_name in section_names:
+        if pcsx2INIConfig.has_section(section_name):
+            pcsx2INIConfig.remove_section(section_name)
+    
     # Now add Controllers
     nplayer = 1
     for controller, pad in sorted(controllers.items()):
-        if nplayer <= 8:
-            # automatically add the multi-tap
-            if nplayer >> 2:
-                pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
-            if nplayer >> 4:
-                pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
-            pad_num = "Pad{}".format(nplayer)
+        # only configure the number of controllers set
+        if nplayer <= multiTap:
+            pad_index = nplayer
+            if multiTap == 4 and pad.index != 0:
+                # Skip Pad2 in the ini file when MultitapPort1 only
+                pad_index = nplayer + 1
+            pad_num = "Pad{}".format(pad_index)
             sdl_num = "SDL-" + "{}".format(pad.index)
+            
             if not pcsx2INIConfig.has_section(pad_num):
                 pcsx2INIConfig.add_section(pad_num)
             
