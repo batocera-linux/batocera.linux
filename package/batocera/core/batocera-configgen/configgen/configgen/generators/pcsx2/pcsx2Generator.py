@@ -13,6 +13,7 @@ import controllersConfig
 import json
 import httplib2
 import time
+import shutil
 
 eslog = get_logger(__name__)
 
@@ -421,7 +422,20 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
         pcsx2INIConfig.add_section("Folders")
     if not pcsx2INIConfig.has_section("EmuCore/GS"):
         pcsx2INIConfig.add_section("EmuCore/GS")
-    pcsx2INIConfig.set("Folders", "Textures", "/usr/pcsx2/bin/resources/textures")
+    # copy textures if necessary to PCSX2 config folder
+    source_dir = "/usr/pcsx2/bin/resources/textures"
+    destination_dir = config_directory + "/textures"
+    # check folders aren't already there
+    folders_to_check = ['SCES-52530', 'SLUS-20927']
+    copy_folders = True
+    existing_folders = [folder for folder in folders_to_check if os.path.isdir(os.path.join(destination_dir, folder))]
+    # only copy if folders don't already exist
+    if len(existing_folders) == len(folders_to_check):
+        copy_folders = False
+    
+    if copy_folders:
+        shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
+    
     pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
 
     ## [Pad]
