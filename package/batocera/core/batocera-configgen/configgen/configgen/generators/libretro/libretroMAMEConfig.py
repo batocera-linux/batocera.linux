@@ -127,10 +127,11 @@ def generateMAMEConfigs(playersControllers, system, rom):
             commandLine += [ '-rompath', romDirname + ";/userdata/bios/" ]
         else:
             # Command line for MESS consoles/computers
-            #TI-99 32k RAM expansion & speech modules - enabled by default
+            # TI-99 32k RAM expansion & speech modules
+            # Don't enable 32k by default
             if system.name == "ti99":
                 commandLine += [ "-ioport", "peb" ]
-                if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                if system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram"):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
@@ -352,23 +353,25 @@ def generateMAMEConfigs(playersControllers, system, rom):
             artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/"
         else:
             artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/"
-        commandLine += [ '-artpath', artPath ]
+        if not system.name == "ti99":
+            commandLine += [ '-artpath', artPath ]
 
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
     if not system.isOptSet("artworkcrop"):
-        if not system.name in [ 'pdp1', 'vgmplay' ]:
+        if not system.name in [ 'pdp1', 'vgmplay', 'ti99' ]:
             commandLine += [ "-artwork_crop" ]
     else:
         if system.getOptBoolean("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME
-    commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
-    commandLine += [ "-homepath" , "/userdata/saves/mame/plugins/" ]
+    # Share plugins & samples with standalone MAME (except TI99)
+    if not system.name == "ti99":
+        commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
+        commandLine += [ "-homepath" , "/userdata/saves/mame/plugins/" ]
+        commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
     if not os.path.exists("/userdata/saves/mame/plugins/"):
         os.makedirs("/userdata/saves/mame/plugins/")
-    commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
     if not os.path.exists("/userdata/bios/mame/samples/"):
         os.makedirs("/userdata/bios/mame/samples/")
 
