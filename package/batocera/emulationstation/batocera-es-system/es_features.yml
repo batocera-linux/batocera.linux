@@ -7582,6 +7582,20 @@ pcsx2:
                 "Maximum 2 Players (Default)": 2
                 "Maximum 4 Players":           4
                 "Maximum 8 Players":           8
+        pcsx2_texture_replacements:
+            group: ADVANCED OPTIONS
+            prompt: TEXTURE REPLACEMENTS
+            description: Allows user replaceable textures.
+            choices:
+                "Off": "false"
+                "On":  "true"
+        pcsx2_crisis_fog:
+            group: ADVANCED OPTIONS
+            prompt: TIME CRISIS FOG HACK
+            description: Necessary for some guns to replace fog textures as a workaround in Time Crisis - Crisis Zone.
+            choices:
+                "Off": "false"
+                "On":  "true"
 
 ppsspp:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]

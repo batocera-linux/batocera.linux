@@ -350,7 +350,12 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
         pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", system.config["pcsx2_bilinear_filtering"])
     else:
         pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", "1")
-        
+    # Load Texture Replacements
+    if system.isOptSet('pcsx2_texture_replacements'):
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", system.config["pcsx2_texture_replacements"])
+    else:
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "false")
+            
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
         pcsx2INIConfig.add_section("InputSources")
@@ -421,27 +426,35 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
                         pcsx2INIConfig.set("USB2", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
                 nc = nc + 1
 
-    # hack for the fog bug for guns (time crisis zone)
-    if not pcsx2INIConfig.has_section("Folders"):
-        pcsx2INIConfig.add_section("Folders")
-    if not pcsx2INIConfig.has_section("EmuCore/GS"):
-        pcsx2INIConfig.add_section("EmuCore/GS")
+    # hack for the fog bug for guns (time crisis - crisis zone)
+    fog_files = [
+        "/usr/pcsx2/bin/resources/textures/SCES-52530/replacements/c321d53987f3986d-eadd4df7c9d76527-00005dd4.png",
+        "/usr/pcsx2/bin/resources/textures/SLUS-20927/replacements/c321d53987f3986d-eadd4df7c9d76527-00005dd4.png"
+    ]
+    texture_dir = config_directory + "/textures"
     # copy textures if necessary to PCSX2 config folder
-    source_dir = "/usr/pcsx2/bin/resources/textures"
-    destination_dir = config_directory + "/textures"
-    # check folders aren't already there
-    folders_to_check = ['SCES-52530', 'SLUS-20927']
-    copy_folders = True
-    existing_folders = [folder for folder in folders_to_check if os.path.isdir(os.path.join(destination_dir, folder))]
-    # only copy if folders don't already exist
-    if len(existing_folders) == len(folders_to_check):
-        copy_folders = False
-    
-    if copy_folders:
-        shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
-    
-    pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
+    if system.isOptSet("pcsx2_crisis_fog") and system.config["pcsx2_crisis_fog"] == "true":
+        for file_path in fog_files:
+            parent_directory_name = os.path.basename(os.path.dirname(os.path.dirname(file_path)))
+            file_name = os.path.basename(file_path)
+            texture_directory_path = os.path.join(texture_dir, parent_directory_name, "replacements")
+            os.makedirs(texture_directory_path, exist_ok=True)
+            
+            destination_file_path = os.path.join(texture_directory_path, file_name)
 
+            shutil.copyfile(file_path, destination_file_path)
+        # set texture replacement on regardless of previous setting
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
+    else:
+        for file_path in fog_files:
+            parent_directory_name = os.path.basename(os.path.dirname(os.path.dirname(file_path)))
+            file_name = os.path.basename(file_path)
+            texture_directory_path = os.path.join(texture_dir, parent_directory_name, "replacements")
+            target_file_path = os.path.join(texture_directory_path, file_name)
+            
+            if os.path.isfile(target_file_path):
+                os.remove(target_file_path)
+    
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
         pcsx2INIConfig.add_section("Pad")
