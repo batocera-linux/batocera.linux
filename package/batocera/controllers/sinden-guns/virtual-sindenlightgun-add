@@ -8,15 +8,15 @@ test -z "${DEVTYPE}" && exit 0
 
 if test "${DEVTYPE}" = "input"
 then
-    PARENTHASH=$(evsieve-helper parent-inputs "${DEVNAME}")
+    PARENTHASH=$(evsieve-helper parent "${DEVNAME}" input usb)
     # on the sinden, the video parent is the same as the input parent if you modify .1 by .2 at the end
-    PARENTVIDEOSHASH=$(evsieve-helper parent-inputs-raw "${DEVNAME}" | sed -e s+"\.2$"+".1"+ | md5sum | cut -c 1-32)
+    PARENTVIDEOSHASH=$(evsieve-helper parent-raw "${DEVNAME}" input usb | sed -e s+"\.2$"+".1"+ | md5sum | cut -c 1-32)
 fi
 if test "${DEVTYPE}" = "video"
 then
     # on the sinden, the video parent is the same as the input parent if you modify .1 by .2 at the end
-    PARENTHASH=$(evsieve-helper parent-videos-raw "${DEVNAME}" | sed -e s+"\.1$"+".2"+ | md5sum | cut -c 1-32)
-    PARENTVIDEOSHASH=$(evsieve-helper parent-videos "${DEVNAME}")
+    PARENTHASH=$(evsieve-helper parent-raw "${DEVNAME}" video usb | sed -e s+"\.1$"+".2"+ | md5sum | cut -c 1-32)
+    PARENTVIDEOSHASH=$(evsieve-helper parent "${DEVNAME}" video usb)
 fi
 BASEFILE="/var/run/virtual-sindenlightgun-devices.${PARENTHASH}"
 PIDFILE="${BASEFILE}.pid"
@@ -60,10 +60,10 @@ reportOnceConfigurationAvailable
 trylock
 checkRunningPIDAndExit1
 
-CHILDRENINPUTS=$(evsieve-helper children-inputs "${PARENTHASH}")
+CHILDRENINPUTS=$(evsieve-helper children "${PARENTHASH}" input usb)
 NDEVSINPUTS=$(echo "${CHILDRENINPUTS}" | wc -l)
 
-CHILDRENVIDEOS=$(evsieve-helper children-videos "${PARENTVIDEOSHASH}")
+CHILDRENVIDEOS=$(evsieve-helper children "${PARENTVIDEOSHASH}" video usb)
 NDEVSVIDEOS=$(echo "${CHILDRENVIDEOS}" | wc -l)
 
 ### hack to fix the sinden code ###
@@ -98,7 +98,7 @@ then
     echo $! > "${PIDFILE}"
 
     # ttyACM
-    ACMSEARCHDIR=/sys$(evsieve-helper parent-inputs-raw "${DEVNAME}")
+    ACMSEARCHDIR=/sys$(evsieve-helper parent-raw "${DEVNAME}" input usb)
     ACM=$(find "${ACMSEARCHDIR}" -name "ttyACM*" | head -1)
     ACMDEV=/dev/$(basename "${ACM}")
     if test -n "${ACMDEV}"
@@ -180,7 +180,7 @@ then
 	rm -f "/var/run/sinden/p${PARENTHASH}/lockfile"
 
 	# hack: before starting the sinden program wait again one second. if devices are not ready, the program don't wait, it just exists
-	sleep 3 # 1 seems not enough... let's try 3
+	sleep 1 # just in case because it is far from stable with the sinden program
 
 	PATH=/bin:/sbin:/usr/bin:/usr/sbin nohup mono-service -l:"/var/run/sinden/p${PARENTHASH}/lockfile" -d:"/var/run/sinden/p${PARENTHASH}" --no-daemon "./LightgunMono-${PARENTHASH}.exe" > "${LOGFILE2}" &
     fi
