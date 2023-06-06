@@ -99,15 +99,16 @@
 - moonlight options
 - lr-mGBA to v0.10.2
 - vice to v3.7.1
-- rpcs3 to v0.0.27
+- rpcs3 to v0.0.28
 - pcsx2 to v1.7.4439 (Qt6)
 - Pyxel to 1.9.15
 - Citra to nightly-1903
-- xemu v0.7.88
+- xemu v0.7.90
 - melonDS to May 11, 2023 (Qt6)
 - duckstation to May 07, 2023 build (Qt6)
 - hypseus-singe to v2.10.4
 - easyrpg to 0.8
+- MAME to 0.253
 ### Dev
 - buildroot upgrade to 2023.02.01
 - mesa3d update to 23.1.0
