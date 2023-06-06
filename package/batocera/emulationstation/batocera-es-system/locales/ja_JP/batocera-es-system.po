@@ -3,15 +3,17 @@ msgstr ""
 "Project-Id-Version: batocera-es v37beta(2023/05/08)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-08 23:17+0900\n"
+"PO-Revision-Date: 2023-06-06 13:40+0800\n"
 "Last-Translator: mikakunin\n"
-"Language-Team: mikakunin\n"
+"Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.2\n"
+"X-Loco-Source-Locale: en_SG\n"
+"X-Generator: Poedit 3.3.1\n"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -4368,7 +4370,7 @@ msgstr ""
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "1x (Default)"
-msgstr ""
+msgstr "1x (通常)"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -7265,7 +7267,7 @@ msgstr ""
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "VBI SKIP"
-msgstr ""
+msgstr "VBIスキップ"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -8760,44 +8762,22 @@ msgstr "チート"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Allows up to 8 controllers in supported games."
-msgstr ""
+msgstr "対応ゲームでは最大コントローラ8台を使用可能"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 2 Players (Default)"
-msgstr ""
+msgstr "最大プレーヤー2人(通常)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 4 Players"
-msgstr ""
+msgstr "最大プレーヤー4人"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 8 Players"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Allows user replaceable textures."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "TEXTURE REPLACEMENTS"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Necessary for some guns to replace fog textures as a workaround in Time "
-"Crisis - Crisis Zone."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "TIME CRISIS FOG HACK"
-msgstr ""
+msgstr "最大プレーヤー8人"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -11011,7 +10991,7 @@ msgstr ""
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "DISABLE SURFACE SYNC"
-msgstr ""
+msgstr "SURFACE SYNC 無効"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
@@ -11021,7 +11001,7 @@ msgstr ""
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "LINEAR FILTERING"
-msgstr ""
+msgstr "線形フィルタ"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
@@ -11428,102 +11408,3 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
-
-#~ msgctxt "game_options"
-#~ msgid "Distorts the output to fill the display fully."
-#~ msgstr "拡大縮小して、最大ディスプレイ表示にします"
-
-#~ msgctxt "game_options"
-#~ msgid "TV MODE"
-#~ msgstr "TV モード"
-
-#~ msgctxt "game_options"
-#~ msgid "Legacy (laggy)"
-#~ msgstr "レガシー（ラグ）"
-
-#~ msgctxt "game_options"
-#~ msgid "Async (skip draw, recommended)"
-#~ msgstr "非同期（スキップドロー、推奨）"
-
-#~ msgctxt "game_options"
-#~ msgid "Async with interp. (hybrid)"
-#~ msgstr "非同期とインタプリタ(ハイブリッド)"
-
-#~ msgctxt "game_options"
-#~ msgid "Interpreter only (experimental)"
-#~ msgstr "インタープリタのみ（実験的）"
-
-#~ msgctxt "game_options"
-#~ msgid "May fix broken graphics in some games."
-#~ msgstr "一部のゲームの壊れたグラフィックを修正する場合があります"
-
-#~ msgctxt "game_options"
-#~ msgid "WRITE DEPTH BUFFER"
-#~ msgstr "深度バッファ書き込み"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "Recompiler (Fastest)(Default)"
-#~ msgctxt "game_options"
-#~ msgid "Recompiler (Fastest)"
-#~ msgstr "リコンパイラ（最速）(通常)"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "Bilinear (No Edge Blending)"
-#~ msgctxt "game_options"
-#~ msgid "Bilinear (no edge blending)"
-#~ msgstr "バイリニア (エッジブレンディングなし)"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "JINC2 (Slow, No Edge Blending)"
-#~ msgctxt "game_options"
-#~ msgid "JINC2 (no edge blending)"
-#~ msgstr "JINC2（遅い、エッジブレンディングなし）"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "Bilinear (No Edge Blending)"
-#~ msgctxt "game_options"
-#~ msgid "xBR (no edge blending)"
-#~ msgstr "バイリニア (エッジブレンディングなし)"
-
-#~ msgctxt "game_options"
-#~ msgid "Activate rumble on supported controllers."
-#~ msgstr "対応しているコントローラーで振動を有効にします"
-
-#, fuzzy
-#~| msgctxt "game_options"
-#~| msgid "Digital Controller"
-#~ msgctxt "game_options"
-#~ msgid "For digital controller mode."
-#~ msgstr "デジタルコントローラー"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu up"
-#~ msgstr "メニュー　上"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu down"
-#~ msgstr "メニュー　下"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu left"
-#~ msgstr "メニュー　左"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu right"
-#~ msgstr "メニュー　右"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu confirm"
-#~ msgstr "ナビゲーションメニュー確認"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu page up"
-#~ msgstr "メニューページ上"
-
-#~ msgctxt "keys_files"
-#~ msgid "Navigate menu page down"
-#~ msgstr "メニューページ下"
