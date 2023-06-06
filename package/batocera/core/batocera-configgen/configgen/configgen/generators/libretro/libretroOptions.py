@@ -195,7 +195,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
-            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['keyboard_pass_through'] + '"')
+            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['vice_keyboard_pass_through'] + '"')
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
