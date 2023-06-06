@@ -1,0 +1,53 @@
+--- a/lib/avb/libavb/avb_slot_verify.c	2021-11-25 10:34:10.000000000 +0100
++++ b/lib/avb/libavb/avb_slot_verify.c	2023-06-06 14:11:10.015341143 +0200
+@@ -294,9 +294,9 @@
+   AvbIOResult io_ret;
+   uint8_t* image_buf = NULL;
+   bool image_preloaded = false;
++  const char* found = NULL;
+   uint8_t* digest;
+   size_t digest_len;
+-  const char* found;
+   uint64_t image_size;
+   size_t expected_digest_len = 0;
+   uint8_t expected_digest_buf[AVB_SHA512_DIGEST_SIZE];
+--- a/drivers/pinctrl/rockchip/pinctrl-rockchip-core.c	2023-06-06 17:31:53.093801963 +0200
++++ b/drivers/pinctrl/rockchip/pinctrl-rockchip-core.c	2023-06-06 17:34:30.708983252 +0200
+@@ -40,7 +40,7 @@
+ {
+ 	struct rockchip_pinctrl_priv *priv = bank->priv;
+ 	struct rockchip_pin_ctrl *ctrl = priv->ctrl;
+-	struct rockchip_mux_recalced_data *data;
++	struct rockchip_mux_recalced_data *data = NULL;
+ 	int i;
+ 
+ 	for (i = 0; i < ctrl->niomux_recalced; i++) {
+@@ -64,7 +64,7 @@
+ {
+ 	struct rockchip_pinctrl_priv *priv = bank->priv;
+ 	struct rockchip_pin_ctrl *ctrl = priv->ctrl;
+-	struct rockchip_mux_route_data *data;
++	struct rockchip_mux_route_data *data = NULL;
+ 	int i;
+ 
+ 	for (i = 0; i < ctrl->niomux_routes; i++) {
+--- a/drivers/pinctrl/pinctrl-rockchip.c	2023-06-06 17:37:50.897036238 +0200
++++ b/drivers/pinctrl/pinctrl-rockchip.c	2023-06-06 17:44:15.696924917 +0200
+@@ -828,7 +828,7 @@
+ {
+ 	struct rockchip_pinctrl_priv *priv = bank->priv;
+ 	struct rockchip_pin_ctrl *ctrl = priv->ctrl;
+-	struct rockchip_mux_recalced_data *data;
++	struct rockchip_mux_recalced_data *data = NULL;
+ 	int i;
+ 
+ 	for (i = 0; i < ctrl->niomux_recalced; i++) {
+@@ -1560,7 +1560,7 @@
+ {
+ 	struct rockchip_pinctrl_priv *priv = bank->priv;
+ 	struct rockchip_pin_ctrl *ctrl = priv->ctrl;
+-	struct rockchip_mux_route_data *data;
++	struct rockchip_mux_route_data *data = NULL;
+ 	int i;
+ 
+ 	for (i = 0; i < ctrl->niomux_routes; i++) {
