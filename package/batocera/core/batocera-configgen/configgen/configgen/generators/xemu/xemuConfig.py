@@ -54,6 +54,9 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     # Disable welcome screen on first launch
     iniConfig.set("general", "show_welcome", "false")
 
+    # Set Screenshot directory
+    iniConfig.set("general", "screenshot_dir", '"/userdata/screenshots"') 
+
     # Fill system section
     iniConfig.set("sys.files", "flashrom_path", '"/userdata/bios/Complex_4627.bin"')
     iniConfig.set("sys.files", "bootrom_path", '"/userdata/bios/mcpx_1.0.bin"')
