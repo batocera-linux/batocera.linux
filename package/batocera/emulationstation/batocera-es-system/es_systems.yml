@@ -3426,7 +3426,7 @@ switch:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
-  name:       Quake II
+  name: Quake II
   manufacturer: Ports
   release: 1997
   hardware: port
@@ -3436,6 +3436,16 @@ vitaquake2:
   emulators:
     libretro:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
+  comment_en: |
+    The libretro vitaquake2 core offers several mission packs.
+    To ensure the correct vitaquake2 core loads for a mission pack, make sure it is placed in a subdirectory within this ROM directory.
+    The supported subdirectories for mission pack ROMs are: xatrix, rogue, and zaero.
+    For the standard Quake II directory, use 'baseq2' to utilize the standard vitaquake2 core.
+  comment_fr: |
+    Le cœur libretro de vitaquake2 propose différents packs de missions.
+    Pour vous assurer que le bon cœur vitaquake2 se charge pour un pack de missions, veillez à le placer dans un sous-répertoire de ce répertoire ROM.
+    Les sous-répertoires pris en charge pour les ROM de packs de missions sont : xatrix, rogue et zaero.
+    Pour le répertoire standard de Quake II, utilisez 'baseq2' pour utiliser le cœur vitaquake2 standard.
 
 j2me:
   name:       Java 2 MicroEdition
