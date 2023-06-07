@@ -9629,7 +9629,7 @@ drastic:
 xemu:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        scaling:
+        xemu_scaling:
             prompt:      SCALING MODE
             description: Choose the scaling mode for the game screen.
             choices:
@@ -9638,7 +9638,7 @@ xemu:
                 "Stretch to full":     stretch
                 "Stretch to 16:9":     scale_16_9
                 "Stretch to 4:3":      scale_4_3
-        render:
+        xemu_render:
             prompt:       RENDERING RESOLUTION
             choices:
                 "1x (640x480)":     1
@@ -9657,19 +9657,18 @@ xemu:
             choices:
                 "Show":        "false"
                 "Skip":        "true"
-        use_dsp:
+        xemu_use_dsp:
             prompt:      USE DSP AUDIO
             description: Improve audio accuracy (experimental).
             choices:
                 "Enabled":      "true"
                 "Disabled":     "false"
-        use_zink:
-            group: ADVANCED OPTIONS
-            prompt: USE ZINK RENDERER
-            description: Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause performance loss.
+        xemu_memory:
+            prompt: SYSTEM MEMORY
+            description: Increase to 128 MiB for debug or homebrew applications.
             choices:
-                "Enabled":            "true"
-                "Disabled (Default)": "false"
+                "64MiB (Default)": 64
+                "128MiB":          128
 
 lexaloffle:
   features: [padtokeyboard]
