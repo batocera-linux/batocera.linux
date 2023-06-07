@@ -1,19 +1,17 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v37beta(2023/05/08)\n"
+"Project-Id-Version: batocera-es v37beta(2023/06/07)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-06-06 13:40+0800\n"
+"PO-Revision-Date: 2023-06-07 11:29+0900\n"
 "Last-Translator: mikakunin\n"
-"Language-Team: Japanese\n"
+"Language-Team: mikakunin\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Loco-Source-Locale: en_SG\n"
-"X-Generator: Poedit 3.3.1\n"
-"X-Loco-Parser: loco_parse_po\n"
+"X-Generator: Poedit 3.2\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1268,17 +1266,17 @@ msgstr "使用しない"
 #. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
 msgid "Exclusive Ubershaders"
-msgstr "排他的ウーバーシェーダー"
+msgstr "排他的(専用)US"
 
 #. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
 msgid "Hybrid Ubershaders"
-msgstr "ハイブリッドウーバーシェーダー"
+msgstr "ハイブリッドUS"
 
 #. TRANSLATION: libretro/dolphin, dolphin
 msgctxt "game_options"
 msgid "Skip Drawing"
-msgstr "描画をスキップ(スキップドロー)"
+msgstr "スキップドロウ(描画)"
 
 #. TRANSLATION: libretro/dolphin, dolphin, dolphin_triforce, pcsx2, ppsspp, ...
 msgctxt "game_options"
@@ -2840,7 +2838,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "HIGH SCORE プラグイン"
 
-#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "使用する (標準)"
@@ -2855,12 +2853,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "コイン投入効果音プラグイン"
 
-#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "使用（有効）"
 
-#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "無効（通常）"
@@ -4360,12 +4358,12 @@ msgstr "フルスピード"
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Only applies when using Parallel-RDP as the chosen RDP Plugin."
-msgstr ""
+msgstr "RDP プラグインとして[PARALLEL-RDP]を選択した場合のみ適用されます"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
-msgstr ""
+msgstr "PARALLEL-RDP アップスケーラー"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -5145,7 +5143,7 @@ msgstr "CPU　互換性"
 #. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor
 msgctxt "game_options"
 msgid "Normal"
-msgstr "通常"
+msgstr "標準"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -7263,11 +7261,13 @@ msgid ""
 "Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
 "audio playback when emulation speed is not 100%."
 msgstr ""
+"ラグを検知するとVBIをスキップするため、エミュレーション速度が100％でない場合"
+"でもスムーズな音声再生が可能です"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "VBI SKIP"
-msgstr "VBIスキップ"
+msgstr "VBI(垂直ブランク割り込み) スキップ"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -7479,8 +7479,7 @@ msgstr "スケーリングされたディザリング"
 msgctxt "game_options"
 msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
-msgstr ""
-"100% を超えて実行している場合、フレームをドロップする代わりに温度を調整します"
+msgstr "100% 超えで動作している場合、フレームを落とさずに音質を調整します"
 
 #. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
@@ -7505,7 +7504,7 @@ msgstr "リサンプリング（ピッチシフト）"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Time Stretch (Tempo Change, Best Sound)"
-msgstr "タイムストレッチ (テンポ変化、最良音質)"
+msgstr "タイムストレッチ (テンポ調整、最良)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7540,7 +7539,7 @@ msgstr "より多くのRAMが必要です"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Preload"
-msgstr "プリロード"
+msgstr "自動読取"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8762,44 +8761,22 @@ msgstr "チート"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Allows up to 8 controllers in supported games."
-msgstr "対応ゲームでは最大コントローラ8台を使用可能"
+msgstr "多人数対応ゲームで最大8個のコントローラーを使用できます"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 2 Players (Default)"
-msgstr "最大プレーヤー2人(通常)"
+msgstr "最大 2 プレイヤー(標準)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 4 Players"
-msgstr "最大プレーヤー4人"
+msgstr "最大 4 プレイヤー"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 8 Players"
-msgstr "最大プレーヤー8人"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Allows user replaceable textures."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "TEXTURE REPLACEMENTS"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Necessary for some guns to replace fog textures as a workaround in Time "
-"Crisis - Crisis Zone."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "TIME CRISIS FOG HACK"
-msgstr ""
+msgstr "最大 8 プレイヤー"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -10198,23 +10175,17 @@ msgstr "DSP オーディオを使用する"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "Increase to 128 MiB for debug or homebrew applications."
+msgid ""
+"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
+"performance loss."
 msgstr ""
+"グラフィック問題の修正の為に、Zinkレンダラーを使用します パフォーマンスが低下"
+"する場合があります"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "SYSTEM MEMORY"
-msgstr ""
-
-#. TRANSLATION: xemu
-msgctxt "game_options"
-msgid "64MiB (Default)"
-msgstr ""
-
-#. TRANSLATION: xemu
-msgctxt "game_options"
-msgid "128MiB"
-msgstr ""
+msgid "USE ZINK RENDERER"
+msgstr "Zink レンダラー(OpenGL->Vulkan)を使用する"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -11015,27 +10986,28 @@ msgid ""
 "Speed hack, enable to disable surface syncing between CPU and GPU. Surface "
 "syncing is needed by a few games."
 msgstr ""
+"(スピードハック)CPU と GPU 間のサーフェスの同期を無効にします。いくつかのゲー"
+"ムでは サーフェスの同期が必要です"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "DISABLE SURFACE SYNC"
-msgstr "SURFACE SYNC 無効"
+msgstr "サーフェスの同期を無効"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "The image will be softer which could help with aliasing."
-msgstr ""
+msgstr "画像がソフトになり、エイリアシングが軽減される可能性があります"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "LINEAR FILTERING"
-msgstr "線形フィルタ"
+msgstr "リニア フィルタリング"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "Anti-aliasing is a technique for smoothing out jagged edges."
-msgstr ""
-"高速近似アンチエイリアシング(FXAA)は、ギザギザのエッジを滑らかにする技術です"
+msgstr "FXAAは、ギザギザのエッジを滑らかにする技術です"
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
@@ -11438,13 +11410,100 @@ msgid "FastForward"
 msgstr "早送り"
 
 #~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May "
-#~ "cause performance loss."
-#~ msgstr ""
-#~ "グラフィック問題の修正の為に、Zinkレンダラーを使用します パフォーマンスが"
-#~ "低下する場合があります"
+#~ msgid "Distorts the output to fill the display fully."
+#~ msgstr "拡大縮小して、最大ディスプレイ表示にします"
 
 #~ msgctxt "game_options"
-#~ msgid "USE ZINK RENDERER"
-#~ msgstr "Zink レンダラー(OpenGL->Vulkan)を使用する"
+#~ msgid "TV MODE"
+#~ msgstr "TV モード"
+
+#~ msgctxt "game_options"
+#~ msgid "Legacy (laggy)"
+#~ msgstr "レガシー（ラグ）"
+
+#~ msgctxt "game_options"
+#~ msgid "Async (skip draw, recommended)"
+#~ msgstr "非同期（スキップドロー、推奨）"
+
+#~ msgctxt "game_options"
+#~ msgid "Async with interp. (hybrid)"
+#~ msgstr "非同期とインタプリタ(ハイブリッド)"
+
+#~ msgctxt "game_options"
+#~ msgid "Interpreter only (experimental)"
+#~ msgstr "インタープリタのみ（実験的）"
+
+#~ msgctxt "game_options"
+#~ msgid "May fix broken graphics in some games."
+#~ msgstr "一部のゲームの壊れたグラフィックを修正する場合があります"
+
+#~ msgctxt "game_options"
+#~ msgid "WRITE DEPTH BUFFER"
+#~ msgstr "深度バッファ書き込み"
+
+#, fuzzy
+#~| msgctxt "game_options"
+#~| msgid "Recompiler (Fastest)(Default)"
+#~ msgctxt "game_options"
+#~ msgid "Recompiler (Fastest)"
+#~ msgstr "リコンパイラ（最速）(通常)"
+
+#, fuzzy
+#~| msgctxt "game_options"
+#~| msgid "Bilinear (No Edge Blending)"
+#~ msgctxt "game_options"
+#~ msgid "Bilinear (no edge blending)"
+#~ msgstr "バイリニア (エッジブレンディングなし)"
+
+#, fuzzy
+#~| msgctxt "game_options"
+#~| msgid "JINC2 (Slow, No Edge Blending)"
+#~ msgctxt "game_options"
+#~ msgid "JINC2 (no edge blending)"
+#~ msgstr "JINC2（遅い、エッジブレンディングなし）"
+
+#, fuzzy
+#~| msgctxt "game_options"
+#~| msgid "Bilinear (No Edge Blending)"
+#~ msgctxt "game_options"
+#~ msgid "xBR (no edge blending)"
+#~ msgstr "バイリニア (エッジブレンディングなし)"
+
+#~ msgctxt "game_options"
+#~ msgid "Activate rumble on supported controllers."
+#~ msgstr "対応しているコントローラーで振動を有効にします"
+
+#, fuzzy
+#~| msgctxt "game_options"
+#~| msgid "Digital Controller"
+#~ msgctxt "game_options"
+#~ msgid "For digital controller mode."
+#~ msgstr "デジタルコントローラー"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu up"
+#~ msgstr "メニュー　上"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu down"
+#~ msgstr "メニュー　下"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu left"
+#~ msgstr "メニュー　左"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu right"
+#~ msgstr "メニュー　右"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu confirm"
+#~ msgstr "ナビゲーションメニュー確認"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu page up"
+#~ msgstr "メニューページ上"
+
+#~ msgctxt "keys_files"
+#~ msgid "Navigate menu page down"
+#~ msgstr "メニューページ下"
