@@ -31,6 +31,8 @@
 - Othello Multivision (libretro-gearsystem)
 - Retroachievements for PS2 (pcsx2)
 - Batocera will now detect older Radeon cards that are compatible with the amdgpu driver & use it
+- additional libretro vitaquake2 cores (rouge, xatrix & zaero)
+- added vitaquake2 to RPi4
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
