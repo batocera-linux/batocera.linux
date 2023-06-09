@@ -2838,7 +2838,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "HIGH SCORE プラグイン"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "使用する (標準)"
@@ -2853,12 +2853,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "コイン投入効果音プラグイン"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "使用（有効）"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "無効（通常）"
@@ -8778,6 +8778,28 @@ msgctxt "game_options"
 msgid "Maximum 8 Players"
 msgstr "最大 8 プレイヤー"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows user replaceable textures."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE REPLACEMENTS"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Necessary for some guns to replace fog textures as a workaround in Time "
+"Crisis - Crisis Zone."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TIME CRISIS FOG HACK"
+msgstr ""
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
@@ -10175,17 +10197,23 @@ msgstr "DSP オーディオを使用する"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid ""
-"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
-"performance loss."
+msgid "Increase to 128 MiB for debug or homebrew applications."
 msgstr ""
-"グラフィック問題の修正の為に、Zinkレンダラーを使用します パフォーマンスが低下"
-"する場合があります"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "USE ZINK RENDERER"
-msgstr "Zink レンダラー(OpenGL->Vulkan)を使用する"
+msgid "SYSTEM MEMORY"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "64MiB (Default)"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "128MiB"
+msgstr ""
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -11408,6 +11436,18 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May "
+#~ "cause performance loss."
+#~ msgstr ""
+#~ "グラフィック問題の修正の為に、Zinkレンダラーを使用します パフォーマンスが"
+#~ "低下する場合があります"
+
+#~ msgctxt "game_options"
+#~ msgid "USE ZINK RENDERER"
+#~ msgstr "Zink レンダラー(OpenGL->Vulkan)を使用する"
 
 #~ msgctxt "game_options"
 #~ msgid "Distorts the output to fill the display fully."
