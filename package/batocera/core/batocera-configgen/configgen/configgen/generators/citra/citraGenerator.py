@@ -69,8 +69,10 @@ class CitraGenerator(Generator):
             citraConfig.set("Layout", "swap_screen",   tab[1])
             citraConfig.set("Layout", "layout_option", tab[0])
         else:
-            citraConfig.set("Layout", "swap_screen",   "false")
-            citraConfig.set("Layout", "layout_option", "4")
+            citraConfig.set("Layout", "swap_screen", "false")
+            citraConfig.set("Layout", "layout_option", "2")
+        citraConfig.set("Layout", "swap_screen\default", "false")
+        citraConfig.set("Layout", "layout_option\default", "false")
 
         ## [SYSTEM]
         if not citraConfig.has_section("System"):
@@ -80,6 +82,7 @@ class CitraGenerator(Generator):
             citraConfig.set("System", "is_new_3ds", "true")
         else:
             citraConfig.set("System", "is_new_3ds", "false")
+        citraConfig.set("System", "is_new_3ds\default", "false")
         # Language
         citraConfig.set("System", "region_value", str(getCitraLangFromEnvironment()))
         citraConfig.set("System", "region_value\default", "false")
@@ -109,6 +112,14 @@ class CitraGenerator(Generator):
         citraConfig.set("UI", "confirmClose", "false")
         citraConfig.set("UI", "confirmclose", "false") # Emulator Bug
         citraConfig.set("UI", "confirmClose\default", "false")
+
+        # screenshots
+        citraConfig.set("UI", "Paths\screenshotPath", "/userdata/screenshots")
+        citraConfig.set("UI", "Paths\screenshotPath\default", "false")
+
+        # don't check updates
+        citraConfig.set("UI", "Updater\check_for_update_on_start", "false")
+        citraConfig.set("UI", "Updater\check_for_update_on_start\default", "false")
 
         ## [RENDERER]
         if not citraConfig.has_section("Renderer"):
