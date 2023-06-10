@@ -6678,12 +6678,12 @@ duckstation:
             prompt: ASPECT RATIO
             description: Change the output resolution ratio.
             choices:
-                "Auto (Match Window)": "Auto (Match Window)"
-                "4:3":                 "4:3"
-                "16:9":                "16:9"
-                "19:9":                "19:9"
-                "20:9":                "20:9"
-                "PAR 1:1":             "PAR 1:1"
+                "Match Window": "Auto (Match Window)"
+                "4:3":          "4:3"
+                "16:9":         "16:9"
+                "19:9":         "19:9"
+                "20:9":         "20:9"
+                "PAR 1:1":      "PAR 1:1"
         duckstation_CropMode:
             submenu: DISPLAY
             prompt: CROP OVERSCAN
@@ -6709,7 +6709,7 @@ duckstation:
         duckstation_stretch:
             submenu: DISPLAY
             prompt: STRETCH TO FILL
-            description: Fills the screen regardless of the aspect ratio.
+            description: Fills the screen regardless of the aspect ratio. Doesn't work with Integer Upscaling.
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
