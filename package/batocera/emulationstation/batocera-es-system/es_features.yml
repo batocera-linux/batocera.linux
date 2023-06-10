@@ -2010,7 +2010,7 @@ libretro:
             hiscoreplugin:
                 group: ADVANCED OPTIONS
                 prompt:      HIGH SCORE PLUGIN
-                description: Emable or disable high score saving
+                description: Enable or disable high score saving
                 choices:
                     "Enabled (Default)": 1
                     "Disabled":          0
@@ -6702,7 +6702,7 @@ duckstation:
         duckstation_linear:
             submenu: DISPLAY
             prompt: LINEAR UPSCALING
-            description: ENabling will smooth out the image.
+            description: Enabling will smooth out the image.
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
@@ -9372,7 +9372,7 @@ mame:
                 hiscoreplugin:
                     group: ADVANCED OPTIONS
                     prompt:      HIGH SCORE PLUGIN
-                    description: Emable or disable high score saving
+                    description: Enable or disable high score saving
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
