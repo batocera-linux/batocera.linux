@@ -2429,7 +2429,8 @@ model3:
   platform: model3, arcade
   emulators:
     supermodel:
-      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
