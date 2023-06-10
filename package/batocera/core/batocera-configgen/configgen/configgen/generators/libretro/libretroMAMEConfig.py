@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 
 # Define RetroPad inputs for mapping
 retroPad = {
@@ -217,6 +218,20 @@ def generateMAMEConfigs(playersControllers, system, rom):
                             commandLine += [ "-flop1" ]
                         else:
                             commandLine += [ "-cart1" ]
+                    # try to choose the right floppy for Apple2gs
+                    elif system.name == "apple2gs":
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".zip":
+                            with zipfile.ZipFile(rom, 'r') as zip_file:
+                                file_list = zip_file.namelist()
+                                # assume only one file in zip
+                                if len(file_list) == 1:
+                                    filename = file_list[0]
+                                    rom_extension = os.path.splitext(filename)[1].lower()
+                        if rom_extension == ".2mg":
+                            commandLine += [ "-flop3" ]
+                        else:
+                            commandLine += [ "-flop1" ]
                     else:
                         commandLine += [ "-" + messRomType[messMode] ]
                 else:
