@@ -228,7 +228,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
                                 if len(file_list) == 1:
                                     filename = file_list[0]
                                     rom_extension = os.path.splitext(filename)[1].lower()
-                        if rom_extension == ".2mg":
+                        if rom_extension in [".2mg", ".2img", ".img", ".image"]:
                             commandLine += [ "-flop3" ]
                         else:
                             commandLine += [ "-flop1" ]

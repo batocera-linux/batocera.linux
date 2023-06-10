@@ -2901,6 +2901,12 @@ apple2gs:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
+  comment_en: |
+          If your game does not start using LR-Mame. Ensure you choose the right floppy type for the rom extension.
+          i.e. some extensions require you to choose the 3 1/2 inch floppy drive (Drive 3).
+  comment_fr: |
+          Si votre jeu ne démarre pas avec LR-Mame, assurez-vous de choisir le bon type de disquette pour l'extension de la ROM.
+          Par exemple, certaines extensions nécessitent que vous choisissiez le lecteur de disquette 3 1/2 pouces (Lecteur 3).
 
 uzebox:
   name:       Uzebox
