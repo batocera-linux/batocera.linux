@@ -20,7 +20,7 @@
     "f.caruso": {
         "latitude": 47.950001,
         "longitude": 1.88333 ,
-	"town": "Saran",
+	"town": "Orléan",
 	"last_contribution" : 2023
     },
     "joinski": {
