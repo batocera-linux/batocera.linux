@@ -20,7 +20,7 @@
     "f.caruso": {
         "latitude": 47.950001,
         "longitude": 1.88333 ,
-	"town": "Orléan",
+	"town": "Orléans",
 	"last_contribution" : 2023
     },
     "joinski": {
@@ -82,5 +82,11 @@
         "longitude": -73.561668,
 	"town": "Montreal",
 	"last_contribution" : 2023
+    },
+    "darknior": {
+        "latitude": 43.836699,
+        "longitude": 4.360054,
+	"town": "Nîmes",
+	"last_contribution" : 2022
     }
 }
