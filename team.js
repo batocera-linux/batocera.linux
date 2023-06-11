@@ -103,7 +103,7 @@
     },
     "mikhailzrick": {
         "latitude": 35.481918,
-        "longitude": -97.508469
+        "longitude": -97.508469,
 	"town": "Oklahoma City",
 	"last_contribution" : 2023
     }
