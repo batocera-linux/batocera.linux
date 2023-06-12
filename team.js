@@ -106,5 +106,11 @@
         "longitude": -97.508469,
 	"town": "Oklahoma City",
 	"last_contribution" : 2023
+    },
+    "maximumentropy": {
+        "latitude": 40.730610,
+        "longitude": -73.935242,
+	"town": "New York",
+	"last_contribution" : 2023
     }
 }
