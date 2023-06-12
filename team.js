@@ -112,5 +112,11 @@
         "longitude": -73.935242,
 	"town": "New York",
 	"last_contribution" : 2023
+    },
+    "kycho": {
+	"latitude": 50.26612301276186,
+        "longitude": 19.018863912638437,
+	"town": "Katowice",
+	"last_contribution" : 2023
     }
 }
