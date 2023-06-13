@@ -1,0 +1,11 @@
+--- a/Makefile	2023-06-07 01:55:42.559364860 +0200
++++ b/Makefile	2023-06-07 01:56:31.532469592 +0200
+@@ -1384,7 +1384,7 @@
+ %.dtb: include/config/kernel.release scripts_dtc
+ 	$(if $(filter $@,$(mesondtb)),\
+ 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/amlogic/$@,\
+-	$(Q)$(MAKE) $(build)=customer/$(dtstree) customer/$(dtstree)/$@)
++	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@)
+ else
+ %.dtb: include/config/kernel.release scripts_dtc
+ 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@

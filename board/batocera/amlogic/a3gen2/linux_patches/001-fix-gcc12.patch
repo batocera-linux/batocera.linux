@@ -1,0 +1,14 @@
+--- a/Makefile	2023-06-07 01:46:40.175122264 +0200
++++ b/Makefile	2023-06-07 01:42:58.790118310 +0200
+@@ -746,6 +746,11 @@
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, misleading-indentation)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, dangling-pointer)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, address)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, stringop-overread)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, array-compare)
+ 
+ ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+ KBUILD_CFLAGS += -O2
