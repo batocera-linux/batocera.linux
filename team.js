@@ -29,7 +29,7 @@
 	"town": "Hamburg",
 	"last_contribution" : 2023
     },
-    "poke": {
+    "poke-1,0": {
         "latitude": -29.754994,
         "longitude": -51.150283,
 	"town": "São Leopoldo",
@@ -117,6 +117,24 @@
 	"latitude": 50.26612301276186,
         "longitude": 19.018863912638437,
 	"town": "Katowice",
+	"last_contribution" : 2023
+    },
+    "wanger": {
+	"latitude": 39.916668,
+        "longitude": 116.383331,
+	"town": "Beijing",
+	"last_contribution" : 2023
+    },
+    "neil9000": {
+	"latitude": 50.768036,
+        "longitude": 0.290472,
+	"town": "Eastbourne",
+	"last_contribution" : 2023
+    },
+    "ordovice": {
+	"latitude": 27.964157,
+        "longitude": -82.452606,
+	"town": "Tampa",
 	"last_contribution" : 2023
     }
 }
