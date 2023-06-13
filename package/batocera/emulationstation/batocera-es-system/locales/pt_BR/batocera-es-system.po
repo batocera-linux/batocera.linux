@@ -2865,10 +2865,10 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Manche giratório de 4 vias (Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
-msgid "Emable or disable high score saving"
-msgstr "Ativa ou desativa a economia de pontuação alta"
+msgid "Enable or disable high score saving"
+msgstr "Ativa ou desativa o salvamento de pontuação alta"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -3095,6 +3095,11 @@ msgstr "Discos originais do Apple II"
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Cassete"
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
+msgctxt "game_options"
+msgid "Hard Drive"
+msgstr "Disco Rígido"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3821,11 +3826,6 @@ msgstr "Tipo de arquivo ROM para carregar"
 msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
-
-#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
-msgctxt "game_options"
-msgid "Hard Drive"
-msgstr "Disco Rígido"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7449,8 +7449,8 @@ msgstr "ENCADEAMENTO DE EXECUÇÃO DE APRESENTAÇÃO"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Auto (Match Window)"
-msgstr "Automático (Coincidir com a janela)"
+msgid "Match Window"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7469,8 +7469,8 @@ msgstr "AUMENTAR ESCALA DE INTEIROS"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "ENabling will smooth out the image."
-msgstr "A ativação suavizará a imagem."
+msgid "Enabling will smooth out the image."
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7479,8 +7479,10 @@ msgstr "AUMENTAR ESCALA LINEAR"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Fills the screen regardless of the aspect ratio."
-msgstr "Preenche a tela independentemente da proporção de aspecto."
+msgid ""
+"Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
+"Upscaling."
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -9896,11 +9898,6 @@ msgstr "Cartuchos Interton VC 4000"
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
-msgid "Enable or disable high score saving"
-msgstr "Ativa ou desativa o salvamento de pontuação alta"
-
-#. TRANSLATION: mame/pcsx2
-msgctxt "game_options"
 msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
@@ -11586,6 +11583,22 @@ msgstr "Menu Rápido"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Avanço Rápido"
+
+#~ msgctxt "game_options"
+#~ msgid "Emable or disable high score saving"
+#~ msgstr "Ativa ou desativa a economia de pontuação alta"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto (Match Window)"
+#~ msgstr "Automático (Coincidir com a janela)"
+
+#~ msgctxt "game_options"
+#~ msgid "ENabling will smooth out the image."
+#~ msgstr "A ativação suavizará a imagem."
+
+#~ msgctxt "game_options"
+#~ msgid "Fills the screen regardless of the aspect ratio."
+#~ msgstr "Preenche a tela independentemente da proporção de aspecto."
 
 #~ msgctxt "game_options"
 #~ msgid "Double the rendering resolution."
