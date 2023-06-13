@@ -101,6 +101,8 @@ def copy_nvram_files():
 def copy_asset_files():
     sourceDir = "/usr/share/supermodel/Assets"
     targetDir = "/userdata/system/configs/supermodel/Assets"
+    if not os.path.exists(sourceDir):
+        return
     if not os.path.exists(targetDir):
         os.makedirs(targetDir)
 
