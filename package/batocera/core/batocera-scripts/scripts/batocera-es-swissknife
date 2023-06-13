@@ -122,17 +122,11 @@ case ${1,,} in
         RC_PID=$(check_emurun)
         [[ -n $RC_PID ]] && emu_kill && sleep 2
 
-        # save current resolution
-        current_resolution=$(batocera-resolution currentMode)
-        
         /etc/init.d/S31emulationstation stop
         batocera-kodilauncher &
         wait $!
         exitcode=$?
-        if [[ $exitcode -eq 0 ]]; then
-            /usr/bin/batocera-resolution setMode "$current_resolution"
-            /etc/init.d/S31emulationstation start
-        fi
+        [[ $exitcode -eq 0 ]] && /etc/init.d/S31emulationstation start
         [[ $exitcode -eq 10 ]] && shutdown -r now
         [[ $exitcode -eq 11 ]] && shutdown -h now
     ;;
