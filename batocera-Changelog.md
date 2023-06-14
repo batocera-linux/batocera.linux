@@ -102,7 +102,7 @@
 - lr-mGBA to v0.10.2
 - vice to v3.7.1
 - rpcs3 to v0.0.28
-- pcsx2 to v1.7.4439 (Qt6)
+- pcsx2 to v1.7.4439 (Qt6) (note: memory cards now saved to /userdata/saves/ps2/pcsx2)
 - Pyxel to 1.9.15
 - Citra to nightly-1903
 - xemu v0.7.90
