@@ -116,6 +116,8 @@ def copy_asset_files():
 def copy_xml():
     source_path = '/usr/share/supermodel/Games.xml'
     dest_path = '/userdata/system/configs/supermodel/Games.xml'
+    if not os.path.exists('/userdata/system/configs/supermodel'):
+        os.makedirs('/userdata/system/configs/supermodel')
     if not os.path.exists(dest_path) or os.path.getmtime(source_path) > os.path.getmtime(dest_path):
         shutil.copy2(source_path, dest_path)
 
