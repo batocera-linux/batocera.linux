@@ -36,4 +36,6 @@ IMAGES_DIR=$3
 
 # Copy generated files
 mkdir -p "${IMAGES_DIR}/batocera/uboot-anbernic-rgxx3"
-cp "${IMAGES_DIR}/uboot-anbernic-rgxx3/u-boot-rockchip.bin" "${IMAGES_DIR}/batocera/uboot-anbernic-rgxx3/u-boot-rockchip.bin"
+cp "${IMAGES_DIR}/uboot-anbernic-rgxx3/idbloader.img" "${IMAGES_DIR}/batocera/uboot-anbernic-rgxx3/idbloader.img"
+cp "${IMAGES_DIR}/uboot-anbernic-rgxx3/uboot.img" "${IMAGES_DIR}/batocera/uboot-anbernic-rgxx3/uboot.img"
+cp "${IMAGES_DIR}/uboot-anbernic-rgxx3/resource.img" "${IMAGES_DIR}/batocera/uboot-anbernic-rgxx3/resource.img"
