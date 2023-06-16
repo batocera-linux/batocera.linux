@@ -1,0 +1,4 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-control", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick", ENV{ID_INPUT_JOYSTICK}="0"
+
