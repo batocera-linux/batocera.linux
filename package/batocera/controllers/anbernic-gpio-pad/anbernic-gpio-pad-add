@@ -39,12 +39,12 @@ echo "${DEVNAME}" >> "${DEVSFILE}"
 
 NDEVS=$(cat "${DEVSFILE}" | wc -l)
 
-if test "${NDEVS}" = 2
+if test "${NDEVS}" = 3
 then
     DEV1=$(cat "${DEVSFILE}" | head -1)
-    DEV2=$(cat "${DEVSFILE}" | tail -1)
-
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
+    DEV2=$(cat "${DEVSFILE}" | head -2 | tail -1)
+    DEV3=$(cat "${DEVSFILE}" | tail -1)
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
 
     echo $! > "${PIDFILE}"
 else
