@@ -103,6 +103,7 @@ menu "Emulationstation"
 endmenu
 
 menu "Controllers"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/anbernic-gpio-pad/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/db9_gpio_rpi/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/gamecon_gpio_rpi/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/mk_arcade_joystick_rpi/Config.in"
