@@ -1,0 +1,27 @@
+diff -u -r a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+--- a/drivers/soc/sunxi/sunxi_sram.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/soc/sunxi/sunxi_sram.c	2023-06-17 01:51:12.543744641 +0200
+@@ -70,6 +70,12 @@
+ 				  SUNXI_SRAM_MAP(0x7fffffff, 1, "ve")),
+ };
+ 
++static struct sunxi_sram_desc sun50i_h616_sram_c1 = {
++	.data	= SUNXI_SRAM_DATA("C1", 0x0, 0x0, 31,
++				  SUNXI_SRAM_MAP(0x7fffffff, 0, "cpu"),
++				  SUNXI_SRAM_MAP(0, 1, "ve")),
++};
++
+ static struct sunxi_sram_desc sun4i_a10_sram_d = {
+ 	.data	= SUNXI_SRAM_DATA("D", 0x4, 0x0, 1,
+ 				  SUNXI_SRAM_MAP(0, 0, "cpu"),
+@@ -99,6 +105,10 @@
+ 		.compatible	= "allwinner,sun50i-a64-sram-c",
+ 		.data		= &sun50i_a64_sram_c.data,
+ 	},
++	{
++		.compatible	= "allwinner,sun50i-h616-sram-c1",
++		.data		= &sun50i_h616_sram_c1.data,
++	},
+ 	{}
+ };
+ 
