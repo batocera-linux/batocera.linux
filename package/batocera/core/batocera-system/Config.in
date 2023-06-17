@@ -77,7 +77,7 @@ endif
 # add platforms that support GLES3 here
 # the GLES3 backend maps to OpenGL 3.3 on desktop, OpenGL ES 3.0 on mobile and WebGL 2.0 on the web.
 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_RISCV \
-    || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 \
+    || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_H616 \
     || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3 \
     || BR2_PACKAGE_BATOCERA_TARGET_ODIN
     config BR2_PACKAGE_BATOCERA_GLES3
@@ -87,7 +87,7 @@ endif
 
 # add cortex a53 group support for use cases like dosbox-staging
 if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS \
- || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 || BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5 || BR2_PACKAGE_BATOCERA_TARGET_RK3328 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+ || BR2_PACKAGE_BATOCERA_TARGET_H616 || BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5 || BR2_PACKAGE_BATOCERA_TARGET_RK3328 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     config BR2_PACKAGE_BATOCERA_CORTEX_A53
     bool "target cortex a53 socs"
     default y
@@ -342,7 +342,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_I2C_TOOLS
     select BR2_PACKAGE_MDADM # RAID
     select BR2_PACKAGE_MC
-    select BR2_PACKAGE_OD_COMMANDER if !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+    select BR2_PACKAGE_OD_COMMANDER
     select BR2_PACKAGE_FDUPES
     select BR2_PACKAGE_PYTHON_SERIAL    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_BATOCERA_ETHTOOL
@@ -416,7 +416,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "rockchip/rk3568/rock-3a"                                                       if BR2_PACKAGE_BATOCERA_TARGET_RK3568
     default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"    if BR2_PACKAGE_BATOCERA_TARGET_RK3128
     default "allwinner/h5/tritium-h5"                                                       if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
-    default "allwinner/h616/orangepi-zero2"                                                 if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+    default "allwinner/h616/orangepi-zero2"                                                 if BR2_PACKAGE_BATOCERA_TARGET_H616
     default "allwinner/h3/orangepi-pc"														if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
     default "allwinner/h3/cha"																if BR2_PACKAGE_BATOCERA_TARGET_CHA
     default "amlogic/s812"																	if BR2_PACKAGE_BATOCERA_TARGET_S812
@@ -513,8 +513,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_CHA
 config BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
     bool "tritium_h5"
 
-config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-    bool "orangepi_zero2"
+config BR2_PACKAGE_BATOCERA_TARGET_H616
+    bool "h616"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
     bool "orangepi_3_lts"
@@ -1083,7 +1083,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905GEN3       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 
@@ -1105,7 +1105,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
 
 
@@ -1608,7 +1608,7 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
     select BR2_PACKAGE_FIRMWARE_RK3588                  if  BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     # Extra linux firmware
-    select BR2_PACKAGE_EXTRALINUXFIRMWARES              if  BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2  || \
+    select BR2_PACKAGE_EXTRALINUXFIRMWARES              if  BR2_PACKAGE_BATOCERA_TARGET_H616            || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RK3399
