@@ -1,5 +1,17 @@
 # 2023/xx/xx - batocera.linux 38 -
+### Hardware
+
+### Added
 - battery remaining time in batocera-info (f2)
+### Fixed
+
+### Changed
+
+### Updated
+
+### Dev
+- linux kernel for x86_64 to 6.3.8
+
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
