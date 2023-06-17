@@ -84,6 +84,7 @@ BR2_PACKAGE_BATOCERA_TOOLS=y
 BR2_PACKAGE_BATOCERA_ALL_SYSTEMS=y
 BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES=y
 BR2_SYSTEM_BIN_SH_DASH=y # /bin/sh implementation; set here because a `choice` cannot be `select`ed, e.g. from batocera-system/Config.in
+BR2_PACKAGE_DROPBEAR_LOCALOPTIONS_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/dropbear_localoptions.h"
 
 # images
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
