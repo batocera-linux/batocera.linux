@@ -12,13 +12,24 @@ then
     fi
 fi
 
+BATTREMAINING=
+BATTREMAINING_CURRENT=$(cat /sys/class/power_supply/{BAT,bat}*/current_now 2>/dev/null)
+BATTREMAINING_CHARGE=$(cat /sys/class/power_supply/{BAT,bat}*/charge_now 2>/dev/null)
+if test -n "${BATTREMAINING_CURRENT}" -a -n "${BATTREMAINING_CHARGE}"
+then
+    BATTREMAINING_HOURS=$(expr ${BATTREMAINING_CHARGE} / ${BATTREMAINING_CURRENT})
+    BATTREMAINING_MINS=$(expr ${BATTREMAINING_CHARGE} '*' 60 / ${BATTREMAINING_CURRENT} - 60 '*' ${BATTREMAINING_HOURS})
+    test ${BATTREMAINING_MINS} -lt 10 && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
+    BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
+fi
+
 ### short version (for osd)
 if test "$1" = "--short"
 then
     DT=$(date +%H:%M)
     if test -n "${BATT}"
     then
-        echo "Battery: ${BATT}% - ${DT}"
+        echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
     else
         echo "${DT}"
     fi
