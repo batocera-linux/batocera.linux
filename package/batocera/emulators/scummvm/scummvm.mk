@@ -10,7 +10,7 @@ SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES = sdl2 zlib libmpeg2 libogg libvorbis flac libmad libpng libtheora faad2 freetype
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-    SCUMMVM_DEPENDENCIES += libjpeg
+    SCUMMVM_DEPENDENCIES += libjpeg-bato
 else
     SCUMMVM_DEPENDENCIES += jpeg
 endif
