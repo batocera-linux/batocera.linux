@@ -68,7 +68,7 @@ endif
 if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES2 || \
     BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES2 || BR2_PACKAGE_BATOCERA_TARGET_RPI_GLES2 || \
     BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC || BR2_PACKAGE_BATOCERA_TARGET_CHA || \
-    BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS || BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+    BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS || BR2_PACKAGE_BATOCERA_TARGET_H5
     config BR2_PACKAGE_BATOCERA_GLES2
     bool "target has gles2 support"
     default y
@@ -87,7 +87,7 @@ endif
 
 # add cortex a53 group support for use cases like dosbox-staging
 if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS \
- || BR2_PACKAGE_BATOCERA_TARGET_H616 || BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5 || BR2_PACKAGE_BATOCERA_TARGET_RK3328 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+ || BR2_PACKAGE_BATOCERA_TARGET_H616 || BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_RK3328 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     config BR2_PACKAGE_BATOCERA_CORTEX_A53
     bool "target cortex a53 socs"
     default y
@@ -415,7 +415,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3288
     default "rockchip/rk3568/rock-3a"                                                       if BR2_PACKAGE_BATOCERA_TARGET_RK3568
     default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"    if BR2_PACKAGE_BATOCERA_TARGET_RK3128
-    default "allwinner/h5/tritium-h5"                                                       if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+    default "allwinner/h5/tritium-h5 allwinner/h5/orangepi-pc2"                             if BR2_PACKAGE_BATOCERA_TARGET_H5
     default "allwinner/h616/orangepi-zero2"                                                 if BR2_PACKAGE_BATOCERA_TARGET_H616
     default "allwinner/h3/orangepi-pc"														if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
     default "allwinner/h3/cha"																if BR2_PACKAGE_BATOCERA_TARGET_CHA
@@ -510,8 +510,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 config BR2_PACKAGE_BATOCERA_TARGET_CHA
     bool "cha"
 
-config BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
-    bool "tritium_h5"
+config BR2_PACKAGE_BATOCERA_TARGET_H5
+    bool "h5"
 
 config BR2_PACKAGE_BATOCERA_TARGET_H616
     bool "h616"
@@ -682,7 +682,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5 && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_H5 && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
 
     select BR2_PACKAGE_LIBRETRO_FLYCASTVL   if  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
@@ -738,7 +738,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2836     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2837     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_BCM2711     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_H5  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RISCV       || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S812
     select BR2_PACKAGE_LIBRETRO_SAME_CDI        if	BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -992,7 +992,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     # Nintendo 64
     select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # mupen64 (n64) runs too slow on these platforms
 
-    select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+    select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_H5
 
     select BR2_PACKAGE_LIBRETRO_PARALLEL_N64        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
@@ -1103,7 +1103,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3588         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
@@ -1361,7 +1361,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
     select BR2_PACKAGE_KODI_GBM     if  BR2_PACKAGE_BATOCERA_TARGET_XU4             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S922X           || \
                                         BR2_PACKAGE_BATOCERA_TARGET_A3GEN2          || \
-                                        BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5      || \
+                                        BR2_PACKAGE_BATOCERA_TARGET_H5      || \
                                         BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC     || \
                                         BR2_PACKAGE_BATOCERA_TARGET_CHA             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S812            || \
@@ -1499,7 +1499,7 @@ config BR2_PACKAGE_BATOCERA_KODI20
     select BR2_PACKAGE_KODI20_GBM     if  BR2_PACKAGE_BATOCERA_TARGET_XU4             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S922X           || \
                                         BR2_PACKAGE_BATOCERA_TARGET_A3GEN2           || \
-                                        BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5      || \
+                                        BR2_PACKAGE_BATOCERA_TARGET_H5      || \
                                         BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC     || \
                                         BR2_PACKAGE_BATOCERA_TARGET_CHA             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S812            || \
