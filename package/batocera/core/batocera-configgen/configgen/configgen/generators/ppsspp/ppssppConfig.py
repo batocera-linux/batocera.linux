@@ -8,9 +8,9 @@ import settings
 from Emulator import Emulator
 import configparser
 
-ppssppConf   = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
-ppssppConfig = ppssppConf + '/ppsspp.ini'
-
+ppssppConf     = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
+ppssppConfig   = ppssppConf + '/ppsspp.ini'
+ppssppControls = ppssppConf + '/controls.ini'
 
 def writePPSSPPConfig(system):
     iniConfig = configparser.ConfigParser(interpolation=None)

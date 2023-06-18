@@ -74,7 +74,7 @@ case "${ACTION}" in
             # let the old format widthxheight and the new one widthxheight.hz
             if echo "${MODE}" | grep "\."; then
                 PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
-                PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
+                PARTHZ=$(echo "${MODE}" | cut -d'.' -f2- | awk '{ printf "%.3f", $0 / 1000 }')
                 swaymsg output "${OUTPUT}" mode "${PARTRES}"@"${PARTHZ}"Hz
             else
                 swaymsg output "${OUTPUT}" mode "${MODE}"

@@ -31,6 +31,8 @@
 - Othello Multivision (libretro-gearsystem)
 - Retroachievements for PS2 (pcsx2)
 - Batocera will now detect older Radeon cards that are compatible with the amdgpu driver & use it
+- additional libretro vitaquake2 cores (rouge, xatrix & zaero)
+- added vitaquake2 to RPi4
 ### Fixed
 - System reverting to 40% volume with Nvidia cards
 - Remove bezel option for BigPemu
@@ -99,21 +101,22 @@
 - moonlight options
 - lr-mGBA to v0.10.2
 - vice to v3.7.1
-- rpcs3 to v0.0.27
-- pcsx2 to v1.7.4439 (Qt6)
+- rpcs3 to v0.0.28
+- pcsx2 to v1.7.4439 (Qt6) (note: memory cards now saved to /userdata/saves/ps2/pcsx2)
 - Pyxel to 1.9.15
 - Citra to nightly-1903
-- xemu v0.7.88
+- xemu v0.7.90
 - melonDS to May 11, 2023 (Qt6)
 - duckstation to May 07, 2023 build (Qt6)
 - hypseus-singe to v2.10.4
 - easyrpg to 0.8
+- MAME to 0.253
 ### Dev
 - buildroot upgrade to 2023.02.01
 - mesa3d update to 23.1.0
 - dxvk to 2.1
 - linux firmware to 20230404
-- linux kernel for x86_64 to 6.3.3
+- linux kernel for x86_64 to 6.3.6
 - linux kernel for RPI to 6.1.25
 - nvidia production driver to 530.41.03
 - llvm to 16.0.3

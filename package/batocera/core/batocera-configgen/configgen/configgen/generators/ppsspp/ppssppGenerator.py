@@ -8,6 +8,7 @@ import os
 import configparser
 import controllersConfig
 from . import ppssppConfig
+from . import ppssppControllers
 
 class PPSSPPGenerator(Generator):
 
@@ -20,6 +21,15 @@ class PPSSPPGenerator(Generator):
         dbpath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt"
         if os.path.exists(dbpath):
             os.remove(dbpath)
+        
+        # Generate the controls.ini
+        for index in playersControllers :
+            controller = playersControllers[index]
+            # We only care about player 1
+            if controller.player != "1":
+                continue
+            ppssppControllers.generateControllerConfig(controller)
+            break
 
         # The command to run
         commandArray = ['/usr/bin/PPSSPP']
@@ -37,6 +47,14 @@ class PPSSPPGenerator(Generator):
 
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]
+
+        # select the correct pad
+        nplayer = 1
+        for playercontroller, pad in sorted(playersControllers.items()):
+            if nplayer == 1:
+                commandArray.extend(["--njoy", str(pad.index)])
+            nplayer = nplayer +1
+
         return Command.Command(
             array=commandArray, 
             env={"XDG_CONFIG_HOME":batoceraFiles.CONF, 

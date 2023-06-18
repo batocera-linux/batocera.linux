@@ -195,7 +195,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
-            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['keyboard_pass_through'] + '"')
+            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['vice_keyboard_pass_through'] + '"')
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
@@ -2303,17 +2303,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('pcsx_rearmed_frameskip', '"0"')
         # Enhanced resolution at the cost of lower performance
-        # Speed hack causes game glitches.
-        if system.isOptSet('neon_enhancement') and system.config['neon_enhancement'] != 'disabled':
-            if system.config['neon_enhancement'] == 'enabled':
-                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
-                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
-            elif system.config['neon_enhancement'] == 'enabled_with_speedhack':
-                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
-                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"enabled"')
-        else:
-            coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
-            coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+        # Speed hack causes game glitches - turn it off.
+        coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
+        coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
         # Multitap
         if system.isOptSet('pcsx_rearmed_multitap'):
             coreSettings.save('pcsx_rearmed_multitap', '"' + system.config['pcsx_rearmed_multitap'] + '"')

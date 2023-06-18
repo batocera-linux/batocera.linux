@@ -1,0 +1,1206 @@
+--- /dev/null	2023-06-17 10:46:38.659770405 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-cpu-opp.dtsi	2023-06-17 01:51:08.803745841 +0200
+@@ -0,0 +1,117 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++// Copyright (C) 2021 Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
++/*
++  Opi Zero2:bin0  bin1
++ 480000000  820mV  880mV
++ 600000000  820mV  880mV
++ 792000000  860mV  940mV
++ 1008000000 900mV  1020mV
++ 1200000000 960mV  1100mV
++ 1296000000 1100mV 1100mV
++ 1344000000 1120mV 1120mV
++ 1512000000 1120mV 1120mV
++*/
++
++/ {
++	cpu_opp_table: opp-table-cpu {
++		compatible = "allwinner,sun50i-h616-operating-points";
++		nvmem-cells = <&cpu_speed_grade>;
++		opp-shared;
++
++		opp-480000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <480000000>;
++
++			opp-microvolt-speed0 = <900000 900000 1100000>;
++			opp-microvolt-speed1 = <900000 900000 1100000>;
++			opp-microvolt-speed2 = <900000 900000 1100000>;
++		};
++
++		opp-600000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <600000000>;
++
++			opp-microvolt-speed0 = <900000 900000 1100000>;
++			opp-microvolt-speed1 = <920000 920000 1100000>;
++			opp-microvolt-speed2 = <920000 920000 1100000>;
++		};
++
++		opp-792000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <792000000>;
++		        opp-microvolt-speed0 = <900000 900000 1100000>;
++			opp-microvolt-speed1 = <940000 940000 1100000>;
++			opp-microvolt-speed2 = <940000 940000 1100000>;
++		};
++
++		opp-1008000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <1008000000>;
++
++			opp-microvolt-speed0 = <900000 900000 1100000>;
++			opp-microvolt-speed1 = <1020000 1020000 1100000>;
++			opp-microvolt-speed2 = <1020000 1020000 1100000>;
++		};
++
++		opp-1200000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <1200000000>;
++
++			opp-microvolt-speed0 = <960000 960000 1100000>;
++			opp-microvolt-speed1 = <1100000 1100000 1100000>;
++			opp-microvolt-speed2 = <1100000 1100000 1100000>;
++		};
++
++		opp-1344000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <1344000000>;
++
++			opp-microvolt-speed0 = <1050000 1050000 1100000>;
++			opp-microvolt-speed1 = <1100000 1100000 1100000>;
++			opp-microvolt-speed2 = <1100000 1100000 1100000>;
++		};
++
++		opp-1416000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <1416000000>;
++
++			opp-microvolt-speed0 = <1100000 1100000 1100000>;
++			opp-microvolt-speed1 = <1100000 1100000 1100000>;
++			opp-microvolt-speed2 = <1100000 1100000 1100000>;
++		};
++
++		opp-1512000000 {
++			clock-latency-ns = <244144>; /* 8 32k periods */
++			opp-hz = /bits/ 64 <1512000000>;
++
++			opp-microvolt-speed0 = <1100000 1100000 1100000>;
++			opp-microvolt-speed1 = <1100000 1100000 1100000>;
++			opp-microvolt-speed2 = <1100000 1100000 1100000>;
++		};
++
++		//opp-1608000000 {
++		//	clock-latency-ns = <244144>; /* 8 32k periods */
++		//	opp-hz = /bits/ 64 <1608000000>;
++
++		//	opp-microvolt-speed0 = <1120000 1120000 1120000>;
++		//	opp-microvolt-speed1 = <1120000 1120000 1120000>;
++		//	opp-microvolt-speed2 = <1120000 1120000 1120000>;
++		//};
++	};
++};
++
++&cpu0 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu1 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu2 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
++
++&cpu3 {
++	operating-points-v2 = <&cpu_opp_table>;
++};
+diff -u -r a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-17 11:02:04.319530602 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-17 01:51:08.803745841 +0200
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+
+ #include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -36,20 +37,19 @@
+ 		};
+ 	};
+ 
+-	leds {
++	leds: leds {
+ 		compatible = "gpio-leds";
+ 
+-		led-0 {
+-			function = LED_FUNCTION_POWER;
+-			color = <LED_COLOR_ID_RED>;
++		led-reg {
++			label = "red_led";
+ 			gpios = <&pio 2 12 GPIO_ACTIVE_HIGH>; /* PC12 */
++			linux,default-trigger = "none";
+ 		};
+ 
+-		led-1 {
+-			function = LED_FUNCTION_STATUS;
+-			color = <LED_COLOR_ID_GREEN>;
++		led-green {
++			label = "green_led";
+ 			gpios = <&pio 2 13 GPIO_ACTIVE_HIGH>; /* PC13 */
+-			default-state = "on";
++			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
+@@ -62,7 +62,7 @@
+ 		regulator-always-on;
+ 	};
+ 
+-	reg_usb1_vbus: regulator-usb1-vbus {
++	reg_usb1_vbus: usb1-vbus {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "usb1-vbus";
+ 		regulator-min-microvolt = <5000000>;
+@@ -70,7 +70,9 @@
+ 		vin-supply = <&reg_vcc5v>;
+ 		enable-active-high;
+ 		gpio = <&pio 2 16 GPIO_ACTIVE_HIGH>; /* PC16 */
++		status = "okay";
+ 	};
++
+ 	reg_vcc33_wifi: vcc33-wifi {
+ 		/* Always on 3.3V regulator for WiFi and BT */
+ 		compatible = "regulator-fixed";
+@@ -147,6 +144,7 @@
+ 	vmmc-supply = <&reg_dcdce>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
+ 	bus-width = <4>;
++	max-frequency = <50000000>;
+ 	status = "okay";
+ };
+ 
+@@ -160,10 +158,6 @@
+ 	status = "okay";
+ };
+ 
+-&ohci1 {
+-	status = "okay";
+-};
+-
+ &r_rsb {
+ 	status = "okay";
+ 
+@@ -213,11 +207,12 @@
+ 				regulator-name = "vcc1v8";
+ 			};
+ 
+-			reg_bldo2: bldo2 {
+-				regulator-always-on;
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <1800000>;
+-				regulator-name = "vcc1v8";
++			bldo2 {
++				/* unused */
++			};
++
++			bldo3 {
++				/* unused */
+ 			};
+ 
+ 			bldo4 {
+@@ -246,14 +241,14 @@
+ 			reg_dcdcc: dcdcc {
+ 				regulator-always-on;
+ 				regulator-min-microvolt = <810000>;
+-				regulator-max-microvolt = <990000>;
++				regulator-max-microvolt = <1100000>;
+ 				regulator-name = "vdd-gpu-sys";
+ 			};
+ 
+ 			reg_dcdcd: dcdcd {
+ 				regulator-always-on;
+-				regulator-min-microvolt = <1500000>;
+-				regulator-max-microvolt = <1500000>;
++				regulator-min-microvolt = <1400000>;
++				regulator-max-microvolt = <1400000>;
+ 				regulator-name = "vdd-dram";
+ 			};
+ 
+@@ -279,55 +274,12 @@
+ 	vcc-pi-supply = <&reg_aldo1>;
+ };
+ 
+-&spi0  {
+-	status = "okay";
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&spi0_pins>, <&spi0_cs0_pin>;
+-
+-	spidev@0 {
+-		status = "disabled";
+-		compatible = "rohm,dh2228fv";
+-		reg = <0>;
+-		spi-max-frequency = <1000000>;
+-	};
+-
+-	flash@0 {
+-		status = "okay";
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		compatible = "jedec,spi-nor";
+-		reg = <0>;
+-		spi-max-frequency = <40000000>;
+-	};
+-};
+-
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_ph_pins>;
+ 	status = "okay";
+ };
+ 
+-&spi1 {
+- 	status = "okay";
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&spi1_pins>, <&spi1_cs1_pin>;
+-
+-	spidev@1 {
+-		compatible = "rohm,dh2228fv";
+-		status = "okay";
+-		reg = <1>;
+-		spi-max-frequency = <1000000>;
+-	};
+-};
+-
+-&codec {
+-	allwinner,audio-routing =
+-			"Line Out", "LINEOUT";
+-	status = "okay";
+-};
+-
+ &usbotg {
+ 	/*
+ 	 * PHY0 pins are connected to a USB-C socket, but a role switch
+@@ -396,7 +348,7 @@
+ };
+ 
+ &i2c3 {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &i2c4 {
+@@ -412,5 +364,69 @@
+ &uart5 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart5_ph_pins>;
++	status = "disabled";
++};
++
++&spi0  {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi0_pins>, <&spi0_cs0_pin>;
++
++	spidev@0 {
++		status = "disabled";
++		compatible = "rohm,dh2228fv";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++	};
++
++	flash@0 {
++		status = "okay";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <40000000>;
++	};
++};
++
++&spi1 {
++	status = "disabled";
++	#address-cells = <1>;
++	#size-cells = <0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi1_pins>, <&spi1_cs1_pin>;
++
++	spidev@1 {
++		compatible = "rohm,dh2228fv";
++		status = "disabled";
++		reg = <1>;
++		spi-max-frequency = <1000000>;
++	};
++};
++
++&codec {
++	allwinner,audio-routing =
++	        "Line Out", "LINEOUT";
++	status = "okay";
++};
++
++&ahub_dam_plat {
++	status = "okay";
++};
++
++&ahub_dam_mach {
++	status = "okay";
++};
++
++&ahub1_plat {
++	status = "okay";
++};
++
++&ahub1_mach {
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
+ 	status = "okay";
+ };
+diff -u -r a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi	2023-06-17 11:02:04.319530602 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi	2023-06-17 01:51:08.803745841 +0200
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ // Copyright (C) 2020 Arm Ltd.
+ // based on the H6 dtsi, which is:
+ //   Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
+@@ -31,6 +31,7 @@
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 			#cooling-cells = <2>;
++			operating-points-v2 = <&cpu_opp_table>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -41,6 +42,7 @@
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 			#cooling-cells = <2>;
++			operating-points-v2 = <&cpu_opp_table>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -51,6 +53,7 @@
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 			#cooling-cells = <2>;
++			operating-points-v2 = <&cpu_opp_table>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -61,6 +64,7 @@
+ 			clocks = <&ccu CLK_CPUX>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 			#cooling-cells = <2>;
++			operating-points-v2 = <&cpu_opp_table>;
+ 		};
+ 	};
+ 
+@@ -277,6 +282,53 @@
+ 			status = "okay";
+ 		};
+ 
++		pwm: pwm@300a000 {
++			compatible = "allwinner,sun50i-h616-pwm";
++			reg = <0x0300a000 0x400>;
++			clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
++			clock-names = "mod", "bus";
++			resets = <&ccu RST_BUS_PWM>;
++			pwm-number = <6>;
++			pwm-base = <0x0>;
++			sunxi-pwms = <&pwm0>, <&pwm1>, <&pwm2>, <&pwm3>, <&pwm4>, <&pwm5>;
++			#pwm-cells = <3>;
++			status = "okay";
++		};
++
++		pwm0: pwm0@0300a000 {
++			compatible = "allwinner,sunxi-pwm0";
++		};
++
++		pwm1: pwm1@0300a000 {
++			compatible = "allwinner,sunxi-pwm1";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm1_pin>;
++		};
++
++		pwm2: pwm2@0300a000 {
++			compatible = "allwinner,sunxi-pwm2";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm2_pin>;
++		};
++
++		pwm3: pwm3@0300a000 {
++			compatible = "allwinner,sunxi-pwm3";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm3_pin>;
++		};
++
++		pwm4: pwm4@0300a000 {
++			compatible = "allwinner,sunxi-pwm4";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm4_pin>;
++		};
++
++		pwm5: pwm5@0300a000 {
++			compatible = "allwinner,sunxi-pwm5";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm5_pin>;
++		};
++
+ 		pio: pinctrl@300b000 {
+ 			compatible = "allwinner,sun50i-h616-pinctrl";
+ 			reg = <0x0300b000 0x400>;
+@@ -339,6 +391,31 @@
+ 				function = "ir_rx";
+ 			};
+ 
++			pwm1_pin: pwm1-pin {
++				pins = "PH3";
++				function = "pwm1";
++			};
++
++			pwm2_pin: pwm2-pin {
++				pins = "PH2";
++				function = "pwm2";
++			};
++
++			pwm3_pin: pwm3-pin {
++				pins = "PH0";
++				function = "pwm3";
++			};
++
++			pwm4_pin: pwm4-pin {
++				pins = "PH1";
++				function = "pwm4";
++			};
++
++			pwm5_pin: pwm5-pin {
++				pins = "PA12";
++				function = "pwm5";
++			};
++
+ 			mmc0_pins: mmc0-pins {
+ 				pins = "PF0", "PF1", "PF2", "PF3",
+ 				       "PF4", "PF5";
+@@ -553,13 +630,13 @@
+ 			                  "clk_pll_audio_4x",
+ 			                  "clk_audio_hub",
+ 			                  "clk_bus_audio_hub";
+-			status		= "okay";
++			status		= "disabled";
+ 		};
+ 
+ 		ahub_dam_mach:ahub_dam_mach {
+ 			compatible = "allwinner,sunxi-snd-mach";
+ 			soundcard-mach,name = "ahubdam";
+-			status		= "okay";
++			status		= "disabled";
+ 			soundcard-mach,cpu {
+ 				sound-dai = <&ahub_dam_plat>;
+ 			};
+@@ -581,12 +658,7 @@
+ 			tdm_num		= <1>;
+ 			tx_pin		= <0>;
+ 			rx_pin		= <0>;
+-			//dai_type	= "hdmi";
+-			/* pinctrl_used; */
+-			/* pinctrl-names= "default","sleep"; */
+-			/* pinctrl-0	= <&ahub_daudio1_pins_a>; */
+-			/* pinctrl-1	= <&ahub_daudio1_pins_b>; */
+-			status		= "okay";
++			status		= "disabled";
+ 		};
+ 
+ 		ahub1_mach:ahub1_mach {
+@@ -600,11 +672,11 @@
+ 			/* soundcard-mach,bitclock-inversion; */
+ 			soundcard-mach,slot-num		= <2>;
+ 			soundcard-mach,slot-width	= <32>;
+-			status		= "okay";
++			status		= "disabled";
+ 			ahub1_cpu: soundcard-mach,cpu {
+ 				sound-dai = <&ahub1_plat>;
+-				soundcard-mach,pll-fs	= <4>;	/* pll freq = 24.576M or 22.5792M * pll-fs */
+-				soundcard-mach,mclk-fs	= <0>;	/* mclk freq = pcm rate * mclk-fs */
++				soundcard-mach,pll-fs	= <4>;
++				soundcard-mach,mclk-fs	= <0>;
+ 			};
+ 
+ 			ahub1_codec: soundcard-mach,codec {
+@@ -881,9 +953,11 @@
+ 			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI0>,
+ 				 <&ccu CLK_BUS_EHCI0>,
+-				 <&ccu CLK_USB_OHCI0>;
++				 <&ccu CLK_USB_OHCI0>,
++				 <&ccu CLK_USB_PHY2>;
+ 			resets = <&ccu RST_BUS_OHCI0>,
+-				 <&ccu RST_BUS_EHCI0>;
++				 <&ccu RST_BUS_EHCI0>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 0>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+@@ -895,8 +969,10 @@
+ 			reg = <0x05101400 0x100>;
+ 			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI0>,
+-				 <&ccu CLK_USB_OHCI0>;
+-			resets = <&ccu RST_BUS_OHCI0>;
++				 <&ccu CLK_USB_OHCI0>,
++				 <&ccu CLK_USB_PHY2>;
++			resets = <&ccu RST_BUS_OHCI0>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 0>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+@@ -909,9 +985,11 @@
+ 			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI1>,
+ 				 <&ccu CLK_BUS_EHCI1>,
+-				 <&ccu CLK_USB_OHCI1>;
++				 <&ccu CLK_USB_OHCI1>,
++				 <&ccu CLK_USB_PHY2>;
+ 			resets = <&ccu RST_BUS_OHCI1>,
+-				 <&ccu RST_BUS_EHCI1>;
++				 <&ccu RST_BUS_EHCI1>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 1>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+@@ -923,8 +1001,10 @@
+ 			reg = <0x05200400 0x100>;
+ 			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI1>,
+-				 <&ccu CLK_USB_OHCI1>;
+-			resets = <&ccu RST_BUS_OHCI1>;
++				 <&ccu CLK_USB_OHCI1>,
++				 <&ccu CLK_USB_PHY2>;
++			resets = <&ccu RST_BUS_OHCI1>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 1>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+@@ -965,9 +1045,11 @@
+ 			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI3>,
+ 				 <&ccu CLK_BUS_EHCI3>,
+-				 <&ccu CLK_USB_OHCI3>;
++				 <&ccu CLK_USB_OHCI3>,
++				 <&ccu CLK_USB_PHY2>;
+ 			resets = <&ccu RST_BUS_OHCI3>,
+-				 <&ccu RST_BUS_EHCI3>;
++				 <&ccu RST_BUS_EHCI3>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 3>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+@@ -979,8 +1061,10 @@
+ 			reg = <0x05311400 0x100>;
+ 			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&ccu CLK_BUS_OHCI3>,
+-				 <&ccu CLK_USB_OHCI3>;
+-			resets = <&ccu RST_BUS_OHCI3>;
++				 <&ccu CLK_USB_OHCI3>,
++				 <&ccu CLK_USB_PHY2>;
++			resets = <&ccu RST_BUS_OHCI3>,
++				 <&ccu RST_USB_PHY2>;
+ 			phys = <&usbphy 3>;
+ 			phy-names = "usb";
+ 			status = "disabled";
+diff -u -r a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
+--- a/drivers/cpufreq/cpufreq-dt-platdev.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/cpufreq/cpufreq-dt-platdev.c	2023-06-17 01:51:09.533745603 +0200
+@@ -102,6 +102,7 @@
+  */
+ static const struct of_device_id blocklist[] __initconst = {
+ 	{ .compatible = "allwinner,sun50i-h6", },
++	{ .compatible = "allwinner,sun50i-h616", },
+ 
+ 	{ .compatible = "arm,vexpress", },
+ 
+diff -u -r a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+--- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c	2023-06-17 01:51:09.533745603 +0200
+@@ -19,25 +19,62 @@
+ 
+ #define MAX_NAME_LEN	7
+ 
+-#define NVMEM_MASK	0x7
+-#define NVMEM_SHIFT	5
++#define SUN50I_H616_NVMEM_MASK 0x22
++#define SUN50I_H616_NVMEM_SHIFT 5
++#define SUN50I_H6_NVMEM_MASK 0x7
++#define SUN50I_H6_NVMEM_SHIFT 5
++
++struct sunxi_cpufreq_soc_data {
++	u32 (*efuse_xlate) (void *efuse);
++};
+ 
+ static struct platform_device *cpufreq_dt_pdev, *sun50i_cpufreq_pdev;
+ 
++static u32 sun50i_h616_efuse_xlate(void *efuse)
++{
++	u32 efuse_value = (*(u32 *)efuse >> SUN50I_H616_NVMEM_SHIFT) &
++			  SUN50I_H616_NVMEM_MASK;
++
++	/* Tested as h616 soc. Expected efuse values are 1 -3,
++	   slowest to fastest */
++	if (efuse_value >=1 && efuse_value <= 3)
++		return efuse_value - 1;
++	else
++		return 0;
++};
++
++static u32 sun50i_h6_efuse_xlate(void *efuse)
++{
++	u32 efuse_value = (*(u32 *)efuse >> SUN50I_H6_NVMEM_SHIFT) &
++			  SUN50I_H6_NVMEM_MASK;
++
++	/*
++	 * We treat unexpected efuse values as if the SoC was from
++	 * the slowest bin. Expected efuse values are 1 -3, slowest
++	 * to fastest.
++	*/
++	if (efuse_value >= 1 && efuse_value <= 3)
++		return efuse_value - 1;
++	else
++		return 0;
++};
++
++
+ /**
+  * sun50i_cpufreq_get_efuse() - Determine speed grade from efuse value
++ * @soc_data: pointer to sunxi_cpufreq_soc_data context
+  * @versions: Set to the value parsed from efuse
+  *
+  * Returns 0 if success.
+  */
+-static int sun50i_cpufreq_get_efuse(u32 *versions)
++static int sun50i_cpufreq_get_efuse(const struct sunxi_cpufreq_soc_data *soc_data,
++				    u32 *versions)
+ {
+ 	struct nvmem_cell *speedbin_nvmem;
+ 	struct device_node *np;
+ 	struct device *cpu_dev;
+-	u32 *speedbin, efuse_value;
++	u32 *speedbin;
+ 	size_t len;
+-	int ret;
+ 
+ 	cpu_dev = get_cpu_device(0);
+ 	if (!cpu_dev)
+@@ -47,9 +84,9 @@
+ 	if (!np)
+ 		return -ENOENT;
+ 
+-	ret = of_device_is_compatible(np,
+-				      "allwinner,sun50i-h6-operating-points");
+-	if (!ret) {
++	if      (of_device_is_compatible(np, "allwinner,sun50i-h6-operating-points")) {}
++	else if (of_device_is_compatible(np, "allwinner,sun50i-h616-operating-points")) {}
++	else {
+ 		of_node_put(np);
+ 		return -ENOENT;
+ 	}
+@@ -65,17 +102,7 @@
+ 	if (IS_ERR(speedbin))
+ 		return PTR_ERR(speedbin);
+ 
+-	efuse_value = (*speedbin >> NVMEM_SHIFT) & NVMEM_MASK;
+-
+-	/*
+-	 * We treat unexpected efuse values as if the SoC was from
+-	 * the slowest bin. Expected efuse values are 1-3, slowest
+-	 * to fastest.
+-	 */
+-	if (efuse_value >= 1 && efuse_value <= 3)
+-		*versions = efuse_value - 1;
+-	else
+-		*versions = 0;
++	*versions = soc_data->efuse_xlate(speedbin);
+ 
+ 	kfree(speedbin);
+ 	return 0;
+@@ -83,23 +110,31 @@
+ 
+ static int sun50i_cpufreq_nvmem_probe(struct platform_device *pdev)
+ {
+-	int *opp_tokens;
++	const struct of_device_id *match;
++	struct opp_table **opp_tables;
+ 	char name[MAX_NAME_LEN];
+ 	unsigned int cpu;
+ 	u32 speed = 0;
+ 	int ret;
+ 
+-	opp_tokens = kcalloc(num_possible_cpus(), sizeof(*opp_tokens),
++	match = dev_get_platdata(&pdev->dev);
++	if (!match) {
++		return -EINVAL;
++	}
++
++	opp_tables = kcalloc(num_possible_cpus(), sizeof(*opp_tables),
+ 			     GFP_KERNEL);
+-	if (!opp_tokens)
++	if (!opp_tables)
+ 		return -ENOMEM;
+ 
+-	ret = sun50i_cpufreq_get_efuse(&speed);
++	ret = sun50i_cpufreq_get_efuse(match->data, &speed);
+ 	if (ret) {
+-		kfree(opp_tokens);
++		kfree(opp_tables);
+ 		return ret;
+ 	}
+ 
++	printk("sun50i-cpufreq-nvmem: will use speed%d CPU OPPs\n", speed);
++
+ 	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
+ 
+ 	for_each_possible_cpu(cpu) {
+@@ -110,9 +145,9 @@
+ 			goto free_opp;
+ 		}
+ 
+-		opp_tokens[cpu] = dev_pm_opp_set_prop_name(cpu_dev, name);
+-		if (opp_tokens[cpu] < 0) {
+-			ret = opp_tokens[cpu];
++		opp_tables[cpu] = dev_pm_opp_set_prop_name(cpu_dev, name);
++		if (opp_tables[cpu] < 0) {
++			ret = opp_tables[cpu];
+ 			pr_err("Failed to set prop name\n");
+ 			goto free_opp;
+ 		}
+@@ -121,7 +156,7 @@
+ 	cpufreq_dt_pdev = platform_device_register_simple("cpufreq-dt", -1,
+ 							  NULL, 0);
+ 	if (!IS_ERR(cpufreq_dt_pdev)) {
+-		platform_set_drvdata(pdev, opp_tokens);
++		platform_set_drvdata(pdev, opp_tables);
+ 		return 0;
+ 	}
+ 
+@@ -130,23 +165,23 @@
+ 
+ free_opp:
+ 	for_each_possible_cpu(cpu)
+-		dev_pm_opp_put_prop_name(opp_tokens[cpu]);
+-	kfree(opp_tokens);
++		dev_pm_opp_put_prop_name(opp_tables[cpu]);
++	kfree(opp_tables);
+ 
+ 	return ret;
+ }
+ 
+ static int sun50i_cpufreq_nvmem_remove(struct platform_device *pdev)
+ {
+-	int *opp_tokens = platform_get_drvdata(pdev);
++	int *opp_tables = platform_get_drvdata(pdev);
+ 	unsigned int cpu;
+ 
+ 	platform_device_unregister(cpufreq_dt_pdev);
+ 
+ 	for_each_possible_cpu(cpu)
+-		dev_pm_opp_put_prop_name(opp_tokens[cpu]);
++		dev_pm_opp_put_prop_name(opp_tables[cpu]);
+ 
+-	kfree(opp_tokens);
++	kfree(opp_tables);
+ 
+ 	return 0;
+ }
+@@ -159,8 +194,17 @@
+ 	},
+ };
+ 
++static const struct sunxi_cpufreq_soc_data sun50i_h616_data = {
++    .efuse_xlate = sun50i_h616_efuse_xlate,
++};
++
++static const struct sunxi_cpufreq_soc_data sun50i_h6_data = {
++    .efuse_xlate = sun50i_h6_efuse_xlate,
++};
++
+ static const struct of_device_id sun50i_cpufreq_match_list[] = {
+-	{ .compatible = "allwinner,sun50i-h6" },
++	{ .compatible = "allwinner,sun50i-h6", .data = &sun50i_h6_data },
++	{ .compatible = "allwinner,sun50i-h616", .data = &sun50i_h616_data },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, sun50i_cpufreq_match_list);
+@@ -195,9 +239,8 @@
+ 	if (unlikely(ret < 0))
+ 		return ret;
+ 
+-	sun50i_cpufreq_pdev =
+-		platform_device_register_simple("sun50i-cpufreq-nvmem",
+-						-1, NULL, 0);
++	sun50i_cpufreq_pdev = platform_device_register_data(NULL,
++			      "sun50i-cpufreq-nvmem", -1, match, sizeof(*match));
+ 	ret = PTR_ERR_OR_ZERO(sun50i_cpufreq_pdev);
+ 	if (ret == 0)
+ 		return 0;
+diff -u -r a/drivers/dma/sun6i-dma.c b/drivers/dma/sun6i-dma.c
+--- a/drivers/dma/sun6i-dma.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/dma/sun6i-dma.c	2023-06-17 01:51:09.593745583 +0200
+@@ -1243,6 +1243,28 @@
+ };
+ 
+ /*
++ * The H616 binding uses the number of dma channels from the
++ * device tree node.
++ */
++static struct sun6i_dma_config sun50i_h616_dma_cfg = {
++        .clock_autogate_enable = sun6i_enable_clock_autogate_h3,
++        .set_burst_length = sun6i_set_burst_length_h3,
++        .set_drq          = sun6i_set_drq_h6,
++        .set_mode         = sun6i_set_mode_h6,
++        .src_burst_lengths = BIT(1) | BIT(4) | BIT(8) | BIT(16),
++        .dst_burst_lengths = BIT(1) | BIT(4) | BIT(8) | BIT(16),
++        .src_addr_widths   = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) |
++                             BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) |
++                             BIT(DMA_SLAVE_BUSWIDTH_4_BYTES) |
++                             BIT(DMA_SLAVE_BUSWIDTH_8_BYTES),
++        .dst_addr_widths   = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) |
++                             BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) |
++                             BIT(DMA_SLAVE_BUSWIDTH_4_BYTES) |
++                             BIT(DMA_SLAVE_BUSWIDTH_8_BYTES),
++        .has_mbus_clk = true,
++};
++
++/*
+  * The V3s have only 8 physical channels, a maximum DRQ port id of 23,
+  * and a total of 24 usable source and destination endpoints.
+  */
+@@ -1275,6 +1297,7 @@
+ 	{ .compatible = "allwinner,sun50i-a64-dma", .data = &sun50i_a64_dma_cfg },
+ 	{ .compatible = "allwinner,sun50i-a100-dma", .data = &sun50i_a100_dma_cfg },
+ 	{ .compatible = "allwinner,sun50i-h6-dma", .data = &sun50i_h6_dma_cfg },
++	{ .compatible = "allwinner,sun50i-h616-dma", .data = &sun50i_h616_dma_cfg },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, sun6i_dma_match);
+diff -u -r a/drivers/nvmem/sunxi_sid.c b/drivers/nvmem/sunxi_sid.c
+--- a/drivers/nvmem/sunxi_sid.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/nvmem/sunxi_sid.c	2023-06-17 01:51:12.213744745 +0200
+@@ -37,6 +37,25 @@
+ 	u32			value_offset;
+ };
+ 
++static unsigned int sunxi_soc_chipid[4];
++static unsigned int sunxi_serial[4];
++
++int sunxi_get_soc_chipid(unsigned char *chipid)
++{
++	memcpy(chipid, sunxi_soc_chipid, 16);
++
++	return 0;
++}
++EXPORT_SYMBOL(sunxi_get_soc_chipid);
++
++int sunxi_get_serial(unsigned       char *serial)
++{
++	memcpy(serial, sunxi_serial, 16);
++
++	return 0;
++}
++EXPORT_SYMBOL(sunxi_get_serial);
++
+ static int sunxi_sid_read(void *context, unsigned int offset,
+ 			  void *val, size_t bytes)
+ {
+@@ -180,6 +199,15 @@
+ 
+ 	platform_set_drvdata(pdev, nvmem);
+ 
++	nvmem_cfg->reg_read(sid, 0, &sunxi_soc_chipid[0], sizeof(int));
++	nvmem_cfg->reg_read(sid, 4, &sunxi_soc_chipid[1], sizeof(int));
++	nvmem_cfg->reg_read(sid, 8, &sunxi_soc_chipid[2], sizeof(int));
++	nvmem_cfg->reg_read(sid, 12, &sunxi_soc_chipid[3], sizeof(int));
++
++	sunxi_serial[0] = sunxi_soc_chipid[3];
++	sunxi_serial[1] = sunxi_soc_chipid[2];
++	sunxi_serial[2] = (sunxi_soc_chipid[1] >> 16) & 0x0ffff;
++
+ 	return 0;
+ }
+ 
+@@ -213,6 +241,12 @@
+ 	.size = 0x200,
+ };
+ 
++static const struct sunxi_sid_cfg sun50i_h616_cfg = {
++	.value_offset = 0x200,
++	.size = 0x100,
++	.need_register_readout = true,
++};
++
+ static const struct of_device_id sunxi_sid_of_match[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-sid", .data = &sun4i_a10_cfg },
+ 	{ .compatible = "allwinner,sun7i-a20-sid", .data = &sun7i_a20_cfg },
+@@ -222,6 +256,7 @@
+ 	{ .compatible = "allwinner,sun50i-a64-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-h5-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-h6-sid", .data = &sun50i_h6_cfg },
++	{ .compatible = "allwinner,sun50i-h616-sid", .data = &sun50i_h616_cfg },
+ 	{/* sentinel */},
+ };
+ MODULE_DEVICE_TABLE(of, sunxi_sid_of_match);
+diff -u -r a/drivers/opp/core.c b/drivers/opp/core.c
+--- a/drivers/opp/core.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/opp/core.c	2023-06-17 01:51:12.213744745 +0200
+@@ -2095,6 +2095,11 @@
+ 	for (i = 0; i < count; i++) {
+ 		reg = regulator_get_optional(dev, names[i]);
+ 		if (IS_ERR(reg)) {
++			if (PTR_ERR(reg) == -ENODEV) {
++				ret = -ENODEV;
++				goto free_regulators;
++			}
++
+ 			ret = dev_err_probe(dev, PTR_ERR(reg),
+ 					    "%s: no regulator (%s) found\n",
+ 					    __func__, names[i]);
+diff -u -r a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+--- a/drivers/pwm/Kconfig	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/pwm/Kconfig	2023-06-17 01:51:12.353744701 +0200
+@@ -582,6 +582,15 @@
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-sun4i.
+ 
++config PWM_SUNXI_ENHANCE
++	tristate "Sunxi Enhance PWM support"
++	depends on PWM && ARCH_SUNXI
++	help
++	Enhance PWM framework driver for sunxi.
++
++	To compile this driver as a module, choose M here: the module
++	will be called pwm-sunxi.
++
+ config PWM_SUNPLUS
+ 	tristate "Sunplus PWM support"
+ 	depends on ARCH_SUNPLUS || COMPILE_TEST
+diff -u -r a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+--- a/drivers/pwm/Makefile	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/pwm/Makefile	2023-06-17 01:51:12.353744701 +0200
+@@ -54,6 +54,7 @@
+ obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
+ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
++obj-$(CONFIG_PWM_SUNXI_ENHANCE)		+= pwm-sunxi-enhance.o
+ obj-$(CONFIG_PWM_SUNPLUS)	+= pwm-sunplus.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+ obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
+Only in b/drivers/pwm: pwm-sunxi-enhance.c
+Only in b/drivers/pwm: pwm-sunxi-enhance.h
+diff -u -r a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
+--- a/drivers/rtc/rtc-sun6i.c	2023-06-17 11:02:04.079530669 +0200
++++ b/drivers/rtc/rtc-sun6i.c	2023-06-17 01:51:12.383744691 +0200
+@@ -708,6 +708,8 @@
+ 	.stride		= 4,
+ };
+ 
++#ifdef CONFIG_PM_SLEEP
++
+ /* Enable IRQ wake on suspend, to wake up from RTC. */
+ static int sun6i_rtc_suspend(struct device *dev)
+ {
+@@ -730,6 +732,8 @@
+ 	return 0;
+ }
+ 
++#endif
++
+ static SIMPLE_DEV_PM_OPS(sun6i_rtc_pm_ops,
+ 	sun6i_rtc_suspend, sun6i_rtc_resume);
+ 
+@@ -851,7 +855,9 @@
+ 
+ static void sun6i_rtc_shutdown(struct platform_device *pdev)
+ {
++#ifdef CONFIG_PM_SLEEP
+ 	sun6i_rtc_suspend(&pdev->dev);
++#endif
+ }
+ 
+ /*
+diff -u -r a/drivers/thermal/sun8i_thermal.c b/drivers/thermal/sun8i_thermal.c
+--- a/drivers/thermal/sun8i_thermal.c	2023-05-30 15:03:33.000000000 +0200
++++ b/drivers/thermal/sun8i_thermal.c	2023-06-17 01:51:12.713744586 +0200
+@@ -108,6 +108,12 @@
+ 		return -1590 * reg / 10 + 276000;
+ }
+ 
++static int sun50i_h616_calc_temp(struct ths_device *tmdev,
++			       int id, int reg)
++{
++	return (reg + tmdev->chip->offset) * tmdev->chip->scale;
++}
++
+ static int sun8i_ths_get_temp(struct thermal_zone_device *tz, int *temp)
+ {
+ 	struct tsensor *s = tz->devdata;
+@@ -278,6 +284,64 @@
+ 	return 0;
+ }
+ 
++static int sun50i_h616_ths_calibrate(struct ths_device *tmdev,
++				     u16 *caldata, int callen)
++{
++	struct device *dev = tmdev->dev;
++	int i, ft_temp;
++
++	if (!caldata[0])
++		return -EINVAL;
++
++	/*
++	 * h616 efuse THS calibration data layout:
++	 *
++	 * 0      11  16     27   32     43   48    57
++	 * +----------+-----------+-----------+-----------+
++	 * |  temp |  |sensor0|   |sensor1|   |sensor2|   |
++	 * +----------+-----------+-----------+-----------+
++	 *                      ^           ^           ^
++	 *                      |           |           |
++	 *                      |           |           sensor3[11:8]
++	 *                      |           sensor3[7:4]
++	 *                      sensor3[3:0]
++	 *
++	 * The calibration data on the H616 is the ambient temperature and
++	 * sensor values that are filled during the factory test stage.
++	 *
++	 * The unit of stored FT temperature is 0.1 degreee celusis.
++	 */
++	ft_temp = caldata[0] & FT_TEMP_MASK;
++
++	for (i = 0; i < tmdev->chip->sensor_num; i++) {
++		int delta, cdata, offset, reg;
++
++		if (i == 3)
++			reg = (caldata[1] >> 12)
++			      | (caldata[2] >> 12 << 4)
++			      | (caldata[3] >> 12 << 8);
++		else
++			reg = (int)caldata[i + 1] & TEMP_CALIB_MASK;
++
++		delta = (ft_temp * 100 - tmdev->chip->calc_temp(tmdev, i, reg))
++			/ tmdev->chip->scale;
++		cdata = CALIBRATE_DEFAULT - delta;
++		if (cdata & ~TEMP_CALIB_MASK) {
++			dev_warn(dev, "sensor%d is not calibrated.\n", i);
++
++			continue;
++		}
++
++		offset = (i % 2) * 16;
++		regmap_update_bits(tmdev->regmap,
++				   SUN50I_H6_THS_TEMP_CALIB + (i / 2 * 4),
++				   0xfff << offset,
++				   cdata << offset);
++	}
++
++	return 0;
++}
++
+ static int sun8i_ths_calibrate(struct ths_device *tmdev)
+ {
+ 	struct nvmem_cell *calcell;
+@@ -460,6 +524,30 @@
+ 	return 0;
+ }
+ 
++static int sun50i_h616_thermal_init(struct ths_device *tmdev)
++{
++	int val;
++
++	/*
++	 * For sun50iw9p1:
++	 * It is necessary that reg[0x03000000] bit[16] is 0.
++	 */
++	regmap_write(tmdev->regmap, SUN50I_THS_CTRL0,
++		     SUN8I_THS_CTRL0_T_ACQ0(47) | SUN8I_THS_CTRL2_T_ACQ1(479));
++	regmap_write(tmdev->regmap, SUN50I_H6_THS_MFC,
++		     SUN50I_THS_FILTER_EN |
++		     SUN50I_THS_FILTER_TYPE(1));
++	regmap_write(tmdev->regmap, SUN50I_H6_THS_PC,
++		     SUN50I_H6_THS_PC_TEMP_PERIOD(365));
++	val = GENMASK(tmdev->chip->sensor_num - 1, 0);
++	regmap_write(tmdev->regmap, SUN50I_H6_THS_ENABLE, val);
++	/* thermal data interrupt enable */
++	val = GENMASK(tmdev->chip->sensor_num - 1, 0);
++	regmap_write(tmdev->regmap, SUN50I_H6_THS_DIC, val);
++
++	return 0;
++}
++
+ static int sun8i_ths_register(struct ths_device *tmdev)
+ {
+ 	int i;
+@@ -628,6 +716,19 @@
+ 	.calc_temp = sun8i_ths_calc_temp,
+ };
+ 
++static const struct ths_thermal_chip sun50i_h616_ths = {
++	.sensor_num = 4,
++	.has_bus_clk_reset = true,
++	.ft_deviation = 8000,
++	.offset = -3255,
++	.scale = -81,
++	.temp_data_base = SUN50I_H6_THS_TEMP_DATA,
++	.calibrate = sun50i_h616_ths_calibrate,
++	.init = sun50i_h616_thermal_init,
++	.irq_ack = sun50i_h6_irq_ack,
++	.calc_temp = sun50i_h616_calc_temp,
++};
++
+ static const struct of_device_id of_ths_match[] = {
+ 	{ .compatible = "allwinner,sun8i-a83t-ths", .data = &sun8i_a83t_ths },
+ 	{ .compatible = "allwinner,sun8i-h3-ths", .data = &sun8i_h3_ths },
+@@ -636,6 +737,7 @@
+ 	{ .compatible = "allwinner,sun50i-a100-ths", .data = &sun50i_a100_ths },
+ 	{ .compatible = "allwinner,sun50i-h5-ths", .data = &sun50i_h5_ths },
+ 	{ .compatible = "allwinner,sun50i-h6-ths", .data = &sun50i_h6_ths },
++	{ .compatible = "allwinner,sun50i-h616-ths", .data = &sun50i_h616_ths },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, of_ths_match);
+diff -u -r a/sound/soc/sunxi/Kconfig b/sound/soc/sunxi/Kconfig
+--- a/sound/soc/sunxi/Kconfig	2023-05-30 15:03:33.000000000 +0200
++++ b/sound/soc/sunxi/Kconfig	2023-06-17 01:51:13.943744193 +0200
+@@ -10,6 +10,14 @@
+ 	  Select Y or M to add support for the Codec embedded in the Allwinner
+ 	  A10 and affiliated SoCs.
+ 
++config SND_SUN50IW9_CODEC
++	tristate "Allwinner H616 Codec Support"
++	select SND_SOC_GENERIC_DMAENGINE_PCM
++	select REGMAP_MMIO
++	help
++	  Select Y or M to add support for the Codec embedded in the Allwinner
++	  H616 and affiliated SoCs.
++
+ config SND_SUN8I_CODEC
+ 	tristate "Allwinner SUN8I audio codec"
+ 	depends on OF
+diff -u -r a/sound/soc/sunxi/Makefile b/sound/soc/sunxi/Makefile
+--- a/sound/soc/sunxi/Makefile	2023-05-30 15:03:33.000000000 +0200
++++ b/sound/soc/sunxi/Makefile	2023-06-17 01:51:13.943744193 +0200
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_SND_SUN4I_CODEC) += sun4i-codec.o
++obj-$(CONFIG_SND_SUN50IW9_CODEC) += sun50iw9-codec.o
+ obj-$(CONFIG_SND_SUN4I_I2S) += sun4i-i2s.o
+ obj-$(CONFIG_SND_SUN4I_SPDIF) += sun4i-spdif.o
+ obj-$(CONFIG_SND_SUN8I_CODEC_ANALOG) += sun8i-codec-analog.o

@@ -33,14 +33,4 @@ class XemuGenerator(Generator):
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         }
 
-        # check if the Zink render option is chosen
-        if system.isOptSet("use_zink") and system.config["use_zink"] == "true":
-            environment = {
-                "XDG_CONFIG_HOME": batoceraFiles.CONF,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-                "__GLX_VENDOR_LIBRARY_NAME": "mesa",
-                "MESA_LOADER_DRIVER_OVERRIDE": "zink",
-                "GALLIUM_DRIVER": "zink"
-            }
-
         return Command.Command(array=commandArray, env=environment)

@@ -229,6 +229,8 @@ class DuckstationGenerator(Generator):
         # Aspect Ratio
         if system.isOptSet("duckstation_ratio"):
             settings.set("Display", "AspectRatio", system.config["duckstation_ratio"])
+            if not system.config["duckstation_ratio"] == "4:3":
+                system.config['bezel'] = "none"
         else:
             settings.set("Display", "AspectRatio", "Auto (Game Native)")
         # Vsync
@@ -264,8 +266,10 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("Display","LinearFiltering", "false")
         # Stretch
-        if system.isOptSet("duckstation_stretch"):
+        if system.isOptSet("duckstation_stretch") and system.config["duckstation_stretch"] == "true":
             settings.set("Display","Stretch", system.config["duckstation_stretch"])
+            if not system.isOptSet("duckstation_integer") or system.config["duckstation_integer"] == "false":
+                system.config['bezel'] = "none"
         else:
             settings.set("Display","Stretch", "false")
         

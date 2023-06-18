@@ -39,7 +39,7 @@ index 57fa9ed..88bc040 100644
              path_bgm = path;
 -         else if (string_is_equal_noncase(basename_noext, "unlock"))
 -            path_cheevo_unlock = path;
-+         else if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
++         else if(string_is_empty(settings->arrays.cheevos_unlock_sound) == false) {
 +            if (string_is_equal_noncase(basename_noext, "unlock"))
 +               path_cheevo_unlock = path;
 +            else

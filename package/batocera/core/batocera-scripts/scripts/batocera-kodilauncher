@@ -42,6 +42,9 @@ fi
 # Kodi complains about these directories not existing in the logs
 mkdir -p /userdata/system/.kodi/userdata/addon_data/pvr.{iptvsimple,nextpvr,vbox,vuplus}
 
+# save current resolution
+current_resolution=$(batocera-resolution currentMode)
+
 (
     LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs
     echo "Kodi process ended." >&2
@@ -64,6 +67,7 @@ do
 	"EXIT")
 	    kodiLastChance
 	    wait
+	    /usr/bin/batocera-resolution setMode "$current_resolution"
 	    exit 0 # code for success
 	    ;;
 	"RESTART")

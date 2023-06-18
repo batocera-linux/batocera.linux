@@ -41,6 +41,8 @@ def generateControllerConfig(system, playersControllers, rom, guns):
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
+# https://docs.libretro.com/library/dolphin/
+
 def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
     wiiMapping = {
         'x':             'Buttons/2',
@@ -172,14 +174,23 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
 
 def generateControllerConfig_gamecube(system, playersControllers,rom):
     gamecubeMapping = {
-        'y':            'Buttons/B',     'b':             'Buttons/A',
-        'x':            'Buttons/Y',     'a':             'Buttons/X',
-        'pagedown':     'Buttons/Z',     'start':         'Buttons/Start',
-        'l2':           'Triggers/L',    'r2':            'Triggers/R',
-        'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
-        'joystick1up':  'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
-        'joystick2up':  'C-Stick/Up',    'joystick2left': 'C-Stick/Left',
-        'hotkey':       'Buttons/Hotkey'
+        'b':             'Buttons/B',
+        'a':             'Buttons/A',
+        'y':             'Buttons/Y',
+        'x':             'Buttons/X',
+        'pagedown':      'Buttons/Z',
+        'start':         'Buttons/Start',
+        'l2':            'Triggers/L',
+        'r2':            'Triggers/R',
+        'up':            'D-Pad/Up',
+        'down':          'D-Pad/Down',
+        'left':          'D-Pad/Left',
+        'right':         'D-Pad/Right',
+        'joystick1up':   'Main Stick/Up',
+        'joystick1left': 'Main Stick/Left',
+        'joystick2up':   'C-Stick/Up',
+        'joystick2left': 'C-Stick/Left',
+        'hotkey':        'Buttons/Hotkey'
     }
     gamecubeReverseAxes = {
         'Main Stick/Up':   'Main Stick/Down',
@@ -334,13 +345,22 @@ def generateHotkeys(playersControllers):
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     hotkeysMapping = {
-        'a':           'Keys/Reset',                    'b': 'Keys/Toggle Pause',
-        'x':           'Keys/Load from selected slot',  'y': 'Keys/Save to selected slot',
-        'r2':          None,                            'start': 'Keys/Exit',
-        'pageup': 'Keys/Take Screenshot', 'pagedown': 'Keys/Toggle 3D Side-by-side',
-        'up': 'Keys/Select State Slot 1', 'down': 'Keys/Select State Slot 2', 'left': None, 'right': None,
-        'joystick1up': None,    'joystick1left': None,
-        'joystick2up': None,    'joystick2left': None
+        'a':             'Keys/Reset',
+        'b':             'Keys/Toggle Pause',
+        'x':             'Keys/Load from selected slot',
+        'y':             'Keys/Save to selected slot',
+        'r2':            None,
+        'start':         'Keys/Exit',
+        'pageup':        'Keys/Take Screenshot',
+        'pagedown':      'Keys/Toggle 3D Side-by-side',
+        'up':            'Keys/Select State Slot 1',
+        'down':          'Keys/Select State Slot 2',
+        'left':          None,
+        'right':         None,
+        'joystick1up':   None,
+        'joystick1left': None,
+        'joystick2up':   None,
+        'joystick2left': None
     }
 
     nplayer = 1

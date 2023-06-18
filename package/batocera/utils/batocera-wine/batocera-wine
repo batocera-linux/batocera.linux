@@ -175,15 +175,15 @@ mf_install() {
 
     if test "${MF}" = 1
     then
-    if test -e "/userdata/system/wine/mf"
-    then
-        chmod +x "${MF_INSTALL}" || return 1
-        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
-    else
-        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
-    fi
+        if test -e "/userdata/system/wine/mf"
+        then
+            chmod +x "${MF_INSTALL}" || return 1
+            WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+            /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
+        else
+            WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+            /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
+        fi
     fi
 
     return 0
@@ -193,8 +193,8 @@ redist_install() {
 WINEPREFIX=$1
 if test -e "${USER_DIR}/exe"; then
 
-        for file in ${USER_DIR}/exe/*.exe; do
-			echo "Executing file $file"
+    for file in ${USER_DIR}/exe/*.exe; do
+	    echo "Executing file $file"
 			
 		case "${file}" in
 
@@ -263,9 +263,9 @@ if test -e "${USER_DIR}/exe"; then
 			"${WINESERVER}" -w
     		;;
 		esac
-		done
+	done
 
-        mv "${USER_DIR}/exe" "${USER_DIR}/exe.bak" || return 1
+    mv "${USER_DIR}/exe" "${USER_DIR}/exe.bak" || return 1
 fi
 
     return 0
@@ -337,7 +337,7 @@ dxvk_install() {
 
     if test "${DXVK_HUD}" = 1
     then
-	export DXVK_HUD=1
+	    export DXVK_HUD=1
     fi
 
     if test "${DXVK}" = 1
@@ -354,17 +354,17 @@ dxvk_install() {
         ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
-	echo "Creating links on /userdata, Linux File System required !!!"
-	ln -sf "/usr/wine/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+	    echo "Creating links on /userdata, Linux File System required !!!"
+	    ln -sf "/usr/wine/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "/usr/wine/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
     then
-    export DXVK_ASYNC=1
-    export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk/dxvk.conf"
-    export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core,nvapi64,nvapi=n"
-    #export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
+        export DXVK_ASYNC=1
+        export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk/dxvk.conf"
+        export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core,nvapi64,nvapi=n"
+        #export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
     else
     export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=b"
     fi
@@ -386,10 +386,10 @@ sandboxing_prefix() {
     # don't create all folders in case links doesn't exist to not create both Music and My Music at the same time (old wine uses My Music, new wine uses Musics)
     for DIR in "Downloads" "Documents" "My Documents" "Music" "My Music" "Pictures" "My Pictures" "Videos" "My Videos" "Templates"
     do
-    if test -L "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}"; then
-        unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
-        mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
-    fi
+        if test -L "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}"; then
+            unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
+            mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
+        fi
     done
 
     return 0
@@ -409,9 +409,9 @@ createWineDirectory() {
 
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
     then
-	rm -rf "${WINEPREFIX}"
-	kill -15 ${BSODPID}
-	return 1
+	    rm -rf "${WINEPREFIX}"
+	    kill -15 ${BSODPID}
+	    return 1
     fi
 
     kill -15 ${BSODPID}
@@ -434,7 +434,7 @@ getWine_var() {
 	    echo "${WINEVALUE}"
 	fi
     else
-	echo "${WINEVALUE}"
+	    echo "${WINEVALUE}"
     fi
 }
 
@@ -534,8 +534,8 @@ play_winetgz() {
     wine_options "${WINEPOINT}"
     if ! test -e "${WINEPOINT}"
     then
-	mkdir -p "${WINEPOINT}" || return 1
-	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
+	    mkdir -p "${WINEPOINT}" || return 1
+	    (cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
     redist_install "${WINEPOINT}" || return 1
@@ -566,6 +566,13 @@ play_squashfs() {
     SAVEPOINT="${G_SAVES_DIR}/${BASEGAMENAME}"
     WORKPOINT="${G_SAVES_DIR}/${BASEGAMENAME}.work"
 
+    # ensure we clean before starting if wine was killed for some reason
+    umount -f -R "${WINEPOINT}"
+    umount -f -R "${SQUASHFSPOINT}"
+    rm -rf "${SQUASHFSPOINT}"
+    rm -rf "${WORKPOINT}"
+    rm -rf "${WINEPOINT}"
+
     mkdir -p "${SAVEPOINT}" || return 1
     mkdir -p "${WORKPOINT}" || return 1
     mkdir -p "${WINEPOINT}" || return 1
@@ -573,21 +580,21 @@ play_squashfs() {
     mkdir -p "${SQUASHFSPOINT}" || return 1
     if ! mount "${GAMENAME}" "${SQUASHFSPOINT}"
     then
-	rmdir "${SQUASHFSPOINT}"
-	rm -rf "${WORKPOINT}"
-	rmdir "${WINEPOINT}"
+        rm -rf "${SQUASHFSPOINT}"
+	    rm -rf "${WORKPOINT}"
+	    rm -rf "${WINEPOINT}"
 	return 1
     fi
-
-    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on "${WINEPOINT}"
+    
+    if ! mount -t overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on overlay "${WINEPOINT}"
     then
-	umount "${SQUASHFSPOINT}"
-	rmdir "${SQUASHFSPOINT}"
-	rm -rf "${WORKPOINT}"
-	rmdir "${WINEPOINT}"
-	return 1
+        umount "${SQUASHFSPOINT}"
+	    rm -rf "${SQUASHFSPOINT}"
+	    rm -rf "${WORKPOINT}"
+	    rm -rf "${WINEPOINT}"
+	    return 1
     fi
-
+    
     reg_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
@@ -603,13 +610,16 @@ play_squashfs() {
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
+    # wait 1 sec before unmounting
+    sleep 1
 
     # try to clean the cdrom
-    umount "${WINEPOINT}"
-    umount "${SQUASHFSPOINT}"
-    rmdir "${SQUASHFSPOINT}"
+    umount -f -R "${WINEPOINT}"
+    umount -f -R "${SQUASHFSPOINT}"
+    sleep 1
+    rm -rf "${SQUASHFSPOINT}"
     rm -rf "${WORKPOINT}"
-    rmdir "${WINEPOINT}"
+    rm -rf "${WINEPOINT}"
 }
 
 init_cmd() {
@@ -672,11 +682,11 @@ install_iso() {
     mkdir -p "${GAMEISOMOUNT}" || return 1
     if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
     then
-            if ! mount -t udf "${INSTALLERISO}" "${GAMEISOMOUNT}"
-            then
-                rmdir "${GAMEISOMOUNT}"
-                return 1
-            fi
+        if ! mount -t udf "${INSTALLERISO}" "${GAMEISOMOUNT}"
+        then
+            rmdir "${GAMEISOMOUNT}"
+            return 1
+        fi
     fi
 
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.iso$"++)".wine"
@@ -685,8 +695,8 @@ install_iso() {
     
     if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"
     then
-	WINEPREFIX=${WINEPOINT} wine explorer "d:"
-	rm -f "${WINEPOINT}/dosdevices/d:"
+	    WINEPREFIX=${WINEPOINT} wine explorer "d:"
+	    rm -f "${WINEPOINT}/dosdevices/d:"
     fi
 
     waitWineServer
@@ -725,7 +735,7 @@ cleanAndExit() {
     RESNEW=$(batocera-resolution currentMode)
     if test "${RESNEW}" != "${G_RESCUR}"
     then
-    batocera-resolution setMode "${G_RESCUR}"
+        batocera-resolution setMode "${G_RESCUR}"
     fi
 
     if test -e "${GST_REGISTRY_1_0}"; then
