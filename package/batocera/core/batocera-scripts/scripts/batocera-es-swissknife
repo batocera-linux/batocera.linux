@@ -8,7 +8,7 @@
 # Added /bin/usr script // 22.09.2019
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
 # Added architecture and version information // 05.01.2020
-# Added update information + beta branch // 10.02.2020
+# Added update information + butterfly branch // 10.02.2020
 # Added --reboot // 26.02.2020
 # Added --overlay and --remount // 13.04.2020
 # Updated version detection only depended from build-date and build-time now
@@ -132,7 +132,7 @@ case ${1,,} in
     ;;
 
     --version|--arch|--update)
-        [[ ${2,,} == "beta" ]] && BRANCH=beta || BRANCH=stable
+        [[ ${2,,} == "butterfly" ]] && BRANCH=butterfly || BRANCH=stable
         if [[ -f /usr/share/batocera/batocera.version ]]; then
             VER=$(cat /usr/share/batocera/batocera.version)
             ret=$?
@@ -237,7 +237,7 @@ case ${1,,} in
 		  --arch     Shows current architecture running
 		  --version  Shows current version of BATOCERA running
 		  --update   Shows possible update for your install
-		      default: stable, you can type --update beta
+		      default: stable, you can type --update butterfly
 
 		  --overlay  will try to backup your overlay file
 		  --remount  toggle write access to <dir>, default /boot
