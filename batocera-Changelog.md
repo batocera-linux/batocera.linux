@@ -1,4 +1,4 @@
-# 2023/xx/xx - batocera.linux 37 - Red Admiral
+# 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
 - steamdeck virtual mouse/gun support from trackpad (left/right hand options)
 - JAMMAsd support (convert it in 2 pads)
