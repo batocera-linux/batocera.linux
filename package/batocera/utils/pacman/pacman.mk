@@ -18,6 +18,8 @@ else ifeq ($(BR2_aarch64),y)
 PACMAN_ARCH = aarch64
 else ifeq ($(BR2_arm),y)
 PACMAN_ARCH = armv7l
+else ifeq ($(BR2_riscv),y)
+PACMAN_ARCH = riscv
 else
 $(error This architecture won't be supported with pacman on Batocera)
 endif
