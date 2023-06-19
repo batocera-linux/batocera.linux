@@ -68,7 +68,7 @@ endif
 if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES2 || \
     BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES2 || BR2_PACKAGE_BATOCERA_TARGET_RPI_GLES2 || \
     BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC || BR2_PACKAGE_BATOCERA_TARGET_CHA || \
-    BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS || BR2_PACKAGE_BATOCERA_TARGET_H5
+    BR2_PACKAGE_BATOCERA_TARGET_H6 || BR2_PACKAGE_BATOCERA_TARGET_H5
     config BR2_PACKAGE_BATOCERA_GLES2
     bool "target has gles2 support"
     default y
@@ -86,7 +86,7 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 ||
 endif
 
 # add cortex a53 group support for use cases like dosbox-staging
-if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS \
+if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_H6 \
  || BR2_PACKAGE_BATOCERA_TARGET_H616 || BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_RK3328 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     config BR2_PACKAGE_BATOCERA_CORTEX_A53
     bool "target cortex a53 socs"
@@ -425,7 +425,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "x86_64"																		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
     default "znver2"																		if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
     default "qualcomm/sd845/odin"															if BR2_PACKAGE_BATOCERA_TARGET_ODIN
-    default "allwinner/h6/orangepi-3-lts"													if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+    default "allwinner/h6/orangepi-3-lts allwinner/h6/orangepi-3 allwinner/h6/orangepi-one-plus"       if BR2_PACKAGE_BATOCERA_TARGET_H6
     default "riscv/visionfive2"													            if BR2_PACKAGE_BATOCERA_TARGET_RISCV
     default "amlogic/s922x/gtking amlogic/s922x/gtkingpro amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S922X
@@ -516,8 +516,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_H5
 config BR2_PACKAGE_BATOCERA_TARGET_H616
     bool "h616"
 
-config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
-    bool "orangepi_3_lts"
+config BR2_PACKAGE_BATOCERA_TARGET_H6
+    bool "h6"
 
 # PC
 # ------------------------------------
@@ -781,7 +781,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3326  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_XU4     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+                                                    BR2_PACKAGE_BATOCERA_TARGET_H6
 
     select BR2_PACKAGE_MELONDS                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
@@ -1084,7 +1084,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_H6
 
 
     # Atari Jaguar
@@ -1106,7 +1106,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_H6
 
 
     # SNK Neo Geo CD
@@ -1609,7 +1609,7 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 
     # Extra linux firmware
     select BR2_PACKAGE_EXTRALINUXFIRMWARES              if  BR2_PACKAGE_BATOCERA_TARGET_H616            || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_3_LTS  || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_H6  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RK3399
 
