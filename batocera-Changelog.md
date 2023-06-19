@@ -14,6 +14,7 @@
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
+- linux kernel for RPI to 6.1.32
 
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
