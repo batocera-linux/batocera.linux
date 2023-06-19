@@ -519,9 +519,9 @@ def write_key(f, keyname, input_type, input_id, input_value, input_global_id, re
         f.write("Button " + str(input_id))
     elif input_type == "hat":
         if input_value == "1" or input_value == "4":        # up or down
-            f.write("Axis " + str(int(input_global_id)+1))
+            f.write("Axis " + str(int(input_global_id)+1+int(input_id)*2))
         else:
-            f.write("Axis " + str(input_global_id))
+            f.write("Axis " + str(int(input_global_id)+int(input_id)*2))
         if input_value == "1" or input_value == "8":        # up or left
             f.write("-")
         else:
