@@ -1,6 +1,35 @@
 ### Supported AMD Island cards to use the amdgpu vs radeon Mesa driver
-### As definative as we can make it, may need adjusting for specific models.
+### As definative as we can make it, may need adjusting for user specific models.
 
+### https://github.com/torvalds/linux/blob/master/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+
+## Southern Islands - from CONFIG_DRM_AMDGPU_SI
+
+1002:6780 ("Tahiti XT GL [FirePro W9000]")
+1002:6784 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:6788 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:678a ("Tahiti PRO GL [FirePro Series]")
+1002:6790
+1002:6791
+1002:6792
+1002:6798 ("Tahiti XT [Radeon HD 7970/8970 OEM / R9 280X]")
+1002:6799
+1002:679a ("Tahiti PRO [Radeon HD 7950/8950 OEM / R9 280]")
+1002:679b ("Malta [Radeon HD 7990/8990 OEM]")
+1002:679e ("Tahiti LE [Radeon HD 7870 XT]")
+1002:679f ("Tahiti")
+1002:6800 ("Wimbledon XT [Radeon HD 7970M]")
+1002:6801 ("Neptune XT [Radeon HD 8970M]")
+1002:6802 ("Wimbledon")
+1002:6806 ("Neptune")
+1002:6808 ("Pitcairn XT GL [FirePro W7000]")
+1002:6809 ("Pitcairn LE GL [FirePro W5000]")
+1002:6810 ("Curacao XT / Trinidad XT [Radeon R7 370 / R9 270X/370X]")
+1002:6811 ("Curacao PRO [Radeon R7 370 / R9 270/370 OEM]")
+1002:6816 ("Pitcairn")
+1002:6817 ("Pitcairn")
+1002:6818 ("Pitcairn XT [Radeon HD 7870 GHz Edition]")
+1002:6819 ("Pitcairn PRO [Radeon HD 7850 / R7 265 / R9 270 1024SP]")
 1002:6600 ("Mars [Radeon HD 8670A/8670M/8750M / R7 M370]")
 1002:6601 ("Mars [Radeon HD 8730M]")
 1002:6602
@@ -18,6 +47,64 @@
 1002:6621
 1002:6623
 1002:6631 ("Oland")
+1002:6820 ("Venus XTX [Radeon HD 8890M / R9 M275X/M375X]")
+1002:6821 ("Venus XT [Radeon HD 8870M / R9 M270X/M370X]")
+1002:6822 ("Venus PRO [Radeon E8860]")
+1002:6823 ("Venus PRO [Radeon HD 8850M / R9 M265X]")
+1002:6824
+1002:6825 ("Heathrow XT [Radeon HD 7870M]")
+1002:6826 ("Chelsea LP [Radeon HD 7700M Series]")
+1002:6827 ("Heathrow PRO [Radeon HD 7850M/8850M]")
+1002:6828 ("Cape Verde PRO [FirePro W600]")
+1002:6829 ("Cape Verde")
+1002:682a ("Venus PRO")
+1002:682b ("Cape Verde PRO / Venus LE / Tropo PRO-L [Radeon HD 8830M / R7 250 / R7 M465X]")
+1002:682c ("Cape Verde GL [FirePro W4100]")
+1002:682d ("Chelsea XT GL [FirePro M4000]")
+1002:682f ("Chelsea LP [Radeon HD 7730M]")
+1002:6830
+1002:6831
+1002:6835 ("Cape Verde PRX [Radeon R9 255 OEM]")
+1002:6837 ("Cape Verde LE [Radeon HD 7730/8730]")
+1002:6838
+1002:6839
+1002:683b
+1002:683d ("Cape Verde XT [Radeon HD 7770/8760 / R7 250X]")
+1002:683f ("Cape Verde PRO [Radeon HD 7750/8740 / R7 250E]")
+1002:6660 ("Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 / Radeon 520 Mobile]")
+1002:6663 ("Sun PRO [Radeon HD 8570A/8570M]")
+1002:6664 ("Jet XT [Radeon R5 M240]")
+1002:6665 ("Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520/610 Mobile]")
+1002:6667 ("Jet ULT [Radeon R5 M230]")
+1002:666f ("Sun LE [Radeon HD 8550M / R5 M230]")
+
+## Sea Islands - from CONFIG_DRM_AMDGPU_CIK
+
+# Kaveri
+1002:1304 ("Kaveri")
+1002:1305 ("Kaveri")
+1002:1306 ("Kaveri")
+1002:1307 ("Kaveri")
+1002:1309 ("Kaveri [Radeon R6/R7 Graphics]")
+1002:130a ("Kaveri [Radeon R6 Graphics]")
+1002:130b ("Kaveri [Radeon R4 Graphics]")
+1002:130c ("Kaveri [Radeon R7 Graphics]")
+1002:130d ("Kaveri [Radeon R6 Graphics]")
+1002:130e ("Kaveri [Radeon R5 Graphics]")
+1002:130f ("Kaveri [Radeon R7 Graphics]")
+1002:1310 ("Kaveri")
+1002:1311 ("Kaveri")
+1002:1312 ("Kaveri")
+1002:1313 ("Kaveri [Radeon R7 Graphics]")
+1002:1315 ("Kaveri [Radeon R5 Graphics]")
+1002:1316 ("Kaveri [Radeon R5 Graphics]")
+1002:1317 ("Kaveri")
+1002:1318 ("Kaveri [Radeon R5 Graphics]")
+1002:131b ("Kaveri [Radeon R4 Graphics]")
+1002:131c ("Kaveri [Radeon R7 Graphics]")
+1002:131d ("Kaveri [Radeon R6 Graphics]")
+
+# Bonaire
 1002:6640 ("Saturn XT [FirePro M6100]")
 1002:6641 ("Saturn PRO [Radeon HD 8930M]")
 1002:6646 ("Bonaire XT [Radeon R9 M280X]")
@@ -29,86 +116,8 @@
 1002:665c ("Bonaire XT [Radeon HD 7790/8770 / R7 360 / R9 260/360 OEM]")
 1002:665d ("Bonaire [Radeon R7 200 Series]")
 1002:665f ("Tobago PRO [Radeon R7 360 / R9 360 OEM]")
-1002:6660 ("Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 / Radeon 520 Mobile]")
-1002:6663 ("Sun PRO [Radeon HD 8570A/8570M]")
-1002:6664 ("Jet XT [Radeon R5 M240]")
-1002:6665 ("Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520/610 Mobile]")
-1002:6667 ("Jet ULT [Radeon R5 M230]")
-1002:666f ("Sun LE [Radeon HD 8550M / R5 M230]")
-1002:6700
-1002:6701
-1002:6702
-1002:6703
-1002:6704 ("Cayman PRO GL [FirePro V7900]")
-1002:6705
-1002:6706
-1002:6707 ("Cayman LE GL [FirePro V5900]")
-1002:6708
-1002:6709
-1002:6718 ("Cayman XT [Radeon HD 6970]")
-1002:6719 ("Cayman PRO [Radeon HD 6950]")
-1002:671c ("Antilles [Radeon HD 6990]")
-1002:671d ("Antilles [Radeon HD 6990]")
-1002:671f ("Cayman CE [Radeon HD 6930]")
-1002:6720 ("Blackcomb [Radeon HD 6970M/6990M]")
-1002:6721
-1002:6722
-1002:6723
-1002:6724
-1002:6725
-1002:6726
-1002:6727
-1002:6728
-1002:6729
-1002:6738 ("Barts XT [Radeon HD 6870]")
-1002:6739 ("Barts PRO [Radeon HD 6850]")
-1002:673e ("Barts LE [Radeon HD 6790]")
-1002:6740 ("Whistler [Radeon HD 6730M/6770M/7690M XT]")
-1002:6741 ("Whistler [Radeon HD 6630M/6650M/6750M/7670M/7690M]")
-1002:6742 ("Whistler LE [Radeon HD 6610M/7610M]")
-1002:6743 ("Whistler [Radeon E6760]")
-1002:6744
-1002:6745
-1002:6746
-1002:6747
-1002:6748
-1002:6749 ("Turks GL [FirePro V4900]")
-1002:674a ("Turks GL [FirePro V3900]")
-1002:6750 ("Onega [Radeon HD 6650A/7650A]")
-1002:6751 ("Turks [Radeon HD 7650A/7670A]")
-1002:6758 ("Turks XT [Radeon HD 6670/7670]")
-1002:6759 ("Turks PRO [Radeon HD 6570/7570/8550 / R5 230]")
-1002:675b ("Turks [Radeon HD 7600 Series]")
-1002:675d ("Turks PRO [Radeon HD 7570]")
-1002:675f ("Turks LE [Radeon HD 5570/6510/7510/8510]")
-1002:6760 ("Seymour [Radeon HD 6400M/7400M Series]")
-1002:6761 ("Seymour LP [Radeon HD 6430M]")
-1002:6762
-1002:6763 ("Seymour [Radeon E6460]")
-1002:6764 ("Seymour [Radeon HD 6400M Series]")
-1002:6765 ("Seymour [Radeon HD 6400M Series]")
-1002:6766 ("Caicos")
-1002:6767 ("Caicos")
-1002:6768 ("Caicos")
-1002:6770 ("Caicos [Radeon HD 6450A/7450A]")
-1002:6771 ("Caicos XTX [Radeon HD 8490 / R5 235X OEM]")
-1002:6772 ("Caicos [Radeon HD 7450A]")
-1002:6778 ("Caicos XT [Radeon HD 7470/8470 / R5 235/310 OEM]")
-1002:6779 ("Caicos [Radeon HD 6450/7450/8450 / R5 230 OEM]")
-1002:677b ("Caicos PRO [Radeon HD 7450]")
-1002:6780 ("Tahiti XT GL [FirePro W9000]")
-1002:6784 ("Tahiti [FirePro Series Graphics Adapter]")
-1002:6788 ("Tahiti [FirePro Series Graphics Adapter]")
-1002:678a ("Tahiti PRO GL [FirePro Series]")
-1002:6790
-1002:6791
-1002:6792
-1002:6798 ("Tahiti XT [Radeon HD 7970/8970 OEM / R9 280X]")
-1002:6799
-1002:679a ("Tahiti PRO [Radeon HD 7950/8950 OEM / R9 280]")
-1002:679b ("Malta [Radeon HD 7990/8990 OEM]")
-1002:679e ("Tahiti LE [Radeon HD 7870 XT]")
-1002:679f ("Tahiti")
+
+# Hawaii
 1002:67a0 ("Hawaii XT GL [FirePro W9100]")
 1002:67a1 ("Hawaii PRO GL [FirePro W8100]")
 1002:67a2 ("Hawaii GL")
@@ -121,3 +130,39 @@
 1002:67b9 ("Vesuvius [Radeon R9 295X2]")
 1002:67ba
 1002:67be ("Hawaii LE")
+
+# Kabini
+1002:9830 ("Kabini [Radeon HD 8400 / R3 Series]")
+1002:9831 ("Kabini [Radeon HD 8400E]")
+1002:9832 ("Kabini [Radeon HD 8330]")
+1002:9833 ("Kabini [Radeon HD 8330E]")
+1002:9834 ("Kabini [Radeon HD 8210]")
+1002:9835 ("Kabini [Radeon HD 8310E]")
+1002:9836 ("Kabini [Radeon HD 8280 / R3 Series]")
+1002:9837 ("Kabini [Radeon HD 8280E]")
+1002:9838 ("Kabini [Radeon HD 8240 / R3 Series]")
+1002:9839 ("Kabini [Radeon HD 8180]")
+1002:983a
+1002:983b
+1002:983c
+1002:983d ("Temash [Radeon HD 8250/8280G]")
+1002:983e
+1002:983f
+
+# Mullins
+1002:9850 ("Mullins [Radeon R3 Graphics]")
+1002:9851 ("Mullins [Radeon R4/R5 Graphics]")
+1002:9852 ("Mullins [Radeon R2 Graphics]")
+1002:9853 ("Mullins [Radeon R2 Graphics]")
+1002:9854 ("Mullins [Radeon R3E Graphics]")
+1002:9855 ("Mullins [Radeon R6 Graphics]")
+1002:9856 ("Mullins [Radeon R1E/R2E Graphics]")
+1002:9857 ("Mullins [Radeon APU XX-2200M with R2 Graphics]")
+1002:9858 ("Mullins")
+1002:9859 ("Mullins")
+1002:985a ("Mullins")
+1002:985b ("Mullins")
+1002:985c ("Mullins")
+1002:985d ("Mullins")
+1002:985e ("Mullins")
+1002:985f ("Mullins")
