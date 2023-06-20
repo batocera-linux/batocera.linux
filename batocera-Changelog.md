@@ -6,7 +6,7 @@
 ### Fixed
 
 ### Changed
-
+- if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 ### Updated
 
 ### Dev

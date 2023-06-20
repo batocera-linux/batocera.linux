@@ -79,10 +79,12 @@ do_videostart ()
 	# --vf-add=sub : rotation of subtitles
         [[ $? -eq 0 ]] && mpv_video="--video-rotate=${video_rotation} --vf-add=sub"
     fi
+    drm_mode="preferred"
     video_resize=$(batocera-settings-get splash.screen.resize)
     if [[ $? -eq 0 ]]; then
         resize=$(echo "${video_resize}" | sed "s/x/:/")
         mpv_video="${mpv_video} --vf=scale=${resize}"
+        drm_mode=$video_resize
     fi
     video_subtitle=$(batocera-settings-get splash.screen.subtitle)
     if [[ $? -eq 0 ]]; then
@@ -116,7 +118,7 @@ do_videostart ()
     echo "Selected DRM connector: $drm_connector" >> $log
     
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --log-file=/userdata/system/logs/mpv.log --drm-connector=$drm_connector $mpv_audio $mpv_video "$video"
+    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --log-file=/userdata/system/logs/mpv.log --drm-connector=$drm_connector $mpv_audio $mpv_video --drm-mode=$drm_mode "$video"
 }
 
 case "$1" in
