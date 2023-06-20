@@ -1,0 +1,30 @@
+--- a/Makefile	2023-06-06 14:02:37.252001779 +0200
++++ b/Makefile	2023-06-06 14:03:59.853928255 +0200
+@@ -662,11 +662,22 @@
+ KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning,frame-address,)
+-KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
+-KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
+-KBUILD_CFLAGS	+= $(call cc-disable-warning, int-in-bool-context)
+-KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
+-KBUILD_CFLAGS	+= $(call cc-disable-warning, attribute-alias)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,format-truncation,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,format-overflow,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,int-in-bool-context,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,address-of-packed-member,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,attribute-alias,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,missing-attributes,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,zero-length-bounds,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,stringop-overflow,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,uninitialized,)
++KBUILD_CFLAGS	+= $(call cc-disable-warning,restrict)
++KBUILD_CFLAGS   += $(call cc-disable-warning,misleading-indentation)
++KBUILD_CFLAGS   += $(call cc-disable-warning,array-bounds)
++KBUILD_CFLAGS   += $(call cc-disable-warning,array-compare)
++KBUILD_CFLAGS   += $(call cc-disable-warning,stringop-overread)
++KBUILD_CFLAGS   += $(call cc-disable-warning,dangling-pointer)
++KBUILD_CFLAGS   += $(call cc-disable-warning,address)
+ 
+ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
+ KBUILD_CFLAGS	+= -Os

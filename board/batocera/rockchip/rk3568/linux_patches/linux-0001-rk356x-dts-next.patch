@@ -1,0 +1,403 @@
+diff -u -r a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+--- a/arch/arm64/boot/dts/rockchip/Makefile	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/Makefile	2023-06-15 15:16:42.844877767 +0200
+@@ -67,6 +70,7 @@
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sapphire-excavator.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rock-pi-n10.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg353p.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg353ps.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg353v.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg353vs.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg503.dtb
+Seulement dans b/arch/arm64/boot/dts/rockchip/: rk3566-anbernic-rg353ps.dts
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353x.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353x.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353x.dtsi	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353x.dtsi	2023-06-15 15:16:42.852877943 +0200
+@@ -22,6 +22,48 @@
+ 			       <200000000>, <241500000>;
+ };
+ 
++&dsi_dphy0 {
++	status = "okay";
++};
++
++&dsi0 {
++	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	ports {
++		dsi0_in: port@0 {
++			reg = <0>;
++			dsi0_in_vp1: endpoint {
++				remote-endpoint = <&vp1_out_dsi0>;
++			};
++		};
++
++		dsi0_out: port@1 {
++			reg = <1>;
++			mipi_out_panel: endpoint {
++				remote-endpoint = <&mipi_in_panel>;
++			};
++		};
++	};
++
++	panel: panel@0 {
++		compatible = "anbernic,rg353p-panel", "newvision,nv3051d";
++		reg = <0>;
++		backlight = <&backlight>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_rst>;
++		reset-gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&vcc3v3_lcd0_n>;
++
++		port {
++			mipi_in_panel: endpoint {
++				remote-endpoint = <&mipi_out_panel>;
++			};
++		};
++	};
++};
++
+ &gpio_keys_control {
+ 	button-a {
+ 		gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
+@@ -57,6 +99,22 @@
+ 	};
+ };
+ 
++&pinctrl {
++	gpio-lcd {
++		lcd_rst: lcd-rst {
++			rockchip,pins =
++				<4 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
+ &pwm4 {
+ 	status = "okay";
+ };
++
++&vp1 {
++	vp1_out_dsi0: endpoint@ROCKCHIP_VOP2_EP_MIPI0 {
++		reg = <ROCKCHIP_VOP2_EP_MIPI0>;
++		remote-endpoint = <&dsi0_in_vp1>;
++	};
++};
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi	2023-06-15 15:16:42.852877943 +0200
+@@ -191,30 +191,30 @@
+ 		};
+ 	};
+ 
+-	leds: gpio-leds {
+-		compatible = "gpio-leds";
+-		pinctrl-0 = <&led_pins>;
+-		pinctrl-names = "default";
++	leds: pwm-leds {
++		compatible = "pwm-leds";
+ 
+ 		green_led: led-0 {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			default-state = "on";
+ 			function = LED_FUNCTION_POWER;
+-			gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++			max-brightness = <255>;
++			pwms = <&pwm6 0 25000 0>;
+ 		};
+ 
+ 		amber_led: led-1 {
+ 			color = <LED_COLOR_ID_AMBER>;
+ 			function = LED_FUNCTION_CHARGING;
+-			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+-			retain-state-suspended;
++			max-brightness = <255>;
++			pwms = <&pwm7 0 25000 0>;
+ 		};
+ 
+ 		red_led: led-2 {
+ 			color = <LED_COLOR_ID_RED>;
+ 			default-state = "off";
+ 			function = LED_FUNCTION_STATUS;
+-			gpios = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
++			max-brightness = <255>;
++			pwms = <&pwm0 0 25000 0>;
+ 		};
+ 	};
+ 
+@@ -597,15 +597,6 @@
+ 		};
+ 	};
+ 
+-	gpio-led {
+-		led_pins: led-pins {
+-			rockchip,pins =
+-				<0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>,
+-				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>,
+-				<0 RK_PC7 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+ 	joy-mux {
+ 		joy_mux_en: joy-mux-en {
+ 			rockchip,pins =
+@@ -654,10 +645,24 @@
+ 	vccio7-supply = <&vcc_3v3>;
+ };
+ 
++&pwm0 {
++	pinctrl-0 = <&pwm0m1_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &pwm5 {
+ 	status = "okay";
+ };
+ 
++&pwm6 {
++	status = "okay";
++};
++
++&pwm7 {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcc_1v8>;
+ 	status = "okay";
+@@ -716,7 +721,7 @@
+ 	status = "okay";
+ 
+ 	bluetooth {
+-		compatible = "realtek,rtl8821cs-bt";
++		compatible = "realtek,rtl8821cs-bt", "realtek,rtl8723bs-bt";
+ 		device-wake-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
+ 		enable-gpios = <&gpio4 3 GPIO_ACTIVE_HIGH>;
+ 		host-wake-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>;
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts	2023-06-15 15:16:42.852877943 +0200
+@@ -28,6 +28,16 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		vin-supply = <&vcc12v_dcin>;
+ 	};
++
++	vcc_sd_pwr: vcc-sd-pwr-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_sd_pwr";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc3v3_sys>;
++	};
+ };
+ 
+ /* phy for pcie */
+@@ -130,13 +140,7 @@
+ };
+ 
+ &sdmmc0 {
+-	vmmc-supply = <&sdmmc_pwr>;
+-	status = "okay";
+-};
+-
+-&sdmmc_pwr {
+-	regulator-min-microvolt = <3300000>;
+-	regulator-max-microvolt = <3300000>;
++	vmmc-supply = <&vcc_sd_pwr>;
+ 	status = "okay";
+ };
+ 
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk3566-soquartz.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-soquartz.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3566-soquartz.dtsi	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3566-soquartz.dtsi	2023-06-15 15:16:42.852877943 +0200
+@@ -104,16 +104,6 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
+-
+-	sdmmc_pwr: sdmmc-pwr-regulator {
+-		compatible = "regulator-fixed";
+-		enable-active-high;
+-		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&sdmmc_pwr_h>;
+-		regulator-name = "sdmmc_pwr";
+-		status = "disabled";
+-	};
+ };
+ 
+ &cpu0 {
+@@ -155,6 +145,19 @@
+ 	status = "disabled";
+ };
+ 
++&gpio0 {
++	nextrst-hog {
++		gpio-hog;
++		/*
++		 * GPIO_ACTIVE_LOW + output-low here means that the pin is set
++		 * to high, because output-low decides the value pre-inversion.
++		 */
++		gpios = <RK_PA5 GPIO_ACTIVE_LOW>;
++		line-name = "nEXTRST";
++		output-low;
++	};
++};
++
+ &gpu {
+ 	mali-supply = <&vdd_gpu>;
+ 	status = "okay";
+@@ -538,12 +541,6 @@
+ 			rockchip,pins = <2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+-
+-	sdmmc-pwr {
+-		sdmmc_pwr_h: sdmmc-pwr-h {
+-			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+ };
+ 
+ &pmu_io_domains {
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi	2023-06-15 15:16:42.852877943 +0200
+@@ -94,9 +94,10 @@
+ 		power-domains = <&power RK3568_PD_PIPE>;
+ 		reg = <0x3 0xc0400000 0x0 0x00400000>,
+ 		      <0x0 0xfe270000 0x0 0x00010000>,
+-		      <0x3 0x7f000000 0x0 0x01000000>;
+-		ranges = <0x01000000 0x0 0x3ef00000 0x3 0x7ef00000 0x0 0x00100000>,
+-			 <0x02000000 0x0 0x00000000 0x3 0x40000000 0x0 0x3ef00000>;
++		      <0x0 0xf2000000 0x0 0x00100000>;
++		ranges = <0x01000000 0x0 0xf2100000 0x0 0xf2100000 0x0 0x00100000>,
++			 <0x02000000 0x0 0xf2200000 0x0 0xf2200000 0x0 0x01e00000>,
++			 <0x03000000 0x0 0x40000000 0x3 0x40000000 0x0 0x40000000>;
+ 		reg-names = "dbi", "apb", "config";
+ 		resets = <&cru SRST_PCIE30X1_POWERUP>;
+ 		reset-names = "pipe";
+@@ -146,9 +147,10 @@
+ 		power-domains = <&power RK3568_PD_PIPE>;
+ 		reg = <0x3 0xc0800000 0x0 0x00400000>,
+ 		      <0x0 0xfe280000 0x0 0x00010000>,
+-		      <0x3 0xbf000000 0x0 0x01000000>;
+-		ranges = <0x01000000 0x0 0x3ef00000 0x3 0xbef00000 0x0 0x00100000>,
+-			 <0x02000000 0x0 0x00000000 0x3 0x80000000 0x0 0x3ef00000>;
++		      <0x0 0xf0000000 0x0 0x00100000>;
++		ranges = <0x01000000 0x0 0xf0100000 0x0 0xf0100000 0x0 0x00100000>,
++			 <0x02000000 0x0 0xf0200000 0x0 0xf0200000 0x0 0x01e00000>,
++			 <0x03000000 0x0 0x40000000 0x3 0x80000000 0x0 0x40000000>;
+ 		reg-names = "dbi", "apb", "config";
+ 		resets = <&cru SRST_PCIE30X2_POWERUP>;
+ 		reset-names = "pipe";
+diff -u -r a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi	2023-06-14 11:17:06.000000000 +0200
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi	2023-06-15 15:16:42.852877943 +0200
+@@ -613,6 +613,17 @@
+ 		#iommu-cells = <0>;
+ 	};
+ 
++	rga: rga@fdeb0000 {
++		compatible = "rockchip,rk3568-rga", "rockchip,rk3288-rga";
++		reg = <0x0 0xfdeb0000 0x0 0x180>;
++		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_RGA>, <&cru HCLK_RGA>, <&cru CLK_RGA_CORE>;
++		clock-names = "aclk", "hclk", "sclk";
++		resets = <&cru SRST_RGA_CORE>, <&cru SRST_A_RGA>, <&cru SRST_H_RGA>;
++		reset-names = "core", "axi", "ahb";
++		power-domains = <&power RK3568_PD_RGA>;
++	};
++
+ 	vepu: video-codec@fdee0000 {
+ 		compatible = "rockchip,rk3568-vepu";
+ 		reg = <0x0 0xfdee0000 0x0 0x800>;
+@@ -744,8 +755,8 @@
+ 		compatible = "rockchip,rk3568-mipi-dsi", "snps,dw-mipi-dsi";
+ 		reg = <0x00 0xfe060000 0x00 0x10000>;
+ 		interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-names = "pclk", "hclk";
+-		clocks = <&cru PCLK_DSITX_0>, <&cru HCLK_VO>;
++		clock-names = "pclk";
++		clocks = <&cru PCLK_DSITX_0>;
+ 		phy-names = "dphy";
+ 		phys = <&dsi_dphy0>;
+ 		power-domains = <&power RK3568_PD_VO>;
+@@ -772,8 +783,8 @@
+ 		compatible = "rockchip,rk3568-mipi-dsi", "snps,dw-mipi-dsi";
+ 		reg = <0x0 0xfe070000 0x0 0x10000>;
+ 		interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-names = "pclk", "hclk";
+-		clocks = <&cru PCLK_DSITX_1>, <&cru HCLK_VO>;
++		clock-names = "pclk";
++		clocks = <&cru PCLK_DSITX_1>;
+ 		phy-names = "dphy";
+ 		phys = <&dsi_dphy1>;
+ 		power-domains = <&power RK3568_PD_VO>;
+@@ -952,7 +963,7 @@
+ 		compatible = "rockchip,rk3568-pcie";
+ 		reg = <0x3 0xc0000000 0x0 0x00400000>,
+ 		      <0x0 0xfe260000 0x0 0x00010000>,
+-		      <0x3 0x3f000000 0x0 0x01000000>;
++		      <0x0 0xf4000000 0x0 0x00100000>;
+ 		reg-names = "dbi", "apb", "config";
+ 		interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>,
+ 			     <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>,
+@@ -982,8 +993,9 @@
+ 		phys = <&combphy2 PHY_TYPE_PCIE>;
+ 		phy-names = "pcie-phy";
+ 		power-domains = <&power RK3568_PD_PIPE>;
+-		ranges = <0x01000000 0x0 0x3ef00000 0x3 0x3ef00000 0x0 0x00100000
+-			  0x02000000 0x0 0x00000000 0x3 0x00000000 0x0 0x3ef00000>;
++		ranges = <0x01000000 0x0 0xf4100000 0x0 0xf4100000 0x0 0x00100000>,
++			 <0x02000000 0x0 0xf4200000 0x0 0xf4200000 0x0 0x01e00000>,
++			 <0x03000000 0x0 0x40000000 0x3 0x00000000 0x0 0x40000000>;
+ 		resets = <&cru SRST_PCIE20_POWERUP>;
+ 		reset-names = "pipe";
+ 		#address-cells = <3>;
+@@ -1808,6 +1820,7 @@
+ 			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&pmucru PCLK_GPIO0>, <&pmucru DBCLK_GPIO0>;
+ 			gpio-controller;
++			gpio-ranges = <&pinctrl 0 0 32>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+@@ -1819,6 +1832,7 @@
+ 			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&cru PCLK_GPIO1>, <&cru DBCLK_GPIO1>;
+ 			gpio-controller;
++			gpio-ranges = <&pinctrl 0 32 32>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+@@ -1830,6 +1844,7 @@
+ 			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&cru PCLK_GPIO2>, <&cru DBCLK_GPIO2>;
+ 			gpio-controller;
++			gpio-ranges = <&pinctrl 0 64 32>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+@@ -1841,6 +1856,7 @@
+ 			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&cru PCLK_GPIO3>, <&cru DBCLK_GPIO3>;
+ 			gpio-controller;
++			gpio-ranges = <&pinctrl 0 96 32>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+@@ -1852,6 +1868,7 @@
+ 			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&cru PCLK_GPIO4>, <&cru DBCLK_GPIO4>;
+ 			gpio-controller;
++			gpio-ranges = <&pinctrl 0 128 32>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+

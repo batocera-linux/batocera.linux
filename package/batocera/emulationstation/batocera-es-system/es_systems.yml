@@ -2429,7 +2429,8 @@ model3:
   platform: model3, arcade
   emulators:
     supermodel:
-      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
@@ -2901,6 +2902,12 @@ apple2gs:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
+  comment_en: |
+          If your game does not start using LR-Mame. Ensure you choose the right floppy type for the rom extension.
+          i.e. some extensions require you to choose the 3 1/2 inch floppy drive (Drive 3).
+  comment_fr: |
+          Si votre jeu ne démarre pas avec LR-Mame, assurez-vous de choisir le bon type de disquette pour l'extension de la ROM.
+          Par exemple, certaines extensions nécessitent que vous choisissiez le lecteur de disquette 3 1/2 pouces (Lecteur 3).
 
 uzebox:
   name:       Uzebox
@@ -3426,7 +3433,7 @@ switch:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
-  name:       Quake II
+  name: Quake II
   manufacturer: Ports
   release: 1997
   hardware: port
@@ -3436,6 +3443,16 @@ vitaquake2:
   emulators:
     libretro:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
+  comment_en: |
+    The libretro vitaquake2 core offers several mission packs.
+    To ensure the correct vitaquake2 core loads for a mission pack, make sure it is placed in a subdirectory within this ROM directory.
+    The supported subdirectories for mission pack ROMs are: xatrix, rogue, and zaero.
+    For the standard Quake II directory, use 'baseq2' to utilize the standard vitaquake2 core.
+  comment_fr: |
+    Le cœur libretro de vitaquake2 propose différents packs de missions.
+    Pour vous assurer que le bon cœur vitaquake2 se charge pour un pack de missions, veillez à le placer dans un sous-répertoire de ce répertoire ROM.
+    Les sous-répertoires pris en charge pour les ROM de packs de missions sont : xatrix, rogue et zaero.
+    Pour le répertoire standard de Quake II, utilisez 'baseq2' pour utiliser le cœur vitaquake2 standard.
 
 j2me:
   name:       Java 2 MicroEdition

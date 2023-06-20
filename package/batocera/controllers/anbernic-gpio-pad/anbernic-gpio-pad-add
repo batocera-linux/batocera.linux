@@ -1,0 +1,54 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+BASEFILE="/var/run/anbernic-pad-devices"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+DEVSFILE="${BASEFILE}.devs"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+echo "${DEVNAME}" >> "${DEVSFILE}"
+
+NDEVS=$(cat "${DEVSFILE}" | wc -l)
+
+if test "${NDEVS}" = 3
+then
+    DEV1=$(cat "${DEVSFILE}" | head -1)
+    DEV2=$(cat "${DEVSFILE}" | head -2 | tail -1)
+    DEV3=$(cat "${DEVSFILE}" | tail -1)
+    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
+
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0

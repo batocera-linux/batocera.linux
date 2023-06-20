@@ -2010,7 +2010,7 @@ libretro:
             hiscoreplugin:
                 group: ADVANCED OPTIONS
                 prompt:      HIGH SCORE PLUGIN
-                description: Emable or disable high score saving
+                description: Enable or disable high score saving
                 choices:
                     "Enabled (Default)": 1
                     "Disabled":          0
@@ -2147,6 +2147,7 @@ libretro:
                           "Cassette":       cass
                           "Disk (Drive 1)": flop1
                           "Disk (Drive 2)": flop2
+                          "Hard Drive":     hard1
                   gameio:
                       group: ADVANCED OPTIONS
                       prompt:      JOYSTICK TYPE
@@ -2934,15 +2935,15 @@ libretro:
                       prompt:      32K RAM EXPANSION
                       description: 32k RAM expansion card installed
                       choices:
-                          "Enabled (Default)": 1
-                          "Disabled":          0
+                          "Disabled (Default)": 0
+                          "Enabled":            1
                   ti99_speech:
                       group: ADVANCED OPTIONS
                       prompt:      SPEECH MODULE
                       description: Speech module installed
                       choices:
-                          "Enabled (Default)": 1
                           "Disabled":          0
+                          "Enabled (Default)": 1
                   altromtype:
                       group: ADVANCED OPTIONS
                       prompt:      MEDIA TYPE
@@ -4040,13 +4041,6 @@ libretro:
                     "1":                1
                     "2":                2
                     "3":                3
-            neon_enhancement:
-                prompt:      ENHANCED RENDERING RESOLUTION
-                description: Double the rendering resolution.
-                choices:
-                    "Off":              disabled
-                    "On":               enabled
-                    "On (Speed hack)":  enabled_with_speedhack
             pcsx_rearmed_multitap:
                 prompt:      MULTITAP
                 description: Allows up to 5 or 8 controllers in supported games.
@@ -6685,12 +6679,12 @@ duckstation:
             prompt: ASPECT RATIO
             description: Change the output resolution ratio.
             choices:
-                "Auto (Match Window)": "Auto (Match Window)"
-                "4:3":                 "4:3"
-                "16:9":                "16:9"
-                "19:9":                "19:9"
-                "20:9":                "20:9"
-                "PAR 1:1":             "PAR 1:1"
+                "Match Window": "Auto (Match Window)"
+                "4:3":          "4:3"
+                "16:9":         "16:9"
+                "19:9":         "19:9"
+                "20:9":         "20:9"
+                "PAR 1:1":      "PAR 1:1"
         duckstation_CropMode:
             submenu: DISPLAY
             prompt: CROP OVERSCAN
@@ -6709,14 +6703,14 @@ duckstation:
         duckstation_linear:
             submenu: DISPLAY
             prompt: LINEAR UPSCALING
-            description: ENabling will smooth out the image.
+            description: Enabling will smooth out the image.
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
         duckstation_stretch:
             submenu: DISPLAY
             prompt: STRETCH TO FILL
-            description: Fills the screen regardless of the aspect ratio.
+            description: Fills the screen regardless of the aspect ratio. Doesn't work with Integer Upscaling.
             choices:
                 "Disabled (Default)": "false"
                 "Enabled":            "true"
@@ -7575,6 +7569,27 @@ pcsx2:
             choices:
                 "Disabled": "false"
                 "Enabled":  "true"
+        pcsx2_multitap:
+            prompt: MULTITAP
+            description: Allows up to 8 controllers in supported games.
+            choices:
+                "Maximum 2 Players (Default)": 2
+                "Maximum 4 Players":           4
+                "Maximum 8 Players":           8
+        pcsx2_texture_replacements:
+            group: ADVANCED OPTIONS
+            prompt: TEXTURE REPLACEMENTS
+            description: Allows user replaceable textures.
+            choices:
+                "Off": "false"
+                "On":  "true"
+        pcsx2_crisis_fog:
+            group: ADVANCED OPTIONS
+            prompt: TIME CRISIS FOG HACK
+            description: Necessary for some guns to replace fog textures as a workaround in Time Crisis - Crisis Zone.
+            choices:
+                "Off": "false"
+                "On":  "true"
 
 ppsspp:
   shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
@@ -9358,7 +9373,7 @@ mame:
                 hiscoreplugin:
                     group: ADVANCED OPTIONS
                     prompt:      HIGH SCORE PLUGIN
-                    description: Emable or disable high score saving
+                    description: Enable or disable high score saving
                     choices:
                         "Enabled (Default)": 1
                         "Disabled":          0
@@ -9608,7 +9623,7 @@ drastic:
 xemu:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        scaling:
+        xemu_scaling:
             prompt:      SCALING MODE
             description: Choose the scaling mode for the game screen.
             choices:
@@ -9617,7 +9632,7 @@ xemu:
                 "Stretch to full":     stretch
                 "Stretch to 16:9":     scale_16_9
                 "Stretch to 4:3":      scale_4_3
-        render:
+        xemu_render:
             prompt:       RENDERING RESOLUTION
             choices:
                 "1x (640x480)":     1
@@ -9636,19 +9651,18 @@ xemu:
             choices:
                 "Show":        "false"
                 "Skip":        "true"
-        use_dsp:
+        xemu_use_dsp:
             prompt:      USE DSP AUDIO
             description: Improve audio accuracy (experimental).
             choices:
                 "Enabled":      "true"
                 "Disabled":     "false"
-        use_zink:
-            group: ADVANCED OPTIONS
-            prompt: USE ZINK RENDERER
-            description: Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause performance loss.
+        xemu_memory:
+            prompt: SYSTEM MEMORY
+            description: Increase to 128 MiB for debug or homebrew applications.
             choices:
-                "Enabled":            "true"
-                "Disabled (Default)": "false"
+                "64MiB (Default)": 64
+                "128MiB":          128
 
 lexaloffle:
   features: [padtokeyboard]

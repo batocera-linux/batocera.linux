@@ -13,6 +13,7 @@ import controllersConfig
 import json
 import httplib2
 import time
+import shutil
 
 eslog = get_logger(__name__)
 
@@ -155,6 +156,10 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Folders", "InputProfiles", "inputprofiles")
     pcsx2INIConfig.set("Folders", "Videos", "../../../saves/ps2/pcsx2/videos")
 
+    # create cache folder
+    if not os.path.exists("/userdata/cache/ps2"):
+        os.makedirs("/userdata/cache/ps2")
+    
     ## [EmuCore]
     if not pcsx2INIConfig.has_section("EmuCore"):
         pcsx2INIConfig.add_section("EmuCore")
@@ -345,7 +350,12 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
         pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", system.config["pcsx2_bilinear_filtering"])
     else:
         pcsx2INIConfig.set("EmuCore/GS", "linear_present_mode", "1")
-        
+    # Load Texture Replacements
+    if system.isOptSet('pcsx2_texture_replacements'):
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", system.config["pcsx2_texture_replacements"])
+    else:
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "false")
+            
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
         pcsx2INIConfig.add_section("InputSources")
@@ -382,10 +392,18 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Hotkeys", "HoldTurbo", "Keyboard/Period")
 
     # guns
+
+    # clean gun sections
     if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "guncon2":
         pcsx2INIConfig.remove_option("USB1", "Type")
     if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "Type") and pcsx2INIConfig.get("USB2", "Type") == "guncon2":
         pcsx2INIConfig.remove_option("USB2", "Type")
+    if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "guncon2_Start"):
+        pcsx2INIConfig.remove_option("USB1", "guncon2_Start")
+    if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "guncon2_Start"):
+        pcsx2INIConfig.remove_option("USB2", "guncon2_Start")
+    ###
+
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
         if len(guns) >= 1:
             if not pcsx2INIConfig.has_section("USB1"):
@@ -408,14 +426,35 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
                         pcsx2INIConfig.set("USB2", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
                 nc = nc + 1
 
-    # hack for the fog bug for guns (time crisis zone)
-    if not pcsx2INIConfig.has_section("Folders"):
-        pcsx2INIConfig.add_section("Folders")
-    if not pcsx2INIConfig.has_section("EmuCore/GS"):
-        pcsx2INIConfig.add_section("EmuCore/GS")
-    pcsx2INIConfig.set("Folders", "Textures", "/usr/pcsx2/bin/resources/textures")
-    pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
+    # hack for the fog bug for guns (time crisis - crisis zone)
+    fog_files = [
+        "/usr/pcsx2/bin/resources/textures/SCES-52530/replacements/c321d53987f3986d-eadd4df7c9d76527-00005dd4.png",
+        "/usr/pcsx2/bin/resources/textures/SLUS-20927/replacements/c321d53987f3986d-eadd4df7c9d76527-00005dd4.png"
+    ]
+    texture_dir = config_directory + "/textures"
+    # copy textures if necessary to PCSX2 config folder
+    if system.isOptSet("pcsx2_crisis_fog") and system.config["pcsx2_crisis_fog"] == "true":
+        for file_path in fog_files:
+            parent_directory_name = os.path.basename(os.path.dirname(os.path.dirname(file_path)))
+            file_name = os.path.basename(file_path)
+            texture_directory_path = os.path.join(texture_dir, parent_directory_name, "replacements")
+            os.makedirs(texture_directory_path, exist_ok=True)
+            
+            destination_file_path = os.path.join(texture_directory_path, file_name)
 
+            shutil.copyfile(file_path, destination_file_path)
+        # set texture replacement on regardless of previous setting
+        pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "true")
+    else:
+        for file_path in fog_files:
+            parent_directory_name = os.path.basename(os.path.dirname(os.path.dirname(file_path)))
+            file_name = os.path.basename(file_path)
+            texture_directory_path = os.path.join(texture_dir, parent_directory_name, "replacements")
+            target_file_path = os.path.join(texture_directory_path, file_name)
+            
+            if os.path.isfile(target_file_path):
+                os.remove(target_file_path)
+    
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
         pcsx2INIConfig.add_section("Pad")
@@ -423,17 +462,54 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Pad", "MultitapPort1", "false")
     pcsx2INIConfig.set("Pad", "MultitapPort2", "false")
 
+    # add multitap as needed
+    multiTap = 2
+    joystick_count = len(controllers)
+    eslog.debug("Number of Controllers = {}".format(joystick_count))
+    if system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "4":
+        if joystick_count > 2 and joystick_count < 5:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = int(system.config["pcsx2_multitap"])
+        elif joystick_count > 4:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = 4
+            eslog.debug("*** You have too many connected controllers for this option, restricting to 4 ***")
+        else:
+            multiTap = 2
+            eslog.debug("*** You have the wrong number of connected controllers for this option ***")
+    elif system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "8":
+        if joystick_count > 4:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
+            multiTap = int(system.config["pcsx2_multitap"])
+        elif joystick_count > 2 and joystick_count < 5:
+            pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
+            multiTap = 4
+            eslog.debug("*** You don't have enough connected controllers for this option, restricting to 4 ***")
+        else:
+            multiTap = 2
+            eslog.debug("*** You don't have enough connected controllers for this option ***")
+    else:
+        multiTap = 2
+    
+    # remove the previous [Padx] sections to avoid phantom controllers
+    section_names = ["Pad1", "Pad2", "Pad3", "Pad4", "Pad5", "Pad6", "Pad7", "Pad8"]
+    for section_name in section_names:
+        if pcsx2INIConfig.has_section(section_name):
+            pcsx2INIConfig.remove_section(section_name)
+    
     # Now add Controllers
     nplayer = 1
     for controller, pad in sorted(controllers.items()):
-        if nplayer <= 8:
-            # automatically add the multi-tap
-            if nplayer >> 2:
-                pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
-            if nplayer >> 4:
-                pcsx2INIConfig.set("Pad", "MultitapPort2", "true")
-            pad_num = "Pad{}".format(nplayer)
-            sdl_num = "SDL-" + "{}".format(nplayer - 1)
+        # only configure the number of controllers set
+        if nplayer <= multiTap:
+            pad_index = nplayer
+            if multiTap == 4 and pad.index != 0:
+                # Skip Pad2 in the ini file when MultitapPort1 only
+                pad_index = nplayer + 1
+            pad_num = "Pad{}".format(pad_index)
+            sdl_num = "SDL-" + "{}".format(pad.index)
+            
             if not pcsx2INIConfig.has_section(pad_num):
                 pcsx2INIConfig.add_section(pad_num)
             

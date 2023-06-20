@@ -42,7 +42,7 @@ else
 BATOCERA_INITRAMFS_INITRDA=arm
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_A3GEN2),y)
     COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
 else
     # -l is needed to make initramfs boot, this compresses using Legacy format (Linux kernel compression)

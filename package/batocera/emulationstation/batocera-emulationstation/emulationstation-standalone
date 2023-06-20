@@ -123,6 +123,7 @@ do
         fi
 
         # Multitouch for touch screens
+        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
         if ! test -z "${TOUCHSCREEN}"
         then
             killall -9 touchegg

@@ -1,13 +1,3 @@
-From 2dafb9ddd4488521026d4a29e49164f1df108cef Mon Sep 17 00:00:00 2001
-From: Rudi Heitbaum <rudi@heitbaum.com>
-Date: Mon, 9 Jan 2023 07:47:01 +0000
-Subject: [PATCH] Bluetooth: btrtl: set HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE
- for  RTL8822BS
-
----
- drivers/bluetooth/btrtl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
 diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
 index 011857e303b6..c889b405c9aa 100644
 --- a/drivers/bluetooth/btrtl.c
@@ -17,7 +7,7 @@ index 011857e303b6..c889b405c9aa 100644
  		hci_set_aosp_capable(hdev);
  		break;
 +	case CHIP_ID_8822B:
-+		set_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FTR_MAX_PAGE, &hdev->quirks);
++		set_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2, &hdev->quirks);
  	default:
  		rtl_dev_dbg(hdev, "Central-peripheral role not enabled.");
  		rtl_dev_dbg(hdev, "WBS supported not enabled.");

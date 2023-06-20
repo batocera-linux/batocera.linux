@@ -8,7 +8,7 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-import socket
+import subprocess
 from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
@@ -60,15 +60,16 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def connected_to_internet(host="batocera.org", timeout=1):
-    try:
-        socket.setdefaulttimeout(timeout)
-        sock = socket.create_connection((host, 443), timeout) # Nobody uses http only, right?
-        sock.close()
+def connected_to_internet():
+    # same call as in es
+    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "8.8.8.8"]
+    process = subprocess.Popen(cmd)
+    process.wait()
+    if process.returncode == 0:
+        eslog.error(f"Connected to the internet")
         return True
-    except Exception as e:
-        eslog.error(f"Not connected to the internet: {host} responded with '{e}'")
-        return False
+    eslog.error(f"Not connected to the internet")
+    return False
 
 def writeLibretroConfig(generator, retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
@@ -589,7 +590,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                 retroarchConfig['cheevos_richpresence_enable'] = 'true'
             else:
                 retroarchConfig['cheevos_richpresence_enable'] = 'false'
-            if not connected_to_internet(host="retroachievements.org", timeout=1):
+            if not connected_to_internet():
                 retroarchConfig['cheevos_enable'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
@@ -819,10 +820,6 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
         retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
         retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
         retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
-
-    if core == "fbneo":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
 
     if core == "fbneo":
         retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''

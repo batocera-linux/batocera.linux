@@ -166,7 +166,7 @@ dl-dir:
 		make O=/$* BR2_EXTERNAL=/build BR2_GRAPH_OUT=svg -C /build/buildroot graph-depends
 
 %-shell: batocera-docker-image output-dir-%
-	$(if $(BATCH_MODE),$(error "not suppoorted in BATCH_MODE!"),)
+	$(if $(BATCH_MODE),$(if $(CMD),,$(error "not suppoorted in BATCH_MODE if CMD not specified!")),)
 	@$(DOCKER) run -t --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -177,7 +177,8 @@ dl-dir:
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		$(DOCKER_REPO)/$(IMAGE_NAME)
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
+		$(CMD)
 
 %-cleanbuild: %-clean %-build
 	@echo

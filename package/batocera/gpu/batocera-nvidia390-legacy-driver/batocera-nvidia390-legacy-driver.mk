@@ -179,7 +179,7 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/drivers/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	        $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
+	        $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(foreach p,$(BATOCERA_NVIDIA390_LEGACY_DRIVER_PROGS), \
 		$(INSTALL) -D -m 0755 $(@D)/$(p) \
 			$(TARGET_DIR)/usr/bin/$(p)
@@ -201,6 +201,7 @@ endef
 define BATOCERA_NVIDIA390_LEGACY_DRIVER_RENAME_KERNEL_MODULES
     mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
+	mkdir -p $(TARGET_DIR)/usr/share/nvidia/xorg/
     # rename the kernel modules to avoid conflict
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-legacy.ko
@@ -210,6 +211,8 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_RENAME_KERNEL_MODULES
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-drm-legacy.ko	
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-uvm-legacy.ko
+	mv -f $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
+	    $(TARGET_DIR)/usr/share/nvidia/xorg/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	# set the driver version file
 	echo $(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/legacy390.version
 endef

@@ -101,6 +101,8 @@ def copy_nvram_files():
 def copy_asset_files():
     sourceDir = "/usr/share/supermodel/Assets"
     targetDir = "/userdata/system/configs/supermodel/Assets"
+    if not os.path.exists(sourceDir):
+        return
     if not os.path.exists(targetDir):
         os.makedirs(targetDir)
 
@@ -114,6 +116,8 @@ def copy_asset_files():
 def copy_xml():
     source_path = '/usr/share/supermodel/Games.xml'
     dest_path = '/userdata/system/configs/supermodel/Games.xml'
+    if not os.path.exists('/userdata/system/configs/supermodel'):
+        os.makedirs('/userdata/system/configs/supermodel')
     if not os.path.exists(dest_path) or os.path.getmtime(source_path) > os.path.getmtime(dest_path):
         shutil.copy2(source_path, dest_path)
 
