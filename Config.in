@@ -21,6 +21,7 @@ menu "System"
 
   menu "Boot"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-initramfs/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-shim-signed-efi-x64/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-syslinux-efi/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-odroid-xu4/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-odroid-goa/Config.in"
@@ -489,6 +490,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/vdpauinfo/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/ledspicer/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/innoextract/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/mokutil/Config.in"
 endmenu
 
 menu "Cases"
