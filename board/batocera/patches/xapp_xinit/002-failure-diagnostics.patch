@@ -1,0 +1,23 @@
+--- a/startx.cpp
++++ b/startx.cpp
+@@ -333,5 +333,20 @@
+ kbd_mode -a
+ #endif
+ 
++if [ $retval -ne 0 ]; then
++    XCOMM X has crashed or otherwise failed
++    XCOMM Display some diagnostics instead of leaving the user at a Black Screen of Death
++
++    XCOMM Switch to the system console virtual terminal
++    chvt "$(cat /sys/devices/virtual/tty/console/active | tr -d 'a-z')"
++
++    XCOMM Pause to allow any system initialization messages to finish printing
++    sleep 10
++
++    XCOMM Display diagnostic information, omitting potentially confusing reference to X.Org wiki
++    sed -e '/X\.Org Foundation support/,+3d' /var/log/Xorg.0.log > /dev/console
++    echo "$(date): X server failed to start!  Log file is: /var/log/Xorg.0.log" > /dev/console
++fi
++
+ exit $retval
+ 
