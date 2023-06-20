@@ -12,6 +12,16 @@ FM_VIDEO=".*\.\(mp4\|MP4\)"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
+# CHA wants a specific splash file
+if [ -f /sys/firmware/devicetree/base/model ]; then
+    IFS= read -r BOARD_MODEL </sys/firmware/devicetree/base/model
+fi
+BOARD_MODEL="$(echo "$BOARD_MODEL" | sed -e s+"[^A-Za-z0-9]"+"_"+g)"
+BOARD_CHA="Capcom_Home_Arcade"
+if [ "${BOARD_MODEL}" = "${BOARD_CHA}" ]; then
+    DEFAULT="/usr/share/batocera/splash/Capcom.mp4"
+fi
+
 do_angels_conversion ()
 {
     [[ $1 -lt 0 || $1 -gt 3 ]] && echo 0 || echo $(($1*90))

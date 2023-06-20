@@ -85,6 +85,9 @@ BR2_PACKAGE_BATOCERA_ALL_SYSTEMS=y
 BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES=y
 BR2_SYSTEM_BIN_SH_DASH=y # /bin/sh implementation; set here because a `choice` cannot be `select`ed, e.g. from batocera-system/Config.in
 
+# Disable generating rootfs tar (speedup)
+BR2_TARGET_ROOTFS_TAR=n
+
 # images
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
