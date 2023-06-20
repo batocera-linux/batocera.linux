@@ -238,9 +238,20 @@ class LibretroGenerator(Generator):
                     lines = fpin.readlines()
                 rom = os.path.dirname(os.path.abspath(rom)) + '/' + lines[0].strip()
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+        # vitaquake2 - choose core based on directory
+        elif system.name == 'vitaquake2':
+            directory_path = os.path.dirname(rom)
+            if "xatrix" in directory_path:
+                system.config['core'] = "vitaquake2-xatrix"            
+            elif "rogue" in directory_path:
+                system.config['core'] = "vitaquake2-rogue"
+            elif "zaero" in directory_path:
+                system.config['core'] = "vitaquake2-zaero"
+            # set the updated core name
+            retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
-
 
         configToAppend = []
 

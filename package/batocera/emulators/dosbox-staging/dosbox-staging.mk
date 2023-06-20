@@ -35,12 +35,12 @@ DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mtune=cortex-a55
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a55
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X)$(BR2_PACKAGE_BATOCERA_TARGET_A3GEN2),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false

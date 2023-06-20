@@ -191,11 +191,6 @@ case "${1}" in
 	tail -f "./output/${arch}/build/build-time.log"
 	;;
     "push")
-	if test -z "${FTPBATOCERA}"
-	then
-	    echo_msg "-" "FTPBATOCERA not set" >&2
-	    exit 1
-	fi
 	ftptarget=${2}
 	checkFtpTarget "${ftptarget}" || exit 1
 	shift

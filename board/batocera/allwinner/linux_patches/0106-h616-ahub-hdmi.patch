@@ -1654,7 +1654,7 @@ index 000000000..fcdecd695
 +			return -EINVAL;
 +		}
 +	}
-+	if (clk_set_rate(clk_info->clk_module, freq_out / 2)) {
++	if (clk_set_rate(clk_info->clk_module, freq_out)) {
 +		SND_LOG_ERR(HLOG, "freq : %u module clk unsupport\n", freq_out);
 +		return -EINVAL;
 +	}

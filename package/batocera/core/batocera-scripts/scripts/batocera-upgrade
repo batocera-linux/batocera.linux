@@ -34,7 +34,7 @@ do_badgeines() {
             COUNT=$((COUNT+5))
             sleep 0.1
         else
-            CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\)[ \t].*$'+'\1'+)
+            CURVAL=$(stat --printf="%s" "/userdata/system/upgrade/boot.tar.xz")
             CURVAL=$((CURVAL / 1024 / 1024))
             PER=$((CURVAL * 100 / TARVAL))
             echo "$CURVAL of $TARVAL MB downloaded ... >>> ${PER}%"
@@ -60,7 +60,7 @@ settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 # force a default value in case the value is removed or miswritten
-test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
+test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly" && updatetype="stable"
 
 # custom the url directory
 DWD_HTTP_DIR="${updateurl}/${board}/${updatetype}/last"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-24 23:27+0200\n"
+"PO-Revision-Date: 2023-06-11 15:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -2866,17 +2866,17 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Rotated 4-Way Stick (Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
-msgid "Emable or disable high score saving"
-msgstr "Włączenie lub wyłączenie zapisywania wyników"
+msgid "Enable or disable high score saving"
+msgstr "Włączanie lub wyłączanie zapisywania najlepszych wyników."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "WTYCZKA PUNKTACJI GIER"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Włączone (domyślnie)"
@@ -2893,12 +2893,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "WTYCZKA DŹWIĘKOWA MONETY"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Włączone"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Wyłączone (domyślnie)"
@@ -3095,6 +3095,11 @@ msgstr "Oryginalne dyski Apple II"
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Kaseta"
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
+msgctxt "game_options"
+msgid "Hard Drive"
+msgstr "Dysk twardy"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3821,11 +3826,6 @@ msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
-msgctxt "game_options"
-msgid "Hard Drive"
-msgstr "Dysk twardy"
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
@@ -4078,7 +4078,7 @@ msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "Umożliwia obsługę do 5 lub 8 kontrolerów w obsługiwanych grach."
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "MULTITAP"
@@ -4412,11 +4412,12 @@ msgstr "Pełna szybkość"
 msgctxt "game_options"
 msgid "Only applies when using Parallel-RDP as the chosen RDP Plugin."
 msgstr ""
+"Dotyczy tylko korzystania z równoległego RDP jako wybranej wtyczki RDP."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
-msgstr ""
+msgstr "UPSCALER RÓWNOLEGŁY-RDP"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -4859,21 +4860,6 @@ msgstr "Mysz PCE"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Wyłączone jest bezpieczniejsze, włączone dla określonych gier."
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "Double the rendering resolution."
-msgstr "Podwojenie rozdzielczości renderowania."
-
-#. TRANSLATION: libretro/pcsx_rearmed, drastic
-msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "ZWIĘKSZONA ROZDZIELCZOŚĆ RENDEROWANIA"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "On (Speed hack)"
-msgstr "Włączone (hak szybkości)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
@@ -6798,7 +6784,7 @@ msgstr "Potrójne buforowanie"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Choose upscaling method."
-msgstr "Wybierz metodę skalowania do góry."
+msgstr "Wybierz metodę skalowania w górę."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7457,13 +7443,13 @@ msgstr "PREZENTACJA WIELOWĄTKOWA"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Auto (Match Window)"
-msgstr "Auto (dopasuj do okna)"
+msgid "Match Window"
+msgstr "Dopasuj okno"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "PAR 1:1"
-msgstr "PAR 1:1"
+msgstr "JEDEN DO JEDNEGO"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7477,8 +7463,8 @@ msgstr "PRZESKALOWANIE CAŁKOWITE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "ENabling will smooth out the image."
-msgstr "Włączenie spowoduje wygładzenie obrazu."
+msgid "Enabling will smooth out the image."
+msgstr "Włączenie tej opcji spowoduje wygładzenie obrazu."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7487,8 +7473,12 @@ msgstr "PRZESKALOWANIE LINIOWE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Fills the screen regardless of the aspect ratio."
-msgstr "Wypełnia ekran niezależnie od współczynnika proporcji."
+msgid ""
+"Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
+"Upscaling."
+msgstr ""
+"Wypełnia ekran niezależnie od współczynnika proporcji. Nie działa z "
+"Przeskalowaniem Całkowitym."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7970,7 +7960,7 @@ msgstr "Mega STE 2.06"
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "TOS languages."
-msgstr "języki TOS."
+msgstr "Języki TOS."
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -8480,27 +8470,27 @@ msgstr "Proste 2x"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Fit to Window / Fullscreen"
-msgstr ""
+msgstr "Dopasuj do okna / pełny ekran"
 
 #. TRANSLATION: pcsx2, pcsx2
 msgctxt "game_options"
 msgid "Auto Standard (4:3 interlaced / 3:2 progressive)"
-msgstr ""
+msgstr "Auto standardowe (4:3 z przeplotem / 3:2 progresywne)"
 
 #. TRANSLATION: pcsx2, pcsx2
 msgctxt "game_options"
 msgid "Standard (4:3)"
-msgstr ""
+msgstr "Standardowe (4:3)"
 
 #. TRANSLATION: pcsx2, pcsx2
 msgctxt "game_options"
 msgid "Widescreen (16:9)"
-msgstr ""
+msgstr "Panoramiczne (16:9)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Adjusts Full Motion Video movies aspect ratio."
-msgstr ""
+msgstr "Dostosowuje współczynnik proporcji filmów Full Motion Video."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8510,7 +8500,7 @@ msgstr "WSPÓŁCZYNNIK PROPORCJI FMV"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "FMV movie deinterlacing."
-msgstr ""
+msgstr "Usuwanie przeplotu w filmach FMV."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8520,42 +8510,42 @@ msgstr "USUWANIE PRZEPLOTU"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Weave (Top Field First)"
-msgstr ""
+msgstr "Splot (najpierw górne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Weave (Bottom Field First)"
-msgstr ""
+msgstr "Splot (najpierw dolne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bob (Top Field First)"
-msgstr ""
+msgstr "Bob (pierwsze górne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bob (Bottom Field First)"
-msgstr ""
+msgstr "Bob (pierwsze dolne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Blend (Top Field First)"
-msgstr ""
+msgstr "Mieszanie (najpierw górne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Blend (Bottom Field First)"
-msgstr ""
+msgstr "Mieszanie (najpierw dolne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Adaptive (Top Field First)"
-msgstr ""
+msgstr "Adaptacyjne (najpierw górne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Adaptive (Bottom Field First)"
-msgstr ""
+msgstr "Adaptacyjnie (najpierw dolne pole)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8563,6 +8553,8 @@ msgid ""
 "Smooths the overall picture as it is displayed on the screen. Corrects "
 "positioning between pixels."
 msgstr ""
+"Wygładza ogólny obraz wyświetlany na ekranie. Koryguje położenie między "
+"pikselami."
 
 #. TRANSLATION: pcsx2, model2emu
 msgctxt "game_options"
@@ -8572,12 +8564,12 @@ msgstr "FILTROWANIE DWULINIOWE"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bilinear (Smooth)"
-msgstr ""
+msgstr "Dwuliniowe (wygładzone)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bilinear (Sharp)"
-msgstr ""
+msgstr "Dwuliniowe (ostre)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8587,7 +8579,7 @@ msgstr "WŁĄCZ ŁATKI SZEROKOEKRANOWE"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Enable to improve bluriness."
-msgstr ""
+msgstr "Włącz, aby poprawić rozmycie."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8597,97 +8589,97 @@ msgstr "ANTY-BLUR"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Enable No-interlacing Patches."
-msgstr ""
+msgstr "Włącz poprawki dla usuwania przeplotu."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "INTERLACING PATCHES"
-msgstr "ŁATKI PRZEPLOTU"
+msgstr "POPRAWKI PRZEPLOTU"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Can sharpen images in lower resolutions."
-msgstr ""
+msgstr "Może wyostrzać obrazy w niższych rozdzielczościach."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Native (PS2)(Default)"
-msgstr ""
+msgstr "Natywna (PS2)(domyślnie)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "1.25x Native"
-msgstr ""
+msgstr "1,25x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "1.5x Native"
-msgstr ""
+msgstr "1,5x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "1.75x Native"
-msgstr ""
+msgstr "1,75x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "2x Native (~720p)"
-msgstr ""
+msgstr "2x natywnej (~720p)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "2.25x Native"
-msgstr ""
+msgstr "2.25x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "2.5x Native"
-msgstr ""
+msgstr "2.5x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "2.75x Native"
-msgstr ""
+msgstr "2.75x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "3x Native (~1080p)"
-msgstr ""
+msgstr "3x natywnej  (~1080p)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "3.5x Native"
-msgstr ""
+msgstr "3.5x natywnej"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "4x Native (~1440p/2K)"
-msgstr ""
+msgstr "4x natywnej (~1440p/2K)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "5x Native (~1620p)"
-msgstr ""
+msgstr "5x natywnej (~1620p)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "6x Native (~2160p/4K)"
-msgstr ""
+msgstr "6x natywnej (~2160p/4K)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "7x Native (~2520p)"
-msgstr ""
+msgstr "7x natywnej (~2520p)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "8x Native (~2880p/5K)"
-msgstr ""
+msgstr "8x natywnej (~2880p/5K)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Choose mipmapping type."
-msgstr ""
+msgstr "Wybierz typ mipmappingu."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8697,37 +8689,37 @@ msgstr "MIPMAPPING"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Basic (generated Mipmaps)"
-msgstr ""
+msgstr "Podstawowe (wygenerowane Mipmapy)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Full (PS2 Mipmaps)"
-msgstr ""
+msgstr "Pełne (Mipmapy PS2)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Control the texture filtering of the emulation."
-msgstr ""
+msgstr "Kontroluje filtrowanie tekstur emulacji."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bilinear (Forced)"
-msgstr ""
+msgstr "Dwuliniowe (wymuszone)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bilinear (PS2)"
-msgstr ""
+msgstr "Dwuliniowe (PS2)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Bilinear (Forced excluding sprite)"
-msgstr ""
+msgstr "Dwuliniowe (wymuszone z wyłączeniem sprite'ów)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Control the texture's trilinear filtering of the emulation."
-msgstr ""
+msgstr "Kontroluje trójliniowe filtrowanie tekstur emulacji."
 
 #. TRANSLATION: pcsx2, model2emu
 msgctxt "game_options"
@@ -8737,23 +8729,23 @@ msgstr "FILTROWANIE TRÓJLINIOWE"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Off (None)"
-msgstr ""
+msgstr "Wył. (Brak)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Trilinear (PS2)"
-msgstr ""
+msgstr "Trójliniowe (PS2)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Trilinear (Forced)"
-msgstr ""
+msgstr "Trójliniowe (wymuszone)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid ""
 "Reduces banding between colours and improves the preceived colour depth."
-msgstr ""
+msgstr "Zmniejsza pasma między kolorami i poprawia postrzeganą głębię kolorów."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8763,12 +8755,12 @@ msgstr "DITHERING"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Unscaled (Default)"
-msgstr ""
+msgstr "Nieskalowane (domyślnie)"
 
 #. TRANSLATION: pcsx2, pcsx2
 msgctxt "game_options"
 msgid "Basic (Recommended)"
-msgstr ""
+msgstr "Podstawowe (zalecane)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8776,6 +8768,8 @@ msgid ""
 "The higher the setting, the more blending is emulated in the shader "
 "accurately, and the higher the speed penalty will be."
 msgstr ""
+"Im wyższe ustawienie, tym dokładniejsze mieszanie jest emulowane w module "
+"cieniującym i tym większy będzie spadek szybkości."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8785,17 +8779,17 @@ msgstr "DOKŁADNOŚĆ MIESZANIA"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Minimum"
-msgstr ""
+msgstr "Minimalne"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Full (Slow)"
-msgstr ""
+msgstr "Pełne (powolne)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum (Very Slow)"
-msgstr ""
+msgstr "Maksymalne (bardzo wolne)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8803,6 +8797,8 @@ msgid ""
 "Uploads entire textures at once instead of small pieces. Improves "
 "performance in most games."
 msgstr ""
+"Przesyła całe tekstury naraz zamiast małych fragmentów. Poprawia wydajność w "
+"większości gier."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8812,12 +8808,12 @@ msgstr "WSTĘPNE ŁADOWANIE TEKSTUR"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Partial"
-msgstr ""
+msgstr "Częściowe"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Full (Hash Cache)"
-msgstr ""
+msgstr "Pełne (Hash Cache)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8841,6 +8837,7 @@ msgid ""
 "Applies the FXAA anti-aliasing algorithm to improve the visual quality of "
 "games."
 msgstr ""
+"Stosuje algorytm antyaliasingu FXAA w celu poprawy jakości wizualnej gier."
 
 #. TRANSLATION: pcsx2, yuzu, vita3k
 msgctxt "game_options"
@@ -8850,12 +8847,56 @@ msgstr "FXAA"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Automatically loads and applies cheats on game start."
-msgstr ""
+msgstr "Automatycznie ładuje i stosuje cheaty podczas uruchamiania gry."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "CHEATS"
-msgstr "KODY"
+msgstr "CHEATY"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows up to 8 controllers in supported games."
+msgstr "Umożliwia podłączenie do 8 kontrolerów w obsługiwanych grach."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 2 Players (Default)"
+msgstr "Maksymalnie 2 graczy (domyślnie)"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 4 Players"
+msgstr "Maksymalnie 4 graczy"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 8 Players"
+msgstr "Maksymalnie 8 graczy"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows user replaceable textures."
+msgstr "Umożliwia wymianę tekstur przez użytkownika."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE REPLACEMENTS"
+msgstr "ZAMIENNIKI TEKSTUR"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Necessary for some guns to replace fog textures as a workaround in Time "
+"Crisis - Crisis Zone."
+msgstr ""
+"Konieczne dla niektórych broni, aby zastąpić tekstury mgły jako obejście w "
+"Time Crisis - Crisis Zone."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TIME CRISIS FOG HACK"
+msgstr "HACK MGŁY DLA TIME CRISIS"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9335,6 +9376,8 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's."
 msgstr ""
+"Strumieniowe przesyłanie tekstur do GPU w trybie równoległym. Może poprawić "
+"wydajność na mocniejszych procesorach graficznych."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9344,7 +9387,7 @@ msgstr "ASYNCHRONICZNE STRUMIENIOWANIE TEKSTUR"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Choose number of audio channels."
-msgstr ""
+msgstr "Wybierz liczbę kanałów audio."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9359,12 +9402,12 @@ msgstr "Stereo"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Surround 5.1"
-msgstr ""
+msgstr "Dźwięk przestrzenny 5.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Surround 7.1"
-msgstr ""
+msgstr "Dźwięk przestrzenny 7.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9690,37 +9733,37 @@ msgstr "50 (domyślnie)"
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred aspect ratio.."
-msgstr ""
+msgstr "Wybierz preferowany współczynnik proporcji."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "4x3 (Default)"
-msgstr ""
+msgstr "4x3 (domyślnie)"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred video filter."
-msgstr ""
+msgstr "Wybierz preferowany filtr wideo."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale2x"
-msgstr ""
+msgstr "Skala2x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale3x"
-msgstr ""
+msgstr "Skala3x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Scale4x"
-msgstr ""
+msgstr "Skala4x"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Choose your preferred video quality."
-msgstr ""
+msgstr "Wybierz preferowaną jakość wideo."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
@@ -9730,17 +9773,17 @@ msgstr "JAKOŚĆ WIDEO"
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "linear"
-msgstr ""
+msgstr "liniowa"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "best"
-msgstr ""
+msgstr "najlepsza"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "Enabled or disbale the mouse cursor. Useful for CG's menus."
-msgstr ""
+msgstr "Włącz lub usuń kursor myszy. Przydatne dla menu CG."
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
@@ -9845,11 +9888,6 @@ msgstr "Obraz dysku"
 msgctxt "game_options"
 msgid "Interton VC 4000 cartridges"
 msgstr "Kartridże Interton VC 4000"
-
-#. TRANSLATION: mame/pcsx2
-msgctxt "game_options"
-msgid "Enable or disable high score saving"
-msgstr "Włączanie lub wyłączanie zapisywania najlepszych wyników."
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
@@ -10181,6 +10219,11 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "ZWIĘKSZONA ROZDZIELCZOŚĆ RENDEROWANIA"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -10288,17 +10331,23 @@ msgstr "UŻYWAJ DŹWIĘKU DSP"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid ""
-"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
-"performance loss."
-msgstr ""
-"Użyj renderera Zink (OpenGL to Vulkan), aby naprawić problemy z grafiką. "
-"Może spowodować spadek wydajności."
+msgid "Increase to 128 MiB for debug or homebrew applications."
+msgstr "Zwiększenie do 128 MB dla debugowania lub aplikacji homebrew."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "USE ZINK RENDERER"
-msgstr "UŻYJ RENDERERA ZINK"
+msgid "SYSTEM MEMORY"
+msgstr "PAMIĘĆ SYSTEMU"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "64MiB (Default)"
+msgstr "64 MB (domyślnie)"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "128MiB"
+msgstr "128MiB"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -10764,7 +10813,7 @@ msgstr "UCT"
 #. TRANSLATION: yuzu
 msgctxt "game_options"
 msgid "Univarsal"
-msgstr "Uniwersalny"
+msgstr "Uniwersalna"
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -10959,7 +11008,7 @@ msgstr "UTC+12"
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "This can be convenient if you're using laserdiscs."
-msgstr ""
+msgstr "Może to być wygodne w przypadku korzystania z dysków laserowych."
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -10969,17 +11018,17 @@ msgstr "SZYBKOŚĆ ŁADOWANIA"
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Realistic Loading"
-msgstr ""
+msgstr "Ładowanie realistyczne"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Full Speed (Default)"
-msgstr ""
+msgstr "Pełna prędkość (domyślnie)"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Choose the appropriate media for disk image."
-msgstr ""
+msgstr "Wybierz odpowiedni nośnik dla obrazu dysku."
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -10989,12 +11038,12 @@ msgstr "TYP DYSKU"
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Floppy Disk Image"
-msgstr ""
+msgstr "Obraz dyskietki"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "Hard Disk Image"
-msgstr ""
+msgstr "Obraz dysku twardego"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -11002,6 +11051,8 @@ msgid ""
 "This option enables the ability to play Xbox Live Arcacde games. May cause "
 "compatibility issues with non-XBLA games."
 msgstr ""
+"Ta opcja umożliwia granie w gry Xbox Live Arcacde. Może powodować problemy "
+"ze zgodnością z grami innymi niż XBLA."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -11011,37 +11062,39 @@ msgstr "XBOX LIVE ARCADE"
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "No licenses enabled"
-msgstr ""
+msgstr "Brak włączonych licencji"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "XBLA license enabled (Default)"
-msgstr ""
+msgstr "Włączona licencja XBLA (domyślnie)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "All possible licenses (Not recommended)"
-msgstr ""
+msgstr "Wszystkie możliwe licencje (niezalecane)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Choose to display UI prompts or accept defaults."
 msgstr ""
+"Wybierz wyświetlanie komunikatów interfejsu użytkownika lub zaakceptuj "
+"ustawienia domyślne."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "UI PROMPTS"
-msgstr "MONITY INTERFEJSU"
+msgstr "KOMUNIKATY INTERFEJSU"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Enabled UI prompts (Default)"
-msgstr ""
+msgstr "Włączone komunikaty interfejsu użytkownika (domyślnie)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Disable UI prompts"
-msgstr ""
+msgstr "Wyłącz komunikaty interfejsu użytkownika"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -11064,6 +11117,8 @@ msgid ""
 "Allow game that support different resolutions to be rendered in specific "
 "resolution."
 msgstr ""
+"Umożliwia renderowanie gier obsługujących różne rozdzielczości w określonej "
+"rozdzielczości."
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
@@ -11518,6 +11573,42 @@ msgstr "Menu podręczne"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Przewijanie do przodu"
+
+#~ msgctxt "game_options"
+#~ msgid "Emable or disable high score saving"
+#~ msgstr "Włączenie lub wyłączenie zapisywania wyników"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto (Match Window)"
+#~ msgstr "Auto (dopasuj do okna)"
+
+#~ msgctxt "game_options"
+#~ msgid "ENabling will smooth out the image."
+#~ msgstr "Włączenie spowoduje wygładzenie obrazu."
+
+#~ msgctxt "game_options"
+#~ msgid "Fills the screen regardless of the aspect ratio."
+#~ msgstr "Wypełnia ekran niezależnie od współczynnika proporcji."
+
+#~ msgctxt "game_options"
+#~ msgid "Double the rendering resolution."
+#~ msgstr "Podwojenie rozdzielczości renderowania."
+
+#~ msgctxt "game_options"
+#~ msgid "On (Speed hack)"
+#~ msgstr "Włączone (hak szybkości)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May "
+#~ "cause performance loss."
+#~ msgstr ""
+#~ "Użyj renderera Zink (OpenGL to Vulkan), aby naprawić problemy z grafiką. "
+#~ "Może spowodować spadek wydajności."
+
+#~ msgctxt "game_options"
+#~ msgid "USE ZINK RENDERER"
+#~ msgstr "UŻYJ RENDERERA ZINK"
 
 #~ msgctxt "game_options"
 #~ msgid "Distorts the output to fill the display fully."

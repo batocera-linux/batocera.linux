@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-24 23:50+0800\n"
+"PO-Revision-Date: 2023-06-10 23:54+0800\n"
 "Last-Translator: wanger\n"
 "Language-Team: 王二\n"
 "Language: zh_CN\n"
@@ -2811,9 +2811,9 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "旋转四向杆(Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
-msgid "Emable or disable high score saving"
+msgid "Enable or disable high score saving"
 msgstr "启用或禁用高分保存"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
@@ -2821,7 +2821,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "高分插件"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "启用(默认)"
@@ -2836,12 +2836,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "硬币声音插件"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "启用"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "禁用(默认)"
@@ -3033,6 +3033,11 @@ msgstr "Apple II 原盘"
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "盒式"
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
+msgctxt "game_options"
+msgid "Hard Drive"
+msgstr "硬盘"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3751,11 +3756,6 @@ msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
-msgctxt "game_options"
-msgid "Hard Drive"
-msgstr "硬盘"
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
@@ -4006,7 +4006,7 @@ msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "在支持的游戏中最多允许5或8个控制器."
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "多点定位"
@@ -4782,21 +4782,6 @@ msgstr "PCE 鼠标"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "关闭更安全，对于特定游戏打开."
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "Double the rendering resolution."
-msgstr "渲染分辨率加倍."
-
-#. TRANSLATION: libretro/pcsx_rearmed, drastic
-msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "增强的渲染分辨率"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "On (Speed hack)"
-msgstr "开启 (速度破解)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
@@ -7337,8 +7322,8 @@ msgstr "多线程呈现"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Auto (Match Window)"
-msgstr "自动（匹配窗口）"
+msgid "Match Window"
+msgstr "匹配窗口"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7357,8 +7342,8 @@ msgstr "整数放大"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "ENabling will smooth out the image."
-msgstr "启用将使图像平滑."
+msgid "Enabling will smooth out the image."
+msgstr "启用将使图像更加平滑."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7367,8 +7352,10 @@ msgstr "线性放大"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Fills the screen regardless of the aspect ratio."
-msgstr "填充屏幕，而不考虑纵横比."
+msgid ""
+"Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
+"Upscaling."
+msgstr "仅填充屏幕而不考虑长宽比，不适用于整数放大."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8712,6 +8699,48 @@ msgctxt "game_options"
 msgid "CHEATS"
 msgstr "作弊"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows up to 8 controllers in supported games."
+msgstr "在支持的游戏中最多允许8个控制器."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 2 Players (Default)"
+msgstr "最多2名玩家(默认)"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 4 Players"
+msgstr "最多4名玩家"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 8 Players"
+msgstr "最多8名玩家"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows user replaceable textures."
+msgstr "允许用户更换纹理."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE REPLACEMENTS"
+msgstr "纹理替换"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Necessary for some guns to replace fog textures as a workaround in Time "
+"Crisis - Crisis Zone."
+msgstr "在《时空危机危机区》中，一些枪械的替换雾霭纹理是必要的解决方法."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TIME CRISIS FOG HACK"
+msgstr "《时空危机》雾霭变通解决方案"
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
@@ -9656,11 +9685,6 @@ msgstr "Interton VC 4000盒式磁带"
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
-msgid "Enable or disable high score saving"
-msgstr "启用或禁用高分保存"
-
-#. TRANSLATION: mame/pcsx2
-msgctxt "game_options"
 msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
@@ -9971,6 +9995,11 @@ msgstr "增强.增加渲染分辨率.使3D画面更加清晰."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "增强的渲染分辨率"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -10072,15 +10101,23 @@ msgstr "视频静音"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid ""
-"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
-"performance loss."
-msgstr "使用Zink（OpenGL到Vulkan）渲染器修复图形问题。可能导致性能损失."
+msgid "Increase to 128 MiB for debug or homebrew applications."
+msgstr "将内存增加到128 MiB，以支持调试或自制应用程序."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "USE ZINK RENDERER"
-msgstr "使用ZINK渲染器"
+msgid "SYSTEM MEMORY"
+msgstr "系统内存"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "64MiB (Default)"
+msgstr "64MiB (默认)"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "128MiB"
+msgstr "128MiB"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -11291,6 +11328,40 @@ msgstr "快速菜单"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "快进"
+
+#~ msgctxt "game_options"
+#~ msgid "Emable or disable high score saving"
+#~ msgstr "启用或禁用高分保存"
+
+#~ msgctxt "game_options"
+#~ msgid "Auto (Match Window)"
+#~ msgstr "自动（匹配窗口）"
+
+#~ msgctxt "game_options"
+#~ msgid "ENabling will smooth out the image."
+#~ msgstr "启用将使图像平滑."
+
+#~ msgctxt "game_options"
+#~ msgid "Fills the screen regardless of the aspect ratio."
+#~ msgstr "填充屏幕，而不考虑纵横比."
+
+#~ msgctxt "game_options"
+#~ msgid "Double the rendering resolution."
+#~ msgstr "渲染分辨率加倍."
+
+#~ msgctxt "game_options"
+#~ msgid "On (Speed hack)"
+#~ msgstr "开启 (速度破解)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May "
+#~ "cause performance loss."
+#~ msgstr "使用Zink（OpenGL到Vulkan）渲染器修复图形问题。可能导致性能损失."
+
+#~ msgctxt "game_options"
+#~ msgid "USE ZINK RENDERER"
+#~ msgstr "使用ZINK渲染器"
 
 #~ msgctxt "game_options"
 #~ msgid "Distorts the output to fill the display fully."

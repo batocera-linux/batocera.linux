@@ -449,8 +449,11 @@ then
 	    mkdir -p /var/run/nvidia/xorg
 	    ln -sf /usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
         ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-	    ln -sf /usr/lib/xorg/modules/extensions/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION /var/run/nvidia/xorg/libglx.so
-        ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/xorg/modules/extensions/libglx.so
+	    # libglx.so
+        ln -sf /usr/share/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION /var/run/nvidia/xorg/libglx.so
+        ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/nvidia/xorg/libglx.so
+        ln -sf /usr/share/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION /var/run/nvidia/xorg/libglx.so.1
+        ln -sf /var/run/nvidia/xorg/libglx.so.1 /usr/lib/nvidia/xorg/libglx.so.1
 	    
         # link GL config files
 	    mkdir -p /var/run/nvidia/configs

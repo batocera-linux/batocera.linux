@@ -2828,9 +2828,9 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Rotated 4-Way Stick (Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
-msgid "Emable or disable high score saving"
+msgid "Enable or disable high score saving"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
@@ -2838,7 +2838,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr ""
@@ -2853,12 +2853,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr ""
@@ -3050,6 +3050,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Cassette"
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
+msgctxt "game_options"
+msgid "Hard Drive"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3768,11 +3773,6 @@ msgctxt "game_options"
 msgid "CD"
 msgstr ""
 
-#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
-msgctxt "game_options"
-msgid "Hard Drive"
-msgstr ""
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
@@ -4023,7 +4023,7 @@ msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "Staat 5 tot 8 controllers toe in ondersteunde spellen."
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "MULTITAP"
@@ -4802,21 +4802,6 @@ msgstr "PCE Muis"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Uit is veiliger, Aan voor specifieke spellen"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "Double the rendering resolution."
-msgstr ""
-
-#. TRANSLATION: libretro/pcsx_rearmed, drastic
-msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "VERBETERDE RENDER RESOLUTIE"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "On (Speed hack)"
-msgstr "Aan (Speed Hack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
@@ -7373,7 +7358,7 @@ msgstr "THREADED PRESENTATION"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Auto (Match Window)"
+msgid "Match Window"
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -7393,7 +7378,7 @@ msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "ENabling will smooth out the image."
+msgid "Enabling will smooth out the image."
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -7403,7 +7388,9 @@ msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Fills the screen regardless of the aspect ratio."
+msgid ""
+"Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
+"Upscaling."
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -8754,6 +8741,48 @@ msgctxt "game_options"
 msgid "CHEATS"
 msgstr ""
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows up to 8 controllers in supported games."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 2 Players (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 4 Players"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 8 Players"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows user replaceable textures."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE REPLACEMENTS"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Necessary for some guns to replace fog textures as a workaround in Time "
+"Crisis - Crisis Zone."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TIME CRISIS FOG HACK"
+msgstr ""
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
@@ -9707,11 +9736,6 @@ msgstr ""
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
-msgid "Enable or disable high score saving"
-msgstr ""
-
-#. TRANSLATION: mame/pcsx2
-msgctxt "game_options"
 msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
@@ -10025,6 +10049,11 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "VERBETERDE RENDER RESOLUTIE"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -10126,14 +10155,22 @@ msgstr ""
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid ""
-"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
-"performance loss."
+msgid "Increase to 128 MiB for debug or homebrew applications."
 msgstr ""
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "USE ZINK RENDERER"
+msgid "SYSTEM MEMORY"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "64MiB (Default)"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "128MiB"
 msgstr ""
 
 #. TRANSLATION: sonic2013
@@ -11354,6 +11391,10 @@ msgstr ""
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid "On (Speed hack)"
+#~ msgstr "Aan (Speed Hack)"
 
 #~ msgctxt "game_options"
 #~ msgid "Recompiler (Fastest)"

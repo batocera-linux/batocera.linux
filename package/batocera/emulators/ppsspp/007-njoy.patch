@@ -36,33 +36,6 @@ index b9e0a83..45e470c 100644
  	}
  }
  
-@@ -163,7 +165,7 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
- 				KeyInput key;
- 				key.flags = KEY_DOWN;
- 				key.keyCode = code;
--				key.deviceId = DEVICE_ID_PAD_0 + getDeviceIndex(event.cbutton.which);
-+				key.deviceId = DEVICE_ID_PAD_0;
- 				NativeKey(key);
- 			}
- 		}
-@@ -175,7 +177,7 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
- 				KeyInput key;
- 				key.flags = KEY_UP;
- 				key.keyCode = code;
--				key.deviceId = DEVICE_ID_PAD_0 + getDeviceIndex(event.cbutton.which);
-+				key.deviceId = DEVICE_ID_PAD_0;
- 				NativeKey(key);
- 			}
- 		}
-@@ -186,7 +188,7 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
- 		axis.value = event.caxis.value / 32767.0f;
- 		if (axis.value > 1.0f) axis.value = 1.0f;
- 		if (axis.value < -1.0f) axis.value = -1.0f;
--		axis.deviceId = DEVICE_ID_PAD_0 + getDeviceIndex(event.caxis.which);
-+		axis.deviceId = DEVICE_ID_PAD_0;
- 		NativeAxis(axis);
- 		break;
- 	case SDL_CONTROLLERDEVICEREMOVED:
 @@ -200,11 +202,9 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
  		}
  		break;

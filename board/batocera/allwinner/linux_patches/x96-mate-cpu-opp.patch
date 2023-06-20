@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-17 18:09:45.739709955 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-17 18:10:00.709698970 +0200
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+ 
+ #include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>

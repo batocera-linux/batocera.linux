@@ -2847,17 +2847,17 @@ msgctxt "game_options"
 msgid "Rotated 4-Way Stick (Q*Bert)"
 msgstr "Otočná 4-Cestná Tyč (Q*Bert)"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
-msgid "Emable or disable high score saving"
-msgstr "Umožnit nebo zakázat ukládání vysokého skóre"
+msgid "Enable or disable high score saving"
+msgstr "Povolení nebo zakázání ukládání vysokého skóre"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "PLUGIN PRO VYSOKÉ SKÓRE"
 
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Povoleno (Výchozí)"
@@ -2873,12 +2873,12 @@ msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "ZVUKOVÝ PLUGIN PRO MINCE"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Povoleno"
 
-#. TRANSLATION: libretro/mame, cemu, cemu, cemu, cemu, ...
+#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Zakázáno (Výchozí)"
@@ -3076,6 +3076,11 @@ msgstr "Originální disky Apple II"
 msgctxt "game_options"
 msgid "Cassette"
 msgstr "Kazeta"
+
+#. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
+msgctxt "game_options"
+msgid "Hard Drive"
+msgstr "Pevný Disk"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3801,11 +3806,6 @@ msgctxt "game_options"
 msgid "CD"
 msgstr "CD"
 
-#. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
-msgctxt "game_options"
-msgid "Hard Drive"
-msgstr "Pevný Disk"
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Select a boot disk or hard drive if needed"
@@ -4056,7 +4056,7 @@ msgctxt "game_options"
 msgid "Allows up to 5 or 8 controllers in supported games."
 msgstr "Umožňuje až 5 nebo 8 ovladačů v podporovaných hrách."
 
-#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro
+#. TRANSLATION: libretro/mednafen_psx, libretro/pcsx_rearmed, libretro/yabasanshiro, pcsx2
 msgctxt "game_options"
 msgid "MULTITAP"
 msgstr "MULTITAP"
@@ -4835,21 +4835,6 @@ msgstr "Myš PCE"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Vypnout je bezpečnější, Zapnout pro konkrétní hry."
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "Double the rendering resolution."
-msgstr "Zdvojnásobte rozlišení vykreslování."
-
-#. TRANSLATION: libretro/pcsx_rearmed, drastic
-msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "On (Speed hack)"
-msgstr "Zapnout (Rychlostní hack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/yabasanshiro
 msgctxt "game_options"
@@ -7414,7 +7399,7 @@ msgstr "ZÁVITOVÁ PREZENTACE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Auto (Match Window)"
+msgid "Match Window"
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -7434,7 +7419,7 @@ msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "ENabling will smooth out the image."
+msgid "Enabling will smooth out the image."
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -7444,7 +7429,9 @@ msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Fills the screen regardless of the aspect ratio."
+msgid ""
+"Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
+"Upscaling."
 msgstr ""
 
 #. TRANSLATION: duckstation
@@ -8813,6 +8800,48 @@ msgctxt "game_options"
 msgid "CHEATS"
 msgstr "CHEATY"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows up to 8 controllers in supported games."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 2 Players (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 4 Players"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Maximum 8 Players"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Allows user replaceable textures."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TEXTURE REPLACEMENTS"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Necessary for some guns to replace fog textures as a workaround in Time "
+"Crisis - Crisis Zone."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "TIME CRISIS FOG HACK"
+msgstr ""
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
@@ -9784,11 +9813,6 @@ msgstr "Kazety Interton VC 4000"
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
-msgid "Enable or disable high score saving"
-msgstr "Povolení nebo zakázání ukládání vysokého skóre"
-
-#. TRANSLATION: mame/pcsx2
-msgctxt "game_options"
 msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
@@ -10111,6 +10135,11 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "VYLEPŠENÉ ROZLIŠENÍ VYKRESLOVÁNÍ"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -10218,17 +10247,23 @@ msgstr "POUŽITÍ ZVUK DSP"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid ""
-"Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May cause "
-"performance loss."
+msgid "Increase to 128 MiB for debug or homebrew applications."
 msgstr ""
-"K odstranění problémů s grafikou použijte vykreslovací program Zink (OpenGL "
-"na Vulkan). Může způsobit snížení výkonu."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
-msgid "USE ZINK RENDERER"
-msgstr "POUŽÍT VYKRESLOVAČ ZINK"
+msgid "SYSTEM MEMORY"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "64MiB (Default)"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "128MiB"
+msgstr ""
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -11449,6 +11484,30 @@ msgstr "Rychlé menu"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Rychle vpřed"
+
+#~ msgctxt "game_options"
+#~ msgid "Emable or disable high score saving"
+#~ msgstr "Umožnit nebo zakázat ukládání vysokého skóre"
+
+#~ msgctxt "game_options"
+#~ msgid "Double the rendering resolution."
+#~ msgstr "Zdvojnásobte rozlišení vykreslování."
+
+#~ msgctxt "game_options"
+#~ msgid "On (Speed hack)"
+#~ msgstr "Zapnout (Rychlostní hack)"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use the Zink (OpenGL to Vulkan) renderer to fix graphics issues. May "
+#~ "cause performance loss."
+#~ msgstr ""
+#~ "K odstranění problémů s grafikou použijte vykreslovací program Zink "
+#~ "(OpenGL na Vulkan). Může způsobit snížení výkonu."
+
+#~ msgctxt "game_options"
+#~ msgid "USE ZINK RENDERER"
+#~ msgstr "POUŽÍT VYKRESLOVAČ ZINK"
 
 #~ msgctxt "game_options"
 #~ msgid "Distorts the output to fill the display fully."
