@@ -4585,3 +4585,57 @@ psvita:
     Isso permitirá que o Emulation Station veja seu jogo instalado e o inicie por meio da GUI do ES.
 
     Consulte o wiki - https://wiki.batocera.org/playground:systems:psvita
+
+boom3:
+  name: Boom3
+  manufacturer: Ports
+  release: 2004
+  hardware: port
+  extensions: [boom3]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      boom3: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BOOM3] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:boom3
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:boom3
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:boom3
+
+reminiscence:
+  name: REminiscence
+  manufacturer: Ports
+  release: 1992
+  hardware: port
+  extensions: [rem]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      reminiscence: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REMINISCENCE] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:reminiscence
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:reminiscence
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:reminiscence
+
+openlara:
+  name: OpenLara
+  manufacturer: Ports
+  release: 1996
+  hardware: port
+  extensions: [phd, psx, tr2]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      openlara: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPENLARA] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:openlara
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:openlara
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:openlara
