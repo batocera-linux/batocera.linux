@@ -1,0 +1,16 @@
+diff --git a/src/gapi_gl.h b/src/gapi_gl.h
+index 4e9b47d..f42a44b 100644
+--- a/src/gapi_gl.h
++++ b/src/gapi_gl.h
+@@ -752,7 +752,11 @@ namespace GAPI {
+             bool isVolume = (opt & OPT_VOLUME)  != 0;
+             bool isShadow = fmt == FMT_SHADOW;
+ 
++#if defined(HAVE_OPENGLES) || defined(HAVE_OPENGLES2)
++            target = isVolume ? GL_TEXTURE_3D_OES : (isCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D);
++#else
+             target = isVolume ? GL_TEXTURE_3D : (isCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D);
++#endif
+ 
+             glGenTextures(1, &ID);
+ 

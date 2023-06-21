@@ -3,6 +3,9 @@
 
 ### Added
 - battery remaining time in batocera-info (f2)
+- libretro core boom3, A Doom 3 port
+- libretro core reminiscence, A Flashback port
+- libretro core openlara, An original Tomb Raider port
 ### Fixed
 
 ### Changed
