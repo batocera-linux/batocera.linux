@@ -4,7 +4,7 @@
 ### Added
 - battery remaining time in batocera-info (f2)
 ### Fixed
-
+- Fix wifi/bluetooth on Tinkerboard
 ### Changed
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 ### Updated
