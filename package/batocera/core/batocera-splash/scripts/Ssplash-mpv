@@ -66,7 +66,7 @@ do_videostart ()
 {
     video="$1"
     printf 'Video: %s: ' "$video"
-    mpv_audio=
+    mpv_audio=--ao=sdl
 
     soundDisabled=$(batocera-settings-get splash.screen.sound)
     if [[ $? -eq 0 ]]; then
