@@ -2397,6 +2397,20 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('mrboom-nomonster', '"ON"')
     
+    # OpenLara
+    if (system.config['core'] == 'openlara'):
+        # Internal resolution
+        if system.isOptSet('lara-resolution'):
+            coreSettings.save('openlara_resolution', '"' + system.config['lara-resolution'] + '"')
+        else:
+            coreSettings.save('openlara_resolution', '"1280x720"')
+                
+        # Framerate
+        if system.isOptSet('lara-framerate'):
+            coreSettings.save('openlara_framerate', '"' + system.config['lara-framerate'] + '"')
+        else:
+            coreSettings.save('openlara_framerate', '"60fps"')
+    
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
