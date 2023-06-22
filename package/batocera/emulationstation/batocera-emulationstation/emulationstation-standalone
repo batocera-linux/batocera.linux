@@ -68,7 +68,7 @@ do
     ###################
 
     ### resolution ###
-    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
+    bootresolution="$(batocera-settings-get-master es.resolution -f "$BOOTCONF")"
     if test -z "${bootresolution}"
     then
 	    batocera-resolution minTomaxResolution-secure
@@ -116,7 +116,7 @@ do
         which xrandr && xrandr -r "${FRAMERATE}"
         ###################
 
-        forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
+        forcedresolution="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" es.forcedresolution)"
         if test -n "${forcedresolution}"
         then
             batocera-resolution forceMode "${forcedresolution}"

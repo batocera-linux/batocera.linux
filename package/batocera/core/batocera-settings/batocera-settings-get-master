@@ -3,6 +3,15 @@
 # this script can be used by values that can have a default value by board
 
 KEY="$1"
+FILE="/usr/share/batocera/sysconfigs/batocera.conf"
+
+# handle -f flag properly
+while getopts "f:" arg; do
+  case $arg in
+    f)
+      FILE="$OPTARG";;
+  esac
+done
 
 # prefer the user value
 VALUE="$(/usr/bin/batocera-settings-get "${KEY}")"
@@ -32,8 +41,8 @@ if [ -e "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" ]; then
 fi
 
 # prefer the general value
-if [ -e "/usr/share/batocera/sysconfigs/batocera.conf" ]; then
-    /usr/bin/batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf" "${KEY}" && exit 0
+if [ -e "${FILE}" ]; then
+    /usr/bin/batocera-settings-get -f "${FILE}" "${KEY}" && exit 0
 fi
 
 exit 1
