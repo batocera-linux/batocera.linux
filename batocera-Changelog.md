@@ -90,6 +90,7 @@
 - ppsspp now fully uses SDL2 controller config
 - more rpcs3 ES options
 - more pcsx2 options
+- Default crop overscan setting for NES is now vertical only
 ### Updated
 - lr-snes9x to v1.62.3
 - xenia to v1.0.2798

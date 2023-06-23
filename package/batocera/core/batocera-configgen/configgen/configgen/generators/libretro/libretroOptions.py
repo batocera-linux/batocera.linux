@@ -1429,11 +1429,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "h":
             coreSettings.save('nestopia_overscan_h',    '"enabled"')
             coreSettings.save('nestopia_overscan_v',    '"disabled"')
-        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "v":
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "both":
+            coreSettings.save('nestopia_overscan_h',    '"enabled"')
             coreSettings.save('nestopia_overscan_v',    '"enabled"')
         else:
-            coreSettings.save('nestopia_overscan_h',    '"enabled"')
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
             coreSettings.save('nestopia_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
@@ -1486,11 +1486,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "h":
             coreSettings.save('fceumm_overscan_h',    '"enabled"')
             coreSettings.save('fceumm_overscan_v',    '"disabled"')
-        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "v":
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "both":
+            coreSettings.save('fceumm_overscan_h',    '"enabled"')
             coreSettings.save('fceumm_overscan_v',    '"enabled"')
         else:
-            coreSettings.save('fceumm_overscan_h',    '"enabled"')
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
             coreSettings.save('fceumm_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
