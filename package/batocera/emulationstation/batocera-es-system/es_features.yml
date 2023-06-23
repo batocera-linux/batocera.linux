@@ -5911,6 +5911,16 @@ libretro:
                     #"None":          0
                     "Saturn Pad":    1
                     "Saturn 3D Pad": 5
+            yabasanshiro_language:
+                prompt: LANGUAGE
+                description: Change the system's language.
+                choices:
+                    "English (Default)": english
+                    "Spanish":           spanish
+                    "French":            french
+                    "Deutsch":           deutsch
+                    "Italian":           italian
+                    "Japanese":          japanese
 
     gong:
       shared: [autosave]

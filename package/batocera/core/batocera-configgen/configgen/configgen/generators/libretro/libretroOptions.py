@@ -2013,7 +2013,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('yabasanshiro_multitap_port1', '"disabled"')
             coreSettings.save('yabasanshiro_multitap_port2', '"disabled"')
-
+        # Language
+        if system.isOptSet('yabasanshiro_language'):
+            coreSettings.save('yabasanshiro_system_language', '"' + system.config['yabasanshiro_language'] + '"')
+        else:
+            coreSettings.save('yabasanshiro_system_language', '"english"')
+    
     if (system.config['core'] == 'kronos'):
         # Share saves with Beetle
         if system.isOptSet('kronos_use_beetle_saves') and system.config['kronos_use_beetle_saves'] == 'disabled':
