@@ -1424,17 +1424,25 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('nestopia_nospritelimit', '"enabled"')
         # Crop Overscan
         if system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "none":
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
-            coreSettings.save('nestopia_overscan_v',    '"disabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"0"')
+            coreSettings.save('nestopia_overscan_h_right', '"0"')
+            coreSettings.save('nestopia_overscan_v_top', '"0"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"0"')
         elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "h":
-            coreSettings.save('nestopia_overscan_h',    '"enabled"')
-            coreSettings.save('nestopia_overscan_v',    '"disabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"8"')
+            coreSettings.save('nestopia_overscan_h_right', '"8"')
+            coreSettings.save('nestopia_overscan_v_top', '"0"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"0"')
         elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "both":
-            coreSettings.save('nestopia_overscan_h',    '"enabled"')
-            coreSettings.save('nestopia_overscan_v',    '"enabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"8"')
+            coreSettings.save('nestopia_overscan_h_right', '"8"')
+            coreSettings.save('nestopia_overscan_v_top', '"8"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"8"')
         else:
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
-            coreSettings.save('nestopia_overscan_v',    '"enabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"0"')
+            coreSettings.save('nestopia_overscan_h_right', '"0"')
+            coreSettings.save('nestopia_overscan_v_top', '"8"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"8"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
             coreSettings.save('nestopia_palette', '"' + system.config['nestopia_palette'] + '"')
@@ -1481,17 +1489,25 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
         # Crop Overscan
         if system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "none":
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
-            coreSettings.save('fceumm_overscan_v',    '"disabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"0"')
+            coreSettings.save('fceumm_overscan_h_right', '"0"')
+            coreSettings.save('fceumm_overscan_v_top', '"0"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"0"')
         elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "h":
-            coreSettings.save('fceumm_overscan_h',    '"enabled"')
-            coreSettings.save('fceumm_overscan_v',    '"disabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"8"')
+            coreSettings.save('fceumm_overscan_h_right', '"8"')
+            coreSettings.save('fceumm_overscan_v_top', '"0"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"0"')
         elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "both":
-            coreSettings.save('fceumm_overscan_h',    '"enabled"')
-            coreSettings.save('fceumm_overscan_v',    '"enabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"8"')
+            coreSettings.save('fceumm_overscan_h_right', '"8"')
+            coreSettings.save('fceumm_overscan_v_top', '"8"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"8"')
         else:
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
-            coreSettings.save('fceumm_overscan_v',    '"enabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"0"')
+            coreSettings.save('fceumm_overscan_h_right', '"0"')
+            coreSettings.save('fceumm_overscan_v_top', '"8"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"8"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
             coreSettings.save('fceumm_palette', '"' + system.config['fceumm_palette'] + '"')
