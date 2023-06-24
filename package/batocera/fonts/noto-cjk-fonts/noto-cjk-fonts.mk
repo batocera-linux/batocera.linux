@@ -16,7 +16,7 @@ endef
 
 define NOTO_CJK_FONTS_INSTALL_TARGET_CMDS
 	mkdir -p $(NOTO_CJK_FONTS_TARGET_DIR)
-	cp $(@D)/Variable/TTF/*.ttf $(NOTO_CJK_FONTS_TARGET_DIR)
+	cp $(@D)/Variable/TTF/Subset/*.ttf $(NOTO_CJK_FONTS_TARGET_DIR)
 endef
 
 $(eval $(generic-package))
