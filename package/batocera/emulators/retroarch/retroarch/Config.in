@@ -6,9 +6,10 @@ config BR2_PACKAGE_RETROARCH
 	select BR2_PACKAGE_LIBRETRO_CORE_INFO
 	select BR2_PACKAGE_FLAC
     select BR2_PACKAGE_SLANG_SHADERS        if BR2_PACKAGE_VULKAN_TOOLS
-      help
-        A multi emulator frontend.
-
+	select BR2_PACKAGE_NOTO_CJK_FONTS
+    help
+      A multi emulator frontend.
+	  
 	  http://www.libretro.com
 
 comment "Retroarch depends on EGL or OpenGLES"
