@@ -51,8 +51,8 @@ coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'}
 coreToP2Device = {'atari800': '513', 'fuse': '513'};
 
 # Define the libretro device type corresponding to the libretro SYSTEM (when needed)
-systemToP1Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
-systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
+systemToP1Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' };
+systemToP2Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' };
 
 # Netplay modes
 systemNetplayModes = {'host', 'client', 'spectator'}
