@@ -1,0 +1,23 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    printf "Starting efivarfs: "
+    if [ -d "/sys/firmware/efi" ]; then
+        mount -t efivarfs none /sys/firmware/efi/efivars
+    fi
+    echo "OK"
+    ;;
+  stop)
+    printf "Stopping efivarfs: "
+    if findmnt --target /sys/firmware/efi/efivars > /dev/null; then
+        umount /sys/firmware/efi/efivars
+    fi
+    echo "OK"
+    ;;
+  restart|reload)
+    ;;
+  *)
+esac
+
+exit $?
