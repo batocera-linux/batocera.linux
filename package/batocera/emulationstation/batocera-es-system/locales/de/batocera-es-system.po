@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-05-13 14:51+0200\n"
+"PO-Revision-Date: 2023-06-17 01:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -654,22 +654,22 @@ msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "Sprache des Spiels ändern."
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, hatari, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, hatari, redream, ...
 msgctxt "game_options"
 msgid "LANGUAGE"
 msgstr "SPRACHE"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/yabasanshiro, redream, xenia, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, redream, xenia, xenia-canary
 msgctxt "game_options"
 msgid "English (Default)"
 msgstr "Englisch (Standard)"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, cemu, flycast/uzem, ...
 msgctxt "game_options"
 msgid "Spanish"
 msgstr "Spanisch"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, cemu, flycast/uzem, ...
 msgctxt "game_options"
 msgid "French"
 msgstr "Französisch"
@@ -1048,7 +1048,7 @@ msgstr "TEXTURGLÄTTUNG"
 #. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D object polygons."
-msgstr "Erweiterung. Glätten Sie gezackte Kanten an Polygonen von 3D-Objekten."
+msgstr "Glätten von gezackten Polygon-Kanten auf 3D-Objekten."
 
 #. TRANSLATION: libretro/desmume, libretro/mupen64plus-next, mupen64plus
 msgctxt "game_options"
@@ -1182,12 +1182,12 @@ msgctxt "game_options"
 msgid "German"
 msgstr "Deutsch"
 
-#. TRANSLATION: libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, flycast/uzem, ...
+#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, redream, ...
 msgctxt "game_options"
 msgid "Italian"
 msgstr "Italienisch"
 
-#. TRANSLATION: libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, flycast/uzem, ...
+#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, redream, ...
 msgctxt "game_options"
 msgid "Japanese"
 msgstr "Japanisch"
@@ -4226,8 +4226,8 @@ msgid ""
 "Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D "
 "objects clearer."
 msgstr ""
-"Erweiterung. Erhöht die Rendering-Auflösung bei einem Seitenverhältnis von "
-"16:9. Macht 3D-Objekte deutlicher."
+"Erhöhung der Rendering-Auflösung bei einem Seitenverhältnis von 16:9 und "
+"klarere Darstellung von 3D-Objekten."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -4257,7 +4257,7 @@ msgstr "3-Punkt"
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D objects polygons."
-msgstr "Verbesserung. Glätten Sie gezackte Kanten an 3D-Objektpolygonen."
+msgstr "Glättung von gezackten Polygon-Kanten auf 3D-Objekten."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, ppsspp, yuzu
 msgctxt "game_options"
@@ -4302,7 +4302,7 @@ msgstr "Erweiterung, die das Hochskalieren von Texturen ermöglicht."
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "TEXTURE UPSCALING"
-msgstr "TEXTUREN HOCHSKALIERUNG"
+msgstr "TEXTUREN HOCHSKALIEREN"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -4435,16 +4435,17 @@ msgstr "Volle Geschwindigkeit"
 msgctxt "game_options"
 msgid "Only applies when using Parallel-RDP as the chosen RDP Plugin."
 msgstr ""
+"Aktivieren von Upscaling, wenn Parrallel-RDP als RDP-Plugin ausgewählt wurde."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
-msgstr ""
+msgstr "PARALLEL-RDP UPSCALER"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "1x (Default)"
-msgstr ""
+msgstr "1x (Standardeinstellung)"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -4768,76 +4769,6 @@ msgstr "Dämpfen der Hash-Soundeffekte bei einigen Spielen."
 msgctxt "game_options"
 msgid "AUDIO FILTER"
 msgstr "AUDIOFILTER"
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "Set desired framerate."
-msgstr ""
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "FRAMERATE"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "30fps"
-msgstr "30fps"
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "60fps (Default)"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "70fps"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "72fps"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "75fps"
-msgstr "75fps"
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "90fps"
-msgstr "90fps"
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "100fps"
-msgstr "100fps"
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "119fps"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "120fps"
-msgstr "120fps"
-
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
-msgctxt "game_options"
-msgid "144fps"
-msgstr "144fps"
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "240fps"
-msgstr ""
-
-#. TRANSLATION: libretro/openlara
-msgctxt "game_options"
-msgid "244fps"
-msgstr ""
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
@@ -5985,6 +5916,11 @@ msgstr "25fps"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
+msgid "30fps"
+msgstr "30fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
 msgid "40fps"
 msgstr "40fps"
 
@@ -5997,6 +5933,31 @@ msgstr "50fps"
 msgctxt "game_options"
 msgid "60fps"
 msgstr "60fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
+msgid "75fps"
+msgstr "75fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
+msgid "90fps"
+msgstr "90fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
+msgid "100fps"
+msgstr "100fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
+msgid "120fps"
+msgstr "120fps"
+
+#. TRANSLATION: libretro/tyrquake
+msgctxt "game_options"
+msgid "144fps"
+msgstr "144fps"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
@@ -6529,16 +6490,6 @@ msgstr "4K"
 msgctxt "game_options"
 msgid "Allows up to 7 or 12 controllers in supported games."
 msgstr "Erlaubt bis zu 7 oder 12 Controller in unterstützten Spielen."
-
-#. TRANSLATION: libretro/yabasanshiro
-msgctxt "game_options"
-msgid "Change the system's language."
-msgstr ""
-
-#. TRANSLATION: libretro/yabasanshiro
-msgctxt "game_options"
-msgid "Deutsch"
-msgstr ""
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -7416,11 +7367,14 @@ msgid ""
 "Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
 "audio playback when emulation speed is not 100%."
 msgstr ""
+"Bei Auftreten von Lags werden Vertical Blank Interrupts übersprungen, um "
+"eine reibungslose Audiowiedergabe zu gewährleisten wenn die "
+"Emulationsleistung nicht bei 100% liegt."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "VBI SKIP"
-msgstr ""
+msgstr "VBI ÜBERSPRINGEN"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -7527,7 +7481,7 @@ msgstr "THREADED PRESENTATION"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Match Window"
-msgstr ""
+msgstr "An Fenster angleichen"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7548,7 +7502,7 @@ msgstr "GANZZAHLIGES UPSCALING"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Enabling will smooth out the image."
-msgstr ""
+msgstr "Zur Glättung des Bildes aktivieren."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7561,6 +7515,8 @@ msgid ""
 "Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
 "Upscaling."
 msgstr ""
+"Strecken der Anzeige auf Vollbild, unabhängig vom Seitenverhältnis. Keine "
+"Funktion, wenn Integer Upscaling aktiviert ist."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8952,32 +8908,32 @@ msgstr "CHEATS"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Allows up to 8 controllers in supported games."
-msgstr ""
+msgstr "Ermöglicht bis zu 8 Controller bei unterstützten Spielen."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 2 Players (Default)"
-msgstr ""
+msgstr "Maximal 2 Spieler (Standard)"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 4 Players"
-msgstr ""
+msgstr "Maximal 4 Spieler"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Maximum 8 Players"
-msgstr ""
+msgstr "Maximal 8 Spieler"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Allows user replaceable textures."
-msgstr ""
+msgstr "Austausch von Texturen durch User erlauben."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "TEXTURE REPLACEMENTS"
-msgstr ""
+msgstr "TEXTURENAUSTAUSCH"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8985,11 +8941,13 @@ msgid ""
 "Necessary for some guns to replace fog textures as a workaround in Time "
 "Crisis - Crisis Zone."
 msgstr ""
+"Notwendiger Workaround für einige Waffen zum Austausch der Nebeltexturen in "
+"Time Crisis - Crisis Zone."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "TIME CRISIS FOG HACK"
-msgstr ""
+msgstr "TIME CRISIS NEBEL-HACK"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -10436,22 +10394,22 @@ msgstr "DSP-AUDIO VERWENDEN"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Increase to 128 MiB for debug or homebrew applications."
-msgstr ""
+msgstr "Für Debug- oder Homebrew-Anwendungen auf 128MiB erhöhen."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "SYSTEM MEMORY"
-msgstr ""
+msgstr "SYSTEMSPEICHER"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "64MiB (Default)"
-msgstr ""
+msgstr "64MiB (Standard)"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "128MiB"
-msgstr ""
+msgstr "128MiB"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
