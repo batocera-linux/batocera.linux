@@ -33,14 +33,14 @@ do_push() {
 	test "${board}" = rpi4 && remoteboarddir=rpi464
 
 	case "${ftptarget}" in
-	    "beta")
+	    "butterfly")
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
-		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/butterfly/last/"
 		;;
 	    "rc")
-		# pushing beta
-		echo_msg "${arch}" "pushing ${board} on beta*..."
-		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
+		# pushing butterfly
+		echo_msg "${arch}" "pushing ${board} on butterfly*..."
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/butterfly/last/"
 
 		# pushing rc
 		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
@@ -56,7 +56,7 @@ do_push() {
 	esac
     done
 
-    # update the beta file
+    # update the butterfly file
     ssh batocera@mirrors.o2switch.fr /opt/www/batocera/listBetas.sh
 }
 
@@ -81,7 +81,7 @@ do_suspend() {
 
 checkFtpTarget() {
     ftptarget=$1
-    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "rc" -a "${ftptarget}" != "unstable"
+    if test "${ftptarget}" != "butterfly" -a "${ftptarget}" != "rc" -a "${ftptarget}" != "unstable"
     then
 	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
 	return 1
@@ -215,7 +215,7 @@ case "${1}" in
     *)
 	PROGNAME=$(basename "${0}")
 	echo "${PROGNAME} defconfig x86"
-	echo "${PROGNAME} build beta"
+	echo "${PROGNAME} build butterfly"
 	echo "${PROGNAME} build rc"
 	echo "${PROGNAME} build unstable"
 	echo "${PROGNAME} enter x86"
@@ -224,7 +224,7 @@ case "${1}" in
 	echo "${PROGNAME} log"
 	echo "${PROGNAME} log x86"
 	echo "${PROGNAME} logpkg x86"
-	echo "${PROGNAME} push beta x86 bcm2837 bcm2835"
+	echo "${PROGNAME} push butterfly x86 bcm2837 bcm2835"
 	echo "${PROGNAME} push rc x86 bcm2837 bcm2835"
 	echo "${PROGNAME} suspend"
 esac
