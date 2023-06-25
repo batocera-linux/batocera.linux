@@ -68,7 +68,7 @@ do
     ###################
 
     ### resolution ###
-    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
+    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
     if test -z "${bootresolution}"
     then
 	    batocera-resolution minTomaxResolution-secure

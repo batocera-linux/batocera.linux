@@ -2,10 +2,25 @@
 
 # this script can be used by values that can have a default value by board
 
-KEY="$1"
+KEY=
+CONFFILE="/usr/share/batocera/sysconfigs/batocera.conf"
+
+while test $# -ne 0
+do
+    case "${1}" in
+	"-f")
+	    shift
+	    CONFFILE="${1}"
+	    shift
+	    ;;
+	*)
+	    KEY="${1}"
+	    shift
+    esac
+done
 
 # prefer the user value
-VALUE="$(/usr/bin/batocera-settings-get "${KEY}")"
+VALUE="$(/usr/bin/batocera-settings-get -f "${CONFFILE}" "${KEY}")"
 # when value is auto, ignore
 if [ "$?" = 0 -a "${VALUE}" != "auto" ]; then
     echo "${VALUE}"
@@ -33,7 +48,7 @@ fi
 
 # prefer the general value
 if [ -e "/usr/share/batocera/sysconfigs/batocera.conf" ]; then
-    /usr/bin/batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf" "${KEY}" && exit 0
+    /usr/bin/batocera-settings-get -f "${CONFFILE}" "${KEY}" && exit 0
 fi
 
 exit 1
