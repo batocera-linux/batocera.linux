@@ -8,9 +8,9 @@
 [ "$1" = "stop" ] || exit 0
 
 set --
-for key in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key splash.screen.enabled system.timezone
+for key in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key splash.screen.enabled system.timezone es.resolution
 do
-    value="$(/usr/bin/batocera-settings-get "$key")" || continue
+    value="$(/usr/bin/batocera-settings-get "$key")" # in case it is empty, it must be set in the batocera-boot.conf file to erase any existing value
     if [ "$value" != "$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf "$key")" ]
     then
         set -- "$@" "$key" "$value"
