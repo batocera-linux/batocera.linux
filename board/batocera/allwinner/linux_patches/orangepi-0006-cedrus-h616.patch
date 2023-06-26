@@ -1,0 +1,98 @@
+From 569dd76f92b7ab13d6c26f70bb927ae1f6244c90 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Fri, 15 Oct 2021 21:49:45 +0200
+Subject: [PATCH] drv:staging:media:sunxi:cedrus: add H616 variant
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/staging/media/sunxi/cedrus/cedrus.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
+index d2419319afd7..e9aeac080cee 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
+@@ -645,6 +645,15 @@ static const struct cedrus_variant sun50i_h6_cedrus_variant = {
+ 	.mod_rate	= 600000000,
+ };
+ 
++static const struct cedrus_variant sun50i_h616_cedrus_variant = {
++	.capabilities	= CEDRUS_CAPABILITY_UNTILED |
++			  CEDRUS_CAPABILITY_MPEG2_DEC |
++			  CEDRUS_CAPABILITY_H264_DEC |
++			  CEDRUS_CAPABILITY_H265_DEC |
++			  CEDRUS_CAPABILITY_VP8_DEC,
++	.mod_rate	= 600000000,
++};
++
+ static const struct of_device_id cedrus_dt_match[] = {
+ 	{
+ 		.compatible = "allwinner,sun4i-a10-video-engine",
+@@ -690,6 +699,10 @@ static const struct of_device_id cedrus_dt_match[] = {
+ 		.compatible = "allwinner,sun50i-h6-video-engine",
+ 		.data = &sun50i_h6_cedrus_variant,
+ 	},
++	{
++		.compatible = "allwinner,sun50i-h616-video-engine",
++		.data = &sun50i_h6_cedrus_variant,
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, cedrus_dt_match);
+From 05604793cefe3e072fdc4d69143fad0935c65252 Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Sun, 26 Apr 2020 14:38:15 -0500
+Subject: [PATCH] media: cedrus: Fix failure to clean up hardware on probe
+ failure
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
+ drivers/staging/media/sunxi/cedrus/cedrus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
+index e9aeac080cee..c3ec9bb4881e 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
+@@ -472,7 +472,7 @@ static int cedrus_probe(struct platform_device *pdev)
+ 	ret = v4l2_device_register(&pdev->dev, &dev->v4l2_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to register V4L2 device\n");
+-		return ret;
++		goto err_hw;
+ 	}
+ 
+ 	vfd = &dev->vfd;
+@@ -533,6 +533,8 @@ static int cedrus_probe(struct platform_device *pdev)
+ 	v4l2_m2m_release(dev->m2m_dev);
+ err_v4l2:
+ 	v4l2_device_unregister(&dev->v4l2_dev);
++err_hw:
++	cedrus_hw_remove(dev);
+ 
+ 	return ret;
+ }
+From c94f359023742bbd4b4c37a58c3b979f89c26a64 Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Sun, 5 Apr 2020 21:16:40 -0500
+Subject: [PATCH] media: cedrus: Fix missing cleanup in error path
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
+ drivers/staging/media/sunxi/cedrus/cedrus.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
+index c3ec9bb4881e..e937140cbafe 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
+@@ -380,7 +380,9 @@ static int cedrus_open(struct file *file)
+ 
+ err_ctrls:
+ 	v4l2_ctrl_handler_free(&ctx->hdl);
++	kfree(ctx->ctrls);
+ err_free:
++	v4l2_fh_exit(&ctx->fh);
+ 	kfree(ctx);
+ 	mutex_unlock(&dev->dev_mutex);
+ 
