@@ -110,12 +110,6 @@ do
         fi
         ###################
 
-        # try to force 60hz (specific to xorg)
-        FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
-        test -z "${FRAMERATE}" && FRAMERATE=60
-        which xrandr && xrandr -r "${FRAMERATE}"
-        ###################
-
         forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
         if test -n "${forcedresolution}"
         then
