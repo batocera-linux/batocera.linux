@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v37beta(2023/06/07)\n"
+"Project-Id-Version: batocera-es v37beta(2023/06/25)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-06-07 11:29+0900\n"
+"PO-Revision-Date: 2023-06-25 20:50+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -4693,12 +4693,12 @@ msgstr "音声 フィルター"
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
 msgid "Set desired framerate."
-msgstr ""
+msgstr "フレームレートを設定します"
 
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
 msgid "FRAMERATE"
-msgstr ""
+msgstr "フレームレート"
 
 #. TRANSLATION: libretro/openlara, libretro/tyrquake
 msgctxt "game_options"
@@ -4708,17 +4708,19 @@ msgstr "30fps"
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
 msgid "60fps (Default)"
-msgstr ""
+msgstr "60fps（通常）"
 
 #. TRANSLATION: libretro/openlara
+#| msgctxt "game_options"
+#| msgid "10fps"
 msgctxt "game_options"
 msgid "70fps"
-msgstr ""
+msgstr "70fps"
 
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
 msgid "72fps"
-msgstr ""
+msgstr "72fps"
 
 #. TRANSLATION: libretro/openlara, libretro/tyrquake
 msgctxt "game_options"
@@ -4738,7 +4740,7 @@ msgstr "100fps"
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
 msgid "119fps"
-msgstr ""
+msgstr "119fps"
 
 #. TRANSLATION: libretro/openlara, libretro/tyrquake
 msgctxt "game_options"
@@ -4751,14 +4753,18 @@ msgid "144fps"
 msgstr "144fps"
 
 #. TRANSLATION: libretro/openlara
+#| msgctxt "game_options"
+#| msgid "40fps"
 msgctxt "game_options"
 msgid "240fps"
-msgstr ""
+msgstr "240fps"
 
 #. TRANSLATION: libretro/openlara
+#| msgctxt "game_options"
+#| msgid "144fps"
 msgctxt "game_options"
 msgid "244fps"
-msgstr ""
+msgstr "244fps"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
@@ -6444,12 +6450,12 @@ msgstr "多人数対応ゲームで7～12のコントローラーを使用でき
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Change the system's language."
-msgstr ""
+msgstr "ゲームシステムの言語を変更します"
 
 #. TRANSLATION: libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Deutsch"
-msgstr ""
+msgstr "ドイツ語"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -7408,7 +7414,7 @@ msgstr "スレッド化プレゼンテーション"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Match Window"
-msgstr ""
+msgstr "ウィンドウに合わせる"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7428,7 +7434,7 @@ msgstr "整数アップスケーリング"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Enabling will smooth out the image."
-msgstr ""
+msgstr "有効にすると画像が滑らかになります"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7441,6 +7447,8 @@ msgid ""
 "Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
 "Upscaling."
 msgstr ""
+"アスペクト比に関係なく、画面いっぱいに表示します(整数アップスケーリングでは機"
+"能しません)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7581,23 +7589,22 @@ msgstr "自動読取"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Use Analog joysticks in addition to D-Pad for DualShock controllers."
-msgstr ""
-"DualShock コントローラの D-Pad に加えて、アナログ スティックも有効にします"
+msgstr "デュアルショックの D-Pad の他に、アナログ スティックも有効にします"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "JOYSTICK TO DPAD"
-msgstr "スティックをDPAD(十字キー)扱い"
+msgstr "スティックをDPAD(十字キー)同様に扱う"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
 msgid "Not Connected"
-msgstr "接続されていません"
+msgstr "接続しない"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
 msgid "PS1 Digital Controller"
-msgstr "PS1 デジタルコントローラー"
+msgstr "PS1 デジタルコントローラ"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
@@ -7607,7 +7614,7 @@ msgstr "PS1 アナログジョイスティック"
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
 msgid "DualShock / Xbox Type"
-msgstr "DualShock / Xbox タイプ"
+msgstr "デュアルショック / Xbox タイプ"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
@@ -8818,12 +8825,12 @@ msgstr "最大 8 プレイヤー"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Allows user replaceable textures."
-msgstr ""
+msgstr "ユーザーがテクスチャを置換可能にします"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "TEXTURE REPLACEMENTS"
-msgstr ""
+msgstr "テクスチャ置換の可否"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8831,11 +8838,13 @@ msgid ""
 "Necessary for some guns to replace fog textures as a workaround in Time "
 "Crisis - Crisis Zone."
 msgstr ""
+"一部の銃では、タイム クライシス - クライシス ゾーンの回避策としてフォグ テク"
+"スチャを置き換える必要があります。"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "TIME CRISIS FOG HACK"
-msgstr ""
+msgstr "タイムクライシス フォグ(霧)ハック"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -10235,22 +10244,22 @@ msgstr "DSP オーディオを使用する"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Increase to 128 MiB for debug or homebrew applications."
-msgstr ""
+msgstr "デバッグまたは自作アプリケーションの場合は 128 MiB に増やします"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "SYSTEM MEMORY"
-msgstr ""
+msgstr "システムメモリ"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "64MiB (Default)"
-msgstr ""
+msgstr "64MB (通常)"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "128MiB"
-msgstr ""
+msgstr "128MB"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
