@@ -6,6 +6,7 @@
 - libretro core boom3, A Doom 3 port
 - libretro core reminiscence, A Flashback port
 - libretro core openlara, An original Tomb Raider port
+- mosquitto client command line tools
 - es : from developper menu, you can change the es resolution
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
