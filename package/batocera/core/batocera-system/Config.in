@@ -336,6 +336,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # script tool
     select BR2_PACKAGE_DIALOG
+    select BR2_PACKAGE_MOSQUITTO # connected object interface (https://wiki.batocera.org/hardware:lcd_led_marquees)
 
     # tools
     select BR2_PACKAGE_I2C_TOOLS
