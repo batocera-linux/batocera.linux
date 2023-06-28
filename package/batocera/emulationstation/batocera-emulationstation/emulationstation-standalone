@@ -2,6 +2,7 @@
 
 BOOTCONF="/boot/batocera-boot.conf"
 REBOOT_FLAG=/var/run/emulationstation-standalone
+log="/userdata/system/logs/display.log"
 
 if test "$1" = "--stop-rebooting"
 then
@@ -110,7 +111,16 @@ do
         fi
         ###################
 
-        forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
+        # set refresh rate of 60Hz if not set
+        RESOLUTION="$(/usr/bin/batocera-settings-get -f $BOOTCONF es.resolution)"
+        FRAMERATE=60
+        if [[ -n "${RESOLUTION}" ]]; then
+            FRAMERATE=$(echo "${RESOLUTION}" | awk -F'.' '{ if ($2 != "") print $2"."$3; else print "60" }')
+            echo "Final ES confirmed framerate = $FRAMERATE Hz" >> $log
+        fi
+        which xrandr && xrandr -r "${FRAMERATE}"
+        
+        forcedresolution="$(/usr/bin/batocera-settings-get -f $BOOTCONF es.forcedresolution)"
         if test -n "${forcedresolution}"
         then
             batocera-resolution forceMode "${forcedresolution}"
