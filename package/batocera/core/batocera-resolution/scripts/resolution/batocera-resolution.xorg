@@ -58,7 +58,7 @@ f_minTomaxResolution() {
     echo "Current resolution: $CURRENTWIDTH x $CURRENTHEIGHT @ $CURRENTRATE Hz" >> "$log"
     
     # check if there is any change required
-    if [ "$CURRENTWIDTH" -eq "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -eq "$MAXHEIGHT" ]; then
+    if [ "$CURRENTWIDTH" -le "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -le "$MAXHEIGHT" ]; then
         if [ -z "$MAXRATE" ] || [ "$CURRENTRATE" = "$MAXRATE" ]; then
             echo "We have a match, nothing to do..." >> $log
             exit 0
