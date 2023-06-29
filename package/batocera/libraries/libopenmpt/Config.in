@@ -2,7 +2,9 @@ config BR2_PACKAGE_LIBOPENMPT
 	bool "libopenmpt"
 	select BR2_PACKAGE_HOST_DOXYGEN
 	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_MPG123
 	help 
-	    This library provides objects and helper methods to help reading and writing AppStream metadata.
+	    OpenMPT and libopenmpt
+	    OpenMPT, a free Windows/Wine-based tracker and libopenmpt, a library to render tracker music.
 
-		https://github.com/hughsie/appstream-glib
+		https://github.com/OpenMPT/openmpt
