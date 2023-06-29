@@ -36,18 +36,10 @@ f_minTomaxResolution() {
         # Extract refresh rate if present
         MAXRATE=$(echo "$BOOTRESOLUTION" | cut -s -d '.' -f 2-)
         if [ -n "$MAXRATE" ]; then
-            echo "Using ES setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
+            echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
         else
-            echo "Using ES setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
+            echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
-    else
-        MAXWIDTH=1920
-        MAXHEIGHT=1080
-    fi
-    if [ -n "$MAXRATE" ]; then
-        echo "Resolution to use: $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
-    else
-        echo "Resolution to use: $MAXWIDTH x $MAXHEIGHT" >> "$log"
     fi
 
     CURRENT_RESOLUTION=$(xrandr --currentResolution)
@@ -56,9 +48,21 @@ f_minTomaxResolution() {
     # get the refresh rate - very important
     CURRENTRATE=$(xrandr --listModes | grep -E '\*$' | sed -E 's/.*\.([0-9]+\.[0-9]+) .*/\1/')
     echo "Current resolution: $CURRENTWIDTH x $CURRENTHEIGHT @ $CURRENTRATE Hz" >> "$log"
-    
+
+    # did we set a resolution?
+    if [ -n "$MAXWIDTH" ] && [ -n "$MAXHEIGHT" ] && [ "$MAXWIDTH" -ne 0 ] && [ "$MAXHEIGHT" -ne 0 ]; then
+        if [ -n "$MAXRATE" ]; then
+            echo "Resolution to use: $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
+        else
+            echo "Resolution to use: $MAXWIDTH x $MAXHEIGHT" >> "$log"
+        fi
+    else
+        echo "No resolution set, nothing to do..." >> $log
+        exit 0
+    fi
+
     # check if there is any change required
-    if [ "$CURRENTWIDTH" -le "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -le "$MAXHEIGHT" ]; then
+    if [ "$CURRENTWIDTH" -eq "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -eq "$MAXHEIGHT" ]; then
         if [ -z "$MAXRATE" ] || [ "$CURRENTRATE" = "$MAXRATE" ]; then
             echo "We have a match, nothing to do..." >> $log
             exit 0

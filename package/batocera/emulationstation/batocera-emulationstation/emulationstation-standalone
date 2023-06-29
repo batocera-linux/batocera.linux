@@ -110,16 +110,7 @@ do
         setxkbmap "${map_name}"
         fi
         ###################
-
-        # set refresh rate of 60Hz if not set
-        RESOLUTION="$(/usr/bin/batocera-settings-get -f $BOOTCONF es.resolution)"
-        FRAMERATE=60
-        if [[ -n "${RESOLUTION}" ]]; then
-            FRAMERATE=$(echo "${RESOLUTION}" | awk -F'.' '{ if ($2 != "") print $2"."$3; else print "60" }')
-            echo "Final ES confirmed framerate = $FRAMERATE Hz" >> $log
-        fi
-        which xrandr && xrandr -r "${FRAMERATE}"
-        
+                
         forcedresolution="$(/usr/bin/batocera-settings-get -f $BOOTCONF es.forcedresolution)"
         if test -n "${forcedresolution}"
         then
