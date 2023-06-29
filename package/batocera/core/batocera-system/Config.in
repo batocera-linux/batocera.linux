@@ -1713,7 +1713,7 @@ config BR2_PACKAGE_BATOCERA_XORG
     select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
     select BR2_PACKAGE_XTERM                        # terminal
     select BR2_PACKAGE_OPENBOX                      # window manager
-    select BR2_PACKAGE_UNCLUTTER                    # hide mouse
+    select BR2_PACKAGE_UNCLUTTER                    if !BR2_PACKAGE_BATOCERA_TARGET_X86 # hide mouse
     select BR2_PACKAGE_TOUCHEGG                     # touchscreen extended gestures
 
     # vendor neutral GL dispatch library
