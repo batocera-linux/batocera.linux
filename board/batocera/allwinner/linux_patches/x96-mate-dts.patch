@@ -1,0 +1,59 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-17 18:09:45.739709955 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-17 18:10:00.709698970 +0200
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+ 
+ #include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-28 14:32:00.192077130 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts	2023-06-28 15:59:58.177278773 +0200
+@@ -228,6 +228,14 @@
+ 	};
+ };
+ 
++&pio {
++	vcc-pc-supply = <&reg_aldo1>;
++	vcc-pf-supply = <&reg_aldo1>;
++	vcc-pg-supply = <&reg_bldo1>;
++	vcc-ph-supply = <&reg_aldo1>;
++	vcc-pi-supply = <&reg_aldo1>;
++};
++
+ &de {
+        status = "okay";
+ };
+@@ -246,3 +254,31 @@
+ &usbphy {
+ 	status = "okay";
+ };
++
++&codec {
++	allwinner,audio-routing =
++	        "Line Out", "LINEOUT";
++	status = "okay";
++};
++
++&ahub_dam_plat {
++	status = "okay";
++};
++
++&ahub_dam_mach {
++	status = "okay";
++};
++
++&ahub1_plat {
++	status = "okay";
++};
++
++&ahub1_mach {
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
++	status = "okay";
++};
++

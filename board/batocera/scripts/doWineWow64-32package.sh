@@ -235,12 +235,9 @@ echo
 echo "icd.d json files..."
 echo
 mkdir -p "${TMPOUT}/usr/share/vulkan/icd.d" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.x86_64.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.x86_64.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.x86_64.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
 sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/icd.d/"*i686.json || exit 1
 
 # extra helper libraries

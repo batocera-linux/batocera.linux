@@ -1,0 +1,71 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-27 13:42:36.162681255 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-27 13:46:21.103474293 +0200
+@@ -86,8 +86,8 @@
+ 
+ 	wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+-		clocks = <&rtc 1>;
+-		clock-names = "osc32k-out";
++		//clocks = <&rtc 1>;
++		//clock-names = "osc32k-out";
+ 		reset-gpios = <&pio 6 18 GPIO_ACTIVE_LOW>; /* PG18 */
+ 		post-power-on-delay-ms = <200>;
+ 	};
+@@ -123,21 +123,12 @@
+ 	};
+ };
+ 
+-&ehci1 {
+-	status = "okay";
+-};
+-
+ /* USB 2 & 3 are on headers only. */
+ 
+ &ehci1 {
+ 	status = "okay";
+ };
+ 
+-&gpu {
+-	mali-supply = <&reg_dcdcc>;
+-	status = "okay";
+-};
+-
+ &emac0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&ext_rgmii_pins>;
+@@ -171,10 +162,16 @@
+ 	non-removable;
+ 	mmc-ddr-1_8v;
+ 	status = "okay";
+-};
+ 
+-&ohci1 {
+-	status = "okay";
++	uwe-bsp {
++		compatible = "unisoc,uwe_bsp";
++		keep-power-on;
++		data-irq;
++		//adma-tx;
++		adma-rx;
++		//blksz-512;
++		status = "okay";
++	};
+ };
+ 
+ &ohci1 {
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-27 15:13:30.452515531 +0200
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-06-27 15:14:31.081736684 +0200
+@@ -155,12 +155,10 @@
+ };
+ 
+ &mmc1 {
+-	vmmc-supply = <&reg_vcc33_wifi>;
+-	vqmmc-supply = <&reg_vcc_wifi_io>;
++	vmmc-supply = <&reg_aldo2>;
+ 	mmc-pwrseq = <&wifi_pwrseq>;
+ 	bus-width = <4>;
+ 	non-removable;
+-	mmc-ddr-1_8v;
+ 	status = "okay";
+ 
+ 	uwe-bsp {
