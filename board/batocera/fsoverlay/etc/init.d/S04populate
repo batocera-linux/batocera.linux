@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CONFIG="/usr/share/batocera/datainit/system/batocera.conf"
+
 if test "$1" != "start"
 then
   exit 0
@@ -8,6 +10,14 @@ fi
 # sixad
 mkdir -p /var/lib/sixad/profiles
 cp /etc/sixad.profile /var/lib/sixad/profiles/default
+
+# randomize initial hostname on first boot
+random_number=$(openssl rand -hex 4)
+if [ ! -f /userdata/system/batocera.conf ]; then
+    mount -o remount,rw /boot
+    /usr/bin/batocera-settings-set -f "${CONFIG}" system.hostname BATOCERA-$random_number
+    mount -o remount,ro /boot
+fi
 
 # custom network config
 mkdir -p "/var/lib/connman"
