@@ -7973,6 +7973,19 @@ rpcs3:
             choices:
                 "Off":          False
                 "On (Default)": True
+        rpcs3_audiobuffer_duration:
+            group: AUDIO
+            prompt: AUDIO BUFFER DURATION
+            description: Duration of audio buffer in milliseconds.
+            choices:
+                "10": 10
+                "20": 20
+                "40": 40
+                "60": 60
+                "80": 80
+                "100 (Default)": 100
+                "120": 120
+                "140": 140
         rpcs3_timestretch:
             group: AUDIO
             prompt: ENABLE TIME STRETCHING
