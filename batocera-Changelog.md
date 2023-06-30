@@ -18,6 +18,7 @@
 - xenia to v1.0.2805
 - xenia canary to ff09bb4 (Commits on Jun 28, 2023)
 - citra to nightly-1936
+- groovy mame to 0.256
 ### Dev
 - linux kernel for x86_64 to 6.4.0
 - xf86-video-amdgpu to 23.0.0

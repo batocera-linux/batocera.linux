@@ -3,8 +3,8 @@
 # switchres
 #
 ################################################################################
-# Version: Commits on Feb 23, 2023
-SWITCHRES_VERSION = ca72648b3253eca8c5addf64d1e4aa1c43f5db94
+# Version: Commits on May 3, 2023
+SWITCHRES_VERSION = a14626d802a18114701c831aabf868d1b605d841
 SWITCHRES_SITE = $(call github,antonioginer,switchres,$(SWITCHRES_VERSION))
 SWITCHRES_LICENSE = GPL-2.0+
 SWITCHRES_DEPENDENCIES = libdrm
