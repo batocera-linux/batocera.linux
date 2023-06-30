@@ -190,7 +190,7 @@ fi
 
 if [ "$command" = "canupdate" ];then
 	updatetype="$(/usr/bin/batocera-settings-get updates.type)"
-	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
+	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly"
 	then
 		# force a default value in case the value is removed or miswritten
 		updatetype="stable"
