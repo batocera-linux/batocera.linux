@@ -7,6 +7,7 @@ import shutil
 import os
 from os import environ
 import configparser
+import controllersConfig
 
 class CitraGenerator(Generator):
 
@@ -15,12 +16,16 @@ class CitraGenerator(Generator):
         CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
 
         commandArray = ['/usr/bin/citra-qt', rom]
-        return Command.Command(array=commandArray, env={ \
-        "XDG_CONFIG_HOME":batoceraFiles.CONF, \
-        "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
-        "XDG_CACHE_HOME":batoceraFiles.CACHE, \
-        "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu", \
-        "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(array=commandArray, env={ 
+            "XDG_CONFIG_HOME":batoceraFiles.CONF,
+            "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds",
+            "XDG_CACHE_HOME":batoceraFiles.CACHE,
+            "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu",
+            "QT_QPA_PLATFORM":"xcb",
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )
 
     # Show mouse on screen
     def getMouseMode(self, config):
