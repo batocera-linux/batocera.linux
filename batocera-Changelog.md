@@ -15,7 +15,8 @@
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
 ### Updated
-
+- xenia to v1.0.2805
+- xenia canary to ff09bb4 (Commits on Jun 28, 2023)
 ### Dev
 - linux kernel for x86_64 to 6.4.0
 - xf86-video-amdgpu to 23.0.0
