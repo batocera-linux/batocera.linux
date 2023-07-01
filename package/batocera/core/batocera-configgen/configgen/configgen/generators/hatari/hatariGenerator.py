@@ -59,8 +59,10 @@ class HatariGenerator(Generator):
         
         rom_extension = os.path.splitext(rom)[1].lower()
         if rom_extension == ".hd":
-            # Hard Drive (IDE) options
-            commandArray += ["--ide-master", rom]
+            if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ASCI":
+                commandArray += ["--asci", rom]
+            else:
+                commandArray += ["--ide-master", rom]
         else:
             # Floppy (A) options
             commandArray += ["--disk-a", rom]
