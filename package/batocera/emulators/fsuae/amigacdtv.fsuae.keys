@@ -3,7 +3,20 @@
 	{
             "trigger": ["hotkey", "start"],
             "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	}
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "description": "Exit emulator"
+	},
+    {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_F11",
+            "description": "Virtual Keyboard"
+    },
+    {
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": "KEY_F12",
+            "description": "Settings GUI"
+    }
     ]
 }
