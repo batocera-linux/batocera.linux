@@ -877,6 +877,16 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('dosbox_pure_joystick_timed', '"' + system.config['pure_joystick_timed'] + '"')
         else:
             coreSettings.save('dosbox_pure_joystick_timed', '"true"')
+        # SoundBlaster Type
+        if system.isOptSet('pure_sblaster_type'):
+            coreSettings.save('dosbox_pure_sblaster_type', '"' + system.config['pure_sblaster_type'] + '"')
+        else:
+            coreSettings.save('dosbox_pure_sblaster_type', '"sb16"')
+        # Midi Type
+        if system.isOptSet('pure_midi'):
+            coreSettings.save('dosbox_pure_midi', '"' + system.config['pure_midi'] + '"')
+        else:
+            coreSettings.save('dosbox_pure_midi', '"zcsf.sf2"')
 
     # Microsoft MSX and Colecovision
     if (system.config['core'] == 'bluemsx'):
