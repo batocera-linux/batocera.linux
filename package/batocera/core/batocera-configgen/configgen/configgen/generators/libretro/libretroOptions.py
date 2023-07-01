@@ -2202,6 +2202,13 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('neocd_per_content_saves', '"Off"')
         else:
             coreSettings.save('neocd_per_content_saves', '"On"')
+    
+    # Sony PSP
+    if (system.config['core'] == 'ppsspp'):
+        if system.isOptSet('ppsspp_resolution'):
+            coreSettings.save('ppsspp_internal_resolution', '"' + system.config['ppsspp_resolution'] + '"')
+        else:
+            coreSettings.save('ppsspp_internal_resolution', '"480x272"')
 
     # Sony PSX
     if (system.config['core'] == 'mednafen_psx'):
