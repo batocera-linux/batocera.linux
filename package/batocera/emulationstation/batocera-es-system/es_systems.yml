@@ -1390,10 +1390,10 @@ atarist:
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z]
+  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd]
   emulators:
     libretro:
-      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd ] }
     hatari:
       hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
 
