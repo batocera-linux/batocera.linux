@@ -1039,6 +1039,24 @@ libretro:
                     "Flight Stick (3 Axes, 4 Btns, 1 Hat)":                 1793
                     "Both Joysticks (4 Axes, 4 Btns)":                      2049
                     "Custom Keyboard Binds (best for Pad2Key)":             3
+            pure_sblaster_type:
+                prompt: SOUNDBLASTER TYPE
+                description: Type of emulated SoundBlaster card.
+                choices:
+                    "SounBlaster 16 (Default)": "sb16"
+                    "SounBlaster Pro 2":        "sbpro2"
+                    "SounBlaster Pro":          "sbpro1"
+                    "SounBlaster 2.0":          "sb2"
+                    "SounBlaster 1.0":          "sb1"
+                    "GameBlaster":              "gb"
+            pure_midi:
+                prompt: MIDI OUTPUT
+                description: Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output.
+                choices:
+                    "General MIDI SoundFont (Default)": "zcsf.sf2"
+                    "Roland MT-32/CM-32L":              "scummvm/extra/MT32_CONTROL.ROM"
+                    "Frontend MIDI driver":             "frontend"
+                    "Off":                              "disabled"
     swanstation:
       features: [cheevos]
       shared: [autosave, use_guns]
