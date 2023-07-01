@@ -886,7 +886,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('pure_midi'):
             coreSettings.save('dosbox_pure_midi', '"' + system.config['pure_midi'] + '"')
         else:
-            coreSettings.save('dosbox_pure_midi', '"zcsf.sf2"')
+            coreSettings.save('dosbox_pure_midi', '"disabled"')
 
     # Microsoft MSX and Colecovision
     if (system.config['core'] == 'bluemsx'):
