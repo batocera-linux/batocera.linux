@@ -27,6 +27,7 @@
 - xwayland to 23.1.2
 - linux kernel for RPI to 6.1.32
 - Enable exFAT and NTFS Linux kernel drivers on x86_64
+- bluez to 5.68
 
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
