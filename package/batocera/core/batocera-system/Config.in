@@ -725,19 +725,9 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS   # ALL
     select BR2_PACKAGE_LIBRETRO_IMAME           if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # IMAME
     select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # MAME2010
-    select BR2_PACKAGE_LIBRETRO_MAME            if	BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3588      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_A3GEN2      || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_BCM2836     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_BCM2837     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_BCM2711     || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_H5  || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RISCV       || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S812
+    select BR2_PACKAGE_LIBRETRO_MAME            if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && \
+						    !BR2_PACKAGE_BATOCERA_TARGET_H3      && \
+						    !BR2_PACKAGE_BATOCERA_TARGET_RK3128
     select BR2_PACKAGE_LIBRETRO_SAME_CDI        if	BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 
@@ -770,14 +760,18 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3326      || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_A3GEN2      || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_H616        || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3568      || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     select BR2_PACKAGE_DRASTIC                  if  BR2_PACKAGE_BATOCERA_RPI_MESA3D     || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_A3GEN2  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_RK3326  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_XU4     || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_H616    || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_H6
 
     select BR2_PACKAGE_MELONDS                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -877,7 +871,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_XRICK           if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     # Flashback
-    select BR2_PACKAGE_LIBRETRO_REMINISCENCE    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_LIBRETRO_REMINISCENCE    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
 
     # Super Flappy Birds
     # select BR2_PACKAGE_LIBRETRO_SUPERFLAPPYBIRDS if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -898,7 +892,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 
     select BR2_PACKAGE_ABUSE                    if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
-    select BR2_PACKAGE_LIBRETRO_VITAQUAKE2		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    select BR2_PACKAGE_LIBRETRO_VITAQUAKE2	if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
     
     # Super Mario War
     select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
@@ -913,7 +907,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_BOOM3           if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
     # OpenLara (Tomb Raider)
-    select BR2_PACKAGE_LIBRETRO_OPENLARA        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_LIBRETRO_OPENLARA        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
 
     help
         Ports
