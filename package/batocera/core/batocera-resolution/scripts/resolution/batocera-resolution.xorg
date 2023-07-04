@@ -1,6 +1,7 @@
 #!/bin/sh
 
 log="/userdata/system/logs/display.log"
+mpvlog="/userdata/system/logs/mpv.log"
 BOOTCONF="/boot/batocera-boot.conf"
 
 f_usage() {
@@ -40,8 +41,17 @@ f_minTomaxResolution() {
         else
             echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
+    # otherwise grab the value from the mpv.log if it exists
+    else
+        if [ -f "$mpvlog" ]; then
+            selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
+            MAXWIDTH=$(echo "$selected_mode" | cut -d 'x' -f 1)
+            MAXHEIGHT=$(echo "$selected_mode" | cut -d 'x' -f 2 | cut -d '@' -f 1)
+            MAXRATE=$(echo "$selected_mode" | cut -d '@' -f 2 | cut -d ' ' -f 1)
+            echo "MPV default drm resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
+        fi
     fi
-
+    
     CURRENT_RESOLUTION=$(xrandr --currentResolution)
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d 'x' -f 2)
