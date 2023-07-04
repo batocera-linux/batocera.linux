@@ -1,0 +1,11 @@
+--- a/src/platform/libretro/Makefile	2023-07-04 00:36:44.731147138 +0200
++++ b/src/platform/libretro/Makefile	2023-07-04 00:39:21.238481472 +0200
+@@ -36,7 +36,7 @@
+ 
+ CORE_DIR := .
+ 
+-ifeq ($(platform), unix)
++ifneq ($(findstring unix,$(platform)),)
+    TARGET := $(TARGET_NAME)_libretro.so
+    fpic := -fPIC
+    SHARED := -shared -Wl,--version-script=link.T -Wl,--no-undefined
