@@ -1,0 +1,15 @@
+diff --git a/configure b/configure
+old mode 100755
+new mode 100755
+index bec51ffba5..f88d90a8db
+--- a/configure
++++ b/configure
+@@ -15959,7 +15959,7 @@ fi
+ 
+ 
+ fi
+-if (test "${enable_external_ell}" != "yes"); then
++if (test "${enable_external_ell}" == "yes"); then
+ 	as_ac_File=`printf "%s\n" "ac_cv_file_${srcdir}/ell/ell.h" | $as_tr_sh`
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${srcdir}/ell/ell.h" >&5
+ printf %s "checking for ${srcdir}/ell/ell.h... " >&6; }

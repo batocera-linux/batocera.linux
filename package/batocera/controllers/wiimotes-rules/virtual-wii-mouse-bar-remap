@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# kill any existing virtul-wii-mouse-bar
-ls /var/run/virtual-wii-mouse-devices*.pid 2>/dev/null |
+# kill any existing virtul-wiigun-bar
+ls /var/run/virtual-wiigun-devices*.pid 2>/dev/null |
     while read VWMB
     do
 	PID=$(cat "${VWMB}")
@@ -10,7 +10,7 @@ ls /var/run/virtual-wii-mouse-devices*.pid 2>/dev/null |
     done
 
 # remove exiting flags
-rm -rf /var/run/virtual-wii-mouse-devices* || exit 1
+rm -rf /var/run/virtual-wiigun-devices* || exit 1
 
 # rerun events
 for EVT in /dev/input/event*
