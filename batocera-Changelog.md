@@ -20,6 +20,7 @@
 - citra to nightly-1936
 - groovy mame to 0.256
 - cemu to v2.0-42
+- amiberry to 5.6.1
 ### Dev
 - linux kernel for x86_64 to 6.4.1
 - xf86-video-amdgpu to 23.0.0
@@ -28,7 +29,7 @@
 - linux kernel for RPI to 6.1.32
 - Enable exFAT and NTFS Linux kernel drivers on x86_64
 - bluez to 5.68
-
+- wildmidi to 0.4.5
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
