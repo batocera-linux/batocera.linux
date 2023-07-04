@@ -21,6 +21,7 @@
 - groovy mame to 0.256
 - cemu to v2.0-42
 - amiberry to 5.6.1
+- dosbox-x to v2023.05.01
 ### Dev
 - linux kernel for x86_64 to 6.4.1
 - xf86-video-amdgpu to 23.0.0
