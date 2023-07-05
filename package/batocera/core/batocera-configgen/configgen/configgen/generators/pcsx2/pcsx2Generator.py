@@ -25,8 +25,6 @@ class Pcsx2Generator(Generator):
         return 4/3
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        isAVX2 = checkAvx2()
-
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
 
         # Remove older config files if present
@@ -46,9 +44,7 @@ class Pcsx2Generator(Generator):
         dbfile = pcsx2ConfigDir + "/game_controller_db.txt"
         controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
         
-        commandArray = ["/usr/pcsx2-avx2/bin/pcsx2-qt"] if isAVX2 and rom == "config" else \
-              ["/usr/pcsx2-avx2/bin/pcsx2-qt", "-nogui", rom] if isAVX2 else \
-              ["/usr/pcsx2/bin/pcsx2-qt"] if rom == "config" else \
+        commandArray = ["/usr/pcsx2/bin/pcsx2-qt"] if rom == "config" else \
               ["/usr/pcsx2/bin/pcsx2-qt", "-nogui", rom]
         
         return Command.Command(
@@ -562,9 +558,3 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
 
     with open(configFileName, 'w') as configfile:
         pcsx2INIConfig.write(configfile)
-
-def checkAvx2():
-    for line in open("/proc/cpuinfo").readlines():
-        if re.match("^flags[\t ]*:.* avx2", line):
-            return True
-    return False

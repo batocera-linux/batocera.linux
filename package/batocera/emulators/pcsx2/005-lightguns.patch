@@ -143,27 +143,23 @@ index 5b105a1..f449b17 100644
  
  		switch (p->pid)
  		{
-@@ -327,11 +430,20 @@ namespace usb_lightgun
+@@ -432,8 +432,16 @@
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
 +	  udev_fd = -1;
 +	  udev_internalGunX = 0.0;
 +	  udev_internalGunY = 0.0;
-+	}
-+
+ 	}
+ 
 +	GunCon2State::~GunCon2State()
 +	{
 +	  if(udev_fd != -1) close(udev_fd);
- 	}
- 
++ 	}
++
  	void GunCon2State::AutoConfigure()
  	{
- 		const std::string serial(VMManager::GetGameSerial());
-+
- 		for (const GameConfig& gc : s_game_config)
- 		{
- 			if (serial != gc.serial)
+ 		const std::string serial = VMManager::GetDiscSerial();
 @@ -358,7 +470,13 @@ namespace usb_lightgun
  	{
  		float pointer_x, pointer_y;

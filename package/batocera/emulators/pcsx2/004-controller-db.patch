@@ -1,7 +1,7 @@
-diff --git a/pcsx2/Frontend/SDLInputSource.cpp b/pcsx2/Frontend/SDLInputSource.cpp
+diff --git a/pcsx2/Input/SDLInputSource.cpp b/pcsx2/Input/SDLInputSource.cpp
 index 4993e43514..38f6a1da47 100644
---- a/pcsx2/Frontend/SDLInputSource.cpp
-+++ b/pcsx2/Frontend/SDLInputSource.cpp
+--- a/pcsx2/Input/SDLInputSource.cpp
++++ b/pcsx2/Input/SDLInputSource.cpp
 @@ -119,7 +119,7 @@ SDLInputSource::~SDLInputSource()
  
  bool SDLInputSource::Initialize(SettingsInterface& si, std::unique_lock<std::mutex>& settings_lock)
