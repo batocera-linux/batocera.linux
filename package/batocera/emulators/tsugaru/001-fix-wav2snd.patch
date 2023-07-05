@@ -1,9 +1,0 @@
---- a/src/cmdutil/wav2snd.cpp	2021-03-28 01:05:30.000000000 +0100
-+++ b/src/cmdutil/wav2snd.cpp	2021-03-29 23:35:51.035570457 +0200
-@@ -1,4 +1,6 @@
- #include "yssimplesound.h"
-+#include <cstdio>
-+#include <cmath>
- #include <vector>
- 
- // cl wav2snd.cpp -I..\..\..\..\public\src\yssimplesound\src ..\..\..\..\public\src\yssimplesound\src\yssimplesound.cpp ..\..\..\..\public\src\yssimplesound\src\nownd\yssimplesound_nownd.cpp -EHsc -W3
