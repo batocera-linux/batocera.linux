@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Apr 28, 2023
-PCSX2_VERSION = v1.7.4439
+#Version: Commits on Jul 5, 2023
+PCSX2_VERSION = v1.7.4683
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -13,7 +13,7 @@ PCSX2_LICENSE_FILE = COPYING.GPLv3
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
-PCSX2_DEPENDENCIES += xserver_xorg-server alsa-lib freetype zlib libpng
+PCSX2_DEPENDENCIES += xorgproto alsa-lib freetype zlib libpng
 PCSX2_DEPENDENCIES += libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp
 PCSX2_DEPENDENCIES += libsamplerate fmt wxwidgets libgtk3 qt6base qt6tools qt6svg
 
@@ -24,7 +24,7 @@ PCSX2_CONF_OPTS += -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE
 PCSX2_CONF_OPTS += -DQT_BUILD=TRUE
 PCSX2_CONF_OPTS += -DENABLE_TESTS=OFF
 PCSX2_CONF_OPTS += -DUSE_SYSTEM_LIBS=AUTO
-PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
+#PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
 PCSX2_CONF_OPTS += -DUSE_VTUNE=OFF
 PCSX2_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 PCSX2_CONF_OPTS += -DLTO_PCSX2_AVX2_CORE=OFF
