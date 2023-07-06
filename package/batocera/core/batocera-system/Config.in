@@ -1580,7 +1580,8 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
     bool "batocera.linux Firmwares packages selection"
 
-    select BR2_PACKAGE_ALLLINUXFIRMWARES
+    # alllinuxfirmwares
+    select BR2_PACKAGE_ALLLINUXFIRMWARES		if !BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # buildroot firmware
     select BR2_PACKAGE_LINUX_FIRMWARE			if BR2_PACKAGE_BATOCERA_TARGET_RK3288
@@ -1610,6 +1611,12 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
                                                             BR2_PACKAGE_BATOCERA_TARGET_H6  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RK3399
+    # orangepi firmware
+    select BR2_PACKAGE_FIRMWARE_ORANGEPI		if BR2_PACKAGE_BATOCERA_TARGET_H3   || \
+							   BR2_PACKAGE_BATOCERA_TARGET_H5   || \
+							   BR2_PACKAGE_BATOCERA_TARGET_H6   || \
+							   BR2_PACKAGE_BATOCERA_TARGET_H616
+
 
 config BR2_PACKAGE_BATOCERA_SDL2
     bool "BATOCERA SDL2"

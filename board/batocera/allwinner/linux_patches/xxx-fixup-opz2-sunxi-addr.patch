@@ -1,0 +1,386 @@
+diff -u -r a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsib/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi	2023-07-06 11:39:34.578488599 +0200
++++b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi	2023-07-03 14:15:37.000000000 +0200
+@@ -1220,58 +1380,81 @@
+ 			nvmem-cell-names = "calibration";
+ 			#thermal-sensor-cells = <1>;
+ 		};
++
++		dump_reg: dump_reg@20000 {
++			compatible = "allwinner,sunxi-dump-reg";
++			reg = <0x0 0x03001000 0x0 0x0f20>;
++			status = "okay";
++		};
++
++		sunxi-info {
++			compatible = "allwinner,sun50i-h616-sys-info";
++			status = "okay";
++		};
++
++		addr_mgt: addr-mgt {
++			compatible = "allwinner,sunxi-addr_mgt";
++			type_addr_wifi = <0x2>;
++			type_addr_bt = <0x2>;
++			type_addr_eth = <0x2>;
++			status = "okay";
++		};
+ 	};
+ 
+ 	thermal-zones {
+ 		cpu-thermal {
+-			polling-delay-passive = <500>;
+-			polling-delay = <1000>;
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
+ 			thermal-sensors = <&ths 2>;
+-			sustainable-power = <1000>;
+-			k_po = <20>;
+-			k_pu = <40>;
+-			k_i = <0>;
+ 
+ 			trips {
+-				cpu_threshold: trip-point@0 {
+-					temperature = <60000>;
++				cpu_alert: cpu-alert {
++					temperature = <85000>;
++					hysteresis = <2000>;
+ 					type = "passive";
+-					hysteresis = <0>;
+ 				};
+-				cpu_target: trip-point@1 {
+-					temperature = <70000>;
+-					type = "passive";
++
++				cpu-crit {
++					temperature = <100000>;
+ 					hysteresis = <0>;
+-				};
+-				cpu_temp_critical: trip-point@2 {
+-					temperature = <110000>;
+ 					type = "critical";
+-					hysteresis = <0>;
+ 				};
+ 			};
+ 
+ 			cooling-maps {
+ 				map0 {
+-					trip = <&cpu_target>;
++					trip = <&cpu_alert>;
+ 					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+-							 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+-							 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+-							 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++					                 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++					                 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++					                 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+ 				};
+ 			};
+ 		};
+ 
+ 		gpu-thermal {
+-			polling-delay-passive = <500>;
+-			polling-delay = <1000>;
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
+ 			thermal-sensors = <&ths 0>;
+-			sustainable-power = <1100>;
+ 
+ 			trips {
+-				gpu_temp_critical: trip-point@0 {
+-					temperature = <110000>;
+-					type = "critical";
++				gpu_alert: gpu-alert {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				gpu-crit {
++					temperature = <100000>;
+ 					hysteresis = <0>;
++					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&gpu_alert>;
++					cooling-device = <&gpu THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+ 				};
+ 			};
+ 		};
+@@ -1282,10 +1465,10 @@
+ 			thermal-sensors = <&ths 1>;
+ 
+ 			trips {
+-				ve_temp_critical: trip-point@0 {
+-					temperature = <110000>;
+-					type = "critical";
+-					hysteresis = <0>;
++				ve_alert: ve-alert {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
+ 				};
+ 			};
+ 		};
+@@ -1296,12 +1479,36 @@
+ 			thermal-sensors = <&ths 3>;
+ 
+ 			trips {
+-				ddr_temp_critical: trip-point@0 {
+-					temperature = <110000>;
+-					type = "critical";
+-					hysteresis = <0>;
++				ddr_alert: ddr-alert {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
+ 				};
+ 			};
+ 		};
+ 	};
++
++	gpu_opp_table: gpu-opp-table {
++		compatible = "operating-points-v2";
++		opp-125000000 {
++			opp-hz = /bits/ 64 <125000000>;
++			opp-microvolt = <810000>;
++		};
++		opp-250000000 {
++			opp-hz = /bits/ 64 <250000000>;
++			opp-microvolt = <810000>;
++		};
++		opp-432000000 {
++			opp-hz = /bits/ 64 <432000000>;
++			opp-microvolt = <810000>;
++		};
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <960000>;
++		};
++		opp-800000000 {
++			opp-hz = /bits/ 64 <800000000>;
++			opp-microvolt = <1080000>;
++		};
++	};
+ };
+diff -u -r a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dtsb/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-07-06 11:39:34.590488856 +0200
++++b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts	2023-07-05 23:24:35.420455804 +0200
+@@ -37,21 +37,19 @@
+ 		};
+ 	};
+ 
+-	leds {
++	leds: leds {
+ 		compatible = "gpio-leds";
+ 
+-		led-0 {
+-			function = LED_FUNCTION_STATUS;
+-			color = <LED_COLOR_ID_RED>;
++		led-red {
++			label = "red_led";
+ 			gpios = <&pio 2 12 GPIO_ACTIVE_HIGH>; /* PC12 */
+-			linux,default-trigger = "heartbeat";
++			linux,default-trigger = "none";
+ 		};
+ 
+-		led-1 {
+-			function = LED_FUNCTION_POWER;
+-			color = <LED_COLOR_ID_GREEN>;
++		led-green {
++			label = "green_led";
+ 			gpios = <&pio 2 13 GPIO_ACTIVE_HIGH>; /* PC13 */
+-			default-state = "on";
++			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
+@@ -64,6 +62,17 @@
+ 		regulator-always-on;
+ 	};
+ 
++	reg_usb1_vbus: usb1-vbus {
++		compatible = "regulator-fixed";
++		regulator-name = "usb1-vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&reg_vcc5v>;
++		enable-active-high;
++		gpio = <&pio 2 16 GPIO_ACTIVE_HIGH>; /* PC16 */
++		status = "okay";
++	};
++
+ 	reg_vcc33_wifi: vcc33-wifi {
+ 		/* Always on 3.3V regulator for WiFi and BT */
+ 		compatible = "regulator-fixed";
+@@ -86,31 +95,16 @@
+ 
+ 	wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+-		//clocks = <&rtc 1>;
+-		//clock-names = "osc32k-out";
++		clocks = <&rtc 1>;
++		clock-names = "osc32k-out";
+ 		reset-gpios = <&pio 6 18 GPIO_ACTIVE_LOW>; /* PG18 */
+ 		post-power-on-delay-ms = <200>;
+ 	};
+-
+-	reg_usb1_vbus: usb1-vbus {
+-		compatible = "regulator-fixed";
+-		regulator-name = "usb1-vbus";
+-		regulator-min-microvolt = <5000000>;
+-		regulator-max-microvolt = <5000000>;
+-		vin-supply = <&reg_vcc5v>;
+-		enable-active-high;
+-		gpio = <&pio 2 16 GPIO_ACTIVE_HIGH>; /* PC16 */
+-		status = "okay";
+-	};
+ };
+ 
+ &de {
+ 	status = "okay";
+ };
+-&gpu {
+-        mali-supply = <&reg_dcdcc>;
+-        status = "okay";
+-};
+ 
+ &hdmi {
+ 	hvcc-supply = <&reg_bldo1>;
+@@ -123,9 +117,8 @@
+ 	};
+ };
+ 
+-/* USB 2 & 3 are on headers only. */
+-
+-&ehci1 {
++&gpu {
++	mali-supply = <&reg_dcdcc>;
+ 	status = "okay";
+ };
+ 
+@@ -151,28 +144,17 @@
+ 	vmmc-supply = <&reg_dcdce>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
+ 	bus-width = <4>;
++	max-frequency = <50000000>;
+ 	status = "okay";
+ };
+ 
+ &mmc1 {
+-	vmmc-supply = <&reg_aldo2>;
++	vmmc-supply = <&reg_vcc33_wifi>;
++	vqmmc-supply = <&reg_vcc_wifi_io>;
+ 	mmc-pwrseq = <&wifi_pwrseq>;
+ 	bus-width = <4>;
+ 	non-removable;
+-	status = "okay";
+-
+-	uwe-bsp {
+-		compatible = "unisoc,uwe_bsp";
+-		keep-power-on;
+-		data-irq;
+-		//adma-tx;
+-		adma-rx;
+-		//blksz-512;
+-		status = "okay";
+-	};
+-};
+-
+-&ohci1 {
++	mmc-ddr-1_8v;
+ 	status = "okay";
+ };
+ 
+@@ -225,11 +207,12 @@
+ 				regulator-name = "vcc1v8";
+ 			};
+ 
+-			reg_bldo2: bldo2 {
+-				regulator-always-on;
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <1800000>;
+-				regulator-name = "vcc1v8";
++			bldo2 {
++				/* unused */
++			};
++
++			bldo3 {
++				/* unused */
+ 			};
+ 
+ 			bldo4 {
+@@ -258,14 +241,14 @@
+ 			reg_dcdcc: dcdcc {
+ 				regulator-always-on;
+ 				regulator-min-microvolt = <810000>;
+-				regulator-max-microvolt = <990000>;
++				regulator-max-microvolt = <1100000>;
+ 				regulator-name = "vdd-gpu-sys";
+ 			};
+ 
+ 			reg_dcdcd: dcdcd {
+ 				regulator-always-on;
+-				regulator-min-microvolt = <1500000>;
+-				regulator-max-microvolt = <1500000>;
++				regulator-min-microvolt = <1400000>;
++				regulator-max-microvolt = <1400000>;
+ 				regulator-name = "vdd-dram";
+ 			};
+ 
+@@ -291,11 +274,6 @@
+ 	vcc-pi-supply = <&reg_aldo1>;
+ };
+ 
+-&cpu0  {
+-	cpu-supply = <&reg_dcdca>;
+-	status = "okay";
+-};
+-
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_ph_pins>;
+diff -u -r a/drivers/misc/sunxi-addr/sunxi-addr.cb/drivers/misc/sunxi-addr/sunxi-addr.c
+--- a/drivers/misc/sunxi-addr/sunxi-addr.c	2023-07-06 11:39:34.250481597 +0200
++++b/drivers/misc/sunxi-addr/sunxi-addr.c	2023-07-06 00:44:06.524977991 +0200
+@@ -39,14 +39,15 @@
+ 
+ #define IS_TYPE_INVALID(x)  ((x < TYPE_ANY) || (x > TYPE_RAND))
+ 
++static char tmpaddr[ADDR_STR_LEN];
++
+ #define ADDR_CLASS_ATTR_ADD(name) \
+ static ssize_t addr_##name##_show(struct class *class, \
+ 		struct class_attribute *attr, char *buffer) \
+ { \
+-	char addr[ADDR_STR_LEN]; \
+-	if (IS_TYPE_INVALID(get_addr_by_name(ADDR_FMT_STR, addr, #name))) \
++	if (IS_TYPE_INVALID(get_addr_by_name(ADDR_FMT_STR, tmpaddr, #name))) \
+ 		return 0; \
+-	return sprintf(buffer, "%.17s\n", addr); \
++	return sprintf(buffer, "%.17s\n", tmpaddr); \
+ } \
+ static ssize_t addr_##name##_store(struct class *class, \
+ 		struct class_attribute *attr, \
+@@ -306,7 +307,6 @@
+ 
+ static struct class addr_class = {
+ 	.name = "addr_mgt",
+-	.owner = THIS_MODULE,
+ 	.class_groups = addr_class_groups,
+ };
+ 
+diff -u -r a/drivers/net/wireless/uwe5622/unisocwifi/main.cb/drivers/net/wireless/uwe5622/unisocwifi/main.c
+--- a/drivers/net/wireless/uwe5622/unisocwifi/main.c	2023-07-06 11:39:34.550488001 +0200
++++b/drivers/net/wireless/uwe5622/unisocwifi/main.c	2023-07-03 14:15:37.000000000 +0200
+@@ -1445,6 +1445,7 @@
+ 	SET_NETDEV_DEV(ndev, wiphy_dev(priv->wiphy));
+ 
+ 	sprdwl_set_mac_addr(vif, addr, ndev->dev_addr);
++	ether_addr_copy(ndev->dev_addr_shadow, ndev->dev_addr);
+ 
+ #ifdef CONFIG_P2P_INTF
+ 	if (type == NL80211_IFTYPE_P2P_DEVICE)
+Seulement dansb/sound/soc/sunxi: sun50iw9-codec.c
