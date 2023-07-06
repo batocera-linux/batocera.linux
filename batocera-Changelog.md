@@ -24,7 +24,7 @@
 - dosbox-x to v2023.05.01
 - tsugaru to v20230420
 ### Dev
-- linux kernel for x86_64 to 6.4.1
+- linux kernel for x86_64 to 6.4.2
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
