@@ -1061,6 +1061,12 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     # Sony PS2
     select BR2_PACKAGE_PCSX2                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
     select BR2_PACKAGE_LIBRETRO_PCSX2               if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_PLAY                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_LIBRETRO_PLAY                if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+						       BR2_PACKAGE_BATOCERA_TARGET_S922X      || \
+						       BR2_PACKAGE_BATOCERA_TARGET_A3GEN2     || \
+						       BR2_PACKAGE_BATOCERA_TARGET_RK3568     || \
+						       BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     # Sony PS3
     select BR2_PACKAGE_RPCS3                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -1230,10 +1236,6 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
     # Jazz Jackrabbit
     select BR2_PACKAGE_OPENJAZZ             # ALL
-
-    # Sony PS2
-    select BR2_PACKAGE_PLAY                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
-    select BR2_PACKAGE_LIBRETRO_PLAY        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
     help
         Emulators under development (Experimental)
