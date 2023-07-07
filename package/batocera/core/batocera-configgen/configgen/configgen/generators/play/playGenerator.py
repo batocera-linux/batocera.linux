@@ -22,7 +22,9 @@ class PlayGenerator(Generator):
         if not path.isdir(playSaves):
             os.mkdir(playSaves)
 
-        commandArray = ["/usr/bin/Play", "--disc", rom]
+        commandArray = ["/usr/bin/Play"]
+        if rom != "config":
+            commandArray.extend(["--disc", rom])
         return Command.Command(
             array=commandArray,
             env={"XDG_CONFIG_HOME":playConfig, "XDG_DATA_HOME":playConfig, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})
