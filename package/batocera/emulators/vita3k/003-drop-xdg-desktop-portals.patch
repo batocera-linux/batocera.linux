@@ -486,7 +486,7 @@ index 72ffabdb..7a6f4265 100644
                              gui.users[emuenv.io.user_id].start_type = "image";
                              save_user(gui, emuenv, emuenv.io.user_id);
                          }
-@@ -638,12 +638,12 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
+@@ -641,12 +641,12 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
                      ImGui::NextColumn();
                  }
                  if (ImGui::Selectable(theme_background.home_screen_backgrounds["add_background"].c_str(), false, ImGuiSelectableFlags_None, SIZE_PACKAGE)) {
@@ -495,11 +495,11 @@ index 72ffabdb..7a6f4265 100644
 +                    nfdchar_t *background_path;
 +                    nfdresult_t result = NFD_OpenDialog("bmp,gif,jpg,png,tif", nullptr, &background_path);
  
--                    if ((result == host::dialog::filesystem::Result::SUCCESS) && (gui.user_backgrounds.find(background_path.string()) == gui.user_backgrounds.end())) {
--                        if (init_user_background(gui, emuenv, emuenv.io.user_id, background_path.string())) {
+-                    if ((result == host::dialog::filesystem::Result::SUCCESS) && (!gui.user_backgrounds.contains(background_path.string()))) {
+-                        if (init_user_background(gui, emuenv, background_path.string())) {
 -                            gui.users[emuenv.io.user_id].backgrounds.push_back(background_path.string());
 +                    if ((result == NFD_OKAY) && (gui.user_backgrounds.find(background_path) == gui.user_backgrounds.end())) {
-+                        if (init_user_background(gui, emuenv, emuenv.io.user_id, background_path)) {
++                        if (init_user_background(gui, emuenv, background_path)) {
 +                            gui.users[emuenv.io.user_id].backgrounds.push_back(background_path);
                              gui.users[emuenv.io.user_id].use_theme_bg = false;
                              save_user(gui, emuenv, emuenv.io.user_id);
@@ -557,13 +557,14 @@ diff --git a/vita3k/gui/src/user_management.cpp b/vita3k/gui/src/user_management
 index e1d23bfb..f0b8a935 100644
 --- a/vita3k/gui/src/user_management.cpp
 +++ b/vita3k/gui/src/user_management.cpp
-@@ -21,12 +21,12 @@
- #include <config/state.h>
+@@ -24,13 +24,13 @@
+ 
  #include <display/state.h>
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
  #include <io/state.h>
- #include <misc/cpp/imgui_stdlib.h>
+ #include <np/common.h>
+ 
  #include <util/log.h>
  #include <util/string_utils.h>
  
@@ -574,7 +575,7 @@ index e1d23bfb..f0b8a935 100644
 @@ -373,11 +373,11 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
          const auto CHANGE_AVATAR_BTN_SIZE = ImGui::CalcTextSize(lang["change_avatar"].c_str()).x + (ImGui::GetStyle().FramePadding.x * 2.f);
          ImGui::SetCursorPos(ImVec2(AVATAR_POS.x + (AVATAR_SIZE.x / 2.f) - (CHANGE_AVATAR_BTN_SIZE / 2.f), AVATAR_POS.y + AVATAR_SIZE.y));
-         if (ImGui::Button(lang["change_avatar"].c_str(), ImVec2(CHANGE_AVATAR_BTN_SIZE, BUTTON_SIZE.y))) {
+         if (ImGui::Button(lang["choose_avatar"].c_str(), CHANGE_AVATAR_BTN_SIZE)) {
 -            std::filesystem::path avatar_path = "";
 -            host::dialog::filesystem::Result result = host::dialog::filesystem::open_file(avatar_path, { { "Image file", { "bmp", "gif", "jpg", "png", "tif" } } });
 +            nfdchar_t *avatar_path;
