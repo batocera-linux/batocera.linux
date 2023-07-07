@@ -1487,7 +1487,7 @@ index 622a1f7d1..bf2365c58 100644
 +
 +			cooling-maps {
 +				map0 {
-+					trip = <&gpu_alert>;
++					trip = <&gpu_temp_critical>;
 +					cooling-device = <&gpu THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 +				};
 +			};
@@ -3648,52 +3648,6 @@ index 38070fc26..04b6f8ac6 100644
  	val = SUN4I_BACKEND_ATTCTL_REG0_LAY_GLBALPHA(state->alpha >> 8);
  	if (state->alpha != DRM_BLEND_ALPHA_OPAQUE)
  		val |= SUN4I_BACKEND_ATTCTL_REG0_LAY_GLBALPHA_EN;
-@@ -635,25 +655,6 @@ static void sun4i_backend_vblank_quirk(struct sunxi_engine *engine)
- 	spin_unlock(&backend->frontend_lock);
- };
- 
--static void sun4i_backend_mode_set(struct sunxi_engine *engine,
--				   const struct drm_display_mode *mode)
--{
--	bool interlaced = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
--
--	DRM_DEBUG_DRIVER("Updating global size W: %u H: %u\n",
--			 mode->hdisplay, mode->vdisplay);
--
--	regmap_write(engine->regs, SUN4I_BACKEND_DISSIZE_REG,
--		     SUN4I_BACKEND_DISSIZE(mode->hdisplay, mode->vdisplay));
--
--	regmap_update_bits(engine->regs, SUN4I_BACKEND_MODCTL_REG,
--			   SUN4I_BACKEND_MODCTL_ITLMOD_EN,
--			   interlaced ? SUN4I_BACKEND_MODCTL_ITLMOD_EN : 0);
--
--	DRM_DEBUG_DRIVER("Switching display backend interlaced mode %s\n",
--			 interlaced ? "on" : "off");
--}
--
- static int sun4i_backend_init_sat(struct device *dev) {
- 	struct sun4i_backend *backend = dev_get_drvdata(dev);
- 	int ret;
-@@ -765,7 +766,6 @@ static const struct sunxi_engine_ops sun4i_backend_engine_ops = {
- 	.apply_color_correction		= sun4i_backend_apply_color_correction,
- 	.disable_color_correction	= sun4i_backend_disable_color_correction,
- 	.vblank_quirk			= sun4i_backend_vblank_quirk,
--	.mode_set			= sun4i_backend_mode_set,
- };
- 
- static const struct regmap_config sun4i_backend_regmap_config = {
-diff --git a/drivers/gpu/drm/sun4i/sun4i_crtc.c b/drivers/gpu/drm/sun4i/sun4i_crtc.c
-index c06d7cd45..45d9eb552 100644
---- a/drivers/gpu/drm/sun4i/sun4i_crtc.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_crtc.c
-@@ -146,7 +146,6 @@ static void sun4i_crtc_mode_set_nofb(struct drm_crtc *crtc)
- 	struct sun4i_crtc *scrtc = drm_crtc_to_sun4i_crtc(crtc);
- 
- 	sun4i_tcon_mode_set(scrtc->tcon, encoder, mode);
--	sunxi_engine_mode_set(scrtc->engine, mode);
- }
- 
- static const struct drm_crtc_helper_funcs sun4i_crtc_helper_funcs = {
 diff --git a/drivers/gpu/drm/sun4i/sun4i_hdmi.h b/drivers/gpu/drm/sun4i/sun4i_hdmi.h
 index 65c801cd6..00ca35f07 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_hdmi.h
@@ -3976,46 +3930,6 @@ index bafee05f6..9c2ef9726 100644
  }
  
  static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
-@@ -297,39 +303,9 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
- 	return planes;
- }
- 
--static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
--				 const struct drm_display_mode *mode)
--{
--	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
--	u32 bld_base, size, val;
--	bool interlaced;
--
--	bld_base = sun8i_blender_base(mixer);
--	interlaced = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
--	size = SUN8I_MIXER_SIZE(mode->hdisplay, mode->vdisplay);
--
--	DRM_DEBUG_DRIVER("Updating global size W: %u H: %u\n",
--			 mode->hdisplay, mode->vdisplay);
--
--	regmap_write(engine->regs, SUN8I_MIXER_GLOBAL_SIZE, size);
--	regmap_write(engine->regs, SUN8I_MIXER_BLEND_OUTSIZE(bld_base), size);
--
--	if (interlaced)
--		val = SUN8I_MIXER_BLEND_OUTCTL_INTERLACED;
--	else
--		val = 0;
--
--	regmap_update_bits(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
--			   SUN8I_MIXER_BLEND_OUTCTL_INTERLACED, val);
--
--	DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
--			 interlaced ? "on" : "off");
--}
--
- static const struct sunxi_engine_ops sun8i_engine_ops = {
- 	.commit		= sun8i_mixer_commit,
- 	.layers_init	= sun8i_layers_init,
--	.mode_set	= sun8i_mixer_mode_set,
- };
- 
- static const struct regmap_config sun8i_mixer_regmap_config = {
 @@ -339,6 +315,20 @@ static const struct regmap_config sun8i_mixer_regmap_config = {
  	.max_register	= 0xffffc, /* guessed */
  };
@@ -4685,56 +4599,6 @@ index 7ba75011a..6839fd5ab 100644
  		u32 val;
  
  		if (format->hsub == 1 && format->vsub == 1)
-diff --git a/drivers/gpu/drm/sun4i/sunxi_engine.h b/drivers/gpu/drm/sun4i/sunxi_engine.h
-index ec8cf9b2b..548710a93 100644
---- a/drivers/gpu/drm/sun4i/sunxi_engine.h
-+++ b/drivers/gpu/drm/sun4i/sunxi_engine.h
-@@ -9,7 +9,6 @@
- struct drm_plane;
- struct drm_device;
- struct drm_crtc_state;
--struct drm_display_mode;
- 
- struct sunxi_engine;
- 
-@@ -109,17 +108,6 @@ struct sunxi_engine_ops {
- 	 * This function is optional.
- 	 */
- 	void (*vblank_quirk)(struct sunxi_engine *engine);
--
--	/**
--	 * @mode_set
--	 *
--	 * This callback is used to set mode related parameters
--	 * like interlacing, screen size, etc. once per mode set.
--	 *
--	 * This function is optional.
--	 */
--	void (*mode_set)(struct sunxi_engine *engine,
--			 const struct drm_display_mode *mode);
- };
- 
- /**
-@@ -193,19 +181,4 @@ sunxi_engine_disable_color_correction(struct sunxi_engine *engine)
- 	if (engine->ops && engine->ops->disable_color_correction)
- 		engine->ops->disable_color_correction(engine);
- }
--
--/**
-- * sunxi_engine_mode_set - Inform engine of a new mode
-- * @engine:	pointer to the engine
-- * @mode:	new mode
-- *
-- * Engine can use this functionality to set specifics once per mode change.
-- */
--static inline void
--sunxi_engine_mode_set(struct sunxi_engine *engine,
--		      const struct drm_display_mode *mode)
--{
--	if (engine->ops && engine->ops->mode_set)
--		engine->ops->mode_set(engine, mode);
--}
- #endif /* _SUNXI_ENGINE_H_ */
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
 index 358ad56f6..c59480dc8 100644
 --- a/drivers/misc/Kconfig
