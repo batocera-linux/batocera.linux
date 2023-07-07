@@ -3592,6 +3592,36 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            mupen64plus-controller1:
+                prompt:      P1 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+                    "N64 (Limited Hotkeys)": n64limited
+                    "N64 (Limited Hotkeys + A/B Swapped)": n64limitedswapped
+            mupen64plus-controller2:
+                prompt:      P2 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+            mupen64plus-controller3:
+                prompt:      P3 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+            mupen64plus-controller4:
+                prompt:      P4 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
             mupen64plus-Framerate:
                 group: ADVANCED OPTIONS
                 prompt: FRAME RATE
@@ -4047,6 +4077,36 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            parallel-n64-controller1:
+                prompt:      P1 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+                    "N64 (Limited Hotkeys)": n64limited
+                    "N64 (Limited Hotkeys + A/B Swapped)": n64limitedswapped
+            parallel-n64-controller2:
+                prompt:      P2 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+            parallel-n64-controller3:
+                prompt:      P3 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
+            parallel-n64-controller4:
+                prompt:      P4 CONTROLLER TYPE
+                description: Type of controller layout that effects keybindings. Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B Swapped)": n64swapped
     pce:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
