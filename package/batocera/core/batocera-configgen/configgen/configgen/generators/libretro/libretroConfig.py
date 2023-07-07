@@ -419,7 +419,127 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         else:
             wswanOrientation = system.config['wswan_rotate_display']
         retroarchConfig['wswan_rotate_display'] = wswanOrientation
-
+    
+    ## N64 Controller
+    if system.config['core'] == 'mupen64plus-next' or system.config['core'] == 'parallel_n64':
+        # Controller 1
+        if system.isOptSet('mupen64plus-controller1'):
+            # Option to swap A/B buttons (needed if user has swapped in ES) 
+            if system.config['mupen64plus-controller1'] == 'n64' or system.config['mupen64plus-controller1'] == 'n64limited':
+                retroarchConfig['input_player1_btn_a'] = '1'
+                retroarchConfig['input_player1_btn_b'] = '0'
+            elif system.config['mupen64plus-controller1'] == 'n64swapped' or system.config['mupen64plus-controller1'] == 'n64limitedswapped':
+                retroarchConfig['input_player1_btn_a'] = '0'
+                retroarchConfig['input_player1_btn_b'] = '1'              
+            # Disable hotkeys for controllers with no dedicated hotkey button :(
+            if system.config['mupen64plus-controller1'] == 'n64limited' or system.config['mupen64plus-controller1'] == 'n64swappedlimited':
+                if system.config['mupen64plus-controller1'] in ['n64limited', 'n64swappedlimited']:
+                    keys_to_disable = [
+                        'input_menu_toggle_btn',
+                        'input_save_state_btn',
+                        'input_load_state_btn',
+                        'input_reset_btn',
+                        'input_state_slot_increase_btn',
+                        'input_state_slot_decrease_btn',
+                        'input_hold_fast_forward_btn',
+                        'input_screenshot_btn',
+                        'input_shader_next_btn',
+                        'input_shader_prev_btn'
+                    ]
+                    for key in keys_to_disable:
+                        retroarchConfig[key] = '100'
+            retroarchConfig['input_player1_btn_x'] = '9'
+            retroarchConfig['input_player1_btn_y'] = '10'
+            retroarchConfig['input_player1_btn_l'] = '2'
+            retroarchConfig['input_player1_btn_r'] = '13'
+            retroarchConfig['input_player1_btn_l2'] = '8'              
+            retroarchConfig['input_player1_btn_r2'] = '11'
+            retroarchConfig['input_player1_btn_select'] = '12'
+            retroarchConfig['input_player1_btn_start'] = '3'
+            retroarchConfig['input_player1_btn_up'] = '4'
+            retroarchConfig['input_player1_btn_down'] = '5'
+            retroarchConfig['input_player1_btn_left'] = '6'
+            retroarchConfig['input_player1_btn_right'] = '7'
+            retroarchConfig['input_player1_stk_l_x+'] = '16'
+            retroarchConfig['input_player1_stk_l_x-'] = '17'
+            retroarchConfig['input_player1_stk_l_y+'] = '18'
+            retroarchConfig['input_player1_stk_l_y-'] = '19'
+        # Controller 2
+        if system.isOptSet('mupen64plus-controller2'):
+            # Option to swap A/B buttons (needed if user has swapped in ES) 
+            if system.config['mupen64plus-controller2'] == 'n64' or system.config['mupen64plus-controller2'] == 'n64limited':
+                retroarchConfig['input_player2_btn_a'] = '1'
+                retroarchConfig['input_player2_btn_b'] = '0'
+            elif system.config['mupen64plus-controller2'] == 'n64swapped' or system.config['mupen64plus-controller2'] == 'n64limitedswapped':
+                retroarchConfig['input_player2_btn_a'] = '0'
+                retroarchConfig['input_player2_btn_b'] = '1'
+            retroarchConfig['input_player2_btn_x'] = '9'
+            retroarchConfig['input_player2_btn_y'] = '10'
+            retroarchConfig['input_player2_btn_l'] = '2'
+            retroarchConfig['input_player2_btn_r'] = '13'
+            retroarchConfig['input_player2_btn_l2'] = '8'              
+            retroarchConfig['input_player2_btn_r2'] = '11'
+            retroarchConfig['input_player2_btn_select'] = '12'
+            retroarchConfig['input_player2_btn_start'] = '3'
+            retroarchConfig['input_player2_btn_up'] = '4'
+            retroarchConfig['input_player2_btn_down'] = '5'
+            retroarchConfig['input_player2_btn_left'] = '6'
+            retroarchConfig['input_player2_btn_right'] = '7'
+            retroarchConfig['input_player2_stk_l_x+'] = '16'
+            retroarchConfig['input_player2_stk_l_x-'] = '17'
+            retroarchConfig['input_player2_stk_l_y+'] = '18'
+            retroarchConfig['input_player2_stk_l_y-'] = '19'
+        # Controller 3
+        if system.isOptSet('mupen64plus-controller3'):
+            # Option to swap A/B buttons (needed if user has swapped in ES) 
+            if system.config['mupen64plus-controller3'] == 'n64' or system.config['mupen64plus-controller3'] == 'n64limited':
+                retroarchConfig['input_player3_btn_a'] = '1'
+                retroarchConfig['input_player3_btn_b'] = '0'
+            elif system.config['mupen64plus-controller3'] == 'n64swapped' or system.config['mupen64plus-controller3'] == 'n64limitedswapped':
+                retroarchConfig['input_player3_btn_a'] = '0'
+                retroarchConfig['input_player3_btn_b'] = '1'
+            retroarchConfig['input_player3_btn_x'] = '9'
+            retroarchConfig['input_player3_btn_y'] = '10'
+            retroarchConfig['input_player3_btn_l'] = '2'
+            retroarchConfig['input_player3_btn_r'] = '13'
+            retroarchConfig['input_player3_btn_l2'] = '8'              
+            retroarchConfig['input_player3_btn_r2'] = '11'
+            retroarchConfig['input_player3_btn_select'] = '12'
+            retroarchConfig['input_player3_btn_start'] = '3'
+            retroarchConfig['input_player3_btn_up'] = '4'
+            retroarchConfig['input_player3_btn_down'] = '5'
+            retroarchConfig['input_player3_btn_left'] = '6'
+            retroarchConfig['input_player3_btn_right'] = '7'
+            retroarchConfig['input_player3_stk_l_x+'] = '16'
+            retroarchConfig['input_player3_stk_l_x-'] = '17'
+            retroarchConfig['input_player3_stk_l_y+'] = '18'
+            retroarchConfig['input_player3_stk_l_y-'] = '19'
+        # Controller 4
+        if system.isOptSet('mupen64plus-controller4'):
+            # Option to swap A/B buttons (needed if user has swapped in ES) 
+            if system.config['mupen64plus-controller4'] == 'n64' or system.config['mupen64plus-controller4'] == 'n64limited':
+                retroarchConfig['input_player4_btn_a'] = '1'
+                retroarchConfig['input_player4_btn_b'] = '0'
+            elif system.config['mupen64plus-controller4'] == 'n64swapped' or system.config['mupen64plus-controller4'] == 'n64limitedswapped':
+                retroarchConfig['input_player4_btn_a'] = '0'
+                retroarchConfig['input_player4_btn_b'] = '1'
+            retroarchConfig['input_player4_btn_x'] = '9'
+            retroarchConfig['input_player4_btn_y'] = '10'
+            retroarchConfig['input_player4_btn_l'] = '2'
+            retroarchConfig['input_player4_btn_r'] = '13'
+            retroarchConfig['input_player4_btn_l2'] = '8'              
+            retroarchConfig['input_player4_btn_r2'] = '11'
+            retroarchConfig['input_player4_btn_select'] = '12'
+            retroarchConfig['input_player4_btn_start'] = '3'
+            retroarchConfig['input_player4_btn_up'] = '4'
+            retroarchConfig['input_player4_btn_down'] = '5'
+            retroarchConfig['input_player4_btn_left'] = '6'
+            retroarchConfig['input_player4_btn_right'] = '7'
+            retroarchConfig['input_player4_stk_l_x+'] = '16'
+            retroarchConfig['input_player4_stk_l_x-'] = '17'
+            retroarchConfig['input_player4_stk_l_y+'] = '18'
+            retroarchConfig['input_player4_stk_l_y-'] = '19'
+                          
     ## PORTS
     ## Quake
     if (system.config['core'] == 'tyrquake'):
