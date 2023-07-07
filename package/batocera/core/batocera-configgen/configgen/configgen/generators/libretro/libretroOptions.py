@@ -1119,7 +1119,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"' + system.config['mupen64plus-parallel-rdp-upscaling'] + '"')
         else:
             coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"1x"')
-        # N64 C button Alt-Mapping (Needed to map c buttons without right joystick)
+        # N64 C button Alt-Mapping (Needed to map c buttons to dedicated digital inputs. This is preferred over using right joystick with N64 style controllers)
+        # Setting is tied to N64 controller type setting so as not to require an additional user selected ES setting. 
         controllers = ['controller1', 'controller2', 'controller3', 'controller4']
 
         alt_map = any(
@@ -1174,15 +1175,16 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
         else:
             coreSettings.save('parallel-n64-pak4', '"none"')
-        # N64 C button Alt-Mapping (Needed to map c buttons without right joystick)
+        # N64 C button Alt-Mapping (Needed to map c buttons to dedicated digital inputs. This is preferred over using right joystick with N64 style controllers)
+        # Setting is tied to N64 controller type setting so as not to require an additional user selected ES setting. 
         controllers = ['controller1', 'controller2', 'controller3', 'controller4']
 
         alt_map = any(
             system.isOptSet(f'parallel-n64-{controller}') and
-            system.config[f'parallel-n64--{controller}'] != 'retropad'
+            system.config[f'parallel-n64-{controller}'] != 'retropad'
             for controller in controllers)
 
-        coreSettings.save('parallel-n64--alt-map', '"True"' if alt_map else '"False"')
+        coreSettings.save('parallel-n64-alt-map', '"enabled"' if alt_map else '"disabled"')
         
         # Nintendo 64-DD
         if (system.name == 'n64dd'):
