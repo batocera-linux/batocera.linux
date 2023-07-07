@@ -3,7 +3,6 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import controllersConfig
 import os
 from os import path
 
@@ -23,11 +22,7 @@ class PlayGenerator(Generator):
         if not path.isdir(playSaves):
             os.mkdir(playSaves)
 
-        commandArray = ["/usr/bin/play-emu", "--disc", rom]
+        commandArray = ["/usr/bin/Play", "--disc", rom]
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":playConfig, "XDG_DATA_HOME":playConfig, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"}
-            )
-
-    def getMouseMode(self, config):
-        return True
+            env={"XDG_CONFIG_HOME":playConfig, "XDG_DATA_HOME":playConfig, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})

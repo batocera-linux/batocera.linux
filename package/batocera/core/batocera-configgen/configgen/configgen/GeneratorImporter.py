@@ -283,9 +283,9 @@ def getGenerator(emulator):
         from generators.pyxel.pyxelGenerator import PyxelGenerator
         return PyxelGenerator()
 
-    #if emulator == 'play':
-    #from generators.play.playGenerator import PlayGenerator
-    #return PlayGenerator(),
+    if emulator == 'play':
+        from generators.play.playGenerator import PlayGenerator
+        return PlayGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
