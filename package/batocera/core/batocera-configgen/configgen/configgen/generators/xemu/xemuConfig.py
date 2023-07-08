@@ -97,16 +97,12 @@ def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
     # Scaling
     if system.isOptSet("xemu_scaling"):
         iniConfig.set("display.ui", "fit", '"' + system.config["xemu_scaling"] + '"')
-        if system.config["xemu_scaling"] != "scale" or system.config["xemu_scaling"] != "center":
-            system.config['bezel'] = "none"
     else:
         iniConfig.set("display.ui", "fit", '"scale"')
     
     # Aspect ratio
     if system.isOptSet("xemu_aspect"):
         iniConfig.set("display.ui", "aspect_ratio", '"' + system.config["xemu_aspect"] + '"')
-        if system.config["xemu_aspect"] == "16x9":
-            system.config['bezel'] = "none"
     else:
         iniConfig.set("display.ui", "aspect_ratio", '"auto"')
     
