@@ -4,10 +4,11 @@ config BR2_PACKAGE_FLYCAST
     depends on BR2_PACKAGE_LIBPNG
     depends on BR2_PACKAGE_LIBZIP
     depends on BR2_GCC_ENABLE_OPENMP
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_NOWIDE
     select BR2_PACKAGE_LIBAO
     select BR2_PACKAGE_LIBCURL
     select BR2_PACKAGE_LIBMINIUPNPC
     select BR2_PACKAGE_ELFUTILS
-
     help
         Flycast is a multi-platform Sega Dreamcast, Naomi and Atomiswave emulator.

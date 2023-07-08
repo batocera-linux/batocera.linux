@@ -3,16 +3,18 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on June 2, 2023
-FLYCAST_VERSION = bc3c1ab628b9f93ec218570d535fa1f52d0100e5
+# Version: Commits on Jul 5, 2023
+FLYCAST_VERSION = 17b82ab5d3968a6c4813a61003d669ca117b3f5e
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
-FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc elfutils
+FLYCAST_DEPENDENCIES = boost sdl2 libpng libzip libcurl libao libminiupnpc elfutils
 
 FLYCAST_SUPPORTS_IN_SOURCE_BUILD = NO
 
+FLYCAST_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+FLYCAST_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
