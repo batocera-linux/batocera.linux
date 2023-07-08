@@ -9732,14 +9732,19 @@ xemu:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         xemu_scaling:
-            prompt:      SCALING MODE
+            prompt: SCALING MODE
             description: Choose the scaling mode for the game screen.
             choices:
                 "Original resolution": center
                 "Scale to best fit":   scale
                 "Stretch to full":     stretch
-                "Stretch to 16:9":     scale_16_9
-                "Stretch to 4:3":      scale_4_3
+        xemu_aspect:
+            prompt: ASPECT RATIO
+            description: Change the output resolution ratio.
+            choices:
+                "Native": native
+                "4x3":    4x3
+                "16x9":   16x9
         xemu_render:
             prompt:       RENDERING RESOLUTION
             choices:

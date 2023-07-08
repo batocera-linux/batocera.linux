@@ -8,7 +8,7 @@ import settings
 from Emulator import Emulator
 import configparser
 
-def writeIniFile(system, rom, playersControllers):
+def writeIniFile(system, rom, playersControllers, gameResolution):
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
@@ -19,14 +19,14 @@ def writeIniFile(system, rom, playersControllers):
         except:
             pass
 
-    createXemuConfig(iniConfig, system, rom, playersControllers)
+    createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
     # save the ini file
     if not os.path.exists(os.path.dirname(batoceraFiles.xemuConfig)):
         os.makedirs(os.path.dirname(batoceraFiles.xemuConfig))
     with open(batoceraFiles.xemuConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createXemuConfig(iniConfig, system, rom, playersControllers):
+def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution):
     # Create INI sections
     if not iniConfig.has_section("general"):
         iniConfig.add_section("general")
@@ -80,16 +80,34 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
         iniConfig.set("display.quality", "surface_scale", system.config["xemu_render"])
     else:
         iniConfig.set("display.quality", "surface_scale", "1") #render scale by default
+    
+    # start fullscreen
+    iniConfig.set("display.window", "fullscreen_on_startup", "true")
+    
+    # Window size
+    window_res = format(gameResolution["width"]) + "x" + format(gameResolution["height"])
+    iniConfig.set("display.window", "startup_size", '"' + window_res + '"')
+    
+    # turn vsync on, doesn't improve framerate when off
+    iniConfig.set("display.window", "vsync", "true")
+    
+    # don't show the menubar
+    iniConfig.set("display.ui", "show_menubar", "false")
 
-    # Aspect ratio
+    # Scaling
     if system.isOptSet("xemu_scaling"):
         iniConfig.set("display.ui", "fit", '"' + system.config["xemu_scaling"] + '"')
-        if system.config["xemu_scaling"] != "scale" or system.config["xemu_scaling"] != "scale_4_3":
-            # don't enable bezels when not 4:3 options
+        if system.config["xemu_scaling"] != "scale" or system.config["xemu_scaling"] != "center":
             system.config['bezel'] = "none"
     else:
-        iniConfig.set("display.ui", "fit", '"scale"') #4:3
-
+        iniConfig.set("display.ui", "fit", '"scale"')
+    
+    # Aspect ratio
+    if system.isOptSet("xemu_aspect"):
+        iniConfig.set("display.ui", "aspect_ratio", '"' + system.config["xemu_aspect"] + '"')
+    else:
+        iniConfig.set("display.ui", "aspect_ratio", '"auto"')
+    
     # Fill input section
     # first, clear
     for i in range(1,5):

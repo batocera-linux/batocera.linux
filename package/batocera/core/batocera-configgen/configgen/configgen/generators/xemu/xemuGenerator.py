@@ -16,7 +16,7 @@ class XemuGenerator(Generator):
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        xemuConfig.writeIniFile(system, rom, playersControllers)
+        xemuConfig.writeIniFile(system, rom, playersControllers, gameResolution)
 
         # copy the hdd if it doesn't exist
         if not os.path.exists("/userdata/saves/xbox/xbox_hdd.qcow2"):
