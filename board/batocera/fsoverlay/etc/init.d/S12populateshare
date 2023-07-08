@@ -91,6 +91,10 @@ done
 # ssh : create directory, but not keys because lack of entropy, dropbear will automatically generate key on client connection
 mkdir -p /userdata/system/ssh
 
+# ssh : create directory for SSH user data (including identity keys, authorized_keys, known_hosts)
+mkdir -p -m 0700 /userdata/system/.ssh
+chmod 0700 /userdata/system/.ssh
+
 # udev : create a link for rules persistance
 mkdir -p /userdata/system/udev/rules.d
 rm -rf /run/udev/rules.d

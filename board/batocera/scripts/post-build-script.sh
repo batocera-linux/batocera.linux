@@ -15,7 +15,7 @@ BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CO
 sed -i "s|^root:x:.*$|root:x:0:0:root:/userdata/system:/bin/bash|g" "${TARGET_DIR}/etc/passwd" || exit 1
 
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
-ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
+ln -sf "/userdata/system/.ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
 
 mkdir -p ${TARGET_DIR}/etc/emulationstation || exit 1
 ln -sf "/usr/share/emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg" || exit 1
