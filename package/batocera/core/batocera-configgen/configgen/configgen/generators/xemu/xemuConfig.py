@@ -105,6 +105,8 @@ def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
     # Aspect ratio
     if system.isOptSet("xemu_aspect"):
         iniConfig.set("display.ui", "aspect_ratio", '"' + system.config["xemu_aspect"] + '"')
+        if system.config["xemu_aspect"] == "16x9":
+            system.config['bezel'] = "none"
     else:
         iniConfig.set("display.ui", "aspect_ratio", '"auto"')
     
