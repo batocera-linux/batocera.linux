@@ -184,3 +184,6 @@ if grep -q " avx2" /proc/cpuinfo
 then
     echo "Cpu feature: avx2"
 fi
+
+PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
+test -n "${PREFSRC}" && echo "Network: ${PREFSRC}"
