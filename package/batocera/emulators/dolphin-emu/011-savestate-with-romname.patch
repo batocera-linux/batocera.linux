@@ -1,0 +1,184 @@
+diff --git a/Source/Core/Core/BootManager.cpp b/Source/Core/Core/BootManager.cpp
+index 1c9e2f0..a66c157 100644
+--- a/Source/Core/Core/BootManager.cpp
++++ b/Source/Core/Core/BootManager.cpp
+@@ -65,6 +65,11 @@ bool BootCore(std::unique_ptr<BootParameters> boot, const WindowSystemInfo& wsi)
+   if (!StartUp.SetPathsAndGameMetadata(*boot))
+     return false;
+ 
++  if (std::holds_alternative<BootParameters::Disc>(boot->parameters))
++  {
++    StartUp.SetBaseSaveState(PathToFileName(std::get<BootParameters::Disc>(boot->parameters).path));
++  }
++
+   // Movie settings
+   if (Movie::IsPlayingInput() && Movie::IsConfigSaved())
+   {
+diff --git a/Source/Core/Core/ConfigManager.cpp b/Source/Core/Core/ConfigManager.cpp
+index 64aa1e1..ae08878 100644
+--- a/Source/Core/Core/ConfigManager.cpp
++++ b/Source/Core/Core/ConfigManager.cpp
+@@ -139,6 +139,10 @@ void SConfig::SetRunningGameMetadata(const std::string& game_id)
+   SetRunningGameMetadata(game_id, "", 0, 0, DiscIO::Region::Unknown);
+ }
+ 
++void SConfig::SetBaseSaveState(const std::string& base_save_state) {
++  m_base_save_state = base_save_state;
++}
++
+ void SConfig::SetRunningGameMetadata(const std::string& game_id, const std::string& gametdb_id,
+                                      u64 title_id, u16 revision, DiscIO::Region region)
+ {
+diff --git a/Source/Core/Core/ConfigManager.h b/Source/Core/Core/ConfigManager.h
+index 4c0eac3..60fc668 100644
+--- a/Source/Core/Core/ConfigManager.h
++++ b/Source/Core/Core/ConfigManager.h
+@@ -64,6 +64,8 @@ struct SConfig
+   // TODO: remove this as soon as the ticket view hack in IOS/ES/Views is dropped.
+   bool m_disc_booted_from_game_list = false;
+ 
++  const std::string& GetBaseSaveState() const { return m_base_save_state; }
++  void SetBaseSaveState(const std::string& base_save_state);
+   const std::string& GetGameID() const { return m_game_id; }
+   const std::string& GetGameTDBID() const { return m_gametdb_id; }
+   const std::string& GetTitleName() const { return m_title_name; }
+@@ -118,6 +120,7 @@ private:
+ 
+   static SConfig* m_Instance;
+ 
++  std::string m_base_save_state;
+   std::string m_game_id;
+   std::string m_gametdb_id;
+   std::string m_title_name;
+diff --git a/Source/Core/Core/Core.cpp b/Source/Core/Core/Core.cpp
+index 1e940d1..ca68b1a 100644
+--- a/Source/Core/Core/Core.cpp
++++ b/Source/Core/Core/Core.cpp
+@@ -767,10 +767,14 @@ void SaveScreenShot()
+   Core::RunAsCPUThread([] { g_frame_dumper->SaveScreenshot(GenerateScreenshotName()); });
+ }
+ 
+-void SaveScreenShot(std::string_view name)
++void SaveScreenShot(std::string_view name) {
++  SaveScreenShotWithPath(GenerateScreenshotFolderPath(), name);
++}
++
++void SaveScreenShotWithPath(std::string path, std::string_view name)
+ {
+-  Core::RunAsCPUThread([&name] {
+-    g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", GenerateScreenshotFolderPath(), name));
++  Core::RunAsCPUThread([&path, &name] {
++    g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", path, name));
+   });
+ }
+ 
+diff --git a/Source/Core/Core/Core.h b/Source/Core/Core/Core.h
+index e237e25..542effa 100644
+--- a/Source/Core/Core/Core.h
++++ b/Source/Core/Core/Core.h
+@@ -148,6 +148,7 @@ void SetState(State state);
+ State GetState();
+ 
+ void SaveScreenShot();
++void SaveScreenShotWithPath(std::string path, std::string_view name);
+ void SaveScreenShot(std::string_view name);
+ 
+ // This displays messages in a user-visible way.
+diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
+index c298dd1..e6d71f4 100644
+--- a/Source/Core/Core/State.cpp
++++ b/Source/Core/Core/State.cpp
+@@ -327,7 +327,10 @@ static std::string SystemTimeAsDoubleToString(double time)
+ #endif
+ }
+ 
+-static std::string MakeStateFilename(int number);
++static std::string MakeStateFilename(bool useId, int number);
++static std::string MakeStateFilename_partdirectory(int number);
++static std::string MakeStateFilename_partfileName(int number);
++static std::string MakeStateFilename_partfileID(int number);
+ 
+ // read state timestamps
+ static std::map<double, int> GetSavedStates()
+@@ -336,7 +339,7 @@ static std::map<double, int> GetSavedStates()
+   std::map<double, int> m;
+   for (int i = 1; i <= (int)NUM_STATES; i++)
+   {
+-    std::string filename = MakeStateFilename(i);
++    std::string filename = MakeStateFilename(true, i);
+     if (File::Exists(filename))
+     {
+       if (ReadHeader(filename, header))
+@@ -536,7 +539,7 @@ bool ReadHeader(const std::string& filename, StateHeader& header)
+ 
+ std::string GetInfoStringOfSlot(int slot, bool translate)
+ {
+-  std::string filename = MakeStateFilename(slot);
++  std::string filename = MakeStateFilename(true, slot);
+   if (!File::Exists(filename))
+     return translate ? Common::GetStringT("Empty") : "Empty";
+ 
+@@ -550,7 +553,7 @@ std::string GetInfoStringOfSlot(int slot, bool translate)
+ u64 GetUnixTimeOfSlot(int slot)
+ {
+   State::StateHeader header;
+-  if (!ReadHeader(MakeStateFilename(slot), header))
++  if (!ReadHeader(MakeStateFilename(true, slot), header))
+     return 0;
+ 
+   constexpr u64 MS_PER_SEC = 1000;
+@@ -751,20 +754,49 @@ void Shutdown()
+   }
+ }
+ 
+-static std::string MakeStateFilename(int number)
++static std::string MakeStateFilename(bool useId, int number)
+ {
+-  return fmt::format("{}{}.s{:02d}", File::GetUserPath(D_STATESAVES_IDX),
+-                     SConfig::GetInstance().GetGameID(), number);
++  // if the useId flag is set : if the file with name exits, returns it, otherwise, if the file with id exists, returns it, otherwise, return the file with name
++  // => priority with the file with name.
++  // if the game is not loaded from a file (disk), use the gameId
++  std::string filePartName = MakeStateFilename_partfileName(number);
++  std::string fileWithName = fmt::format("{}{}", MakeStateFilename_partdirectory(number), filePartName);
++  if (File::Exists(fileWithName) && filePartName != "")
++    return fileWithName;
++  std::string fileWithId = fmt::format("{}{}", MakeStateFilename_partdirectory(number), MakeStateFilename_partfileID(number));
++  if (File::Exists(fileWithId) && useId)
++    return fileWithId;
++  if(filePartName == "") return fileWithId;
++  return fileWithName;
++}
++
++static std::string MakeStateFilename_partdirectory(int number)
++{
++  return File::GetUserPath(D_STATESAVES_IDX);
++}
++
++static std::string MakeStateFilename_partfileID(int number)
++{
++  return fmt::format("{}.s{:02d}", SConfig::GetInstance().GetGameID(), number);
++}
++
++static std::string MakeStateFilename_partfileName(int number)
++{
++  std::string basesavestate = SConfig::GetInstance().GetBaseSaveState();
++  if(basesavestate == "") return "";
++  return fmt::format("{}.s{:02d}", basesavestate, number);
+ }
+ 
+ void Save(int slot, bool wait)
+ {
+-  SaveAs(MakeStateFilename(slot), wait);
++  std::string savePath = MakeStateFilename(false, slot);
++  SaveAs(savePath, wait);
++  Core::SaveScreenShotWithPath(MakeStateFilename_partdirectory(slot), PathToFileName(savePath));
+ }
+ 
+ void Load(int slot)
+ {
+-  LoadAs(MakeStateFilename(slot));
++  LoadAs(MakeStateFilename(true, slot));
+ }
+ 
+ void LoadLastSaved(int i)
