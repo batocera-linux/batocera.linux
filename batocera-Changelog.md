@@ -25,6 +25,7 @@
 - tsugaru to v20230420
 - dolphin to 5.0-19776
 - duckstation to Jun 30, 2023 build
+- flycast to July 5th build
 ### Dev
 - linux kernel for x86_64 to 6.4.2
 - xf86-video-amdgpu to 23.0.0
