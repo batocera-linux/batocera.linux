@@ -18,6 +18,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Core", "SaveStatePath",  batoceraFiles.mupenSaves)
     iniConfig.set("Core", "SaveSRAMPath",   batoceraFiles.mupenSaves)
     iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
+    iniConfig.set("Core", "SaveFilenameFormat", "1000") # forces savesstates with rom name
     # TODO : Miss Mupen64Plus\hires_texture
 
     # 4MB RAM Extention Pack

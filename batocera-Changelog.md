@@ -14,6 +14,7 @@
 ### Changed
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
+- n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ff09bb4 (Commits on Jun 28, 2023)
