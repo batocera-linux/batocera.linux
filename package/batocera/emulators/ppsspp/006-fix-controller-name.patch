@@ -11,14 +11,16 @@ index 0a53ef80b..22f48f01e 100644
  	}
  }
  
-@@ -87,8 +87,8 @@ void SDLJoystick::setUpController(int deviceIndex) {
+@@ -87,9 +87,9 @@ void SDLJoystick::setUpController(int deviceIndex) {
  		if (SDL_GameControllerGetAttached(controller)) {
  			controllers.push_back(controller);
  			controllerDeviceMap[SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))] = deviceIndex;
 -			cout << "found control pad: " << SDL_GameControllerName(controller) << ", loading mapping: ";
--			KeyMap::NotifyPadConnected(deviceIndex, std::string(pszGUID) + ": " + SDL_GameControllerName(controller));
+-			// NOTE: The case to InputDeviceID here is wrong, we should do some kind of lookup.
+-			KeyMap::NotifyPadConnected((InputDeviceID)deviceIndex, std::string(pszGUID) + ": " + SDL_GameControllerName(controller));
 +			cout << "found control pad: " << SDL_JoystickNameForIndex(deviceIndex) << ", loading mapping: ";
-+			KeyMap::NotifyPadConnected(deviceIndex, std::string(pszGUID) + ": " + SDL_JoystickNameForIndex(deviceIndex));
++           // NOTE: The case to InputDeviceID here is wrong, we should do some kind of lookup.
++			KeyMap::NotifyPadConnected((InputDeviceID)deviceIndex, std::string(pszGUID) + ": " + SDL_JoystickNameForIndex(deviceIndex));
  			auto mapping = SDL_GameControllerMapping(controller);
  			if (mapping == NULL) {
  				//cout << "FAILED" << endl;
