@@ -29,6 +29,7 @@
 - melonds to July 8th build
 - ppsspp to July 8th build
 - lr-ppsspp to July 8th build
+- xemu to v0.7.96
 ### Dev
 - linux kernel for x86_64 to 6.4.2
 - xf86-video-amdgpu to 23.0.0
