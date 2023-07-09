@@ -48,9 +48,11 @@ BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+
+BATOCERA_NVIDIA_DRIVER_LIBS_VDPAU = \
+	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_GL) \
@@ -67,7 +69,6 @@ BATOCERA_NVIDIA_DRIVER_32 = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
@@ -173,6 +174,19 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_LIBS
 			ln -sf $(notdir $(lib)) $(1)/usr/lib/$${baseso}; \
 		fi
 	)
+	$(foreach lib,$(BATOCERA_NVIDIA_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/vdpau/$(notdir $(lib))
+		libsoname="$$( $(TARGET_READELF) -d "$(@D)/$(lib)" \
+			|sed -r -e '/.*\(SONAME\).*\[(.*)\]$$/!d; s//\1/;' )"; \
+		if [ -n "$${libsoname}" -a "$${libsoname}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) \
+				$(1)/usr/lib/vdpau/$${libsoname}; \
+		fi
+		baseso=$(firstword $(subst .,$(space),$(notdir $(lib)))).so; \
+		if [ -n "$${baseso}" -a "$${baseso}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) $(1)/usr/lib/vdpau/$${baseso}; \
+		fi
+	)
 endef
 
 # batocera install 32bit libraries
@@ -188,6 +202,19 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_32
 		baseso=$(firstword $(subst .,$(space),$(notdir $(lib)))).so; \
 		if [ -n "$${baseso}" -a "$${baseso}" != "$(notdir $(lib))" ]; then \
 			ln -sf $(notdir $(lib)) $(1)/lib32/$${baseso}; \
+		fi
+	)
+	$(foreach lib,$(BATOCERA_NVIDIA_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/vdpau/$(notdir $(lib))
+		libsoname="$$( $(TARGET_READELF) -d "$(@D)/$(lib)" \
+			|sed -r -e '/.*\(SONAME\).*\[(.*)\]$$/!d; s//\1/;' )"; \
+		if [ -n "$${libsoname}" -a "$${libsoname}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) \
+				$(1)/lib32/vdpau/$${libsoname}; \
+		fi
+		baseso=$(firstword $(subst .,$(space),$(notdir $(lib)))).so; \
+		if [ -n "$${baseso}" -a "$${baseso}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) $(1)/lib32/vdpau/$${baseso}; \
 		fi
 	)
 endef

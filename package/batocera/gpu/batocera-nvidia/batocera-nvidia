@@ -139,10 +139,12 @@ then
     ln -sf /usr/lib/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
     # libvdpau_nvidia.so
-    ln -sf /usr/lib/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
-    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/libvdpau_nvidia.so
-    ln -sf /usr/lib/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
-    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/vdpau/libvdpau_nvidia.so
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/vdpau/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1.0 /usr/lib/vdpau/libvdpau_nvidia.so.1.0
     # libnvidia-ml.so
     ln -sf /usr/lib/libnvidia-ml.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib/libnvidia-ml.so /usr/lib/libnvidia-ml.so
@@ -187,10 +189,12 @@ then
     ln -sf /lib32/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
     # libvdpau_nvidia.so
-    ln -sf /lib32/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
-    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/libvdpau_nvidia.so
-    ln -sf /lib32/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
-    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/vdpau/libvdpau_nvidia.so
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/vdpau/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0 /lib32/vdpau/libvdpau_nvidia.so.1.0
     # libnvidia-ml.so
     ln -sf /lib32/libnvidia-ml.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib32/libnvidia-ml.so /lib32/libnvidia-ml.so
@@ -322,10 +326,12 @@ then
     ln -sf /usr/lib/libnvidia-tls.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
     # libvdpau_nvidia.so
-    ln -sf /usr/lib/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
-    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/libvdpau_nvidia.so
-    ln -sf /usr/lib/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
-    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/vdpau/libvdpau_nvidia.so
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/vdpau/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1.0 /usr/lib/vdpau/libvdpau_nvidia.so.1.0
     # libnvidia-ml.so
     ln -sf /usr/lib/libnvidia-ml.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib/libnvidia-ml.so /usr/lib/libnvidia-ml.so
@@ -400,10 +406,12 @@ then
     ln -sf /lib32/libnvidia-tls.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
     # libvdpau_nvidia.so
-    ln -sf /lib32/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
-    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/libvdpau_nvidia.so
-    ln -sf /lib32/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
-    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/vdpau/libvdpau_nvidia.so
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/vdpau/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0 /lib32/vdpau/libvdpau_nvidia.so.1.0
     # libnvidia-ml.so
     ln -sf /lib32/libnvidia-ml.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib32/libnvidia-ml.so /lib32/libnvidia-ml.so
