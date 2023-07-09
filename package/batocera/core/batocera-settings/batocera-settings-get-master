@@ -3,7 +3,8 @@
 # this script can be used by values that can have a default value by board
 
 KEY=
-CONFFILE="/usr/share/batocera/sysconfigs/batocera.conf"
+CONFFILE=
+SYSCONFFILE="/usr/share/batocera/sysconfigs/batocera.conf"
 
 while test $# -ne 0
 do
@@ -20,7 +21,11 @@ do
 done
 
 # prefer the user value
-VALUE="$(/usr/bin/batocera-settings-get -f "${CONFFILE}" "${KEY}")"
+if [ -n "${CONFFILE}" ]; then
+    VALUE="$(/usr/bin/batocera-settings-get -f "${CONFFILE}" "${KEY}")"
+else
+    VALUE="$(/usr/bin/batocera-settings-get "${KEY}")"
+fi
 # when value is auto, ignore
 if [ "$?" = 0 -a "${VALUE}" != "auto" ]; then
     echo "${VALUE}"
@@ -37,8 +42,8 @@ fi
 BOARD_MODEL="$(echo "$BOARD_MODEL" | sed -e s+"[^A-Za-z0-9]"+"_"+g)"
 
 # prefer the board value
-if [ -e "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" ]; then
-    VALUE="$(/usr/bin/batocera-settings-get -f "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" "${KEY}")"
+if [ -e "${SYSCONFFILE}.${BOARD_MODEL}" ]; then
+    VALUE="$(/usr/bin/batocera-settings-get -f "${SYSCONFFILE}.${BOARD_MODEL}" "${KEY}")"
     # when value is auto, ignore
     if [ "$?" = 0 -a "${VALUE}" != "auto" ]; then
         echo "${VALUE}"
@@ -47,8 +52,8 @@ if [ -e "/usr/share/batocera/sysconfigs/batocera.conf.${BOARD_MODEL}" ]; then
 fi
 
 # prefer the general value
-if [ -e "/usr/share/batocera/sysconfigs/batocera.conf" ]; then
-    /usr/bin/batocera-settings-get -f "${CONFFILE}" "${KEY}" && exit 0
+if [ -e "${SYSCONFFILE}" ]; then
+    /usr/bin/batocera-settings-get -f "${SYSCONFFILE}" "${KEY}" && exit 0
 fi
 
 exit 1

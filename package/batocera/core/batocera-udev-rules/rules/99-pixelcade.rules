@@ -1,0 +1,2 @@
+# http://pixelcade.org ; naming devices to recognize them easierly among other devices
+ACTION=="add", SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="0008", SYMLINK+="pixelcade%n", MODE="666"
