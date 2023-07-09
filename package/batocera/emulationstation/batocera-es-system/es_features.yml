@@ -3592,6 +3592,36 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            mupen64plus-controller1:
+                prompt:     CONTROLLER 1 TYPE
+                description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+                    "N64 (Limited Hotkeys)": n64limited
+                    "N64 (Limited Hotkeys + A/B Swap)": n64limitedswapped
+            mupen64plus-controller2:
+                prompt:     CONTROLLER 2 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+            mupen64plus-controller3:
+                prompt:     CONTROLLER 3 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+            mupen64plus-controller4:
+                prompt:     CONTROLLER 4 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped                    
             mupen64plus-Framerate:
                 group: ADVANCED OPTIONS
                 prompt: FRAME RATE
@@ -4047,6 +4077,36 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            parallel-n64-controller1:
+                prompt:     CONTROLLER 1 TYPE
+                description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+                    "N64 (Limited Hotkeys)": n64limited
+                    "N64 (Limited Hotkeys + A/B Swap)": n64limitedswapped
+            parallel-n64-controller2:
+                prompt:     CONTROLLER 2 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+            parallel-n64-controller3:
+                prompt:     CONTROLLER 3 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped
+            parallel-n64-controller4:
+                prompt:     CONTROLLER 4 TYPE
+                description: Useful for N64 style controllers.
+                choices:
+                    "RetroPad (Default)": retropad
+                    "N64": n64
+                    "N64 (A/B SWAP)": n64swapped                
     pce:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
