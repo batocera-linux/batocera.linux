@@ -207,6 +207,10 @@ define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
+# firmware
+    mkdir -p $(TARGET_DIR)/lib/firmware/nvidia/$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+	$(INSTALL) -D -m 0644 $(@D)/firmware/* $(TARGET_DIR)/lib/firmware/nvidia/$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+
 endef
 
 define BATOCERA_NVIDIA_LEGACY_DRIVER_VULKANJSON_X86_64
