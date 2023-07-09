@@ -44,9 +44,11 @@ BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+
+BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU = \
+	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_GL) \
@@ -63,7 +65,6 @@ BATOCERA_NVIDIA_LEGACY_DRIVER_32 = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
@@ -156,12 +157,18 @@ define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_LIBS
 	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS),\
 		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/$(notdir $(lib))
 	)
+	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/vdpau/$(notdir $(lib))
+	)
 endef
 
 # batocera install 32bit libraries
 define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_32
 	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_32),\
 		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/$(notdir $(lib))
+	)
+	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/vdpau/$(notdir $(lib))
 	)
 endef
 
