@@ -8,6 +8,7 @@
 - libretro core openlara, An original Tomb Raider port
 - mosquitto client command line tools
 - es : from developper menu, you can change the es resolution
+- xenia canary can now apply patches
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
