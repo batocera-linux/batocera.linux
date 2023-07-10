@@ -249,7 +249,7 @@ index 00000000000..50fe8c2d0e2
 +	assigned-clock-rates = <0>, <125000000>;
 +	clock_in_out = "output";
 +	phy-handle = <&rgmii_phy0>;
-+	phy-mode = "rgmii-id";
++	phy-mode = "rgmii";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&gmac0_miim
 +		     &gmac0_tx_bus2
@@ -271,7 +271,7 @@ index 00000000000..50fe8c2d0e2
 +	assigned-clock-rates = <0>, <125000000>;
 +	clock_in_out = "output";
 +	phy-handle = <&rgmii_phy1>;
-+	phy-mode = "rgmii-id";
++	phy-mode = "rgmii";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&gmac1m1_miim
 +		     &gmac1m1_tx_bus2
