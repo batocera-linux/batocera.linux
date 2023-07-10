@@ -10397,6 +10397,12 @@ xenia-canary:
                 "Turkish":           14
                 "Norwegian":         15
                 "Dutch":             16
+        xeniaPatches:
+            prompt: GAME PATCHES
+            description: Enable or disable Xenia patches. These patches can fix graphics problems in some games.
+            choices:
+                "Disabled (Default)": false
+                "Enabled": true            
 
 odcommander:
   features: [padtokeyboard]
