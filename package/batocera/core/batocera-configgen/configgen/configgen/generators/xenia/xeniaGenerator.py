@@ -10,6 +10,8 @@ import controllersConfig
 import filecmp
 import subprocess
 import toml
+import glob
+import re
 from utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -34,9 +36,12 @@ class XeniaGenerator(Generator):
         # check binary then copy updated xenia exe's as necessary
         if not filecmp.cmp('/usr/xenia/xenia.exe', emupath + '/xenia.exe'):
             shutil.copytree('/usr/xenia', emupath, dirs_exist_ok=True)
+        # xenia canary - copy patches directory also
         if not filecmp.cmp('/usr/xenia-canary/xenia_canary.exe', canarypath + '/xenia_canary.exe'):
             shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
-
+        if not os.path.exists(canarypath + '/patches'):
+            shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
+        
         # create portable txt file to try & stop file spam
         if not os.path.exists(emupath + '/portable.txt'):
             with open(emupath + '/portable.txt', 'w') as fp:
@@ -111,7 +116,12 @@ class XeniaGenerator(Generator):
         if 'General' not in config:
             config['General'] = {}
         # disable discord
-        config['General'] = {'discord': False} 
+        config['General'] = {'discord': False}
+        # patches
+        if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':
+            config['General'] = {'apply_patches': True}
+        else:
+            config['General'] = {'apply_patches': False}
         # add node HID
         if 'HID' not in config:
             config['HID'] = {}
@@ -146,7 +156,32 @@ class XeniaGenerator(Generator):
         # now write the updated toml
         with open(toml_file, 'w') as f:
             toml.dump(config, f)
-
+        
+        # handle patches files to set all matching toml files keys to true
+        rom_name = os.path.splitext(os.path.basename(rom))[0]
+        # simplify the name for matching
+        rom_name = re.sub(r'\[.*?\]', '', rom_name)
+        rom_name = re.sub(r'\(.*?\)', '', rom_name)
+        if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':            
+            # pattern to search for matching .patch.toml files
+            pattern = os.path.join(canarypath, 'patches', '*' + rom_name + '*.patch.toml')
+            matching_files = [file_path for file_path in glob.glob(pattern) if re.search(rom_name, os.path.basename(file_path), re.IGNORECASE)]
+            if matching_files:
+                for file_path in matching_files:
+                    eslog.debug(f'Enabling patches for: {file_path}')
+                    # load the matchig .patch.toml file
+                    with open(file_path, 'r') as f:
+                        patch_toml = toml.load(f)
+                    # modify all occurrences of the `is_enabled` key to `true`
+                    for patch in patch_toml.get('patch', []):
+                        if 'is_enabled' in patch:
+                            patch['is_enabled'] = True
+                    # save the updated .patch.toml file
+                    with open(file_path, 'w') as f:
+                        toml.dump(patch_toml, f)
+            else:
+                eslog.debug(f'No patch file found for {rom_name}')
+        
         # now setup the command array for the emulator
         if rom == 'config':
             if core == 'xenia-canary':
