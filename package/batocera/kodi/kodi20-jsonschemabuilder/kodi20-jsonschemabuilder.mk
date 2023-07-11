@@ -1,12 +1,12 @@
 ################################################################################
 #
-# kodi-jsonschemabuilder
+# kodi20-jsonschemabuilder
 #
 ################################################################################
 
 # Not possible to directly refer to kodi variables, because of
 # first/second expansion trickery...
-KODI20_JSONSCHEMABUILDER_VERSION = 20.1-Nexus
+KODI20_JSONSCHEMABUILDER_VERSION = 20.2-Nexus
 KODI20_JSONSCHEMABUILDER_SITE = $(call github,xbmc,xbmc,$(KODI20_JSONSCHEMABUILDER_VERSION))
 KODI20_JSONSCHEMABUILDER_SOURCE = kodi-$(KODI20_JSONSCHEMABUILDER_VERSION).tar.gz
 KODI20_JSONSCHEMABUILDER_DL_SUBDIR = kodi
