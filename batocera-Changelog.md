@@ -1,5 +1,6 @@
 # 2023/xx/xx - batocera.linux 38 -
 ### Hardware
+- Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 
 ### Added
 - battery remaining time in batocera-info (f2)
@@ -17,6 +18,7 @@
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
 - n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
+- Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ff09bb4 (Commits on Jun 28, 2023)
@@ -36,10 +38,11 @@
 - devilutionX to 1.5.0
 ### Dev
 - linux kernel for x86_64 to 6.4.2
+- linux kernel for RPI to 6.1.32
+- linux kernel for most ARM SBCs to 6.1.38
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
-- linux kernel for RPI to 6.1.32
 - Enable exFAT and NTFS Linux kernel drivers on x86_64
 - bluez to 5.68
 - wildmidi to 0.4.5
