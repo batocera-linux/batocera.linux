@@ -12,6 +12,7 @@
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
+- DVD playback in Kodi
 ### Changed
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only

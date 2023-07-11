@@ -1,0 +1,62 @@
+From a12e811af345c56844fa5b834384c6e2d390dec1 Mon Sep 17 00:00:00 2001
+From: Don Mahurin <@>
+Date: Fri, 7 Jul 2023 21:01:40 -0700
+Subject: [PATCH] Fix DVD disc device playback (#20048) by fixing device url
+ initialization
+
+The "iso9660: rework IFile and IFileDirectory implementations" changes, committed in 2019/2020, broke DVD disc device playback. (commit e846acb56897c9a6b66e08e221024366b08c0a8a)
+
+Fixes needed to restore DVD disc device playback:
+ - restore the the iso9660 url host/path update
+ - open the disc device filename when no file/directory given in the url
+---
+ xbmc/URL.cpp                         |  3 ++-
+ xbmc/filesystem/ISO9660Directory.cpp | 14 +++++++++++++-
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/URL.cpp b/xbmc/URL.cpp
+index 877c9d9585746..549acb1a67191 100644
+--- a/xbmc/URL.cpp
++++ b/xbmc/URL.cpp
+@@ -284,7 +284,8 @@ void CURL::Parse(const std::string& strURL1)
+       m_strFileName = strURL.substr(iPos, iEnd - iPos);
+   }
+ 
+-  if (IsProtocol("musicdb") || IsProtocol("videodb") || IsProtocol("sources") || IsProtocol("pvr"))
++  if (IsProtocol("iso9660") || IsProtocol("musicdb") || IsProtocol("videodb") ||
++      IsProtocol("sources") || IsProtocol("pvr"))
+   {
+     if (m_strHostName != "" && m_strFileName != "")
+     {
+diff --git a/xbmc/filesystem/ISO9660Directory.cpp b/xbmc/filesystem/ISO9660Directory.cpp
+index 894db53f3565a..4f293888b258d 100644
+--- a/xbmc/filesystem/ISO9660Directory.cpp
++++ b/xbmc/filesystem/ISO9660Directory.cpp
+@@ -10,6 +10,9 @@
+ 
+ #include "FileItem.h"
+ #include "URL.h"
++#if defined(HAS_DVD_DRIVE)
++#include "storage/cdioSupport.h"
++#endif
+ #include "utils/URIUtils.h"
+ 
+ #include <cdio++/iso9660.hpp>
+@@ -34,7 +37,16 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList& items)
+ 
+   std::unique_ptr<ISO9660::IFS> iso(new ISO9660::IFS);
+ 
+-  if (!iso->open(url2.GetHostName().c_str()))
++  std::string iso_file = url2.GetHostName();
++#if defined(HAS_DVD_DRIVE)
++  if (iso_file.empty())
++  {
++    std::shared_ptr<MEDIA_DETECT::CLibcdio> c_cdio = MEDIA_DETECT::CLibcdio::GetInstance();
++    iso_file = c_cdio->GetDeviceFileName();
++  }
++#endif
++
++  if (!iso->open(iso_file.c_str()))
+     return false;
+ 
+   std::vector<ISO9660::Stat*> isoFiles;
