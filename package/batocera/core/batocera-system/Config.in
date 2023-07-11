@@ -849,7 +849,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_CANNONBALL               # ALL
 
     # PrBoom (Doom)
-    select BR2_PACKAGE_LIBRETRO_PRBOOM          if  !BR2_PACKAGE_BATOCERA_TARGET_RK3588
+    select BR2_PACKAGE_LIBRETRO_PRBOOM          # ALL
 
     # TyrQuake (Quake 1)
     select BR2_PACKAGE_LIBRETRO_TYRQUAKE        if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
@@ -1105,7 +1105,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2837        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H3             && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3588         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
