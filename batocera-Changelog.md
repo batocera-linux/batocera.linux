@@ -1,5 +1,6 @@
 # 2023/xx/xx - batocera.linux 38 -
 ### Hardware
+- Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 
 ### Added
 - battery remaining time in batocera-info (f2)
@@ -8,7 +9,6 @@
 - libretro core openlara, An original Tomb Raider port
 - mosquitto client command line tools
 - es : from developper menu, you can change the es resolution
-- Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
