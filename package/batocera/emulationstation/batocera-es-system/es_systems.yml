@@ -4654,3 +4654,15 @@ openlara:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:openlara
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:openlara
+
+vitaquake3:
+  name: Quake III
+  manufacturer: Ports
+  release: 1999
+  hardware: port
+  extensions: [pk3]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      vitaquake3: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE3] }
