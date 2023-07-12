@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_LOADER_VERSION = v1.3.250
+VULKAN_LOADER_VERSION = v1.3.257
 VULKAN_LOADER_SITE =  $(call github,KhronosGroup,Vulkan-Loader,$(VULKAN_LOADER_VERSION))
 VULKAN_LOADER_DEPENDENCIES = vulkan-headers
 VULKAN_LOADER_INSTALL_STAGING = YES
