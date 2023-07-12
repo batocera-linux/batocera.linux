@@ -10,8 +10,9 @@
 - mosquitto client command line tools
 - es : from developper menu, you can change the es resolution
 - xenia canary can now apply patches
-- add: Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
-- virtaquake3 to libretro cores
+- Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
+- vitaquake2 libretro core enabled for AArch64
+- vitaquake3 to libretro cores
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
@@ -42,6 +43,7 @@
 - linux kernel for x86_64 to 6.4.2
 - linux kernel for RPI to 6.1.32
 - linux kernel for most ARM SBCs to 6.1.38
+- linux kernel for Rockchip RK3566/RK3568 to 6.4.3
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
