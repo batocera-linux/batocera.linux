@@ -24,7 +24,7 @@
 - xenia canary to ff09bb4 (Commits on Jun 28, 2023)
 - citra to nightly-1936
 - groovy mame to 0.256
-- cemu to v2.0-42
+- cemu to v2.0-44
 - amiberry to 5.6.1
 - dosbox-x to v2023.05.01
 - tsugaru to v20230420
