@@ -14,17 +14,17 @@ index 4f5436c89e08..eaf2f133a264 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
 @@ -1125,9 +1125,9 @@ static int rkvdec_remove(struct platform_device *pdev)
- {
- 	struct rkvdec_dev *rkvdec = platform_get_drvdata(pdev);
+ 
+ 	cancel_delayed_work_sync(&rkvdec->watchdog_work);
  
 -	rkvdec_v4l2_cleanup(rkvdec);
 -	pm_runtime_disable(&pdev->dev);
  	pm_runtime_dont_use_autosuspend(&pdev->dev);
 +	pm_runtime_disable(&pdev->dev);
 +	rkvdec_v4l2_cleanup(rkvdec);
- 	return 0;
  }
  
+ #ifdef CONFIG_PM
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Li <ayaka@soulik.info>
