@@ -1,0 +1,47 @@
+From 3aba32fb28f939d1e568959af8657e7d18e843d3 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Mon, 7 Nov 2022 14:52:36 +0000
+Subject: [PATCH] gdtoa: Fix cross-compiling
+
+When cross-compiling, these headers must be provided as they cannot be
+generated.
+
+Fixes the following error:
+
+> make[4]: *** No rule to make target 'libraries/gdtoa/qnan', needed by 'libraries/gdtoa/gd_qnan.h'.  Stop.
+---
+ libraries/gdtoa/CMakeLists.txt | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libraries/gdtoa/CMakeLists.txt b/libraries/gdtoa/CMakeLists.txt
+index 834340909..ea3155f9b 100644
+--- a/libraries/gdtoa/CMakeLists.txt
++++ b/libraries/gdtoa/CMakeLists.txt
+@@ -18,18 +18,18 @@ add_definitions( -DINFNAN_CHECK -DMULTIPLE_THREADS )
+ if( NOT MSVC AND NOT APPLE )
+ 	if( NOT CMAKE_CROSSCOMPILING )
+ 		add_executable( arithchk arithchk.c )
++		add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/arith.h
++			COMMAND arithchk >${CMAKE_CURRENT_BINARY_DIR}/arith.h
++			DEPENDS arithchk )
+ 	endif()
+-	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/arith.h 
+-		COMMAND arithchk >${CMAKE_CURRENT_BINARY_DIR}/arith.h
+-		DEPENDS arithchk )
+ 
+ 	if( NOT CMAKE_CROSSCOMPILING )
+ 		add_executable( qnan qnan.c arith.h )
+ 		set( CROSS_EXPORTS ${CROSS_EXPORTS} arithchk qnan PARENT_SCOPE )
++		add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gd_qnan.h
++			COMMAND qnan >${CMAKE_CURRENT_BINARY_DIR}/gd_qnan.h
++			DEPENDS qnan )
+ 	endif()
+-	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gd_qnan.h
+-		COMMAND qnan >${CMAKE_CURRENT_BINARY_DIR}/gd_qnan.h
+-		DEPENDS qnan )
+ 		
+ 	set( GEN_FP_FILES arith.h gd_qnan.h )
+ 	set( GEN_FP_DEPS ${CMAKE_CURRENT_BINARY_DIR}/arith.h ${CMAKE_CURRENT_BINARY_DIR}/gd_qnan.h )
+-- 
+2.37.2
+
