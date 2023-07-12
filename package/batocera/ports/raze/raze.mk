@@ -7,7 +7,7 @@
 RAZE_VERSION = b4a49ea228e0fff196092ccf6e03b8550fa4592c
 RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
-RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal mesa3d zmusic
+RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic
 RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # We need the tools from the host package to build the target package
@@ -42,14 +42,17 @@ RAZE_PRE_CONFIGURE_HOOKS += RAZE_COPY_GENERATED_HEADERS
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
+    RAZE_DEPENDENCIES += vulkan-headers vulkan-loader
 else
     RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_GLES3)$(BR2_PACKAGE_BATOCERA_GLES2),y)
     RAZE_CONF_OPTS += -DHAVE_GLES2=ON
+    RAZE_DEPENDENCIES = libgles
 else
     RAZE_CONF_OPTS += -DHAVE_GLES2=OFF
+    RAZE_DEPENDENCIES = libgl
 endif
 
 define RAZE_INSTALL_TARGET_CMDS
