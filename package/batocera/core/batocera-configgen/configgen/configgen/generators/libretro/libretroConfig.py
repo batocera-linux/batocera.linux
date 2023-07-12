@@ -428,12 +428,6 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             'btn_l2': '22', 'btn_r2': '20', 'btn_select': '12',             
         }
             
-        config_option = system.config[f'{option}{controller_number}']
-        # Swap A/B if selected
-        if config_option in ['n64swapped', 'n64limitedswapped']:
-            remap_values['btn_a'] = '0'
-            remap_values['btn_b'] = '1'
-            
         for btn, value in remap_values.items():
             retroarchConfig[f'input_player{controller_number}_{btn}'] = value
             

@@ -65,7 +65,7 @@ def writeControllersConfig(retroconfig, system, controllers, lightgun):
     else:
         option = None
     # Check for limited hotkey setting
-    if option and option in system.config and system.config[option] in ['n64limited', 'n64limitedswapped']:
+    if option and option in system.config and system.config[option] in ['n64limited']:
         retroarchspecials = {'start': 'exit_emulator'}
     
     for controller in controllers:
