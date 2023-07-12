@@ -34,7 +34,7 @@
 - melonds to July 8th build
 - ppsspp to July 8th build
 - lr-ppsspp to July 8th build
-- xemu to v0.7.96
+- xemu to v0.7.98
 - devilutionX to 1.5.0
 ### Dev
 - linux kernel for x86_64 to 6.4.2
