@@ -1,0 +1,23 @@
+From eb8de9bf24ebdec3dfed654b6260e38719b3d448 Mon Sep 17 00:00:00 2001
+From: Corentin Wallez <cwallez@google.com>
+Date: Thu, 13 Apr 2023 13:59:47 +0200
+Subject: [PATCH] Add default case for spv::Dim for TileImageEXT
+
+Without this the switch statement must be updated at the same time as
+the SPIR-V headers, which makes rolls impossible.
+---
+ source/val/validate_image.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/source/val/validate_image.cpp b/source/val/validate_image.cpp
+index ebcd8c3b79..0e5142248a 100644
+--- a/source/val/validate_image.cpp
++++ b/source/val/validate_image.cpp
+@@ -218,6 +218,7 @@ uint32_t GetPlaneCoordSize(const ImageTypeInfo& info) {
+       plane_size = 3;
+       break;
+     case spv::Dim::Max:
++    default:
+       assert(0);
+       break;
+   }
