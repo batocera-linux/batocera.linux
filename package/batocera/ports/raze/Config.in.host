@@ -1,0 +1,5 @@
+config BR2_PACKAGE_HOST_RAZE
+	bool "host raze tools"
+	select BR2_PACKAGE_HOST_BZIP2
+	help
+	  This package is required for building raze.

@@ -1,0 +1,24 @@
+--- a/CMakeLists.txt	2023-07-12 09:46:32.433403667 +0200
++++ b/CMakeLists.txt	2023-07-12 09:47:10.218043808 +0200
+@@ -20,6 +20,8 @@
+ include( FindPackageHandleStandardArgs )
+ 
+ # Support cross compiling
++option(TOOLS_ONLY "Only build the tools, not gzdoom itself (useful for cross-compiling)" OFF)
++
+ option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
+ if( FORCE_CROSSCOMPILE )
+ 	set( CMAKE_CROSSCOMPILING TRUE )
+@@ -418,8 +420,10 @@
+ add_subdirectory( libraries/lzma )
+ add_subdirectory( tools )
+ add_subdirectory( libraries/gdtoa )
+-add_subdirectory( wadsrc )
+-add_subdirectory( source )
++if ( NOT TOOLS_ONLY )
++	add_subdirectory( wadsrc )
++	add_subdirectory( source )
++endif()
+ 
+ if( NOT CMAKE_CROSSCOMPILING )
+ 	export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake" )

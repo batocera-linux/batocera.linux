@@ -10,6 +10,7 @@
 - mosquitto client command line tools
 - es : from developper menu, you can change the es resolution
 - xenia canary can now apply patches
+- add: Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
