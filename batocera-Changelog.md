@@ -46,6 +46,7 @@
 - Enable exFAT and NTFS Linux kernel drivers on x86_64
 - bluez to 5.68
 - wildmidi to 0.4.5
+- vulkan stack to 1.3.257
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
