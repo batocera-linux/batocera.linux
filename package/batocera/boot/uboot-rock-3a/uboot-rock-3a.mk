@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-UBOOT_ROCK_3A_VERSION = 1.0
+UBOOT_ROCK_3A_VERSION = 2023.07.02
 UBOOT_ROCK_3A_SOURCE =
 
 define UBOOT_ROCK_3A_BUILD_CMDS
