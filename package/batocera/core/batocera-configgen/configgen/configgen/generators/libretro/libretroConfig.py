@@ -420,6 +420,29 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             wswanOrientation = system.config['wswan_rotate_display']
         retroarchConfig['wswan_rotate_display'] = wswanOrientation
 
+    ## N64 Controller Remap
+    def update_controller_config(controller_number, option):
+        # Remaps for N64 style controllers
+        remap_values = {
+            'btn_a': '1', 'btn_b': '0', 'btn_x': '23', 'btn_y': '21', 
+            'btn_l2': '22', 'btn_r2': '20', 'btn_select': '12',             
+        }
+            
+        for btn, value in remap_values.items():
+            retroarchConfig[f'input_player{controller_number}_{btn}'] = value
+            
+            
+    if system.config['core'] == 'mupen64plus-next':
+        option = 'mupen64plus-controller'
+    elif system.config['core'] == 'parallel_n64':
+        option = 'parallel-n64-controller'
+    else:
+        option = None
+        
+    for i in range(1, 5):
+        if option and system.isOptSet(f'{option}{i}') and system.config[f'{option}{i}'] != 'retropad':
+            update_controller_config(i, option)
+                      
     ## PORTS
     ## Quake
     if (system.config['core'] == 'tyrquake'):
