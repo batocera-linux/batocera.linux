@@ -12,7 +12,7 @@
 - xenia canary can now apply patches
 - Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
 - vitaquake2 libretro core enabled for AArch64
-- vitaquake3 to libretro cores
+- ioquake3 to ports, An updated Quake III engine
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds

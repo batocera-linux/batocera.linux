@@ -286,6 +286,10 @@ def getGenerator(emulator):
     if emulator == 'play':
         from generators.play.playGenerator import PlayGenerator
         return PlayGenerator()
+    
+    if emulator == "ioquake3":
+        from generators.ioquake3.ioquake3Generator import IOQuake3Generator
+        return IOQuake3Generator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
