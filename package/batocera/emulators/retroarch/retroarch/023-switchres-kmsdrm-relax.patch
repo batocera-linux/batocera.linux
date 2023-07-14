@@ -1,0 +1,17 @@
+--- a/deps/switchres/custom_video_drmkms.cpp	2023-07-14 00:08:29.446903844 +0200
++++ b/deps/switchres/custom_video_drmkms.cpp	2023-07-14 00:10:01.112941739 +0200
+@@ -563,12 +563,12 @@
+ 		log_verbose("DRM/KMS: <%d> (init) version %d.%d.%d type %s\n", m_id, version->version_major, version->version_minor, version->version_patchlevel, version->name);
+ 		drmFreeVersion(version);
+ 
+-		uint64_t check_dumb = 0;
++		/*uint64_t check_dumb = 0;
+ 		if (drmGetCap(m_drm_fd, DRM_CAP_DUMB_BUFFER, &check_dumb) < 0)
+ 			log_error("DRM/KMS: <%d> (init) [ERROR] ioctl DRM_CAP_DUMB_BUFFER\n", m_id);
+ 
+ 		if (!check_dumb)
+-			log_error("DRM/KMS: <%d> (init) [ERROR] dumb buffer not supported\n", m_id);
++			log_error("DRM/KMS: <%d> (init) [ERROR] dumb buffer not supported\n", m_id);*/
+ 
+ 		p_res = drmModeGetResources(m_drm_fd);
+ 
