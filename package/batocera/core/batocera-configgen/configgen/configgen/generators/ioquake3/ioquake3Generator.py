@@ -22,9 +22,15 @@ class IOQuake3Generator(Generator):
         # therefore copy latest ioquake3 file to rom directory
         if not os.path.isfile(destination_file) or os.path.getmtime(source_file) > os.path.getmtime(destination_file):
             shutil.copy2(source_file, destination_file)
-                
-        # run from the rom directory
-        commandArray = ["/userdata/roms/quake3/ioquake3", rom]
+        
+        commandArray = ["/userdata/roms/quake3/ioquake3"]
+
+        # get the game / mod to launch
+        with open(rom, "r") as file:
+            command_line = file.readline().strip()
+            command_line_words = command_line.split()
+            
+        commandArray.extend(command_line_words)
 
         environment = {
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
