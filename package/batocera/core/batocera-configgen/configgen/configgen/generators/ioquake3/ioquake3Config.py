@@ -5,6 +5,8 @@ import os
 
 def writeCfgFile(filename, init_line, defaults_to_add, controls_to_add, gameResolution):
     if not os.path.isfile(filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        
         with open(filename, 'w') as file:
             file.write(init_line)
             for line in defaults_to_add:
