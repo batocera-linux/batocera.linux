@@ -4670,26 +4670,44 @@ quake3:
     Quake 3 is best played with a mouse & keyboard but is pre-configured for a controller.
 
     IOQuake3 requires your baseq3 & missionpack folders in the quake3 rom folder.
-    To be able to launch a game, create a file with a .quake3 extension. i.e. Quake III Arena.quake3. 
+    
+    To be able to launch a game, create a file with a .quake3 extension. i.e. Quake III Arena.quake3.
+    Inside that file add the following: +set fs_game "baseq3"
+    "baseq3" is the folder which contains Quake3 or the mod.
+    Another example is to run Team Fortress directly, therefore create a Team Fortress.quake3 file.
+    The inside that file you would add: +set fs_game "missionpack"
+    Do this for every mod you wish to play, naming the file to what makes sense to scrape artwork etc.
 
-    Note: Team Arena's menu options can only be selected with a mouse input, once you launch a game the controller will work.
+    Note: Team Arena's & other mods menu options may only be selected with a mouse input, once you launch a game the controller will work.
 
     For more info: https://wiki.batocera.org/systems:ioquake3
   comment_fr: |
-    Quake 3 se joue mieux avec une souris et un clavier, mais il est préconfiguré pour une manette.
+    Quake 3 est mieux joué avec une souris et un clavier, mais il est préconfiguré pour une manette.
     
-    IOQuake3 nécessite les dossiers baseq3 et missionpack dans le dossier de roms de Quake3.
-    Pour pouvoir lancer un jeu, créez un fichier avec l'extension .quake3, par exemple Quake III Arena.quake3.
+    IOQuake3 nécessite vos dossiers baseq3 et missionpack dans le dossier du jeu Quake3.
+    
+    Pour pouvoir lancer une partie, créez un fichier avec une extension .quake3, par exemple Quake III Arena.quake3.
+    À l'intérieur de ce fichier, ajoutez ce qui suit : +set fs_game "baseq3"
+    "baseq3" est le dossier qui contient Quake3 ou le mod.
+    Un autre exemple est d'exécuter directement Team Fortress, pour cela, créez un fichier Team Fortress.quake3.
+    À l'intérieur de ce fichier, vous ajouterez : +set fs_game "missionpack"
+    Faites cela pour chaque mod que vous souhaitez jouer, en nommant le fichier en fonction de ce qui a du sens pour récupérer les illustrations, etc.
 
-    Note : Les options du menu de Team Arena ne peuvent être sélectionnées qu'avec une souris, une fois que vous avez lancé un jeu, la manette fonctionnera.
+    Remarque : Les options de menu de Team Arena et d'autres mods peuvent être sélectionnées uniquement avec une souris, une fois que vous avez lancé une partie, la manette fonctionnera.
 
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:ioquake3
+    Pour plus d'informations : https://wiki.batocera.org/systems:ioquake3
   comment_br: |
-    Quake 3 é melhor jogado com mouse e teclado, mas está pré-configurado para um controle.
+    O Quake 3 é melhor jogado com mouse e teclado, mas está pré-configurado para um controle.
     
-    O IOQuake3 requer as pastas baseq3 e missionpack na pasta da ROM do Quake3.
-    Para poder iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo, Quake III Arena.quake3.
+    O IOQuake3 requer suas pastas baseq3 e missionpack na pasta do jogo Quake3.
     
-    Observação: As opções do menu do Team Arena só podem ser selecionadas com um mouse, uma vez que você inicia um jogo, o controle funcionará.
-
+    Para conseguir iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo, Quake III Arena.quake3.
+    Dentro desse arquivo, adicione o seguinte: +set fs_game "baseq3"
+    "baseq3" é a pasta que contém o Quake3 ou o mod.
+    Outro exemplo é executar o Team Fortress diretamente, para isso, crie um arquivo Team Fortress.quake3.
+    Dentro desse arquivo, você adicionaria: +set fs_game "missionpack"
+    Faça isso para cada mod que você deseja jogar, nomeando o arquivo de acordo com o que faz sentido para recuperar ilustrações, etc.
+    
+    Observação: As opções de menu do Team Arena e de outros mods só podem ser selecionadas com um mouse, uma vez que você inicia um jogo, o controle funcionará.
+    
     Para mais informações: https://wiki.batocera.org/systems:ioquake3
