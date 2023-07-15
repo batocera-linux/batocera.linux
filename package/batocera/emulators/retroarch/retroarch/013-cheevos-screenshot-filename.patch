@@ -1,11 +1,9 @@
-diff --git a/cheevos/cheevos.c b/cheevos/cheevos.c
-index 6cd3a06320..6845517e06 100644
---- a/cheevos/cheevos.c
-+++ b/cheevos/cheevos.c
-@@ -361,9 +361,10 @@ void rcheevos_award_achievement(rcheevos_locals_t* locals,
- 
+--- a/cheevos/cheevos.c	2023-07-13 17:02:33.000000000 +0200
++++ b/cheevos/cheevos.c	2023-07-13 23:15:43.488414454 +0200
+@@ -377,9 +377,10 @@ void rcheevos_award_achievement(rcheevos_locals_t* locals,
        if (shotname)
        {
+          video_driver_state_t *video_st  = video_state_get_ptr();;
 -         snprintf(shotname, shotname_len, "%s/%s-cheevo-%u",
 +         snprintf(shotname, shotname_len, "%s/%s - %s (%u)",
                 settings->paths.directory_screenshot,
@@ -13,3 +11,4 @@ index 6cd3a06320..6845517e06 100644
 +               cheevo->title,
                 cheevo->id);
           shotname[shotname_len - 1] = '\0';
+ 
