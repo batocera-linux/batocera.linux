@@ -1,7 +1,6 @@
 config BR2_PACKAGE_SWITCHRES
 	bool "switchres"
 	depends on BR2_PACKAGE_LIBDRM
-    depends on BR2_PACKAGE_XORG7
 	help
 	  Command line tool for modeline generation
 	  
