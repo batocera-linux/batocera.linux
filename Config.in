@@ -270,7 +270,6 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-gearsystem/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-boom3/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-openlara/Config.in"
-      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-vitaquake3/Config.in"
      endmenu
   endmenu
 
@@ -369,6 +368,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/gzdoom/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/eduke32/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/raze/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/ioquake3/Config.in"
   endmenu
 
   menu "mupen64plus"

@@ -4655,14 +4655,41 @@ openlara:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:openlara
 
-vitaquake3:
+quake3:
   name: Quake III
   manufacturer: Ports
   release: 1999
   hardware: port
-  extensions: [pk3]
+  extensions: [ quake3 ]
   platform: pc
   group: ports
   emulators:
-    libretro:
-      vitaquake3: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE3] }
+    ioquake3:
+      ioquake3: { requireAnyOf: [ BR2_PACKAGE_IOQUAKE3 ] }
+  comment_en: |
+    Quake 3 is best played with a mouse & keyboard but is pre-configured for a controller.
+
+    IOQuake3 requires your baseq3 & missionpack folders in the quake3 rom folder.
+    To be able to launch a game, create a file called with .quake3 extension. i.e. Quake III Arena.quake3. 
+
+    Note: Team Arena's menu options can only be selected with a mouse input, once you launch a game the controller will work.
+
+    For more info: https://wiki.batocera.org/systems:ioquake3
+  comment_fr: |
+    Quake 3 se joue mieux avec une souris et un clavier, mais il est préconfiguré pour une manette.
+    
+    IOQuake3 nécessite les dossiers baseq3 et missionpack dans le dossier de roms de Quake3.
+    Pour pouvoir lancer un jeu, créez un fichier avec l'extension .quake3, par exemple Quake III Arena.quake3.
+
+    Note : Les options du menu de Team Arena ne peuvent être sélectionnées qu'avec une souris, une fois que vous avez lancé un jeu, la manette fonctionnera.
+
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:ioquake3
+  comment_br: |
+    Quake 3 é melhor jogado com mouse e teclado, mas está pré-configurado para um controle.
+    
+    O IOQuake3 requer as pastas baseq3 e missionpack na pasta da ROM do Quake3.
+    Para poder iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo, Quake III Arena.quake3.
+    
+    Observação: As opções do menu do Team Arena só podem ser selecionadas com um mouse, uma vez que você inicia um jogo, o controle funcionará.
+    
+    Para mais informações: https://wiki.batocera.org/systems:ioquake3
