@@ -1,5 +1,7 @@
 config BR2_PACKAGE_IOQUAKE3
     bool "ioquake3"
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_NET
     help
       The ioquake3 community effort to continue supporting/developing id's Quake III Arena.
       

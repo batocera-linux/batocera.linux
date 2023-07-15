@@ -31,6 +31,9 @@ def writeCfgFile(filename, init_line, defaults_to_add, controls_to_add, gameReso
                     line = 'seta in_joystickUseAnalog "1"\n'
                 elif line.startswith('seta in_joystick'):
                     line = 'seta in_joystick "1"\n'
+                # network downloads
+                elif line.startswith('seta cl_allowdownload'):
+                    line = 'seta cl_allowDownload "1"\n'
 
                 file.write(line)
 
@@ -56,7 +59,8 @@ def writeCfgFiles(system, rom, playersControllers, gameResolution):
         f'seta r_customwidth "{gameResolution["width"]}"\n',
         f'seta r_customheight "{gameResolution["height"]}"\n',
         'seta in_joystickUseAnalog "1"\n',
-        'seta in_joystick "1"\n'
+        'seta in_joystick "1"\n',
+        'cl_allowdownload "1"\n'
     ]
 
     # basic controller config

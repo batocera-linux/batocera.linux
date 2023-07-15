@@ -19,12 +19,9 @@ class IOQuake3Generator(Generator):
         destination_dir = "/userdata/roms/quake3"
         destination_file = os.path.join(destination_dir, "ioquake3")
         source_file = os.path.join(source_dir, "ioquake3")
-        # therefore copy latest files to rom directory
+        # therefore copy latest ioquake3 file to rom directory
         if not os.path.isfile(destination_file) or os.path.getmtime(source_file) > os.path.getmtime(destination_file):
-            for file_name in os.listdir(source_dir):
-                source_file = os.path.join(source_dir, file_name)
-                destination_file = os.path.join(destination_dir, file_name)
-                shutil.copy2(source_file, destination_file)
+            shutil.copy2(source_file, destination_file)
                 
         # run from the rom directory
         commandArray = ["/userdata/roms/quake3/ioquake3", rom]
