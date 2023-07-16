@@ -912,7 +912,8 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_OPENLARA        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
 
     # Quake 3
-    select BR2_PACKAGE_IOQUAKE3                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_IOQUAKE3                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+                                                   BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 
     help
         Ports
