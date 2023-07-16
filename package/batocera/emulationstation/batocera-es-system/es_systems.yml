@@ -4667,47 +4667,44 @@ quake3:
     ioquake3:
       ioquake3: { requireAnyOf: [ BR2_PACKAGE_IOQUAKE3 ] }
   comment_en: |
-    Quake 3 is best played with a mouse & keyboard but is pre-configured for a controller.
-
-    IOQuake3 requires your baseq3 & missionpack folders in the quake3 rom folder.
+    Quake III is optimized to be played with a mouse and keyboard, but here it is also pre-configured to be played with a gamepad.
     
-    To be able to launch a game, create a file with a .quake3 extension. i.e. Quake III Arena.quake3.
-    Inside that file add the following: +set fs_game "baseq3"
-    "baseq3" is the folder which contains Quake3 or the mod.
-    Another example is to run Team Fortress directly, therefore create a Team Fortress.quake3 file.
-    The inside that file you would add: +set fs_game "missionpack"
-    Do this for every mod you wish to play, naming the file to what makes sense to scrape artwork etc.
-
-    Note: Team Arena's & other mods menu options may only be selected with a mouse input, once you launch a game the controller will work.
+    For the basic configuration you must have the "baseq3" and "missionpack" folders in the "/userdata/roms/quake3" directory.
+    
+    To start a game, create a file with the extension .quake3, for example "Quake III Arena.quake3".
+    Inside this file, add the following line: "+set fs_game "baseq3" for the game "Quake III Arena.
+    For Quake III: Team Arena mode create another file with: "+set fs_game "missionpack".
+    
+    Repeat this step for each mod you wish to play, giving the file a logical name to help you navigate through artwork etc.
+    
+    Please note that menu options in Team Arena and other mods can only be selected using a mouse, once the game is started the controller will function normally.
 
     For more info: https://wiki.batocera.org/systems:ioquake3
   comment_fr: |
-    Quake 3 est mieux joué avec une souris et un clavier, mais il est préconfiguré pour une manette.
+    Quake III est optimisé pour être joué avec une souris et un clavier, mais il est ici également pré-configuré pour y jouer avec une manette.
     
-    IOQuake3 nécessite vos dossiers baseq3 et missionpack dans le dossier du jeu Quake3.
+    Pour la configuration de base vous devez avoir les dossiers "baseq3" et "missionpack" dans le répertoire "/userdata/roms/quake3".
     
-    Pour pouvoir lancer une partie, créez un fichier avec une extension .quake3, par exemple Quake III Arena.quake3.
-    À l'intérieur de ce fichier, ajoutez ce qui suit : +set fs_game "baseq3"
-    "baseq3" est le dossier qui contient Quake3 ou le mod.
-    Un autre exemple est d'exécuter directement Team Fortress, pour cela, créez un fichier Team Fortress.quake3.
-    À l'intérieur de ce fichier, vous ajouterez : +set fs_game "missionpack"
-    Faites cela pour chaque mod que vous souhaitez jouer, en nommant le fichier en fonction de ce qui a du sens pour récupérer les illustrations, etc.
-
-    Remarque : Les options de menu de Team Arena et d'autres mods peuvent être sélectionnées uniquement avec une souris, une fois que vous avez lancé une partie, la manette fonctionnera.
+    Pour lancer une partie, créez un fichier avec l'extension .quake3, par exemple "Quake III Arena.quake3".
+    À l'intérieur de ce fichier, ajoutez la ligne suivante : "+set fs_game "baseq3" pour le jeu "Quake III Arena.
+    Pour le mode Quake III: Team Arena creez un autre fichier avec : "+set fs_game "missionpack".
+    
+    Répétez cette étape pour chaque mod auquel vous souhaitez jouer, en donnant un nom logique au fichier pour vous aider à vous y retrouver avec les illustrations, etc.
+    
+    Veuillez noter que les options de menu de Team Arena et d'autres mods peuvent être sélectionnées uniquement à l'aide d'une souris, une fois la partie lancée, la manette fonctionnera normalement.
 
     Pour plus d'informations : https://wiki.batocera.org/systems:ioquake3
   comment_br: |
-    O Quake 3 é melhor jogado com mouse e teclado, mas está pré-configurado para um controle.
+    O Quake III é otimizado para ser jogado com mouse e teclado, mas aqui também é pré-configurado para ser jogado com um gamepad.
     
-    O IOQuake3 requer suas pastas baseq3 e missionpack na pasta do jogo Quake3.
+    Para a configuração básica você deve ter as pastas "baseq3" e "missionpack" no diretório "/userdata/roms/quake3".
     
-    Para conseguir iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo, Quake III Arena.quake3.
-    Dentro desse arquivo, adicione o seguinte: +set fs_game "baseq3"
-    "baseq3" é a pasta que contém o Quake3 ou o mod.
-    Outro exemplo é executar o Team Fortress diretamente, para isso, crie um arquivo Team Fortress.quake3.
-    Dentro desse arquivo, você adicionaria: +set fs_game "missionpack"
-    Faça isso para cada mod que você deseja jogar, nomeando o arquivo de acordo com o que faz sentido para recuperar ilustrações, etc.
+    Para iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo "Quake III Arena.quake3".
+    Dentro deste arquivo, adicione a seguinte linha: "+set fs_game "baseq3" para o jogo "Quake III Arena.
+    Para o modo Quake III: Team Arena, crie outro arquivo com: "+set fs_game "missionpack".
     
-    Observação: As opções de menu do Team Arena e de outros mods só podem ser selecionadas com um mouse, uma vez que você inicia um jogo, o controle funcionará.
+    Repita esta etapa para cada mod que deseja reproduzir, dando ao arquivo um nome lógico para ajudá-lo a navegar pela arte, etc.
+    
+    Observe que as opções de menu no Team Arena e outros mods só podem ser selecionadas usando um mouse, uma vez que o jogo é iniciado, o controlador funcionará normalmente.
     
     Para mais informações: https://wiki.batocera.org/systems:ioquake3
