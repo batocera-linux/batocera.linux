@@ -166,6 +166,13 @@ ifeq ($(BR2_PACKAGE_BIGPEMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += bigpemu.png
 endif
 
+# play!
+ifeq ($(BR2_PACKAGE_PLAY),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-play
+  BATOCERA_DESKTOPAPPS_APPS    += play-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += play.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
