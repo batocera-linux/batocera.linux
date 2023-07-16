@@ -18,7 +18,7 @@ index d89059a..90e4bf0 100644
     game_path[0]        = '\0';
     content_path[0]     = '\0';
  
-@@ -4103,6 +4105,12 @@ bool config_load_remap(const char *directory_input_remapping,
+@@ -4475,6 +4475,12 @@
           FILE_PATH_REMAP_EXTENSION,
           sizeof(core_path));
  
@@ -28,10 +28,12 @@ index d89059a..90e4bf0 100644
 +         FILE_PATH_REMAP_EXTENSION,
 +         sizeof(common_path));
 +
-    input_remapping_set_defaults(false);
- 
     /* If a game remap file exists, load it. */
-@@ -4151,6 +4159,19 @@ bool config_load_remap(const char *directory_input_remapping,
+    if (has_content && (new_conf = config_file_new_from_path_to_string(game_path)))
+    {
+--- a/configuration.c	2023-07-13 23:25:43.277761188 +0200
++++ b/configuration.c	2023-07-13 23:29:15.810429836 +0200
+@@ -4521,6 +4521,19 @@
        }
     }
  
