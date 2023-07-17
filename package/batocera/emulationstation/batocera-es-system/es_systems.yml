@@ -4708,3 +4708,15 @@ quake3:
     Observe que as opções de menu no Team Arena e outros mods só podem ser selecionadas usando um mouse, uma vez que o jogo é iniciado, o controlador funcionará normalmente.
     
     Para mais informações: https://wiki.batocera.org/systems:ioquake3
+
+namco2x6:
+  name: Namco System 246/256
+  manufacturer: Sony / Namco
+  release: 2000
+  hardware: arcade
+  extensions: [zip]
+  emulators:
+    play:
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:namco2x6
