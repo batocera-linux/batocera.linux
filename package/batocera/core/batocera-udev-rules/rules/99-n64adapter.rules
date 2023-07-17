@@ -1,0 +1,3 @@
+
+# rule elabored from joinsky information
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HuiJia  USB GamePad", RUN+="/usr/bin/libevdev-tweak-device --abs ABS_X --min 40 --max 215 $env{DEVNAME}", RUN+="/usr/bin/libevdev-tweak-device --abs ABS_Y --min 40 --max 215 $env{DEVNAME}"
