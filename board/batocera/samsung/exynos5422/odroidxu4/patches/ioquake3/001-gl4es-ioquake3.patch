@@ -1,0 +1,168 @@
+diff -u -r a/code/sdl/sdl_glimp.c b/code/sdl/sdl_glimp.c
+--- a/code/sdl/sdl_glimp.c	2023-07-06 11:10:06.000000000 +0200
++++ b/code/sdl/sdl_glimp.c	2023-07-17 20:18:30.069483092 +0200
+@@ -35,6 +35,25 @@
+ #include "../sys/sys_local.h"
+ #include "sdl_icon.h"
+ 
++// GL4ES BEGIN
++#include <gl4es/gl4esinit.h>
++#include <gl4es/gl4eshint.h>
++
++void GL4ES_GetMainFBSize( int *width, int *height )
++{
++        *width = glConfig.vidWidth;
++        *height = glConfig.vidHeight;
++}
++void *GL4ES_GetProcAddress( const char *name )
++{
++	if( !strcmp(name, "glShadeModel") )
++                // combined gles/gles2/gl implementation exports this, but it is invalid
++                return NULL;
++        return SDL_GL_GetProcAddress (name);
++        //return gEngfuncs.GL_GetProcAddress( name );
++}
++// GL4ES END
++
+ typedef enum
+ {
+ 	RSERR_OK,
+@@ -244,7 +263,7 @@
+ #ifdef __SDL_NOGETPROCADDR__
+ #define GLE( ret, name, ... ) qgl##name = gl#name;
+ #else
+-#define GLE( ret, name, ... ) qgl##name = (name##proc *) SDL_GL_GetProcAddress("gl" #name); \
++#define GLE( ret, name, ... ) qgl##name = (name##proc *) gl4es_GetProcAddress("gl" #name); \
+ 	if ( qgl##name == NULL ) { \
+ 		ri.Printf( PRINT_ALL, "ERROR: Missing OpenGL function %s\n", "gl" #name ); \
+ 		success = qfalse; \
+@@ -277,30 +296,30 @@
+ 	}
+ 
+ 	if ( fixedFunction ) {
+-		if ( QGL_VERSION_ATLEAST( 1, 1 ) ) {
++		/*if ( QGL_VERSION_ATLEAST( 1, 1 ) ) {*/
+ 			QGL_1_1_PROCS;
+ 			QGL_1_1_FIXED_FUNCTION_PROCS;
+ 			QGL_DESKTOP_1_1_PROCS;
+ 			QGL_DESKTOP_1_1_FIXED_FUNCTION_PROCS;
+-		} else if ( qglesMajorVersion == 1 && qglesMinorVersion >= 1 ) {
++		/*} else if (( qglesMajorVersion == 1 && qglesMinorVersion >= 1 ) || ( qglesMajorVersion == 2 && qglesMinorVersion >= 0 )) {
+ 			// OpenGL ES 1.1 (2.0 is not backward compatible)
+ 			QGL_1_1_PROCS;
+ 			QGL_1_1_FIXED_FUNCTION_PROCS;
+ 			QGL_ES_1_1_PROCS;
+ 			QGL_ES_1_1_FIXED_FUNCTION_PROCS;
+ 			// error so this doesn't segfault due to NULL desktop GL functions being used
+-			Com_Error( ERR_FATAL, "Unsupported OpenGL Version: %s", version );
++			//Com_Error( ERR_FATAL, "Unsupported OpenGL Version: %s", version );
+ 		} else {
+ 			Com_Error( ERR_FATAL, "Unsupported OpenGL Version (%s), OpenGL 1.1 is required", version );
+-		}
++		}*/
+ 	} else {
+-		if ( QGL_VERSION_ATLEAST( 2, 0 ) ) {
++		/*if ( QGL_VERSION_ATLEAST( 2, 0 ) ) {*/
+ 			QGL_1_1_PROCS;
+ 			QGL_DESKTOP_1_1_PROCS;
+ 			QGL_1_3_PROCS;
+ 			QGL_1_5_PROCS;
+ 			QGL_2_0_PROCS;
+-		} else if ( QGLES_VERSION_ATLEAST( 2, 0 ) ) {
++		/*} else if ( QGLES_VERSION_ATLEAST( 2, 0 ) ) {
+ 			QGL_1_1_PROCS;
+ 			QGL_ES_1_1_PROCS;
+ 			QGL_1_3_PROCS;
+@@ -310,7 +329,7 @@
+ 			Com_Error( ERR_FATAL, "Unsupported OpenGL Version: %s", version );
+ 		} else {
+ 			Com_Error( ERR_FATAL, "Unsupported OpenGL Version (%s), OpenGL 2.0 is required", version );
+-		}
++		}*/
+ 	}
+ 
+ 	if ( QGL_VERSION_ATLEAST( 3, 0 ) || QGLES_VERSION_ATLEAST( 3, 0 ) ) {
+@@ -644,6 +663,7 @@
+ 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+ 			if ((SDL_glContext = SDL_GL_CreateContext(SDL_window)) == NULL)
+ 			{
++				initialize_gl4es();
+ 				ri.Printf(PRINT_ALL, "SDL_GL_CreateContext failed: %s\n", SDL_GetError());
+ 				ri.Printf(PRINT_ALL, "Reverting to default context\n");
+ 
+@@ -656,6 +676,7 @@
+ 				const char *renderer;
+ 
+ 				ri.Printf(PRINT_ALL, "SDL_GL_CreateContext succeeded.\n");
++				initialize_gl4es();
+ 
+ 				if ( GLimp_GetProcAddresses( fixedFunction ) )
+ 				{
+@@ -696,6 +717,7 @@
+ 				SDL_window = NULL;
+ 				continue;
+ 			}
++			initialize_gl4es();
+ 
+ 			if ( !GLimp_GetProcAddresses( fixedFunction ) )
+ 			{
+@@ -778,7 +800,7 @@
+ 		r_fullscreen->modified = qfalse;
+ 		fullscreen = qfalse;
+ 	}
+-	
++
+ 	err = GLimp_SetMode(mode, fullscreen, noborder, gl3Core);
+ 
+ 	switch ( err )
+@@ -885,9 +907,9 @@
+ 		{
+ 			if ( r_ext_multitexture->value )
+ 			{
+-				qglMultiTexCoord2fARB = SDL_GL_GetProcAddress( "glMultiTexCoord2fARB" );
+-				qglActiveTextureARB = SDL_GL_GetProcAddress( "glActiveTextureARB" );
+-				qglClientActiveTextureARB = SDL_GL_GetProcAddress( "glClientActiveTextureARB" );
++				qglMultiTexCoord2fARB = gl4es_GetProcAddress( "glMultiTexCoord2fARB" );
++				qglActiveTextureARB = gl4es_GetProcAddress( "glActiveTextureARB" );
++				qglClientActiveTextureARB = gl4es_GetProcAddress( "glClientActiveTextureARB" );
+ 
+ 				if ( qglActiveTextureARB )
+ 				{
+@@ -923,8 +945,8 @@
+ 			if ( r_ext_compiled_vertex_array->value )
+ 			{
+ 				ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
+-				qglLockArraysEXT = ( void ( APIENTRY * )( GLint, GLint ) ) SDL_GL_GetProcAddress( "glLockArraysEXT" );
+-				qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) SDL_GL_GetProcAddress( "glUnlockArraysEXT" );
++				qglLockArraysEXT = ( void ( APIENTRY * )( GLint, GLint ) ) gl4es_GetProcAddress( "glLockArraysEXT" );
++				qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) gl4es_GetProcAddress( "glUnlockArraysEXT" );
+ 				if (!qglLockArraysEXT || !qglUnlockArraysEXT)
+ 				{
+ 					ri.Error (ERR_FATAL, "bad getprocaddress");
+@@ -1007,6 +1029,9 @@
+ 
+ 	ri.Sys_GLimpInit( );
+ 
++        set_getprocaddress( GL4ES_GetProcAddress );
++        set_getmainfbsize( GL4ES_GetMainFBSize );
++
+ 	// Create the window and set up the context
+ 	if(GLimp_StartDriverAndSetMode(r_mode->integer, r_fullscreen->integer, r_noborder->integer, fixedFunction))
+ 		goto success;
+@@ -1135,3 +1160,4 @@
+ 		r_fullscreen->modified = qfalse;
+ 	}
+ }
++
+diff -u -r a/Makefile b/Makefile
+--- a/Makefile	2023-07-06 11:10:06.000000000 +0200
++++ b/Makefile	2023-07-17 18:56:49.305785987 +0200
+@@ -402,7 +402,7 @@
+   AUTOUPDATER_LIBS += -ldl
+ 
+   CLIENT_LIBS=$(SDL_LIBS)
+-  RENDERER_LIBS = $(SDL_LIBS)
++  RENDERER_LIBS = $(SDL_LIBS) -L$(SYSROOT)/usr/lib/gl4es/ -lGL
+ 
+   ifeq ($(USE_OPENAL),1)
+     ifneq ($(USE_OPENAL_DLOPEN),1)
