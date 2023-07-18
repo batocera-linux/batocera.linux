@@ -12,26 +12,21 @@ diff --git a/src/render/opengles2/SDL_render_gles2.c b/src/render/opengles2/SDL_
 index c2f5d64..22d2b56 100644
 --- a/src/render/opengles2/SDL_render_gles2.c
 +++ b/src/render/opengles2/SDL_render_gles2.c
-@@ -2183,12 +2183,16 @@ SDL_RenderDriver GLES2_RenderDriver = {
-     {
-         "opengles2",
-         (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE),
--        4,
-+        8,
-         {
-         SDL_PIXELFORMAT_ARGB8888,
+@@ -2261,11 +2261,15 @@
+     GLES2_CreateRenderer,
+     { "opengles2",
+       (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE),
+-      4,
++      8,
+       { SDL_PIXELFORMAT_ARGB8888,
          SDL_PIXELFORMAT_ABGR8888,
          SDL_PIXELFORMAT_RGB888,
--        SDL_PIXELFORMAT_BGR888
+-        SDL_PIXELFORMAT_BGR888 },
 +        SDL_PIXELFORMAT_BGR888,
 +        SDL_PIXELFORMAT_IYUV,
 +        SDL_PIXELFORMAT_YV12,
 +        SDL_PIXELFORMAT_NV12,
-+        SDL_PIXELFORMAT_NV21
-         },
-         0,
-         0
--- 
-2.20.1
-
-
++        SDL_PIXELFORMAT_NV21 },
+       0,
+       0 }
+ };

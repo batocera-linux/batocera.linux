@@ -40,7 +40,7 @@ index 25d942e..defe75b 100644
  
      /* Always wait for the previous issued flip before issuing a new one,
         even if you do async flips. */
-@@ -135,7 +141,30 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
+@@ -141,7 +141,30 @@
      }
  
      /* Get an actual usable fb for the next front buffer. */
@@ -65,11 +65,11 @@ index 25d942e..defe75b 100644
 +         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not get a framebuffer");
 +         return 0;
 +        }
-+    
++
 +        viddata->rga_buffer_index = (viddata->rga_buffer_index + 1) % RGA_BUFFERS_MAX;
 +    }
 +
-     if (!fb_info) {
+     if (fb_info == NULL) {
          SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not get a framebuffer");
          return 0;
 diff --git a/src/video/kmsdrm/SDL_kmsdrmsym.h b/src/video/kmsdrm/SDL_kmsdrmsym.h
@@ -104,7 +104,7 @@ index def7233..ce7024b 100644
  
  #ifdef __OpenBSD__
  static SDL_bool moderndri = SDL_FALSE;
-@@ -68,6 +70,10 @@ static char kmsdrm_dri_cardpath[32];
+@@ -70,6 +70,10 @@
  #define EGL_PLATFORM_GBM_MESA 0x31D7
  #endif
  
@@ -112,9 +112,9 @@ index def7233..ce7024b 100644
 +rga_info_t dst_info = {0};
 +int batocera_rotate=false;
 +
- static int
- get_driindex(void)
+ static int get_driindex(void)
  {
+     int available = -ENOENT;
 @@ -79,6 +85,10 @@ get_driindex(void)
      DIR *folder;
      const char *hint;
@@ -126,7 +126,7 @@ index def7233..ce7024b 100644
      hint = SDL_GetHint(SDL_HINT_KMSDRM_DEVICE_INDEX);
      if (hint && *hint) {
          char *endptr = NULL;
-@@ -334,6 +344,46 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
+@@ -352,6 +356,47 @@
      SDL_free(fb_info);
  }
  
@@ -170,9 +170,10 @@ index def7233..ce7024b 100644
 +    rga_set_rect(&dst_info.rect, 0, 0, frameWidth, frameHeight, frameWidth, frameHeight, RK_FORMAT_BGRA_8888);
 +}
 +
- KMSDRM_FBInfo *
- KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
++
+ KMSDRM_FBInfo *KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
  {
+     SDL_VideoData *viddata = ((SDL_VideoData *)_this->driverdata);
 @@ -691,8 +741,15 @@ KMSDRM_AddDisplay (_THIS, drmModeConnector *connector, drmModeRes *resources) {
      modedata->mode_index = mode_index;
  
@@ -204,7 +205,7 @@ index def7233..ce7024b 100644
  }
  
  /* This determines the size of the fb, which comes from the GBM surface
-@@ -1005,14 +1066,26 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
+@@ -1227,14 +1272,26 @@
         mode that's set in sync with what SDL_video.c thinks is set */
      KMSDRM_GetModeToSet(window, &dispdata->mode);
  
@@ -222,7 +223,8 @@ index def7233..ce7024b 100644
      display->current_mode.format = SDL_PIXELFORMAT_ARGB8888;
  
 -    windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
--                      dispdata->mode.hdisplay, dispdata->mode.vdisplay,
+-                                            dispdata->mode.hdisplay, dispdata->mode.vdisplay,
+-                                            surface_fmt, surface_flags);
 +    if (!batocera_rotate) {
 +        windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
 +                       dispdata->mode.hdisplay, dispdata->mode.vdisplay,
@@ -230,7 +232,7 @@ index def7233..ce7024b 100644
 +    } else {
 +        windata->gs = KMSDRM_gbm_surface_create(viddata->gbm_dev,
 +                      dispdata->mode.vdisplay, dispdata->mode.hdisplay,
-                       surface_fmt, surface_flags);
++                   surface_fmt, surface_flags);
 +    }
  
      if (!windata->gs) {

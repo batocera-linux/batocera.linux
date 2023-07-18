@@ -2,9 +2,9 @@ diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
 index b416a53..70936a4 100644
 --- a/src/core/linux/SDL_udev.c
 +++ b/src/core/linux/SDL_udev.c
-@@ -48,6 +48,66 @@ static int SDL_UDEV_load_syms(void);
- static SDL_bool SDL_UDEV_hotplug_update_available(void);
- static void device_event(SDL_UDEV_deviceevent type, struct udev_device *dev);
+@@ -60,6 +60,67 @@
+     return SDL_TRUE;
+ }
  
 +struct joypad_udev_entry
 +{
@@ -22,7 +22,7 @@ index b416a53..70936a4 100644
 +
 +  for(n=0; n<strlen(s); n++) {
 +    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
-+	 s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++    s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
 +      return 0;
 +  }
 +  return 1;
@@ -66,9 +66,10 @@ index b416a53..70936a4 100644
 +   return strcmp_events(aa->devnode, bb->devnode);
 +}
 +
- static SDL_bool
- SDL_UDEV_load_sym(const char *fn, void **addr)
++
+ static int SDL_UDEV_load_syms(void)
  {
+ /* cast funcs to char* first, to please GCC's strict aliasing rules. */
 @@ -200,6 +260,10 @@ SDL_UDEV_Scan(void)
      struct udev_list_entry *devs = NULL;
      struct udev_list_entry *item = NULL;

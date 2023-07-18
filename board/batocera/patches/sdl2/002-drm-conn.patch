@@ -48,21 +48,21 @@ index 7223a5a..0972cb9 100644
  
      /* Open /dev/dri/cardNN (/dev/drmN if on OpenBSD version less than 6.9) */
      SDL_snprintf(viddata->devpath, sizeof(viddata->devpath), "%s%d",
-@@ -775,10 +792,26 @@ KMSDRM_InitDisplays (_THIS) {
+@@ -950,11 +950,27 @@
          goto cleanup;
      }
  
 +    // batocera
 +    {
-+      FILE* fdDrmConn;
-+      int drmConnRead;
-+      if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
-+	if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
-+	  if(drmConnRead>=0 && drmConn<resources->count_connectors) {
-+	    drmConn = drmConnRead;
-+	  }
-+	}
-+      }
++        FILE* fdDrmConn;
++        int drmConnRead;
++        if((fdDrmConn = fopen("/var/run/drmConn", "r")) != NULL) {
++            if(fscanf(fdDrmConn, "%i", &drmConnRead) == 1) {
++                if(drmConnRead>=0 && drmConn<resources->count_connectors) {
++                    drmConn = drmConnRead;
++                }
++            }
++        }
 +    }
 +    //
 +
@@ -70,9 +70,11 @@ index 7223a5a..0972cb9 100644
         we create an SDL_Display and add it to the list of SDL Displays. */
      for (i = 0; i < resources->count_connectors; i++) {
 -        drmModeConnector *connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
+-                                                                 resources->connectors[i]);
 +        drmModeConnector *connector;
-+	if(i != drmConn) continue;
-+        connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
-             resources->connectors[i]);
++        if(i != drmConn) continue;
++            connector = KMSDRM_drmModeGetConnector(viddata->drm_fd,
++                                                   resources->connectors[i]);
  
-         if (!connector) {
+         if (connector == NULL) {
+             continue;
