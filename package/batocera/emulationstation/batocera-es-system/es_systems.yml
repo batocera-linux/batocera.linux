@@ -4719,4 +4719,15 @@ namco2x6:
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
   comment_en: |
+    The Play! emulator provides `work in progress` support for Namco 246 & 256 systems.
+    Currently you will need a high performance system to be able to emulate supported games.
+    We recommend using the OpenGL API for now.
+    
+    This rom directory should include a zip file based on the arcade id and a supporting folder with associated .chd file.
+    i.e. Tekken 4 - tekken4.zip
+                    |
+                    tekken4
+                    |
+                    ---tef1dvd0.chd
+    
     For more info: https://wiki.batocera.org/systems:namco2x6
