@@ -11,9 +11,9 @@ index cfb8353..832bcd7 100644
  #include "../SDL_hints_c.h"
  
  #if !SDL_EVENTS_DISABLED
-@@ -114,6 +116,70 @@ static SDL_atomic_t SDL_next_joystick_instance_id;
- static int SDL_joystick_player_count = 0;
- static SDL_JoystickID *SDL_joystick_players = NULL;
+@@ -144,6 +144,71 @@
+     return SDL_joysticks_quitting;
+ }
  
 +void custom_restore_initial_state(SDL_Joystick * joystick) {
 +  char filename[256];
@@ -79,9 +79,10 @@ index cfb8353..832bcd7 100644
 +  fclose(fd);
 +}
 +
- void
- SDL_LockJoysticks(void)
++
+ void SDL_LockJoysticks(void)
  {
+     (void)SDL_AtomicIncRef(&SDL_joystick_lock_pending);
 @@ -450,6 +516,9 @@ SDL_JoystickOpen(int device_index)
      joystick->epowerlevel = SDL_JOYSTICK_POWER_UNKNOWN;
      joystick->led_expiration = SDL_GetTicks();
@@ -145,14 +146,14 @@ diff --git a/src/joystick/SDL_sysjoystick.h b/src/joystick/SDL_sysjoystick.h
 index d673ddd..9c7da51 100644
 --- a/src/joystick/SDL_sysjoystick.h
 +++ b/src/joystick/SDL_sysjoystick.h
-@@ -121,6 +121,9 @@ struct _SDL_Joystick
+@@ -128,6 +128,9 @@
  
-     int ref_count;              /* Reference count for multiple opens */
+     int ref_count _guarded; /* Reference count for multiple opens */
  
 +    SDL_bool initial_state_is_valid; // true once a first button is released (axis initial values are incorrect on some pad until this happen (ie 8bitdo nes)
 +    SDL_bool initial_state_initialized; // true once the initialisation is done
 +
-     struct _SDL_Joystick *next; /* pointer to next joystick we have allocated */
+     struct _SDL_Joystick *next _guarded; /* pointer to next joystick we have allocated */
  };
  
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
