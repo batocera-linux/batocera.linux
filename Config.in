@@ -476,6 +476,10 @@ menu "Cases"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/element14-pi-desktop/Config.in"
 endmenu
 
+menu "Screens"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/pixelcade/Config.in"
+endmenu
+
 menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libopenmpt/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/xlib_libXpresent/Config.in"
