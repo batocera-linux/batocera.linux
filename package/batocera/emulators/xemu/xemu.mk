@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.7.98
+XEMU_VERSION = v0.7.99
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -36,13 +36,11 @@ XEMU_CONF_OPTS += --disable-live-block-migration
 XEMU_CONF_OPTS += --disable-rdma
 XEMU_CONF_OPTS += --disable-replication
 XEMU_CONF_OPTS += --disable-capstone
-XEMU_CONF_OPTS += --disable-fdt
 XEMU_CONF_OPTS += --disable-libiscsi
 XEMU_CONF_OPTS += --disable-spice
 XEMU_CONF_OPTS += --disable-user
 XEMU_CONF_OPTS += --disable-stack-protector
 XEMU_CONF_OPTS += --disable-glusterfs
-XEMU_CONF_OPTS += --disable-gtk
 XEMU_CONF_OPTS += --disable-curses
 XEMU_CONF_OPTS += --disable-gnutls
 XEMU_CONF_OPTS += --disable-nettle
@@ -51,13 +49,11 @@ XEMU_CONF_OPTS += --disable-crypto-afalg
 XEMU_CONF_OPTS += --disable-virglrenderer
 XEMU_CONF_OPTS += --disable-vhost-net
 XEMU_CONF_OPTS += --disable-vhost-crypto
-XEMU_CONF_OPTS += --disable-vhost-vsock
 XEMU_CONF_OPTS += --disable-vhost-user
 XEMU_CONF_OPTS += --disable-virtfs
 XEMU_CONF_OPTS += --disable-snappy
 XEMU_CONF_OPTS += --disable-bzip2
 XEMU_CONF_OPTS += --disable-vde
-XEMU_CONF_OPTS += --disable-libxml2
 XEMU_CONF_OPTS += --disable-seccomp
 XEMU_CONF_OPTS += --disable-numa
 XEMU_CONF_OPTS += --disable-lzo
