@@ -174,9 +174,15 @@ class FlycastGenerator(Generator):
         # VMU will be in $XDG_DATA_HOME / $FLYCAST_DATADIR because it needs rw access -> /userdata/saves/dreamcast
         # $FLYCAST_BIOS_PATH is where Flaycast should find the bios files
         # controller cfg files are set with an absolute path, so no worry
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
-            "XDG_CONFIG_DIRS":batoceraFiles.CONF,
-            "XDG_DATA_HOME":batoceraFiles.flycastSaves,
-            "FLYCAST_DATADIR":batoceraFiles.flycastSaves,
-            "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
-            })
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                "XDG_CONFIG_DIRS":batoceraFiles.CONF,
+                "XDG_DATA_HOME":batoceraFiles.flycastSaves,
+                "FLYCAST_DATADIR":batoceraFiles.flycastSaves,
+                "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )
