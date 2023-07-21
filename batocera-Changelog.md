@@ -15,6 +15,7 @@
 - vitaquake2 libretro core enabled for AArch64
 - ioquake3 to ports, An updated Quake III engine
 - play! emulator for PS2 but also Namco 246 & 256 systems
+- TheXTech game engine for Super Mario-like SMBX platform games
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
