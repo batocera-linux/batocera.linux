@@ -11,7 +11,7 @@ BATOCERA_CONFIGGEN_DEPENDENCIES = python3 python-pyyaml
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 define BATOCERA_CONFIGGEN_EXTRACT_CMDS
-	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configgen/* $(@D)
+	cp -avf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configgen/* $(@D)
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
