@@ -43,7 +43,7 @@ case "${ACTION}" in
 	# remove hooks
 	for EVT in ${EVENTS}
 	do
-	    unlink /var/run/emulationstation/${EVT}/scripts/pixelcade.sh
+	    unlink /var/run/emulationstation/scripts/${EVT}/pixelcade.sh
 	done
 	;;
     "update-artwork")
