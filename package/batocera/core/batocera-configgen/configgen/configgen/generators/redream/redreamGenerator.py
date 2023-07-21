@@ -55,6 +55,7 @@ class RedreamGenerator(Generator):
             "r2":            3
         }
         nplayer = 1
+        written_guids = set()
         for index in playersControllers:
             controller = playersControllers[index]
             if nplayer <= 4:
@@ -102,7 +103,10 @@ class RedreamGenerator(Generator):
                     fullprofile = ctrlprofile + "b:joy1,a:joy0,dpad_down:hat1,ljoy_left:-axis0,ljoy_right:+axis0,ljoy_up:-axis1,ljoy_down:+axis1,ltrig:joy6,dpad_left:hat2,rtrig:joy7,dpad_right:hat3,turbo:joy8,start:joy9,dpad_up:hat0,y:joy2,x:joy3,"
                 # add key to exit for evmapy to the end
                 fullprofile = fullprofile + "exit:f10"
-                f.write((fullprofile)+ "\n")
+                # check if we have already writtent the profile, if so, we don't save it
+                if controller.guid not in written_guids:
+                    written_guids.add(controller.guid)
+                    f.write((fullprofile)+ "\n")
                 nplayer = nplayer + 1
         
         # change settings as per users options
