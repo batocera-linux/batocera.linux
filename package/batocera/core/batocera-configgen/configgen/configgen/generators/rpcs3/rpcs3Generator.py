@@ -106,7 +106,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = system.config["rpcs3_sputhreads"]
         else:
             rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = 0
-
+        # SPU Loop Detection
+        if system.isOptSet("rpcs3_spuloopdetection"):
+            rpcs3ymlconfig["Core"]["SPU loop detection"] = system.config["rpcs3_spuloopdetection"]
+        else:
+            rpcs3ymlconfig["Core"]["SPU loop detection"] = False       
         # -= [Video] =-
         # gfx backend - default to Vulkan
         if system.isOptSet("rpcs3_gfxbackend"):

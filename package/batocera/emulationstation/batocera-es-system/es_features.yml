@@ -7892,6 +7892,13 @@ rpcs3:
                 "4 threads": 4
                 "5 threads": 5
                 "6 threads": 6
+        rpcs3_spuloopdetection:
+            submenu: CPU
+            prompt: SPU LOOP DETECTION
+            description: May provide performance gain on CPUs with low core/thread count at the expense of possible broken timings.
+            choices:
+                "Off (Default)": False
+                "On": True
         rpcs3_ratio:
             submenu: VIDEO
             prompt: ASPECT RATIO
