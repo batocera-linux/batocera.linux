@@ -38,6 +38,8 @@ def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
         iniConfig.add_section("audio")
     if not iniConfig.has_section("display.quality"):
         iniConfig.add_section("display.quality")
+    if not iniConfig.has_section("display.window"):
+        iniConfig.add_section("display.window")
     if not iniConfig.has_section("display.ui"):
         iniConfig.add_section("display.ui")
     if not iniConfig.has_section("input.bindings"):
