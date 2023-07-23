@@ -162,4 +162,11 @@ class RedreamGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0'
-            })
+            }
+        )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        if config['redreamRatio'] == "16:9" or config['redreamRatio'] == "stretch":
+            return 16/9
+        else:
+            return 4/3
