@@ -110,7 +110,26 @@ class Rpcs3Generator(Generator):
         if system.isOptSet("rpcs3_spuloopdetection"):
             rpcs3ymlconfig["Core"]["SPU loop detection"] = system.config["rpcs3_spuloopdetection"]
         else:
-            rpcs3ymlconfig["Core"]["SPU loop detection"] = False       
+            rpcs3ymlconfig["Core"]["SPU loop detection"] = False
+        # SPU Block Size
+        if system.isOptSet("rpcs3_spublocksize"):
+            rpcs3ymlconfig["Core"]["SPU Block Size"] = system.config["rpcs3_spublocksize"]
+        else:
+            rpcs3ymlconfig["Core"]["SPU Block Size"] = "Safe"
+        # Max Power Saving CPU-Preemptions
+        # values are maximum yields per frame threshold
+        if system.isOptSet("rpcs3_maxcpu_preemptcount"):
+            if system.config["rpcs3_maxcpu_preemptcount"] == "Off (Default)":
+                rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 0
+            elif system.config["rpcs3_maxcpu_preemptcount"] == "Minimum":
+                rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 10
+            elif system.config["rpcs3_maxcpu_preemptcount"] == "Moderate":
+                rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 25
+            elif system.config["rpcs3_maxcpu_preemptcount"] == "Maximum":
+                rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 50
+        else:
+            rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 0
+            
         # -= [Video] =-
         # gfx backend - default to Vulkan
         if system.isOptSet("rpcs3_gfxbackend"):

@@ -7897,6 +7897,23 @@ rpcs3:
             choices:
                 "Off (Default)": False
                 "On": True
+        rpcs3_spublocksize:
+            submenu: CPU
+            prompt: SPU BLOCK SIZE
+            description: Mega and Giga modes may improve performance. Use the Safe mode for maximum compatibility.
+            choices:
+                "Safe (Default)": "Safe"
+                "Mega": "Mega"
+                "Giga": "Giga"
+        rpcs3_maxcpu_preemptcount:
+            submenu: CPU
+            prompt: MAX POWER SAVING CPU-PREEMPTIONS
+            description: Reduces CPU usage and power consumption. The lighter the game is on the hardware, the more power is saved by it.
+            choices:
+                "Off (Default)": "0"
+                "Minimum": "10"
+                "Moderate": "25"
+                "Maximum": "50"
         rpcs3_ratio:
             submenu: VIDEO
             prompt: ASPECT RATIO
