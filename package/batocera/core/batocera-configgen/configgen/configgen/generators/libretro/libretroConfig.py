@@ -380,31 +380,26 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
-    ## PS1 Swanstation and Duckstation
-    if (system.config['core'] == 'swanstation'):               # Swanstation
-        # Controller 1 Type
-        if system.isOptSet('swanstation_Controller1'):
-            coreSettings.save('swanstation_Controller1.Type', system.config['swanstation_Controller1'])
-        else:
-            coreSettings.save('swanstation_Controller1.Type', '"DigitalController"')
-        # Controller 2 Type
-        if system.isOptSet('swanstation_Controller2'):
-            coreSettings.save('swanstation_Controller2.Type', system.config['swanstation_Controller2'])
-        else:
-            coreSettings.save('swanstation_Controller2.Type', '"DigitalController"')
-    if (system.config['core'] == 'duckstation'):               # Duckstation
+    ## PS1 Swanstation
+    if (system.config['core'] == 'swanstation'):
         if system.isOptSet('swanstation_Controller1'):
             retroarchConfig['input_libretro_device_p1'] = system.config['swanstation_Controller1']
-            if system.config['swanstation_Controller1'] != '1':
+            if system.config['swanstation_Controller1'] != '261' and system.config['swanstation_Controller1'] != '517':
                 retroarchConfig['input_player1_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
         if system.isOptSet('swanstation_Controller2'):
             retroarchConfig['input_libretro_device_p2'] = system.config['swanstation_Controller2']
-            if system.config['swanstation_Controller2'] != '1':
+            if system.config['swanstation_Controller2'] != '261' and system.config['swanstation_Controller2'] != '517':
                 retroarchConfig['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchConfig['input_player2_analog_dpad_mode'] = '0'
 
     ## Wonder Swan & Wonder Swan Color
     if (system.config['core'] == "mednafen_wswan"):             # Beetle Wonderswan

@@ -2390,17 +2390,28 @@ msgstr ""
 "듀얼쇼크는 럼블 지원을 제공합니다. 모든 게임이 듀얼쇼크를 지원하는 것은 아닙"
 "니다."
 
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
-#, fuzzy
+#. TRANSLATION: libretro/swanstation, libretro/swanstation
 msgctxt "game_options"
-msgid "Digital Controller"
-msgstr "디지털 컨트롤러"
+msgid "Digital Controller (Gamepad)"
+msgstr ""
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation
 #, fuzzy
 msgctxt "game_options"
 msgid "Analog Controller (DualShock)"
 msgstr "아날로그 컨트롤러 (듀얼쇼크)"
+
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/puae, libretro/puae, libretro/puae, ...
+#, fuzzy
+msgctxt "game_options"
+msgid "Analog Joystick"
+msgstr "아날로그 조이스틱"
+
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
+#, fuzzy
+msgctxt "game_options"
+msgid "NeGcon"
+msgstr "네그콘"
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 #, fuzzy
@@ -2414,11 +2425,11 @@ msgctxt "game_options"
 msgid "PlayStation Mouse"
 msgstr "플레이 스테이션 마우스"
 
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
+#. TRANSLATION: libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, libretro/mednafen_psx, libretro/pcsx_rearmed, ...
 #, fuzzy
 msgctxt "game_options"
-msgid "NeGcon"
-msgstr "네그콘"
+msgid "Digital Controller"
+msgstr "디지털 컨트롤러"
 
 #. TRANSLATION: libretro/duckstation, libretro/duckstation
 #, fuzzy
@@ -6426,12 +6437,6 @@ msgstr "CD32 패드"
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 #, fuzzy
 msgctxt "game_options"
-msgid "Analog Joystick"
-msgstr "아날로그 조이스틱"
-
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
-#, fuzzy
-msgctxt "game_options"
 msgid "Joystick"
 msgstr "조이스틱"
 
@@ -10434,7 +10439,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM이 가장 빠르며 문제가있는 경우 통역사 설정을 사용하십시오."
 
-#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CPU"
 msgstr ""
@@ -10570,6 +10575,18 @@ msgstr "5 threads"
 msgctxt "game_options"
 msgid "6 threads"
 msgstr "6 threads"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"May provide performance gain on CPUs with low core/thread count at the "
+"expense of possible broken timings."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SPU LOOP DETECTION"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 #, fuzzy

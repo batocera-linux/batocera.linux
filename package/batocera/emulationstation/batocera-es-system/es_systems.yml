@@ -2154,6 +2154,16 @@ daphne:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:daphne
 
+thextech:
+  name:       TheXTech
+  manufacturer: Wohlstand
+  release: 2020
+  hardware: port
+  extensions: [smbx]
+  emulators:
+    thextech:
+      thextech:  { requireAnyOf: [BR2_PACKAGE_THEXTECH] }
+
 thomson:
   name:       Thomson - MO/TO (Theodore)
   manufacturer: Thomson
