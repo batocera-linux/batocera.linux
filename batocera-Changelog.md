@@ -46,7 +46,7 @@
 - redream to 1.5.0-1079-g5ac7859
 - kodi to 20.2
 ### Dev
-- linux kernel for x86_64 to 6.4.4
+- linux kernel for x86_64 to 6.4.6
 - linux kernel for RPI to 6.1.32
 - linux kernel for most ARM SBCs to 6.1.38
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.3
