@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_RESOURCE_LANGUAGE_ZH_CN_VERSION = 10.0.62
+KODI20_RESOURCE_LANGUAGE_ZH_CN_VERSION = 10.0.63
 KODI20_RESOURCE_LANGUAGE_ZH_CN_SOURCE = resource.language.zh_cn-$(KODI20_RESOURCE_LANGUAGE_ZH_CN_VERSION).zip
 KODI20_RESOURCE_LANGUAGE_ZH_CN_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.zh_cn
 KODI20_RESOURCE_LANGUAGE_ZH_CN_PLUGINNAME=resource.language.zh_cn

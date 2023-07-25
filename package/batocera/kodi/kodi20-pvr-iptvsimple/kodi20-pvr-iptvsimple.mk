@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_PVR_IPTVSIMPLE_VERSION = 20.8.1-Nexus
+KODI20_PVR_IPTVSIMPLE_VERSION = 20.10.1-Nexus
 KODI20_PVR_IPTVSIMPLE_SITE = $(call github,kodi-pvr,pvr.iptvsimple,$(KODI20_PVR_IPTVSIMPLE_VERSION))
 KODI20_PVR_IPTVSIMPLE_LICENSE = GPL-2.0+
 KODI20_PVR_IPTVSIMPLE_LICENSE_FILES = LICENSE.md

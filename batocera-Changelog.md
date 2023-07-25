@@ -44,6 +44,7 @@
 - devilutionX to 1.5.0
 - ScummVM (standalone and libretro core) to July 18th build
 - redream to 1.5.0-1079-g5ac7859
+- kodi to 20.2
 ### Dev
 - linux kernel for x86_64 to 6.4.4
 - linux kernel for RPI to 6.1.32
