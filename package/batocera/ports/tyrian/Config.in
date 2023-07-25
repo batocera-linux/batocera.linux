@@ -1,0 +1,8 @@
+config BR2_PACKAGE_TYRIAN
+	bool "tyrian"
+	depends on BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_SDL2_NET
+	help
+	  OpenTyrian is an open-source port of the DOS game Tyrian.
+
+          https://github.com/opentyrian/opentyrian
