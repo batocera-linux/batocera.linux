@@ -1,0 +1,9 @@
+config BR2_PACKAGE_CORSIXTH
+	bool "corsixth"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+
+	help
+	  CorsixTH - Theme Hospital engine
+
+	  https://github.com/CorsixTH/CorsixTH

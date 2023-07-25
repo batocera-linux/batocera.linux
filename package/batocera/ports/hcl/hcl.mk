@@ -3,8 +3,8 @@
 # HYDRACASTLELABYRINTH
 #
 ################################################################################
-# Version.: Commits on Sept 12, 2021
-HCL_VERSION = e112bdb3185bcb314263543aff87db66795f85ff
+# Version.: Commits on Jun 24, 2022
+HCL_VERSION = a4000681a20cd6639183cf72a722f4c2daf30cc7
 HCL_SITE = $(call github,ptitSeb,hydracastlelabyrinth,$(HCL_VERSION))
 
 HCL_DEPENDENCIES = sdl2 sdl2_mixer
@@ -21,7 +21,7 @@ define HCL_INSTALL_TARGET_CMDS
 	chmod 0754 $(TARGET_DIR)/usr/share/hcl/hcl
 	echo "cd /usr/share/hcl && ./hcl" > $(TARGET_DIR)/usr/share/hcl/hcl.sh
 	chmod 0754 $(TARGET_DIR)/usr/share/hcl/hcl.sh
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/hcl/hcl.bin $(TARGET_DIR)/usr/bin/hcl
+	cp $(@D)/buildroot-build/hcl $(TARGET_DIR)/usr/bin/hcl
 	chmod 0754 $(TARGET_DIR)/usr/bin/hcl
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
