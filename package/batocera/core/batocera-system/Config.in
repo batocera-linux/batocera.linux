@@ -925,6 +925,12 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 							!BR2_PACKAGE_BATOCERA_TARGET_RISCV && \
 							!BR2_PACKAGE_BATOCERA_TARGET_ODIN
 
+    # Hydra Castle Labyrinth
+    select BR2_PACKAGE_HCL                  # ALL
+
+    # C-Dogs SDL
+    select BR2_PACKAGE_CDOGS                # ALL
+
     help
         Ports
 
@@ -1229,12 +1235,6 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 #### Cores Experimental ####
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     bool "add experimental cores"
-
-    # Hydra Castle Labyrinth
-    select BR2_PACKAGE_HCL                  # ALL
-
-    # C-Dogs SDL
-    select BR2_PACKAGE_CDOGS                # ALL
 
     # CorsixTH (Theme Hospital engine)
     select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64
