@@ -1043,16 +1043,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_KRONOS              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_BCM2711     || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_ODIN        || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S912        || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_A3GEN2      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588
+                                                        BR2_PACKAGE_BATOCERA_GLES3
 
     # Gamecube / Wii
     select BR2_PACKAGE_DOLPHIN_EMU                  if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
