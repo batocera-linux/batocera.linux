@@ -71,11 +71,11 @@ index b3e9677e..f9d9ed95 100644
 --- a/3rdparty/bx/src/mutex.cpp
 +++ b/3rdparty/bx/src/mutex.cpp
 @@ -18,7 +18,8 @@
- 	|| BX_PLATFORM_IOS     \
  	|| BX_PLATFORM_OSX     \
  	|| BX_PLATFORM_PS4     \
--	|| BX_PLATFORM_RPI
-+	|| BX_PLATFORM_RPI	   \
+ 	|| BX_PLATFORM_RPI	   \
+-	|| BX_PLATFORM_NX
++	|| BX_PLATFORM_NX      \
 +	|| BX_PLATFORM_LINUX_NO_GL
  #	include <pthread.h>
  #elif  BX_PLATFORM_WINDOWS \
@@ -139,19 +139,19 @@ index 17ace092..75a51090 100644
 --- a/3rdparty/bx/src/thread.cpp
 +++ b/3rdparty/bx/src/thread.cpp
 @@ -22,12 +22,14 @@
- 	|| BX_PLATFORM_IOS     \
  	|| BX_PLATFORM_OSX     \
  	|| BX_PLATFORM_PS4     \
--	|| BX_PLATFORM_RPI
-+	|| BX_PLATFORM_RPI	   \
+ 	|| BX_PLATFORM_RPI     \
+-	|| BX_PLATFORM_NX
++	|| BX_PLATFORM_NX      \
 +	| BX_PLATFORM_LINUX_NO_GL
  #	include <pthread.h>
- #	if defined(__FreeBSD__)
+ #	if BX_PLATFORM_BSD
  #		include <pthread_np.h>
- #	endif
+ #	endif // BX_PLATFORM_BSD
 -#	if BX_PLATFORM_LINUX && (BX_CRT_GLIBC < 21200)
 +#	if BX_PLATFORM_LINUX \
-+	|| BX_PLATFORM_LINUX_NO_GL && (BX_CRT_GLIBC < 21200)
++        || BX_PLATFORM_LINUX_NO_GL && (BX_CRT_GLIBC < 21200)
  #		include <sys/prctl.h>
  #	endif // BX_PLATFORM_
  #elif  BX_PLATFORM_WINDOWS \
