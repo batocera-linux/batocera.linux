@@ -2,6 +2,7 @@ config BR2_PACKAGE_CORSIXTH
 	bool "corsixth"
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_LUAJIT
 
 	help
 	  CorsixTH - Theme Hospital engine
