@@ -336,7 +336,6 @@ menu "Emulators"
   endmenu
 
   menu "WINE"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/faudio/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/dxvk/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/dxvk-nvapi/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/mf/Config.in"
@@ -511,6 +510,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/qt6/qt6declarative/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/qt6/qt6shadertools/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libjpeg-bato/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/faudio/Config.in"
 endmenu
 
 endmenu
