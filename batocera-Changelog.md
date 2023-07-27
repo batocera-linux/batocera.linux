@@ -63,6 +63,7 @@
 - vulkan stack to 1.3.257
 - SDL2 to 2.28.1
 - nvidia production driver to 535.86.05
+- faudio to 23.07
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
