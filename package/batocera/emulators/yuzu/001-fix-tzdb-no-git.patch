@@ -1,0 +1,20 @@
+diff --git a/externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt b/externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt.new
+index 119002b20b..92660b2994 100644
+--- a/externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt
++++ b/externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt.new
+@@ -13,14 +13,7 @@ set(NX_ZONEINFO_DIR "${NX_TZDB_DIR}/zoneinfo")
+ 
+ set(TZDB_VERSION_FILE ${TZ_SOURCE_DIR}/NEWS)
+ 
+-execute_process(
+-    COMMAND 
+-        ${GIT_PROGRAM} log --pretty=%at -n1 NEWS
+-    OUTPUT_VARIABLE
+-        TZ_COMMIT_TIME
+-    WORKING_DIRECTORY
+-        ${TZ_SOURCE_DIR}
+-    COMMAND_ERROR_IS_FATAL ANY)
++set(TZ_COMMIT_TIME "1660610838")
+ 
+ string(REPLACE "\n" "" TZ_COMMIT_TIME "${TZ_COMMIT_TIME}")
+ 
