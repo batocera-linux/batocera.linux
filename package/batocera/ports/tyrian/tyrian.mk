@@ -3,8 +3,8 @@
 # TYRIAN
 #
 ################################################################################
-# Version: Commits from March 18, 2022
-TYRIAN_VERSION = v2.1.20220318
+# Version: Commits from Nov 23, 2022
+TYRIAN_VERSION = v2.1.20221123
 TYRIAN_SITE = $(call github,opentyrian,opentyrian,$(TYRIAN_VERSION))
 
 TYRIAN_DEPENDENCIES = sdl2 sdl2_net
@@ -22,9 +22,7 @@ define TYRIAN_BUILD_CMDS
 endef
 
 define TYRIAN_INSTALL_TARGET_CMDS
-	#$(INSTALL) -D -m 0644 $(@D)/libTYRIAN.so $(TARGET_DIR)/usr/lib/libTYRIAN.so
-	#$(INSTALL) -D -m 0755 $(@D)/TYRIAN $(TARGET_DIR)/usr/bin/TYRIAN
-	#$(INSTALL) -D -m 0755 $(@D)/grid $(TARGET_DIR)/usr/bin/grid
+	$(INSTALL) -D -m 0755 $(@D)/opentyrian $(TARGET_DIR)/usr/bin/
 endef
 
 $(eval $(generic-package))
