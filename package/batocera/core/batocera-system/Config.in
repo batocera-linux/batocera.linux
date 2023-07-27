@@ -905,7 +905,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Super Mario War
     select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
-    select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     select BR2_PACKAGE_GZDOOM                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     select BR2_PACKAGE_RAZE                     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     # ZMusic: standalone library used by gzdoom and raze source ports
