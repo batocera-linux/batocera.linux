@@ -27,7 +27,7 @@
 - Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
 ### Updated
 - xenia to v1.0.2805
-- xenia canary to ff09bb4 (Commits on Jun 28, 2023)
+- xenia canary to ba936e8 (Commits on Jul 22, 2023)
 - citra to nightly-1936
 - groovy mame to 0.256
 - libretro-mame to 0.256
