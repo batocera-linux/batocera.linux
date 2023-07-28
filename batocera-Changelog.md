@@ -31,7 +31,7 @@
 - citra to nightly-1936
 - groovy mame to 0.256
 - libretro-mame to 0.256
-- cemu to v2.0-44
+- cemu to v2.0-45
 - amiberry to 5.6.1
 - dosbox-x to v2023.05.01
 - tsugaru to v20230722
