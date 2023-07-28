@@ -3,8 +3,8 @@
 # yuzu
 #
 ################################################################################
-# Version: Commits on Apr 22, 2023
-YUZU_VERSION = d60018358366304db271c76d64ee753f7dde14b4
+# Version: Commits on Jul 27, 2023
+YUZU_VERSION = a1c355051e030d48b24044023c3fb35d2640386b
 YUZU_SITE = https://github.com/yuzu-emu/yuzu.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
@@ -23,9 +23,11 @@ YUZU_CONF_OPTS += -DENABLE_SDL2=ON
 YUZU_CONF_OPTS += -DYUZU_USE_EXTERNAL_SDL2=OFF
 YUZU_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 YUZU_CONF_OPTS += -DYUZU_TESTS=OFF
+YUZU_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
+YUZU_CONF_OPTS += -DYUZU_USE_QT_MULTIMEDIA=OFF
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    YUZU_DEPENDENCIES += host-glslang
+    YUZU_DEPENDENCIES += host-glslang vulkan-headers vulkan-loader
 endif
 
 define YUZU_INSTALL_TARGET_CMDS
