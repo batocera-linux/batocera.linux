@@ -188,6 +188,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
     select BR2_PACKAGE_UMTOOL                               # command line tool for configuring Ultimarc arcade hardware
     select BR2_PACKAGE_PYTHON_HIDAPI                        # Communication with USB HID devices via Python
+    select BR2_PACKAGE_LEDSPICER                            # LED Manager for Linux
 
     # Python and SSL
     select BR2_PACKAGE_HOST_PYTHON3
