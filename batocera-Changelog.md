@@ -50,7 +50,7 @@
 - OpenMSX to v19
 - btop to 1.2.13
 ### Dev
-- linux kernel for x86_64 to 6.4.6
+- linux kernel for x86_64 to 6.4.7
 - linux kernel for RPI to 6.1.32
 - linux kernel for most ARM SBCs to 6.1.41
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.6
