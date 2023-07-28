@@ -64,6 +64,8 @@
 - SDL2 to 2.28.1
 - nvidia production driver to 535.86.05
 - faudio to 23.07
+- llvm to 16.0.6
+- Buildroot to 2023.05.x
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
