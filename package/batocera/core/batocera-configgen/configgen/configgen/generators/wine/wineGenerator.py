@@ -14,9 +14,13 @@ class WineGenerator(Generator):
             return Command.Command(array=commandArray)
         elif system.name == "windows":
             commandArray = ["batocera-wine", "windows", "play", rom]
-            return Command.Command(array=commandArray,env={
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-            })
+            return Command.Command(
+                array=commandArray,
+                env={
+                    "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                    "SDL_JOYSTICK_HIDAPI": "0"
+                }
+            )
 
         raise Exception("invalid system " + system.name)
 
