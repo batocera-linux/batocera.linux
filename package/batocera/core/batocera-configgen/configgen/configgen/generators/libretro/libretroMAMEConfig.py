@@ -21,10 +21,10 @@ retroPad = {
     "joystick1down":    "YAXIS_DOWN_SWITCH",
     "joystick1left":    "XAXIS_LEFT_SWITCH",
     "joystick1right":   "XAXIS_RIGHT_SWITCH",
-    "up":               "HAT1UP",
-    "down":             "HAT1DOWN",
-    "left":             "HAT1LEFT",
-    "right":            "HAT1RIGHT",
+    "up":               "HAT{0}UP",
+    "down":             "HAT{0}DOWN",
+    "left":             "HAT{0}LEFT",
+    "right":            "HAT{0}RIGHT",
     "joystick2up":      "RYAXIS_NEG_SWITCH",
     "joystick2down":    "RYAXIS_POS_SWITCH",
     "joystick2left":    "RXAXIS_NEG_SWITCH",
@@ -796,41 +796,42 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
 
 def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
     if input.find("BUTTON") != -1 or input.find("HAT") != -1 or input == "START" or input == "SELECT":
+        input = input.format(joycode) if "{0}" in input else input
         return f"JOYCODE_{joycode}_{input}"
     elif input.find("AXIS") != -1:
         if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1up']}_{joycode}_{retroPad['joystick1right']} OR \
-                    JOYCODE_{joycode}_{retroPad['up']} JOYCODE_{joycode}_{retroPad['right']}"
+                    JOYCODE_{joycode}_{retroPad['up'].format(joycode)} JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1down']} JOYCODE_{joycode}_{retroPad['joystick1left']} OR \
-                    JOYCODE_{joycode}_{retroPad['down']} JOYCODE_{joycode}_{retroPad['left']}"
+                    JOYCODE_{joycode}_{retroPad['down'].format(joycode)} JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1left']} JOYCODE_{joycode}_{retroPad['joystick1up']} OR \
-                    JOYCODE_{joycode}_{retroPad['left']} JOYCODE_{joycode}_{retroPad['up']}"
+                    JOYCODE_{joycode}_{retroPad['left'].format(joycode)} JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1right']} JOYCODE_{joycode}_{retroPad['joystick1down']} OR \
-                    JOYCODE_{joycode}_{retroPad['right']} JOYCODE_{joycode}_{retroPad['down']}"
+                    JOYCODE_{joycode}_{retroPad['right'].format(joycode)} JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             else:
                 return f"JOYCODE_{joycode}_{input}"
         elif ignoreAxis:
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_{retroPad['up']}"
+                return f"JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_{retroPad['down']}"
+                return f"JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_{retroPad['left']}"
+                return f"JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_{retroPad['right']}"
+                return f"JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
         else:
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['down']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['left']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['right']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
             elif(key == "joystick2up"):
                 return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['x']}"
             elif(key == "joystick2down"):
