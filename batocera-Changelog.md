@@ -25,6 +25,7 @@
 - Default crop overscan setting for NES is now vertical only
 - n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
 - Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
+- To enable Analog mode in Duckstation it's now hotkey + left trigger (l2)
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ba936e8 (Commits on Jul 22, 2023)
