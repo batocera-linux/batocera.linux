@@ -15,13 +15,14 @@ mupenHatToAxis        = {'1': 'Up',   '2': 'Right', '4': 'Down', '8': 'Left'}
 mupenHatToReverseAxis = {'1': 'Down', '2': 'Left',  '4': 'Up',   '8': 'Right'}
 mupenDoubleAxis = {0:'X Axis', 1:'Y Axis'}
 
-def getMupenMapping():
+def getMupenMapping(use_n64_inputs):
     # load system values and override by user values in case some user values are missing
     map = dict()
     for file in [batoceraFiles.mupenMappingSystem, batoceraFiles.mupenMappingUser]:
         if os.path.exists(file):
             dom = minidom.parse(file)
-            for inputs in dom.getElementsByTagName('inputList'):
+            list_name = 'n64InputList' if use_n64_inputs else 'defaultInputList'
+            for inputs in dom.getElementsByTagName(list_name):
                 for input in inputs.childNodes:
                     if input.attributes:
                         if input.attributes['name']:
@@ -29,11 +30,11 @@ def getMupenMapping():
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig, controllers, systemconfig):
+def setControllersConfig(iniConfig, controllers, system):
     nplayer = 1
     for playercontroller, pad in sorted(controllers.items()):
         # Dynamic controller bindings
-        config = defineControllerKeys(pad, systemconfig)
+        config = defineControllerKeys(nplayer, pad, system)
         fillIniPlayer(nplayer, iniConfig, pad, config)
         nplayer += 1
 
@@ -42,22 +43,30 @@ def setControllersConfig(iniConfig, controllers, systemconfig):
         section = "Input-SDL-Control"+str(x)
         if iniConfig.has_section(section):
             cleanPlayer(nplayer, iniConfig)
-                
-def defineControllerKeys(controller, systemconfig):
-        mupenmapping = getMupenMapping()
+         
+def getPeakandDeadzoneValues(start_value, config_value, system, default_multiplier):
+    number = int(start_value.split(',')[0])
+    if config_value in system.config:
+        percentage = float(system.config[config_value]) / 100
+        result = int(round(number * percentage))
+    else:
+        result = int(round(number * default_multiplier))
+    return f"{result},{result}"
+         
+def defineControllerKeys(nplayer, controller, system):
+        if f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad":
+            mupenmapping = getMupenMapping(True)
+        else:    
+            mupenmapping = getMupenMapping(False)
 
         # config holds the final pad configuration in the mupen style
         # ex: config['DPad U'] = "button(1)"
         config = dict()
 
-        # deadzone and peak from config files
-        config['AnalogDeadzone'] = mupenmapping['AnalogDeadzone']
-        config['AnalogPeak']     = mupenmapping['AnalogPeak']
-        if 'analogdeadzone' in systemconfig:
-            config['AnalogDeadzone'] = systemconfig['analogdeadzone']
-        if 'analogpeak' in systemconfig:
-            config['AnalogPeak']     = systemconfig['analogpeak']
-
+        # determine joystick deadzone and peak       
+        config['AnalogPeak'] = getPeakandDeadzoneValues(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system, 1)
+        config['AnalogDeadzone'] = getPeakandDeadzoneValues(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system, 0.05)
+        
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
         if 'l2' not in controller.inputs:
