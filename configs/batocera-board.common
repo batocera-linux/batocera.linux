@@ -12,6 +12,9 @@ BR2_TOOLCHAIN_BUILDROOT_CXX=y
 # required for utf-8
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
 
+# Allow to build GOLD linker, but do not use as default
+BR2_BINUTILS_EXTRA_CONFIG_OPTIONS="--enable-gold --enable-plugins"
+
 # prefer linux tools over busybox tools
 BR2_PACKAGE_BUSYBOX=n
 BR2_PACKAGE_BC=y
