@@ -10800,4 +10800,17 @@ ioquake3:
 thextech:
   features: [padtokeyboard]
   shared: [videomode, hud, hud_corner]
-
+  cfeatures:
+    frameskip:
+      prompt:      FRAMESKIP
+      description: Skip frames to improve performance, at the cost of choppy motion.
+      choices:
+        "On (default)": 1
+        "Off":          0
+    rendering_mode:
+      prompt:      RENDERING MODE
+      description: Better performance with hardware rendering.
+      choices:
+        "Hardware (default)": "hw"
+        "Software":           "sw"
+        "Vsync":              "vsync"
