@@ -1365,12 +1365,12 @@ msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "Comando do GameCube"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64, libretro/snes9x
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
 msgctxt "game_options"
 msgid "CONTROLLER 3 TYPE"
 msgstr "TIPO DE COMANDO 3"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/dolphin, libretro/flycast
 msgctxt "game_options"
 msgid "CONTROLLER 4 TYPE"
 msgstr "TIPO DE COMANDO 4"
@@ -4421,47 +4421,22 @@ msgctxt "game_options"
 msgid "Pure Interpreter (Most Accurate)"
 msgstr "Interpreter puro (Mais Preciso)"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Emulate a pak in the controller expansion port."
-msgstr "Emula um cartão de memória PAK na porta de expansão do comando."
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 1"
-msgstr "COMANDO PAK 1"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Memory Pak"
-msgstr "Memória Pak (cartão de memória)"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Rumble Pak"
-msgstr "Rumble Pak (Vibração)"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 2"
-msgstr "COMANDO PAK 2"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 3"
-msgstr "COMANDO PAK 3"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 4"
-msgstr "COMANDO PAK 4"
-
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
 msgctxt "game_options"
 msgid ""
 "Useful for N64 style controllers. Limited hotkeys for controllers without "
 "dedicated hotkey."
 msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 1"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "CONTROLLER TYPE"
+msgstr "PORTA DO COMANDO"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4482,6 +4457,46 @@ msgstr ""
 msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 2"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 3"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 4"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Emulate a pak in the controller expansion port."
+msgstr "Emula um cartão de memória PAK na porta de expansão do comando."
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CONTOLLER 1"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "CONTROLLER PAK"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Memory Pak"
+msgstr "Memória Pak (cartão de memória)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak"
+msgstr "Rumble Pak (Vibração)"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -5007,6 +5022,11 @@ msgstr "AUTOMÁTICO"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-pontos"
+
+#. TRANSLATION: libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTOLLER 2"
+msgstr ""
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -6329,11 +6349,6 @@ msgstr "PORTA DO COMANDO"
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
-msgid "CONTROLLER TYPE"
-msgstr "PORTA DO COMANDO"
-
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
 msgid "Paddles"
 msgstr "Botão giratório (Paddles)"
 
@@ -7566,7 +7581,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "OTIMIZAR A PASSAGEM DOS FRAMES"
 
-#. TRANSLATION: duckstation, melonds, pcsx2
+#. TRANSLATION: duckstation, melonds, pcsx2, thextech
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
@@ -8614,26 +8629,6 @@ msgctxt "game_options"
 msgid "Enable"
 msgstr "Ativar"
 
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "CONTROLLER 1"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "CONTROLLER 2"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "CONTROLLER 3"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "CONTROLLER 4"
-msgstr ""
-
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "Set the sensitivity of the joystick analog sticks."
@@ -9117,7 +9112,7 @@ msgstr ""
 "Pular memória temporária desativa o salto de frames automático e renderiza "
 "na resolução de saída de exibição."
 
-#. TRANSLATION: ppsspp
+#. TRANSLATION: ppsspp, thextech
 msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MODO DE RENDERIZAÇÃO"
@@ -11545,6 +11540,26 @@ msgctxt "game_options"
 msgid "256MB (Default)"
 msgstr ""
 
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "On (default)"
+msgstr ""
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Better performance with hardware rendering."
+msgstr ""
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Hardware (default)"
+msgstr ""
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Vsync"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -11959,3 +11974,19 @@ msgstr "Menu Rápido"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Avanço Rápido"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 1"
+#~ msgstr "COMANDO PAK 1"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 2"
+#~ msgstr "COMANDO PAK 2"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 3"
+#~ msgstr "COMANDO PAK 3"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 4"
+#~ msgstr "COMANDO PAK 4"
