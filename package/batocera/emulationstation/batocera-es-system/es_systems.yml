@@ -4741,3 +4741,13 @@ namco2x6:
                     ---tef1dvd0.chd
     
     For more info: https://wiki.batocera.org/systems:namco2x6
+
+vis:
+  name: Tandy Video Information System
+  manufacturer: Tandy / Memorex
+  release: 1992
+  hardware: computer
+  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
