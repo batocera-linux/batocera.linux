@@ -56,7 +56,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         corePath = system.config['core']
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.getOptBoolean("customcfg"):
@@ -65,7 +65,10 @@ def generateMAMEConfigs(playersControllers, system, rom):
             cfgPath = "/userdata/saves/mame/mame/cfg/"
         if not os.path.exists(cfgPath):
             os.makedirs(cfgPath)
-        commandLine += [ romDrivername ]
+        if system.name == 'vis':
+            commandLine += [ 'vis', '-cdrom', f'"{rom}"' ]
+        else:
+            commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', cfgPath ]
         commandLine += [ '-rompath', romDirname ]
         pluginsToLoad = []
