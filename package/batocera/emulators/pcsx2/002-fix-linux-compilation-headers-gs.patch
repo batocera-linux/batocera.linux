@@ -2,15 +2,15 @@ diff --git a/pcsx2/CDVD/CDVD.cpp b/pcsx2/CDVD/CDVD.cpp
 index 757d7ae..79c4937 100644
 --- a/pcsx2/CDVD/CDVD.cpp
 +++ b/pcsx2/CDVD/CDVD.cpp
-@@ -25,7 +25,7 @@
- #include "CDVD_internal.h"
- #include "CDVDisoReader.h"
- 
--#include "GS.h" // for gsVideoMode
+@@ -20,7 +20,7 @@
+ #include "CDVD/CDVD_internal.h"
+ #include "CDVD/IsoReader.h"
+ #include "CDVD/IsoFileFormats.h"
+-#include "GS.h"
 +#include "../GS.h" // for gsVideoMode
  #include "Elfheader.h"
  #include "ps2/BiosTools.h"
- 
+ #include "Recording/InputRecording.h"
 diff --git a/pcsx2/DebugTools/DebugInterface.cpp b/pcsx2/DebugTools/DebugInterface.cpp
 index d29c2b0..2a89378 100644
 --- a/pcsx2/DebugTools/DebugInterface.cpp
