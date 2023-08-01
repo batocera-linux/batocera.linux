@@ -52,6 +52,7 @@
 - OpenMSX to v19
 - btop to 1.2.13
 - slang and glsl shaders to July 29th 2023
+- pcsx2 to v1.7.4857 (Aug, 1st 2023)
 ### Dev
 - linux kernel for x86_64 to 6.4.7
 - linux kernel for RPI to 6.1.32
