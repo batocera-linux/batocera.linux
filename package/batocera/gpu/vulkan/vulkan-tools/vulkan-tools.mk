@@ -30,7 +30,6 @@ define VULKAN_TOOLS_SERVICE
 	    $(TARGET_DIR)/etc/init.d/S55vulkaninfo
 endef
 
-# remove (at least temporary) while it prevents es to open windows with some nvidia cards
-#VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
+VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
 
 $(eval $(cmake-package))
