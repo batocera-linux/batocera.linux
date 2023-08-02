@@ -295,6 +295,10 @@ def getGenerator(emulator):
         from generators.thextech.thextechGenerator import TheXTechGenerator
         return TheXTechGenerator()
 
+    if emulator == 'applewin':
+        from generators.applewin.applewinGenerator import AppleWinGenerator
+        return AppleWinGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()
