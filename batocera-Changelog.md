@@ -3,7 +3,9 @@
 - Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 
 ### Added
-- Added ES settings for N64 controllers in N64 libretro cores.
+- Additional ES settings for rpcs3
+- ES settings for joystick deadzone/sensitivity for mupen64plus
+- ES settings for N64 controllers for N64 emulators.
 - battery remaining time in batocera-info (f2)
 - libretro core boom3, A Doom 3 port
 - libretro core reminiscence, A Flashback port
