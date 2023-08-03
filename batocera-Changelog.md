@@ -19,6 +19,7 @@
 - play! emulator for PS2 but also Namco 246 & 256 systems
 - TheXTech game engine for Super Mario-like SMBX platform games
 - Tandy / Memorex Video Information System (VIS)
+- Visual Pinball X (Standalone) for X86_64, RPi4 & RK3588 boards
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds

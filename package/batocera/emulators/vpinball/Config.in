@@ -1,0 +1,13 @@
+config BR2_PACKAGE_VPINBALL
+    bool "vpinball"
+    select BR2_PACKAGE_LIBFREEIMAGE
+    select BR2_PACKAGE_LIBPINMAME
+    select BR2_PACKAGE_LIBSERUM
+    select BR2_PACKAGE_LIBZEDMD
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_IMAGE
+    select BR2_PACKAGE_SDL2_TTF
+    help
+      Visual Pinball.
+      
+      www.vpforums.org

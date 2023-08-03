@@ -4751,3 +4751,19 @@ vis:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+
+vpinball:
+  name: Visual Pinball X
+  manufacturer: Randy Davis
+  release: 2000
+  hardware: pinball
+  extensions: [vpx]
+  emulators:
+    vpinball:
+      vpinball:  { requireAnyOf: [BR2_PACKAGE_VPINBALL] }
+  comment_en: |
+    Visual Pinabll X - Stanadlone supports the .vpx extension tables.
+    Version 10 community based tables for can be downloaded from https://www.vpforums.org
+  comment_fr: |
+    Visual Pinball X - Stanadlone prend en charge les tables avec l'extension .vpx.
+    Les tables créées par la communauté pour la Version 10 peuvent être téléchargées depuis https://www.vpforums.org.
