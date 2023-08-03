@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-07-06 01:45+0300\n"
+"PO-Revision-Date: 2023-07-26 22:16+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fi_FI\n"
@@ -50,17 +50,17 @@ msgstr "Täysi"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Config"
-msgstr ""
+msgstr "Asetustiedosto"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Square pixel"
-msgstr ""
+msgstr "Neliöpikseli"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Core provided"
-msgstr ""
+msgstr "Ytimen asettama"
 
 #. TRANSLATION: shared, shared, libretro/mesen, libretro/gambatte
 msgctxt "game_options"
@@ -71,6 +71,8 @@ msgstr "Mukautettu"
 msgctxt "game_options"
 msgid "Store past states to rewind to in realtime, if the core supports it."
 msgstr ""
+"Tallenna mennyttä tilaa takaisinkelataksesi reaaliajassa, mikäli ydin sitä "
+"tukee."
 
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
@@ -91,6 +93,8 @@ msgstr "Pois"
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
 msgstr ""
+"Lataa viimeisin tilatallennus pelin käynnistyksen yhteydessä, ja tallenna "
+"tila pelistä poistuttaessa."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -105,7 +109,7 @@ msgstr "PELIN RENDERÖINTI JA VARJOSTIMET"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SHADER SET"
-msgstr ""
+msgstr "VARJOSTIN LAJITELMA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -132,12 +136,12 @@ msgstr ""
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "DECORATIONS"
-msgstr ""
+msgstr "KORISTEET"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "DECORATION SET"
-msgstr ""
+msgstr "KORISTE LAJITELMA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -157,12 +161,12 @@ msgstr ""
 #. TRANSLATION: shared, shared, libretro/mesen-s, libretro/mesen, libretro/mesen, ...
 msgctxt "game_options"
 msgid "None"
-msgstr ""
+msgstr "Ei mitään"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Game info/art"
-msgstr ""
+msgstr "Pelin tiedot/taide"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -249,32 +253,32 @@ msgstr ""
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "AI GAME TRANSLATION"
-msgstr ""
+msgstr "PELIN KÄÄNNÖS TEKOÄLYLLÄ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
-msgstr ""
+msgstr "OTA KÄYTTÖÖN TEKOÄLYN KÄÄNNÖSPALVELU"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "The language to translate into."
-msgstr ""
+msgstr "Kieli, jolle käännetään."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TARGET LANGUAGE"
-msgstr ""
+msgstr "KOHDEKIELI"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "If nothing is specified, will use ZTranslate by default."
-msgstr ""
+msgstr "Jos ei mitään ei ole määritelty, Ztranslatea käytetään oletuksena."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AI TRANSLATION SERVICE URL"
-msgstr ""
+msgstr "TEKOÄLYN KÄÄNNÖSPALVELUN VERKKO-OSOITE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -384,7 +388,7 @@ msgstr "0 (Ei vahvistusta)"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Show/Hide guns borders for specific systems"
-msgstr ""
+msgstr "Näytä/piilota aseiden rajat tietyillä järjestelmillä."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -394,12 +398,12 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "normal"
-msgstr ""
+msgstr "normaali"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "hidden"
-msgstr ""
+msgstr "piilotettu"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -419,17 +423,17 @@ msgstr ""
 #. TRANSLATION: libretro/81, libretro/81, libretro/fceumm, libretro/fceumm, libretro/genesisplusgx, ...
 msgctxt "game_options"
 msgid "Autodetect"
-msgstr ""
+msgstr "Havaitse automaattisesti"
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "On (forced)"
-msgstr ""
+msgstr "Päällä (pakotettu)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Required for some homebrew."
-msgstr ""
+msgstr "Jotkin kotitekoiset pelit vaativat tämän käyttöön."
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
@@ -460,11 +464,13 @@ msgstr ""
 msgctxt "game_options"
 msgid "Speeds up file loading. Some games won't load with this."
 msgstr ""
+"Nopeuta tiedostojen lataamista. Jotkin pelit eivät lataudu, kun tämä on "
+"käytössä."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "SIO ACCELERATION"
-msgstr ""
+msgstr "SIO-KIIHDYTYS"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -480,11 +486,12 @@ msgstr ""
 msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
 msgstr ""
+"Käytä vaihtoehtoista resoluutiota. Jotkin pelit tarvitsevat tämän käyttöön."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
-msgstr ""
+msgstr "SISÄINEN RESOLUUTIO"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -499,22 +506,22 @@ msgstr ""
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "LIGHT GUN CROSSHAIR"
-msgstr ""
+msgstr "VALOASEEN TÄHTÄIN"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "Cross"
-msgstr ""
+msgstr "Risti"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
 msgid "Dot"
-msgstr ""
+msgstr "Piste"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
-msgstr "Ei käytössä"
+msgstr "Pois"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -524,7 +531,7 @@ msgstr ""
 #. TRANSLATION: libretro/beetle-saturn, libretro/dolphin, libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1 TYPE"
-msgstr ""
+msgstr "OHJAIMEN 1 TYYPPI"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -539,7 +546,7 @@ msgstr ""
 #. TRANSLATION: libretro/beetle-saturn, libretro/dolphin, libretro/dosbox, libretro/dosbox_pure, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2 TYPE"
-msgstr ""
+msgstr "OHJAIMEN 2 TYYPPI"
 
 #. TRANSLATION: libretro/bluemsx, libretro/fuse, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, ...
 msgctxt "game_options"
@@ -624,27 +631,27 @@ msgstr ""
 #. TRANSLATION: libretro/cap32, sonic2013, soniccd, play, yuzu, ...
 msgctxt "game_options"
 msgid "Change the game's language."
-msgstr ""
+msgstr "Vaihda pelin kieltä."
 
 #. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, hatari, ...
 msgctxt "game_options"
 msgid "LANGUAGE"
-msgstr ""
+msgstr "KIELI"
 
 #. TRANSLATION: libretro/cap32, libretro/melonds, libretro/yabasanshiro, redream, xenia, ...
 msgctxt "game_options"
 msgid "English (Default)"
-msgstr ""
+msgstr "Englanti (Oletus)"
 
 #. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, ...
 msgctxt "game_options"
 msgid "Spanish"
-msgstr ""
+msgstr "Espanja"
 
 #. TRANSLATION: libretro/cap32, libretro/melonds, libretro/dolphin, libretro/yabasanshiro, cemu, ...
 msgctxt "game_options"
 msgid "French"
-msgstr ""
+msgstr "Ranska"
 
 #. TRANSLATION: libretro/mesen-s, libretro/fceumm, libretro/genesisplusgx, libretro/genesisplusgx, libretro/nestopia
 msgctxt "game_options"
@@ -743,27 +750,27 @@ msgstr ""
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/same_cdi, libretro/mame, ...
 msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
-msgstr ""
+msgstr "YLIKELLOTUS (EPÄVAKAA)"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
 msgid "Low"
-msgstr ""
+msgstr "Alhainen"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus, pcsx2
 msgctxt "game_options"
 msgid "Medium"
-msgstr ""
+msgstr "Keskitaso"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
 msgid "High"
-msgstr ""
+msgstr "Korkea"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, mupen64plus
 msgctxt "game_options"
 msgid "Very High"
-msgstr ""
+msgstr "Hyvin korkea"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
@@ -773,47 +780,50 @@ msgstr ""
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
 msgid "OVERCLOCK TYPE"
-msgstr ""
+msgstr "YLIKELLOTUKSEN TYYPPI"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
 msgid "Before NMI"
-msgstr ""
+msgstr "Ennen NMI"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
 msgid "After NMI"
-msgstr ""
+msgstr "NMI:n jälkeen"
 
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x_next
 msgctxt "game_options"
 msgid "Enhancement. Reduces slowdown in mode 7 games."
-msgstr ""
+msgstr "Parannus. Vähentää hidastelua mode 7 peleissä."
 
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x, libretro/snes9x_next
 msgctxt "game_options"
 msgid "SUPER FX OVERCLOCK"
-msgstr ""
+msgstr "SUPER FX YLIKELLOTUS"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Dendy is a popular Russian clone with unique characteristics."
 msgstr ""
+"Dendy on suosittu venäläinen kopio, jolla on ainutlaatuisia ominaisuuksia."
 
 #. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation, flycast/uzem
 msgctxt "game_options"
 msgid "CONSOLE REGION"
-msgstr ""
+msgstr "KONSOLIN ALUE"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Dendy"
-msgstr ""
+msgstr "Dendy"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Rotate the screen, useful for certain vertical gameplay homebrews."
 msgstr ""
+"Kierrä näyttöä. Hyödyllinen joillekin pystysuuntaisille kotitekoisille "
+"peleille."
 
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
 msgctxt "game_options"
@@ -843,7 +853,7 @@ msgstr ""
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "NTSC FILTER"
-msgstr ""
+msgstr "NTSC-SUODATIN"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -863,17 +873,17 @@ msgstr ""
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprite per line limit."
-msgstr ""
+msgstr "Parannus. Poista kahdeksan spriten rajoitus per näytönviiva."
 
 #. TRANSLATION: libretro/mesen, libretro/potator
 msgctxt "game_options"
 msgid "COLOR PALETTE"
-msgstr ""
+msgstr "VÄRIPALETTI"
 
 #. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, yuzu, yuzu
 msgctxt "game_options"
 msgid "Default"
-msgstr ""
+msgstr "Oletus"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -958,33 +968,35 @@ msgstr ""
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "All 0s (Default)"
-msgstr ""
+msgstr "Pelkkiä nollia (oletus)"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "All 1s"
-msgstr ""
+msgstr "Pelkkiä ykkösiä"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Random Values"
-msgstr ""
+msgstr "Satunnaiset arvot"
 
 #. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
 msgstr ""
+"Parannus. Nostattaa renderöitävää resoluutiota. Saa 3D-kohteet näyttämään "
+"selvemmiltä."
 
 #. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
-msgstr ""
+msgstr "RENDERÖINTI RESOLUUTIO"
 
 #. TRANSLATION: libretro/desmume
 msgctxt "game_options"
 msgid "Enhancement. Upscales textures on 3D objects."
-msgstr ""
+msgstr "Parannus. Kasvattaa 3D-kohteiden tekstuureja."
 
 #. TRANSLATION: libretro/desmume, libretro/flycast
 msgctxt "game_options"
@@ -1014,12 +1026,12 @@ msgstr ""
 #. TRANSLATION: libretro/desmume, libretro/melonds, citra, drastic
 msgctxt "game_options"
 msgid "Arrange the dual screen layout."
-msgstr ""
+msgstr "Määrittele kahden näytön asettelu."
 
 #. TRANSLATION: libretro/desmume, libretro/melonds, citra, melonds, drastic
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
-msgstr ""
+msgstr "NÄYTTÖJEN ASETTELU"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds, citra
 msgctxt "game_options"
@@ -1079,7 +1091,7 @@ msgstr "KUVANOHITUS"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "NDS VERSION"
-msgstr ""
+msgstr "NDS-MALLI"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1330,12 +1342,12 @@ msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64, libretro/snes9x
 msgctxt "game_options"
 msgid "CONTROLLER 3 TYPE"
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER 4 TYPE"
 msgstr ""
@@ -1790,7 +1802,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr ""
 
-#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr ""
@@ -2051,24 +2063,14 @@ msgctxt "game_options"
 msgid "DualShock has rumble support. Not all games support DualShock."
 msgstr ""
 
-#. TRANSLATION: libretro/swanstation, libretro/swanstation
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 msgctxt "game_options"
-msgid "Digital Controller (Gamepad)"
+msgid "Digital Controller"
 msgstr ""
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation
 msgctxt "game_options"
 msgid "Analog Controller (DualShock)"
-msgstr ""
-
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/puae, libretro/puae, libretro/puae, ...
-msgctxt "game_options"
-msgid "Analog Joystick"
-msgstr ""
-
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
-msgctxt "game_options"
-msgid "NeGcon"
 msgstr ""
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
@@ -2081,9 +2083,9 @@ msgctxt "game_options"
 msgid "PlayStation Mouse"
 msgstr ""
 
-#. TRANSLATION: libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, libretro/mednafen_psx, libretro/pcsx_rearmed, ...
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 msgctxt "game_options"
-msgid "Digital Controller"
+msgid "NeGcon"
 msgstr ""
 
 #. TRANSLATION: libretro/duckstation, libretro/duckstation
@@ -4356,21 +4358,46 @@ msgctxt "game_options"
 msgid "Pure Interpreter (Most Accurate)"
 msgstr ""
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
-msgid ""
-"Useful for N64 style controllers. Limited hotkeys for controllers without "
-"dedicated hotkey."
+msgid "Emulate a pak in the controller expansion port."
 msgstr ""
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
-msgid "CONTROLLER 1"
+msgid "CONTROLLER PAK 1"
 msgstr ""
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
-msgid "CONTROLLER TYPE"
+msgid "Memory Pak"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 2"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 3"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 4"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Useful for N64 style controllers. Limited hotkeys for controllers without "
+"dedicated hotkey."
 msgstr ""
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
@@ -4383,7 +4410,7 @@ msgctxt "game_options"
 msgid "N64"
 msgstr ""
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "N64 (Limited Hotkeys)"
 msgstr ""
@@ -4391,46 +4418,6 @@ msgstr ""
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Useful for N64 style controllers."
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 2"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 3"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 4"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Emulate a pak in the controller expansion port."
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "CONTOLLER 1"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "CONTROLLER PAK"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Memory Pak"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Rumble Pak"
 msgstr ""
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
@@ -4956,11 +4943,6 @@ msgstr ""
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "N64 3-point"
-msgstr ""
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTOLLER 2"
 msgstr ""
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
@@ -5523,6 +5505,11 @@ msgstr ""
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "CD32 Pad"
+msgstr ""
+
+#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
+msgctxt "game_options"
+msgid "Analog Joystick"
 msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
@@ -6265,6 +6252,11 @@ msgstr ""
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "CONTROLLER PORT"
+msgstr ""
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
+msgctxt "game_options"
+msgid "CONTROLLER TYPE"
 msgstr ""
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
@@ -7473,7 +7465,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr ""
 
-#. TRANSLATION: duckstation, melonds, pcsx2, thextech
+#. TRANSLATION: duckstation, melonds, pcsx2
 msgctxt "game_options"
 msgid "Software"
 msgstr ""
@@ -8493,31 +8485,6 @@ msgctxt "game_options"
 msgid "Enable"
 msgstr ""
 
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "Set the sensitivity of the joystick analog sticks."
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "SENSITIVITY"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "100% (Default)"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "DEADZONE"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "5% (Default)"
-msgstr ""
-
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -8838,7 +8805,7 @@ msgctxt "game_options"
 msgid "BLENDING ACCURACY"
 msgstr ""
 
-#. TRANSLATION: pcsx2, rpcs3
+#. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Minimum"
 msgstr ""
@@ -8960,7 +8927,7 @@ msgid ""
 "Skip buffer disables auto frameskip and renders at display output resolution."
 msgstr ""
 
-#. TRANSLATION: ppsspp, thextech
+#. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr ""
@@ -9066,7 +9033,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr ""
 
-#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CPU"
 msgstr ""
@@ -9182,67 +9149,6 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "6 threads"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"May provide performance gain on CPUs with low core/thread count at the "
-"expense of possible broken timings."
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "SPU LOOP DETECTION"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Mega and Giga modes may improve performance. Use the Safe mode for maximum "
-"compatibility."
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "SPU BLOCK SIZE"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Safe (Default)"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Mega"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Giga"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Helps reduce CPU power consumption by throttling the CPU when not needed. "
-"Useful for handhelds."
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "MAX POWER SAVING CPU-PREEMPTIONS"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Moderate"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Maximum"
 msgstr ""
 
 #. TRANSLATION: rpcs3
@@ -11307,26 +11213,6 @@ msgctxt "game_options"
 msgid "256MB (Default)"
 msgstr ""
 
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "On (default)"
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Better performance with hardware rendering."
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Hardware (default)"
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Vsync"
-msgstr ""
-
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -11600,11 +11486,6 @@ msgstr ""
 #. TRANSLATION: atomiswave.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, dreamcast.flycast.keys, dreamcast.redream.keys
 msgctxt "keys_files"
 msgid "Hide the bezel"
-msgstr ""
-
-#. TRANSLATION: dos.dosbox-x.keys
-msgctxt "keys_files"
-msgid "Exit Dosbox-X"
 msgstr ""
 
 #. TRANSLATION: wiiu.keys

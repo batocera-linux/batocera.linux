@@ -1365,12 +1365,12 @@ msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "Comando do GameCube"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64, libretro/snes9x
 msgctxt "game_options"
 msgid "CONTROLLER 3 TYPE"
 msgstr "TIPO DE COMANDO 3"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTROLLER 4 TYPE"
 msgstr "TIPO DE COMANDO 4"
@@ -1825,7 +1825,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr "Ligado em conjunto com a mensagem de detecção do jogo"
 
-#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr "Defina a zona morta dos analógicos do joystick."
@@ -2093,7 +2093,7 @@ msgstr ""
 #. TRANSLATION: libretro/swanstation, libretro/swanstation
 msgctxt "game_options"
 msgid "Digital Controller (Gamepad)"
-msgstr ""
+msgstr "Controlador digital (Comando)"
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation
 msgctxt "game_options"
@@ -4421,72 +4421,15 @@ msgctxt "game_options"
 msgid "Pure Interpreter (Most Accurate)"
 msgstr "Interpreter puro (Mais Preciso)"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
-msgctxt "game_options"
-msgid ""
-"Useful for N64 style controllers. Limited hotkeys for controllers without "
-"dedicated hotkey."
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 1"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "CONTROLLER TYPE"
-msgstr "PORTA DO COMANDO"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "RetroPad (Default)"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "N64"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
-msgctxt "game_options"
-msgid "N64 (Limited Hotkeys)"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Useful for N64 style controllers."
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 2"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 3"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
-msgctxt "game_options"
-msgid "CONTROLLER 4"
-msgstr ""
-
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
 msgstr "Emula um cartão de memória PAK na porta de expansão do comando."
 
-#. TRANSLATION: libretro/mupen64plus-next
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
-msgid "CONTOLLER 1"
-msgstr ""
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "CONTROLLER PAK"
-msgstr ""
+msgid "CONTROLLER PAK 1"
+msgstr "COMANDO PAK 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4497,6 +4440,50 @@ msgstr "Memória Pak (cartão de memória)"
 msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "Rumble Pak (Vibração)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 2"
+msgstr "COMANDO PAK 2"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 3"
+msgstr "COMANDO PAK 3"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTROLLER PAK 4"
+msgstr "COMANDO PAK 4"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Useful for N64 style controllers. Limited hotkeys for controllers without "
+"dedicated hotkey."
+msgstr ""
+"Útil para comandos de estilo N64. Teclas de atalho limitadas para comandos sem  "
+"tecla de atalho dedicada."
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "RetroPad (Default)"
+msgstr "RetroPad (Padrão)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "N64"
+msgstr "N64"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "N64 (Limited Hotkeys)"
+msgstr "N64 (teclas de atalho limitadas)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Useful for N64 style controllers."
+msgstr "Útil para comandos de estilo N64."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -5022,11 +5009,6 @@ msgstr "AUTOMÁTICO"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-pontos"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTOLLER 2"
-msgstr ""
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -6349,6 +6331,11 @@ msgstr "PORTA DO COMANDO"
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
+msgid "CONTROLLER TYPE"
+msgstr "PORTA DO COMANDO"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
+msgctxt "game_options"
 msgid "Paddles"
 msgstr "Botão giratório (Paddles)"
 
@@ -7581,7 +7568,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "OTIMIZAR A PASSAGEM DOS FRAMES"
 
-#. TRANSLATION: duckstation, melonds, pcsx2, thextech
+#. TRANSLATION: duckstation, melonds, pcsx2
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
@@ -8629,31 +8616,6 @@ msgctxt "game_options"
 msgid "Enable"
 msgstr "Ativar"
 
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "Set the sensitivity of the joystick analog sticks."
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "SENSITIVITY"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "100% (Default)"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "DEADZONE"
-msgstr ""
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "5% (Default)"
-msgstr ""
-
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -8981,7 +8943,7 @@ msgctxt "game_options"
 msgid "BLENDING ACCURACY"
 msgstr "PRECISÃO DE MISTURA"
 
-#. TRANSLATION: pcsx2, rpcs3
+#. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Minimum"
 msgstr "Mínima"
@@ -9112,7 +9074,7 @@ msgstr ""
 "Pular memória temporária desativa o salto de frames automático e renderiza "
 "na resolução de saída de exibição."
 
-#. TRANSLATION: ppsspp, thextech
+#. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MODO DE RENDERIZAÇÃO"
@@ -9220,7 +9182,7 @@ msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr ""
 "O LLVM é mais rápido, usar os ajustes do interpretador se houver problemas."
 
-#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CPU"
 msgstr "CPU"
@@ -9350,60 +9312,13 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
+"Pode fornecer ganho de desempenho em CPUs com baixa contagem de núcleos/threads às custas "
+"de possíveis interrupções de tempo."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "SPU LOOP DETECTION"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Mega and Giga modes may improve performance. Use the Safe mode for maximum "
-"compatibility."
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "SPU BLOCK SIZE"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Safe (Default)"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Mega"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Giga"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid ""
-"Helps reduce CPU power consumption by throttling the CPU when not needed. "
-"Useful for handhelds."
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "MAX POWER SAVING CPU-PREEMPTIONS"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Moderate"
-msgstr ""
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "Maximum"
-msgstr ""
+msgstr "DETECÇÃO DE LOOP SPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10810,67 +10725,67 @@ msgstr "ATIVAR RENDERIZADOR DE SOFTWARE"
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "OPENGL RENDERING RESOLUTION"
-msgstr ""
+msgstr "RESOLUÇÃO DE RENDERIZAÇÃO OPENGL"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "1x (~480)"
-msgstr ""
+msgstr "1x (~480)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "2x (~960)"
-msgstr ""
+msgstr "2x (~960)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "4x (~1920p)"
-msgstr ""
+msgstr "4x (~1920p)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "8x (~4320p / 8k)"
-msgstr ""
+msgstr "8x (~4320p / 8k)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "16x (~7680p / 16k)"
-msgstr ""
+msgstr "16x (~7680p / 16k)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
-msgstr ""
+msgstr "MODO DE APRESENTAÇÃO"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Fill Screen"
-msgstr ""
+msgstr "Preencher Ecrã"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Fit Screen"
-msgstr ""
+msgstr "Ajustar Ecrã"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Original Size"
-msgstr ""
+msgstr "Tamanho original"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Enable widescreen support."
-msgstr ""
+msgstr "Ativar o suporte para widescreen."
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
-msgstr ""
+msgstr "ATIVAR WIDESCREEN"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Only applicable when using OpenGL."
-msgstr ""
+msgstr "Aplicável somente ao usar OpenGL."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -11529,36 +11444,18 @@ msgid ""
 "Select how much graphics memory is allocated for the GPU, may need modifying "
 "for some games / systems."
 msgstr ""
+"Selecione quanta memória gráfica é alocada para a GPU, pode precisar de modificação "
+"para alguns jogos/sistemas."
 
 #. TRANSLATION: ioquake3
 msgctxt "game_options"
 msgid "GRAPHICS MEMORY"
-msgstr ""
+msgstr "MEMÓRIA GRÁFICA"
 
 #. TRANSLATION: ioquake3
 msgctxt "game_options"
 msgid "256MB (Default)"
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "On (default)"
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Better performance with hardware rendering."
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Hardware (default)"
-msgstr ""
-
-#. TRANSLATION: thextech
-msgctxt "game_options"
-msgid "Vsync"
-msgstr ""
+msgstr "256 MB (Padrão)"
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
@@ -11835,11 +11732,6 @@ msgctxt "keys_files"
 msgid "Hide the bezel"
 msgstr "Ocultar a moldura"
 
-#. TRANSLATION: dos.dosbox-x.keys
-msgctxt "keys_files"
-msgid "Exit Dosbox-X"
-msgstr ""
-
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
 msgid "Display the controller screen"
@@ -11974,19 +11866,3 @@ msgstr "Menu Rápido"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Avanço Rápido"
-
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER PAK 1"
-#~ msgstr "COMANDO PAK 1"
-
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER PAK 2"
-#~ msgstr "COMANDO PAK 2"
-
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER PAK 3"
-#~ msgstr "COMANDO PAK 3"
-
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER PAK 4"
-#~ msgstr "COMANDO PAK 4"
