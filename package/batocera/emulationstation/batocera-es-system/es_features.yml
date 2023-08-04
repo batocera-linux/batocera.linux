@@ -6095,7 +6095,7 @@ cemu:
   cfeatures:
         cemu_gfxbackend:
             prompt:      GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "OpenGL":           0
                 "Vulkan (Default)": 1
@@ -6393,7 +6393,7 @@ dolphin:
             archs_include: [x86, x86_64, bcm2711, rk3326]
             submenu: RENDERING
             prompt:  GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
@@ -6812,7 +6812,7 @@ duckstation:
             submenu: DISPLAY
             archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt: GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "Vulkan":   Vulkan
                 "OpenGL":   OpenGL
@@ -7762,7 +7762,7 @@ pcsx2:
         pcsx2_gfxbackend:
             submenu: RENDERING
             prompt: GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "OpenGL":   12
                 "Software": 13
@@ -7896,7 +7896,7 @@ ppsspp:
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt: GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "OpenGL": 0 (OPENGL)
                 "Vulkan": 3 (VULKAN)
@@ -8078,7 +8078,7 @@ rpcs3:
         rpcs3_gfxbackend:
             submenu: RENDER
             prompt: GRAPHICS API
-            description: Choose which graphics API library to use. Vulkan is better, when supported.
+            description: Choose which graphics API library to use.
             choices:
                 "OpenGL": OpenGL
                 "Vulkan": Vulkan
@@ -8542,7 +8542,7 @@ mame:
         bgfxbackend:
             archs_include: [x86, x86_64, bcm2711, rk3326]
             prompt:      BGFX GRAPHICS API
-            description: Depends on video mode being set to BGFX. Vulkan is better, when supported.
+            description: Depends on video mode being set to BGFX.
             choices:
                 "MAME Detect":     automatic
                 "OpenGL":          opengl
@@ -10272,7 +10272,7 @@ yuzu:
   cfeatures:
         yuzu_backend:
           prompt: GRAPHICS API
-          description: Choose which graphics API library to use. Vulkan is better, when supported.
+          description: Choose which graphics API library to use.
           choices:
             "OpenGL": 0
             "Vulkan": 1
@@ -10430,7 +10430,7 @@ ryujinx:
   cfeatures:
         ryujinx_api:
           prompt: GRAPHICS API
-          description: Choose which graphics API library to use. Vulkan is better, when supported.
+          description: Choose which graphics API library to use.
           choices:
             "OpenGL": "OpenGL"
             "Vulkan": "Vulkan"
@@ -10701,8 +10701,14 @@ gzdoom:
       prompt: USE GZDOOM JOYSTICK CONFIGURATION
       description: Configuring controllers in GZDoom can cause problems.
       choices:
-        "Disabled (Default)": false
-        "Enabled":            true
+        "Disabled (Default)": "false"
+        "Enabled":            "true"
+    gz_api:
+      prompt: GRAPHICS API
+      description: Choose which graphics API library to use.
+      choices:
+        "OpenGL (Default)": 0
+        "Vulkan":           1
 
 eduke32:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -10741,7 +10747,7 @@ vita3k:
   cfeatures:
     vita3k_gfxbackend:
       prompt:      GRAPHICS API
-      description: Choose which graphics API library to use. Vulkan is better, when supported.
+      description: Choose which graphics API library to use.
       choices:
         "OpenGL": "OpenGL"
         "Vulkan": "Vulkan"
