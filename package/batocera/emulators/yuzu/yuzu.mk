@@ -9,8 +9,8 @@ YUZU_SITE = https://github.com/yuzu-emu/yuzu.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
 YUZU_LICENSE = GPLv2
-YUZU_DEPENDENCIES = qt5base qt5tools qt5multimedia fmt boost ffmpeg \
-                    zstd zlib libzip lz4 catch2 sdl2 opus
+YUZU_DEPENDENCIES = qt6base qt6tools qt6multimedia fmt boost ffmpeg \
+                    zstd zlib libzip lz4 catch2 sdl2 opus json-for-modern-cpp
 
 YUZU_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -20,6 +20,7 @@ YUZU_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 YUZU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 YUZU_CONF_OPTS += -DARCHITECTURE_x86_64=ON
 YUZU_CONF_OPTS += -DENABLE_SDL2=ON
+YUZU_CONF_OPTS += -DENABLE_QT6=ON
 YUZU_CONF_OPTS += -DYUZU_USE_EXTERNAL_SDL2=OFF
 YUZU_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 YUZU_CONF_OPTS += -DYUZU_TESTS=OFF
