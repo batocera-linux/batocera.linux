@@ -148,7 +148,14 @@ def writeKodiConfig(controllersFromES):
             f.write("<setting id=\"driver_linux\">1</setting>")
 
         f.write("</settings>")
-        f.close()
+
+    # disable the kodi splash by default (nicer integration)
+    advxml = "/userdata/system/.kodi/userdata/advancedsettings.xml"
+    if not os.path.exists(advxml):
+        if not os.path.exists(os.path.dirname(advxml)):
+            os.makedirs(os.path.dirname(advxml))
+        with open(advxml, "w") as f:
+            f.write("<advancedsettings><splash>false</splash></advancedsettings>")
 
 def vidpid(guid):
   return guid[10:12]+guid[8:10], guid[18:20]+guid[16:18]
