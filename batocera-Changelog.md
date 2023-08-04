@@ -60,10 +60,10 @@
 - slang and glsl shaders to July 29th 2023
 - pcsx2 to v1.7.4857 (Aug, 1st 2023)
 ### Dev
-- linux kernel for x86_64 to 6.4.7
+- linux kernel for x86_64 to 6.4.8
 - linux kernel for RPI to 6.1.32
-- linux kernel for most ARM SBCs to 6.1.41
-- linux kernel for Rockchip RK3566/RK3568 to 6.4.6
+- linux kernel for most ARM SBCs to 6.1.43
+- linux kernel for Rockchip RK3566/RK3568 to 6.4.8
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
@@ -76,6 +76,7 @@
 - faudio to 23.08
 - llvm to 16.0.6
 - Buildroot to 2023.05.01
+- Preliminary support for Khadas VIM4, Khadas VIM1S
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
