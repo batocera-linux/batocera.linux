@@ -10,7 +10,7 @@ MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidj
 MAME_LICENSE = MAME
 
 MAME_CROSS_ARCH = unknown
-MAME_CROSS_OPTS =
+MAME_CROSS_OPTS = PRECOMPILE=0
 MAME_CFLAGS =
 
 # Limit number of jobs not to eat too much RAM....
@@ -76,6 +76,7 @@ define MAME_BUILD_CMDS
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
+	CCACHE_SLOPPINESS="pch_defines,time_macros" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=mame \
