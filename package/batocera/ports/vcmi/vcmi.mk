@@ -12,11 +12,11 @@ VCMI_DEPENDENCIES = sdl2 sdl2_image sdl2_mixer sdl2_ttf ffmpeg tbb boost
 
 VCMI_CONF_OPTS += -DENABLE_TEST=OFF -DENABLE_MONOLITHIC_INSTALL=ON -DCMAKE_INSTALL_PREFIX="/usr/vcmi/"
 
-# Launcher requires Qt5
-ifeq ($(BR2_PACKAGE_QT5),)
+# Launcher requires Qt
+ifeq ($(BR2_PACKAGE_QT6),)
 VCMI_CONF_OPTS += -DENABLE_LAUNCHER=OFF -DENABLE_EDITOR=OFF
 else
-VCMI_DEPENDENCIES += qt5base qt5tools
+VCMI_DEPENDENCIES += qt6base qt6tools
 endif
 
 # Install into proper prefix
