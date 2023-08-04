@@ -29,7 +29,7 @@ def generateControllerConfig(system, playersControllers, rom, guns):
             # Generate if hardcoded
             generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
-        elif (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom) or system.isOptSet("sideWiimote"):
+        elif (".cc." in rom or ".pro." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom) or system.isOptSet("sideWiimote"):
             # Generate if auto and name extensions are present
             generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
@@ -133,19 +133,16 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
         wiiMapping['joystick2up']   = 'Nunchuk/Stick/Up'
         wiiMapping['joystick2left'] = 'Nunchuk/Stick/Left'
 
-    # cc : Classic Controller Settings
-    if (".cc." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'cc'):
+    # cc : Classic Controller Settings / pro : Classic Controller Pro Settings
+    # Swap shoulder with triggers and vice versa if cc
+    if (".cc." in rom or ".pro." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] in ('cc', 'pro')):
         extraOptions['Extension']   = 'Classic'
         wiiMapping['x'] = 'Classic/Buttons/X'
         wiiMapping['y'] = 'Classic/Buttons/Y'
         wiiMapping['b'] = 'Classic/Buttons/B'
         wiiMapping['a'] = 'Classic/Buttons/A'
         wiiMapping['select'] = 'Classic/Buttons/-'
-        wiiMapping['start'] = 'Classic/Buttons/+'
-        wiiMapping['pageup'] = 'Classic/Triggers/L'
-        wiiMapping['pagedown'] = 'Classic/Triggers/R'
-        wiiMapping['l2'] = 'Classic/Buttons/ZL'
-        wiiMapping['r2'] = 'Classic/Buttons/ZR'
+        wiiMapping['start'] = 'Classic/Buttons/+'     
         wiiMapping['up'] = 'Classic/D-Pad/Up'
         wiiMapping['down'] = 'Classic/D-Pad/Down'
         wiiMapping['left'] = 'Classic/D-Pad/Left'
@@ -153,7 +150,17 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
         wiiMapping['joystick1up'] = 'Classic/Left Stick/Up'
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
-        wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
+        wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'               
+        if (".cc." in rom or system.config['controller_mode'] == 'cc')): 
+            wiiMapping['pageup'] = 'Classic/Buttons/ZL'
+            wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
+            wiiMapping['l2'] = 'Classic/Triggers/L'
+            wiiMapping['r2'] = 'Classic/Triggers/R'
+        else:
+            wiiMapping['pageup'] = 'Classic/Triggers/L'
+            wiiMapping['pagedown'] = 'Classic/Triggers/R'
+            wiiMapping['l2'] = 'Classic/Buttons/ZL'
+            wiiMapping['r2'] = 'Classic/Buttons/ZR'
 
     # This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"       # Define ROM configuration name

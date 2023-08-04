@@ -3,6 +3,7 @@
 - Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 
 ### Added
+- ES settings for both types of classic controllers for dolphin. 
 - Additional ES settings for rpcs3
 - ES settings for joystick deadzone/sensitivity for mupen64plus
 - ES settings for N64 controllers for N64 emulators.
