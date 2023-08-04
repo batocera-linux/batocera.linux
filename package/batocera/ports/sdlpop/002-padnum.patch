@@ -1,14 +1,14 @@
 --- a/src/proto.h	2021-12-06 23:24:06.728608135 +0100
 +++ b/src/proto.h	2021-12-06 23:24:19.016869769 +0100
-@@ -558,7 +558,7 @@
+@@ -564,7 +564,7 @@
  image_type* decode_image(image_data_type* image_data, dat_pal_type* palette);
- image_type*far __pascal far load_image(int index, dat_pal_type* palette);
- void __pascal far draw_image_transp(image_type far *image,image_type far *mask,int xpos,int ypos);
--int __pascal far set_joy_mode(void);
-+int __pascal far set_joy_mode(int joynum);
- surface_type far *__pascal make_offscreen_buffer(const rect_type far *rect);
- void __pascal far free_surface(surface_type *surface);
- void __pascal far free_peel(peel_type *peel_ptr);
+ image_type*load_image(int index, dat_pal_type* palette);
+ void draw_image_transp(image_type* image,image_type* mask,int xpos,int ypos);
+-int set_joy_mode(void);
++int set_joy_mode(int joynum);
+ surface_type *make_offscreen_buffer(const rect_type* rect);
+ void free_surface(surface_type *surface);
+ void free_peel(peel_type *peel_ptr);
 --- a/src/seg000.c	2021-12-06 23:19:42.759012810 +0100
 +++ b/src/seg000.c	2021-12-06 23:20:34.784111214 +0100
 @@ -28,6 +28,8 @@
@@ -58,12 +58,12 @@ diff --git a/src/seg009.c b/src/seg009.c
 index 591430c..8dd5ced 100644
 --- a/src/seg009.c
 +++ b/src/seg009.c
-@@ -830,7 +830,7 @@ void __pascal far draw_image_transp(image_type far *image,image_type far *mask,i
+@@ -874,7 +874,7 @@
  }
  
  // seg009:157E
--int __pascal far set_joy_mode() {
-+int __pascal far set_joy_mode(int joynum) {
+-int set_joy_mode() {
++int set_joy_mode(int joynum) {
  	// stub
  	if (SDL_NumJoysticks() < 1) {
  		is_joyst_mode = 0;
