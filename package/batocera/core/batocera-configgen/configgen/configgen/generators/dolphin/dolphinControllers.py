@@ -151,7 +151,7 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'               
-        if (".cc." in rom or system.config['controller_mode'] == 'cc')): 
+        if (".cc." in rom or system.config['controller_mode'] == 'cc'): 
             wiiMapping['pageup'] = 'Classic/Buttons/ZL'
             wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
             wiiMapping['l2'] = 'Classic/Triggers/L'
