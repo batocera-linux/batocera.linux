@@ -15,12 +15,6 @@ HCL_SUPPORTS_IN_SOURCE_BUILD = NO
 HCL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DUSE_SDL2=ON
 
 define HCL_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/share/hcl
-	cp -pvr $(@D)/data $(TARGET_DIR)/usr/share/hcl/
-	#$(INSTALL) -D $(@D)/buildroot-build/hcl $(TARGET_DIR)/usr/share/hcl/hcl
-	#chmod 0754 $(TARGET_DIR)/usr/share/hcl/hcl
-	#echo "cd /usr/share/hcl && ./hcl" > $(TARGET_DIR)/usr/share/hcl/hcl.sh
-	#chmod 0754 $(TARGET_DIR)/usr/share/hcl/hcl.sh
 	cp $(@D)/buildroot-build/hcl $(TARGET_DIR)/usr/bin/hcl
 	chmod 0754 $(TARGET_DIR)/usr/bin/hcl
 	# evmap config
