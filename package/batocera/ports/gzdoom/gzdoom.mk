@@ -3,7 +3,7 @@
 # gzdoom
 #
 ################################################################################
-GZDOOM_VERSION = g4.8.2
+GZDOOM_VERSION = g4.10.0
 GZDOOM_SITE = https://github.com/coelckers/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES
@@ -35,8 +35,10 @@ endif
 
 define GZDOOM_COPY_GENERATED_HEADERS
 	mkdir -p $(GZDOOM_BUILDDIR)/libraries/gdtoa/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/arith_$(GZDOOM_GENERATED_HEADER_SUFFIX).h $(GZDOOM_BUILDDIR)/libraries/gdtoa/arith.h
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gd_qnan_$(GZDOOM_GENERATED_HEADER_SUFFIX).h $(GZDOOM_BUILDDIR)/libraries/gdtoa/gd_qnan.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/arith_$(GZDOOM_GENERATED_HEADER_SUFFIX).h \
+	    $(GZDOOM_BUILDDIR)/libraries/gdtoa/arith.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gd_qnan_$(GZDOOM_GENERATED_HEADER_SUFFIX).h \
+	    $(GZDOOM_BUILDDIR)/libraries/gdtoa/gd_qnan.h
 endef
 
 GZDOOM_PRE_CONFIGURE_HOOKS += GZDOOM_COPY_GENERATED_HEADERS
@@ -64,7 +66,7 @@ define GZDOOM_PATCH_USE_GLES2
 	$(SED) '1i #define __ANDROID__' $(@D)/src/common/rendering/gles/gles_system.cpp
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_GLES3)$(BR2_PACKAGE_BATOCERA_GLES2),y)
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     GZDOOM_CONF_OPTS += -DHAVE_GLES2=ON
     GZDOOM_DEPENDENCIES += libgles
     GZDOOM_POST_PATCH_HOOKS += GZDOOM_PATCH_USE_GLES2
@@ -80,7 +82,8 @@ define GZDOOM_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/buildroot-build/fm_banks $(TARGET_DIR)/usr/share/gzdoom
 	cp -pr $(@D)/buildroot-build/soundfonts $(TARGET_DIR)/usr/share/gzdoom
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gzdoom.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gzdoom.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
