@@ -514,13 +514,15 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
 def runCommand(command):
     global proc
 
-    command.env.update(os.environ)
+    env={}
+    env.update(os.environ)
+    env.update(command.env)
     eslog.debug(f"command: {str(command)}")
     eslog.debug(f"command: {str(command.array)}")
-    eslog.debug(f"env: {str(command.env)}")
+    eslog.debug(f"env: {str(env)}")
     exitcode = -1
     if command.array:
-        proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(command.array, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
         return exitcode
     try:
