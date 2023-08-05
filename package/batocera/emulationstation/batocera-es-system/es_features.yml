@@ -9547,6 +9547,39 @@ wine:
   features: [padtokeyboard]
   shared: [videomode]
   cfeatures:
+        lang:
+            prompt:      LANGUAGE
+            description: Change the game's language.
+            choices:
+                "Arabic":   "ar"
+                "Catalan":   "ca"
+                "Czech":   "cs_CZ"
+                "Welsh":   "cy_GB"
+                "German":   "de"
+                "Greek":   "el"
+                "BritishEnglish":   "en_GB"
+                "American English":   "en_US"
+                "Spanish":   "es"
+                "Mexican Spanish":   "es_MX"
+                "French":   "fr"
+                "Hebrew":   "he"
+                "Hungarian":   "hu"
+                "Italian":   "it"
+                "Japanese":   "ja_JP"
+                "Korean":   "ko"
+                "Norwegian bokmal":   "nb_NO"
+                "Dutch":   "nl"
+                "Norwegian nynorsk":   "nn_NO"
+                "Occitan":   "oc_FR"
+                "Polish":   "pl"
+                "Brazilian Portuguese":   "pt_BR"
+                "Portuguese":   "pt_PT"
+                "Russian":   "ru_RU"
+                "Swedish":   "sv_SE"
+                "Turkish":   "tr"
+                "Ukrainian":   "uk_UA"
+                "Simplified Chinese":   "zh_CN"
+                "Traditional Chinese":   "zh_TW"
         dxvk:
             group: ADVANCED OPTIONS
             prompt:      DXVK FEATURE
