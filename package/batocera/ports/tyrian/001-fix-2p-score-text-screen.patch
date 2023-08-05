@@ -1,0 +1,22 @@
+From 9750f8cfab738d0ea08ccb8d8752b95f5c09df07 Mon Sep 17 00:00:00 2001
+From: Kane <loveletslive7@gmail.com>
+Date: Tue, 10 Jan 2023 00:15:26 +1100
+Subject: [PATCH] Fix 2 player final score screen text
+
+---
+ src/tyrian2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tyrian2.c b/src/tyrian2.c
+index e5d114b0..82e8b571 100644
+--- a/src/tyrian2.c
++++ b/src/tyrian2.c
+@@ -2638,7 +2638,7 @@ void JE_loadMap(void)
+ 						if (twoPlayerMode)
+ 						{
+ 							for (uint i = 0; i < 2; ++i)
+-								snprintf(levelWarningText[i], sizeof(*levelWarningText), "%s %lu", miscText[40], player[i].cash);
++								snprintf(levelWarningText[i], sizeof(*levelWarningText), "%s %lu", miscText[40 + i], player[i].cash);
+ 							strcpy(levelWarningText[2], "");
+ 							levelWarningLines = 3;
+ 						}

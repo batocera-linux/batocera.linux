@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_RESOURCE_LANGUAGE_PT_BR_VERSION = 10.0.68
+KODI20_RESOURCE_LANGUAGE_PT_BR_VERSION = 10.0.69
 KODI20_RESOURCE_LANGUAGE_PT_BR_SOURCE = resource.language.pt_br-$(KODI20_RESOURCE_LANGUAGE_PT_BR_VERSION).zip
 KODI20_RESOURCE_LANGUAGE_PT_BR_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.pt_br
 KODI20_RESOURCE_LANGUAGE_PT_BR_PLUGINNAME=resource.language.pt_br

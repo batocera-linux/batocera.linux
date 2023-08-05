@@ -1,0 +1,10 @@
+diff --git a/standalone/cmake/CMakeLists_gl-linux-x64.txt b/standalone/cmake/CMakeLists_gl-linux-x64.txt
+index b7059882c9..43a6af6ff7 100644
+--- a/standalone/cmake/CMakeLists_gl-linux-x64.txt
++++ b/standalone/cmake/CMakeLists_gl-linux-x64.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.26)
++cmake_minimum_required(VERSION 3.22)
+ 
+ file(READ vpversion.h version)
+ string(REGEX MATCH "VP_VERSION_MAJOR[ ]+([0-9]+)" _tmp ${version})

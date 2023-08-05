@@ -8,4 +8,7 @@ then
     export DISPLAY=:0.0
 fi
 
-emulatorlauncher -system ps2 -rom config
+export XDG_CONFIG_HOME=/userdata/system/configs
+export QT_QPA_PLATFORM=xcb
+
+/usr/pcsx2/bin/pcsx2-qt

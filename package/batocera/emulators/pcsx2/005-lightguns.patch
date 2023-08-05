@@ -23,19 +23,19 @@ index 5b105a1..f449b17 100644
  
  		USBDevice dev{};
  		USBDesc desc{};
-@@ -160,6 +167,12 @@ namespace usb_lightgun
- 		void AutoConfigure();
+@@ -182,6 +182,12 @@
  
  		std::tuple<s16, s16> CalculatePosition();
+ 
 +
 +		// udev
 +		int   udev_fd;
 +		float udev_internalGunX;
 +		float udev_internalGunY;
 +		int   udev_gunMinx, udev_gunMiny, udev_gunMaxx, udev_gunMaxy;
- 	};
- 
- 	static const USBDescStrings desc_strings = {
+ 		// 0..1, not -1..1.
+ 		std::pair<float, float> GetAbsolutePositionFromRelativeAxes() const;
+ 		u32 GetSoftwarePointerIndex() const;
 @@ -221,6 +234,12 @@ namespace usb_lightgun
  		0x08, // Polling interval (frame counts)
  	};
@@ -160,22 +160,20 @@ index 5b105a1..f449b17 100644
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -358,7 +470,13 @@ namespace usb_lightgun
- 	{
- 		float pointer_x, pointer_y;
- 		const std::pair<float, float> abs_pos(InputManager::GetPointerAbsolutePosition(0));
--		GSTranslateWindowToDisplayCoordinates(abs_pos.first, abs_pos.second, &pointer_x, &pointer_y);
-+
+@@ -489,6 +495,13 @@
+ 			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
+ 		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
+ 
 +		if(udev_has(this)) {
 +		  GSTranslateWindowToDisplayCoordinates(udev_internalGunX, udev_internalGunY, &pointer_x, &pointer_y);
 +		} else {
 +		  // basic mouse position
-+		  GSTranslateWindowToDisplayCoordinates(abs_pos.first, abs_pos.second, &pointer_x, &pointer_y);
++		  GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
 +		}
- 
++
  		s16 pos_x, pos_y;
  		if (pointer_x < 0.0f || pointer_y < 0.0f)
-@@ -411,9 +529,148 @@ namespace usb_lightgun
+ 		{@@ -411,9 +529,148 @@ namespace usb_lightgun
  		return "guncon2";
  	}
  
@@ -337,10 +335,10 @@ index 7300680..262a46a 100644
  	class GunCon2Device final : public DeviceProxy
  	{
  	public:
-@@ -30,5 +32,8 @@ namespace usb_lightgun
+@@ -32,5 +32,8 @@
  		void SetBindingValue(USBDevice* dev, u32 bind_index, float value) const override;
- 		gsl::span<const InputBindingInfo> Bindings(u32 subtype) const override;
- 		gsl::span<const SettingInfo> Settings(u32 subtype) const override;
+ 		std::span<const InputBindingInfo> Bindings(u32 subtype) const override;
+ 		std::span<const SettingInfo> Settings(u32 subtype) const override;
 +	private:
 +		static void udev_open_gun(GunCon2State* us);
 +		static void udev_configure_gun(GunCon2State* us);

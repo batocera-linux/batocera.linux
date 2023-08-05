@@ -786,6 +786,11 @@ systems = {
     # ---------- Supr'A'can  ---------- #
     "supracan":   { "name": "Supr'A'can", "biosFiles":  [ { "md5": "", "file": "bios/supracan.zip"  },
                                     { "md5": "53c4343e062bb3b337370bbb58e64d16", "zippedFile": "internal_68k.bin", "file": "bios/supracan.zip" } ] },
+
+    # ---------- Tandy VIS ---------- #
+    "vis":  { "name": "Tandy Video Information System", "biosFiles": [  { "md5": "", "file": "bios/vis.zip" },
+                                  { "md5": "ebf432d3b09f694db1c62018eb2ab471", "zippedFile": "p513bk0b.bin", "file": "bios/vis.zip"},
+                                  { "md5": "758f8fec271fbf526bb22b36e88f154b", "zippedFile": "p513bk1b.bin", "file": "bios/vis.zip"} ] },
 }
 
 class BiosStatus:

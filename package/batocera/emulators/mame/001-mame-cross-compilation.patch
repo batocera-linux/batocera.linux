@@ -66,16 +66,10 @@ diff -ur ./makefile /home/romain/batocera.linux/output/odroidn2/build/mame-mame0
  endif # TARGET_OS
  
  ifdef PTR64
-@@ -573,6 +581,18 @@
+@@ -573,6 +581,12 @@
  LD := $(OVERRIDE_LD)
  endif
  endif
-+ifdef OVERRIDE_AR
-+PARAMS += --AR='$(OVERRIDE_AR)'
-+ifndef CROSS_BUILD
-+AR := $(OVERRIDE_AR)
-+endif
-+endif
 +ifdef OVERRIDE_STRIP
 +PARAMS += --STRIP='$(OVERRIDE_STRIP)'
 +ifndef CROSS_BUILD

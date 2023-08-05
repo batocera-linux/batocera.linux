@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_RESOURCE_LANGUAGE_SV_SE_VERSION = 10.0.64
+KODI20_RESOURCE_LANGUAGE_SV_SE_VERSION = 10.0.65
 KODI20_RESOURCE_LANGUAGE_SV_SE_SOURCE = resource.language.sv_se-$(KODI20_RESOURCE_LANGUAGE_SV_SE_VERSION).zip
 KODI20_RESOURCE_LANGUAGE_SV_SE_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.sv_se
 KODI20_RESOURCE_LANGUAGE_SV_SE_PLUGINNAME=resource.language.sv_se

@@ -8,6 +8,7 @@ config BR2_PACKAGE_GZDOOM
     select BR2_PACKAGE_LIBGL
     select BR2_PACKAGE_OPENAL
     select BR2_PACKAGE_ZMUSIC
+    select BR2_PACKAGE_LIBVPX
     help
       GZDoom is a 3D-accelerated Doom source port based on ZDoom.
 

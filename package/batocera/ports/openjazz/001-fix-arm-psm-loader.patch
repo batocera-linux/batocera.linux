@@ -1,0 +1,64 @@
+From 4ecf82cb690f5e09309c063b16e6e2e20ee77ade Mon Sep 17 00:00:00 2001
+From: Apaczer <94932128+Apaczer@users.noreply.github.com>
+Date: Tue, 24 Jan 2023 21:09:22 +0100
+Subject: [PATCH] update psm lib for low ARM
+
+"Avoid unaligned memory access in the PSM loader"
+
+Co-Authored-By: Cameron Cawley <19293424+ccawley2011@users.noreply.github.com>
+---
+ ext/psmplug/load_psm.cpp | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/ext/psmplug/load_psm.cpp b/ext/psmplug/load_psm.cpp
+index 4270f0a..abd6347 100644
+--- a/ext/psmplug/load_psm.cpp
++++ b/ext/psmplug/load_psm.cpp
+@@ -74,6 +74,12 @@ typedef struct _PSMSAMPLE
+ 
+ #pragma pack()
+ 
++DWORD read_DWORD(LPCBYTE lpStream){
++	DWORD s;
++	memcpy(&s,lpStream,sizeof(s));
++	return bswapLE32(s);
++}
++
+ static void swap_PSMCHUNK(PSMCHUNK* p){
+ 	p->id = bswapLE32(p->id);
+ 	p->len = bswapLE32(p->len);
+@@ -211,7 +217,7 @@ BOOL CSoundFile::ReadPSM(LPCBYTE lpStream, DWORD dwMemLength)
+ 	m_nChannels = pSong->channels;
+ 	// Valid song header -> convert attached chunks
+ 	{
+-		DWORD dwSongEnd = dwSongPos + 8 + *(DWORD *)(lpStream+dwSongPos+4);
++		DWORD dwSongEnd = dwSongPos + 8 + read_DWORD(lpStream+dwSongPos+4);
+ 		dwMemPos = dwSongPos + 8 + 11; // sizeof(PSMCHUNK)+sizeof(PSMSONGHDR)
+ 		while (dwMemPos + 8 < dwSongEnd)
+ 		{
+@@ -231,10 +237,10 @@ BOOL CSoundFile::ReadPSM(LPCBYTE lpStream, DWORD dwMemLength)
+ 					{
+ 						BOOL bFound = FALSE;
+ 						pos -= 5;
+-						DWORD dwName = *(DWORD *)(pdata+pos);
++						DWORD dwName = read_DWORD(pdata+pos);
+ 						for (UINT i=0; i<nPatterns; i++)
+ 						{
+-							DWORD dwPatName = ((PSMPATTERN *)(lpStream+patptrs[i]+8))->name;
++							DWORD dwPatName = read_DWORD(lpStream+patptrs[i]+12);
+ 							if (dwName == dwPatName)
+ 							{
+ 								bFound = TRUE;
+@@ -252,10 +258,10 @@ BOOL CSoundFile::ReadPSM(LPCBYTE lpStream, DWORD dwMemLength)
+ 					UINT iOrd = 0;
+ 					while ((pos+5<len) && (iOrd < MAX_ORDERS))
+ 					{
+-						DWORD dwName = *(DWORD *)(pdata+pos);
++						DWORD dwName = read_DWORD(pdata+pos);
+ 						for (UINT i=0; i<nPatterns; i++)
+ 						{
+-							DWORD dwPatName = ((PSMPATTERN *)(lpStream+patptrs[i]+8))->name;
++							DWORD dwPatName = read_DWORD(lpStream+patptrs[i]+12);
+ 							if (dwName == dwPatName)
+ 							{
+ 								Order[iOrd++] = i;

@@ -428,7 +428,6 @@ class DuckstationGenerator(Generator):
                 settings.set(pad_num, "R1", sdl_num+"/RightShoulder")
                 settings.set(pad_num, "L2", sdl_num+"/+LeftTrigger")
                 settings.set(pad_num, "R2", sdl_num+"/+RightTrigger")
-                settings.set(pad_num, "Mode", sdl_num+"/Guide")
                 settings.set(pad_num, "L3", sdl_num+"/LeftStick")
                 settings.set(pad_num, "R3", sdl_num+"/RightStick")
                 settings.set(pad_num, "LLeft", sdl_num+"/-LeftX")
@@ -446,7 +445,7 @@ class DuckstationGenerator(Generator):
                 if system.isOptSet("duckstation_digitalmode"):
                     settings.set(pad_num, "AnalogDPadInDigitalMode", system.config["duckstation_digitalmode"])
                     if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "AnalogController":
-                        settings.set(pad_num, "Analog", sdl_num+"/Guide")
+                        settings.set(pad_num, "Analog", sdl_num+"/Guide & "+sdl_num+"/+LeftTrigger")
                 else:
                     settings.set(pad_num, "AnalogDPadInDigitalMode", "false")
                 # NeGcon ?
@@ -479,7 +478,7 @@ class DuckstationGenerator(Generator):
         # Force defaults to be aligned with evmapy
         settings.set("Hotkeys", "FastForward",                 "Keyboard/Tab")
         settings.set("Hotkeys", "Reset",                       "Keyboard/F6")
-        settings.set("Hotkeys", "PowerOff",                    "Keyboard/Escape")
+        settings.set("Hotkeys", "OpenPauseMenu",               "SDL-0/Guide")
         settings.set("Hotkeys", "LoadSelectedSaveState",       "Keyboard/F1")
         settings.set("Hotkeys", "SaveSelectedSaveState",       "Keyboard/F2")
         settings.set("Hotkeys", "SelectPreviousSaveStateSlot", "Keyboard/F3")

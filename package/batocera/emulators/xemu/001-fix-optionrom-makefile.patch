@@ -2,12 +2,12 @@ diff --git a/pc-bios/optionrom/Makefile b/pc-bios/optionrom/Makefile
 index 30771f8..1055073 100644
 --- a/pc-bios/optionrom/Makefile
 +++ b/pc-bios/optionrom/Makefile
-@@ -47,7 +47,7 @@ all: multiboot.bin linuxboot.bin linuxboot_dma.bin kvmvapic.bin pvh.bin
+@@ -41,7 +41,7 @@
  pvh.img: pvh.o pvh_main.o
  
  %.o: %.S
--	$(call quiet-command,$(CPP) $(CPPFLAGS) -c -o - $< | $(AS) $(ASFLAGS) -o $@,"AS","$@")
-+	$(call quiet-command,$(CPP) $(CPPFLAGS) -o - $< | $(AS) $(ASFLAGS) -o $@,"AS","$@")
+-	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<,Assembling)
++	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<,Assembling)
  
  %.o: %.c
- 	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@,"CC","$@")
+ 	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@,Compiling)

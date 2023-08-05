@@ -197,6 +197,13 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_UMTOOL								# command line tool for configuring Ultimarc arcade hardware
     select BR2_PACKAGE_PYTHON_HIDAPI                        # Communication with USB HID devices via Python
 
+    # Python and SSL
+    select BR2_PACKAGE_HOST_PYTHON3
+    select BR2_PACKAGE_HOST_PYTHON3_SSL
+    select BR2_PACKAGE_PYTHON3
+    select BR2_PACKAGE_PYTHON3_SSL
+    select BR2_PACKAGE_PYTHON3_PYOPENSSL
+
     # Deprecated, which what library should we replace ?
     select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
     select BR2_PACKAGE_USBMOUNT                             # usb key/sd card mounter
@@ -271,6 +278,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                   BR2_PACKAGE_BATOCERA_TARGET_BCM2837  || \
                                                   BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # piboy rpi3/rpi4
     select BR2_PACKAGE_PICADE                  if BR2_PACKAGE_BATOCERA_RPI_ANY # picade arcade case
+
+    # screens
+    select BR2_PACKAGE_PIXELCADE
 
     # swap
     select BR2_PACKAGE_SWAPIT if BR2_PACKAGE_BATOCERA_TARGET_RK3128
@@ -406,7 +416,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     string "target images"
     default "amlogic/s905gen2"                                                              if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
     default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/tvbox-gen3"                         if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
-    default "amlogic/a3gen2/vim4 amlogic/a3gen2/gtking2"                                    if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
+    default "amlogic/a3gen2/khadas-vim-4 amlogic/a3gen2/khadas-vim-1s"                      if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
     default "amlogic/s912/vim2"                                                             if BR2_PACKAGE_BATOCERA_TARGET_S912
     default "broadcom/bcm2835"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
     default "broadcom/bcm2836"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
@@ -644,9 +654,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
     select BR2_PACKAGE_BATOCERA_PYGAME if !BR2_PACKAGE_BATOCERA_TARGET_H3
 
     # RPG engine : Solarus
-    select BR2_PACKAGE_LUAJIT           if !BR2_aarch64 # for performance
-    select BR2_PACKAGE_LUA              if  BR2_aarch64
-    select BR2_PACKAGE_SOLARUS_ENGINE   # engine itself
+    select BR2_PACKAGE_SOLARUS_ENGINE   # ALL
 
     # RPG engine : EasyRPG / RPG MAker
     select BR2_PACKAGE_EASYRPG_PLAYER   # standalone
@@ -662,6 +670,9 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 
     # Fighting games engine
     select BR2_PACKAGE_IKEMEN            if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+
+    # SMBX engine
+    select BR2_PACKAGE_THEXTECH
 
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
@@ -899,7 +910,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Super Mario War
     select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
-    select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     select BR2_PACKAGE_GZDOOM                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     select BR2_PACKAGE_RAZE                     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_aarch64
     # ZMusic: standalone library used by gzdoom and raze source ports
@@ -918,6 +929,12 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 							!BR2_PACKAGE_BATOCERA_TARGET_RK3326 && \
 							!BR2_PACKAGE_BATOCERA_TARGET_RISCV && \
 							!BR2_PACKAGE_BATOCERA_TARGET_ODIN
+
+    # Hydra Castle Labyrinth
+    select BR2_PACKAGE_HCL                  # ALL
+
+    # C-Dogs SDL
+    select BR2_PACKAGE_CDOGS                # ALL
 
     help
         Ports
@@ -1037,16 +1054,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_KRONOS              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_BCM2711     || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_ODIN        || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S912        || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_A3GEN2      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588
+                                                        BR2_PACKAGE_BATOCERA_GLES3
 
     # Gamecube / Wii
     select BR2_PACKAGE_DOLPHIN_EMU                  if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -1086,6 +1094,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
     # future pinball
     select BR2_PACKAGE_FPINBALL                     if BR2_PACKAGE_BATOCERA_WINE
+    select BR2_PACKAGE_VPINBALL                     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+                                                       BR2_PACKAGE_BATOCERA_TARGET_RK3588
+                                                       # rpi4 SDL2 window not working - BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 
     # Panasonic 3DO
     select BR2_PACKAGE_LIBRETRO_OPERA               if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
@@ -1233,18 +1244,24 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     bool "add experimental cores"
 
-    # Hydra Castle Labyrinth
-    select BR2_PACKAGE_HCL                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
-
-    # C-Dogs SDL
-    select BR2_PACKAGE_CDOGS                if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    # CorsixTH (Theme Hospital engine)
+    select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64
 
     # Turrican Port
-    select BR2_PACKAGE_LIBEPOXY             if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
-    select BR2_PACKAGE_HURRICAN             if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    select BR2_PACKAGE_LIBEPOXY             # ALL
+    select BR2_PACKAGE_HURRICAN             # ALL
 
     # Jazz Jackrabbit
     select BR2_PACKAGE_OPENJAZZ             # ALL
+
+    # Free Heroes of Might & Magic 2 engine
+    select BR2_PACKAGE_FHEROES2             # ALL
+
+    # HoMM3 open source engine
+    select BR2_PACKAGE_VCMI                 # ALL
+
+    # OpenTyrian (shmup game)
+    select BR2_PACKAGE_TYRIAN               # ALL
 
     help
         Emulators under development (Experimental)
@@ -1272,8 +1289,12 @@ config BR2_PACKAGE_BATOCERA_KODI20
     select BR2_PACKAGE_X264                 # decoder
     select BR2_PACKAGE_X265                 # decoder
     select BR2_PACKAGE_LIBAACS              # decoder
-    select BR2_PACKAGE_LIBDVDCSS            # decoder
+
     select BR2_PACKAGE_GNUTLS               # https streams
+
+    # Kodi disc decoding
+    select BR2_PACKAGE_LIBDVDCSS            # decoder
+    select BR2_PACKAGE_LIBUDFREAD           # Bluray
 
     # Kodi game controllers
     select BR2_PACKAGE_KODI20_PERIPHERAL_JOYSTICK     # joysticks for kodi
@@ -1290,16 +1311,16 @@ config BR2_PACKAGE_BATOCERA_KODI20
     select BR2_PACKAGE_DAV1D           if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY       # AV1
 
     # kodi languages
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_DE_DE
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_ES_ES
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_EU_ES
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_FR_FR
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_IT_IT
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_PT_BR
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_SV_SE
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_TR_TR
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_ZH_CN
-    # select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_EL_GR
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_DE_DE
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_ES_ES
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_EU_ES
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_FR_FR
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_IT_IT
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_PT_BR
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_SV_SE
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_TR_TR
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_ZH_CN
+    select BR2_PACKAGE_KODI20_RESOURCE_LANGUAGE_EL_GR
 
     # plugins
     select BR2_PACKAGE_KODI20_PVR_FREEBOX
@@ -1313,14 +1334,14 @@ config BR2_PACKAGE_BATOCERA_KODI20
     select BR2_PACKAGE_KODI20_MYSQL
     select BR2_PACKAGE_KODI20_ALSA_LIB
     select BR2_PACKAGE_KODI20_AVAHI
-    #select BR2_PACKAGE_KODI20_DBUS
+    select BR2_PACKAGE_KODI20_DBUS
     select BR2_PACKAGE_KODI20_LIBCEC
     select BR2_PACKAGE_KODI20_LIBMICROHTTPD
     select BR2_PACKAGE_KODI20_LIBNFS
     select BR2_PACKAGE_KODI20_LIBSHAIRPLAY
     select BR2_PACKAGE_KODI20_LIBSMBCLIENT
     select BR2_PACKAGE_KODI20_VFS_SFTP
-    select BR2_PACKAGE_KODI20_LIBVDPAU        if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI20_PLATFORM_SUPPORTS_X11 && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+    select BR2_PACKAGE_KODI20_LIBVDPAU        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_KODI20_AUDIODECODER_OPENMPT
     select BR2_PACKAGE_KODI20_AUDIODECODER_NOSEFART
     select BR2_PACKAGE_KODI20_AUDIODECODER_SIDPLAY
@@ -1523,7 +1544,7 @@ config BR2_PACKAGE_BATOCERA_SDL2
     select BR2_PACKAGE_SDL2_OPENGLES
     select BR2_PACKAGE_SDL2_OPENGL      if BR2_PACKAGE_HAS_LIBGL
     select BR2_PACKAGE_SDL2_X11         if BR2_PACKAGE_XORG7
-    select BR2_PACKAGE_SDL2_KMSDRM      if !BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_WAYLAND
+    select BR2_PACKAGE_SDL2_KMSDRM      if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_SDL2_WAYLAND     if BR2_PACKAGE_BATOCERA_WAYLAND
     select BR2_PACKAGE_FLAC             # flac
     select BR2_PACKAGE_LIBMAD           # mp3
