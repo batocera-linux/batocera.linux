@@ -84,11 +84,11 @@ c20:
   manufacturer: Commodore
   release: 1980
   hardware: computer
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
+  extensions: [20, 40, 60, rom, a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   c20
   emulators:
     vice:
-      xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z,20,40,60] }
     libretro:
       vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -538,6 +538,19 @@ mastersystem:
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
       smsplus:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
+
+pico:
+  name:       Sega Pico
+  manufacturer: Sega
+  release: 1993
+  hardware: console
+  extensions: [bin, md, zip, 7z]
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+      picodrive:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 gamegear:
   name:       Game Gear
@@ -1980,7 +1993,7 @@ ps2:
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2], incompatible_extensions: [m3u]  }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u]  }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
@@ -2153,6 +2166,16 @@ daphne:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:daphne
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:daphne
+
+thextech:
+  name:       TheXTech
+  manufacturer: Wohlstand
+  release: 2020
+  hardware: port
+  extensions: [smbx]
+  emulators:
+    thextech:
+      thextech:  { requireAnyOf: [BR2_PACKAGE_THEXTECH] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
@@ -2329,7 +2352,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wua, wup, wud, rpx, squashfs]
+  extensions: [wua, wup, wud, wux, rpx, squashfs]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -3544,9 +3567,9 @@ hcl:
     hcl:
       hcl: { requireAnyOf: [BR2_PACKAGE_HCL] }
   comment_en: |
-    This system is a standalone game. No rom required.
+    This system is a standalone game. No rom required, get the game assets files from the Content Downloader.
   comment_fr: |
-    Ce système est un jeu autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise, téléchargez les fichiers de données de jeu depuis le Content Downloader.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -4731,3 +4754,29 @@ namco2x6:
                     ---tef1dvd0.chd
     
     For more info: https://wiki.batocera.org/systems:namco2x6
+
+vis:
+  name: Tandy Video Information System
+  manufacturer: Tandy / Memorex
+  release: 1992
+  hardware: computer
+  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+
+vpinball:
+  name: Visual Pinball X
+  manufacturer: Randy Davis
+  release: 2000
+  hardware: pinball
+  extensions: [vpx]
+  emulators:
+    vpinball:
+      vpinball:  { requireAnyOf: [BR2_PACKAGE_VPINBALL] }
+  comment_en: |
+    Visual Pinabll X - Stanadlone supports the .vpx extension tables.
+    Version 10 community based tables for can be downloaded from https://www.vpforums.org
+  comment_fr: |
+    Visual Pinball X - Stanadlone prend en charge les tables avec l'extension .vpx.
+    Les tables créées par la communauté pour la Version 10 peuvent être téléchargées depuis https://www.vpforums.org.

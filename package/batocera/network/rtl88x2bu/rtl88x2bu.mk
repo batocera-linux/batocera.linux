@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTL88X2BU_VERSION = f0a2c9c74045cf2c3701084f389e358f9236fc8c
+RTL88X2BU_VERSION = 83db18e610845df9434a628ca3feb9004296b307
 RTL88X2BU_SITE = $(call github,morrownr,88x2bu-20210702,$(RTL88X2BU_VERSION))
 RTL88X2BU_LICENSE = GPL-2.0
 RTL88X2BU_LICENSE_FILES = LICENSE

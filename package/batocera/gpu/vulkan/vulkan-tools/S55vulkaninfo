@@ -2,5 +2,5 @@
 
 if test "${1}" = start
 then
-    vulkaninfo --no-extensions --json | jq -r ".VkPhysicalDeviceProperties.apiVersion" > /var/run/vulkaninfo.version & # it can take some seconds, so i add a &
+    vulkaninfo | grep -oP 'apiVersion[[:space:]]*=\s*\K[0-9]+\.[0-9]+\.[0-9]+' > /var/run/vulkaninfo.version
 fi

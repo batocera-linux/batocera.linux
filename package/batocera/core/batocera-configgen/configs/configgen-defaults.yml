@@ -247,9 +247,17 @@ gx4000:
 gzdoom:
   emulator: gzdoom
   core:     gzdoom
+hcl:
+  emulator: hcl
+  core:     hcl
+  options:
+    bezel: none
 hikaru:
   emulator: demul
   core:     demul
+hurrican:
+  emulator: hurrican
+  core:     hurrican
 ikemen:
   emulator: ikemen
   core:     ikemen
@@ -391,6 +399,9 @@ openbor:
   options:
     # none because some games fails by default with textures (street of rage 2x)
     bezel: none
+openjazz:
+  emulator: openjazz
+  core:     openjazz
 openlara:
   emulator: libretro
   core:     openlara
@@ -420,6 +431,9 @@ pdp1:
 pet:
   emulator: vice
   core:     xpet
+pico:
+  emulator: libretro
+  core:     genesisplusgx
 pico8:
   emulator: libretro
   core:     fake08
@@ -442,6 +456,8 @@ ps2:
   core:     pcsx2
   options:
     fullboot: true
+    # temporarily disable until mangohud fixed
+    hud_support: false
 ps3:
   emulator: rpcs3
   core:     rpcs3
@@ -542,6 +558,11 @@ switch:
 
 # T-Z
 
+thextech:
+  emulator: thextech
+  core:     thextech
+  options:
+    bezel: none
 thomson:
   emulator: libretro
   core:     theodore
@@ -578,6 +599,9 @@ videopacplus:
 virtualboy:
   emulator: libretro
   core:     vb
+vis:
+  emulator: libretro
+  core:     mame
 vitaquake2:
   emulator: libretro
   core:     vitaquake2
@@ -645,3 +669,6 @@ zx81:
 zxspectrum:
   emulator: libretro
   core:     fuse
+vpinball:
+  emulator: vpinball
+  core:     vpinball

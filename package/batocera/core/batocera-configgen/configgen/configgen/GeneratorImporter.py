@@ -291,6 +291,14 @@ def getGenerator(emulator):
         from generators.ioquake3.ioquake3Generator import IOQuake3Generator
         return IOQuake3Generator()
 
+    if emulator == "thextech":
+        from generators.thextech.thextechGenerator import TheXTechGenerator
+        return TheXTechGenerator()
+
+    if emulator == 'vpinball':
+        from generators.vpinball.vpinballGenerator import VPinballGenerator
+        return VPinballGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()

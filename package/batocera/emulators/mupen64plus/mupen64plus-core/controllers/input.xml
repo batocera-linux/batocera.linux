@@ -1,28 +1,59 @@
 <inputList>
-<input name="AnalogDeadzone" value="0,0" />
-<input name="AnalogPeak"     value="32768,32768" />
-<input name="l3"             value="Mempak switch" />
-<input name="r3"             value="Rumblepak switch" />
-<input name="a"        	     value="C Button R" />
-<input name="b"        	     value="A Button" />
-<input name="x"        	     value="C Button U" />
-<input name="y"        	     value="B Button" />
-<input name="start"    	     value="Start" />
-<input name="select"   	     value="" />
-<input name="pageup"   	     value="L Trig" />
-<input name="pagedown" 	     value="R Trig" />
-<input name="l2"       	     value="Z Trig" />
-<input name="r2"       	     value="" />
-<input name="up"       	     value="DPad U" />
-<input name="down"     	     value="DPad D" />
-<input name="right"    	     value="DPad R" />
-<input name="left"     	     value="DPad L" />
-<input name="joystick1up"    value="Y Axis" />
-<input name="joystick1down"  value="Y Axis" />
-<input name="joystick1left"  value="X Axis" />
-<input name="joystick1right" value="X Axis" />
-<input name="joystick2up"    value="C Button U" />
-<input name="joystick2down"  value="C Button D" />
-<input name="joystick2left"  value="C Button L" />
-<input name="joystick2right" value="C Button R" />
+	<defaultInputList>
+		<input name="AnalogDeadzone" value="0,0" />
+		<input name="AnalogPeak"     value="32768,32768" />
+		<input name="l3"             value="Mempak switch" />
+		<input name="r3"             value="Rumblepak switch" />
+		<input name="a"        	     value="C Button R" />
+		<input name="b"        	     value="A Button" />
+		<input name="x"        	     value="C Button U" />
+		<input name="y"        	     value="B Button" />
+		<input name="start"    	     value="Start" />
+		<input name="select"   	     value="" />
+		<input name="pageup"   	     value="L Trig" />
+		<input name="pagedown" 	     value="R Trig" />
+		<input name="l2"       	     value="Z Trig" />
+		<input name="r2"       	     value="" />
+		<input name="up"       	     value="DPad U" />
+		<input name="down"     	     value="DPad D" />
+		<input name="right"    	     value="DPad R" />
+		<input name="left"     	     value="DPad L" />
+		<input name="joystick1up"    value="Y Axis" />
+		<input name="joystick1down"  value="Y Axis" />
+		<input name="joystick1left"  value="X Axis" />
+		<input name="joystick1right" value="X Axis" />
+		<input name="joystick2up"    value="C Button U" />
+		<input name="joystick2down"  value="C Button D" />
+		<input name="joystick2left"  value="C Button L" />
+		<input name="joystick2right" value="C Button R" />
+	</defaultInputList>
+	<!-- Alt inputs for n64 style controllers -->
+	<n64InputList>
+		<input name="AnalogDeadzone" value="0,0" />
+		<input name="AnalogPeak"     value="32768,32768" />
+		<input name="l3"             value="Mempak switch" />
+		<input name="r3"             value="Rumblepak switch" />
+		<input name="a"        	     value="B Button" />
+		<input name="b"        	     value="A Button" />
+		<input name="x"        	     value="C Button U" />
+		<input name="y"        	     value="C Button L" />
+		<input name="start"    	     value="Start" />
+		<input name="select"   	     value="Z Trig" />
+		<input name="pageup"   	     value="L Trig" />
+		<input name="pagedown" 	     value="R Trig" />
+		<input name="l2"       	     value="C Button D" />
+		<input name="r2"       	     value="C Button R" />
+		<input name="up"       	     value="DPad U" />
+		<input name="down"     	     value="DPad D" />
+		<input name="right"    	     value="DPad R" />
+		<input name="left"     	     value="DPad L" />
+		<input name="joystick1up"    value="Y Axis" />
+		<input name="joystick1down"  value="Y Axis" />
+		<input name="joystick1left"  value="X Axis" />
+		<input name="joystick1right" value="X Axis" />
+		<input name="joystick2up"    value="" />
+		<input name="joystick2down"  value="" />
+		<input name="joystick2left"  value="" />
+		<input name="joystick2right" value="" />
+	</n64InputList>
 </inputList>

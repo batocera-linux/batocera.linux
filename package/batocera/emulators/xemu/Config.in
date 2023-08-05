@@ -3,6 +3,7 @@ config BR2_PACKAGE_XEMU
     depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_LIBSAMPLERATE
+    select BR2_PACKAGE_SLIRP
     help
         Xbox (og) emulator based on QEMU
         

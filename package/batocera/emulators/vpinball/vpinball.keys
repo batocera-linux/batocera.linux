@@ -1,0 +1,70 @@
+{
+    "actions_player1": [
+		{
+      "trigger": ["hotkey", "start"],
+      "type": "exec",
+      "target": "killall -9 VPinballX_GL",
+      "description": "Exit the emulator"
+		},
+		{
+      "trigger": ["start"],
+      "type": "key",
+      "target": [ "KEY_1" ],
+      "description": "Start game"
+		},
+		{
+      "trigger": ["select"],
+      "type": "key",
+      "target": [ "KEY_5" ],
+      "description": "Insert coin"
+		},
+		{
+      "trigger": ["up"],
+      "type": "key",
+      "target": [ "KEY_SPACE" ],
+      "description": "Nudge up"
+		},
+		{
+      "trigger": ["left"],
+      "type": "key",
+      "target": [ "KEY_Z" ],
+      "description": "Nudge left"
+		},
+		{
+      "trigger": ["right"],
+      "type": "key",
+      "target": [ "KEY_SLASH" ],
+      "description": "Nudge right"
+		},
+		{
+      "trigger": ["b"],
+      "type": "key",
+      "target": [ "KEY_ENTER" ],
+      "description": "Pull plunger"
+		},
+    {
+      "trigger": ["pageup"],
+      "type": "key",
+      "target": [ "KEY_LEFTSHIFT" ],
+      "description": "Left flipper"
+    },
+    {
+      "trigger": ["pagedown"],
+      "type": "key",
+      "target": [ "KEY_RIGHTSHIFT" ],
+      "description": "Right flipper"
+    },
+    {
+      "trigger": ["l2"],
+      "type": "key",
+      "target": [ "KEY_LEFTSHIFT" ],
+      "description": "Left flipper"
+    },
+    {
+      "trigger": ["r2"],
+      "type": "key",
+      "target": [ "KEY_RIGHTSHIFT" ],
+      "description": "Right flipper"
+    }
+    ]
+}

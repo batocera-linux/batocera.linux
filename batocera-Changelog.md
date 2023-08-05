@@ -3,7 +3,10 @@
 - Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
 
 ### Added
-- Added ES settings for N64 controllers in N64 libretro cores.
+- ES settings for both types of classic controllers for dolphin. 
+- Additional ES settings for rpcs3
+- ES settings for joystick deadzone/sensitivity for mupen64plus
+- ES settings for N64 controllers for N64 emulators.
 - battery remaining time in batocera-info (f2)
 - libretro core boom3, A Doom 3 port
 - libretro core reminiscence, A Flashback port
@@ -15,37 +18,54 @@
 - vitaquake2 libretro core enabled for AArch64
 - ioquake3 to ports, An updated Quake III engine
 - play! emulator for PS2 but also Namco 246 & 256 systems
+- TheXTech game engine for Super Mario-like SMBX platform games
+- Tandy / Memorex Video Information System (VIS)
+- Visual Pinball X (Standalone) for X86_64, RPi4 & RK3588 boards
+- Added Sega Pico system entry utilizing existing emulator cores
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
 - DVD playback in Kodi
 ### Changed
+- ES music volume on a logarithmic scale instead of linear one
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
 - n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
 - Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
+- To enable Analog mode in Duckstation it's now hotkey + left trigger (l2)
+- kodi splash removed (if the advancedsettings file was not already created)
 ### Updated
 - xenia to v1.0.2805
-- xenia canary to ff09bb4 (Commits on Jun 28, 2023)
+- xenia canary to ba936e8 (Commits on Jul 22, 2023)
 - citra to nightly-1936
-- groovy mame to 0.256
-- cemu to v2.0-44
+- groovy mame to 0.257
+- libretro-mame to 0.257
+- cemu to v2.0-46
 - amiberry to 5.6.1
 - dosbox-x to v2023.05.01
-- tsugaru to v20230420
+- tsugaru to v20230722
 - dolphin to 5.0-19776
 - duckstation to Jun 30, 2023 build
 - flycast to July 5th build
 - melonds to July 8th build
 - ppsspp to July 8th build
 - lr-ppsspp to July 8th build
-- xemu to v0.7.98
+- xemu to v0.7.110
 - devilutionX to 1.5.0
+- ScummVM (standalone and libretro core) to July 18th build
+- redream to 1.5.0-1079-g5ac7859
+- kodi to 20.2
+- EDuke32 to July, 3th 2023
+- OpenMSX to v19
+- btop to 1.2.13
+- slang and glsl shaders to July 29th 2023
+- pcsx2 to v1.7.4857 (Aug, 1st 2023)
+- SDLPoP to v1.23 (Feb, 4th 2023)
 ### Dev
-- linux kernel for x86_64 to 6.4.2
+- linux kernel for x86_64 to 6.4.8
 - linux kernel for RPI to 6.1.32
-- linux kernel for most ARM SBCs to 6.1.38
-- linux kernel for Rockchip RK3566/RK3568 to 6.4.3
+- linux kernel for most ARM SBCs to 6.1.43
+- linux kernel for Rockchip RK3566/RK3568 to 6.4.8
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
@@ -53,6 +73,12 @@
 - bluez to 5.68
 - wildmidi to 0.4.5
 - vulkan stack to 1.3.257
+- SDL2 to 2.28.1
+- nvidia production driver to 535.86.05
+- faudio to 23.08
+- llvm to 16.0.6
+- Buildroot to 2023.05.01
+- Preliminary support for Khadas VIM4, Khadas VIM1S
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware

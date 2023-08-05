@@ -6,7 +6,7 @@
 
 # Not possible to directly refer to kodi20 variables, because of
 # first/second expansion trickery...
-KODI20_TEXTUREPACKER_VERSION = 20.1-Nexus
+KODI20_TEXTUREPACKER_VERSION = 20.2-Nexus
 KODI20_TEXTUREPACKER_SITE = $(call github,xbmc,xbmc,$(KODI20_TEXTUREPACKER_VERSION))
 KODI20_TEXTUREPACKER_SOURCE = kodi20-$(KODI20_TEXTUREPACKER_VERSION).tar.gz
 KODI20_TEXTUREPACKER_DL_SUBDIR = kodi20

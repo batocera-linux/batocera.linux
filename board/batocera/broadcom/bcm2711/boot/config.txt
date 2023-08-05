@@ -145,12 +145,6 @@ max_framebuffers=1
 # Run as fast as firmware/board allows
 arm_boost=1
 
-# Enable H.265 decoding
-dtoverlay=v4l2-codec-hevc
-# Enable H.265 encoding
-# Requires RPi4 system with 4GB or greater
-#dtoverlay=v4l2-encoder-omxh265
-
 [DPI]
 # Put any DPI required display code here
 # i.e. Official 7" DSI Raspberry Pi Touch Display for 'Full' KMS

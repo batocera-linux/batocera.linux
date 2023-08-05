@@ -15,7 +15,7 @@ SOLARUS_ENGINE_LICENSE_FILES = license.txt
 # Install libsolarus.so
 SOLARUS_ENGINE_INSTALL_STAGING = YES
 
-SOLARUS_ENGINE_DEPENDENCIES = glm libmodplug libogg libvorbis openal physfs \
+SOLARUS_ENGINE_DEPENDENCIES = luajit glm libmodplug libogg libvorbis openal physfs \
 	sdl2 sdl2_image sdl2_ttf
 
 # Disable launcher GUI (requires Qt5)
@@ -31,17 +31,12 @@ endif
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_BASE_WRITE_DIR=/userdata/saves
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_WRITE_DIR=solarus
 
-ifeq ($(BR2_aarch64),y) # https://github.com/kubernetes/ingress-nginx/issues/2802
-SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=OFF
-SOLARUS_ENGINE_DEPENDENCIES += lua
-else
 ifeq ($(BR2_PACKAGE_LUAJIT),y)
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=ON
 SOLARUS_ENGINE_DEPENDENCIES += luajit
 else
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=OFF
 SOLARUS_ENGINE_DEPENDENCIES += lua
-endif
 endif
 
 $(eval $(cmake-package))
