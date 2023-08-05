@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PIXELCADE
+	bool "pixelcade"
+	select BR2_PACKAGE_JQ
+	select BR2_PACKAGE_IMAGEMAGICK
+
+	help
+	  pixelcade support

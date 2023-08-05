@@ -9,14 +9,18 @@ import controllersConfig
 class WineGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        cmd=None
+        cmd = None
         if system.name == "windows_installers":
             commandArray = ["batocera-wine", "windows", "install", rom]
-            cmd=Command.Command(array=commandArray)
+            cmd = Command.Command(array=commandArray)
         elif system.name == "windows":
             commandArray = ["batocera-wine", "windows", "play", rom]
-            cmd=Command.Command(array=commandArray)
-        else: raise Exception("invalid system " + system.name)
+            cmd = Command.Command(
+                array=commandArray,
+                env={
+                    "SDL_JOYSTICK_HIDAPI": "0"
+                }
+            )
 
         cmd.env['SDL_GAMECONTROLLERCONFIG']=controllersConfig.generateSdlGameControllerConfig(playersControllers)
 

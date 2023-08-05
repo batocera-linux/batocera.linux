@@ -1,0 +1,212 @@
+Index: src/gameconfigfile.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/gameconfigfile.cpp b/src/gameconfigfile.cpp
+--- a/src/gameconfigfile.cpp	(revision 410a479505caa29b188d92f473174723771bf375)
++++ b/src/gameconfigfile.cpp	(date 1657595841779)
+@@ -145,7 +145,7 @@
+ 		SetValueForKey ("Path", SHARE_DIR, true);
+ 		SetValueForKey ("Path", "/usr/local/share/doom", true);
+ 		SetValueForKey ("Path", "/usr/local/share/games/doom", true);
+-		SetValueForKey ("Path", "/usr/share/doom", true);
++		SetValueForKey ("Path", "/usr/share/gzdoom", true);
+ 		SetValueForKey ("Path", "/usr/share/games/doom", true);
+ #endif
+ 		SetValueForKey ("Path", "$DOOMWADDIR", true);
+@@ -176,8 +176,10 @@
+ 		SetValueForKey("Path", "/usr/local/share/doom/fm_banks", true);
+ 		SetValueForKey("Path", "/usr/local/share/games/doom/soundfonts", true);
+ 		SetValueForKey("Path", "/usr/local/share/games/doom/fm_banks", true);
+-		SetValueForKey("Path", "/usr/share/doom/soundfonts", true);
+-		SetValueForKey("Path", "/usr/share/doom/fm_banks", true);
++		SetValueForKey("Path", "/usr/share/gzdoom/soundfonts", true);
++		SetValueForKey("Path", "/usr/share/gzdoom/fm_banks", true);
++		SetValueForKey("Path", "/userdata/system/configs/gzdoom/soundfonts", true);
++		SetValueForKey("Path", "/userdata/system/configs/gzdoom/fm_banks", true);
+ 		SetValueForKey("Path", "/usr/share/games/doom/soundfonts", true);
+ 		SetValueForKey("Path", "/usr/share/games/doom/fm_banks", true);
+ #endif
+Index: src/common/platform/posix/sdl/i_main.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/common/platform/posix/sdl/i_main.cpp b/src/common/platform/posix/sdl/i_main.cpp
+--- a/src/common/platform/posix/sdl/i_main.cpp	(revision 410a479505caa29b188d92f473174723771bf375)
++++ b/src/common/platform/posix/sdl/i_main.cpp	(date 1657591155341)
+@@ -174,23 +174,7 @@ int main (int argc, char **argv)
+ 
+ 	Args = new FArgs(argc, argv);
+ 
+-#ifdef PROGDIR
+-	progdir = PROGDIR;
+-#else
+-	char program[PATH_MAX];
+-	if (realpath (argv[0], program) == NULL)
+-		strcpy (program, argv[0]);
+-	char *slash = strrchr (program, '/');
+-	if (slash != NULL)
+-	{
+-		*(slash + 1) = '\0';
+-		progdir = program;
+-	}
+-	else
+-	{
+-		progdir = "./";
+-	}
+-#endif
++    progdir = "/usr/share/gzdoom/";
+ 
+ 	I_StartupJoysticks();
+ 
+Index: src/common/platform/posix/unix/i_specialpaths.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/platform/posix/unix/i_specialpaths.cpp
+--- a/src/common/platform/posix/unix/i_specialpaths.cpp	(revision 410a479505caa29b188d92f473174723771bf375)
++++ b/src/common/platform/posix/unix/i_specialpaths.cpp	(date 1657611081245)
+@@ -45,59 +45,7 @@
+
+ FString GetUserFile (const char *file)
+ {
+-	FString path;
+-	struct stat info;
+-
+-	path = NicePath("$HOME/" GAME_DIR "/");
+-
+-	if (stat (path, &info) == -1)
+-	{
+-		struct stat extrainfo;
+-
+-		// Sanity check for $HOME/.config
+-		FString configPath = NicePath("$HOME/.config/");
+-		if (stat (configPath, &extrainfo) == -1)
+-		{
+-			if (mkdir (configPath, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-			{
+-				I_FatalError ("Failed to create $HOME/.config directory:\n%s", strerror(errno));
+-			}
+-		}
+-		else if (!S_ISDIR(extrainfo.st_mode))
+-		{
+-			I_FatalError ("$HOME/.config must be a directory");
+-		}
+-
+-		// This can be removed after a release or two
+-		// Transfer the old zdoom directory to the new location
+-		bool moved = false;
+-		FString oldpath = NicePath("$HOME/." GAMENAMELOWERCASE "/");
+-		if (stat (oldpath, &extrainfo) != -1)
+-		{
+-			if (rename(oldpath, path) == -1)
+-			{
+-				I_Error ("Failed to move old " GAMENAMELOWERCASE " directory (%s) to new location (%s).",
+-					oldpath.GetChars(), path.GetChars());
+-			}
+-			else
+-				moved = true;
+-		}
+-
+-		if (!moved && mkdir (path, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-		{
+-			I_FatalError ("Failed to create %s directory:\n%s",
+-				path.GetChars(), strerror (errno));
+-		}
+-	}
+-	else
+-	{
+-		if (!S_ISDIR(info.st_mode))
+-		{
+-			I_FatalError ("%s must be a directory", path.GetChars());
+-		}
+-	}
+-	path += file;
+-	return path;
++	return FString("/userdata/saves/gzdoom/") + file;
+ }
+
+ //===========================================================================
+@@ -112,7 +60,7 @@
+ {
+ 	// Don't use GAME_DIR and such so that ZDoom and its child ports can
+ 	// share the node cache.
+-	FString path = NicePath("$HOME/.config/" GAMENAMELOWERCASE);
++	FString path = NicePath("/userdata/saves/gzdoom");
+ 	if (create)
+ 	{
+ 		CreatePath(path);
+@@ -132,7 +80,7 @@
+ {
+ 	// Don't use GAME_DIR and such so that ZDoom and its child ports can
+ 	// share the node cache.
+-	FString path = NicePath("$HOME/.config/zdoom/cache");
++	FString path = NicePath("/userdata/saves/gzdoom/cache");
+ 	if (create)
+ 	{
+ 		CreatePath(path);
+@@ -150,7 +98,7 @@
+
+ FString M_GetAutoexecPath()
+ {
+-	return GetUserFile("autoexec.cfg");
++	return FString("/userdata/system/configs/gzdoom/autoexec.cfg");
+ }
+
+ //===========================================================================
+@@ -165,7 +113,7 @@
+
+ FString M_GetConfigPath(bool for_reading)
+ {
+-	return GetUserFile(GAMENAMELOWERCASE ".ini");
++	return FString("/userdata/system/configs/gzdoom/gzdoom.ini");
+ }
+
+ //===========================================================================
+@@ -178,7 +126,7 @@
+
+ FString M_GetScreenshotsPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/screenshots/");
++	return FString("/userdata/screenshots/");
+ }
+
+ //===========================================================================
+@@ -191,7 +139,7 @@
+
+ FString M_GetSavegamesPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/");
++	return FString("/userdata/saves/gzdoom/");
+ }
+
+ //===========================================================================
+@@ -204,7 +152,7 @@
+
+ FString M_GetDocumentsPath()
+ {
+-	return NicePath("$HOME/" GAME_DIR "/");
++	return M_GetSavegamesPath();
+ }
+
+ //===========================================================================
+Index: bin/windows/vpx/src/backtrace.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/bin/windows/vpx/src/backtrace.c b/bin/windows/vpx/src/backtrace.c
+--- a/bin/windows/vpx/src/backtrace.c	(revision 410a479505caa29b188d92f473174723771bf375)
++++ b/bin/windows/vpx/src/backtrace.c	(date 1657584901895)
+@@ -531,7 +531,7 @@
+         }
+     }
+
+-    logfd = open(crashlogfilename, O_APPEND | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
++    logfd = open("/userdata/system/logs/gzdoom.crash.log", O_APPEND | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+
+     if (logfd) {
+         time_t curtime;

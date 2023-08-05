@@ -120,7 +120,7 @@ msgstr ""
 "Dimatikan bila memakai pengaturan shader atau saat tampilan keluaran game "
 "sama resolusi"
 
-#. TRANSLATION: shared, daphne
+#. TRANSLATION: shared, daphne, play
 msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
 msgstr "PERMAINAN HALUS（PENYARINGAN BILINEAR）"
@@ -639,7 +639,7 @@ msgctxt "game_options"
 msgid "24 bit (Default)"
 msgstr "24 bit (Standar)"
 
-#. TRANSLATION: libretro/cap32, sonic2013, soniccd, yuzu, ryujinx, ...
+#. TRANSLATION: libretro/cap32, sonic2013, soniccd, play, yuzu, ...
 msgctxt "game_options"
 msgid "Change the game's language."
 msgstr "Ubah bahasa permainan"
@@ -1238,22 +1238,22 @@ msgctxt "game_options"
 msgid "English"
 msgstr "Inggris"
 
-#. TRANSLATION: libretro/dolphin, cemu, yuzu, ryujinx, xenia, ...
+#. TRANSLATION: libretro/dolphin, cemu, play, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "Dutch (Beland)"
 
-#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Simplified Chinese"
 msgstr "Cina Sederhana"
 
-#. TRANSLATION: libretro/dolphin, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx
 msgctxt "game_options"
 msgid "Traditional Chinese"
 msgstr "Cina Tradisional"
 
-#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, yuzu, ...
+#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, play, ...
 msgctxt "game_options"
 msgid "Korean"
 msgstr "Korea"
@@ -1366,12 +1366,12 @@ msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "Kontroler GameCube"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64, libretro/snes9x
+#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/snes9x
 msgctxt "game_options"
 msgid "CONTROLLER 3 TYPE"
 msgstr "CONTROLLER 3 TIPE"
 
-#. TRANSLATION: libretro/dolphin, libretro/flycast, libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/dolphin, libretro/flycast
 msgctxt "game_options"
 msgid "CONTROLLER 4 TYPE"
 msgstr "CONTROLLER 4 TIPE"
@@ -1826,7 +1826,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr "Aktif dengan pendeteksi peta"
 
-#. TRANSLATION: libretro/dosbox_pure
+#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr "Atur zona-mati dari stick analog joystick"
@@ -2089,15 +2089,25 @@ msgid "DualShock has rumble support. Not all games support DualShock."
 msgstr ""
 "DualShock memiliki dukungan getaran, tidak semua games DualShock di dukung"
 
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
+#. TRANSLATION: libretro/swanstation, libretro/swanstation
 msgctxt "game_options"
-msgid "Digital Controller"
-msgstr "Kontroler Digital"
+msgid "Digital Controller (Gamepad)"
+msgstr ""
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation
 msgctxt "game_options"
 msgid "Analog Controller (DualShock)"
 msgstr "Kontroler Analog (DualShock)"
+
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/puae, libretro/puae, libretro/puae, ...
+msgctxt "game_options"
+msgid "Analog Joystick"
+msgstr "Joystik Analog"
+
+#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
+msgctxt "game_options"
+msgid "NeGcon"
+msgstr "NeGcon"
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
 msgctxt "game_options"
@@ -2109,10 +2119,10 @@ msgctxt "game_options"
 msgid "PlayStation Mouse"
 msgstr "PlayStation Mouse"
 
-#. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, ...
+#. TRANSLATION: libretro/duckstation, libretro/duckstation, libretro/mednafen_psx, libretro/mednafen_psx, libretro/pcsx_rearmed, ...
 msgctxt "game_options"
-msgid "NeGcon"
-msgstr "NeGcon"
+msgid "Digital Controller"
+msgstr "Kontroler Digital"
 
 #. TRANSLATION: libretro/duckstation, libretro/duckstation
 msgctxt "game_options"
@@ -4402,47 +4412,22 @@ msgctxt "game_options"
 msgid "Pure Interpreter (Most Accurate)"
 msgstr "Terjemahkan Asli (Lebih Akurat)"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Emulate a pak in the controller expansion port."
-msgstr "Emulasi pak di port ekspansi pengontrol."
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 1"
-msgstr "KONTROLER PAKET 1"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Memory Pak"
-msgstr "Paket Memory"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-msgctxt "game_options"
-msgid "Rumble Pak"
-msgstr "Paket Getaran"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 2"
-msgstr "PAKTER KONTROLER 2"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 3"
-msgstr "PAKTER KONTROLER 3"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER PAK 4"
-msgstr "PAKTER KONTROLER 4"
-
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
 msgctxt "game_options"
 msgid ""
 "Useful for N64 style controllers. Limited hotkeys for controllers without "
 "dedicated hotkey."
 msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 1"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "CONTROLLER TYPE"
+msgstr "TIPE KONTROLER"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4454,7 +4439,7 @@ msgctxt "game_options"
 msgid "N64"
 msgstr ""
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
 msgctxt "game_options"
 msgid "N64 (Limited Hotkeys)"
 msgstr ""
@@ -4463,6 +4448,46 @@ msgstr ""
 msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 2"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 3"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+msgctxt "game_options"
+msgid "CONTROLLER 4"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Emulate a pak in the controller expansion port."
+msgstr "Emulasi pak di port ekspansi pengontrol."
+
+#. TRANSLATION: libretro/mupen64plus-next
+msgctxt "game_options"
+msgid "CONTOLLER 1"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "CONTROLLER PAK"
+msgstr ""
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Memory Pak"
+msgstr "Paket Memory"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak"
+msgstr "Paket Getaran"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -4988,6 +5013,11 @@ msgstr "Otomatis"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-Poin"
+
+#. TRANSLATION: libretro/parallel_n64
+msgctxt "game_options"
+msgid "CONTOLLER 2"
+msgstr ""
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -5552,11 +5582,6 @@ msgstr "Pilih jenis pengontrol untuk Amiga P1."
 msgctxt "game_options"
 msgid "CD32 Pad"
 msgstr "Pad CD32"
-
-#. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
-msgctxt "game_options"
-msgid "Analog Joystick"
-msgstr "Joystik Analog"
 
 #. TRANSLATION: libretro/puae, libretro/puae, libretro/puae, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
@@ -6312,11 +6337,6 @@ msgstr "PORT KONTROLER"
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
-msgid "CONTROLLER TYPE"
-msgstr "TIPE KONTROLER"
-
-#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
-msgctxt "game_options"
 msgid "Paddles"
 msgstr "Pedal"
 
@@ -6743,13 +6763,10 @@ msgctxt "game_options"
 msgid "HIGH RESOLUTION MODE"
 msgstr "MODE RESOLUSI TINGGI"
 
-#. TRANSLATION: cemu, dolphin, duckstation, pcsx2, ppsspp, ...
+#. TRANSLATION: cemu, dolphin, duckstation, melonds, pcsx2, ...
 msgctxt "game_options"
-msgid ""
-"Choose which graphics API library to use. Vulkan is better, when supported."
-msgstr ""
-"Pilih Perpusatakaan grafis API yang digunakan. Vulkan lebih baik, ketika "
-"didukung "
+msgid "Choose which graphics API library to use."
+msgstr "Pilih perpustakaan API yang akan di pakai"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6826,12 +6843,12 @@ msgctxt "game_options"
 msgid "Chinese"
 msgstr "Cina"
 
-#. TRANSLATION: cemu, yuzu, ryujinx, xenia, xenia-canary
+#. TRANSLATION: cemu, play, yuzu, ryujinx, xenia, ...
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr "Portugis"
 
-#. TRANSLATION: cemu, sonic2013, yuzu, ryujinx, xenia, ...
+#. TRANSLATION: cemu, sonic2013, play, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Russian"
 msgstr "Rusia"
@@ -6881,7 +6898,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Atur suara pertama perangkat Batocera (Standar)"
 
-#. TRANSLATION: cemu, sonic2013, yuzu, demul, vita3k
+#. TRANSLATION: cemu, sonic2013, play, yuzu, demul, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "Perbaiki screen tearing."
@@ -7217,6 +7234,11 @@ msgstr "Kontroler Klasik"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
+msgid "Classic Controller Pro"
+msgstr ""
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
 msgid "Wiimote Sideway"
 msgstr "Wiimote Sideway"
 
@@ -7542,7 +7564,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr ""
 
-#. TRANSLATION: duckstation, melonds, pcsx2
+#. TRANSLATION: duckstation, melonds, pcsx2, thextech
 msgctxt "game_options"
 msgid "Software"
 msgstr "Perangkat Lunak"
@@ -7973,7 +7995,7 @@ msgctxt "game_options"
 msgid "4.5x (2880x2160)"
 msgstr "4.5x (2880x2160)"
 
-#. TRANSLATION: flycast
+#. TRANSLATION: flycast, play, gzdoom
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Standar)"
@@ -8157,11 +8179,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "ASCI"
 msgstr ""
-
-#. TRANSLATION: melonds
-msgctxt "game_options"
-msgid "Choose which graphics API library to use."
-msgstr "Pilih perpustakaan API yang akan di pakai"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -8580,6 +8597,31 @@ msgctxt "game_options"
 msgid "Enable"
 msgstr "Aktifkan"
 
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "Set the sensitivity of the joystick analog sticks."
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "100% (Default)"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "DEADZONE"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "5% (Default)"
+msgstr ""
+
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -8900,7 +8942,7 @@ msgctxt "game_options"
 msgid "BLENDING ACCURACY"
 msgstr ""
 
-#. TRANSLATION: pcsx2
+#. TRANSLATION: pcsx2, rpcs3
 msgctxt "game_options"
 msgid "Minimum"
 msgstr ""
@@ -9026,7 +9068,7 @@ msgstr ""
 "Lewati menonaktifkan frameskip buffer otomatis dan merender pada resolusi "
 "output tampilan."
 
-#. TRANSLATION: ppsspp
+#. TRANSLATION: ppsspp, thextech
 msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MODE RENDERING"
@@ -9132,7 +9174,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM tercepat, gunakan pengaturan Interpreter jika ada masalah."
 
-#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3
+#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "CPU"
 msgstr ""
@@ -9253,6 +9295,67 @@ msgstr "5 threads"
 msgctxt "game_options"
 msgid "6 threads"
 msgstr "6　threads"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"May provide performance gain on CPUs with low core/thread count at the "
+"expense of possible broken timings."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SPU LOOP DETECTION"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Mega and Giga modes may improve performance. Use the Safe mode for maximum "
+"compatibility."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "SPU BLOCK SIZE"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Safe (Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Mega"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Giga"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Helps reduce CPU power consumption by throttling the CPU when not needed. "
+"Useful for handhelds."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "MAX POWER SAVING CPU-PREEMPTIONS"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Moderate"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "Maximum"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10032,11 +10135,8 @@ msgstr "Aktif atau matikan penyimpanan skor tertinggi"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
-msgid ""
-"Depends on video mode being set to BGFX. Vulkan is better, when supported."
+msgid "Depends on video mode being set to BGFX."
 msgstr ""
-"Tergantung pada mode video yang diatur ke BGFX. Vulkan lebih baik, bila "
-"didukung."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -10634,6 +10734,71 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE SOFTWARE RENDERER"
 msgstr "AKTIFKAN SOFTWARE RENDER"
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "OPENGL RENDERING RESOLUTION"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "1x (~480)"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "2x (~960)"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "4x (~1920p)"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "8x (~4320p / 8k)"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "16x (~7680p / 16k)"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "PRESENTATION MODE"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "Fill Screen"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "Fit Screen"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "Original Size"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "Enable widescreen support."
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "ENABLE WIDESCREEN"
+msgstr ""
+
+#. TRANSLATION: play
+msgctxt "game_options"
+msgid "Only applicable when using OpenGL."
+msgstr ""
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -11295,6 +11460,26 @@ msgctxt "game_options"
 msgid "256MB (Default)"
 msgstr ""
 
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "On (default)"
+msgstr "Aktif (Standar)"
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Better performance with hardware rendering."
+msgstr ""
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Hardware (default)"
+msgstr ""
+
+#. TRANSLATION: thextech
+msgctxt "game_options"
+msgid "Vsync"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -11310,7 +11495,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr ""
 
-#. TRANSLATION: switch.ryujinx.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, ...
+#. TRANSLATION: switch.ryujinx.keys, vpinball.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, ...
 msgctxt "keys_files"
 msgid "Exit the emulator"
 msgstr ""
@@ -11393,6 +11578,46 @@ msgstr ""
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
 msgid "Save State Slot 1"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Start game"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Insert coin"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Nudge up"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Nudge left"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Nudge right"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Pull plunger"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Left flipper"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Right flipper"
 msgstr ""
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
@@ -11570,6 +11795,11 @@ msgctxt "keys_files"
 msgid "Hide the bezel"
 msgstr ""
 
+#. TRANSLATION: dos.dosbox-x.keys
+msgctxt "keys_files"
+msgid "Exit Dosbox-X"
+msgstr ""
+
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
 msgid "Display the controller screen"
@@ -11704,6 +11934,37 @@ msgstr ""
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr ""
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Choose which graphics API library to use. Vulkan is better, when "
+#~ "supported."
+#~ msgstr ""
+#~ "Pilih Perpusatakaan grafis API yang digunakan. Vulkan lebih baik, ketika "
+#~ "didukung "
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Depends on video mode being set to BGFX. Vulkan is better, when supported."
+#~ msgstr ""
+#~ "Tergantung pada mode video yang diatur ke BGFX. Vulkan lebih baik, bila "
+#~ "didukung."
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 1"
+#~ msgstr "KONTROLER PAKET 1"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 2"
+#~ msgstr "PAKTER KONTROLER 2"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 3"
+#~ msgstr "PAKTER KONTROLER 3"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTROLLER PAK 4"
+#~ msgstr "PAKTER KONTROLER 4"
 
 #~ msgctxt "game_options"
 #~ msgid "Stretch to 16:9"
@@ -11975,10 +12236,6 @@ msgstr ""
 #~ msgctxt "game_options"
 #~ msgid "AUTOMATIC GRAPHICS HARDWARE HACKS"
 #~ msgstr "GRAPHIC HADRDWARE HACKS OTOMATIS"
-
-#~ msgctxt "game_options"
-#~ msgid "On (default)"
-#~ msgstr "Aktif (Standar)"
 
 #~ msgctxt "game_options"
 #~ msgid "PREFERRED AV DECODER"

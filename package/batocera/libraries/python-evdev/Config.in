@@ -1,6 +1,0 @@
-config BR2_PACKAGE_PYTHON_EVDEV
-        bool "python-evdev"
-	select BR2_PACKAGE_PYTHON3
-	select BR2_PACKAGE_PYTHON_PYUDEV
-        help
-	  https://github.com/gvalkov/python-evdev

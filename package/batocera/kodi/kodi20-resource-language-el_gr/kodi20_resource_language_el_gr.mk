@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_RESOURCE_LANGUAGE_EL_GR_VERSION = 10.0.52
+KODI20_RESOURCE_LANGUAGE_EL_GR_VERSION = 10.0.53
 KODI20_RESOURCE_LANGUAGE_EL_GR_SOURCE = resource.language.el_gr-$(KODI20_RESOURCE_LANGUAGE_EL_GR_VERSION).zip
 KODI20_RESOURCE_LANGUAGE_EL_GR_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.el_gr
 KODI20_RESOURCE_LANGUAGE_EL_GR_PLUGINNAME=resource.language.el_gr

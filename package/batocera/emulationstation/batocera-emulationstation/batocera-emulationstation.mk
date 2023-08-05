@@ -1,10 +1,10 @@
 ################################################################################
 #
-# Batocera EmulationStation
+# batocera-emulationStation
 #
 ################################################################################
-# Last update: June 2, 2023
-BATOCERA_EMULATIONSTATION_VERSION = 04e88bc0a4b64f82388bd71a769002cd0c173a83
+# Last update: August 5, 2023
+BATOCERA_EMULATIONSTATION_VERSION = 3d0823598cf8fefb35c00626b733e2adb5780092
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -24,10 +24,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
 BATOCERA_EMULATIONSTATION_CONF_OPTS += -DGLES2=ON
-endif
-
-ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
-BATOCERA_EMULATIONSTATION_CONF_OPTS += -DEGL=ON
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
