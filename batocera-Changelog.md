@@ -27,6 +27,7 @@
 - Fixed crop overscan settings for NES to work with newer core builds
 - DVD playback in Kodi
 ### Changed
+- ES music volume on a logarithmic scale instead of linear one
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
 - n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
