@@ -18,7 +18,7 @@ class WineGenerator(Generator):
             cmd=Command.Command(array=commandArray)
         else: raise Exception("invalid system " + system.name)
 
-        cmd.env['SDL_GAMECONTROLLERCONFIG']=controllersConfig.generateSdlGameControllerConfig(playersControllers)
+        cmd.env['SDL_GAMECONTROLLERCONFIG']=controllersConfig.generateSdlGameControllerConfig(playersControllers,'enable_gamepad' not in system.config or system.config['enable_gamepad']=='1')
 
         if 'lang' in system.config and system.config['lang'] != '':
             cmd.env['LANG']=cmd.env['LC_ALL']=system.config['lang']+'.UTF-8'
