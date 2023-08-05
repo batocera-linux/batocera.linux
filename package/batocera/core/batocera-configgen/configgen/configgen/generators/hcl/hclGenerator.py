@@ -4,11 +4,17 @@ import Command
 from generators.Generator import Generator
 import controllersConfig
 import os
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 class HclGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        os.chdir("/usr/share/hcl")
+        try:
+            os.chdir("/userdata/roms/hcl/data/map")
+            os.chdir("/userdata/roms/hcl/")
+        except:
+            eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["hcl"]
 
         return Command.Command(
