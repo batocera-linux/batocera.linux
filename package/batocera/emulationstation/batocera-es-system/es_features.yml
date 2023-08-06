@@ -10121,7 +10121,12 @@ model2emu:
             description: Enable widescreen support.
             choices:
                 "Off":      1
-                "On":       4 
+                "On":       4
+        crossHairs:
+            prompt: SHOW LIGHT GUN CROSSHAIRS
+            choices:
+                "Off":          0
+                "On (Default)": 1
         fakeGouraud:
             group: ADVANCED OPTIONS
             prompt:      FAKE GOURAUD
