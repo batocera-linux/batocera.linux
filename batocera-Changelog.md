@@ -45,7 +45,7 @@
 - dosbox-x to v2023.05.01
 - tsugaru to v20230722
 - dolphin to 5.0-19864
-- duckstation to Jun 30, 2023 build
+- duckstation to Aug 4, 2023 build
 - flycast to July 5th build
 - melonds to July 8th build
 - ppsspp to July 8th build
