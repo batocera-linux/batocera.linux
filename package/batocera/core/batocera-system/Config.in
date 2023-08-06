@@ -940,6 +940,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # C-Dogs SDL
     select BR2_PACKAGE_CDOGS                # ALL
 
+    # Turrican clone
+    select BR2_PACKAGE_HURRICAN             # ALL
+
     help
         Ports
 
@@ -1250,10 +1253,6 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
     # CorsixTH (Theme Hospital engine)
     select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64
-
-    # Turrican Port
-    select BR2_PACKAGE_LIBEPOXY             # ALL
-    select BR2_PACKAGE_HURRICAN             # ALL
 
     # Jazz Jackrabbit
     select BR2_PACKAGE_OPENJAZZ             # ALL
