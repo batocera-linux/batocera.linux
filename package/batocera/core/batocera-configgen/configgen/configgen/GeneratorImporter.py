@@ -239,6 +239,10 @@ def getGenerator(emulator):
         from generators.hcl.hclGenerator import HclGenerator
         return HclGenerator()
 
+    if emulator == 'hurrican':
+        from generators.hurrican.hurricanGenerator import HurricanGenerator
+        return HurricanGenerator()
+
     if emulator == 'openmsx':
         from generators.openmsx.openmsxGenerator import OpenmsxGenerator
         return OpenmsxGenerator()
