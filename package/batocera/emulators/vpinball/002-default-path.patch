@@ -1,0 +1,13 @@
+diff --git a/vpinball.cpp b/vpinball.cpp
+index 142860ad68..40aa17667e 100644
+--- a/vpinball.cpp
++++ b/vpinball.cpp
+@@ -237,7 +237,7 @@ void VPinball::GetMyPrefPath()
+    m_szMyPrefPath = szPrefPath;
+    SDL_free(szPrefPath);
+ #else
+-   m_szMyPrefPath = string(getenv("HOME")) + PATH_SEPARATOR_CHAR + ".vpinball" + PATH_SEPARATOR_CHAR;
++   m_szMyPrefPath = string("/userdata/system/configs") + PATH_SEPARATOR_CHAR + "vpinball" + PATH_SEPARATOR_CHAR;
+ #endif
+    if (!DirExists(m_szMyPrefPath))
+       std::filesystem::create_directory(m_szMyPrefPath);
