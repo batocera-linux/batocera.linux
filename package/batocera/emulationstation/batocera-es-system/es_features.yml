@@ -10116,12 +10116,27 @@ soniccd:
 model2emu:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        renderRes:
+            prompt: RENDERING RESOLUTION
+            description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+            choices:
+                "640x480":                     0
+                "800x600":                     1
+                "1024x768":                    2
+                "1280x1024":                   3
+                "Screen Resolution (Default)": 4
         ratio:
             prompt: ENABLE WIDESCREEN
             description: Enable widescreen support.
             choices:
-                "Off":      1
-                "On":       4
+                "Off": false
+                "On":  true
+        scanlines:
+            prompt: ENABLE SCANLINES
+            description: Enable scanlines for roms that support it.
+            choices:
+                "Off": false
+                "On":  true
         crossHairs:
             prompt: SHOW LIGHT GUN CROSSHAIRS
             choices:
