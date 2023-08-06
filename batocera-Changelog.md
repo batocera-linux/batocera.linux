@@ -79,6 +79,7 @@
 - llvm to 16.0.6
 - Buildroot to 2023.05.01
 - Preliminary support for Khadas VIM4, Khadas VIM1S
+- linux firmware to 20230804
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
