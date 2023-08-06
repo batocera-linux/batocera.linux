@@ -93,12 +93,12 @@ class DaphneGenerator(Generator):
         else:
             commandArray.append("-opengl")
 
-        # Disable Bilinear Filtering
+        # Enable Bilinear Filtering
         if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
-            commandArray.append("-nolinear_scale")
+            commandArray.append("-linear_scale")
 
         #The following options should only be set when os.path.isfile(singeFile) is true.
-        #-blend_sprites, -set_overlay oversize, -nocrosshair, -sinden or -manymouse
+        #-blend_sprites, -nocrosshair, -sinden or -manymouse
         if os.path.isfile(singeFile):
             # Blend Sprites (Singe)
             if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
@@ -132,14 +132,6 @@ class DaphneGenerator(Generator):
                     if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
-            # Overlay sizes (Singe) for HD lightgun and Singe 2 games
-            if system.isOptSet('overlay_size') and system.config['overlay_size'] == 'oversize':
-                commandArray.extend(["-set_overlay", "oversize"])
-            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'full':
-                commandArray.extend(["-set_overlay", "full"])
-            elif system.isOptSet('overlay_size') and system.config['overlay_size'] == 'half':
-                commandArray.extend(["-set_overlay", "half"])
-            
             # crosshair
             if system.isOptSet('daphne_crosshair'):
                 if not system.getOptBoolean("daphne_crosshair"):
@@ -148,7 +140,7 @@ class DaphneGenerator(Generator):
                     if not controllersConfig.gunsNeedCrosses(guns):
                         commandArray.append("-nocrosshair")
 
-        # Invert Axis
+        # Invert HAT Axis
         if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
             commandArray.append("-tiphat")
 
@@ -170,7 +162,7 @@ class DaphneGenerator(Generator):
         if system.isOptSet('daphne_scanlines') and system.getOptBoolean("daphne_scanlines"):
             commandArray.append("-scanlines")
 
-        # Hide crosshair in supported games (e.g. ActionMax)
+        # Hide crosshair in supported games (e.g. ActionMax, ALG)
         if system.isOptSet('singe_crosshair') and system.getOptBoolean("singe_crosshair"):
             commandArray.append("-nocrosshair")
 
