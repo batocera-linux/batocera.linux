@@ -76,7 +76,7 @@
 - bluez to 5.68
 - wildmidi to 0.4.5
 - vulkan stack to 1.3.257
-- SDL2 to 2.28.1
+- SDL2 to 2.28.2
 - nvidia production driver to 535.86.05
 - faudio to 23.08
 - llvm to 16.0.6
