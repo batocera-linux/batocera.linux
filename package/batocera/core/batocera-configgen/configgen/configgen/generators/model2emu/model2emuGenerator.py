@@ -19,7 +19,7 @@ class Model2EmuGenerator(Generator):
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/model2"
         emupath = wineprefix + "/model2emu"
-        rompath = "/userdata/roms/model2"
+        rompath = "/userdata/roms/model2/"
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
@@ -114,7 +114,7 @@ class Model2EmuGenerator(Generator):
         # add subdirectories
         dirnum = 1 # existing rom path
         for x in os.listdir(rompath):
-            possibledir = str(rompath + "/" + x)
+            possibledir = str(rompath + x)
             if os.path.isdir(possibledir) and x != "images":
                 dirnum = dirnum +1
                 # convert to windows friendly name
@@ -125,7 +125,10 @@ class Model2EmuGenerator(Generator):
         # set ini to use custom resolution and automatically start in fullscreen
         Config.set("Renderer","FullScreenWidth", str(gameResolution["width"]))
         Config.set("Renderer","FullScreenHeight", str(gameResolution["height"]))
-        Config.set("Renderer","FullMode", "4")
+        if system.isOptSet("ratio"):
+            Config.set("Renderer","FullMode", format(system.config["ratio"]))
+        else:
+            Config.set("Renderer","FullMode", "1")
         Config.set("Renderer","AutoFull", "1")
 
         # now set the emulator features
@@ -180,22 +183,17 @@ class Model2EmuGenerator(Generator):
 
         # check if software render option is chosen
         if system.isOptSet("model2Software") and system.config["model2Software"] == "1":
-            environment = {
-            "WINEPREFIX": wineprefix,
-            "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
-            "LIBGL_DRIVERS_PATH": "/lib32/dri",
-            "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3",
-            "__GLX_VENDOR_LIBRARY_NAME": "mesa",
-            "MESA_LOADER_DRIVER_OVERRIDE": "llvmpipe",
-            "GALLIUM_DRIVER": "llvmpipe"
-            }
+            environment.update({
+                "__GLX_VENDOR_LIBRARY_NAME": "mesa",
+                "MESA_LOADER_DRIVER_OVERRIDE": "llvmpipe",
+                "GALLIUM_DRIVER": "llvmpipe"
+            })
 
         # now run the emulator
-        commandArray = ["/usr/wine/proton/bin/wine", "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
+        commandArray = ["/usr/wine/proton/bin/wine", emupath + "/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         if rom != 'config':
-            romname = rom.replace("/userdata/roms/model2/", "")
+            romname = rom.replace(rompath, "")
             smplromname = romname.replace(".zip", "")
             rom = smplromname.split('/', 1)[-1]
             commandArray.extend([rom])
