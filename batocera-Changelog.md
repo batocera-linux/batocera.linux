@@ -63,6 +63,7 @@
 - SDLPoP to v1.23 (Feb, 4th 2023)
 - BigPemu to v107
 - commander genius to v3.4.9
+- play! to v0.62
 ### Dev
 - linux kernel for x86_64 to 6.4.8
 - linux kernel for RPI to 6.1.32
