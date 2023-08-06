@@ -27,7 +27,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/kvim4 amlogic/kvim1s"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/kvim4"
 
 # System
 # todo BR2_PACKAGE_BATOCERA_KODI20=y
@@ -43,7 +43,6 @@ BR2_PACKAGE_FIRMWARE_KHADAS_VIM4=y
 
 # Bootloader
 BR2_PACKAGE_UBOOT_VIM4=y
-BR2_PACKAGE_UBOOT_VIM1S=y
 
 # choices can be put in _defconfig files only
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
