@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_PLAY_VERSION = 0.61
+LIBRETRO_PLAY_VERSION = 0.62
 LIBRETRO_PLAY_SITE = https://github.com/jpd002/Play-.git
 LIBRETRO_PLAY_SITE_METHOD = git
 LIBRETRO_PLAY_GIT_SUBMODULES = YES
@@ -19,7 +19,7 @@ LIBRETRO_PLAY_CONF_OPTS += -DBUILD_PLAY=OFF
 LIBRETRO_PLAY_CONF_OPTS += -DENABLE_AMAZON_S3=ON
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-LIBRETRO_PLAY_DEPENDENCIES = qt5base qt5x11extras xserver_xorg-server libglew
+LIBRETRO_PLAY_DEPENDENCIES = libglew
 endif
 
 # Force to use GLES on ARM
