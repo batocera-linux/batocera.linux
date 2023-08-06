@@ -153,8 +153,8 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Folders", "Videos", "../../../saves/ps2/pcsx2/videos")
 
     # create cache folder
-    if not os.path.exists("/userdata/cache/ps2"):
-        os.makedirs("/userdata/cache/ps2")
+    if not os.path.exists("/userdata/system/cache/ps2"):
+        os.makedirs("/userdata/system/cache/ps2")
     
     ## [EmuCore]
     if not pcsx2INIConfig.has_section("EmuCore"):
