@@ -5,7 +5,7 @@
 ################################################################################
 
 MALI_G52_VERSION = 8f3f475751c604be1328c9ccd6c99bd36129953b
-MALI_G52_SITE = $(call github,rtissera,a331d2-mali-g52,$(MALI_G52_VERSION))
+MALI_G52_SITE = $(call github,rtissera,a311d2-mali-g52,$(MALI_G52_VERSION))
 MALI_G52_LICENSE = Proprietary
 MALI_G52_LICENSE_FILES = END_USER_LICENCE_AGREEMENT.txt
 MALI_G52_INSTALL_STAGING = YES
