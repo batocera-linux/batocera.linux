@@ -168,6 +168,10 @@ class Model2EmuGenerator(Generator):
             Config.set("Input","UseRawInput", format(system.config["useRawInput"]))
         else:
             Config.set("Input","UseRawInput", "0")
+        if system.isOptSet("crossHairs"):
+            Config.set("Renderer","DrawCross", format(system.config["crossHairs"]))
+        else:
+            Config.set("Renderer","DrawCross", "1")
         
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
