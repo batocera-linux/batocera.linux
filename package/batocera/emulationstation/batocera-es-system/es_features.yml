@@ -9717,6 +9717,12 @@ wine:
   features: [padtokeyboard]
   shared: [videomode]
   cfeatures:
+        sdl_config:
+            prompt: SDL CONFIG
+            description: Choose whether to pass SDL Game Controller config to the Windows game. Disabling may help with some games.
+            choices:
+                "Off":          0
+                "On (Deafult)": 1
         dxvk:
             group: ADVANCED OPTIONS
             prompt:      DXVK FEATURE
