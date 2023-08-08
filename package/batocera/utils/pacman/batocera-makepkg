@@ -84,12 +84,12 @@ function check_optional_argument() {
 
 function set_config() {
 	# search for first key.name at beginning of line and write value to it
-	sed -i "1,/^\(\s*$1\s*=\).*/s^^$1 = $2^" "$INFO"
+	sed -i "0,/^\(\s*$1\s*=\).*/{s^^$1 = $2^}" "$INFO"
 }
 
 function uncomment_config() {
 	# search for first Comment Char at beginning of line and remove it
-	sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/s//\1/" "$INFO"
+	sed -i "0,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/{s//\1/}" "$INFO"
 }
 
 function write_argument() {
