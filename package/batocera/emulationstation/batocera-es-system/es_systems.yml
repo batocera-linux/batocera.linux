@@ -3537,6 +3537,24 @@ openjazz:
     openjazz:
       openjazz: { requireAnyOf: [BR2_PACKAGE_OPENJAZZ] }
 
+tyrian:
+  name:       Tyrian
+  manufacturer: Ports
+  release: 1995
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    tyrian:
+      tyrian: { requireAnyOf: [BR2_PACKAGE_TYRIAN] }
+  comment_en: |
+    This system is a standalone game. No rom required.
+  comment_fr: |
+    Ce système est un jeu autonome. Aucune rom n'est requise.
+  comment_br: |
+    Este sistema é um jogo independente. Não requer arquivo de rom.
+
 hurrican:
   name:       Hurrican
   manufacturer: Ports
