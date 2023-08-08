@@ -34,6 +34,9 @@
 - Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
 - To enable Analog mode in Duckstation it's now hotkey + left trigger (l2)
 - kodi splash removed (if the advancedsettings file was not already created)
+- Model2 emulator will now default to 4:3 unless widescreen selected
+- Model2 emulator now allows rendering resolution to be selected
+- Model2 now allows you to enable scanlines
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ba936e8 (Commits on Jul 22, 2023)
