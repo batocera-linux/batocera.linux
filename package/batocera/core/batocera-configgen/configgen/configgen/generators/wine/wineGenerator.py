@@ -25,8 +25,8 @@ class WineGenerator(Generator):
                     "LC_ALL": language + ".UTF-8"
                     }
                 )
-            # sdl controller option
-            if system.isOptSet("sdl_config") and system.getOptBoolean("sdl_config"):
+            # sdl controller option - default is on
+            if not system.isOptSet("sdl_config") or system.getOptBoolean("sdl_config"):
                 environment.update({
                     "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                     "SDL_JOYSTICK_HIDAPI": "0"
