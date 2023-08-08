@@ -243,6 +243,10 @@ def getGenerator(emulator):
         from generators.hurrican.hurricanGenerator import HurricanGenerator
         return HurricanGenerator()
 
+    if emulator == 'tyrian':
+        from generators.tyrian.tyrianGenerator import TyrianGenerator
+        return TyrianGenerator()
+
     if emulator == 'openmsx':
         from generators.openmsx.openmsxGenerator import OpenmsxGenerator
         return OpenmsxGenerator()

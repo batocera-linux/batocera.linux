@@ -923,6 +923,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Turrican clone
     select BR2_PACKAGE_HURRICAN             # ALL
 
+    # OpenTyrian (shmup game)
+    select BR2_PACKAGE_TYRIAN               # ALL
+
     help
         Ports
 
@@ -1241,9 +1244,6 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
     # HoMM3 open source engine
     select BR2_PACKAGE_VCMI                 # ALL
-
-    # OpenTyrian (shmup game)
-    select BR2_PACKAGE_TYRIAN               # ALL
 
     help
         Emulators under development (Experimental)
