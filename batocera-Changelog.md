@@ -22,6 +22,8 @@
 - Tandy / Memorex Video Information System (VIS)
 - Visual Pinball X (Standalone) for X86_64, RPi4 & RK3588 boards
 - Added Sega Pico system entry utilizing existing emulator cores
+- Added Hydra Castle Labyrinth, a 16-bit platformer game (through content downloader)
+- Added Hurrican, a Turrican clone (through content downloader)
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
