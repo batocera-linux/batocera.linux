@@ -88,6 +88,7 @@
 - Buildroot to 2023.05.01
 - Preliminary support for Khadas VIM4, Khadas VIM1S
 - linux firmware to 20230804
+- pacman to 5.2.2 with fix for GNU sed on batocera-makepkg
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
