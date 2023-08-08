@@ -8,7 +8,11 @@ import os
 class HurricanGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
-        os.chdir("/usr/share/hurrican")
+        try:
+            os.chdir("/userdata/roms/hurrican/data/levels/")
+            os.chdir("/userdata/roms/hurrican/")
+        except:
+            eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["hurrican"]
 
         return Command.Command(
