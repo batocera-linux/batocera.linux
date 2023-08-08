@@ -187,6 +187,7 @@ class Model2EmuGenerator(Generator):
         else:
             Config.set("Renderer","FullMode", "4")
         Config.set("Renderer","AutoFull", "1")
+        Config.set("Renderer","ForceSync", "1")
         # widescreen
         lua_file_path = emupath + "/scripts/" + rom + ".lua"
         if system.isOptSet("ratio"):
