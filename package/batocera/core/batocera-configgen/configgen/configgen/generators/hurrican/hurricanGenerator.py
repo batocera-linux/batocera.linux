@@ -4,6 +4,8 @@ import Command
 from generators.Generator import Generator
 import controllersConfig
 import os
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 class HurricanGenerator(Generator):
 

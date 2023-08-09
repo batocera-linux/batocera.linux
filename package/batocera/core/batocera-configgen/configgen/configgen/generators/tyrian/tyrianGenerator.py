@@ -4,12 +4,14 @@ import Command
 from generators.Generator import Generator
 import controllersConfig
 import os
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 class TyrianGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         try:
-            os.chdir("/usr/share/opentyrian")
+            os.chdir("/userdata/roms/tyrian/data")
         except:
             eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["opentyrian"]
