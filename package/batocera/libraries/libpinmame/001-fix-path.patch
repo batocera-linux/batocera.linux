@@ -1,0 +1,13 @@
+diff --git a/src/ppuc/ppuc.cpp b/src/ppuc/ppuc.cpp
+index 3d68b8c158..36275e6e2a 100644
+--- a/src/ppuc/ppuc.cpp
++++ b/src/ppuc/ppuc.cpp
+@@ -529,7 +529,7 @@ int main (int argc, char *argv[]) {
+ #if defined(_WIN32) || defined(_WIN64)
+     snprintf((char*)config.vpmPath, PINMAME_MAX_PATH, "%s%s\\pinmame\\", getenv("HOMEDRIVE"), getenv("HOMEPATH"));
+ #else
+-    snprintf((char*)config.vpmPath, PINMAME_MAX_PATH, "%s/.pinmame/", getenv("HOME"));
++    snprintf((char*)config.vpmPath, PINMAME_MAX_PATH, "/userdata/system/configs/vpinball/pinmame/");
+ #endif
+ 
+ #if defined(SERUM_SUPPORT)
