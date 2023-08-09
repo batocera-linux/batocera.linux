@@ -324,7 +324,10 @@ class DolphinGenerator(Generator):
         hotkeyConfig.set('Hotkeys', 'GBA Window Size/2x', '`KP_2`')
         hotkeyConfig.set('Hotkeys', 'GBA Window Size/3x', '`KP_3`')
         hotkeyConfig.set('Hotkeys', 'GBA Window Size/4x', '`KP_4`')
-        # 
+        # Skylanders Portal
+        hotkeyConfig.set('Hotkeys', 'USB Emulation Devices/Show Skylanders Portal', '@(Ctrl+P)')
+        hotkeyConfig.set('Hotkeys', 'USB Emulation Devices/Show Infinity Base', '@(Ctrl+I)')
+        #
         # Write the configuration to the file
         hotkey_path = '/userdata/system/configs/dolphin-emu/Hotkeys.ini'
         with open(hotkey_path, 'w') as configfile:
