@@ -247,6 +247,10 @@ def getGenerator(emulator):
         from generators.tyrian.tyrianGenerator import TyrianGenerator
         return TyrianGenerator()
 
+    if emulator == 'openjazz':
+        from generators.openjazz.openjazzGenerator import OpenJazzGenerator
+        return OpenJazzGenerator()
+
     if emulator == 'openmsx':
         from generators.openmsx.openmsxGenerator import OpenmsxGenerator
         return OpenmsxGenerator()
