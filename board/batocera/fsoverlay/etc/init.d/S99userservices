@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# custom.sh : deprecated
+if test -e "/userdata/system/custom.sh"; then
+    #bash interpreter executes scripts without x-flag e.g. for vFAT
+    bash /userdata/system/custom.sh $1 &
+fi
+
+enabled_services="$(/usr/bin/batocera-settings-get system.services)"
+
+if test -n "${enabled_services}"
+then
+    for SERVICE in ${enabled_services}
+    do
+	export __SERVICE__${SERVICE}=1
+    done
+fi
+
+# user services
+find /userdata/system/services -type f |
+    while read SERVICE
+    do
+	SRVVAR=__SERVICE__${SERVICE}
+	if test "${!SRVVAR}" = 1
+	then
+	    bash "${SERVICE}" "${1}" &
+	fi
+    done
+
+# system user services
+find /usr/share/batocera/services -type f |
+    while read SERVICE
+    do
+	SRVVAR=__SERVICE__${SERVICE}
+	if test "${!SRVVAR}" = 1
+	then
+	    bash "${SERVICE}" "${1}" &
+	fi
+    done

@@ -39,6 +39,7 @@
 - Model2 emulator will now default to 4:3 unless widescreen selected
 - Model2 emulator now allows rendering resolution to be selected
 - Model2 now allows you to enable scanlines
+- batocera-services - custom.sh is deprecated and may be removed in a later version. Put your services into /userdata/system/services, and enable them in batocera.conf (syncthing may be reenabled).
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ba936e8 (Commits on Jul 22, 2023)
