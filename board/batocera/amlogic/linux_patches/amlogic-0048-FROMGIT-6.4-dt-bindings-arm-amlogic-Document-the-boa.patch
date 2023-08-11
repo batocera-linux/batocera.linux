@@ -1,0 +1,39 @@
+From dafb23b2d7961125dc39553fa6b2ffb1b892a8b5 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Fri, 3 Mar 2023 18:37:57 +0100
+Subject: [PATCH 048/120] FROMGIT(6.4): dt-bindings: arm: amlogic: Document the
+ boards with the BPI-CM4 connected
+
+The BPI-CM4 module with an Amlogic A311D SoC is a module compatible
+with the Raspberry Pi CM4 specifications.
+
+Document the boards using this module, by specifying the BananaPi CM4
+compatible in addition to the baseboard compatible.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 7ded40b309a4..94f68e7c85ed 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -158,6 +158,14 @@ properties:
+           - const: amlogic,a311d
+           - const: amlogic,g12b
+ 
++      - description: Boards using the BPI-CM4 module with Amlogic Meson G12B A311D SoC
++        items:
++          - enum:
++              - bananapi,bpi-cm4io
++          - const: bananapi,bpi-cm4
++          - const: amlogic,a311d
++          - const: amlogic,g12b
++
+       - description: Boards with the Amlogic Meson G12B S922X SoC
+         items:
+           - enum:
+-- 
+2.34.1
+

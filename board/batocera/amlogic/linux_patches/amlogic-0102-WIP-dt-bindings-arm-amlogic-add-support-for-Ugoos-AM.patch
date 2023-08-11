@@ -1,0 +1,30 @@
+From 740b7806615c9781caa1f40e390b6075764bb85e Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 15 Dec 2022 04:27:45 +0000
+Subject: [PATCH 102/120] WIP: dt-bindings: arm: amlogic: add support for Ugoos
+ AM6 plus
+
+The AM6 plus is a revised version of the AM6 Android box based
+on the Amlogic W400 reference board, but now with an S922XJ to
+bump CPU speeds (rev C silicon) and add Dolby Vision features.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index b7ade343feaf..a1ec954a8b8b 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -192,6 +192,7 @@ properties:
+               - hardkernel,odroid-n2-plus
+               - khadas,vim3
+               - ugoos,am6
++              - ugoos,am6-plus
+           - const: amlogic,s922x
+           - const: amlogic,g12b
+ 
+-- 
+2.34.1
+

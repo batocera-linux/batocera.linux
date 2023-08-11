@@ -1,0 +1,29 @@
+From 3cba9548f0cd3d983ffa349516afdb0adf4a62ee Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 13 Feb 2023 11:41:09 +0000
+Subject: [PATCH 113/120] WIP: dt-bindings: arm: amlogic: add support for
+ Sunvell T95Z Plus
+
+Sunvell T95Z Plus is an Android STB based on the Amlogic Q200 reference
+board with S912 chip.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index dea5d15da404..800ecbc6efa6 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -140,6 +140,7 @@ properties:
+               - minix,neo-u9h
+               - nexbox,a1
+               - oranth,tx9-pro
++              - sunvell,t95z-plus
+               - tronsmart,vega-s96
+               - videostrong,gxm-kiii-pro
+               - wetek,core2
+-- 
+2.34.1
+

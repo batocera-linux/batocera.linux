@@ -1,0 +1,139 @@
+From 551f6b28a561c121f00222c0f101c75dfad93d4b Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 9 Feb 2023 10:01:14 +0000
+Subject: [PATCH 107/120] WIP: arm64: dts: meson: add initial device-tree for
+ Tanix TX9 Pro
+
+Oranth Tanix TX9 Pro is based on the Amlogic Q200 reference design with
+an S912 chip and the following specs:
+
+- 3GB DDR3 RAM
+- 32GB eMMC
+- 10/100/1000 Base-T Ethernet
+- AP6356 Wireless (802.11 b/g/n/ac, BT 5.0)
+- HDMI 2.0a video
+- VFD for clock/status
+- 2x USB 2.0 ports
+- IR receiver
+- 1x Power LED (white)
+- 1x Update/Reset button (underside)
+- 1x micro SD card slot
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |  1 +
+ .../boot/dts/amlogic/meson-gxm-tx9-pro.dts    | 90 +++++++++++++++++++
+ 2 files changed, 91 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 43ffbe9e359e..8b4155e0140c 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -78,6 +78,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q200.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q201.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-rbox-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-s912-libretech-pc.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxm-tx9-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-vega-s96.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-wetek-core2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-s4-s805x2-aq222.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
+new file mode 100644
+index 000000000000..9a62176cfe5a
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2016 Endless Computers, Inc.
++ * Author: Carlo Caione <carlo@endlessm.com>
++ */
++
++/dts-v1/;
++
++#include "meson-gxm.dtsi"
++#include "meson-gx-p23x-q20x.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "oranth,tx9-pro", "amlogic,s912", "amlogic,meson-gxm";
++	model = "Tanix TX9 Pro";
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1710000>;
++
++		button-function {
++			label = "Update";
++			linux,code = <KEY_VENDOR>;
++			press-threshold-microvolt = <10000>;
++		};
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		poll-interval = <100>;
++
++		button {
++			label = "power";
++			linux,code = <KEY_POWER>;
++			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&ethmac {
++	pinctrl-0 = <&eth_pins>;
++	pinctrl-names = "default";
++	phy-handle = <&external_phy>;
++	amlogic,tx-delay-ns = <2>;
++	phy-mode = "rgmii";
++};
++
++&external_mdio {
++	external_phy: ethernet-phy@0 {
++		/* Realtek RTL8211F (0x001cc916) */
++		reg = <0>;
++		max-speed = <1000>;
++
++		reset-assert-us = <10000>;
++		reset-deassert-us = <80000>;
++		reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
++
++		interrupt-parent = <&gpio_intc>;
++		/* MAC_INTR on GPIOZ_15 */
++		interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
++	};
++};
++
++&ir {
++	linux,rc-map-name = "rc-tanix-tx3mini";
++};
++
++&sd_emmc_a {
++	brcmf: wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++	};
++};
++
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		shutdown-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		max-speed = <2000000>;
++		clocks = <&wifi32k>;
++		clock-names = "lpo";
++	};
++};
+-- 
+2.34.1
+

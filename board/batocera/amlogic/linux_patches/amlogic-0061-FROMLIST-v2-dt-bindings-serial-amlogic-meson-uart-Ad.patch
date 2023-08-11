@@ -1,0 +1,65 @@
+From f9e1f4f9ae2a9390cc8bde8742f4454acc29ff0f Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 22 Feb 2023 21:41:53 +0100
+Subject: [PATCH 061/120] FROMLIST(v2): dt-bindings: serial:
+ amlogic,meson-uart: Add compatible string for G12A
+
+Amlogic G12A SoCs gained a new "divide XTAL by 2" bit. Everything else
+(we know about) is identical to the UART IP on GX (GXBB/GXL/GXM) SoCs.
+Add a new compatible string for this SoC so this new bit can be managed
+accordingly while keeping "amlogic,meson-gx-uart" as fallback compatible
+string.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/serial/amlogic,meson-uart.yaml   | 28 +++++++++++++------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 7822705ad16c..644d52859497 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -23,21 +23,31 @@ properties:
+   compatible:
+     oneOf:
+       - description: Always-on power domain UART controller
+-        items:
++        oneOf:
++          - items:
++              - enum:
++                  - amlogic,meson6-uart
++                  - amlogic,meson8-uart
++                  - amlogic,meson8b-uart
++                  - amlogic,meson-gx-uart
++                  - amlogic,meson-s4-uart
++              - const: amlogic,meson-ao-uart
++          - items:
++              - const: amlogic,meson-g12a-uart
++              - const: amlogic,meson-gx-uart
++              - const: amlogic,meson-ao-uart
++      - description: Everything-Else power domain UART controller
++        oneOf:
+           - enum:
+               - amlogic,meson6-uart
+               - amlogic,meson8-uart
+               - amlogic,meson8b-uart
+               - amlogic,meson-gx-uart
++              - amlogic,meson-g12a-uart
+               - amlogic,meson-s4-uart
+-          - const: amlogic,meson-ao-uart
+-      - description: Everything-Else power domain UART controller
+-        enum:
+-          - amlogic,meson6-uart
+-          - amlogic,meson8-uart
+-          - amlogic,meson8b-uart
+-          - amlogic,meson-gx-uart
+-          - amlogic,meson-s4-uart
++          - items:
++              - const: amlogic,meson-g12a-uart
++              - const: amlogic,meson-gx-uart
+ 
+   reg:
+     maxItems: 1
+-- 
+2.34.1
+

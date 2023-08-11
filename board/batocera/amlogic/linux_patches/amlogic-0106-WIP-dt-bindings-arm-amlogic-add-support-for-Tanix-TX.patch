@@ -1,0 +1,28 @@
+From d9dd54c8b2d2f7ec05e42392205a67b20dba4e83 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 9 Feb 2023 09:59:58 +0000
+Subject: [PATCH 106/120] WIP: dt-bindings: arm: amlogic: add support for Tanix
+ TX9 Pro
+
+The Oranth Tanix TX9 Pro is an Android STB using the Amlogic S912 chip
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index a1ec954a8b8b..dea5d15da404 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -139,6 +139,7 @@ properties:
+               - libretech,aml-s912-pc
+               - minix,neo-u9h
+               - nexbox,a1
++              - oranth,tx9-pro
+               - tronsmart,vega-s96
+               - videostrong,gxm-kiii-pro
+               - wetek,core2
+-- 
+2.34.1
+

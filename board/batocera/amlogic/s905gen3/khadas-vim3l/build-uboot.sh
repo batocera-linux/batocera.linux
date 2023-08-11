@@ -24,8 +24,11 @@ make khadas-vim3l_defconfig
 ARCH=aarch64 CROSS_COMPILE="${HOST_DIR}/bin/aarch64-buildroot-linux-gnu-" make -j$(nproc)
 mkdir -p ../../uboot-vim3l
 
+# Copy u-boot.bin as u-boot.raw for chainloading
+cp u-boot.bin ../../uboot-vim3l/u-boot.raw
+
 # Clone LibreElec Amlogic FIP
 git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip
 
-# Build and put to appropriate place
+# Build with FIP package and put to appropriate place
 cd amlogic-boot-fip && ./build-fip.sh khadas-vim3l ../u-boot.bin ../../../uboot-vim3l/
