@@ -1,0 +1,62 @@
+From 2a3a6c002d0055ae280e94bdcff00088c60e56a6 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Sat, 3 Dec 2022 06:04:00 +0000
+Subject: [PATCH 026/120] FROMGIT(6.3): arm64: dts: Fix NPU power domain
+ references in Amlogic G12-based SoCs
+
+The power sequence is different between SoCs in that family, so get the
+right bits for each one.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 --
+ arch/arm64/boot/dts/amlogic/meson-g12b.dtsi       | 4 ++++
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi        | 4 ++++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index c90066823250..bb2e86073261 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -11,7 +11,6 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/reset/amlogic,meson-g12a-reset.h>
+ #include <dt-bindings/thermal/thermal.h>
+-#include <dt-bindings/power/meson-g12a-power.h>
+ 
+ / {
+ 	interrupt-parent = <&gic>;
+@@ -2494,6 +2493,5 @@ npu: npu@ff100000 {
+ 			 <&clkc CLKID_NNA_AXI_CLK>;
+ 		clock-names = "core", "bus";
+ 		resets = <&reset RESET_NNA>;
+-		power-domains = <&pwrc PWRC_G12A_NNA_ID>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+index ee8fcae9f9f0..886380b5a96f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+@@ -139,3 +139,7 @@ map1 {
+ &mali {
+ 	dma-coherent;
+ };
++
++&npu {
++	power-domains = <&pwrc PWRC_G12A_NNA_ID>;
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 80737731af3f..318a16aa4433 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -543,3 +543,7 @@ &vpu {
+ &usb {
+ 	power-domains = <&pwrc PWRC_SM1_USB_ID>;
+ };
++
++&npu {
++	power-domains = <&pwrc PWRC_SM1_NNA_ID>;
++};
+-- 
+2.34.1
+

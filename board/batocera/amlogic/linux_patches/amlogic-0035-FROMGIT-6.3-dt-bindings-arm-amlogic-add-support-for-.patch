@@ -1,0 +1,30 @@
+From b71a8761891cdca7af133b91aaef4f485e7542b3 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 16 Feb 2022 07:27:07 +0000
+Subject: [PATCH 035/120] FROMGIT(6.3): dt-bindings: arm: amlogic: add support
+ for Radxa Zero2
+
+The Radxa Zero2 is a small form-factor SBC using the Amlogic
+A311D chip.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index d63f6b899f25..7ded40b309a4 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -154,6 +154,7 @@ properties:
+         items:
+           - enum:
+               - khadas,vim3
++              - radxa,zero2
+           - const: amlogic,a311d
+           - const: amlogic,g12b
+ 
+-- 
+2.34.1
+

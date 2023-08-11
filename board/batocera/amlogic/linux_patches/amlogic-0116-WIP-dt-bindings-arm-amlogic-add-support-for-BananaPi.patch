@@ -1,0 +1,39 @@
+From eab9517d3b0b48c6b62442f5c8c0edcc2e3e95e2 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 17 Feb 2023 19:25:18 +0000
+Subject: [PATCH 116/120] WIP: dt-bindings: arm: amlogic: add support for
+ BananaPi M2S variants
+
+BananaPi M2S ships in two variants with Amlogic S922X or A311D chips.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 800ecbc6efa6..fb93a6e51061 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -169,6 +169,7 @@ properties:
+       - description: Boards with the Amlogic Meson G12B A311D SoC
+         items:
+           - enum:
++              - bananapi,bpi-m2s
+               - khadas,vim3
+               - radxa,zero2
+           - const: amlogic,a311d
+@@ -188,8 +189,10 @@ properties:
+               - azw,gsking-x
+               - azw,gtking
+               - azw,gtking-pro
++              - bananapi,bpi-m2s
+               - dream,dreambox-one
+               - dream,dreambox-two
++              - hardkernel,odroid-go-ultra
+               - hardkernel,odroid-n2
+               - hardkernel,odroid-n2-plus
+               - khadas,vim3
+-- 
+2.34.1
+

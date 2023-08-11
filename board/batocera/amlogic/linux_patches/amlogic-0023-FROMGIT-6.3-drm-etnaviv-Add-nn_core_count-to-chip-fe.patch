@@ -1,0 +1,68 @@
+From 32817c57b6cc75595d60ea68ccc0c7c767d46898 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Sat, 3 Dec 2022 06:01:47 +0000
+Subject: [PATCH 023/120] FROMGIT(6.3): drm/etnaviv: Add nn_core_count to chip
+ feature struct
+
+We will use these for differentiating between GPUs and NPUs, as the
+downstream driver does.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.h  | 3 +++
+ drivers/gpu/drm/etnaviv/etnaviv_hwdb.c | 4 ++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+index 85eddd492774..c8f3ad2031ce 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+@@ -50,6 +50,9 @@ struct etnaviv_chip_identity {
+ 	/* Number of shader cores. */
+ 	u32 shader_core_count;
+ 
++	/* Number of Neural Network cores. */
++	u32 nn_core_count;
++
+ 	/* Size of the vertex cache. */
+ 	u32 vertex_cache_size;
+ 
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c b/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
+index f2fc645c7956..44df273a5aae 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
+@@ -16,6 +16,7 @@ static const struct etnaviv_chip_identity etnaviv_chip_identities[] = {
+ 		.register_max = 64,
+ 		.thread_count = 128,
+ 		.shader_core_count = 1,
++		.nn_core_count = 0,
+ 		.vertex_cache_size = 8,
+ 		.vertex_output_buffer_size = 1024,
+ 		.pixel_pipes = 1,
+@@ -47,6 +48,7 @@ static const struct etnaviv_chip_identity etnaviv_chip_identities[] = {
+ 		.register_max = 64,
+ 		.thread_count = 512,
+ 		.shader_core_count = 2,
++		.nn_core_count = 0,
+ 		.vertex_cache_size = 16,
+ 		.vertex_output_buffer_size = 1024,
+ 		.pixel_pipes = 1,
+@@ -78,6 +80,7 @@ static const struct etnaviv_chip_identity etnaviv_chip_identities[] = {
+ 		.register_max = 64,
+ 		.thread_count = 512,
+ 		.shader_core_count = 2,
++		.nn_core_count = 0,
+ 		.vertex_cache_size = 16,
+ 		.vertex_output_buffer_size = 1024,
+ 		.pixel_pipes = 1,
+@@ -109,6 +112,7 @@ static const struct etnaviv_chip_identity etnaviv_chip_identities[] = {
+ 		.register_max = 64,
+ 		.thread_count = 1024,
+ 		.shader_core_count = 4,
++		.nn_core_count = 0,
+ 		.vertex_cache_size = 16,
+ 		.vertex_output_buffer_size = 1024,
+ 		.pixel_pipes = 2,
+-- 
+2.34.1
+

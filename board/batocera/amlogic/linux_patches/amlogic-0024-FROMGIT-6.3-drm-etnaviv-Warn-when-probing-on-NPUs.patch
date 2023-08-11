@@ -1,0 +1,31 @@
+From b3155f8944de71787491aa1cedbf079939539de7 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Sat, 3 Dec 2022 06:02:31 +0000
+Subject: [PATCH 024/120] FROMGIT(6.3): drm/etnaviv: Warn when probing on NPUs
+
+Userspace is still not making full use of the hardware, so we don't know
+yet if changes to the UAPI won't be needed. Warn about it.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+index f667e7906d1f..2fb70c73cf71 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+@@ -772,6 +772,10 @@ int etnaviv_gpu_init(struct etnaviv_gpu *gpu)
+ 		goto fail;
+ 	}
+ 
++	if (gpu->identity.nn_core_count > 0)
++		dev_warn(gpu->dev, "etnaviv has been instantiated on a NPU, "
++                                   "for which the UAPI is still experimental\n");
++
+ 	/* Exclude VG cores with FE2.0 */
+ 	if (gpu->identity.features & chipFeatures_PIPE_VG &&
+ 	    gpu->identity.features & chipFeatures_FE20) {
+-- 
+2.34.1
+
