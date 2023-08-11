@@ -15,7 +15,7 @@ class HclGenerator(Generator):
             os.chdir("/userdata/roms/hcl/")
         except:
             eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
-        commandArray = ["hcl"]
+        commandArray = ["hcl", "-d"]
 
         return Command.Command(
             array=commandArray,
