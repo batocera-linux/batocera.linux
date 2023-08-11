@@ -5,11 +5,10 @@ config BR2_PACKAGE_LIGHTSPARK
 	depends on BR2_PACKAGE_JPEG
 	depends on BR2_PACKAGE_LIBPNG
 	depends on BR2_PACKAGE_SDL2
-	depends on BR2_PACKAGE_SDL2_MIXER
 	depends on BR2_PACKAGE_CAIRO
 	depends on BR2_PACKAGE_FFMPEG
 	depends on BR2_PACKAGE_LIBCURL
-
+	select BR2_PACKAGE_RTMPDUMP
 	help
           LightSpark
           Flash emulator for windows / mac / linux.
