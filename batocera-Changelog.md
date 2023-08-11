@@ -24,6 +24,8 @@
 - Added Sega Pico system entry utilizing existing emulator cores
 - Added Hydra Castle Labyrinth, a 16-bit platformer game (through content downloader)
 - Added Hurrican, a Turrican clone (through content downloader)
+- Added Tyrian, a vertical shooter (through content downloader)
+- Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds

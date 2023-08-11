@@ -3010,13 +3010,9 @@ megaduck:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
-      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK], incompatible_extensions: [zip, 7z] }
+      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-  comment_en: |
-          Use unzipped ROMs (BIN format) if using Sameduck.
-  comment_br: |
-           Use ROMs descompactadas (formato BIN) se estiver usando Sameduck.
 
 pv1000:
   name:       PV-1000

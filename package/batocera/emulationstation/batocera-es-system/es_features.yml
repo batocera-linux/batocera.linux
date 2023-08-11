@@ -4944,6 +4944,9 @@ libretro:
                 choices:
                     "Off":                  disabled
                     "On":                   enabled
+    sameduck:
+      features: [netplay, padtokeyboard, cheevos]
+      shared: [rewind, autosave]
     scummvm:
       features: [padtokeyboard]
       cfeatures:

@@ -3,8 +3,9 @@
 # Sameduck
 #
 ################################################################################
-# Version.: Commits on Feb 27, 2023
-LIBRETRO_SAMEDUCK_VERSION = e48eb3515d1056aa779e95946345dd9c6c6ef3a6
+# Version.: Commits on Jul 3, 2022
+# This is the latest on the SameDuck branch of the SameBoy emulator (used here for Megaduck)
+LIBRETRO_SAMEDUCK_VERSION = 5c5cdec7c7d3a489c8414ed04d99ee3c8779639b
 LIBRETRO_SAMEDUCK_SITE = $(call github,LIJI32,SameBoy,$(LIBRETRO_SAMEDUCK_VERSION))
 LIBRETRO_SAMEDUCK_LICENSE = GPL-3.0
 
