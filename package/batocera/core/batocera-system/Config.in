@@ -56,8 +56,8 @@ if BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S812
 endif
 
 if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 || \
-   BR2_PACKAGE_BATOCERA_TARGET_S912 || BR2_PACKAGE_BATOCERA_TARGET_S922X || \
-   BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 || BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
+   BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 || \
+   BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
     config BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3
     bool "amlogic gles3"
     default y
@@ -404,11 +404,10 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     bool "target images definitions"
     config BR2_TARGET_BATOCERA_IMAGES
     string "target images"
-    default "amlogic/s905gen2"                                                              if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
+    default "amlogic/s905gen2/radxa-zero amlogic/s905gen2/khadas-vim2"                            if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
     default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/khadas-vim3l amlogic/s905gen3/tvbox-gen3" if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
     default "amlogic/s9gen4/khadas-vim1s"                                                   if BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
     default "amlogic/a3gen2/khadas-vim4"                                                    if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
-    default "amlogic/s912/vim2"                                                             if BR2_PACKAGE_BATOCERA_TARGET_S912
     default "broadcom/bcm2835"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
     default "broadcom/bcm2836"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
     default "broadcom/bcm2837"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
@@ -488,9 +487,6 @@ config BR2_PACKAGE_BATOCERA_TARGET_S812
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905
     bool "s905"
-
-config BR2_PACKAGE_BATOCERA_TARGET_S912
-    bool "s912"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
     bool "s905gen2"
@@ -1009,7 +1005,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3128      || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_S912        || \
+                                                        BR2_PACKAGE_BATOCERA_TARGET_S905GEN2    || \
+                                                        BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3588      || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
@@ -1113,7 +1110,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H5     && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H616           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H6
 
