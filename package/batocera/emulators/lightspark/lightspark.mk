@@ -7,7 +7,7 @@
 LIGHTSPARK_VERSION = 0.8.7
 LIGHTSPARK_SITE = $(call github,lightspark,lightspark,$(LIGHTSPARK_VERSION))
 LIGHTSPARK_LICENSE = LGPLv3
-LIGHTSPARK_DEPENDENCIES = sdl2 freetype pcre jpeg libpng cairo ffmpeg libcurl rtmpdump
+LIGHTSPARK_DEPENDENCIES = sdl2 freetype pcre jpeg libpng cairo pango ffmpeg libcurl rtmpdump
 
 LIGHTSPARK_CONF_OPTS += -DCOMPILE_NPAPI_PLUGIN=FALSE -DCOMPILE_PPAPI_PLUGIN=FALSE
 ifneq ($(BR2_x86_64),y)
