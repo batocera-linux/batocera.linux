@@ -20,6 +20,46 @@ getCpu() {
     cat "${CPU}/cpufreq/scaling_max_freq"
 }
 
+# Detect battery
+BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+if ! test -n "${BATT}"
+then
+    NOW=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
+    MAX=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
+    if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]
+    then
+        BATT=$((200*$NOW/$MAX % 2 + 100*$NOW/$MAX))
+    fi
+fi
+
+BATTREMAINING=
+BATTREMAINING_CURRENT=$(cat /sys/class/power_supply/{BAT,bat}*/current_now 2>/dev/null)
+BATTREMAINING_CHARGE=$(cat /sys/class/power_supply/{BAT,bat}*/charge_now 2>/dev/null)
+if test -n "${BATTREMAINING_CURRENT}" -a -n "${BATTREMAINING_CHARGE}"
+then
+    if test "${BATTREMAINING_CURRENT}" -gt 0
+    then
+	BATTREMAINING_HOURS=$(expr ${BATTREMAINING_CHARGE} / ${BATTREMAINING_CURRENT})
+	BATTREMAINING_MINS=$(expr ${BATTREMAINING_CHARGE} '*' 60 / ${BATTREMAINING_CURRENT} - 60 '*' ${BATTREMAINING_HOURS})
+	test ${BATTREMAINING_MINS} -lt 10 && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
+	BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
+    fi
+fi
+
+### short version (for osd)
+if test "$1" = "--short"
+then
+    DT=$(date +%H:%M)
+    if test -n "${BATT}"
+    then
+        echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
+    else
+        echo "${DT}"
+    fi
+    exit 0
+fi
+###
+
 V_BOARD=$(cat /boot/boot/batocera.board)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMAXNB=$(ls /sys/devices/system/cpu | grep -E '^cpu[0-9]*$' | wc -l)
@@ -130,46 +170,6 @@ echo "Data Partition Available Space: $(df -h | awk '/\/userdata$/ {print $4}')"
 
 PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
 test -n "${PREFSRC}" && echo "Network IP Address: ${PREFSRC}"
-
-# Detect battery
-BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
-if ! test -n "${BATT}"
-then
-    NOW=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
-    MAX=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
-    if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]
-    then
-        BATT=$((200*$NOW/$MAX % 2 + 100*$NOW/$MAX))
-    fi
-fi
-
-BATTREMAINING=
-BATTREMAINING_CURRENT=$(cat /sys/class/power_supply/{BAT,bat}*/current_now 2>/dev/null)
-BATTREMAINING_CHARGE=$(cat /sys/class/power_supply/{BAT,bat}*/charge_now 2>/dev/null)
-if test -n "${BATTREMAINING_CURRENT}" -a -n "${BATTREMAINING_CHARGE}"
-then
-    if test "${BATTREMAINING_CURRENT}" -gt 0
-    then
-	BATTREMAINING_HOURS=$(expr ${BATTREMAINING_CHARGE} / ${BATTREMAINING_CURRENT})
-	BATTREMAINING_MINS=$(expr ${BATTREMAINING_CHARGE} '*' 60 / ${BATTREMAINING_CURRENT} - 60 '*' ${BATTREMAINING_HOURS})
-	test ${BATTREMAINING_MINS} -lt 10 && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
-	BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
-    fi
-fi
-
-### short version (for osd)
-if test "$1" = "--short"
-then
-    DT=$(date +%H:%M)
-    if test -n "${BATT}"
-    then
-        echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
-    else
-        echo "${DT}"
-    fi
-    exit 0
-fi
-###
 
 # battery
 if test -n "${BATT}"
