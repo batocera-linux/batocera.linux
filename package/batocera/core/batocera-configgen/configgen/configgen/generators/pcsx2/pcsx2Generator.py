@@ -46,6 +46,10 @@ class Pcsx2Generator(Generator):
         
         commandArray = ["/usr/pcsx2/bin/pcsx2-qt"] if rom == "config" else \
               ["/usr/pcsx2/bin/pcsx2-qt", "-nogui", rom]
+
+        with open("/proc/cpuinfo") as cpuinfo:
+            if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
+                eslog.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
         
         return Command.Command(
             array=commandArray,
