@@ -69,9 +69,19 @@ then
 else
     echo "CPU Max Frequency: ${V_CPUMAXFREQ} MHz"
 fi
-if grep -q " avx2" /proc/cpuinfo
+
+declare -a check_cpu_features=("avx2" "sse4_1")
+declare -a cpu_features=()
+for feature in "${check_cpu_features[@]}"
+do
+    if grep -q " ${feature}" /proc/cpuinfo
+    then
+        cpu_features+=("${feature}")
+    fi
+done
+if [ "${#cpu_features[@]}" -gt 0 ]
 then
-    echo "CPU Feature: avx2"
+    echo "CPU Features: ${cpu_features[@]}"
 fi
 
 # temperature
