@@ -9,20 +9,6 @@ else
 fi
 ###
 
-### short version (for osd)
-if test "$1" = "--short"
-then
-    DT=$(date +%H:%M)
-    if test -n "${BATT}"
-    then
-        echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
-    else
-        echo "${DT}"
-    fi
-    exit 0
-fi
-###
-
 getCpu() {
     test -e "${1}/cpufreq/scaling_max_freq" || return 0
 
