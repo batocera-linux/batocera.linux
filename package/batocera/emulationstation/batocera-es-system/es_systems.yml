@@ -4789,8 +4789,56 @@ vpinball:
     vpinball:
       vpinball:  { requireAnyOf: [BR2_PACKAGE_VPINBALL] }
   comment_en: |
-    Visual Pinabll X - Stanadlone supports the .vpx extension tables.
-    Version 10 community based tables for can be downloaded from https://www.vpforums.org
+    Visual Pinabll X - Standalone
+    -----------------------------
+    
+    The current version of Visual Pinball supports version 10 (.vpx extension) tables.
+    Community based tables for can be downloaded from https://www.vpforums.org
+
+    PinMAME
+    -------
+    
+    To use PinMAME roms, you need to add roms and / or nvram files into their respective folders at:
+    /userdata/system/configs/vpinball/pinmame
+
+    All Paths
+    ---------
+    
+    Your .vpx & and any associated .directb2s files should be in the: /userdata/roms/vpinball folder.
+    Note: .directb2s files should match the .vpx file name.
+
+    /userdata/system/configs/vpinball:                  VPinball configuration & log files
+    /userdata/system/configs/vpinball/user:             VPinball user directory
+    /userdata/system/configs/vpinball/music:            VPinball music directory, put you music here.
+    /userdata/system/configs/vpinball/pinmame:          VPinball generated PinMAME settings, ex. sound, cheat, dmd_red
+    /userdata/system/configs/vpinball/pinmame/roms:     PinMAME ROMs directory
+    /userdata/system/configs/vpinball/pinmame/nvramL    PinMAME NVRAM directory
+    /userdata/system/configs/vpinball/pinmame/altcolor: Serum colorizations directory <rom_name>/<rom.cRZ>
+    /userdata/system/configs/vpinball/pinmame/vpinball: VPinball PinMAME settings directory
   comment_fr: |
-    Visual Pinball X - Stanadlone prend en charge les tables avec l'extension .vpx.
-    Les tables créées par la communauté pour la Version 10 peuvent être téléchargées depuis https://www.vpforums.org.
+    Visual Pinabll X - Standalone
+    -----------------------------
+
+    La version actuelle de Visual Pinball prend en charge les tables de la version 10 (extension .vpx).
+    Les tables basées sur la communauté peuvent être téléchargées depuis https://www.vpforums.org.
+    
+    PinMAME
+    --------
+
+    Pour utiliser les roms PinMAME, vous devez ajouter des roms et/ou des fichiers nvram dans leurs dossiers respectifs à :
+    /userdata/system/configs/vpinball/pinmame
+
+    Tous les Chemins
+    ----------------
+    
+    Vos fichiers .vpx & et tous les fichiers .directb2s associés doivent se trouver dans le dossier : /userdata/roms/vpinball.
+    Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
+
+    /userdata/system/configs/vpinball:                   Configuration de VPinball et fichiers de log
+    /userdata/system/configs/vpinball/user :             Répertoire utilisateur VPinball
+    /userdata/system/configs/vpinball/music :            Répertoire de musique VPinball, mettez votre musique ici.
+    /userdata/system/configs/vpinball/pinmame :          Paramètres PinMAME générés pour VPinball, ex. son, triche, dmd_red
+    /userdata/system/configs/vpinball/pinmame/roms :     Répertoire des ROMs PinMAME
+    /userdata/system/configs/vpinball/pinmame/nvram :    Répertoire NVRAM PinMAME
+    /userdata/system/configs/vpinball/pinmame/altcolor : Répertoire des colorisations Serum <nom_rom>/<rom.cRZ>
+    /userdata/system/configs/vpinball/pinmame/vpinball : Répertoire des paramètres VPinball pour PinMAME
