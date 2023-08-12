@@ -160,7 +160,7 @@ class Model2EmuGenerator(Generator):
             if os.path.exists(lua_file_path):
                 modify_lua_scanlines(lua_file_path, "False")
         # sinden - check if rom is a gun game
-        known_gun_roms = ["bel", "gunblade", "hotd", "pltkids", "pltkidsa", "rchase2", "vcop", "vcop2", "vcopa"]
+        known_gun_roms = ["bel", "gunblade", "hotd", "rchase2", "vcop", "vcop2", "vcopa"]
         if rom in known_gun_roms:
             if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
                 for gun in guns:
