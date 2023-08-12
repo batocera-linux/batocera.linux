@@ -89,7 +89,7 @@ def cleanControllerConfig(retroconfig, controllers, retroarchspecials):
 # Write the hotkey for player 1
 def writeHotKeyConfig(retroconfig, controllers):
     if '1' in controllers:
-        if 'hotkey' in controllers['1'].inputs:
+        if 'hotkey' in controllers['1'].inputs and controllers['1'].inputs['hotkey'].type == 'button':
             retroconfig.save('input_enable_hotkey_btn', controllers['1'].inputs['hotkey'].id)
 
 
@@ -163,9 +163,10 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
             if specialkey in controller.inputs:
                 input = controller.inputs[specialkey]
                 config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
-        specialvalue = retroarchspecials['start']
-        input = controller.inputs['start']
-        config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
+        if 'start' in controller.inputs:
+            specialvalue = retroarchspecials['start']
+            input = controller.inputs['start']
+            config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
     config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
     return config
 
