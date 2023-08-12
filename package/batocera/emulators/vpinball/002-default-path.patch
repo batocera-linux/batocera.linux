@@ -11,3 +11,16 @@ index 142860ad68..40aa17667e 100644
  #endif
     if (!DirExists(m_szMyPrefPath))
        std::filesystem::create_directory(m_szMyPrefPath);
+diff --git a/standalone/inc/vpinmame/VPinMAMEController.cpp b/standalone/inc/vpinmame/VPinMAMEController.cpp
+index 1d17e3867e..0681a6ab9e 100644
+--- a/standalone/inc/vpinmame/VPinMAMEController.cpp
++++ b/standalone/inc/vpinmame/VPinMAMEController.cpp
+@@ -360,7 +360,7 @@ VPinMAMEController::VPinMAMEController()
+          m_szPath += PATH_SEPARATOR_CHAR;
+    }
+    else
+-      m_szPath = string(getenv("HOME")) + PATH_SEPARATOR_CHAR + ".pinmame" + PATH_SEPARATOR_CHAR;
++      m_szPath = string(getenv("/userdata/system/configs/vpinball")) + PATH_SEPARATOR_CHAR + "pinmame" + PATH_SEPARATOR_CHAR;
+ #endif
+    strncpy_s((char*)config.vpmPath, m_szPath.c_str(), PINMAME_MAX_PATH - 1);
+ 
