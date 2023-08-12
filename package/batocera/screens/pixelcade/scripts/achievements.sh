@@ -6,10 +6,7 @@ test -e "/userdata/system/configs/emulationstation/scripts/achievements/pixelcad
 IMG="/userdata/system/pixelcade/achievements/achievements1.gif"
 if test -e "${IMG}"
 then
-    if cp "${IMG}" "/userdata/system/pixelcade/system/load.gif"
-    then
-	timeout 2 wget -qO - "http://localhost:8080/arcade/stream/system/load.gif" && exit 0 # success
-    fi
+    timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=${IMG}" && exit 0 # success
 fi
 
 # fallback : empty

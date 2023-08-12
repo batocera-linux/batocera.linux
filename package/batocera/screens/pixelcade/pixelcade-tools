@@ -20,8 +20,10 @@ case "${ACTION}" in
 
 	# batocera image
 	mkdir -p "/userdata/system/pixelcade/system" || exit 1
-	rm -f /userdata/system/pixelcade/system/load.* || exit 1
-	cp "/usr/share/pixelcade/images/system/batocera.png" "/userdata/system/pixelcade/system/load.png" || exit 1
+	if ! test -e "/userdata/system/pixelcade/system/batocera.png"
+	then
+	    cp "/usr/share/pixelcade/images/system/batocera.png" "/userdata/system/pixelcade/system/batocera.png" || exit 1
+	fi
 
 	# start the binary
 	test -n "${PIDVAL}" && kill -15 "${PIDVAL}"
@@ -29,7 +31,13 @@ case "${ACTION}" in
 	# prefer the custom bin
 	test -e "/userdata/system/pixelcade/pixelweb" && BIN="/userdata/system/pixelcade/pixelweb"
 	mkdir -p /userdata/system/pixelcade || exit 1
-	nohup "${BIN}" -d "${DEVICE}" -image system/load.png -p /userdata/system/pixelcade -delay 1 -startup >/dev/null 2>/dev/null &
+
+	if test "${DEVICE}" = demo
+	then
+	    nohup "${BIN}" -demo -image system/batocera.png -p /userdata/system/pixelcade -delay 1 -startup >/dev/null 2>/dev/null &
+	else
+	    nohup "${BIN}" -d "${DEVICE}" -image system/batocera.png -p /userdata/system/pixelcade -delay 1 -startup >/dev/null 2>/dev/null &
+	fi
 	echo "$!" > "${PIDFILE}"
 	;;
     "disable")

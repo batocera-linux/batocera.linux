@@ -14,13 +14,7 @@ do
     NORMAL="/userdata/system/pixelcade/console/${GSYSTEM}.${EXT}"
     if test -e "${NORMAL}"
     then
-	if rm -f /userdata/system/pixelcade/system/load.*
-	then
-	    if cp "${NORMAL}" "/userdata/system/pixelcade/system/load.${EXT}"
-	    then
-		timeout 2 wget -qO - "http://localhost:8080/arcade/stream/system/load.${EXT}" && exit 0 # success
-	    fi
-	fi
+	timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=${NORMAL}" && exit 0 # success
     fi
 done
 
@@ -36,24 +30,18 @@ then
 	then
 	    # use cache here...
 	    CHASH=$(echo "${LOGO}" | md5sum | cut -c 1-32)
-	    if test -e "/var/run/pixelcade/cache/${CHASH}"
+	    if test -e "/var/run/pixelcade/cache/${CHASH}.png"
 	    then
-		if cp "/var/run/pixelcade/cache/${CHASH}" "/userdata/system/pixelcade/system/load.png"
-		then
-		    wget -qO - "http://localhost:8080/arcade/stream/system/load.png" && exit 0 # success
-		fi		    
+		timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=/var/run/pixelcade/cache/${CHASH}.png" && exit 0 # success
 	    else
-		if convert -background black "${LOGO}" -resize 300x300 "/userdata/system/pixelcade/system/load.png"
+		mkdir -p "/var/run/pixelcade/cache"
+		if convert -background black "${LOGO}" -resize 300x300 "/var/run/pixelcade/cache/${CHASH}.png" # try to cache
 		then
-		    mkdir -p "/var/run/pixelcade/cache" && cp "/userdata/system/pixelcade/system/load.png" "/var/run/pixelcade/cache/${CHASH}" # try to cache
-		    wget -qO - "http://localhost:8080/arcade/stream/system/load.png" && exit 0 # success
+		    timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=/var/run/pixelcade/cache/${CHASH}.png" && exit 0 # success
 		fi
 	    fi
 	else
-	    if cp "${LOGO}" "/userdata/system/pixelcade/system/load.${EXT}"
-	    then
-		wget -qO - "http://localhost:8080/arcade/stream/system/load.${EXT}" && exit 0 # success
-	    fi  
+	    timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=${LOGO}" && exit 0 # success
 	fi
     fi
 fi

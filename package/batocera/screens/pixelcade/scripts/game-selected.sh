@@ -16,13 +16,7 @@ do
     NORMAL="/userdata/system/pixelcade/${GSYSTEM}/${BASENAME}.${EXT}"
     if test -e "${NORMAL}"
     then
-	if rm -f /userdata/system/pixelcade/system/load.*
-	then
-	    if cp "${NORMAL}" "/userdata/system/pixelcade/system/load.${EXT}"
-	    then
-		timeout 2 wget -qO - "http://localhost:8080/arcade/stream/system/load.${EXT}" && exit 0 # success
-	    fi
-	fi
+	timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=${NORMAL}" && exit 0 # success
     fi
 done
 
@@ -32,14 +26,7 @@ GMARQUEE=$(wget "http://localhost:1234/systems/${GSYSTEM}/games/${GHASH}?localpa
 
 if test -n "${GMARQUEE}" -a -e "${GMARQUEE}"
 then
-    if rm -f /userdata/system/pixelcade/system/load.*
-    then
-	EXT=$(echo "${GMARQUEE}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+)
-	if cp "${GMARQUEE}" "/userdata/system/pixelcade/system/load.${EXT}"
-	then
-	    timeout 2 wget -qO - "http://localhost:8080/arcade/stream/system/load.${EXT}" && exit 0 # success
-	fi
-    fi
+    timeout 2 wget -qO - "http://localhost:8080/path/stream?imagePath=${GMARQUEE}" && exit 0 # success
 fi
 
 # fallback : name
