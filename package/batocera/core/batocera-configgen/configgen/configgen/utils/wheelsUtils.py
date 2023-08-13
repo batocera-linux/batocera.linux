@@ -23,6 +23,12 @@ emulatorMapping = {
         "b":  "b",
         "x":  "x",
         "y":  "y"
+    },
+    "ps2": {
+        "cross":    "b",
+        "square":   "y",
+        "round":    "a",
+        "triangle": "x"
     }
 }
 
