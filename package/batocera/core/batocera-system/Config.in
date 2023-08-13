@@ -1241,6 +1241,12 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     # HoMM3 open source engine
     select BR2_PACKAGE_VCMI                 # ALL
 
+    # Fallout 1 open source engine
+    select BR2_PACKAGE_FALLOUT1_CE          # ALL
+
+    # Fallout 2 open source engine
+    select BR2_PACKAGE_FALLOUT2_CE          # ALL
+
     help
         Emulators under development (Experimental)
 
