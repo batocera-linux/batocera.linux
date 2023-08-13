@@ -36,6 +36,7 @@ batocera_wifi_configure() {
 		Name=${settings_ssid}
 		Hidden=${settings_hide}
 		Passphrase=${settings_key}
+		Autoconnect=true
 	_EOF_
     else
         rm "${settings_file}" 2>/dev/null
