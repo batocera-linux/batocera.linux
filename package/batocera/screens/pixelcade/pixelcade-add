@@ -1,0 +1,15 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "pixelcade ${ACTION} ${DEVNAME} ${DEVPATH} pixelcade-add" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
+/usr/bin/pixelcade-tools enable "${DEVNAME}"

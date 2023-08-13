@@ -52,7 +52,7 @@ reportOnceConfigurationAvailable() {
     LOADERFILE="/var/run/virtual-events.waiting"
 
     test -e "${STARTFILE}" && return # normal behavior
-    echo "sindengun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    echo "sindengun ${ACTION} ${DEVNAME} ${DEVPATH} virtual-sindenlightgun-add" >> "${LOADERFILE}"
     exit 0
 }
 
