@@ -8,7 +8,7 @@ reportOnceConfigurationAvailable() {
     LOADERFILE="/var/run/virtual-events.waiting"
 
     test -e "${STARTFILE}" && return # normal behavior
-    echo "steamdeckgun ${ACTION} ${DEVNAME} ${DEVPATH}" >> "${LOADERFILE}"
+    echo "steamdeckgun ${ACTION} ${DEVNAME} ${DEVPATH} steamdeckgun-add" >> "${LOADERFILE}"
     exit 0
 }
 
