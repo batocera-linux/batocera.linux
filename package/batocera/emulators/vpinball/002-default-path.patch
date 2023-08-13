@@ -20,7 +20,7 @@ index 1d17e3867e..0681a6ab9e 100644
     }
     else
 -      m_szPath = string(getenv("HOME")) + PATH_SEPARATOR_CHAR + ".pinmame" + PATH_SEPARATOR_CHAR;
-+      m_szPath = string(getenv("/userdata/system/configs/vpinball")) + PATH_SEPARATOR_CHAR + "pinmame" + PATH_SEPARATOR_CHAR;
++      m_szPath = string("/userdata/system/configs/vpinball/pinmame/");
  #endif
     strncpy_s((char*)config.vpmPath, m_szPath.c_str(), PINMAME_MAX_PATH - 1);
  
