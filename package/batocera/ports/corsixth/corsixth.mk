@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CORSIXTH_VERSION = v0.66
+CORSIXTH_VERSION = v0.67
 CORSIXTH_SITE = $(call github,CorsixTH,CorsixTH,$(CORSIXTH_VERSION))
 CORSIXTH_DEPENDENCIES = sdl2 sdl2_image
 
