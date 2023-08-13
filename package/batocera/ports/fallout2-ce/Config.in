@@ -1,0 +1,8 @@
+config BR2_PACKAGE_FALLOUT2_CE
+	bool "fallout2-ce"
+	select BR2_PACKAGE_SDL2
+
+	help
+	  Fallout 2 CE - Open Source Fallout 2 engine
+
+	  https://github.com/alexbatalov/fallout2-ce
