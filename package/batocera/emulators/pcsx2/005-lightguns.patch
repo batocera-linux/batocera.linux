@@ -1,8 +1,8 @@
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
-index 5b105a1..f449b17 100644
+index 6b8de71..21bcd37 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.cpp
 +++ b/pcsx2/USB/usb-lightgun/guncon2.cpp
-@@ -27,6 +27,12 @@
+@@ -31,6 +31,12 @@
  
  #include <tuple>
  
@@ -15,7 +15,7 @@ index 5b105a1..f449b17 100644
  namespace usb_lightgun
  {
  	enum : u32
-@@ -121,6 +127,7 @@ namespace usb_lightgun
+@@ -130,6 +136,7 @@ namespace usb_lightgun
  	struct GunCon2State
  	{
  		explicit GunCon2State(u32 port_);
@@ -23,20 +23,20 @@ index 5b105a1..f449b17 100644
  
  		USBDevice dev{};
  		USBDesc desc{};
-@@ -182,6 +182,12 @@
+@@ -175,6 +182,12 @@ namespace usb_lightgun
  
  		std::tuple<s16, s16> CalculatePosition();
  
-+
 +		// udev
 +		int   udev_fd;
 +		float udev_internalGunX;
 +		float udev_internalGunY;
 +		int   udev_gunMinx, udev_gunMiny, udev_gunMaxx, udev_gunMaxy;
++
  		// 0..1, not -1..1.
  		std::pair<float, float> GetAbsolutePositionFromRelativeAxes() const;
  		u32 GetSoftwarePointerIndex() const;
-@@ -221,6 +234,12 @@ namespace usb_lightgun
+@@ -240,6 +253,12 @@ namespace usb_lightgun
  		0x08, // Polling interval (frame counts)
  	};
  
@@ -49,7 +49,7 @@ index 5b105a1..f449b17 100644
  	static void guncon2_handle_control(
  		USBDevice* dev, USBPacket* p, int request, int value, int index, int length, uint8_t* data)
  	{
-@@ -250,9 +269,93 @@ namespace usb_lightgun
+@@ -269,9 +288,93 @@ namespace usb_lightgun
  		p->status = USB_RET_STALL;
  	}
  
@@ -143,7 +143,7 @@ index 5b105a1..f449b17 100644
  
  		switch (p->pid)
  		{
-@@ -432,8 +432,16 @@
+@@ -350,8 +453,16 @@ namespace usb_lightgun
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
@@ -160,7 +160,7 @@ index 5b105a1..f449b17 100644
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -489,6 +495,13 @@
+@@ -384,6 +495,13 @@ namespace usb_lightgun
  			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
  		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
  
@@ -173,7 +173,8 @@ index 5b105a1..f449b17 100644
 +
  		s16 pos_x, pos_y;
  		if (pointer_x < 0.0f || pointer_y < 0.0f)
- 		{@@ -411,9 +529,148 @@ namespace usb_lightgun
+ 		{
+@@ -458,9 +576,148 @@ namespace usb_lightgun
  		return "guncon2";
  	}
  
@@ -323,19 +324,19 @@ index 5b105a1..f449b17 100644
  		s->desc.str = desc_strings;
  
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.h b/pcsx2/USB/usb-lightgun/guncon2.h
-index 7300680..262a46a 100644
+index 9b7d011..5d46d36 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.h
 +++ b/pcsx2/USB/usb-lightgun/guncon2.h
 @@ -18,6 +18,8 @@
  
  namespace usb_lightgun
  {
-+	struct GunCon2State;
++  	struct GunCon2State;
 +
  	class GunCon2Device final : public DeviceProxy
  	{
  	public:
-@@ -32,5 +32,8 @@
+@@ -30,5 +32,8 @@ namespace usb_lightgun
  		void SetBindingValue(USBDevice* dev, u32 bind_index, float value) const override;
  		std::span<const InputBindingInfo> Bindings(u32 subtype) const override;
  		std::span<const SettingInfo> Settings(u32 subtype) const override;
