@@ -1,0 +1,90 @@
+#!/bin/bash
+
+ACTION=$1
+
+do_help() {
+    echo "${1} status"  >&2
+    echo "${1} enable"  >&2
+    echo "${1} disable" >&2
+}
+
+get_status() {
+    VAL=on
+
+    # if wifi is on => off
+    if test -e /var/run/connmand.pid
+    then
+	VPID=$(cat /var/run/connmand.pid)
+	if test -e "/proc/${VPID}"
+	then
+	    VAL=off
+	fi
+    fi
+
+    # if bt is on => off
+    if test -e /var/run/bluetoothd.pid
+    then
+	VPID=$(cat /var/run/bluetoothd.pid)
+	if test -e "/proc/${VPID}"
+	then
+	    VAL=off
+	fi
+    fi
+
+    echo "${VAL}"
+}
+
+do_status() {
+    STATUS=$(get_status)
+
+    if test "${STATUS}" = "on"
+    then
+	if test -t 1
+	then
+	    echo "plane mode is enabled"
+	else
+	    echo "on"
+	fi
+    else
+	if test -t 1
+	then
+	    echo "plane mode is disabled"
+	else
+	    echo "off"
+	fi
+    fi
+}
+
+do_enable() {
+    STATUS=$(get_status)
+
+    if test "${STATUS}" = "off"
+    then
+	/etc/init.d/S32bluetooth stop
+	/etc/init.d/S08connman   stop
+    fi
+}
+
+do_disable() {
+    STATUS=$(get_status)
+
+    if test "${STATUS}" = "on"
+    then
+	/etc/init.d/S32bluetooth start
+	/etc/init.d/S08connman   start
+    fi
+}
+
+case "${ACTION}" in
+    status)
+	do_status
+    ;;
+    enable)
+	do_enable
+    ;;
+    disable)
+	do_disable
+    ;;
+    *)
+	do_help "${0}"
+esac
