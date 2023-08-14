@@ -5,9 +5,9 @@ BOARD_DIR=$2
 IMAGES_DIR=$3
 
 # Download U-Boot mainline
-wget "https://ftp.denx.de/pub/u-boot/u-boot-2023.07.02.tar.bz2"
-tar xf u-boot-2023.07.02.tar.bz2
-cd u-boot-2023.07.02
+wget "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
+tar xf u-boot-2023.01.tar.bz2
+cd u-boot-2023.01
 
 # Apply patches
 PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s905gen3/patches/uboot/*.patch"
