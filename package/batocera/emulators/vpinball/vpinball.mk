@@ -48,6 +48,7 @@ define VPINBALL_CMAKE_HACKS
 endef
 
 VPINBALL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+VPINBALL_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 
 define VPINBALL_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/vpinball
@@ -59,9 +60,6 @@ define VPINBALL_INSTALL_TARGET_CMDS
     cp -R $(@D)/buildroot-build/res $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/scripts $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/shader $(TARGET_DIR)/usr/bin/vpinball/
-    # install last library
-    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/libglad.so \
-        $(TARGET_DIR)/usr/lib
 endef
 
 define VPINBALL_EVMAPY
