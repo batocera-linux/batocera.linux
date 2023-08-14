@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # custom.sh : deprecated
 if test -e "/userdata/system/custom.sh"; then
@@ -20,7 +20,8 @@ fi
 find /userdata/system/services -type f |
     while read SERVICE
     do
-	SRVVAR=__SERVICE__${SERVICE}
+	BASE_SERVICE=${SERVICE##*/}
+	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
 	if test "${!SRVVAR}" = 1
 	then
 	    bash "${SERVICE}" "${1}" &
@@ -31,7 +32,8 @@ find /userdata/system/services -type f |
 find /usr/share/batocera/services -type f |
     while read SERVICE
     do
-	SRVVAR=__SERVICE__${SERVICE}
+	BASE_SERVICE=${SERVICE##*/}
+	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
 	if test "${!SRVVAR}" = 1
 	then
 	    bash "${SERVICE}" "${1}" &
