@@ -18,11 +18,11 @@ then
     PARENTHASH=$(evsieve-helper parent-raw "${DEVNAME}" video usb | sed -e s+"\.1$"+".2"+ | md5sum | cut -c 1-32)
     PARENTVIDEOSHASH=$(evsieve-helper parent "${DEVNAME}" video usb)
 fi
-BASEFILE="/var/run/virtual-sindenlightgun-devices.${PARENTHASH}"
-PIDFILE="${BASEFILE}.pid"
-LOCKFILE="${BASEFILE}.lock"
-LOGFILE="${BASEFILE}.log"
-LOGFILE2="${BASEFILE}.log2"
+BASEFILE="virtual-sindenlightgun-devices.${PARENTHASH}"
+PIDFILE="/var/run/${BASEFILE}.pid"
+LOCKFILE="/var/run/${BASEFILE}.lock"
+LOGFILE="/var/log/${BASEFILE}.log"
+LOGFILE2="/var/log/${BASEFILE}.log2"
 
 unlockAndExit() {
     rmdir "${LOCKFILE}"
