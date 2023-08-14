@@ -873,6 +873,12 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core):
         retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 3
         retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = 4
 
+    if core == "swanstation":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
+        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
+        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
+
 
     # mapping
     mapping = {
