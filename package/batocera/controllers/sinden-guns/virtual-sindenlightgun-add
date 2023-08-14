@@ -66,19 +66,6 @@ NDEVSINPUTS=$(echo "${CHILDRENINPUTS}" | wc -l)
 CHILDRENVIDEOS=$(evsieve-helper children "${PARENTVIDEOSHASH}" video usb)
 NDEVSVIDEOS=$(echo "${CHILDRENVIDEOS}" | wc -l)
 
-### hack to fix the sinden code ###
-if test "${DEVTYPE}" = "video"
-then
-    for L in ${DEVLINKS}
-    do
-	if echo "${L}" | grep -qE "^/dev/v4l/by-id/"
-	then
-	    ln -sf "${L}" "/dev/input/by-id/"$(basename "${L}")
-	fi
-    done
-fi
-### ###
-
 if test "${NDEVSINPUTS}" = 2 -a "${NDEVSVIDEOS}" -ge 1
 then
     DEV1=$(echo "${CHILDRENINPUTS}" | head -1           | cut -f 1)

@@ -3,4 +3,4 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Unknown Sinde
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Sinden lightgun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_GUN_NEED_BORDERS}="1"
 
 # camera
-SUBSYSTEM=="video4linux", KERNEL=="video*", ACTION=="add", ENV{ID_V4L_PRODUCT}=="SindenCam*", RUN+="/usr/bin/virtual-sindenlightgun-add"
+SUBSYSTEM=="video4linux", KERNEL=="video*", ACTION=="add", ENV{ID_V4L_PRODUCT}=="SindenCam*", SYMLINK+="input/by-id/SindenCam%n", RUN+="/usr/bin/virtual-sindenlightgun-add"
