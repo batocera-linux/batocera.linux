@@ -18,7 +18,10 @@ class WineGenerator(Generator):
             
             environment = {}
             #system.language
-            language = subprocess.check_output("batocera-settings-get system.language", shell=True, text=True).strip()
+            try:
+                language = subprocess.check_output("batocera-settings-get system.language", shell=True, text=True).strip()
+            except subprocess.CalledProcessError:
+                language = 'en_US'
             if language:
                 environment.update({
                     "LANG": language + ".UTF-8",
