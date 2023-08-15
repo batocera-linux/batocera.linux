@@ -1,0 +1,56 @@
+diff --git a/Source/Core/Common/GL/GLInterface/EGLDRM.cpp b/Source/Core/Common/GL/GLInterface/EGLDRM.cpp
+index f848761..676c886 100644
+--- a/Source/Core/Common/GL/GLInterface/EGLDRM.cpp
++++ b/Source/Core/Common/GL/GLInterface/EGLDRM.cpp
+@@ -819,37 +819,24 @@ static bool gfx_ctx_drm_set_video_mode(void* data, unsigned width, unsigned heig
+   if (!drm)
+     return false;
+ 
+-  /* Find desired video mode, and use that.
+-   * If not fullscreen, we get desired windowed size,
+-   * which is not appropriate. */
+-  if ((width == 0 && height == 0) || !fullscreen)
+-    drm->drm_mode = &drm->drm_connector->modes[0];
+-  else
++  // batocera - set resolution
+   {
+-    /* Try to match refresh_rate as closely as possible.
+-     *
+-     * Lower resolutions tend to have multiple supported
+-     * refresh rates as well.
+-     */
+-    float minimum_fps_diff = 0.0f;
+-
+-    /* Find best match. */
+-    for (i = 0; i < drm->drm_connector->count_modes; i++)
+-    {
+-      float diff;
+-      if (width != drm->drm_connector->modes[i].hdisplay ||
+-          height != drm->drm_connector->modes[i].vdisplay)
+-        continue;
+-
+-      diff = fabsf(drm->drm_connector->modes[i].vrefresh - video_refresh_rate);
+-
+-      if (!drm->drm_mode || diff < minimum_fps_diff)
+-      {
+-        drm->drm_mode = &drm->drm_connector->modes[i];
+-        minimum_fps_diff = diff;
++    FILE* fdDrmMode;
++    int drmMode;
++    if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++      if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++	if(drmMode>=0 && drmMode<drm->drm_connector->count_modes) {
++	  drmModeCrtc *pcrtc = drmModeGetCrtc(drm->drm_fd, drm->drm_encoder->crtc_id);
++	  if(pcrtc != NULL) {
++	    drmModeSetCrtc(drm->drm_fd, pcrtc->crtc_id, pcrtc->buffer_id, 0, 0, &drm->drm_connector->connector_id, 1, &drm->drm_connector->modes[drmMode]);
++	    drm->drm_mode = &drm->drm_connector->modes[drmMode];
++	  }
++	}
+       }
++      fclose(fdDrmMode);
+     }
+   }
++  //
+ 
+   if (!drm->drm_mode)
+   {
