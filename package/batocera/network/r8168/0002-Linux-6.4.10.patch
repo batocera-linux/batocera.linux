@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "Jan Alexander Steffens (heftig)" <heftig@archlinux.org>
+Date: Thu, 10 Aug 2023 22:01:56 +0000
+Subject: [PATCH] Linux 6.4.10
+
+---
+ src/r8168_n.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/r8168_n.c b/src/r8168_n.c
+index 7e9e2eac948c..583ca3cfe1a8 100755
+--- a/src/r8168_n.c
++++ b/src/r8168_n.c
+@@ -56,6 +56,9 @@
+ #include <linux/ipv6.h>
+ #include <net/ip6_checksum.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,10)
++#include <net/gso.h>
++#endif
+ #include <linux/tcp.h>
+ #include <linux/init.h>
+ #include <linux/rtnetlink.h>
