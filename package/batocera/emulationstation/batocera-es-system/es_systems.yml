@@ -4804,17 +4804,24 @@ vpinball:
     All Paths
     ---------
     
-    Your .vpx & and any associated .directb2s files should be in the: /userdata/roms/vpinball folder.
+    Your .vpx & and any associated .directb2s or .vbs files should be in the: /userdata/roms/vpinball folder.
+    Any associated .UltraDMD folders should also be in the vpinball roms folders.
     Note: .directb2s files should match the .vpx file name.
+
 
     /userdata/system/configs/vpinball:                  VPinball configuration & log files
     /userdata/system/configs/vpinball/user:             VPinball user directory
-    /userdata/system/configs/vpinball/music:            VPinball music directory, put you music here.
     /userdata/system/configs/vpinball/pinmame:          VPinball generated PinMAME settings, ex. sound, cheat, dmd_red
     /userdata/system/configs/vpinball/pinmame/roms:     PinMAME ROMs directory
     /userdata/system/configs/vpinball/pinmame/nvramL    PinMAME NVRAM directory
     /userdata/system/configs/vpinball/pinmame/altcolor: Serum colorizations directory <rom_name>/<rom.cRZ>
     /userdata/system/configs/vpinball/pinmame/vpinball: VPinball PinMAME settings directory
+
+    Music
+    -----
+    /userdata/system/configs/vpinball/music:            VPinball music directory, put your music here.
+    or in the same folder as your vpx file in it's own 'music' folder.
+    The music folder, should be lowercase - i.e. /userdata/roms/vpinball/Kiss/music
   comment_fr: |
     Visual Pinabll X - Standalone
     -----------------------------
@@ -4832,13 +4839,19 @@ vpinball:
     ----------------
     
     Vos fichiers .vpx & et tous les fichiers .directb2s associés doivent se trouver dans le dossier : /userdata/roms/vpinball.
+    Tous les dossiers .UltraDMD associés doivent également se trouver dans les dossiers vpinball roms.
     Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
 
-    /userdata/system/configs/vpinball:                   Configuration de VPinball et fichiers de log
-    /userdata/system/configs/vpinball/user :             Répertoire utilisateur VPinball
-    /userdata/system/configs/vpinball/music :            Répertoire de musique VPinball, mettez votre musique ici.
-    /userdata/system/configs/vpinball/pinmame :          Paramètres PinMAME générés pour VPinball, ex. son, triche, dmd_red
-    /userdata/system/configs/vpinball/pinmame/roms :     Répertoire des ROMs PinMAME
-    /userdata/system/configs/vpinball/pinmame/nvram :    Répertoire NVRAM PinMAME
-    /userdata/system/configs/vpinball/pinmame/altcolor : Répertoire des colorisations Serum <nom_rom>/<rom.cRZ>
-    /userdata/system/configs/vpinball/pinmame/vpinball : Répertoire des paramètres VPinball pour PinMAME
+    /userdata/system/configs/vpinball:                  Configuration de VPinball et fichiers de log
+    /userdata/system/configs/vpinball/user:             Répertoire utilisateur VPinball
+    /userdata/system/configs/vpinball/pinmame:          Paramètres PinMAME générés pour VPinball, ex. son, triche, dmd_red
+    /userdata/system/configs/vpinball/pinmame/roms:     Répertoire des ROMs PinMAME
+    /userdata/system/configs/vpinball/pinmame/nvram:    Répertoire NVRAM PinMAME
+    /userdata/system/configs/vpinball/pinmame/altcolor: Répertoire des colorisations Serum <nom_rom>/<rom.cRZ>
+    /userdata/system/configs/vpinball/pinmame/vpinball: Répertoire des paramètres VPinball pour PinMAME
+
+    Musique
+    -------
+    /userdata/system/configs/vpinball/music:             Répertoire de musique de VPinball, placez votre musique ici.
+    ou dans le même dossier que votre fichier vpx dans son propre dossier 'musique'.
+    Le dossier de musique doit être en minuscules - c'est-à-dire /userdata/roms/vpinball/Kiss/music

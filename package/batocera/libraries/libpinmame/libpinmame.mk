@@ -3,8 +3,8 @@
 # libpinmame
 #
 ################################################################################
-# Version: Commits on Aug 3, 2023
-LIBPINMAME_VERSION = 7b8e993b0e856c277300ee28c9621e5d2aa278e8
+# Version: Commits on Aug 15, 2023
+LIBPINMAME_VERSION = e326fa6b572bbf5fc94bfb58c30c488e2d6d5648
 LIBPINMAME_SITE = $(call github,vpinball,pinmame,$(LIBPINMAME_VERSION))
 LIBPINMAME_LICENSE = BSD-3-Clause
 LIBPINMAME_LICENSE_FILES = LICENSE
