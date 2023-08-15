@@ -1,0 +1,10 @@
+--- a/CMakeLists.txt	2023-08-15 15:18:20.931507332 +0200
++++ b/CMakeLists.txt	2023-08-15 15:19:21.984741739 +0200
+@@ -397,6 +397,7 @@
+   if(LINUX_LOCAL_DEV OR (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND STEAM))
+     add_definitions(-DLINUX_LOCAL_DEV)
+   endif()
++  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--copy-dt-needed-entries")
+ endif()
+ 
+ # BSDs put packages in /usr/local instead of /usr, so we need to
