@@ -392,6 +392,8 @@ config BR2_PACKAGE_BATOCERA_DEBUG
     bool "add debug options"
 
     select BR2_PACKAGE_STRACE
+    select BR2_PACKAGE_VALGRIND
+    select BR2_BINUTILS_GPROFNG
     select BR2_PACKAGE_GDB
     select BR2_PACKAGE_GDB_DEBUGGER
     select BR2_PACKAGE_LINUX_TOOLS_PERF
