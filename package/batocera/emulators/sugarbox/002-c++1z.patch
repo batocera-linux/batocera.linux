@@ -1,0 +1,20 @@
+--- a/CPCCore/CPCCoreEmu/CMakeLists.txt	2023-08-18 19:48:03.571622053 +0200
++++ b/CPCCore/CPCCoreEmu/CMakeLists.txt	2023-08-18 19:48:26.812139963 +0200
+@@ -49,5 +49,5 @@
+ endif()
+ 
+ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+-	set ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++1z )
++	set_property(TARGET CPCCoreEmu PROPERTY CXX_STANDARD 17)
+ endif()
+--- a/CPCCore/UnitTests/CMakeLists.txt	2023-08-18 19:48:12.307816760 +0200
++++ b/CPCCore/UnitTests/CMakeLists.txt	2023-08-18 19:48:34.604313568 +0200
+@@ -56,7 +56,7 @@
+ ENDIF(MSVC)
+ 
+ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+-	set ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++1z)
++	set_property(TARGET unitTests PROPERTY CXX_STANDARD 17)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+       set (LIBZA libz.a )
+    else()
