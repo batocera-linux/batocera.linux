@@ -1255,7 +1255,7 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     select BR2_PACKAGE_FALLOUT2_CE          # ALL
 
     # Amstrad CPC emulator
-    select BR2_PACKAGE_SUGARBOX		    if BR2_PACKAGE_QT6 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+    select BR2_PACKAGE_SUGARBOX		    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     help
         Emulators under development (Experimental)

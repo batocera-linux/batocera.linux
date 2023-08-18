@@ -1,5 +1,5 @@
 config BR2_PACKAGE_SUGARBOX
-	bool "duckstation"
+	bool "sugarbox"
 	select BR2_PACKAGE_QT6                      if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_QT6BASE                  if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_QT6BASE_GUI              if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
