@@ -4855,3 +4855,15 @@ vpinball:
     /userdata/system/configs/vpinball/music:             Répertoire de musique de VPinball, placez votre musique ici.
     ou dans le même dossier que votre fichier vpx dans son propre dossier 'musique'.
     Le dossier de musique doit être en minuscules - c'est-à-dire /userdata/roms/vpinball/Kiss/music
+
+spectravideo:
+  name: Spectravideo SV-328
+  manufacturer: Spectravideo
+  release: 1983
+  hardware: computer
+  extensions: [zip, 7z, cas]
+  platform: spectravideo
+  theme: spectravideo
+  emulators:
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
