@@ -138,7 +138,10 @@ class OpenmsxGenerator(Generator):
 
         if system.name == "colecovision":
             commandArray[1:1] = ["-machine", "ColecoVision_SGM"]
-
+        
+        if system.name == "spectravideo":
+            commandArray[1:1] = ["-machine", "Spectravideo_SVI-328"]
+        
         if system.isOptSet("hud") and system.config["hud"] != "":
             commandArray.insert(0, "mangohud")
         
