@@ -1,0 +1,39 @@
+--- a/openal-soft/CMakeLists.txt	2023-08-18 19:23:19.145158375 +0200
++++ b/openal-soft/CMakeLists.txt	2023-08-18 19:23:28.149387959 +0200
+@@ -1265,9 +1265,9 @@
+ if(ALSOFT_UTILS)
+     find_package(MySOFA)
+     if(NOT ALSOFT_NO_CONFIG_UTIL)
+-        find_package(Qt5Widgets QUIET)
+-        if(NOT Qt5Widgets_FOUND)
+-            message(STATUS "Could NOT find Qt5Widgets")
++        find_package(Qt6Widgets QUIET)
++        if(NOT Qt6Widgets_FOUND)
++            message(STATUS "Could NOT find Qt6Widgets")
+         endif()
+     endif()
+ endif()
+--- a/openal-soft/utils/alsoft-config/CMakeLists.txt	2023-08-18 19:24:10.634464185 +0200
++++ b/openal-soft/utils/alsoft-config/CMakeLists.txt	2023-08-18 19:24:24.294807856 +0200
+@@ -1,9 +1,9 @@
+ project(alsoft-config)
+ 
+-if(Qt5Widgets_FOUND)
+-    qt5_wrap_ui(UIS  mainwindow.ui)
++if(Qt6Widgets_FOUND)
++    qt6_wrap_ui(UIS  mainwindow.ui)
+ 
+-    qt5_wrap_cpp(MOCS  mainwindow.h)
++    qt6_wrap_cpp(MOCS  mainwindow.h)
+ 
+     add_executable(alsoft-config
+         main.cpp
+@@ -12,7 +12,7 @@
+         verstr.cpp
+         verstr.h
+         ${UIS} ${RSCS} ${TRS} ${MOCS})
+-    target_link_libraries(alsoft-config Qt5::Widgets)
++    target_link_libraries(alsoft-config Qt6::Widgets)
+     target_include_directories(alsoft-config PRIVATE "${alsoft-config_BINARY_DIR}"
+         "${OpenAL_BINARY_DIR}")
+     set_target_properties(alsoft-config PROPERTIES ${DEFAULT_TARGET_PROPS}
