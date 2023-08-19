@@ -27,6 +27,8 @@ RPCS3_CONF_OPTS += -DUSE_PRECOMPILED_HEADERS=OFF
 RPCS3_CONF_OPTS += -DSTATIC_LINK_LLVM=OFF
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_FFMPEG=OFF
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_CURL=ON
+# sdl controller config seems broken...
+RPCS3_CONF_OPTS += -DUSE_SDL=OFF
 # this is ugly, but necessary... for now...
 RPCS3_CONF_OPTS += -DFFMPEG_LIB_AVCODEC=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libavcodec.a
 RPCS3_CONF_OPTS += -DFFMPEG_LIB_AVFORMAT=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libavformat.a
@@ -40,12 +42,6 @@ ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     RPCS3_CONF_OPTS += -DUSE_VULKAN=ON
 else
     RPCS3_CONF_OPTS += -DUSE_VULKAN=OFF
-endif
-
-ifeq ($(BR2_PACKAGE_SDL2),y)
-    RPCS3_CONF_OPTS += -DUSE_SDL=ON
-else
-    RPCS3_CONF_OPTS += -DUSE_SDL=ON
 endif
 
 define RPCS3_BUILD_CMDS
