@@ -9,3 +9,13 @@
  #if !defined(__ANDROID__) && !defined(NO_ICONV)
  #include <iconv.h>
  #endif
+--- a/3rdparty/libusb/libusb.cmake	2020-07-19 17:14:04.829722651 +0200
++++ b/3rdparty/libusb/libusb.cmake	2020-07-19 17:14:12.793868076 +0200
+@@ -10,6 +10,7 @@
+ 	list(APPEND LIBUSB_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+ endif()
+ 
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ add_library(usb-1.0-static
+ 	STATIC
+ 	libusb/libusb/core.c
