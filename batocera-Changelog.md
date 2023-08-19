@@ -93,6 +93,7 @@
 - Preliminary support for Khadas VIM4, Khadas VIM1S
 - linux firmware to 20230804
 - pacman to 5.2.2 with fix for GNU sed on batocera-makepkg
+- sound open firmware to v2.2.6
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
