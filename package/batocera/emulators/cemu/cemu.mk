@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CEMU_VERSION = v2.0-46
+CEMU_VERSION = v2.0-47
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
@@ -21,6 +21,7 @@ CEMU_CONF_OPTS += -DENABLE_VCPKG=OFF
 CEMU_CONF_OPTS += -DPORTABLE=OFF
 CEMU_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/glslang"
 CEMU_CONF_OPTS += -DENABLE_FERAL_GAMEMODE=OFF
+CEMU_CONF_OPTS += -DENABLE_HIDAPI=OFF
 CEMU_CONF_OPTS += -Wno-dev 
 
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
