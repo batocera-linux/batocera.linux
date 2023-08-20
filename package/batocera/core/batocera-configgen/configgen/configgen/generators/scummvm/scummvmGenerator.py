@@ -7,8 +7,7 @@ import os.path
 import glob
 
 class ScummVMGenerator(Generator):  
-    # Main entry of the module
-    # Configure mupen and return a command
+
     def generate(self, system, rom, playersControllers, guns, gameResolution):
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
         if not os.path.exists('/userdata/bios/scummvm/extra'):
@@ -34,15 +33,64 @@ class ScummVMGenerator(Generator):
                 id=pad.index
             nplayer += 1
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                        "-f",
-                        f"--joystick={id}",
-                        "--screenshotspath="+batoceraFiles.screenshotsDir, 
-                        "--extrapath=/userdata/bios/scummvm/extra",
-                        "--savepath="+batoceraFiles.scummvmSaves,
-                        "--path=""{}""".format(romPath)]
-        commandArray.append(f"""{romName}""")
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-f"]
+        
+        # set the resolution
+        window_width = str(gameResolution["width"])
+        window_height = str(gameResolution["height"])
+        commandArray.append(f"--window-size={window_width},{window_height}")
 
-        return Command.Command(array=commandArray,env={
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
-        })
+        ## user options
+
+        # scale factor
+        if system.isOptSet("scumm_scale"):
+            commandArray.append(f"--scale-factor={system.config['scumm_scale']}")
+        else:
+            commandArray.append("--scale-factor=3")
+
+        # sclaer mode
+        if system.isOptSet("scumm_scaler_mode"):
+            commandArray.append(f"--scaler={system.config['scumm_scaler_mode']}")
+        else:
+            commandArray.append("--scaler=normal")
+                
+        #  stretch mode
+        if system.isOptSet("scumm_stretch"):
+            commandArray.append(f"--stretch-mode={system.config['scumm_stretch']}")
+        else:
+            commandArray.append("--stretch-mode=center")
+
+        # renderer
+        if system.isOptSet("scumm_renderer"):
+            commandArray.append(f"--renderer={system.config['scumm_renderer']}")
+        else:
+            commandArray.append("--renderer=opengl")
+
+        # language
+        if system.isOptSet("scumm_language"):
+            commandArray.extend(["-q", f"{system.config['scumm_language']}"])
+        else:
+            commandArray.extend(["-q", "en"])
+
+        # logging
+        commandArray.append("--logfile=/userdata/system/logs")
+
+        commandArray.extend(
+            [f"--joystick={id}",
+            "--screenshotspath="+batoceraFiles.screenshotsDir,
+            "--extrapath=/userdata/bios/scummvm/extra",
+            "--savepath="+batoceraFiles.scummvmSaves,
+            "--path=""{}""".format(romPath),
+            f"""{romName}"""]
+        )
+
+        return Command.Command(
+            array=commandArray, env={
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+            }
+        )
+    
+    def getInGameRatio(self, config, gameResolution, rom):
+        if ("scumm_stretch" in config and config["scumm_stretch"] == "fit_force_aspect") or ("scumm_stretch" in config and config["scumm_stretch"] == "pixel-perfect"):
+            return 4/3
+        return 16/9
