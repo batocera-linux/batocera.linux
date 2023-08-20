@@ -77,7 +77,7 @@
 - slang and glsl shaders to July 29th 2023
 - pcsx2 to v1.7.4857 (Aug, 1st 2023)
 - SDLPoP to v1.23 (Feb, 4th 2023)
-- BigPemu to v107
+- BigPemu to v1071
 - commander genius to v3.4.9
 - play! to v0.62
 ### Dev
