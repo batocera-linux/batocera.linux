@@ -1136,7 +1136,7 @@ msgstr ""
 "[ファームウェア設定を使用] が無効になっている場合、またはファームウェア ファ"
 "イルが見つからない場合は、選択した言語が使用されます"
 
-#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, redream, ...
+#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, scummvm, ...
 msgctxt "game_options"
 msgid "German"
 msgstr "ドイツ語"
@@ -1211,7 +1211,7 @@ msgctxt "game_options"
 msgid "Wii NAND's language setting."
 msgstr "Wii NAND の言語設定"
 
-#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, scummvm, sonic2013, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "英語"
@@ -1231,7 +1231,7 @@ msgctxt "game_options"
 msgid "Traditional Chinese"
 msgstr "繁体字中国語"
 
-#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, play, ...
+#. TRANSLATION: libretro/dolphin, cemu, scummvm, easyrpg, sonic2013, ...
 msgctxt "game_options"
 msgid "Korean"
 msgstr "韓国語"
@@ -5327,7 +5327,7 @@ msgctxt "game_options"
 msgid "CPU COMPATIBILITY"
 msgstr "CPU　互換性"
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor
+#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor, scummvm
 msgctxt "game_options"
 msgid "Normal"
 msgstr "標準"
@@ -6802,12 +6802,12 @@ msgctxt "game_options"
 msgid "Chinese"
 msgstr "中国語"
 
-#. TRANSLATION: cemu, play, yuzu, ryujinx, xenia, ...
+#. TRANSLATION: cemu, scummvm, play, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr "ポルトガル語"
 
-#. TRANSLATION: cemu, sonic2013, play, yuzu, ryujinx, ...
+#. TRANSLATION: cemu, scummvm, sonic2013, play, yuzu, ...
 msgctxt "game_options"
 msgid "Russian"
 msgstr "ロシア語"
@@ -7490,7 +7490,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "最適なフレームペーシング"
 
-#. TRANSLATION: duckstation, melonds, pcsx2, thextech
+#. TRANSLATION: duckstation, melonds, pcsx2, scummvm, thextech
 msgctxt "game_options"
 msgid "Software"
 msgstr "ソフトウェア"
@@ -7625,7 +7625,7 @@ msgctxt "game_options"
 msgid "AUDIO"
 msgstr "音声"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, scummvm
 msgctxt "game_options"
 msgid "STRETCH MODE"
 msgstr "ストレッチモード"
@@ -7922,7 +7922,7 @@ msgctxt "game_options"
 msgid "4.5x (2880x2160)"
 msgstr "4.5x (2880x2160)"
 
-#. TRANSLATION: flycast, play, gzdoom
+#. TRANSLATION: flycast, scummvm, play, gzdoom
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (通常)"
@@ -9596,6 +9596,146 @@ msgstr "[Alt+Tab]でRPCS3のメニューを表示します(ディスク交換な
 msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "グラフィカル ユーザー インターフェース"
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Select scale resolution of the game."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SCALE FACTOR"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Sets the scaler filter mode when rendering."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SCALER MODE"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "HQ (bilinear filter)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Edge (sharper filet)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "AdvMame"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Scanline Interpolation Filter (SAI)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SuperSAI"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SuperEagle"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Pixel-Perfect"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "DotMatrix"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "TV2x CRT Television Filter"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Stretches the output to fill the display area."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Center (Default)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Pixel Perfect"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Even Pixels"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Fit resolution scale"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Stretch to screen"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Fit 4:3 Aspect Ratio"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Choose your preferred renderer."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "RENDERER"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "OpenGL with Shaders"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Choose your preferred language."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Chinese (Mandarin)"
+msgstr ""
+
+#. TRANSLATION: scummvm, xenia, xenia-canary
+msgctxt "game_options"
+msgid "Swedish"
+msgstr "スウェーデン語"
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Hebrew"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Czech"
+msgstr ""
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -11314,11 +11454,6 @@ msgstr "ポーランド語"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
-msgid "Swedish"
-msgstr "スウェーデン語"
-
-#. TRANSLATION: xenia, xenia-canary
-msgctxt "game_options"
 msgid "Norwegian"
 msgstr "ノルウェイ語"
 
@@ -11705,18 +11840,8 @@ msgstr "メニュー"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
-msgid "Aspect ratio correction on/off"
-msgstr "アスペクト比補正のオン/オフ"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Cycle through stretch modes"
-msgstr "ストレッチモード切り替え"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
@@ -11897,6 +12022,14 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "keys_files"
+#~ msgid "Aspect ratio correction on/off"
+#~ msgstr "アスペクト比補正のオン/オフ"
+
+#~ msgctxt "keys_files"
+#~ msgid "Cycle through stretch modes"
+#~ msgstr "ストレッチモード切り替え"
 
 #~ msgctxt "game_options"
 #~ msgid "OVERLAY SIZE (SINGE)"
