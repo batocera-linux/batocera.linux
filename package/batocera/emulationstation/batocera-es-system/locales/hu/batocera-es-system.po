@@ -1161,7 +1161,7 @@ msgstr ""
 "A kiválasztott nyelv akkor kerül használatba, ha a 'Firmware beállítások "
 "használata' ki van kapcsolva, vagy ha a firmware fájl nem található."
 
-#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, redream, ...
+#. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, scummvm, ...
 msgctxt "game_options"
 msgid "German"
 msgstr "Német"
@@ -1236,7 +1236,7 @@ msgctxt "game_options"
 msgid "Wii NAND's language setting."
 msgstr ""
 
-#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, sonic2013, soniccd, ...
+#. TRANSLATION: libretro/dolphin, cemu, flycast/uzem, scummvm, sonic2013, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "Angol"
@@ -1256,7 +1256,7 @@ msgctxt "game_options"
 msgid "Traditional Chinese"
 msgstr "Hagyományos kínai"
 
-#. TRANSLATION: libretro/dolphin, cemu, easyrpg, sonic2013, play, ...
+#. TRANSLATION: libretro/dolphin, cemu, scummvm, easyrpg, sonic2013, ...
 msgctxt "game_options"
 msgid "Korean"
 msgstr "Koreai"
@@ -5339,7 +5339,7 @@ msgctxt "game_options"
 msgid "CPU COMPATIBILITY"
 msgstr "CPU KOMPATIBILITÁS"
 
-#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor
+#. TRANSLATION: libretro/puae, libretro/puae2021, duckstation, openbor, scummvm
 msgctxt "game_options"
 msgid "Normal"
 msgstr "Normál"
@@ -6809,12 +6809,12 @@ msgctxt "game_options"
 msgid "Chinese"
 msgstr "Kínai"
 
-#. TRANSLATION: cemu, play, yuzu, ryujinx, xenia, ...
+#. TRANSLATION: cemu, scummvm, play, yuzu, ryujinx, ...
 msgctxt "game_options"
 msgid "Portuguese"
 msgstr "Portugál"
 
-#. TRANSLATION: cemu, sonic2013, play, yuzu, ryujinx, ...
+#. TRANSLATION: cemu, scummvm, sonic2013, play, yuzu, ...
 msgctxt "game_options"
 msgid "Russian"
 msgstr ""
@@ -7491,7 +7491,7 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr ""
 
-#. TRANSLATION: duckstation, melonds, pcsx2, thextech
+#. TRANSLATION: duckstation, melonds, pcsx2, scummvm, thextech
 msgctxt "game_options"
 msgid "Software"
 msgstr "Szoftver"
@@ -7624,7 +7624,7 @@ msgctxt "game_options"
 msgid "AUDIO"
 msgstr "AUDIÓ"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: duckstation, scummvm
 msgctxt "game_options"
 msgid "STRETCH MODE"
 msgstr "NYÚJTÁS MÓD"
@@ -7918,7 +7918,7 @@ msgctxt "game_options"
 msgid "4.5x (2880x2160)"
 msgstr "4.5x (2880x2160)"
 
-#. TRANSLATION: flycast, play, gzdoom
+#. TRANSLATION: flycast, scummvm, play, gzdoom
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (alapértelmezett)"
@@ -9554,6 +9554,146 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Select scale resolution of the game."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SCALE FACTOR"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Sets the scaler filter mode when rendering."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SCALER MODE"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "HQ (bilinear filter)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Edge (sharper filet)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "AdvMame"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Scanline Interpolation Filter (SAI)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SuperSAI"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "SuperEagle"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Pixel-Perfect"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "DotMatrix"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "TV2x CRT Television Filter"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Stretches the output to fill the display area."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Center (Default)"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Pixel Perfect"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Even Pixels"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Fit resolution scale"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Stretch to screen"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Fit 4:3 Aspect Ratio"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Choose your preferred renderer."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "RENDERER"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "OpenGL with Shaders"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Choose your preferred language."
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Chinese (Mandarin)"
+msgstr ""
+
+#. TRANSLATION: scummvm, xenia, xenia-canary
+msgctxt "game_options"
+msgid "Swedish"
+msgstr "Svéd"
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Hebrew"
+msgstr ""
+
+#. TRANSLATION: scummvm
+msgctxt "game_options"
+msgid "Czech"
 msgstr ""
 
 #. TRANSLATION: easyrpg
@@ -11247,11 +11387,6 @@ msgstr "Lengyel"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
-msgid "Swedish"
-msgstr "Svéd"
-
-#. TRANSLATION: xenia, xenia-canary
-msgctxt "game_options"
 msgid "Norwegian"
 msgstr "Norvég"
 
@@ -11634,18 +11769,8 @@ msgstr "Menü"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
-msgid "Aspect ratio correction on/off"
-msgstr "Tengelyarány-korrekció be/ki"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "Grafikai szűrés be/ki"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Cycle through stretch modes"
-msgstr "Ciklikus nyújtási módok"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
@@ -11826,6 +11951,14 @@ msgstr "Gyorsmenü"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Gyors előre"
+
+#~ msgctxt "keys_files"
+#~ msgid "Aspect ratio correction on/off"
+#~ msgstr "Tengelyarány-korrekció be/ki"
+
+#~ msgctxt "keys_files"
+#~ msgid "Cycle through stretch modes"
+#~ msgstr "Ciklikus nyújtási módok"
 
 #~ msgctxt "game_options"
 #~ msgid "OVERLAY SIZE (SINGE)"
