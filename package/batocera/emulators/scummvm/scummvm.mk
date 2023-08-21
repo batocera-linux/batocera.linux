@@ -25,6 +25,10 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
     SCUMMVM_CONF_OPTS += --host=raspberrypi
 endif
 
+ifeq ($(BR2_aarch64)$(BR2_arm),y)
+    SCUMMVM_CONF_OPTS += --host=arm-linux
+endif
+
 SCUMMVM_CONF_ENV += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" 
 SCUMMVM_CONF_ENV += AR="$(TARGET_AR) cru" AS="$(TARGET_AS)"
 
