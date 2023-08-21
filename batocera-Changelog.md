@@ -80,6 +80,7 @@
 - BigPemu to v1071
 - commander genius to v3.4.9
 - play! to v0.62
+- Vita3K to 0.1.9
 ### Dev
 - linux kernel for x86_64 to 6.4.11
 - linux kernel for RPI to 6.1.32
