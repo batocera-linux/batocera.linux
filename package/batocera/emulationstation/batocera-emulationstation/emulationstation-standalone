@@ -144,7 +144,7 @@ do
         # xrandr -s 640x480 -r 60
         #####################
 
-        test -x /userdata/system/custom-es-config && /userdata/system/custom-es-config
+        test -e /userdata/system/custom-es-config && bash /userdata/system/custom-es-config &
         ###################
     fi
 
