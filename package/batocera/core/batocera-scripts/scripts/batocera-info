@@ -166,7 +166,7 @@ fi
 INTERNALDEVICE=$(batocera-part "share")
 INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
 echo "Data Partition Format: ${INTERNALDEVICETYPE}"
-echo "Data Partition Available Space: $(df -h | awk '/\/userdata$/ {print $4}')"
+echo "Data Partition Available Space: $(df -h ${INTERNALDEVICE} | awk '/\/userdata$/ {print $4}')"
 
 PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
 test -n "${PREFSRC}" && echo "Network IP Address: ${PREFSRC}"
