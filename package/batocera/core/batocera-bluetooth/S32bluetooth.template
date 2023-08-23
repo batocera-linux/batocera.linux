@@ -51,6 +51,13 @@ case "$1" in
                     /usr/bin/hciattach_opi -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
                     sleep 2
                 ;;
+                opi5b)
+                    # specific to the orangepi-5b board...
+                    if test "${BOARD}" = "orangepi-5b"; then
+                        /usr/bin/hciattach -n -s 115200 /dev/ttyS9 bcm43xx 1500000
+                        sleep 2
+                    fi
+                ;;
             esac
         done
 
