@@ -2097,7 +2097,7 @@ msgstr ""
 #. TRANSLATION: libretro/swanstation, libretro/swanstation
 msgctxt "game_options"
 msgid "Digital Controller (Gamepad)"
-msgstr ""
+msgstr "Contrôleur numérique (Gamepad)"
 
 #. TRANSLATION: libretro/swanstation, libretro/swanstation, libretro/duckstation, libretro/duckstation
 msgctxt "game_options"
@@ -4437,7 +4437,7 @@ msgstr ""
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
-msgstr ""
+msgstr "MANETTE 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4467,17 +4467,17 @@ msgstr "Utile pour les manettes de type N64."
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
-msgstr ""
+msgstr "MANETTE 2"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 3"
-msgstr ""
+msgstr "MANETTE 3"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 4"
-msgstr ""
+msgstr "MANETTE 4"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4487,12 +4487,12 @@ msgstr "Émuler un pak dans le port d'extension du contrôleur."
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
 msgid "CONTOLLER 1"
-msgstr ""
+msgstr "MANETTE 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "CONTROLLER PAK"
-msgstr ""
+msgstr "CONTROLLER PAK"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -5033,7 +5033,7 @@ msgstr "N64 3-point"
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "CONTOLLER 2"
-msgstr ""
+msgstr "MANETTE 2"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -7237,7 +7237,7 @@ msgstr "Classic Controller"
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Classic Controller Pro"
-msgstr ""
+msgstr "Classic Controller Pro"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -8621,27 +8621,27 @@ msgstr "Activer"
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "Set the sensitivity of the joystick analog sticks."
-msgstr ""
+msgstr "Définir la sensibilité des sticks analogiques."
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "SENSITIVITY"
-msgstr ""
+msgstr "SENSIBILITÉ"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "100% (Default)"
-msgstr ""
+msgstr "100% (par défaut)"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "DEADZONE"
-msgstr ""
+msgstr "ZONE MORTE"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "5% (Default)"
-msgstr ""
+msgstr "5% (par défaut)"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -9340,11 +9340,13 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
+"Peut améliorer les performances sur les CPUs avec peu de coeurs ou threads "
+"au risque de casser l'émulation de l'horloge."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "SPU LOOP DETECTION"
-msgstr ""
+msgstr "DÉTECTION DE BOUCLE SPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9352,26 +9354,28 @@ msgid ""
 "Mega and Giga modes may improve performance. Use the Safe mode for maximum "
 "compatibility."
 msgstr ""
+"Les modes Mega et Giga peuvent améliorer les performances. Utilisez le mode "
+"sûr pour la meilleure compatibilité."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "SPU BLOCK SIZE"
-msgstr ""
+msgstr "TAILLE DE BLOC SPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Safe (Default)"
-msgstr ""
+msgstr "Sûr (par défaut)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Mega"
-msgstr ""
+msgstr "Mega"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Giga"
-msgstr ""
+msgstr "Giga"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9379,21 +9383,23 @@ msgid ""
 "Helps reduce CPU power consumption by throttling the CPU when not needed. "
 "Useful for handhelds."
 msgstr ""
+"Aide à réduire la consommation du CPU en le contraignant lorsque c'est "
+"possible. Utile pour les machines portables."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "MAX POWER SAVING CPU-PREEMPTIONS"
-msgstr ""
+msgstr "ÉCONOMIE D'ÉNERGIE MAX SUR LES PRÉEMPTIONS CPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Moderate"
-msgstr ""
+msgstr "Modérée"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Maximum"
-msgstr ""
+msgstr "Maximum"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9722,127 +9728,127 @@ msgstr "INTERFACE UTILISATEUR GRAPHIQUE"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Select scale resolution of the game."
-msgstr ""
+msgstr "Choisir la résolution d'échelle du jeu."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SCALE FACTOR"
-msgstr ""
+msgstr "FACTEUR D'ÉCHELLE"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Sets the scaler filter mode when rendering."
-msgstr ""
+msgstr "Définit le mode de filtrage d'échelle."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SCALER MODE"
-msgstr ""
+msgstr "MODE DE FILTRAGE D'ÉCHELLE"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "HQ (bilinear filter)"
-msgstr ""
+msgstr "HQ (filtre bilinéaire)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Edge (sharper filet)"
-msgstr ""
+msgstr "Au bord (rendu plus précis)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "AdvMame"
-msgstr ""
+msgstr "AdvMame"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Scanline Interpolation Filter (SAI)"
-msgstr ""
+msgstr "Filtre d'interpolation pour balayage (SAI)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SuperSAI"
-msgstr ""
+msgstr "SuperSAI"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SuperEagle"
-msgstr ""
+msgstr "SuperEagle"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Pixel-Perfect"
-msgstr ""
+msgstr "Pixel Perfait"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "DotMatrix"
-msgstr ""
+msgstr "Matrice de points"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "TV2x CRT Television Filter"
-msgstr ""
+msgstr "TV2x Télévision cathodique"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Stretches the output to fill the display area."
-msgstr ""
+msgstr "Étend le rendu pour remplir la surface d'affichage."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center (Default)"
-msgstr ""
+msgstr "Au centre (par défaut)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Pixel Perfect"
-msgstr ""
+msgstr "Pixel parfait"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Even Pixels"
-msgstr ""
+msgstr "Pixels pairs"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Fit resolution scale"
-msgstr ""
+msgstr "Satisfaire l'échelle de résolution"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Stretch to screen"
-msgstr ""
+msgstr "Étire pour remplir l'écran"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
-msgstr ""
+msgstr "Satisfaire un ratio d'écran 4:3"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
-msgstr ""
+msgstr "Choisissez votre moteur de rendu préféré."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "RENDERER"
-msgstr ""
+msgstr "MOTEUR DE RENDU"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "OpenGL with Shaders"
-msgstr ""
+msgstr "OpenGL avec des shaders"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Choose your preferred language."
-msgstr ""
+msgstr "Choisissez votre langue préférée."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Chinese (Mandarin)"
-msgstr ""
+msgstr "Chinois (Mandarin)"
 
 #. TRANSLATION: scummvm, xenia, xenia-canary
 msgctxt "game_options"
@@ -9852,12 +9858,12 @@ msgstr "Suédois"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Hebrew"
-msgstr ""
+msgstr "Hébreu"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Czech"
-msgstr ""
+msgstr "Tchèque"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
@@ -10339,7 +10345,7 @@ msgstr "Corrige l'effet de déchirure d'écran, mais peut perdre des images."
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "Depends on video mode being set to BGFX."
-msgstr ""
+msgstr "Nécessite le mode vidéo mis sur BGFX."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -10423,11 +10429,13 @@ msgid ""
 "Choose whether to pass SDL Game Controller config to the Windows game. "
 "Disabling may help with some games."
 msgstr ""
+"Choisissez si vous voulez passer la configuration SDL des manettes "
+"aux jeux Windows. La désactiver peut aider pour certains jeux."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "SDL CONFIG"
-msgstr ""
+msgstr "CONFIGURATION SDL"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -10854,27 +10862,27 @@ msgstr "Sonic CD (maintenir le saut)"
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "Screen Resolution (Default)"
-msgstr ""
+msgstr "Résolution d'écran (par défaut)"
 
 #. TRANSLATION: model2emu, play
 msgctxt "game_options"
 msgid "Enable widescreen support."
-msgstr ""
+msgstr "Active le support d'écran large."
 
 #. TRANSLATION: model2emu, play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
-msgstr ""
+msgstr "ACTIVE L'ÉCRAN LARGE"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "Enable scanlines for roms that support it."
-msgstr ""
+msgstr "Active le filtre de balayage pour les roms qui le supportent."
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "ENABLE SCANLINES"
-msgstr ""
+msgstr "ACTIVE FILTRE DE BALAYAGE"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -10987,57 +10995,57 @@ msgstr "ACTIVER LE RENDU LOGICIEL"
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "OPENGL RENDERING RESOLUTION"
-msgstr ""
+msgstr "RÉSOLUTION DE RENDU OPENGL"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "1x (~480)"
-msgstr ""
+msgstr "1x (~480)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "2x (~960)"
-msgstr ""
+msgstr "2x (~960)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "4x (~1920p)"
-msgstr ""
+msgstr "4x (~1920p)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "8x (~4320p / 8k)"
-msgstr ""
+msgstr "8x (~4320p / 8k)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "16x (~7680p / 16k)"
-msgstr ""
+msgstr "16x (~7680p / 16k)"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
-msgstr ""
+msgstr "MODE DE PRÉSENTATION"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Fill Screen"
-msgstr ""
+msgstr "Remplir l'écran"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Fit Screen"
-msgstr ""
+msgstr "Se caler à l'écran"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Original Size"
-msgstr ""
+msgstr "Taille d'origine"
 
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Only applicable when using OpenGL."
-msgstr ""
+msgstr "Valable seulement si vous utilisez OpenGL."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -11712,17 +11720,17 @@ msgstr "Activé (par défaut)"
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "Better performance with hardware rendering."
-msgstr ""
+msgstr "Meilleures performances avec le rendu matériel."
 
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "Hardware (default)"
-msgstr ""
+msgstr "Matériel (par défaut)"
 
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "Vsync"
-msgstr ""
+msgstr "VSync"
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
@@ -11827,47 +11835,47 @@ msgstr "Ecrire la sauvegarde d'état à l'emplacement 1"
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Reset the table, sometimes required for PinMame"
-msgstr ""
+msgstr "Remet la table à zéro, parfois nécessaire pour PinMame"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Start game"
-msgstr ""
+msgstr "Démarrer le jeu"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Insert coin"
-msgstr ""
+msgstr "Insérer une pièce"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Nudge up"
-msgstr ""
+msgstr "Pousser vers le haut"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Nudge left"
-msgstr ""
+msgstr "Pousser à gauche"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Nudge right"
-msgstr ""
+msgstr "Pousser à droite"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Pull plunger"
-msgstr ""
+msgstr "Tirer le pousse-bille"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
-msgstr ""
+msgstr "Flipper gauche"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Right flipper"
-msgstr ""
+msgstr "Flipper droit"
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
@@ -12037,7 +12045,7 @@ msgstr "Cacher la décoration"
 #. TRANSLATION: dos.dosbox-x.keys
 msgctxt "keys_files"
 msgid "Exit Dosbox-X"
-msgstr ""
+msgstr "Quitter Dosbox-X"
 
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
