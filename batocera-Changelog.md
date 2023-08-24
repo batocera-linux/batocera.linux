@@ -1,6 +1,6 @@
 # 2023/xx/xx - batocera.linux 38 -
 ### Hardware
-- Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1
+- Support for Orange Pi Zero 2, Orange Pi 3 LTS, HardKernel ODROID-M1 & ODROID-GO ULTRA
 
 ### Added
 - ES settings for both types of classic controllers for dolphin. 
