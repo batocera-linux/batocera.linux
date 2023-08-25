@@ -3,8 +3,8 @@
 # batocera-nvidia-lists
 #
 ################################################################################
-# Version: Commits on Aug 9, 2023
-BATOCERA_NVIDIA_LISTS_VERSION = d3992a821caaf8aba189fac6890eb490286d7694
+# Version: Commits on Aug 25, 2023
+BATOCERA_NVIDIA_LISTS_VERSION = 97485594b5b561519f9faff75de5e0c6db0ff67b
 BATOCERA_NVIDIA_LISTS_SITE = $(call github,batocera-linux,nvidia-lists,$(BATOCERA_NVIDIA_LISTS_VERSION))
 BATOCERA_NVIDIA_LISTS_LICENSE = GPL-3.0+
 BATOCERA_NVIDIA_LISTS_LICENSE_FILES = LICENSE

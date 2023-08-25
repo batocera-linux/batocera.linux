@@ -101,7 +101,7 @@
 - wildmidi to 0.4.5
 - vulkan stack to 1.3.257
 - SDL2 to 2.28.2
-- nvidia production driver to 535.86.05
+- nvidia production driver to 535.104.05
 - faudio to 23.08
 - llvm to 16.0.6
 - Buildroot to 2023.05.01
