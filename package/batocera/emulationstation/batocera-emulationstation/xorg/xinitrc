@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
-log="/userdata/system/logs/nvidia.log"
+display_log="/userdata/system/logs/display.log"
+nvidia_log="/userdata/system/logs/nvidia.log"
+amd_log="/userdata/system/logs/amd.log"
 
 # hide mouse cursor
 unclutter --noevents -b
@@ -10,35 +12,64 @@ xset -dpms
 xset s off
 
 # allow coredumps for ES
-ulimit -H -c unlimited
-ulimit -S -c unlimited emulationstation
+ulimit -c unlimited
 
 # dbus launch is required for the gio/gvfs/trash:///...
-eval `dbus-launch --sh-syntax --exit-with-session`
+eval "$(dbus-launch --sh-syntax --exit-with-session)"
 
-### nvidia ###
-nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
-if test "${nvidia_prime}" = "true"
-then
-    # Check if there are two GPUs in the system
-    gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
-    if [ $gpu_count -ne 2 ]
-    then
-        echo "There are not two GPUs in the system for Nvidia Prime... remove the setting in batocera-boot.conf" >> $log
-    else
-        echo "There are two GPUs in the system, using Nvidia Prime!" >> $log
+# Check if there are two GPUs in the system
+gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+
+if [ "$gpu_count" -eq 2 ]; then
+    echo "Two GPUs detected in the system" >> "$display_log"
+    echo "Setting best primary GPU..." >> "$display_log"
+    
+    # Check for NVIDIA GPUs
+    nvidia_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)
+    if [ "$nvidia_prime" = "false" ]; then
+        echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
+        break
+    fi
+    gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D")
+    if [ -n "$gpu_name" ]; then
+        echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
         export __NV_PRIME_RENDER_OFFLOAD=1
         export __VK_LAYER_NV_optimus=NVIDIA_only
         export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        echo "Using $gpu_name as primary GPU" >> "$nvidia_log"
+        break
+    else
+        # Check for nvidia-prime setting
+        if [ "$nvidia_prime" = "true" ]; then
+            echo "'nvidia-prime' manually set to true" >> "$nvidia_log"
+            echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
+            export __NV_PRIME_RENDER_OFFLOAD=1
+            export __VK_LAYER_NV_optimus=NVIDIA_only
+            export __GLX_VENDOR_LIBRARY_NAME=nvidia
+            break
+        fi
     fi
-fi
-
-### radeon ###
-# variable for AMD Dynamic Switchable Graphics to take amd-radeon gpu over intel cards when such hybrid cards are available
-radeon_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)"
-if test "${radeon_prime}" = "true"
-then
-    export DRI_PRIME=1
+    
+    # Check for AMD/ATI GPUs
+    radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
+    if [ "$radeon_prime" = "false" ]; then
+        echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
+        break
+    fi
+    gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
+    if [ -n "$gpu_name" ]; then
+        echo "Setting AMD Prime environment variable" >> "$amd_log"
+        export DRI_PRIME=1
+        echo "Using $gpu_name as primary GPU" >> "$amd_log" 
+    else
+        if [ "$radeon_prime" = "true" ]; then
+            echo "'radeon-prime' manually set to true" >> "$amd_log" 
+            echo "Setting AMD Prime environment variable" >> "$amd_log"
+            export DRI_PRIME=1
+        fi
+    fi
+else
+    echo "Only one GPU detected in the system" >> "$display_log"
 fi
 
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"

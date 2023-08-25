@@ -153,7 +153,8 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# VULKAN
 	if test -e /var/run/vulkaninfo.version
 	then
-	    APIVERSION=$(cat /var/run/vulkaninfo.version)
+	    APIVERSION=$(sed '2q;d' /var/run/vulkaninfo.version)
+        [ -z "$APIVERSION" ] && APIVERSION=$(head -n 1 /var/run/vulkaninfo.version)
 	    if test -n "${APIVERSION}"; then
 		    echo "Vulkan Driver Version: ${APIVERSION}"
 	    else

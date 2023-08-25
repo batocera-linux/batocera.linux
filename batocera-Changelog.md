@@ -57,6 +57,7 @@
   - Put your services into /userdata/system/services, and enable them in batocera.conf (syncthing may be reenabled).
 - Model2 now loads 16:9 bezels accordingly to your screen and border size in ES
 - Model2 crosshair disabled by default with light guns connected
+- Laptops / Systems with 2 GPUs will now automatically set the environment variables to use the best GPU.
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to ba936e8 (Commits on Jul 22, 2023)
