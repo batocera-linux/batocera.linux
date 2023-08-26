@@ -882,6 +882,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('dosbox_pure_sblaster_type', '"' + system.config['pure_sblaster_type'] + '"')
         else:
             coreSettings.save('dosbox_pure_sblaster_type', '"sb16"')
+        # Enable Gravis Sound
+        if system.isOptSet("pure_gravis"):
+            coreSettings.save("dosbox_pure_gus", '"' + system.config['pure_gravis'] + '"')
+        else:
+            coreSettings.save("dosbox_pure_gus", '"false"')
         # Midi Type
         if system.isOptSet('pure_midi'):
             coreSettings.save('dosbox_pure_midi', '"' + system.config['pure_midi'] + '"')

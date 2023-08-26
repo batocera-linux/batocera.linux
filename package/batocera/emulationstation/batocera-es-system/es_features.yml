@@ -1049,6 +1049,12 @@ libretro:
                     "SounBlaster 2.0":          "sb2"
                     "SounBlaster 1.0":          "sb1"
                     "GameBlaster":              "gb"
+            pure_gravis:
+                prompt: ENABLE GRAVIS ULTRASOUND
+                description: Enable Gravis Utrasound emulation. Ensure the ULTRASND folder is in the root of your <game>.pc rom folder.
+                choices:
+                    "Off (Default)": "false"
+                    "On":            "true"
             pure_midi:
                 prompt: MIDI OUTPUT
                 description: Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output.
