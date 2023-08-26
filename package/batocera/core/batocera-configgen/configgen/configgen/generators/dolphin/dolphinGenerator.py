@@ -133,6 +133,18 @@ class DolphinGenerator(Generator):
         # Change discs automatically
         dolphinSettings.set("Core", "AutoDiscChange", "True")
 
+        # Skip Menu
+        if system.isOptSet("dolphin_SkipIPL") and system.getOptBoolean("dolphin_SkipIPL"):
+            # check files exist to avoid crashes
+            ipl_regions = ["USA", "EUR", "JAP"]
+            base_path = "/userdata/saves/dolphin-emu/User/GC"
+            if any(os.path.exists(os.path.join(base_path, region, "IPL.bin")) for region in ipl_regions):
+                dolphinSettings.set("Core", "SkipIPL", "False")
+            else:
+                dolphinSettings.set("Core", "SkipIPL", "True")
+        else:
+            dolphinSettings.set("Core", "SkipIPL", "True")
+        
         # Save dolphin.ini
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
