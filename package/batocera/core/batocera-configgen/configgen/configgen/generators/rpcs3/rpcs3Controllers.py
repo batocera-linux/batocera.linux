@@ -14,14 +14,23 @@ def generateControllerConfig(system, controllers, rom):
         os.makedirs(rpcs3_input_dir)
         
     valid_sony_guids = [
+        # ds3
+        "030000004c0500006802000011010000",
         "030000004c0500006802000011810000",
         "050000004c0500006802000000800000",
+        "050000004c0500006802000000000000",
+        # ds4
         "030000004c050000c405000011810000",
         "050000004c050000c405000000810000",
+        "030000004c050000cc09000011010000",
+        "050000004c050000cc09000000010000",
+        "030000004c050000cc09000011810000",
+        "050000004c050000cc09000000810000",
+        # ds5
         "030000004c050000e60c000011810000",
         "050000004c050000e60c000000810000"
     ]
-
+    
     # may need to expand this to support more controllers
     # from evdev_joystick_handler.h
     input_mapping = [
@@ -50,13 +59,13 @@ def generateControllerConfig(system, controllers, rom):
             # check for DualShock / DualSense
             if pad.guid in valid_sony_guids:
                 # dualshock 3
-                if pad.guid in valid_sony_guids[:2]:
+                if pad.guid in valid_sony_guids[:4]:
                     f.write(f'Player {nplayer} Input:\n')
                     f.write('  Handler: DualShock 3\n')
                     f.write(f'  Device: "DS3 Pad #{ds3player}"\n')
                     ds3player += 1
                 # dualshock 4
-                elif pad.guid in valid_sony_guids[2:4]:
+                elif pad.guid in valid_sony_guids[4:10]:
                     f.write(f'Player {nplayer} Input:\n')
                     f.write('  Handler: DualShock 4\n')
                     f.write(f'  Device: "DS4 Pad #{ds4player}"\n')
