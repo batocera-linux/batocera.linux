@@ -31,6 +31,7 @@
 - Added Tyrian, a vertical shooter (through content downloader)
 - Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
 - initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
+- guncon3 support
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
