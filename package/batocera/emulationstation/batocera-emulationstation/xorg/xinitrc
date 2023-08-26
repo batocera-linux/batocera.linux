@@ -14,9 +14,6 @@ xset s off
 # allow coredumps for ES
 ulimit -c unlimited
 
-# dbus launch is required for the gio/gvfs/trash:///...
-eval "$(dbus-launch --sh-syntax --exit-with-session)"
-
 # Check if there are two GPUs in the system
 gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
 
