@@ -13,7 +13,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index c0b8ac9df..17407e954 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -19,6 +19,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+@@ -52,6 +52,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
  include( FindPackageHandleStandardArgs )
  
  # Support cross compiling
@@ -22,13 +22,19 @@ index c0b8ac9df..17407e954 100644
  option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
  if( FORCE_CROSSCOMPILE )
  	set( CMAKE_CROSSCOMPILING TRUE )
-@@ -188,9 +190,11 @@ endmacro()
+@@ -214,8 +216,6 @@ endmacro()
  option( NO_OPENAL "Disable OpenAL sound support" OFF )
  
  find_package( BZip2 )
 -find_package( JPEG )
 -find_package( VPX )
  find_package( ZLIB )
+ find_package( WebP )
+ if (NOT WebP_FOUND)
+@@ -231,6 +231,10 @@ if (NOT WebP_FOUND)
+ 	add_library(WebP::webpdemux ALIAS PkgConfig::libwebpdemux)
+ 	add_library(WebP::libwebpmux ALIAS PkgConfig::libwebpmux)
+ endif()
 +if(NOT TOOLS_ONLY)
 +	find_package( JPEG )
 +	find_package( VPX )
@@ -36,14 +42,12 @@ index c0b8ac9df..17407e954 100644
  
  include( TargetArch )
  
-@@ -323,17 +327,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+@@ -354,15 +358,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
  option(FORCE_INTERNAL_ASMJIT "Use internal asmjit" ON)
  mark_as_advanced( FORCE_INTERNAL_ASMJIT )
  
 -if (HAVE_VULKAN)
--	add_subdirectory( libraries/glslang/glslang)
--	add_subdirectory( libraries/glslang/spirv )
--	add_subdirectory( libraries/glslang/OGLCompilersDLL )
+-	add_subdirectory( libraries/ZVulkan )
 -endif()
 -
 -add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
@@ -54,7 +58,7 @@ index c0b8ac9df..17407e954 100644
  if( ZLIB_FOUND AND NOT FORCE_INTERNAL_ZLIB )
  	message( STATUS "Using system zlib, includes found at ${ZLIB_INCLUDE_DIR}" )
  else()
-@@ -345,43 +338,6 @@ else()
+@@ -374,43 +369,6 @@ else()
  	set( ZLIB_LIBRARY z )
  endif()
  
@@ -98,15 +102,13 @@ index c0b8ac9df..17407e954 100644
  if( BZIP2_FOUND AND NOT FORCE_INTERNAL_BZIP2 )
  	message( STATUS "Using system bzip2 library, includes found at ${BZIP2_INCLUDE_DIR}" )
  else()
-@@ -394,6 +350,56 @@ endif()
+@@ -423,6 +381,57 @@ endif()
  
  set( LZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/lzma/C" )
  
 +if(NOT TOOLS_ONLY)
 +	if (HAVE_VULKAN)
-+		add_subdirectory( libraries/glslang/glslang)
-+		add_subdirectory( libraries/glslang/spirv )
-+		add_subdirectory( libraries/glslang/OGLCompilersDLL )
++		add_subdirectory( libraries/ZVulkan )
 +	endif()
 +
 +	add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
@@ -152,10 +154,13 @@ index c0b8ac9df..17407e954 100644
 +	endif()
 +endif()
 +
++
++
++
  if( NOT CMAKE_CROSSCOMPILING )
  	if( NOT CROSS_EXPORTS )
  		set( CROSS_EXPORTS "" )
-@@ -401,26 +407,31 @@ if( NOT CMAKE_CROSSCOMPILING )
+@@ -430,25 +439,29 @@ if( NOT CMAKE_CROSSCOMPILING )
  endif()
  
  # Install the entire docs directory in the distributed zip package
@@ -181,16 +186,13 @@ index c0b8ac9df..17407e954 100644
  
  add_subdirectory( libraries/lzma )
  add_subdirectory( tools )
--add_subdirectory( libraries/gdtoa )
 -add_subdirectory( wadsrc )
 -add_subdirectory( wadsrc_bm )
 -add_subdirectory( wadsrc_lights )
 -add_subdirectory( wadsrc_extra )
 -add_subdirectory( wadsrc_widepix )
 -add_subdirectory( src )
-+
 +if(NOT TOOLS_ONLY)
-+	add_subdirectory( libraries/gdtoa )
 +	add_subdirectory( wadsrc )
 +	add_subdirectory( wadsrc_bm )
 +	add_subdirectory( wadsrc_lights )

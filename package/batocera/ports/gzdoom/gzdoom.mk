@@ -3,17 +3,18 @@
 # gzdoom
 #
 ################################################################################
-GZDOOM_VERSION = g4.10.0
+# Version: Commits on Aug 26, 2023
+GZDOOM_VERSION = 5d38e4c476762118c74ae3d54d20d7312dc107ab
 GZDOOM_SITE = https://github.com/coelckers/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES
 GZDOOM_LICENSE = GPLv3
-GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic libvpx
+GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic libvpx webp
 GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
-
+ 
 # We need the tools from the host package to build the target package
-HOST_GZDOOM_DEPENDENCIES = zlib bzip2
-HOST_GZDOOM_CONF_OPTS += -DTOOLS_ONLY=ON -DSKIP_INSTALL_ALL=ON -DCMAKE_BUILD_TYPE=Release
+HOST_GZDOOM_DEPENDENCIES = zlib bzip2 host-webp
+HOST_GZDOOM_CONF_OPTS += -DTOOLS_ONLY=ON -DHAVE_VULKAN=ON -DSKIP_INSTALL_ALL=ON -DCMAKE_BUILD_TYPE=Release
 HOST_GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define HOST_GZDOOM_INSTALL_CMDS
