@@ -1,0 +1,15 @@
+diff --git a/src/file/FilePool.cc b/src/file/FilePool.cc
+index 99175f2d42..a6aa346305 100644
+--- a/src/file/FilePool.cc
++++ b/src/file/FilePool.cc
+@@ -20,7 +20,9 @@ namespace openmsx {
+ 
+ 	for (const auto& p : systemFileContext().getPaths()) {
+ 		result.addListElement(
+-			makeTclDict("-path", tmpStrCat(p, "/systemroms"),
++			makeTclDict("-path", "/userdata/bios/Machines",
++			            "-types", "system_rom"),
++			makeTclDict("-path", "/userdata/bios/openmsx",
+ 			            "-types", "system_rom"),
+ 			makeTclDict("-path", tmpStrCat(p, "/software"),
+ 			            "-types", "rom disk tape"));
