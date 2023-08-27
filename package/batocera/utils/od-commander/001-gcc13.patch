@@ -1,0 +1,24 @@
+diff --git a/sdl_ttf_multifont.h b/sdl_ttf_multifont.h
+index 58bcc730a6..70d44e2b1c 100644
+--- a/sdl_ttf_multifont.h
++++ b/sdl_ttf_multifont.h
+@@ -9,6 +9,7 @@
+ #include <limits>
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ /* Rendering with font fallback for SDL_ttf. */
+ 
+diff --git a/text_edit.h b/text_edit.h
+index 742feca648..a9a0b86aaf 100644
+--- a/text_edit.h
++++ b/text_edit.h
+@@ -2,6 +2,7 @@
+ #define TEXT_EDIT_H_
+ 
+ #include <string>
++#include <cstdint>
+ 
+ #include <SDL.h>
+ 
