@@ -263,7 +263,7 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
             bios_found = True
             break
     
-    if not biosFound:
+    if not bios_found:
         raise Exception("No bios found")
     
     pcsx2INIConfig.set("Filenames", "BIOS", bios_file)
