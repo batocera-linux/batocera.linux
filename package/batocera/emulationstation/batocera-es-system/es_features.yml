@@ -6602,6 +6602,13 @@ dolphin:
                 choices:
                     "Off": 0
                     "On":  1
+            dolphin_SkipIPL:
+                group: ADVANCED OPTIONS
+                prompt: ENABLE BIOS ACCESS
+                description: Enable Gamecube BIOS access (requires IPL.bin BIOS in appropriate user directory).
+                choices:
+                    "Off": 0
+                    "On":  1
     wii:
         shared: [use_guns]
         cfeatures:
