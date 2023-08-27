@@ -1,0 +1,36 @@
+diff --git a/libraries/ZVulkan/include/zvulkan/vk_mem_alloc/vk_mem_alloc.h b/libraries/ZVulkan/include/zvulkan/vk_mem_alloc/vk_mem_alloc.h
+index fd4472286b..bdbb9d3fe7 100644
+--- a/libraries/ZVulkan/include/zvulkan/vk_mem_alloc/vk_mem_alloc.h
++++ b/libraries/ZVulkan/include/zvulkan/vk_mem_alloc/vk_mem_alloc.h
+@@ -2259,6 +2259,7 @@ remove them if not needed.
+ #include <cassert> // for assert
+ #include <algorithm> // for min, max
+ #include <mutex>
++#include <cstdio>
+ 
+ #ifndef VMA_NULL
+    // Value used as null pointer. Define it to e.g.: nullptr, NULL, 0, (void*)0.
+diff --git a/libraries/ZVulkan/src/vulkanswapchain.cpp b/libraries/ZVulkan/src/vulkanswapchain.cpp
+index 9162109c42..7bf1f47481 100644
+--- a/libraries/ZVulkan/src/vulkanswapchain.cpp
++++ b/libraries/ZVulkan/src/vulkanswapchain.cpp
+@@ -3,6 +3,7 @@
+ #include "vulkanobjects.h"
+ #include "vulkansurface.h"
+ #include "vulkanbuilders.h"
++#include <stdexcept>
+ 
+ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device) : device(device)
+ {
+diff --git a/libraries/ZVulkan/src/vulkanbuilders.cpp b/libraries/ZVulkan/src/vulkanbuilders.cpp
+index bfa138080c..a2c670e415 100644
+--- a/libraries/ZVulkan/src/vulkanbuilders.cpp
++++ b/libraries/ZVulkan/src/vulkanbuilders.cpp
+@@ -5,6 +5,7 @@
+ #include "vulkanswapchain.h"
+ #include "glslang/glslang/Public/ShaderLang.h"
+ #include "glslang/spirv/GlslangToSpv.h"
++#include <stdexcept>
+ 
+ static const TBuiltInResource DefaultTBuiltInResource = {
+ 	/* .MaxLights = */ 32,
