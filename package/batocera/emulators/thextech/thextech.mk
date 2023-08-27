@@ -3,8 +3,8 @@
 # TheXTech
 #
 ################################################################################
-# Last stable v 1.3.6 from Sep 12, 2022
-THEXTECH_VERSION = 2c855a76999d60340f63e7d91ab1d1075211ae58
+# v1.3.7 beta from Aug 27, 2023
+THEXTECH_VERSION = 45b37e92827789f8e2ccf7e107ef3e9179fc8213
 THEXTECH_SITE = https://github.com/Wohlstand/TheXTech
 THEXTECH_SITE_METHOD = git
 THEXTECH_GIT_SUBMODULES = YES
