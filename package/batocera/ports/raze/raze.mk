@@ -3,8 +3,8 @@
 # raze
 #
 ################################################################################
-# Version: Commits on Nov 6, 2022
-RAZE_VERSION = b4a49ea228e0fff196092ccf6e03b8550fa4592c
+
+RAZE_VERSION = 1.7.1
 RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
 RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic
