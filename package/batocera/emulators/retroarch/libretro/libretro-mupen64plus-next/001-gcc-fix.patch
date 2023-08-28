@@ -1,0 +1,19 @@
+diff --git a/mupen64plus-rsp-paraLLEl/rsp_disasm.hpp b/mupen64plus-rsp-paraLLEl/rsp_disasm.hpp.new
+index 22c464b239..a5133e2e90 100644
+--- a/mupen64plus-rsp-paraLLEl/rsp_disasm.hpp
++++ b/mupen64plus-rsp-paraLLEl/rsp_disasm.hpp.new
+@@ -2,6 +2,7 @@
+ #define RSP_DISASM_HPP_
+ 
+ #include <string>
++#include <cstdint>
+ 
+ namespace RSP
+ {
+@@ -9,4 +10,4 @@ std::string disassemble(uint32_t pc, uint32_t instr);
+ const char *register_name(unsigned reg_index);
+ }
+ 
+-#endif
+\ No newline at end of file
++#endif
