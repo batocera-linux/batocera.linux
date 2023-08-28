@@ -1,0 +1,19 @@
+diff --git a/src/osd/modules/lib/osdlib_retro.cpp b/src/osd/modules/lib/osdlib_retro.cpp
+index 8007f292c2..2299b6821f 100644
+--- a/src/osd/modules/lib/osdlib_retro.cpp
++++ b/src/osd/modules/lib/osdlib_retro.cpp
+@@ -3,6 +3,7 @@
+ #include <sys/types.h>
+ #include <signal.h>
+ #include <time.h>
++#include <cstdint>
+ 
+ #if defined(_WIN32)
+ #include <windows.h>
+@@ -359,4 +360,4 @@ dynamic_module::ptr dynamic_module::open(std::vector<std::string> &&names)
+ #endif
+ }
+ 
+-} // namespace osd
+\ No newline at end of file
++} // namespace osd
