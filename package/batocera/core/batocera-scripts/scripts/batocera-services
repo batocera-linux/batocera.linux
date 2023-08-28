@@ -25,7 +25,7 @@ do_list() {
 	done
     fi
 
-    find /userdata/system/services /usr/share/batocera/services -type f 2>/dev/null | sort -u |
+    find -L /userdata/system/services /usr/share/batocera/services -type f 2>/dev/null | sort -u |
 	while read SERVICE
 	do
 	    SNAME=$(basename "${SERVICE}")
@@ -55,7 +55,7 @@ do_list() {
 }
 
 do_start() {
-    find /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
 	while read SERVICE
 	do
 	    bash "${SERVICE}" start
@@ -63,7 +63,7 @@ do_start() {
 }
 
 do_stop() {
-    find /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
 	while read SERVICE
 	do
 	    bash "${SERVICE}" stop
