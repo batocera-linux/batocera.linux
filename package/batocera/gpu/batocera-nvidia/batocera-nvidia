@@ -18,7 +18,7 @@ if test "${MODE}" = "auto"; then
         for d in $NVIDIA_DEV ; do
             CARDNAME=$(lspci -s "$d" | cut -d "[" -f2 | cut -d "]" -f1)
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }' | tr '[:lower:]' '[:upper:]')
-            echo "Checking card: $CARDNAME" >> "$log"
+            echo "Checking card: $CARDNAME with ID: $PCIDEVID" >> "$log"
             if grep -q -i "$CARDNAME" "$LISTDIR/production.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in production list" >> "$log"
                 # now check pci vendor id
@@ -62,11 +62,13 @@ if test "${MODE}" = "auto"; then
                 fi
             else
                 echo "$CARDNAME is not in any of the lists" >> "$log"
+                echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
+                MODE=nouveau
             fi
         done
     else
         echo "No NVIDIA GPU detected" > $log
-        echo "Failing back to OpenSource Mesa Nouveau driver" >> $log
+        echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
         exit 0
