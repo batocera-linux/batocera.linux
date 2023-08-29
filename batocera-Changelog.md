@@ -113,6 +113,7 @@
 - pacman to 5.2.2 with fix for GNU sed on batocera-makepkg
 - sound open firmware to v2.2.6
 - evsieve to v1.4.0
+- wf-recorder to 0.4.0
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
