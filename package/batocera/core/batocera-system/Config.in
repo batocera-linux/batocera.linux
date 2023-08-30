@@ -1250,6 +1250,9 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     # Fallout 2 open source engine
     select BR2_PACKAGE_FALLOUT2_CE          # ALL
 
+    # Descent 1 & 2 open source engine
+    select BR2_PACKAGE_DXX_REBIRTH          if BR2_x86_64 
+
     # Amstrad CPC emulator
     select BR2_PACKAGE_SUGARBOX		    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
