@@ -15,12 +15,12 @@ diff --git a/standalone/inc/vpinmame/VPinMAMEController.cpp b/standalone/inc/vpi
 index 1d17e3867e..0681a6ab9e 100644
 --- a/standalone/inc/vpinmame/VPinMAMEController.cpp
 +++ b/standalone/inc/vpinmame/VPinMAMEController.cpp
-@@ -360,7 +360,7 @@ VPinMAMEController::VPinMAMEController()
-          m_szPath += PATH_SEPARATOR_CHAR;
-    }
-    else
+@@ -362,7 +362,7 @@ VPinMAMEController::VPinMAMEController()
+ #if (defined(__APPLE__) && ((defined(TARGET_OS_IOS) && TARGET_OS_IOS) || (defined(TARGET_OS_TV) && TARGET_OS_TV))) || defined(__ANDROID__)
+       m_szPath = g_pvp->m_szMyPath + "pinmame" + PATH_SEPARATOR_CHAR;
+ #else
 -      m_szPath = string(getenv("HOME")) + PATH_SEPARATOR_CHAR + ".pinmame" + PATH_SEPARATOR_CHAR;
 +      m_szPath = string("/userdata/system/configs/vpinball/pinmame/");
  #endif
-    strncpy_s((char*)config.vpmPath, m_szPath.c_str(), PINMAME_MAX_PATH - 1);
+    }
  
