@@ -92,7 +92,7 @@
 - play! to v0.62
 - Vita3K to 0.1.9
 ### Dev
-- linux kernel for x86_64 to 6.4.12
+- linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
 - linux kernel for most ARM SBCs to 6.1.49
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.12
@@ -114,6 +114,7 @@
 - sound open firmware to v2.2.6
 - evsieve to v1.4.0
 - wf-recorder to 0.4.0
+- pipewire to 0.3.79
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
