@@ -4,7 +4,7 @@
 #
 
 do_help() {
-    echo "${0} list"
+    echo "${0} list [all|system|user]"
     echo "${0} enable service1"
     echo "${0} disable service1"
     echo "${0} stop service1"
@@ -25,7 +25,19 @@ do_list() {
 	done
     fi
 
-    find -L /userdata/system/services /usr/share/batocera/services -type f 2>/dev/null | sort -u |
+    case "${1}" in
+        system)
+            service_folders="/usr/share/batocera/services"
+            ;;
+        user)
+            service_folders="/userdata/system/services"
+            ;;
+        *)
+            service_folders="/userdata/system/services /usr/share/batocera/services"
+            ;;
+    esac
+
+    find -L $service_folders -type f 2>/dev/null | sort -u |
 	while read SERVICE
 	do
 	    SNAME=$(basename "${SERVICE}")
@@ -137,7 +149,7 @@ shift
 
 case "${ACTION}" in
     list)
-	do_list
+	do_list "${1}"
 	;;
     start)
 	do_start "${1}"
