@@ -1,0 +1,13 @@
+config BR2_PACKAGE_DXX_REBIRTH
+	bool "dxx-rebirth"
+	select BR2_PACKAGE_HOST_SCONS
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_PHYSFS
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_SDL2_MIXER
+
+	help
+	  dxx-rebirth is an opensource port of Descent 1 & 2
+
+	  https://github.com/dxx-rebirth/dxx-rebirth
