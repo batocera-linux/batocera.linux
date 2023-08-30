@@ -1,8 +1,8 @@
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index d41ed68..6cd9f08 100644
+index 987e394..6555688 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -944,7 +944,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
+@@ -1244,7 +1244,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
  		{
  			if (!devicePath.empty())
  			{
@@ -11,7 +11,7 @@ index d41ed68..6cd9f08 100644
  				{
  					config->updateBatteryLevel(level);
  					changed = true;
-@@ -952,7 +952,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
+@@ -1252,7 +1252,7 @@ void InputManager::updateBatteryLevel(int id, const std::string& device, const s
  			}
  			else
  			{
@@ -20,10 +20,3 @@ index d41ed68..6cd9f08 100644
  				{
  					config->updateBatteryLevel(level);
  					changed = true;
-@@ -993,4 +993,4 @@ void InputManager::sendMouseClick(Window* window, int button)
- {
- 	window->input(getInputConfigByDevice(DEVICE_MOUSE), Input(DEVICE_MOUSE, TYPE_BUTTON, button, true, false));
- 	window->input(getInputConfigByDevice(DEVICE_MOUSE), Input(DEVICE_MOUSE, TYPE_BUTTON, button, false, false));
--}
-\ No newline at end of file
-+}

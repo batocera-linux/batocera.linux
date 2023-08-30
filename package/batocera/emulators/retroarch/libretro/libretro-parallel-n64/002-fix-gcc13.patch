@@ -1,0 +1,12 @@
+diff --git a/mupen64plus-video-angrylion/parallel_al.cpp b/mupen64plus-video-angrylion/parallel_al.cpp
+index a269e43345..22aa4534f5 100644
+--- a/mupen64plus-video-angrylion/parallel_al.cpp
++++ b/mupen64plus-video-angrylion/parallel_al.cpp
+@@ -10,6 +10,7 @@
+ #include <mutex>
+ #include <thread>
+ #include <vector>
++#include <stdexcept>
+ 
+ class Parallel
+ {

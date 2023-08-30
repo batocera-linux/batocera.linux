@@ -82,7 +82,7 @@
 - redream to 1.5.0-1079-g5ac7859
 - kodi to 20.2
 - EDuke32 to July, 3th 2023
-- OpenMSX to v19
+- OpenMSX to v19.1
 - btop to 1.2.13
 - slang and glsl shaders to July 29th 2023
 - pcsx2 to v1.7.4857 (Aug, 1st 2023)
@@ -93,8 +93,8 @@
 - Vita3K to 0.1.9
 ### Dev
 - linux kernel for x86_64 to 6.4.12
-- linux kernel for RPI to 6.1.32
-- linux kernel for most ARM SBCs to 6.1.43
+- linux kernel for RPI to 6.1.47
+- linux kernel for most ARM SBCs to 6.1.49
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.12
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
@@ -112,6 +112,8 @@
 - linux firmware to 20230804
 - pacman to 5.2.2 with fix for GNU sed on batocera-makepkg
 - sound open firmware to v2.2.6
+- evsieve to v1.4.0
+- wf-recorder to 0.4.0
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware

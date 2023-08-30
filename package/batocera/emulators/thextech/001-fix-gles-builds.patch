@@ -1,0 +1,18 @@
+--- a/CMakeLists.txt	2023-08-29 17:55:07.652134061 +0200
++++ b/CMakeLists.txt	2023-08-29 17:59:01.470408708 +0200
+@@ -1148,6 +1148,7 @@
+ 
+ if(THEXTECH_BUILD_GL_ES_MODERN)
+     target_compile_definitions(thextech PRIVATE -DTHEXTECH_BUILD_GL_ES_MODERN)
++    target_link_libraries(thextech PRIVATE EGL GLESv2)
+ endif()
+ 
+ if(THEXTECH_BUILD_GL_DESKTOP_MODERN OR THEXTECH_BUILD_GL_ES_MODERN)
+@@ -1160,6 +1161,7 @@
+ 
+ if(THEXTECH_BUILD_GL_ES_LEGACY)
+     target_compile_definitions(thextech PRIVATE -DTHEXTECH_BUILD_GL_ES_LEGACY)
++    target_link_libraries(thextech PRIVATE EGL GLESv1_CM)
+ endif()
+ 
+ if(THEXTECH_ENABLE_NEW_USER_PATHS)
