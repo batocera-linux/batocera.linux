@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v38beta(2023/08/14)\n"
+"Project-Id-Version: batocera-es v38beta(2023/08/24)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-08-14 12:04+0900\n"
+"PO-Revision-Date: 2023-08-24 19:00+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -1909,23 +1909,6 @@ msgstr "GameBlaster"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid ""
-"Enable Gravis Utrasound emulation. Ensure the ULTRASND folder is in the root "
-"of your <game>.pc rom folder."
-msgstr ""
-
-#. TRANSLATION: libretro/dosbox_pure
-msgctxt "game_options"
-msgid "ENABLE GRAVIS ULTRASOUND"
-msgstr ""
-
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, ...
-msgctxt "game_options"
-msgid "Off (Default)"
-msgstr "使用しない (標準)"
-
-#. TRANSLATION: libretro/dosbox_pure
-msgctxt "game_options"
-msgid ""
 "Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output."
 msgstr ""
 "MIDI 出力に使用する .SF2(サウンドフォント)、.ROM 、またはインターフェイスを選"
@@ -2996,6 +2979,11 @@ msgstr "画面外射撃の代わりに銃ボタン2をリロードに設定し�
 msgctxt "game_options"
 msgid "OFF-SCREEN RELOAD BUTTON"
 msgstr "画面外射撃リロードの代替えボタン"
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, libretro/xrick, ...
+msgctxt "game_options"
+msgid "Off (Default)"
+msgstr "使用しない (標準)"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -7146,18 +7134,6 @@ msgstr "表示系設定"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
-msgid ""
-"Enable Gamecube BIOS access (requires IPL.bin BIOS in appropriate user "
-"directory)."
-msgstr ""
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "ENABLE BIOS ACCESS"
-msgstr ""
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "コントローラをエミュレートされたWiiリモコンにマッピングします"
 
@@ -9624,127 +9600,129 @@ msgstr "グラフィカル ユーザー インターフェース"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Select scale resolution of the game."
-msgstr ""
+msgstr "ゲームのスケール解像度を選択します"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SCALE FACTOR"
-msgstr ""
+msgstr "スケールファクター"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Sets the scaler filter mode when rendering."
-msgstr ""
+msgstr "レンダリング時のスケーラー フィルター モードを設定します"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SCALER MODE"
-msgstr ""
+msgstr "スケーラーモード"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "HQ (bilinear filter)"
-msgstr ""
+msgstr "HQ (バイリニアフィルター)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Edge (sharper filet)"
-msgstr ""
+msgstr "エッジ（よりシャープなフィレ）"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "AdvMame"
-msgstr ""
+msgstr "Advance Mame"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Scanline Interpolation Filter (SAI)"
-msgstr ""
+msgstr "スキャンライン補間フィルター（SAI）"
 
 #. TRANSLATION: scummvm
+#| msgctxt "game_options"
+#| msgid "Super Scope"
 msgctxt "game_options"
 msgid "SuperSAI"
-msgstr ""
+msgstr "SuperSAI"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "SuperEagle"
-msgstr ""
+msgstr "SuperEagle"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Pixel-Perfect"
-msgstr ""
+msgstr "ピクセルパーフェクト (ピクセルを正方形表示)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "DotMatrix"
-msgstr ""
+msgstr "ドットマトリクス"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "TV2x CRT Television Filter"
-msgstr ""
+msgstr "TV2xブラウン管テレビ用フィルター"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Stretches the output to fill the display area."
-msgstr ""
+msgstr "領域全体に拡大して表示します"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center (Default)"
-msgstr ""
+msgstr "中央 (標準)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Pixel Perfect"
-msgstr ""
+msgstr "ピクセルパーフェクト (ピクセルを正方形表示)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Even Pixels"
-msgstr ""
+msgstr "偶数ピクセル"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Fit resolution scale"
-msgstr ""
+msgstr "解像度スケールに合わせる"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Stretch to screen"
-msgstr ""
+msgstr "画面全体に引き伸ばし"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
-msgstr ""
+msgstr "アスペクト比を 4:3 に合わせる"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
-msgstr ""
+msgstr "好みのレンダラーを選択してください"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "RENDERER"
-msgstr ""
+msgstr "レンダラー"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "OpenGL with Shaders"
-msgstr ""
+msgstr "OpenGL　と　シェーダー"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Choose your preferred language."
-msgstr ""
+msgstr "使用する言語を選択してください"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Chinese (Mandarin)"
-msgstr ""
+msgstr "中国語（北京語）"
 
 #. TRANSLATION: scummvm, xenia, xenia-canary
 msgctxt "game_options"
@@ -9754,12 +9732,12 @@ msgstr "スウェーデン語"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Hebrew"
-msgstr ""
+msgstr "ヘブライ語"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Czech"
-msgstr ""
+msgstr "チェコ語"
 
 #. TRANSLATION: easyrpg
 msgctxt "game_options"
