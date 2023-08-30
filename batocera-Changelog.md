@@ -82,7 +82,7 @@
 - redream to 1.5.0-1079-g5ac7859
 - kodi to 20.2
 - EDuke32 to July, 3th 2023
-- OpenMSX to v19
+- OpenMSX to v19.1
 - btop to 1.2.13
 - slang and glsl shaders to July 29th 2023
 - pcsx2 to v1.7.4857 (Aug, 1st 2023)
