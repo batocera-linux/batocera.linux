@@ -1,27 +1,27 @@
 # 2023/xx/xx - batocera.linux 38 -
 ### Hardware
 - Added support for:
-  - Orange Pi Zero 2
+  - Orange Pi 5B
   - Orange Pi 3 LTS
+  - Orange Pi Zero 2
   - HardKernel ODROID-M1
-  - ODROID-GO ULTRA
-  - Orange Pi 5b
+  - HardKernel ODROID-GO ULTRA
 ### Added
 - ES settings for both types of classic controllers for dolphin.
 - Additional ES settings for rpcs3
 - ES settings for joystick deadzone/sensitivity for mupen64plus
 - ES settings for N64 controllers for N64 emulators.
-- battery remaining time in batocera-info (f2)
-- libretro core boom3, A Doom 3 port
-- libretro core reminiscence, A Flashback port
+- Remaining battery life in batocera-info (f2)
+- Libretro core boom3, A Doom 3 port
+- Libretro core reminiscence, A Flashback port
 - libretro core openlara, An original Tomb Raider port
-- mosquitto client command line tools
-- es : from developper menu, you can change the es resolution
-- xenia canary can now apply patches
+- Mosquitto client command line tools
+- ES you can now change the resolution from developer menu
+- Xenia canary can now apply patches
 - Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
-- vitaquake2 libretro core enabled for AArch64
-- ioquake3 to ports, An updated Quake III engine
-- play! emulator for PS2 but also Namco 246 & 256 systems
+- Vitaquake2 libretro core enabled for AArch64
+- Ioquake3 to ports, An updated Quake III engine
+- Play! PS2 emulator with support for Namco 246 & 256 systems
 - TheXTech game engine for Super Mario-like SMBX platform games
 - Tandy / Memorex Video Information System (VIS)
 - Visual Pinball X (Standalone) for X86_64, RPi4 & RK3588 boards
@@ -30,33 +30,33 @@
 - Added Hurrican, a Turrican clone (through content downloader)
 - Added Tyrian, a vertical shooter (through content downloader)
 - Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
-- initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
-- guncon3 support
-- plane mode (disable wifi/bt)
+- Initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
+- Guncon3 support
+- Plane mode (enable/disable wifi/bt on the fly)
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
 - DVD playback in Kodi
-- workaround BT firmware with Intel AX101 chipset
+- Workaround BT firmware for Intel AX101 chipset
 - Fix Star Wars Trilogy (supermodel) not working with the light gun
 - Mame2003plus light gun controls properly mapped
-- Lr-swanstation light gun controls properly mapped
+- Libretro-swanstation light gun controls properly mapped
 - Sinden Lightgun will now start when booting Batocera
 - Fixed PS3 controllers not repairing after standby or poweroff
-- USB 2.0 with the Orange Pi 5.
+- Fixed USB 2.0 for the Orange Pi 5.
 ### Changed
 - ES music volume on a logarithmic scale instead of linear one
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
 - Default crop overscan setting for NES is now vertical only
-- n64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
+- N64 mupen states files are now named with rom names (renaming necessary when migrating to keep old states)
 - Enable lr-beetle-pcfx and lr-prboom libretro cores on RK3588
 - To enable Analog mode in Duckstation it's now hotkey + left trigger (l2)
-- kodi splash removed (if the advancedsettings file was not already created)
+- Kodi splash removed (if the advancedsettings file was not already created)
 - Model2 emulator will now default to 4:3 unless widescreen selected
 - Model2 emulator now allows rendering resolution to be selected
 - Model2 now allows you to enable scanlines
 - batocera-services - custom.sh is deprecated and may be removed in a later version.
-  - Put your services into /userdata/system/services, and enable them in batocera.conf (syncthing may be reenabled).
+- Put your services into /userdata/system/services, and enable them in batocera.conf (syncthing may be reenabled).
 - Model2 now loads 16:9 bezels accordingly to your screen and border size in ES
 - Model2 crosshair disabled by default with light guns connected
 - Laptops / Systems with 2 GPUs will now automatically set the environment variables to use the best GPU.
@@ -101,12 +101,12 @@
 ### Dev
 - linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
-- linux kernel for most ARM SBCs to 6.1.49
+- linux kernel for most ARM SBCs to 6.1.50
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.12
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
-- Enable exFAT and NTFS Linux kernel drivers on x86_64
+- enable exFAT and NTFS Linux kernel drivers on x86_64
 - bluez to 5.68
 - wildmidi to 0.4.5
 - vulkan stack to 1.3.257
@@ -115,7 +115,7 @@
 - faudio to 23.08
 - llvm to 16.0.6
 - Buildroot to 2023.05.01
-- Preliminary support for Khadas VIM4, Khadas VIM1S
+- Preliminary support for Khadas VIM4, Khadas VIM1S & Khadas VIM3L
 - linux firmware to 20230804
 - pacman to 5.2.2 with fix for GNU sed on batocera-makepkg
 - sound open firmware to v2.2.6
