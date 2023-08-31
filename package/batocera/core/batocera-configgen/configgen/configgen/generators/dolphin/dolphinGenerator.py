@@ -137,7 +137,7 @@ class DolphinGenerator(Generator):
         if system.isOptSet("dolphin_SkipIPL") and system.getOptBoolean("dolphin_SkipIPL"):
             # check files exist to avoid crashes
             ipl_regions = ["USA", "EUR", "JAP"]
-            base_path = "/userdata/saves/dolphin-emu/User/GC"
+            base_path = "/userdata/bios/GC"
             if any(os.path.exists(os.path.join(base_path, region, "IPL.bin")) for region in ipl_regions):
                 dolphinSettings.set("Core", "SkipIPL", "False")
             else:
