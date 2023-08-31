@@ -7,7 +7,7 @@
   - ODROID-GO ULTRA
   - Orange Pi 5b
 ### Added
-- ES settings for both types of classic controllers for dolphin. 
+- ES settings for both types of classic controllers for dolphin.
 - Additional ES settings for rpcs3
 - ES settings for joystick deadzone/sensitivity for mupen64plus
 - ES settings for N64 controllers for N64 emulators.
@@ -32,6 +32,7 @@
 - Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
 - initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
 - guncon3 support
+- plane mode (disable wifi/bt)
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
