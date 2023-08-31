@@ -92,6 +92,12 @@
 - commander genius to v3.4.9
 - play! to v0.62
 - Vita3K to 0.1.9
+- vcmi to 1.3.1
+- libretro-mupen64plus-next to Aug 8 build
+- raze to 1.7.1
+- gzdoom to Aug 26 build
+- libretro-fake08 to Aug 21 build
+- libretro-bsnes to Aug 18 build
 ### Dev
 - linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
