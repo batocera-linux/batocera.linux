@@ -64,7 +64,7 @@
 - xenia to v1.0.2805
 - xenia canary to ba936e8 (Commits on Jul 22, 2023)
 - citra to nightly-1973
-- groovy mame to 0.257
+- groovy mame to 0.258
 - libretro-mame to 0.257
 - cemu to v2.0-47
 - amiberry to 5.6.1
