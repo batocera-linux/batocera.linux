@@ -1635,6 +1635,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_hires_blend', '"' + system.config['hires_blend'] + '"')
         else:
             coreSettings.save('snes9x_hires_blend', '"disabled"')
+        # Blargg NTSC Filter
+        if system.isOptSet('snes9x_blargg_filter'):
+            coreSettings.save('snes9x_blargg', '"' + system.config['snes9x_blargg_filter'] + '"')
+        else:
+            coreSettings.save('snes9x_blargg', '"disabled"')
+        # Crosshair
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
@@ -1662,6 +1668,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_2010_overclock', '"' + system.config['2010_overclock_superfx'] + '"')
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
+        # Blargg NTSC Filter
+        if system.isOptSet('snes9x_2010_blargg_filter'):
+            coreSettings.save('snes9x_2010_blargg', '"' + system.config['snes9x_2010_blargg_filter'] + '"')
+        else:
+            coreSettings.save('snes9x_2010_blargg', '"disabled"')
+        # Crosshair
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_2010_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
@@ -1675,6 +1687,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     if (system.config['core'] == 'bsnes'):
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save('bsnes_touchscreen_lightgun_superscope_reverse', '"OFF"')
+        # Video Filters
+        if system.isOptSet('bsnes_video_filter'):
+            coreSettings.save('bsnes_video_filter', '"' + system.config['bsnes_video_filter'] + '"')
+        else:
+            coreSettings.save('bsnes_video_filter', '"disabled"')
 
     # Nintendo SNES/GB/GBC/SGB
     if (system.config['core'] == 'mesen-s'):

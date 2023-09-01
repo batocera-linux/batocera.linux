@@ -406,6 +406,16 @@ libretro:
     bsnes:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
+      cfeatures:
+            bsnes_video_filter:
+                prompt: VIDEO FILTERS
+                description: Apply a video filter to mimic various NTSC TV signals.
+                choices:
+                    "Off":              "None"
+                    "NTSC (RF)":        "NTSC (RF)"
+                    "NTSC (RGB)":       "NTSC (RGB)"
+                    "NTSC (S-Video)":   "NTSC (S-Video)"
+                    "NTSC (Composite)": "NTSC (Composite)"
     bsnes_hd:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
@@ -5061,6 +5071,17 @@ libretro:
                 choices:
                     "Off":                                disabled
                     "On":                                 enabled
+            snes9x_blargg_filter:
+                prompt: BLARGG NTSC FILTER
+                description: Apply a video filter to mimic various NTSC TV signals.
+                choices:
+                    "Off":        "disabled"
+                    "Monochrome": "monochrome"
+                    "RF":         "rf"
+                    "RGB":        "rgb"
+                    "S-Video":    "s-video"
+                    "Composite":  "composite"
+                
     snes9x_next:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
@@ -5118,6 +5139,17 @@ libretro:
                 choices:
                     "Off":                                disabled
                     "On":                                 enabled
+            snes9x_2010_blargg_filter:
+                prompt: BLARGG NTSC FILTER
+                description: Apply a video filter to mimic various NTSC TV signals.
+                choices:
+                    "Off":        "disabled"
+                    "Monochrome": "monochrome"
+                    "RF":         "rf"
+                    "RGB":        "rgb"
+                    "S-Video":    "s-video"
+                    "Composite":  "composite"
+    
     stella:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
