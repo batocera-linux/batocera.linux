@@ -1,13 +1,11 @@
 #!/bin/sh
 
-SERVICE=ledspicer
-CONFIG_DIR="/userdata/system/configs/ledspicer"
 DAEMON="/usr/bin/ledspicerd"
-PIDFILE="/var/run/ledspicerd.pid"
+CONFIG_DIR="/userdata/system/configs/ledspicer"
 DAEMON_ARGS=
 
 start() {
-        echo -n "Starting $SERVICE service: "
+        echo -n "Starting LEDSpicer: "
 
         # Use an externalized configuration directory for editing
         mkdir -p "$CONFIG_DIR"
@@ -25,8 +23,8 @@ start() {
                 TARGET_CFG="/usr/share/ledspicer/$(basename $INIT_CFG)"
                 if [ ! -e "$EXT_CFG" ]; then
                         cp -a "$INIT_CFG" "$EXT_CFG"
+                        ln -sf "$EXT_CFG" "$TARGET_CFG"
                 fi
-                ln -sf "$EXT_CFG" "$TARGET_CFG"
         done
 
         # Apply udev rule and trigger for any compatible devices already connected
@@ -37,9 +35,10 @@ start() {
                 udevadm trigger --action=add --attr-match="idVendor=d209"
                 udevadm trigger --action=add --attr-match="idVendor=fafa"
                 udevadm trigger --action=add --attr-match="idVendor=03eb"
+        fi
 
         # Start the LEDSpicer daemon (ledspicerd)
-        start-stop-daemon --start --quiet -m --pidfile $PIDFILE --exec $DAEMON --background -- $DAEMON_ARGS
+        start-stop-daemon --start --quiet --exec $DAEMON --background -- $DAEMON_ARGS
         RETVAL=$?
 
 	echo "done"
@@ -47,10 +46,10 @@ start() {
 }
 
 stop() {
-        echo -n "Stopping $SERVICE service: "
+        echo -n "Stopping LEDSpicer: "
 
         # Stop the LEDSpicer daemon (ledspicerd)
-        start-stop-daemon --stop --quiet --pidfile $PIDFILE
+        start-stop-daemon --stop --quiet --exec $DAEMON
 	RETVAL=$?
 	
         echo "done"
@@ -64,12 +63,8 @@ case "$1" in
         stop)
                 stop
                 ;;
-        restart)
-                stop
-                start
-                ;;
         *)
-                echo "Usage: $0 {start|stop|restart}"
+                echo "Usage: $0 {start|stop}"
                 exit 1
 esac
 

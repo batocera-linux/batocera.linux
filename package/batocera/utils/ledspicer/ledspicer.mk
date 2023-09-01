@@ -35,17 +35,14 @@ else
 endif
 
 # Stage files in an 'init' directory to be used by the LEDSpicer service
-# Default contents of /usr/share/ledspicer (except 'doc') move to '/usr/share/ledspicer/init/share'
-# udev rules move to '/usr/share/ledspicer/init/udev'
+# Default contents of /usr/share/ledspicer (except 'doc') move to '/usr/share/ledspicer/init'
 define LEDSPICER_SERVICE_INIT
-    mkdir -p $(TARGET_DIR)/usr/share/ledspicer/init/share
+    mkdir -p $(TARGET_DIR)/usr/share/ledspicer/init
     for f in $(TARGET_DIR)/usr/share/ledspicer/*; do \
         test "$$f" == "$(TARGET_DIR)/usr/share/ledspicer/doc" && continue; \
         test "$$f" == "$(TARGET_DIR)/usr/share/ledspicer/init" && continue; \
-        mv "$$f" "$(TARGET_DIR)/usr/share/ledspicer/init/share/"; \
+        mv "$$f" "$(TARGET_DIR)/usr/share/ledspicer/init/"; \
     done
-    mkdir -p $(TARGET_DIR)/usr/share/ledspicer/init/udev
-    cp $(@D)/data/21-ledspicer.rules $(TARGET_DIR)/usr/share/ledspicer/init/udev/99-ledspicer.rules
 endef
 
 define LEDSPICER_SERVICE_INSTALL
