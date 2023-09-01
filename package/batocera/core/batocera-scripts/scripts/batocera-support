@@ -53,6 +53,7 @@ command -v tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
 lspci                   > "${DSYSTEM}/lspci.txt"
 lspci -v                > "${DSYSTEM}/lspci_v.txt"
+hciconfig -a            > "${DSYSTEM}/bt-capabilities.txt"
 amixer                  > "${DSYSTEM}/amixer.txt"
 aplay -l                > "${DSYSTEM}/aplay-l.txt"
 command -v glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
