@@ -1,0 +1,13 @@
+diff --git a/src/guncon3.c b/src/guncon3.c
+index 12c7e2d682..ee3b6d0e45 100644
+--- a/src/guncon3.c
++++ b/src/guncon3.c
+@@ -183,7 +183,7 @@ static void guncon3_usb_irq(struct urb *urb) {
+     unsigned char hat0_y = 0;
+     unsigned char hat1_x = 0;
+     unsigned char hat1_y = 0;
+-    unsigned short _X_MIN, _X_MAX;
++    //unsigned short _X_MIN, _X_MAX;
+     int status;
+     switch (urb->status) {
+         case 0:
