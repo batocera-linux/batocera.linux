@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI20_RESOURCE_LANGUAGE_TR_TR_VERSION = 10.0.63
+KODI20_RESOURCE_LANGUAGE_TR_TR_VERSION = 10.0.64
 KODI20_RESOURCE_LANGUAGE_TR_TR_SOURCE = resource.language.tr_tr-$(KODI20_RESOURCE_LANGUAGE_TR_TR_VERSION).zip
 KODI20_RESOURCE_LANGUAGE_TR_TR_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.tr_tr
 KODI20_RESOURCE_LANGUAGE_TR_TR_PLUGINNAME=resource.language.tr_tr
