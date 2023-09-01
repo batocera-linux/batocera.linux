@@ -357,7 +357,11 @@ class DolphinGenerator(Generator):
             commandArray = ["dolphin-emu", "-b", "-e", rom]
         else:
             commandArray = ["dolphin-emu-nogui", "-e", rom]
-        
+
+        # state_slot option
+        if system.isOptSet('state_filename'):
+            commandArray.extend(["--save_state", system.config['state_filename']])
+
         return Command.Command(array=commandArray, \
             env={ "XDG_CONFIG_HOME":batoceraFiles.CONF, \
             "XDG_DATA_HOME":batoceraFiles.SAVES, \
