@@ -36,7 +36,7 @@ class MupenGenerator(Generator):
 
         # state_slot option
         if system.isOptSet('state_filename'):
-            commandArray.extend(["--savestate", "/userdata/saves/n64/{}".format(system.config['state_filename'])])
+            commandArray.extend(["--savestate", system.config['state_filename']])
 
         commandArray.append(rom)
 
