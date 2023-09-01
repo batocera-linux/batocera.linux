@@ -124,10 +124,7 @@ class OpenmsxGenerator(Generator):
         commandArray = ["/usr/bin/openmsx", "-cart", rom, "-script", settings_tcl]
 
         # set the best machine based on the system
-        if system.name == "msx1":
-            commandArray[1:1] = ["-machine", "Boosted_MSX2_EN"]
-        
-        if system.name == "msx2":
+        if system.name in ["msx1", "msx2"]:
             commandArray[1:1] = ["-machine", "Boosted_MSX2_EN"]
 
         if system.name == "msx2+":
