@@ -1422,6 +1422,8 @@ atarist:
   emulators:
     libretro:
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd ] }
+    libretro:
+      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB], incompatible_extensions: [ hd ] }
     hatari:
       hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
 

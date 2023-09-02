@@ -1,0 +1,15 @@
+config BR2_PACKAGE_LIBRETRO_HATARIB
+	bool "libretro-hatarib"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_LIBCAPSIMAGE
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ZLIB
+	help
+	  A libretro core for Hatari emulation of Atari ST STE TT Falcon.
+
+	  https://github.com/bbbradsmith/hatariB
+
+comment "LIBRETRO_HATARIB needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

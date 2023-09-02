@@ -33,6 +33,7 @@
 - Initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
 - Guncon3 support
 - Plane mode (enable/disable wifi/bt on the fly)
+- hatariB libretro core
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
