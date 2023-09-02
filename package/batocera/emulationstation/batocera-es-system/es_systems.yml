@@ -1445,13 +1445,12 @@ amstradcpc:
     De "Quick Menu/Core Input Options/User 1 Device type: Retropad" para "Amstrad Joystick"
 
 msx1:
-  name:       MSX1
+  name: MSX1
   manufacturer: Microsoft
   release: 1983
   hardware: computer
   extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv, openmsx]
-  platform:   msx
-  group:      msx
+  platform: pc
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [ogv, openmsx] }
@@ -1545,13 +1544,12 @@ msx1:
         3. userdata/bios/openmsx
 
 msx2:
-  name:       MSX2
+  name: MSX2
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
-  platform:   msx
-  group:      msx
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, ogv, openmsx]
+  platform: pc
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
@@ -1644,13 +1642,12 @@ msx2:
     RS232.ROM
 
 msx2+:
-  name:       MSX2+
+  name: MSX2+
   manufacturer: Microsoft
   release: 1988
   hardware: computer
   extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
-  platform:   msx
-  group:      msx
+  platform: pc
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
@@ -1743,13 +1740,12 @@ msx2+:
     RS232.ROM
 
 msxturbor:
-  name:       MSX Turbo-R
+  name: MSX Turbo-R
   manufacturer: Microsoft
   release: 1990
   hardware: computer
   extensions: [dsk, mx2, rom, zip, 7z, openmsx, m3u]
-  platform:   msx
-  group:      msx
+  platform: pc
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
