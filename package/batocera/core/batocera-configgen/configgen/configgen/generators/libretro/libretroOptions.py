@@ -2471,6 +2471,48 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('openlara_framerate', '"60fps"')
     
+    # HatariB
+    if (system.config['core'] == 'hatarib'):
+        # Defaults
+        coreSettings.save('hatarib_statusbar', '"0"')
+        coreSettings.save('hatarib_fast_floppy', '"1"')
+        coreSettings.save('hatarib_show_welcome', '"0"')
+        # Machine Type
+        if system.isOptSet('hatarib_machine'):
+            coreSettings.save('hatarib_machine', '"' + system.config['hatarib_machine'] + '"')
+        else:
+            coreSettings.save('hatarib_machine', '"0"')
+        # CPU
+        if system.isOptSet('hatarib_cpu'):
+            coreSettings.save('hatarib_cpu', '"' + system.config['hatarib_cpu'] + '"')
+        else:
+            coreSettings.save('hatarib_cpu', '"-1"')
+        # CPU Clock
+        if system.isOptSet('hatarib_cpu_clock'):
+            coreSettings.save('hatarib_cpu_clock', '"' + system.config['hatarib_cpu'] + '"')
+        else:
+            coreSettings.save('hatarib_cpu_clock', '"-1"')
+        # ST Memory Size
+        if system.isOptSet('hatarib_memory'):
+            coreSettings.save('hatarib_memory', '"' + system.config['hatarib_memory'] + '"')
+        else:
+            coreSettings.save('hatarib_memory', '"0"')
+        # Pause Screen
+        if system.isOptSet('hatarib_pause'):
+            coreSettings.save('hatarib_pause_osk', '"' + system.config['hatarib_pause'] + '"')
+        else:
+            coreSettings.save('hatarib_pause_osk', '"2"')
+        # Aspect Ratio
+        if system.isOptSet('hatarib_ratio'):
+            coreSettings.save('hatarib_aspect', '"' + system.config['hatarib_ratio'] + '"')
+        else:
+            coreSettings.save('hatarib_aspect', '"0"')
+        # Borders
+        if system.isOptSet('hatarib_borders'):
+            coreSettings.save('hatarib_borders', '"' + system.config['hatarib_borders'] + '"')
+        else:
+            coreSettings.save('hatarib_borders', '"0"')
+    
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
