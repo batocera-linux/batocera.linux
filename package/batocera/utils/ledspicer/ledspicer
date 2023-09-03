@@ -17,7 +17,7 @@ start() {
         ln -sf "$CONFIG_DIR/ledspicer.conf" "/etc/ledspicer.conf"
 
         # Externalize /usr/share/ledspicer configs, creating any missing files or directories from init
-        find "/usr/share/ledspicer/init/share" -mindepth 1 -maxdepth 1 2>/dev/null |
+        find "/usr/share/ledspicer/init" -mindepth 1 -maxdepth 1 2>/dev/null |
         while read INIT_CFG; do
                 EXT_CFG="$CONFIG_DIR/$(basename $INIT_CFG)"
                 TARGET_CFG="/usr/share/ledspicer/$(basename $INIT_CFG)"
@@ -30,7 +30,7 @@ start() {
         # Apply udev rule and trigger for any compatible devices already connected
         if [ ! -f "/userdata/system/udev/rules.d/99-ledspicer.rules" ]; then
                 mkdir -p "/userdata/system/udev/rules.d"
-                cp "/usr/share/ledspicer/init/udev/99-ledspicer.rules" "/userdata/system/udev/rules.d/"
+                cp "/usr/share/ledspicer/doc/examples/21-ledspicer.rules" "/userdata/system/udev/rules.d/99-ledspicer.rules"
                 udevadm control --reload-rules
                 udevadm trigger --action=add --attr-match="idVendor=d209"
                 udevadm trigger --action=add --attr-match="idVendor=fafa"
