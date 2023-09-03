@@ -16,13 +16,19 @@ start() {
         fi
         ln -sf "$CONFIG_DIR/ledspicer.conf" "/etc/ledspicer.conf"
 
-        # Externalize /usr/share/ledspicer configs, creating any missing files or directories from init
+        # Externalize /usr/share/ledspicer configs
         find "/usr/share/ledspicer/init" -mindepth 1 -maxdepth 1 2>/dev/null |
         while read INIT_CFG; do
                 EXT_CFG="$CONFIG_DIR/$(basename $INIT_CFG)"
                 TARGET_CFG="/usr/share/ledspicer/$(basename $INIT_CFG)"
+                
+                # Create any missing files or directories from init
                 if [ ! -e "$EXT_CFG" ]; then
                         cp -a "$INIT_CFG" "$EXT_CFG"
+                fi
+
+                # Always recreate symlinks to external configs
+                if [ ! -e "$TARGET_CFG" ]; then
                         ln -sf "$EXT_CFG" "$TARGET_CFG"
                 fi
         done
