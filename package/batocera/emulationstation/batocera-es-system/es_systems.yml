@@ -1414,19 +1414,26 @@ cavestory:
     Outras versões podem congelar o sistema.
 
 atarist:
-  name:       Atari ST
+  name: Atari ST
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd]
+  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos]
   emulators:
     libretro:
-      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd ] }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
     libretro:
-      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB], incompatible_extensions: [ hd ] }
+      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB], incompatible_extensions: [ hd, gemdos ] }
     hatari:
       hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
-
+  comment_en: |
+    To enable GEMDOS support within the non-libretro version of Hatari.
+    Create a directory within the roms folder that has a .gemdos extension.
+    i.e. /userdata/roms/atarist/<drive name>.gemdos
+  comment_fr: |
+    Pour activer le support GEMDOS dans la version non libretro de Hatari.
+    Créez un répertoire dans le dossier roms portant une extension .gemdos.
+    c'est-à-dire /userdata/roms/atarist/<nom du lecteur>.gemdos
 amstradcpc:
   name:       Amstrad CPC
   manufacturer: Amstrad
