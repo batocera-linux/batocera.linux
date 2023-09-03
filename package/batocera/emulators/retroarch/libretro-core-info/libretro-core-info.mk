@@ -31,10 +31,12 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	# mamevirtual_libretro.so      => no info found
 	# superflappybirds_libretro.so => no info found
 	# zc210_libretro.so            => no info found
+	# hatarib_libretro.info       => no info found
 	touch $(TARGET_DIR)/usr/share/libretro/info/emuscv_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/mamevirtual_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/superflappybirds_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/zc210_libretro.info
+	touch $(TARGET_DIR)/usr/share/libretro/info/hatarib_libretro.info
 
 endef
 

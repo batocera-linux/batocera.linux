@@ -55,6 +55,7 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-gw
                    libretro-handy
                    libretro-hatari
+                   libretro-hatarib
                    libretro-imame
                    libretro-kronos
                    libretro-lowresnx
