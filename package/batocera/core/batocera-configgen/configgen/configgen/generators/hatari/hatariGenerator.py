@@ -63,6 +63,12 @@ class HatariGenerator(Generator):
                 commandArray += ["--asci", rom]
             else:
                 commandArray += ["--ide-master", rom]
+        elif rom_extension == ".gemdos":
+            blank_file = "/userdata/system/configs/hatari/blank.st"
+            if not os.path.exists(blank_file):
+                with open(blank_file, 'w') as file:
+                    pass
+            commandArray += ["--harddrive", rom, blank_file]
         else:
             # Floppy (A) options
             commandArray += ["--disk-a", rom]
