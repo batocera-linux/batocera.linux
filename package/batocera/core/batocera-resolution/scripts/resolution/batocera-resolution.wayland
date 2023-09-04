@@ -61,7 +61,7 @@ case "${ACTION}" in
     "listModes")
         echo "max-1920x1080:maximum 1920x1080"
         echo "max-640x480:maximum 640x480"
-        swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh) Hz"' | uniq
+        swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh / 1000) Hz"' | uniq
     ;;
     "setMode")
         MODE=$1
