@@ -8,13 +8,7 @@ SCUMMVM_VERSION = v2.7.1
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES += sdl2 zlib libmpeg2 libogg libvorbis flac libmad
-SCUMMVM_DEPENDENCIES += libpng libtheora faad2 freetype
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-    SCUMMVM_DEPENDENCIES += libjpeg-bato
-else
-    SCUMMVM_DEPENDENCIES += jpeg
-endif
+SCUMMVM_DEPENDENCIES += libpng libtheora faad2 freetype libjpeg-bato
 
 SCUMMVM_ADDITIONAL_FLAGS += -I$(STAGING_DIR)/usr/include -lpthread -lm
 SCUMMVM_ADDITIONAL_FLAGS += -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
