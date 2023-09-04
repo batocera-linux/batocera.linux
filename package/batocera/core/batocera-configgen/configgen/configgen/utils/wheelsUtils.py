@@ -6,8 +6,8 @@ eslog = get_logger(__name__)
 
 wheelMapping = {
     "wheel":      "joystick1left",
-    "accelerate": "l2",
-    "brake":      "r2"
+    "accelerate": "r2",
+    "brake":      "l2"
 }
 
 # partial mapping between real pads buttons and batocera pads
