@@ -70,7 +70,7 @@
 - libretro-mame to 0.258
 - cemu to v2.0-47
 - amiberry to 5.6.1
-- dosbox-x to v2023.05.01
+- dosbox-x to v2023.09.01
 - tsugaru to v20230722
 - dolphin to 5.0-19864
 - duckstation to Aug 4, 2023 build
