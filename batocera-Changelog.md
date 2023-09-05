@@ -123,6 +123,7 @@
 - evsieve to v1.4.0
 - wf-recorder to 0.4.0
 - pipewire to 0.3.79
+- dxvk to 2.3
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
