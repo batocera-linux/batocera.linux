@@ -16,6 +16,7 @@ ulimit -c unlimited
 
 # Check if there are two GPUs in the system
 gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+nvidia_conditions_met=false
 
 if [ "$gpu_count" -eq 2 ]; then
     echo "Two GPUs detected in the system" >> "$display_log"
@@ -25,44 +26,46 @@ if [ "$gpu_count" -eq 2 ]; then
     nvidia_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)
     if [ "$nvidia_prime" = "false" ]; then
         echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
-        break
-    fi
-    gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D")
-    if [ -n "$gpu_name" ]; then
-        echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
-        export __NV_PRIME_RENDER_OFFLOAD=1
-        export __VK_LAYER_NV_optimus=NVIDIA_only
-        export __GLX_VENDOR_LIBRARY_NAME=nvidia
-        echo "Using $gpu_name as primary GPU" >> "$nvidia_log"
-        break
     else
-        # Check for nvidia-prime setting
-        if [ "$nvidia_prime" = "true" ]; then
-            echo "'nvidia-prime' manually set to true" >> "$nvidia_log"
+        gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D")
+        if [ -n "$gpu_name" ]; then
             echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
             export __NV_PRIME_RENDER_OFFLOAD=1
             export __VK_LAYER_NV_optimus=NVIDIA_only
             export __GLX_VENDOR_LIBRARY_NAME=nvidia
-            break
+            echo "Using $gpu_name as primary GPU" >> "$nvidia_log"
+            nvidia_conditions_met=true
+        else
+            # Check for nvidia-prime setting
+            if [ "$nvidia_prime" = "true" ]; then
+                echo "'nvidia-prime' manually set to true" >> "$nvidia_log"
+                echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
+                export __NV_PRIME_RENDER_OFFLOAD=1
+                export __VK_LAYER_NV_optimus=NVIDIA_only
+                export __GLX_VENDOR_LIBRARY_NAME=nvidia
+                nvidia_conditions_met=true
+            fi
         fi
     fi
     
-    # Check for AMD/ATI GPUs
-    radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
-    if [ "$radeon_prime" = "false" ]; then
-        echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
-        break
-    fi
-    gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
-    if [ -n "$gpu_name" ]; then
-        echo "Setting AMD Prime environment variable" >> "$amd_log"
-        export DRI_PRIME=1
-        echo "Using $gpu_name as primary GPU" >> "$amd_log" 
-    else
-        if [ "$radeon_prime" = "true" ]; then
-            echo "'radeon-prime' manually set to true" >> "$amd_log" 
-            echo "Setting AMD Prime environment variable" >> "$amd_log"
-            export DRI_PRIME=1
+    # Check for AMD/ATI GPUs if Nvidia Prime has not already been set
+    if [ "$nvidia_conditions_met" = "false" ]; then
+        radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
+        if [ "$radeon_prime" = "false" ]; then
+            echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
+        else
+            gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
+            if [ -n "$gpu_name" ]; then
+                echo "Setting AMD Prime environment variable" >> "$amd_log"
+                export DRI_PRIME=1
+                echo "Using $gpu_name as primary GPU" >> "$amd_log"
+            else
+                if [ "$radeon_prime" = "true" ]; then
+                    echo "'radeon-prime' manually set to true" >> "$amd_log" 
+                    echo "Setting AMD Prime environment variable" >> "$amd_log"
+                    export DRI_PRIME=1
+                fi
+            fi
         fi
     fi
 else
