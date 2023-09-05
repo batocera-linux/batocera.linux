@@ -3053,13 +3053,13 @@ Subject: [PATCH] ARM: dts: RK3288: add hevc node
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 21 ++++++++++++++++++++-
+ arch/arm/boot/dts/rockchip/rk3288.dtsi | 21 ++++++++++++++++++++-
  1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288.dtsi b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 index 7b2cde230b87..59fba3ac6aae 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 @@ -1248,6 +1248,25 @@ vpu_mmu: iommu@ff9a0800 {
  		power-domains = <&power RK3288_PD_VIDEO>;
  	};
