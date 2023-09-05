@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# 20210825
-WINETRICKS_VERSION = 20220411
+# 20230212
+WINETRICKS_VERSION = 20230212
 WINETRICKS_SITE = $(call github,Winetricks,winetricks,$(WINETRICKS_VERSION))
 
 define WINETRICKS_INSTALL_TARGET_CMDS
