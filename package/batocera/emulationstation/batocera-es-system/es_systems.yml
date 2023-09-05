@@ -4124,10 +4124,10 @@ xbox360:
   manufacturer: Microsoft
   release: 2005
   hardware: console
-  extensions: [iso, xex, xbox360]
+  extensions: [iso, xex, xbox360, zar]
   emulators:
     xenia:
-      xenia: { requireAnyOf: [BR2_PACKAGE_XENIA] }
+      xenia: { requireAnyOf: [BR2_PACKAGE_XENIA], incompatible_extensions: [zar] }
     xenia-canary:
       xenia-canary: { requireAnyOf: [BR2_PACKAGE_XENIA_CANARY] }
   comment_en: |
