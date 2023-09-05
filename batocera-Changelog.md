@@ -113,7 +113,7 @@
 - vulkan stack to 1.3.257
 - SDL2 to 2.28.2
 - nvidia production driver to 535.104.05
-- faudio to 23.08
+- faudio to 23.09
 - llvm to 16.0.6
 - Buildroot to 2023.05.01
 - Preliminary support for Khadas VIM4, Khadas VIM1S & Khadas VIM3L
