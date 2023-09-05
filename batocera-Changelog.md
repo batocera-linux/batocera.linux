@@ -124,6 +124,7 @@
 - wf-recorder to 0.4.0
 - pipewire to 0.3.79
 - dxvk to 2.3
+- winetricks to 20230212
 
 # 2023/06/18 - batocera.linux 37 - Red Admiral
 ### hardware
