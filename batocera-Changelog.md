@@ -17,7 +17,7 @@
 - libretro core openlara, An original Tomb Raider port
 - Mosquitto client command line tools
 - ES you can now change the resolution from developer menu
-- Xenia canary can now apply patches
+- Xenia canary can now apply patches and load ZAR (ZArchive) files
 - Raze source port enabled for AArch64: Duke Nukem 3D, Shadow Warrior, Blood, etc.
 - Vitaquake2 libretro core enabled for AArch64
 - Ioquake3 to ports, An updated Quake III engine
@@ -64,7 +64,7 @@
 - Model2 start and coins now mapped on light guns when playing gun games
 ### Updated
 - xenia to v1.0.2805
-- xenia canary to ba936e8 (Commits on Jul 22, 2023)
+- xenia canary to 9554f82 (Commits on Sep 4, 2023)
 - citra to nightly-1973
 - groovy mame to 0.258
 - libretro-mame to 0.258
