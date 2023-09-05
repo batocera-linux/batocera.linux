@@ -751,13 +751,13 @@ Subject: [PATCH] ARM: dts: rockchip: split rk3288 vop
 
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 4 ++--
+ arch/arm/boot/dts/rockchip/rk3288.dtsi | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288.dtsi b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 index 487b0e03d4b4..c60eacab8a79 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 @@ -1017,7 +1017,7 @@ rga: rga@ff920000 {
  	};
  
@@ -786,7 +786,7 @@ Subject: [PATCH] drm/bridge: dw-hdmi: add mtmdsclock parameter to phy
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 ---
  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 10 ++++++----
- drivers/gpu/drm/rcar-du/rcar_dw_hdmi.c    |  3 ++-
+ drivers/gpu/drm/renesas/rcar-du/rcar_dw_hdmi.c    |  3 ++-
  include/drm/bridge/dw_hdmi.h              |  3 ++-
  3 files changed, 10 insertions(+), 6 deletions(-)
 
@@ -826,10 +826,10 @@ index 40d8ca37f5bc..22af42a08980 100644
  	if (ret) {
  		dev_err(hdmi->dev, "PHY configuration failed (clock %lu)\n",
  			mpixelclock);
-diff --git a/drivers/gpu/drm/rcar-du/rcar_dw_hdmi.c b/drivers/gpu/drm/rcar-du/rcar_dw_hdmi.c
+diff --git a/drivers/gpu/drm/renesas/rcar-du/rcar_dw_hdmi.c b/drivers/gpu/drm/renesas/rcar-du/rcar_dw_hdmi.c
 index 18ed14911b98..9c75095a25c5 100644
---- a/drivers/gpu/drm/rcar-du/rcar_dw_hdmi.c
-+++ b/drivers/gpu/drm/rcar-du/rcar_dw_hdmi.c
+--- a/drivers/gpu/drm/renesas/rcar-du/rcar_dw_hdmi.c
++++ b/drivers/gpu/drm/renesas/rcar-du/rcar_dw_hdmi.c
 @@ -53,7 +53,8 @@ rcar_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
  }
  
@@ -1462,14 +1462,14 @@ Signed-off-by: Nickey Yang <nickey.yang@rock-chips.com>
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288.dtsi     | 2 ++
+ arch/arm/boot/dts/rockchip/rk3288.dtsi     | 2 ++
  drivers/clk/rockchip/clk-rk3288.c | 9 +++++----
  2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288.dtsi b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 index c60eacab8a79..d1ae42757242 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 @@ -1026,6 +1026,8 @@ vopb: vop@ff930000 {
  		resets = <&cru SRST_LCDC0_AXI>, <&cru SRST_LCDC0_AHB>, <&cru SRST_LCDC0_DCLK>;
  		reset-names = "axi", "ahb", "dclk";
@@ -1710,14 +1710,14 @@ Date: Sun, 19 Jul 2020 16:35:11 +0000
 Subject: [PATCH] HACK: dts: rockchip: do not use vopl for hdmi
 
 ---
- arch/arm/boot/dts/rk3288.dtsi            | 9 ---------
+ arch/arm/boot/dts/rockchip/rk3288.dtsi            | 9 ---------
  arch/arm64/boot/dts/rockchip/rk3399.dtsi | 9 ---------
  2 files changed, 18 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288.dtsi b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 index d1ae42757242..7b2cde230b87 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 @@ -1083,11 +1083,6 @@ vopl_out: port {
  			#address-cells = <1>;
  			#size-cells = <0>;
