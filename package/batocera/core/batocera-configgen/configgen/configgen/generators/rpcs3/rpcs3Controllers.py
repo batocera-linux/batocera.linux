@@ -54,10 +54,10 @@ def generateControllerConfig(system, controllers, rom):
     configFileName = f"{rpcs3_input_dir}/Default.yml"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     for controller, pad in sorted(controllers.items()):
-        if nplayer <= 7:
+        if nplayer <= 8:
             eslog.debug(f"Controller #{nplayer} - {pad.guid}")
             # check for DualShock / DualSense
-            if pad.guid in valid_sony_guids:
+            if pad.guid in valid_sony_guids and system.config[f"rpcs3_controller{nplayer}"] == "True":
                 # dualshock 3
                 if pad.guid in valid_sony_guids[:4]:
                     f.write(f'Player {nplayer} Input:\n')
