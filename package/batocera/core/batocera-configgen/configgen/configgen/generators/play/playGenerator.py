@@ -120,12 +120,6 @@ class PlayGenerator(Generator):
             with open(playConfigFile, "wb") as file:
                 tree.write(file)
         
-        ## Controller config
-        if not os.path.exists(playInputFile):
-            os.makedirs(os.path.dirname(playInputFile))
-        # Create xml each launch
-        
-
         commandArray = ["/usr/bin/Play"]
         
         if rom != "config":
