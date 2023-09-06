@@ -12,7 +12,7 @@ CONFIGDIR  = batoceraFiles.CONF + '/GSplus'
 CONFIGFILE = CONFIGDIR + '/config.txt'
 
 class GSplusGenerator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         if not os.path.exists(CONFIGDIR):
             os.makedirs(CONFIGDIR)
 

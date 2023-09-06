@@ -9,7 +9,7 @@ import subprocess
 
 class WineGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         if system.name == "windows_installers":
             commandArray = ["batocera-wine", "windows", "install", rom]
             return Command.Command(array=commandArray)

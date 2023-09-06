@@ -7,7 +7,7 @@ import controllersConfig
 
 class EtekwarGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         commandArray = ["etekwar", rom]
 
         return Command.Command(

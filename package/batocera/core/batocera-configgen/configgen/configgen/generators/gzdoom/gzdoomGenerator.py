@@ -29,7 +29,7 @@ def set_joystick_setting(ini_file, set_gz_joystick):
 
 class GZDoomGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         config_dir = f"{batoceraFiles.CONF}/gzdoom"
         ini_file = config_dir + "/gzdoom.ini"
 

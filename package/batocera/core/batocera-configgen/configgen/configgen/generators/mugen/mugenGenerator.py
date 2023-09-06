@@ -7,7 +7,7 @@ import re
 
 class MugenGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         settings_path = rom + "/data/mugen.cfg"
         with open(settings_path, 'r', encoding='utf-8-sig') as f:

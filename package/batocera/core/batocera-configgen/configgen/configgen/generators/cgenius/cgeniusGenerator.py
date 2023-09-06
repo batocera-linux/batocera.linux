@@ -9,7 +9,7 @@ import Command
 import shutil
 
 class CGeniusGenerator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         cgeniusCtrl = {
             "a":              "Fire",

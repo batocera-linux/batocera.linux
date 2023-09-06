@@ -24,7 +24,7 @@ class Pcsx2Generator(Generator):
             return 16/9
         return 4/3
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
 
         # Remove older config files if present

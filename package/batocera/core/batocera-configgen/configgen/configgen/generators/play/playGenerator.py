@@ -15,7 +15,7 @@ playInputFile = playConfig + '/Play Data Files/inputprofiles/default.xml'
 
 class PlayGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         # Create config folder
         if not path.isdir(playConfig):

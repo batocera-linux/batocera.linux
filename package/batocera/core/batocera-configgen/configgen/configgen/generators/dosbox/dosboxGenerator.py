@@ -10,7 +10,7 @@ class DosBoxGenerator(Generator):
 
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         # Find rom path
         gameDir = rom
         batFile = gameDir + "/dosbox.bat"

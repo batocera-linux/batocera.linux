@@ -7,7 +7,7 @@ import pathlib
 
 class PyxelGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         if pathlib.Path(rom).suffix == '.pyxapp':
             cmd = 'play'
         else:

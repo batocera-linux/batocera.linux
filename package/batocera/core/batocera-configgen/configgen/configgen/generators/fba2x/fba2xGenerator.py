@@ -13,7 +13,7 @@ fbaRoot = batoceraFiles.CONF + '/fba/'
 fbaCustom = fbaRoot + 'fba2x.cfg'
 
 class Fba2xGenerator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         iniConfig = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str

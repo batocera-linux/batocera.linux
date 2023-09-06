@@ -6,7 +6,7 @@ import os
 
 class FlatpakGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         romId = None
         with open(rom) as f:

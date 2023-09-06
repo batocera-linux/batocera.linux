@@ -21,7 +21,7 @@ class OpenmsxGenerator(Generator):
     def hasInternalMangoHUDCall(self):
         return True
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         share_dir = openMSX_Homedir + "/share"
         source_settings = openMSX_Config + "/settings.xml" 

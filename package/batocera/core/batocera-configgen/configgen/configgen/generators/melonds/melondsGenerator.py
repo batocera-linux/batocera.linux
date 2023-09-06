@@ -13,7 +13,7 @@ eslog = get_logger(__name__)
 
 class MelonDSGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         romBasename = path.basename(rom)
         
         # Verify the save path exists

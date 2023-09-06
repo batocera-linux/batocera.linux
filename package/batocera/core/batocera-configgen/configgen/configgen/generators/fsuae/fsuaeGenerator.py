@@ -48,7 +48,7 @@ class FsuaeGenerator(Generator):
             return filename
         return filename[:-1]
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--fullscreen",

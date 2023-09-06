@@ -8,7 +8,7 @@ from utils.buildargs import parse_args
 
 
 class EDuke32Generator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         # Core is either eduke32 or fury
         core = system.config["core"]
         config_dir = f"{batoceraFiles.CONF}/{core}"

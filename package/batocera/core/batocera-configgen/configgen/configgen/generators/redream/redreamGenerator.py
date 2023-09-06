@@ -14,7 +14,7 @@ redreamConfig = batoceraFiles.CONF + "/redream"
 
 class RedreamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         redream_exec = redreamConfig + "/redream"
 
         if not os.path.exists(redreamConfig):

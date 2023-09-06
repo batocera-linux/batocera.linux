@@ -72,3 +72,10 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
                                 eslog.info("wheel: unable to replace {} with {}".format(wantedkey, wheelkey))
         nplayer += 1
     return playersControllers
+
+def getWheelsFromDevicesInfos(deviceInfos):
+    res = {}
+    for x in deviceInfos:
+        if deviceInfos[x]["isWheel"]:
+            res[x] = deviceInfos[x]
+    return res
