@@ -9,7 +9,7 @@ eslog = get_logger(__name__)
 
 class TyrianGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         try:
             os.chdir("/userdata/roms/tyrian/data")
         except:

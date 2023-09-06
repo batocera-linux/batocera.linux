@@ -18,7 +18,7 @@ eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/model2"
         emupath = wineprefix + "/model2emu"
         rompath = "/userdata/roms/model2/"

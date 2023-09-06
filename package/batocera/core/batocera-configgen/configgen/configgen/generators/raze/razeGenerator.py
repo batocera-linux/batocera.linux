@@ -69,7 +69,7 @@ class RazeGenerator(Generator):
             "Ins": "togglerotate",
         }
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         for path in [self.config_dir, self.saves_dir]:
             if not os.path.exists(path):
                 os.mkdir(path)

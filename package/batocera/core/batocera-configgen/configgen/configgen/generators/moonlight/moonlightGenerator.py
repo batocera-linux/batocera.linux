@@ -14,7 +14,7 @@ class MoonlightGenerator(Generator):
     
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         moonlightConfig.generateMoonlightConfig(system)
         gameName,confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 'stream','-config',  confFile]

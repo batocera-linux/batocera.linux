@@ -8,7 +8,7 @@ import codecs
 
 class EasyRPGGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         commandArray = ["easyrpg-player"]
 
         # FPS

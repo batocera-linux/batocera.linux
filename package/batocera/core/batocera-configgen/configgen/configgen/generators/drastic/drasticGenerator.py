@@ -16,7 +16,7 @@ from os import environ
 
 class DrasticGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         drastic_root = "/userdata/system/configs/drastic"
         drastic_bin = "/userdata/system/configs/drastic/drastic"

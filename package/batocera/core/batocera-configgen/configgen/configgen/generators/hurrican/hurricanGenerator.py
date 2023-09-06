@@ -9,7 +9,7 @@ eslog = get_logger(__name__)
 
 class HurricanGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         try:
             os.chdir("/userdata/roms/hurrican/data/levels/")
             os.chdir("/userdata/roms/hurrican/")

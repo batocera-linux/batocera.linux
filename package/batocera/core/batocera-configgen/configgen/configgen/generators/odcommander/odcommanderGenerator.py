@@ -6,7 +6,7 @@ import controllersConfig
 
 class OdcommanderGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         commandArray = ["od-commander"]
 
         return Command.Command(array=commandArray,env={

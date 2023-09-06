@@ -6,7 +6,7 @@ import os
 
 class SteamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         basename = os.path.basename(rom)
         gameId = None
         if basename != "Steam.steam":

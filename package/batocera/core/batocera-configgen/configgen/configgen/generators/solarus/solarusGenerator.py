@@ -10,7 +10,7 @@ import zipfile
 
 class SolarusGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         # basis
         commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]

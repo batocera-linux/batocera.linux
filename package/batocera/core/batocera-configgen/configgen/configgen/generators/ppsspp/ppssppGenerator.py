@@ -14,7 +14,7 @@ class PPSSPPGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         ppssppConfig.writePPSSPPConfig(system)
 
         # Remove the old gamecontrollerdb.txt file

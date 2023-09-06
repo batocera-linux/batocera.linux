@@ -17,7 +17,7 @@ eslog = get_logger(__name__)
 
 class DemulGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/demul"
         emupath = wineprefix + "/demul"
         bottlewinpath = wineprefix + "/drive_c/windows" 

@@ -8,7 +8,7 @@ import glob
 
 class ScummVMGenerator(Generator):  
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
         if not os.path.exists('/userdata/bios/scummvm/extra'):
             os.makedirs('/userdata/bios/scummvm/extra')

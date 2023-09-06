@@ -16,7 +16,7 @@ class ViceGenerator(Generator):
     
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         if not os.path.exists(os.path.dirname(batoceraFiles.viceConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.viceConfig))

@@ -161,8 +161,10 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
         deviceInfos = controllers.getDevicesInformation()
         playersControllers = wheelsUtils.reconfigureControllers(playersControllers, system, rom, deviceInfos)
+        wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
     else:
-        eslog.info("wheels disabled.");
+        eslog.info("wheels disabled.")
+        wheels = []
 
     # find the generator
     generator = GeneratorImporter.getGenerator(system.config['emulator'])
@@ -257,7 +259,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            cmd = generator.generate(system, rom, playersControllers, guns, gameResolution)
+            cmd = generator.generate(system, rom, playersControllers, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))

@@ -7,7 +7,7 @@ import controllersConfig
 
 class AbuseGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         commandArray = ["abuse", "-datadir", "/userdata/roms/abuse/abuse_data"]
 
         return Command.Command(

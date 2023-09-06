@@ -16,7 +16,7 @@ eslog = get_logger(__name__)
 
 class BigPEmuGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/bigpemu-bottle"
         emupath = wineprefix + "/bigpemu"
 

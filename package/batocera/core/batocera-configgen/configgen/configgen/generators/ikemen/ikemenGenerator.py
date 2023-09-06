@@ -167,7 +167,7 @@ Joymapping =[
 
 class IkemenGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         try:
             conf = json.load(open(rom+"/save/config.json", "r"))
         except:

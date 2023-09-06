@@ -7,7 +7,7 @@ eslog = get_logger(__name__)
 
 class TheXTechGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
         if not os.path.exists("/userdata/saves/thextech"):
                 os.makedirs("/userdata/saves/thextech")

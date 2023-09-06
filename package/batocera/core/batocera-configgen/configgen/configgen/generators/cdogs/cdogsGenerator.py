@@ -7,7 +7,7 @@ import controllersConfig
 
 class CdogsGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         commandArray = ["cdogs"]
 
         return Command.Command(
