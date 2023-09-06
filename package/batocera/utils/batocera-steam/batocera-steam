@@ -10,7 +10,7 @@ chmod -R g+rwX /var/run/pulse
 
 if test -z "${GAME}"
 then
-    su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam"
+    su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -bigpicture"
 else
     su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -silent ${GAME}" 2>&1 |
 	while read LINE
