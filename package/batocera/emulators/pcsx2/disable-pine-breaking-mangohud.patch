@@ -1,0 +1,53 @@
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index f0745b4..e1b806e 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -180,7 +180,7 @@ static u64 s_session_start_time = 0;
+ 
+ static bool s_screensaver_inhibited = false;
+ 
+-static PINEServer s_pine_server;
++//static PINEServer s_pine_server;
+ 
+ #ifdef ENABLE_DISCORD_PRESENCE
+ static bool s_discord_presence_active = false;
+@@ -374,7 +374,7 @@ void VMManager::Internal::CPUThreadShutdown()
+ {
+ 	ShutdownDiscordPresence();
+ 
+-	s_pine_server.Deinitialize();
++	//s_pine_server.Deinitialize();
+ 
+ 	Achievements::Shutdown();
+ 
+@@ -2802,18 +2802,18 @@ const std::vector<u32>& VMManager::GetSortedProcessorList()
+ 
+ void VMManager::ReloadPINE()
+ {
+-	if (EmuConfig.EnablePINE && (s_pine_server.m_slot != EmuConfig.PINESlot || s_pine_server.m_end))
+-	{
+-		if (!s_pine_server.m_end)
+-		{
+-			s_pine_server.Deinitialize();
+-		}
+-		s_pine_server.Initialize(EmuConfig.PINESlot);
+-	}
+-	else if ((!EmuConfig.EnablePINE && !s_pine_server.m_end))
+-	{
+-		s_pine_server.Deinitialize();
+-	}
++//	if (EmuConfig.EnablePINE && (s_pine_server.m_slot != EmuConfig.PINESlot || s_pine_server.m_end))
++//	{
++//		if (!s_pine_server.m_end)
++//		{
++//			s_pine_server.Deinitialize();
++//		}
++//		s_pine_server.Initialize(EmuConfig.PINESlot);
++//	}
++//	else if ((!EmuConfig.EnablePINE && !s_pine_server.m_end))
++//	{
++//		s_pine_server.Deinitialize();
++//	}
+ }
+ 
+ #ifdef ENABLE_DISCORD_PRESENCE
