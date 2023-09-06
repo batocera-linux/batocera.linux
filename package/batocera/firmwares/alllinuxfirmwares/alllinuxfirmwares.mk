@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 0e048b061bde79ad735c7b7b5161ee1bd3400150
+ALLLINUXFIRMWARES_VERSION = c57a9388c13dc2877308dd979e1147ee1a35c9b9
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
 ALLLINUXFIRMWARES_SITE = https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot
 
