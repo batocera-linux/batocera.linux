@@ -242,7 +242,7 @@
 - MAME to 0.253
 ### Dev
 - buildroot upgrade to 2023.02.01
-- mesa3d update to 23.1.5
+- mesa3d update to 23.1.7
 - dxvk to 2.1
 - linux firmware to 20230404
 - linux kernel for x86_64 to 6.3.6
