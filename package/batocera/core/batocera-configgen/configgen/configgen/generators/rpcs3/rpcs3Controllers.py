@@ -39,9 +39,13 @@ def generateControllerConfig(system, controllers, rom):
         ("left", "Left", [("BTN_DPAD_LEFT", "D-Pad Left"), ("ABS_HAT0X", "Hat0 X-")]),
         ("right", "Right", [("BTN_DPAD_RIGHT", "D-Pad Right"), ("ABS_HAT0X", "Hat0 X+")]),
         ("l2", "L2", [("BTN_TL2", "TL 2"), ("ABS_Z", "LZ+")]),
-        ("r2", "R2", [("BTN_TR2", "TR 2"), ("ABS_RZ", "RZ+")])
+        ("r2", "R2", [("BTN_TR2", "TR 2"), ("ABS_RZ", "RZ+")]),
+        ("a", "Cross", [("BTN_A", "A")]),
+        ("b", "Circle", [("BTN_B", "B")]),
+        ("x", "Square", [("BTN_X", "X")]),
+        ("y", "Triangle", [("BTN_Y", "Y")])
     ]
-
+    
     mapping_dict = {}
     for input_name, config_name, event_variations in input_mapping:
         mapping_dict[input_name] = {
@@ -54,10 +58,10 @@ def generateControllerConfig(system, controllers, rom):
     configFileName = f"{rpcs3_input_dir}/Default.yml"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     for controller, pad in sorted(controllers.items()):
-        if nplayer <= 8:
+        if nplayer <= 7:
             eslog.debug(f"Controller #{nplayer} - {pad.guid}")
             # check for DualShock / DualSense
-            if pad.guid in valid_sony_guids and system.config[f"rpcs3_controller{nplayer}"] == "True":
+            if pad.guid in valid_sony_guids and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Sony":
                 # dualshock 3
                 if pad.guid in valid_sony_guids[:4]:
                     f.write(f'Player {nplayer} Input:\n')
@@ -169,10 +173,6 @@ def generateControllerConfig(system, controllers, rom):
                 f.write('    Start: Start\n')
                 f.write('    Select: Select\n')
                 f.write('    PS Button: Mode\n')
-                f.write('    Square: X\n')
-                f.write('    Cross: A\n')
-                f.write('    Circle: B\n')
-                f.write('    Triangle: Y\n')
                 for inputIdx in pad.inputs:
                     input = pad.inputs[inputIdx]
                     if input.name in mapping_dict:
@@ -180,6 +180,14 @@ def generateControllerConfig(system, controllers, rom):
                         event_variations = mapping_dict[input.name]["event_variations"]
                         for event_type, value_name in event_variations:
                             if "BTN" in event_type and input.type == "button":
+                                if config_name == "Circle" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
+                                    config_name = "Cross"
+                                elif config_name == "Cross" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
+                                    config_name = "Circle"
+                                elif config_name == "Square" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
+                                    config_name = "Triangle"
+                                elif config_name == "Triangle" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
+                                    config_name = "Square"
                                 f.write(f"    {config_name}: {value_name}\n")
                             elif "HAT" in event_type and input.type == "hat":
                                 f.write(f"    {config_name}: {value_name}\n")
@@ -187,10 +195,8 @@ def generateControllerConfig(system, controllers, rom):
                                 f.write(f"    {config_name}: {value_name}\n")
                 # continue with default settings
                 f.write('    R1: TR\n')
-                #f.write('    R2: RZ+\n')
                 f.write('    R3: Thumb R\n')
                 f.write('    L1: TL\n')
-                #f.write('    L2: LZ+\n')
                 f.write('    L3: Thumb L\n')
                 f.write('    Motion Sensor X:\n')
                 f.write('      Axis: X\n')

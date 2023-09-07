@@ -62,6 +62,7 @@
 - Model2 crosshair disabled by default with light guns connected
 - Laptops / Systems with 2 GPUs will now automatically set the environment variables to use the best GPU.
 - Model2 start and coins now mapped on light guns when playing gun games
+- RPCS3 now requires specific Sony controller selection via EmulationStation
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to 9554f82 (Commits on Sep 4, 2023)
