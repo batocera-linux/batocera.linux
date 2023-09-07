@@ -26,6 +26,8 @@ def generateControllerConfig(system, controllers, rom):
         "050000004c050000cc09000000010000",
         "030000004c050000cc09000011810000",
         "050000004c050000cc09000000810000",
+        "030000004c050000a00b000011010000",
+        "030000004c050000a00b000011810000",
         # ds5
         "030000004c050000e60c000011810000",
         "050000004c050000e60c000000810000"
@@ -62,6 +64,7 @@ def generateControllerConfig(system, controllers, rom):
             eslog.debug(f"Controller #{nplayer} - {pad.guid}")
             # check for DualShock / DualSense
             if pad.guid in valid_sony_guids and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Sony":
+                eslog.debug("*** Using DualShock / DualSense configuration ***")
                 # dualshock 3
                 if pad.guid in valid_sony_guids[:4]:
                     f.write(f'Player {nplayer} Input:\n')
@@ -69,7 +72,7 @@ def generateControllerConfig(system, controllers, rom):
                     f.write(f'  Device: "DS3 Pad #{ds3player}"\n')
                     ds3player += 1
                 # dualshock 4
-                elif pad.guid in valid_sony_guids[4:10]:
+                elif pad.guid in valid_sony_guids[4:12]:
                     f.write(f'Player {nplayer} Input:\n')
                     f.write('  Handler: DualShock 4\n')
                     f.write(f'  Device: "DS4 Pad #{ds4player}"\n')
@@ -157,6 +160,7 @@ def generateControllerConfig(system, controllers, rom):
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
             else:
+                eslog.debug("*** Using EVDEV configuration ***")
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: Evdev\n')
