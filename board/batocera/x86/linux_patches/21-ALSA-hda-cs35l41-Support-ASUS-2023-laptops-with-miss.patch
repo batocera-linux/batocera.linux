@@ -1,0 +1,108 @@
+From d99738ad5dd159028f354c1ece9eddabd16a0ed9 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Wed, 23 Aug 2023 11:05:59 +1200
+Subject: [PATCH] ALSA: hda: cs35l41: Support ASUS 2023 laptops with missing
+ DSD
+
+Support adding the missing DSD properties required  for ASUS ROG 2023
+laptops and other ASUS laptops to properly utilise the cs35l41.
+
+The currently added laptops are:
+- ASUS GS650P,   i2c
+- ASUS GA402X,   i2c
+- ASUS GU604V,   spi
+- ASUS GU603V,   spi
+- ASUS GV601V,   spi
+- ASUS GZ301V,   spi
+- ASUS ROG ALLY, i2c
+- ASUS G614J,    spi
+- ASUS G634J,    spi
+- ASUS G614JI,   spi
+- ASUS G713P,    i2c
+
+The SPI connected amps may be required to use an external DSD patch
+to fix or add the "cs-gpios" property.
+
+Co-developed-by: Jonathan LoBue <jlobue10@gmail.com>
+Signed-off-by: Jonathan LoBue <jlobue10@gmail.com>
+Co-developed-by: Luke D. Jones <luke@ljones.dev>
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ sound/pci/hda/cs35l41_hda_property.c | 54 ++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+
+diff --git a/sound/pci/hda/cs35l41_hda_property.c b/sound/pci/hda/cs35l41_hda_property.c
+index 673f23257a09..2bf2365cef50 100644
+--- a/sound/pci/hda/cs35l41_hda_property.c
++++ b/sound/pci/hda/cs35l41_hda_property.c
+@@ -43,6 +43,49 @@ static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *phy
+ 	return 0;
+ }
+ 
++static int asus_rog_2023_i2c_no_acpi(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++				const char *hid)
++{
++	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
++
++	/* check I2C address to assign the index */
++	cs35l41->index = id == 0x40 ? 0 : 1;
++	cs35l41->channel_index = 0;
++	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 0, GPIOD_OUT_HIGH);
++	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, 0, 0, 2);
++	hw_cfg->spk_pos = cs35l41->index;
++	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
++	hw_cfg->gpio2.valid = true;
++	hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
++	hw_cfg->valid = true;
++
++	return 0;
++}
++
++/*
++ * Some SPI connected versions may be missing a chip select GPIO and require a DSD table patch.
++ */
++static int asus_rog_2023_spi_no_acpi(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++				const char *hid)
++{
++	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
++
++	/* check SPI address to assign the index */
++	cs35l41->index = id == 0 ? 0 : 1;
++	cs35l41->channel_index = 0;
++	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 0, GPIOD_OUT_HIGH);
++	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, 0, 0, 2);
++	hw_cfg->spk_pos = cs35l41->index;
++	hw_cfg->bst_type = CS35L41_EXT_BOOST;
++	hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
++	hw_cfg->gpio1.valid = true;
++	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
++	hw_cfg->gpio2.valid = true;
++	hw_cfg->valid = true;
++
++	return 0;
++}
++
+ struct cs35l41_prop_model {
+ 	const char *hid;
+ 	const char *ssid;
+@@ -53,6 +96,17 @@ struct cs35l41_prop_model {
+ const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
+ 	{ "CLSA0100", NULL, lenovo_legion_no_acpi },
+ 	{ "CLSA0101", NULL, lenovo_legion_no_acpi },
++	{ "CSC3551", "10431433", asus_rog_2023_i2c_no_acpi }, // ASUS GS650P
++	{ "CSC3551", "10431463", asus_rog_2023_i2c_no_acpi }, // ASUS GA402X
++	{ "CSC3551", "10431473", asus_rog_2023_spi_no_acpi }, // ASUS GU604V
++	{ "CSC3551", "10431483", asus_rog_2023_spi_no_acpi }, // ASUS GU603V
++	{ "CSC3551", "10431493", asus_rog_2023_spi_no_acpi }, // ASUS GV601V
++	{ "CSC3551", "10431573", asus_rog_2023_spi_no_acpi }, // ASUS GZ301V
++	{ "CSC3551", "104317F3", asus_rog_2023_i2c_no_acpi }, // ASUS ROG ALLY
++	{ "CSC3551", "10431B93", asus_rog_2023_spi_no_acpi }, // ASUS G614J
++	{ "CSC3551", "10431CAF", asus_rog_2023_spi_no_acpi }, // ASUS G634J
++	{ "CSC3551", "10431C9F", asus_rog_2023_spi_no_acpi }, // ASUS G614JI
++	{ "CSC3551", "10431D1F", asus_rog_2023_i2c_no_acpi }, // ASUS G713P
+ 	{}
+ };
+ 
+-- 
+2.41.0
+
