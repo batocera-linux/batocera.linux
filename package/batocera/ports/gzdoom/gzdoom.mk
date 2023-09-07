@@ -3,9 +3,9 @@
 # gzdoom
 #
 ################################################################################
-# Version: Commits on Aug 26, 2023
-GZDOOM_VERSION = 5d38e4c476762118c74ae3d54d20d7312dc107ab
-GZDOOM_SITE = https://github.com/coelckers/gzdoom.git
+# Version: Commits on Sep 7, 2023
+GZDOOM_VERSION = bf0e74447db01aab896561c84f72aa12c892328b
+GZDOOM_SITE = https://github.com/ZDoom/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES
 GZDOOM_LICENSE = GPLv3
@@ -47,9 +47,17 @@ GZDOOM_PRE_CONFIGURE_HOOKS += GZDOOM_COPY_GENERATED_HEADERS
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
     GZDOOM_DEPENDENCIES += vulkan-headers vulkan-loader
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+    GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
+else
+ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
+    GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON
+endif
+endif
 else
     GZDOOM_CONF_OPTS += -DHAVE_VULKAN=OFF
 endif
+
 
 # This applies the patches to actually use GLES2.
 # By default, gzdoom attempts to use GLES2 with an OpenGL context.
