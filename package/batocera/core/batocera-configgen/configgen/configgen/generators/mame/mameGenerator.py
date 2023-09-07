@@ -261,6 +261,11 @@ class MameGenerator(Generator):
         if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
             commandArray += [ "-offscreen_reload" ]
 
+        # wheels
+        useWheels = False
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            useWheels = True
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messSysName[messMode] == "" or messMode == -1:
@@ -482,9 +487,9 @@ class MameGenerator(Generator):
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
