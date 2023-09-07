@@ -251,7 +251,7 @@
 - llvm to 16.0.3
 - vulkan stack to v1.3.248
 - add multiple Qt6 packages
-- alsa stack to 1.2.9
+- alsa stack to 1.2.10
 
 
 # 2023/03/09 - batocera.linux 36 - Luna Moth
