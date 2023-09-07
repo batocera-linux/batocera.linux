@@ -1,0 +1,266 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v1] ALSA: hda: cs35l41: Support systems with missing _DSD
+ properties
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Tue, 15 Aug 2023 17:10:33 +0100
+Message-Id: <20230815161033.3519-1-sbinding@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Some systems using CS35L41 with HDA were released without some
+required _DSD properties in ACPI. To support these special cases,
+add an api to configure the correct properties for systems with
+this issue.
+
+This initial commit moves the no _DSD support for Lenovo
+Legion Laptops (CLSA0100, CLSA0101) into a new framework which
+can be extended to support additional laptops in the future.
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/Makefile               |  2 +-
+ sound/pci/hda/cs35l41_hda.c          | 65 ++++++-------------------
+ sound/pci/hda/cs35l41_hda.h          |  1 +
+ sound/pci/hda/cs35l41_hda_property.c | 73 ++++++++++++++++++++++++++++
+ sound/pci/hda/cs35l41_hda_property.h | 18 +++++++
+ 5 files changed, 108 insertions(+), 51 deletions(-)
+ create mode 100644 sound/pci/hda/cs35l41_hda_property.c
+ create mode 100644 sound/pci/hda/cs35l41_hda_property.h
+
+diff --git a/sound/pci/hda/Makefile b/sound/pci/hda/Makefile
+index c6e6509e7b8e..5506255be895 100644
+--- a/sound/pci/hda/Makefile
++++ b/sound/pci/hda/Makefile
+@@ -28,7 +28,7 @@ snd-hda-codec-via-objs :=	patch_via.o
+ snd-hda-codec-hdmi-objs :=	patch_hdmi.o hda_eld.o
+ 
+ # side codecs
+-snd-hda-scodec-cs35l41-objs :=		cs35l41_hda.o
++snd-hda-scodec-cs35l41-objs :=		cs35l41_hda.o cs35l41_hda_property.o
+ snd-hda-scodec-cs35l41-i2c-objs :=	cs35l41_hda_i2c.o
+ snd-hda-scodec-cs35l41-spi-objs :=	cs35l41_hda_spi.o
+ snd-hda-scodec-cs35l56-objs :=		cs35l56_hda.o
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 825e551be9bb..f9b77353c266 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -19,6 +19,7 @@
+ #include "hda_component.h"
+ #include "cs35l41_hda.h"
+ #include "hda_cs_dsp_ctl.h"
++#include "cs35l41_hda_property.h"
+ 
+ #define CS35L41_FIRMWARE_ROOT "cirrus/"
+ #define CS35L41_PART "cs35l41"
+@@ -1315,8 +1316,7 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
+ 	return cs35l41_hda_channel_map(cs35l41->dev, 0, NULL, 1, &hw_cfg->spk_pos);
+ }
+ 
+-static int cs35l41_get_speaker_id(struct device *dev, int amp_index,
+-				  int num_amps, int fixed_gpio_id)
++int cs35l41_get_speaker_id(struct device *dev, int amp_index, int num_amps, int fixed_gpio_id)
+ {
+ 	struct gpio_desc *speaker_id_desc;
+ 	int speaker_id = -ENODEV;
+@@ -1370,49 +1370,6 @@ static int cs35l41_get_speaker_id(struct device *dev, int amp_index,
+ 	return speaker_id;
+ }
+ 
+-/*
+- * Device CLSA010(0/1) doesn't have _DSD so a gpiod_get by the label reset won't work.
+- * And devices created by serial-multi-instantiate don't have their device struct
+- * pointing to the correct fwnode, so acpi_dev must be used here.
+- * And devm functions expect that the device requesting the resource has the correct
+- * fwnode.
+- */
+-static int cs35l41_no_acpi_dsd(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
+-			       const char *hid)
+-{
+-	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
+-
+-	/* check I2C address to assign the index */
+-	cs35l41->index = id == 0x40 ? 0 : 1;
+-	cs35l41->channel_index = 0;
+-	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 0, GPIOD_OUT_HIGH);
+-	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, 0, 0, 2);
+-	hw_cfg->spk_pos = cs35l41->index;
+-	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
+-	hw_cfg->gpio2.valid = true;
+-	hw_cfg->valid = true;
+-
+-	if (strncmp(hid, "CLSA0100", 8) == 0) {
+-		hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
+-	} else if (strncmp(hid, "CLSA0101", 8) == 0) {
+-		hw_cfg->bst_type = CS35L41_EXT_BOOST;
+-		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
+-		hw_cfg->gpio1.valid = true;
+-	} else {
+-		/*
+-		 * Note: CLSA010(0/1) are special cases which use a slightly different design.
+-		 * All other HIDs e.g. CSC3551 require valid ACPI _DSD properties to be supported.
+-		 */
+-		dev_err(cs35l41->dev, "Error: ACPI _DSD Properties are missing for HID %s.\n", hid);
+-		hw_cfg->valid = false;
+-		hw_cfg->gpio1.valid = false;
+-		hw_cfg->gpio2.valid = false;
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, int id)
+ {
+ 	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
+@@ -1438,12 +1395,17 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
+ 		sub = NULL;
+ 	cs35l41->acpi_subsystem_id = sub;
+ 
++	ret = cs35l41_add_dsd_properties(cs35l41, physdev, id, hid);
++	if (!ret) {
++		dev_info(cs35l41->dev, "Using extra _DSD properties, bypassing _DSD in ACPI\n");
++		goto put_physdev;
++	}
++
+ 	property = "cirrus,dev-index";
+ 	ret = device_property_count_u32(physdev, property);
+-	if (ret <= 0) {
+-		ret = cs35l41_no_acpi_dsd(cs35l41, physdev, id, hid);
+-		goto err_put_physdev;
+-	}
++	if (ret <= 0)
++		goto err;
++
+ 	if (ret > ARRAY_SIZE(values)) {
+ 		ret = -EINVAL;
+ 		goto err;
+@@ -1533,7 +1495,10 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
+ 
+ err:
+ 	dev_err(cs35l41->dev, "Failed property %s: %d\n", property, ret);
+-err_put_physdev:
++	hw_cfg->valid = false;
++	hw_cfg->gpio1.valid = false;
++	hw_cfg->gpio2.valid = false;
++put_physdev:
+ 	put_device(physdev);
+ 
+ 	return ret;
+diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
+index bdb35f3be68a..b93bf762976e 100644
+--- a/sound/pci/hda/cs35l41_hda.h
++++ b/sound/pci/hda/cs35l41_hda.h
+@@ -83,5 +83,6 @@ extern const struct dev_pm_ops cs35l41_hda_pm_ops;
+ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int irq,
+ 		      struct regmap *regmap);
+ void cs35l41_hda_remove(struct device *dev);
++int cs35l41_get_speaker_id(struct device *dev, int amp_index, int num_amps, int fixed_gpio_id);
+ 
+ #endif /*__CS35L41_HDA_H__*/
+diff --git a/sound/pci/hda/cs35l41_hda_property.c b/sound/pci/hda/cs35l41_hda_property.c
+new file mode 100644
+index 000000000000..673f23257a09
+--- /dev/null
++++ b/sound/pci/hda/cs35l41_hda_property.c
+@@ -0,0 +1,73 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// CS35L41 ALSA HDA Property driver
++//
++// Copyright 2023 Cirrus Logic, Inc.
++//
++// Author: Stefan Binding <sbinding@opensource.cirrus.com>
++
++#include <linux/gpio/consumer.h>
++#include <linux/string.h>
++#include "cs35l41_hda_property.h"
++
++/*
++ * Device CLSA010(0/1) doesn't have _DSD so a gpiod_get by the label reset won't work.
++ * And devices created by serial-multi-instantiate don't have their device struct
++ * pointing to the correct fwnode, so acpi_dev must be used here.
++ * And devm functions expect that the device requesting the resource has the correct
++ * fwnode.
++ */
++static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++				 const char *hid)
++{
++	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
++
++	/* check I2C address to assign the index */
++	cs35l41->index = id == 0x40 ? 0 : 1;
++	cs35l41->channel_index = 0;
++	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 0, GPIOD_OUT_HIGH);
++	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, 0, 0, 2);
++	hw_cfg->spk_pos = cs35l41->index;
++	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
++	hw_cfg->gpio2.valid = true;
++	hw_cfg->valid = true;
++
++	if (strcmp(hid, "CLSA0100") == 0) {
++		hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
++	} else if (strcmp(hid, "CLSA0101") == 0) {
++		hw_cfg->bst_type = CS35L41_EXT_BOOST;
++		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
++		hw_cfg->gpio1.valid = true;
++	}
++
++	return 0;
++}
++
++struct cs35l41_prop_model {
++	const char *hid;
++	const char *ssid;
++	int (*add_prop)(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++			const char *hid);
++};
++
++const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
++	{ "CLSA0100", NULL, lenovo_legion_no_acpi },
++	{ "CLSA0101", NULL, lenovo_legion_no_acpi },
++	{}
++};
++
++int cs35l41_add_dsd_properties(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++			       const char *hid)
++{
++	const struct cs35l41_prop_model *model;
++
++	for (model = cs35l41_prop_model_table; model->hid > 0; model++) {
++		if (!strcmp(model->hid, hid) &&
++		    (!model->ssid ||
++		     (cs35l41->acpi_subsystem_id &&
++		      !strcmp(model->ssid, cs35l41->acpi_subsystem_id))))
++			return model->add_prop(cs35l41, physdev, id, hid);
++	}
++
++	return -ENOENT;
++}
+diff --git a/sound/pci/hda/cs35l41_hda_property.h b/sound/pci/hda/cs35l41_hda_property.h
+new file mode 100644
+index 000000000000..fd834042e2fd
+--- /dev/null
++++ b/sound/pci/hda/cs35l41_hda_property.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * CS35L41 ALSA HDA Property driver
++ *
++ * Copyright 2023 Cirrus Logic, Inc.
++ *
++ * Author: Stefan Binding <sbinding@opensource.cirrus.com>
++ */
++
++#ifndef CS35L41_HDA_PROP_H
++#define CS35L41_HDA_PROP_H
++
++#include <linux/device.h>
++#include "cs35l41_hda.h"
++
++int cs35l41_add_dsd_properties(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++			       const char *hid);
++#endif /* CS35L41_HDA_PROP_H */
+-- 
+2.34.1
+
