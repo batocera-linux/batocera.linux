@@ -1,0 +1,61 @@
+--- a/CMakeLists.txt	2023-09-07 18:07:39.103274677 +0200
++++ b/CMakeLists.txt	2023-09-07 18:15:22.709886362 +0200
+@@ -216,7 +216,6 @@
+ option( NO_OPENAL "Disable OpenAL sound support" OFF )
+ 
+ find_package( BZip2 )
+-find_package( VPX )
+ find_package( ZLIB )
+ find_package( WebP )
+ if (NOT WebP_FOUND)
+@@ -233,7 +232,6 @@
+ 	add_library(WebP::libwebpmux ALIAS PkgConfig::libwebpmux)
+ endif()
+ if(NOT TOOLS_ONLY)
+-	find_package( JPEG )
+ 	find_package( VPX )
+ endif()
+ 
+@@ -418,42 +416,6 @@
+ 	set( DRPC_LIBRARIES discord-rpc )
+ 	set( DRPC_LIBRARY discord-rpc )
+ 
+-	if( HAVE_VM_JIT AND UNIX )
+-		check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
+-		if( NOT HAVE_BACKTRACE )
+-			set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
+-			check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
+-			if( HAVE_LIBEXECINFO )
+-				set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
+-			else( HAVE_LIBEXECINFO )
+-				set( HAVE_VM_JIT NO )
+-			endif( HAVE_LIBEXECINFO )
+-			set( CMAKE_REQUIRED_FLAGS )
+-		endif( NOT HAVE_BACKTRACE )
+-	endif( HAVE_VM_JIT AND UNIX )
+-
+-	if( ${HAVE_VM_JIT} )
+-		if( ASMJIT_FOUND AND NOT FORCE_INTERNAL_ASMJIT )
+-			message( STATUS "Using system asmjit, includes found at ${ASMJIT_INCLUDE_DIR}" )
+-		else()
+-			message( STATUS "Using internal asmjit" )
+-			set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
+-			add_subdirectory( libraries/asmjit )
+-			set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
+-			set( ASMJIT_LIBRARIES asmjit )
+-			set( ASMJIT_LIBRARY asmjit )
+-		endif()
+-	endif()
+-
+-	if( JPEG_FOUND AND NOT FORCE_INTERNAL_JPEG )
+-		message( STATUS "Using system jpeg library, includes found at ${JPEG_INCLUDE_DIR}" )
+-	else()
+-		message( STATUS "Using internal jpeg library" )
+-		add_subdirectory( libraries/jpeg )
+-		set( JPEG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/jpeg )
+-		set( JPEG_LIBRARIES jpeg )
+-		set( JPEG_LIBRARY jpeg )
+-	endif()
+ endif()
+ 
+ 
