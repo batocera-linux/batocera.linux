@@ -1,0 +1,43 @@
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index d1094bb1aa42..47fb048bb5fd 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -910,6 +910,16 @@ static int asus_input_mapping(struct hid_device *hdev,
+ 
+ 		/* Fn+Right Aura mode next on N-Key keyboard */
+ 		case 0xb3: asus_map_key_clear(KEY_PROG3);		break;
++		
++		case 0xa0: asus_map_key_clear(KEY_F10);		break; /* ROG Ally back paddle + A */
++		case 0xa1: asus_map_key_clear(KEY_F11);		break;
++		case 0xa2: asus_map_key_clear(KEY_F12);		break; /* ROG Ally back paddle + D Pad Up */
++		case 0xa3: asus_map_key_clear(KEY_F13);		break;
++		case 0xa4: asus_map_key_clear(KEY_F14);		break; /* ROG Ally back paddle + Y */
++		case 0xa5: asus_map_key_clear(KEY_F15);		break; /* ROG Ally left back */
++		case 0xa6: asus_map_key_clear(KEY_F16);		break; /* ROG Ally QAM button */
++		case 0xa7: asus_map_key_clear(KEY_F17);		break; /* ROG Ally ROG long-press */
++		case 0xa8: asus_map_key_clear(KEY_F18);		break; /* ROG Ally ROG long-press-release */
+ 
+ 		default:
+ 			/* ASUS lazily declares 256 usages, ignore the rest,
+@@ -1267,6 +1277,9 @@ static const struct hid_device_id asus_devices[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
+ 	    USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD2),
+ 	  QUIRK_USE_KBD_BACKLIGHT | QUIRK_ROG_NKEY_KEYBOARD },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
++	    USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY),
++	  QUIRK_ROG_NKEY_KEYBOARD },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
+ 	    USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD),
+ 	  QUIRK_ROG_CLAYMORE_II_KEYBOARD },
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index c2e9b6d1fd7d..cd6efa46a2bd 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -207,6 +207,7 @@
+ #define USB_DEVICE_ID_ASUSTEK_ROG_KEYBOARD3 0x1822
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD	0x1866
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD2	0x19b6
++#define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY	0x1abe
+ #define USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD	0x196b
+ #define USB_DEVICE_ID_ASUSTEK_FX503VD_KEYBOARD	0x1869
+ 
