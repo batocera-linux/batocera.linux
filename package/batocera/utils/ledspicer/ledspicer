@@ -1,0 +1,57 @@
+#!/bin/sh
+
+DAEMON="/usr/bin/ledspicerd"
+CONFIG_DIR="/userdata/system/configs/ledspicer"
+DAEMON_ARGS="--config $CONFIG_DIR/ledspicer.conf"
+
+start() {
+        echo -n "Starting LEDSpicer: "
+
+        # If the configuration directory does not exist, initialize the config
+        if [ ! -e "$CONFIG_DIR" ]; then
+                initialize
+        fi
+        
+        # Start the LEDSpicer daemon (ledspicerd)
+        start-stop-daemon --start --quiet --exec $DAEMON --background -- $DAEMON_ARGS
+        RETVAL=$?
+
+	echo "done"
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Stopping LEDSpicer: "
+
+        # Stop the LEDSpicer daemon (ledspicerd)
+        start-stop-daemon --stop --quiet --exec $DAEMON
+	RETVAL=$?
+	
+        echo "done"
+        return $RETVAL
+}
+
+initialize() {
+        # Use an externalized configuration directory for editing
+        mkdir -p "$CONFIG_DIR" || exit 1
+
+        # Copy example config file
+        cp "/usr/share/ledspicer/doc/examples/ledspicer.conf" "$CONFIG_DIR/ledspicer.conf" || exit 1
+
+        # Copy the /usr/share/ledspicer configs
+        rsync -aq --exclude="doc" "/usr/share/ledspicer/" "$CONFIG_DIR" || exit 1
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        *)
+                echo "Usage: $0 {start|stop}"
+                exit 1
+esac
+
+exit $?
