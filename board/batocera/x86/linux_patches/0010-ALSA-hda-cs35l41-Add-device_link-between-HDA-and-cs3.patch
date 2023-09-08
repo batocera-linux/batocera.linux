@@ -1,0 +1,60 @@
+From 74c165859e33b62888b93891d82680350b9a615f Mon Sep 17 00:00:00 2001
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Fri, 21 Jul 2023 16:18:15 +0100
+Subject: [PATCH 10/11] ALSA: hda: cs35l41: Add device_link between HDA and
+ cs35l41_hda
+
+To ensure consistency between the HDA core and the CS35L41 HDA
+driver, add a device_link between them. This ensures that the
+HDA core will suspend first, and resume second, meaning the
+amp driver will not miss any events from the playback hook from
+the HDA core during system suspend and resume.
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 70aa819cfbd6..175378cdf9df 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -1063,6 +1063,7 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
+ {
+ 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
+ 	struct hda_component *comps = master_data;
++	unsigned int sleep_flags;
+ 	int ret = 0;
+ 
+ 	if (!comps || cs35l41->index < 0 || cs35l41->index >= HDA_MAX_COMPONENTS)
+@@ -1102,6 +1103,11 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
+ 
+ 	mutex_unlock(&cs35l41->fw_mutex);
+ 
++	sleep_flags = lock_system_sleep();
++	if (!device_link_add(&comps->codec->core.dev, cs35l41->dev, DL_FLAG_STATELESS))
++		dev_warn(dev, "Unable to create device link\n");
++	unlock_system_sleep(sleep_flags);
++
+ 	pm_runtime_mark_last_busy(dev);
+ 	pm_runtime_put_autosuspend(dev);
+ 
+@@ -1112,9 +1118,14 @@ static void cs35l41_hda_unbind(struct device *dev, struct device *master, void *
+ {
+ 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
+ 	struct hda_component *comps = master_data;
++	unsigned int sleep_flags;
+ 
+-	if (comps[cs35l41->index].dev == dev)
++	if (comps[cs35l41->index].dev == dev) {
+ 		memset(&comps[cs35l41->index], 0, sizeof(*comps));
++		sleep_flags = lock_system_sleep();
++		device_link_remove(&comps->codec->core.dev, cs35l41->dev);
++		unlock_system_sleep(sleep_flags);
++	}
+ }
+ 
+ static const struct component_ops cs35l41_hda_comp_ops = {
+-- 
+2.41.0
+
