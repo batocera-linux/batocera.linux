@@ -1,0 +1,61 @@
+diff --git a/src/DataLoader.cpp b/src/DataLoader.cpp
+index 374e18b..223ac48 100644
+--- a/src/DataLoader.cpp
++++ b/src/DataLoader.cpp
+@@ -523,7 +523,7 @@ umap<string, Items*> DataLoader::processInputMap(tinyxml2::XMLElement* inputNode
+ 
+ string DataLoader::createFilename(const string& name) {
+ 	return (
+-		string(PACKAGE_DATA_DIR)
++		string("/userdata/system/configs/ledspicer/")
+ 			.append(Utility::removeChar(name, '.'))
+ 			.append(".xml")
+ 	);
+diff --git a/src/Emitter.hpp b/src/Emitter.hpp
+index 1e47827..97a8e90 100644
+--- a/src/Emitter.hpp
++++ b/src/Emitter.hpp
+@@ -43,7 +43,7 @@ using std::endl;
+ #define DATA_SOURCE_CONTROLSINI "controls.ini"
+ 
+ // dataSource fields.
+-#define CONTROLLERS_FILE PACKAGE_DATA_DIR "gameData.xml"
++#define CONTROLLERS_FILE "/userdata/system/configs/ledspicer/" "gameData.xml"
+ #define CONTROL "C"
+ #define PLAYERS "ps"
+ #define PLAYER  "p"
+@@ -64,7 +64,7 @@ using std::endl;
+ #define CCOINS   "coins"
+ 
+ // controls.ini fields.
+-#define CONTROLINI_FILE PACKAGE_DATA_DIR "controls.ini"
++#define CONTROLINI_FILE "/userdata/system/configs/ledspicer/" "controls.ini"
+ 
+ // Controllers
+ #define MOUSE      "MOUSE"
+diff --git a/src/Main.cpp b/src/Main.cpp
+index a95b594..74e7d31 100644
+--- a/src/Main.cpp
++++ b/src/Main.cpp
+@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
+ 				"-e or --elements\t\t\tTest registered elements.\n"
+ 				"-v or --version\t\t\t\tDisplay version information\n"
+ 				"-h or --help\t\t\t\tDisplay this help screen.\n"
+-				"Data directory:    " PACKAGE_DATA_DIR "\n"
++				"Data directory:    " "/userdata/system/configs/ledspicer/" "\n"
+ 				"Actors directory:  " ACTORS_DIR "\n"
+ 				"Devices directory: " DEVICES_DIR "\n"
+ 				"Inputs directory:  " INPUTS_DIR "\n"
+diff --git a/src/restrictors/UltraStik360.hpp b/src/restrictors/UltraStik360.hpp
+index 453a69c..4f251db 100644
+--- a/src/restrictors/UltraStik360.hpp
++++ b/src/restrictors/UltraStik360.hpp
+@@ -35,7 +35,7 @@
+ #define ULTRASTIK_MAX_BOARDS 4
+ #define ULTRASTIK_DATA_SIZE  4
+ 
+-#define UM_FILES_DIR PACKAGE_DATA_DIR "umaps/"
++#define UM_FILES_DIR "/userdata/system/configs/ledspicer/" "umaps/"
+ #define DEFAULT_MAP_BORDERS {30,58,86,114,142,170,198,226}
+ namespace LEDSpicer {
+ namespace Restrictors {

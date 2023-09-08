@@ -2,47 +2,16 @@
 
 DAEMON="/usr/bin/ledspicerd"
 CONFIG_DIR="/userdata/system/configs/ledspicer"
-DAEMON_ARGS=
+DAEMON_ARGS="--config $CONFIG_DIR/ledspicer.conf"
 
 start() {
         echo -n "Starting LEDSpicer: "
 
-        # Use an externalized configuration directory for editing
-        mkdir -p "$CONFIG_DIR"
-
-        # Externalize /etc/ledspicer.conf, creating from example if it doesn't exist
-        if [ ! -f "$CONFIG_DIR/ledspicer.conf" ]; then
-                cp "/usr/share/ledspicer/doc/examples/ledspicer.conf" "$CONFIG_DIR/ledspicer.conf"
+        # If the configuration directory does not exist, initialize the config
+        if [ ! -e "$CONFIG_DIR" ]; then
+                initialize
         fi
-        ln -sf "$CONFIG_DIR/ledspicer.conf" "/etc/ledspicer.conf"
-
-        # Externalize /usr/share/ledspicer configs
-        find "/usr/share/ledspicer/init" -mindepth 1 -maxdepth 1 2>/dev/null |
-        while read INIT_CFG; do
-                EXT_CFG="$CONFIG_DIR/$(basename $INIT_CFG)"
-                TARGET_CFG="/usr/share/ledspicer/$(basename $INIT_CFG)"
-                
-                # Create any missing files or directories from init
-                if [ ! -e "$EXT_CFG" ]; then
-                        cp -a "$INIT_CFG" "$EXT_CFG"
-                fi
-
-                # Always recreate symlinks to external configs
-                if [ ! -e "$TARGET_CFG" ]; then
-                        ln -sf "$EXT_CFG" "$TARGET_CFG"
-                fi
-        done
-
-        # Apply udev rule and trigger for any compatible devices already connected
-        if [ ! -f "/userdata/system/udev/rules.d/99-ledspicer.rules" ]; then
-                mkdir -p "/userdata/system/udev/rules.d"
-                cp "/usr/share/ledspicer/doc/examples/21-ledspicer.rules" "/userdata/system/udev/rules.d/99-ledspicer.rules"
-                udevadm control --reload-rules
-                udevadm trigger --action=add --attr-match="idVendor=d209"
-                udevadm trigger --action=add --attr-match="idVendor=fafa"
-                udevadm trigger --action=add --attr-match="idVendor=03eb"
-        fi
-
+        
         # Start the LEDSpicer daemon (ledspicerd)
         start-stop-daemon --start --quiet --exec $DAEMON --background -- $DAEMON_ARGS
         RETVAL=$?
@@ -60,6 +29,17 @@ stop() {
 	
         echo "done"
         return $RETVAL
+}
+
+initialize() {
+        # Use an externalized configuration directory for editing
+        mkdir -p "$CONFIG_DIR" || exit 1
+
+        # Copy example config file
+        cp "/usr/share/ledspicer/doc/examples/ledspicer.conf" "$CONFIG_DIR/ledspicer.conf" || exit 1
+
+        # Copy the /usr/share/ledspicer configs
+        rsync -aq --exclude="doc" "/usr/share/ledspicer/" "$CONFIG_DIR" || exit 1
 }
 
 case "$1" in
