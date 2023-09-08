@@ -4,3 +4,4 @@ SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster FFB Wheel", 	    MOD
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster TRS Racing wheel",       	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 SUBSYSTEM=="input", ATTRS{name}=="G25 Racing Wheel",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Force Feedback Wheel (USB)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
