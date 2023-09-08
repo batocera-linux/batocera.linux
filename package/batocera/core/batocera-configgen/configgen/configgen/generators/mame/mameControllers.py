@@ -204,13 +204,17 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         # wheel mappings
         isWheel = False
         if useWheels:
-            for x in mappings_use.copy():
-                if mappings_use[x] == "l2" or mappings_use[x] == "r2" or mappings_use[x] == "joystick1left":
-                    del mappings_use[x]
-            mappings_use["PEDAL".format(pad.index+1)] = "r2"
-            mappings_use["PEDAL2".format(pad.index+1)] = "l2"
-            mappings_use["PADDLE".format(pad.index+1)] = "joystick1left"
-            isWheel = True
+            for w in wheels:
+                if wheels[w]["joystick_index"] == pad.index:
+                    isWheel = True
+                    eslog.debug(f"player {nplayer} has a wheel")
+            if isWheel:
+                for x in mappings_use.copy():
+                    if mappings_use[x] == "l2" or mappings_use[x] == "r2" or mappings_use[x] == "joystick1left":
+                        del mappings_use[x]
+                mappings_use["PEDAL".format(pad.index+1)] = "r2"
+                mappings_use["PEDAL2".format(pad.index+1)] = "l2"
+                mappings_use["PADDLE".format(pad.index+1)] = "joystick1left"
 
         addCommonPlayerPorts(config, xml_input, nplayer)
 
