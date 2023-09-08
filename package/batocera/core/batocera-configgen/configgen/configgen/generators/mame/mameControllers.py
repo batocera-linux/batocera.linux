@@ -205,10 +205,11 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         isWheel = False
         if useWheels:
             for x in mappings_use.copy():
-                if mappings_use[x] == "l2" or mappings_use[x] == "r2":
+                if mappings_use[x] == "l2" or mappings_use[x] == "r2" or mappings_use[x] == "joystick1left":
                     del mappings_use[x]
             mappings_use["PEDAL".format(pad.index+1)] = "r2"
             mappings_use["PEDAL2".format(pad.index+1)] = "l2"
+            mappings_use["PADDLE".format(pad.index+1)] = "joystick1left"
             isWheel = True
 
         addCommonPlayerPorts(config, xml_input, nplayer)
@@ -403,6 +404,20 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     return xml_port
 
 def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False, isWheel = False):
+
+    mameAxisMappingNames = {0: "XAXIS", 1: "YAXIS", 2: "ZAXIS", 3: "RXAXIS", 4: "RYAXIS", 5: "RZAXIS"}
+
+    if isWheel:
+        if key == "joystick1left" or key == "l2" or key == "r2":
+            suffix = ""
+            if key == "r2":
+                suffix = "_NEG"
+            if key == "l2":
+                suffix = "_NEG"
+            if int(input.id) in mameAxisMappingNames:
+                idname = mameAxisMappingNames[int(input.id)]
+                return f"JOYCODE_{joycode}_{idname}{suffix}"
+
     if input.type == "button":
         return f"JOYCODE_{joycode}_BUTTON{int(input.id)+1}"
     elif input.type == "hat":
@@ -480,17 +495,10 @@ def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis 
                 return f"JOYCODE_{joycode}_RXAXIS_NEG_SWITCH OR {buttonDirections['y']}"
             if(key == "joystick2right"):
                 return f"JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {buttonDirections['a']}"
-            if isWheel:
-                if int(input.id) == 2: # XInput L2
-                    return f"JOYCODE_{joycode}_ZAXIS_POS"
-                if int(input.id) == 5: # XInput R2
-                    return f"JOYCODE_{joycode}_RZAXIS_POS"
-            else:
-                if int(input.id) == 2: # XInput L2
-                    return f"JOYCODE_{joycode}_ZAXIS_POS_SWITCH"
-                if int(input.id) == 5: # XInput R2
-                    return f"JOYCODE_{joycode}_RZAXIS_POS_SWITCH"
-            
+            if int(input.id) in mameAxisMappingNames:
+                idname = mameAxisMappingNames[int(input.id)]
+                return f"JOYCODE_{joycode}_{idname}_POS_SWITCH"
+
     return "unknown"
 
 def hasStick(pad):
