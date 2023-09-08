@@ -34,6 +34,7 @@
 - Guncon3 support
 - Plane mode (enable/disable wifi/bt on the fly)
 - hatariB libretro core
+- Better Chromebook audio support
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
