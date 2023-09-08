@@ -1,0 +1,63 @@
+From 05bfc01172a34466e660465922d1cab5b460880f Mon Sep 17 00:00:00 2001
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Fri, 21 Jul 2023 16:18:10 +0100
+Subject: [PATCH 05/11] ALSA: hda: cs35l41: Ensure we pass up any errors during
+ system suspend.
+
+There are several steps required to put the system into system suspend.
+Some of these steps may fail, so the driver should pass up the errors
+if they occur.
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index f42457147ce4..d4a11f7b5dbd 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -626,17 +626,22 @@ static int cs35l41_system_suspend(struct device *dev)
+ 	}
+ 
+ 	ret = pm_runtime_force_suspend(dev);
+-	if (ret)
++	if (ret) {
++		dev_err(dev, "System Suspend Failed, unable to runtime suspend: %d\n", ret);
+ 		return ret;
++	}
+ 
+ 	/* Shutdown DSP before system suspend */
+-	cs35l41_ready_for_reset(cs35l41);
++	ret = cs35l41_ready_for_reset(cs35l41);
++
++	if (ret)
++		dev_err(dev, "System Suspend Failed, not ready for Reset: %d\n", ret);
+ 
+ 	/*
+ 	 * Reset GPIO may be shared, so cannot reset here.
+ 	 * However beyond this point, amps may be powered down.
+ 	 */
+-	return 0;
++	return ret;
+ }
+ 
+ static int cs35l41_system_resume(struct device *dev)
+@@ -659,9 +664,13 @@ static int cs35l41_system_resume(struct device *dev)
+ 	usleep_range(2000, 2100);
+ 
+ 	ret = pm_runtime_force_resume(dev);
++	if (ret) {
++		dev_err(dev, "System Resume Failed: Unable to runtime resume: %d\n", ret);
++		return ret;
++	}
+ 
+ 	mutex_lock(&cs35l41->fw_mutex);
+-	if (!ret && cs35l41->request_fw_load && !cs35l41->fw_request_ongoing) {
++	if (cs35l41->request_fw_load && !cs35l41->fw_request_ongoing) {
+ 		cs35l41->fw_request_ongoing = true;
+ 		schedule_work(&cs35l41->fw_load_work);
+ 	}
+-- 
+2.41.0
+

@@ -1,0 +1,56 @@
+From c1bf8ed3a5f3d011276d975c7b1f62039bed160e Mon Sep 17 00:00:00 2001
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Fri, 21 Jul 2023 16:18:12 +0100
+Subject: [PATCH 07/11] ALSA: hda: hda_component: Add pre and post playback
+ hooks to hda_component
+
+These hooks can be used to add callbacks that would be run before and after
+the main playback hooks. These hooks would be called for all amps, before
+moving on to the next hook, i.e. pre_playback_hook would be called for
+all amps, before the playback_hook is called for all amps, then finally
+the post_playback_hook is called for all amps.
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/hda_component.h |  2 ++
+ sound/pci/hda/patch_realtek.c | 10 +++++++++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
+index 534e845b9cd1..f170aec967c1 100644
+--- a/sound/pci/hda/hda_component.h
++++ b/sound/pci/hda/hda_component.h
+@@ -15,5 +15,7 @@ struct hda_component {
+ 	struct device *dev;
+ 	char name[HDA_MAX_NAME_SIZE];
+ 	struct hda_codec *codec;
++	void (*pre_playback_hook)(struct device *dev, int action);
+ 	void (*playback_hook)(struct device *dev, int action);
++	void (*post_playback_hook)(struct device *dev, int action);
+ };
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 44fccfb93cff..dff92679ae72 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6716,9 +6716,17 @@ static void comp_generic_playback_hook(struct hda_pcm_stream *hinfo, struct hda_
+ 	int i;
+ 
+ 	for (i = 0; i < HDA_MAX_COMPONENTS; i++) {
+-		if (spec->comps[i].dev)
++		if (spec->comps[i].dev && spec->comps[i].pre_playback_hook)
++			spec->comps[i].pre_playback_hook(spec->comps[i].dev, action);
++	}
++	for (i = 0; i < HDA_MAX_COMPONENTS; i++) {
++		if (spec->comps[i].dev && spec->comps[i].playback_hook)
+ 			spec->comps[i].playback_hook(spec->comps[i].dev, action);
+ 	}
++	for (i = 0; i < HDA_MAX_COMPONENTS; i++) {
++		if (spec->comps[i].dev && spec->comps[i].post_playback_hook)
++			spec->comps[i].post_playback_hook(spec->comps[i].dev, action);
++	}
+ }
+ 
+ struct cs35l41_dev_name {
+-- 
+2.41.0
+

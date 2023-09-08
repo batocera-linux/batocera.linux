@@ -1,0 +1,74 @@
+From 9684d3a1fbe55573eccd6c7e5f72dd519a4e406b Mon Sep 17 00:00:00 2001
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Fri, 21 Jul 2023 16:18:09 +0100
+Subject: [PATCH 04/11] ALSA: hda: cs35l41: Ensure we correctly re-sync regmap
+ before system suspending.
+
+In order to properly system suspend, it is necessary to unload the firmware
+and ensure the chip is ready for shutdown (if necessary). If the system
+is currently in runtime suspend, it is necessary to wake up the device,
+and then make it ready. Currently, the wake does not correctly resync
+the device, which may mean it cannot suspend correctly. Fix this by
+performaing a resync.
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
+
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 29f1dce45f1d..f42457147ce4 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -574,21 +574,43 @@ static int cs35l41_hda_channel_map(struct device *dev, unsigned int tx_num, unsi
+ 				    rx_slot);
+ }
+ 
+-static void cs35l41_ready_for_reset(struct cs35l41_hda *cs35l41)
++static int cs35l41_ready_for_reset(struct cs35l41_hda *cs35l41)
+ {
++	int ret = 0;
++
+ 	mutex_lock(&cs35l41->fw_mutex);
+ 	if (cs35l41->firmware_running) {
+ 
+ 		regcache_cache_only(cs35l41->regmap, false);
+ 
+-		cs35l41_exit_hibernate(cs35l41->dev, cs35l41->regmap);
++		ret = cs35l41_exit_hibernate(cs35l41->dev, cs35l41->regmap);
++		if (ret) {
++			dev_warn(cs35l41->dev, "Unable to exit Hibernate.");
++			goto err;
++		}
++
++		/* Test key needs to be unlocked to allow the OTP settings to re-apply */
++		cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
++		ret = regcache_sync(cs35l41->regmap);
++		cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
++		if (ret) {
++			dev_err(cs35l41->dev, "Failed to restore register cache: %d\n", ret);
++			goto err;
++		}
++
++		if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST)
++			cs35l41_init_boost(cs35l41->dev, cs35l41->regmap, &cs35l41->hw_cfg);
++
+ 		cs35l41_shutdown_dsp(cs35l41);
+ 		cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type);
+-
+-		regcache_cache_only(cs35l41->regmap, true);
+-		regcache_mark_dirty(cs35l41->regmap);
+ 	}
++err:
++	regcache_cache_only(cs35l41->regmap, true);
++	regcache_mark_dirty(cs35l41->regmap);
++
+ 	mutex_unlock(&cs35l41->fw_mutex);
++
++	return ret;
+ }
+ 
+ static int cs35l41_system_suspend(struct device *dev)
+-- 
+2.41.0
+
