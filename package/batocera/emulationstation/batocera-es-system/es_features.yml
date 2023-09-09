@@ -10064,6 +10064,12 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        nvapi:
+            prompt:      NVAPI
+            description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU.
+            choices:
+                "Off": 0
+                "On":  1
         dxvk_reset_cache:
             group: ADVANCED OPTIONS
             prompt:      DXVK RESET CACHE
