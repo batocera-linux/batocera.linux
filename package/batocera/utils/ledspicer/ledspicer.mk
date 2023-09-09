@@ -12,6 +12,10 @@ LEDSPICER_AUTORECONF = YES
 LEDSPICER_CONF_OPTS = CXXFLAGS='-g0 -O3' --enable-nanoled --enable-pacdrive --enable-pacled64 --enable-ultimateio --enable-ledwiz32 --enable-howler --enable-adalight
 LEDSPICER_CONF_OPTS += --docdir=/usr/share/ledspicer/doc
 
+ifeq ($(BR2_PACKAGE_PIGPIO),y)
+    LEDSPICER_DEPENDENCIES += pigpio
+endif
+
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
     LEDSPICER_CONF_OPTS += --enable-pulseaudio
     LEDSPICER_DEPENDENCIES += pulseaudio
