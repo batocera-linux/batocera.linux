@@ -10064,8 +10064,9 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
-        nvapi:
-            prompt:      NVAPI
+        enable_nvapi:
+            group: ADVANCED OPTIONS
+            prompt:      ENABLE NVAPI
             description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU.
             choices:
                 "Off": 0
