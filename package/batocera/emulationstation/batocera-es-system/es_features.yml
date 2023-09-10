@@ -207,6 +207,13 @@ shared:
       choices:
         "On":  1
         "Off": 0
+    use_wheels:
+      group: WHEELS
+      prompt: USE WHEELS
+      description: Use wheels instead of pads if wheels are connected.
+      choices:
+        "On":  1
+        "Off": 0
     rumble_gain:
       prompt:      RUMBLE LEVEL
       description: For emulators and controllers supporting force feedback.
@@ -6706,6 +6713,7 @@ dolphin:
 
   systems:
     gamecube:
+        shared: [use_wheels]
         cfeatures:
             widescreen_hack:
                 submenu: DISPLAY
@@ -6721,7 +6729,7 @@ dolphin:
                     "Off": 0
                     "On":  1
     wii:
-        shared: [use_guns]
+        shared: [use_guns, use_wheels]
         cfeatures:
             tv_mode:
                 submenu: DISPLAY
@@ -7800,7 +7808,7 @@ openbor:
 pcsx2:
   cores:
     'pcsx2':
-      shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+      shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels]
       features: [cheevos]
       cfeatures:
         pcsx2_ratio:
@@ -8753,7 +8761,7 @@ tsugaru:
 
 mame:
   features: [padtokeyboard]
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels]
   cfeatures:
         video:
             prompt:      VIDEO MODE
