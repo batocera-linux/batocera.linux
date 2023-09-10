@@ -84,6 +84,7 @@ wine_options() {
     HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
     HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
     ENABLE_NVAPI="$(get_setting enable_nvapi "${SYSTEM}" "${ROMGAMENAME}")"
+    VKBASALT="$(get_setting vkbasalt "${SYSTEM}" "${ROMGAMENAME}")"
     DXVK_RESET_CACHE="$(get_setting dxvk_reset_cache "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_NTFS="$(get_setting wine_ntfs "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
@@ -144,6 +145,9 @@ wine_options() {
 
     export NVAPI=0
     test "${ENABLE_NVAPI}" = 1 && NVAPI=1
+
+    export ENABLE_VKBASALT=0
+    test "${VKBASALT}" = 1 && ENABLE_VKBASALT=1
 
     export DXVK_STATE_CACHE=1
     test "${DXVK_RESET_CACHE}" = 1 && DXVK_STATE_CACHE=reset

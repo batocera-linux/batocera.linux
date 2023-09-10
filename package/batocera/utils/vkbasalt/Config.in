@@ -1,0 +1,9 @@
+config BR2_PACKAGE_VKBASALT
+        bool "vkbasalt"
+        depends on !BR2_STATIC_LIBS
+        depends on BR2_PACKAGE_XORG7
+        depends on BR2_TOOLCHAIN_HAS_THREADS
+        help
+          A vulkan post processing layer for linux.
+
+          https://github.com/DadSchoorse/vkBasalt
