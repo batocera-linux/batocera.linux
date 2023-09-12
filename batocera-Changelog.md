@@ -31,6 +31,7 @@
 - Added Tyrian, a vertical shooter (through content downloader)
 - Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
 - Initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
+- ps2 native wheel support with force feedback
 - Guncon3 support
 - Plane mode (enable/disable wifi/bt on the fly)
 - hatariB libretro core
