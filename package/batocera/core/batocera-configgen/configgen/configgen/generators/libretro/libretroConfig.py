@@ -747,6 +747,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                             "segacd" : { "device": 516, "p2": 0,
                                          "gameDependant": [ { "key": "gun", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ]} },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
+        "mame"          : { "default" : { "p1": 0, "p2": 1 } },
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame0139"      : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "flycast"       : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
@@ -784,7 +785,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                     if "device_p"+str(nplayer) in ragunconf:
                         retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device_p"+str(nplayer)]
                     else:
-                        retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                        if "device" in ragunconf:
+                            retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
+                        else:
+                            retroarchConfig['input_libretro_device_p'+str(nplayer)] = ""
                     configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'])
 
             # override core settings

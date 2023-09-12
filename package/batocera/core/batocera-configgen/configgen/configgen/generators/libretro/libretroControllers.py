@@ -167,7 +167,9 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
             specialvalue = retroarchspecials['start']
             input = controller.inputs['start']
             config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
-    config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
+    if not lightgun:
+        # dont touch to it when there are connected lightguns
+        config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
     return config
 
 
