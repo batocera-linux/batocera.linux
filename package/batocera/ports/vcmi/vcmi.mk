@@ -17,6 +17,9 @@ ifeq ($(BR2_PACKAGE_QT6),)
 VCMI_CONF_OPTS += -DENABLE_LAUNCHER=OFF -DENABLE_EDITOR=OFF
 else
 VCMI_DEPENDENCIES += qt6base qt6tools
+ifeq ($(BR2_PACKAGE_QT6WAYLAND),y)
+VCMI_DEPENDENCIES += qt6wayland
+endif
 endif
 
 # Install into proper prefix
