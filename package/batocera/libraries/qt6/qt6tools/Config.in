@@ -2,6 +2,13 @@ config BR2_PACKAGE_QT6TOOLS
     bool "qt6tools"
     depends on BR2_PACKAGE_QT6
     depends on BR2_PACKAGE_QT6BASE
+
+    # Needed Qt6 base components
+    select BR2_PACKAGE_QT6BASE_DBUS
+    select BR2_PACKAGE_QT6BASE_NETWORK
+    select BR2_PACKAGE_QT6BASE_XML
+    select BR2_PACKAGE_QT6BASE_PRINTSUPPORT
+    
     help
       Qt is a cross-platform application and UI framework for
       developers using C++.
