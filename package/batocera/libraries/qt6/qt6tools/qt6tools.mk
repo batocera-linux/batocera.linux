@@ -53,7 +53,7 @@ HOST_QT6TOOLS_DEPENDENCIES = \
 HOST_QT6TOOLS_CONF_OPTS = \
     -GNinja \
     -DQT_FEATURE_linguist=ON \
-    -DQT_FEATURE_qdbus=ON \
+    -DQT_FEATURE_qdbus=OFF \
     -DQT_FEATURE_qtattributionsscanner=ON \
     -DQT_FEATURE_qtdiag=ON \
     -DQT_FEATURE_qtplugininfo=ON
