@@ -1261,6 +1261,12 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     # Symbian OS / Nokia N-Gage emulator
     select BR2_PACKAGE_EKA2L1		    if BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3
 
+    # Supermodel OpenGL ES port
+    select BR2_PACKAGE_SUPERMODEL_ES        if	BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+						BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+						BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+						BR2_PACKAGE_BATOCERA_TARGET_H616
+
     help
         Emulators under development (Experimental)
 

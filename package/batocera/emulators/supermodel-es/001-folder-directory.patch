@@ -1,0 +1,122 @@
+diff --git a/Src/OSD/Unix/FileSystemPath.cpp b/Src/OSD/Unix/FileSystemPath.cpp
+index f30bb04fb7..a013e8de20 100644
+--- a/Src/OSD/Unix/FileSystemPath.cpp
++++ b/Src/OSD/Unix/FileSystemPath.cpp
+@@ -48,7 +48,7 @@ namespace FileSystemPath
+     std::string GetPath(PathType pathType)
+     {
+         std::string finalPath = "";
+-        std::string homePath = "";
++        std::string homePath = "/userdata";
+         std::string strPathType = "";
+         struct passwd* pwd = getpwuid(getuid());
+ 
+@@ -78,84 +78,43 @@ namespace FileSystemPath
+             break;
+         }
+ 
+-        // Get user's HOME directory
+-        if (pwd)
++        // Use batocera directories
++        if (pathType == Analysis)
+         {
+-            homePath = pwd->pw_dir;
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel/" << strPathType;
+         }
+-        else
++        if (pathType == Config)
+         {
+-            homePath = getenv("HOME");
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel";
+         }
+-
+-        // If Config path exists in current directory or the user doesn't have a HOME directory use current directory
+-        if (FileSystemPath::PathExists("Config") || homePath.empty())
++        if (pathType == Log)
+         {
+-            // Use current directory
+-            if (pathType == Screenshots || pathType == Log)
+-            {
+-                finalPath = "";
+-            }
+-            else
+-            {
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(strPathType))
+-                {
+-                    mkdir(strPathType.c_str(), 0775);
+-                }
+-                finalPath = strPathType;
+-            }
++            finalPath = Util::Format() << homePath << "/system/logs";
+         }
+-        // Check if $HOME/.supermodel exists
+-        else if (FileSystemPath::PathExists(Util::Format() << homePath << "/.supermodel"))
++        if (pathType == NVRAM)
+         {
+-            // Use $HOME/.supermodel
+-            finalPath = Util::Format() << homePath << "/.supermodel/" << strPathType;
+-            // If directory doesn't exist, create it
+-            if (!FileSystemPath::PathExists(finalPath))
+-            {
+-                mkdir(finalPath.c_str(), 0775);
+-            }
++            finalPath = Util::Format() << homePath << "/saves/supermodel/" << strPathType;
+         }
+-        // On Linux one may want to follow the XDG base directory specs (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+-        else
++        if (pathType == Saves)
+         {
+-            // Use $HOME/.config/supermodel or $HOME/.local/share/supermodel depending on the file type
+-            if (pathType == Config)
+-            {
+-                finalPath = Util::Format() << homePath << "/.config/supermodel";
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-                // If directory doesn't exist, create it
+-                finalPath = Util::Format() << homePath << "/.config/supermodel/Config";
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-            }
+-            else
+-            {
+-                finalPath = Util::Format() << homePath << "/.local/share/supermodel";
+-                // If directory doesn't exist, create it
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-                // If directory doesn't exist, create it
+-                finalPath = Util::Format() << homePath << "/.local/share/supermodel/" << strPathType;
+-                if (!FileSystemPath::PathExists(finalPath))
+-                {
+-                    mkdir(finalPath.c_str(), 0775);
+-                }
+-            }
+-            
++            finalPath = Util::Format() << homePath << "/saves/supermodel/" << strPathType;
++        }                     
++        if (pathType == Screenshots)
++        {
++            finalPath = Util::Format() << homePath << "/screenshots/supermodel";
++        }
++        if (pathType == Assets)
++        {
++            finalPath = Util::Format() << homePath << "/system/configs/supermodel/Assets";
+         }
+         
+         if (finalPath != "")
+         {
++            // If directory doesn't exist, create it
++            if (!FileSystemPath::PathExists(finalPath))
++            {
++                mkdir(finalPath.c_str(), 0775);
++            }
+             finalPath = Util::Format() << finalPath << "/";
+         }
+ 

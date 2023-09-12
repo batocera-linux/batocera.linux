@@ -1,0 +1,30 @@
+diff --git a/Config/Supermodel.ini b/Config/Supermodel.ini
+index 9d8a4d2..4c9d042 100644
+--- a/Config/Supermodel.ini
++++ b/Config/Supermodel.ini
+@@ -151,8 +151,8 @@ InputAnalogJoyLeft = "KEY_LEFT"             ; digital, move left
+ InputAnalogJoyRight = "KEY_RIGHT"           ; digital, move right
+ InputAnalogJoyUp = "KEY_UP"                 ; digital, move up
+ InputAnalogJoyDown = "KEY_DOWN"             ; digital, move down
+-InputAnalogJoyX = "JOY_XAXIS,MOUSE_XAXIS"   ; analog, full X axis
+-InputAnalogJoyY = "JOY_YAXIS,MOUSE_YAXIS"   ; analog, full Y axis
++InputAnalogJoyX = "JOY_XAXIS_INV,MOUSE_XAXIS_INV"   ; analog, full X axis
++InputAnalogJoyY = "JOY_YAXIS_INV,MOUSE_YAXIS_INV"   ; analog, full Y axis
+ InputAnalogJoyTrigger = "KEY_A,JOY_BUTTON1,MOUSE_LEFT_BUTTON"
+ InputAnalogJoyEvent = "KEY_S,JOY_BUTTON2,MOUSE_RIGHT_BUTTON"
+ InputAnalogJoyTrigger2 = "KEY_D,JOY_BUTTON2"
+@@ -191,10 +191,10 @@ InputAnalogGunLeft2 = "NONE"
+ InputAnalogGunRight2 = "NONE"
+ InputAnalogGunUp2 = "NONE"
+ InputAnalogGunDown2 = "NONE"
+-InputAnalogGunX2 = "NONE"
+-InputAnalogGunY2 = "NONE"
+-InputAnalogTriggerLeft2 = "NONE"
+-InputAnalogTriggerRight2 = "NONE"
++InputAnalogGunX2 = "JOY2_XAXIS"
++InputAnalogGunY2 = "JOY2_YAXIS"
++InputAnalogTriggerLeft2 = "JOY2_BUTTON1"
++InputAnalogTriggerRight2 = "JOY2_BUTTON2"
+ 
+ ; Ski Champ controls
+ InputSkiLeft = "KEY_LEFT"
