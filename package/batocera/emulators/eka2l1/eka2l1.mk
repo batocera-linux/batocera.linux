@@ -3,8 +3,10 @@
 # EKA2L1
 #
 ################################################################################
-# Dirty version and repo while fixing gcc13 and upstreaming
-EKA2L1_VERSION = 42c21bebee8bd25f856e7407ea712ba5f160833e
+# Dirty version and repo while:
+# -fixing gcc13
+# - upstreaming needed changes (wayland, ffmpeg, gles)
+EKA2L1_VERSION = e2aaf64c5b0e2081d640d358bdd5fad69726ab2e
 EKA2L1_SITE = https://github.com/rtissera/EKA2L1.git
 EKA2L1_SITE_METHOD=git
 EKA2L1_GIT_SUBMODULES=YES
@@ -15,10 +17,16 @@ EKA2L1_SUPPORTS_IN_SOURCE_BUILD = NO
 
 EKA2L1_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 EKA2L1_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+EKA2L1_CONF_OPTS += -DBUILD_STATIC_LIBS=ON
 EKA2L1_CONF_OPTS += -DEKA2L1_ENABLE_SCRIPTING_ABILITY=OFF
 EKA2L1_CONF_OPTS += -DEKA2L1_BUILD_TOOLS=OFF
 EKA2L1_CONF_OPTS += -DEKA2L1_BUILD_TESTS=OFF
-#EKA2L1_CONF_OPTS += -DBUILD_STATIC_LIBS=OFF
+EKA2L1_CONF_OPTS += -DEKA2L1_USE_SYSTEM_FFMPEG=ON
+
+ifneq ($(BR2_x86_64),y)
+EKA2L1_CONF_OPTS += -DEKA2L1_UNIX_USE_X11=OFF
+EKA2L1_CONF_OPTS += -DEKA2L1_UNIX_USE_WAYLAND=ON
+endif
 
 define EKA2L1_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/eka2l1
