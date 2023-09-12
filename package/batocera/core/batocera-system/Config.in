@@ -1256,7 +1256,7 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     select BR2_PACKAGE_DXX_REBIRTH          if BR2_x86_64 
 
     # Amstrad CPC emulator
-    select BR2_PACKAGE_SUGARBOX		    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+    select BR2_PACKAGE_SUGARBOX             if BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3
 
     # Symbian OS / Nokia N-Gage emulator
     select BR2_PACKAGE_EKA2L1		    if BR2_x86_64 # depends on X11 and Qt6 (mostly)
