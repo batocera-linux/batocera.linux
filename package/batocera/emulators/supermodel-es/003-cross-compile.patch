@@ -1,0 +1,16 @@
+diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
+index 3aefc48..64f0508 100644
+--- a/Makefiles/Rules.inc
++++ b/Makefiles/Rules.inc
+@@ -302,9 +302,9 @@ MUSASHI_LDFLAGS = -o $(MUSASHI_OUTFILE) $(OBJ_DIR)/m68kmake.o -s
+ $(MUSASHI_OUTFILE): Src/CPU/68K/Musashi/m68kmake.c Src/CPU/68K/Musashi/m68k_in.c
+ 	$(info --------------------------------------------------------------------------------)
+ 	$(info Compiling              : $< -> $(OBJ_DIR)/m68kmake.o)
+-	$(SILENT)$(CC) $< $(CFLAGS) -o $(OBJ_DIR)/m68kmake.o
++	$(CC_FOR_BUILD) -o $@ $<
+ 	$(info Linking                : $(MUSASHI_OUTFILE))
+-	$(SILENT)$(LD) $(MUSASHI_LDFLAGS)
++	$(CC_FOR_BUILD) -o $@ $<
+ 
+ $(OBJ_DIR)/m68kops.h $(OBJ_DIR)/m68kops.c $(OBJ_DIR)/m68kopac.c $(OBJ_DIR)/m68kopdm.c $(OBJ_DIR)/m68kopnz.c:	$(MUSASHI_OUTFILE) Src/CPU/68K/Musashi/m68k_in.c Src/CPU/68K/Musashi/m68k.h Src/CPU/68K/Musashi/m68kconf.h
+ 	$(info Generating 68K emulator: $@)
