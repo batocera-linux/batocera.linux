@@ -37,7 +37,7 @@ class Pcsx2Generator(Generator):
         
         # Config files
         configureReg(pcsx2ConfigDir)
-        configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, playersControllers, guns)
+        configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, playersControllers, guns, wheels)
         configureAudio(pcsx2ConfigDir)
 
         # write our own game_controller_db.txt file before launching the game
@@ -50,14 +50,19 @@ class Pcsx2Generator(Generator):
         with open("/proc/cpuinfo") as cpuinfo:
             if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
                 eslog.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
-        
+
+        envcmd = { "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                   "QT_QPA_PLATFORM":"xcb",
+                   "SDL_JOYSTICK_HIDAPI": "0"
+                  }
+
+        # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
+        if not (system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0):
+            envcmd["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
+
         return Command.Command(
             array=commandArray,
-            env={ "XDG_CONFIG_HOME":batoceraFiles.CONF,
-            "QT_QPA_PLATFORM":"xcb",
-            "SDL_GAMECONTROLLERCONFIG":controllersConfig.generateSdlGameControllerConfig(playersControllers),
-            "SDL_JOYSTICK_HIDAPI": "0"
-            }
+            env=envcmd
         )
 
 def getGfxRatioFromConfig(config, gameResolution):
@@ -104,7 +109,7 @@ def configureAudio(config_directory):
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory, bios_directory, system, controllers, guns):
+def configureINI(config_directory, bios_directory, system, controllers, guns, wheels):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2.ini")
 
     if not os.path.exists(config_directory + "/inis"):
@@ -400,8 +405,6 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
     pcsx2INIConfig.set("Hotkeys", "ToggleTurbo", "Keyboard/Tab")
     pcsx2INIConfig.set("Hotkeys", "HoldTurbo", "Keyboard/Period")
 
-    # guns
-
     # clean gun sections
     if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "guncon2":
         pcsx2INIConfig.remove_option("USB1", "Type")
@@ -411,8 +414,15 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
         pcsx2INIConfig.remove_option("USB1", "guncon2_Start")
     if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "guncon2_Start"):
         pcsx2INIConfig.remove_option("USB2", "guncon2_Start")
+
+    # clean wheel sections
+    if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "Pad" and pcsx2INIConfig.has_option("USB1", "Pad_subtype") and pcsx2INIConfig.get("USB1", "Pad_subtype") == "1":
+        pcsx2INIConfig.remove_option("USB1", "Type")
+    if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "Type") and pcsx2INIConfig.get("USB2", "Type") == "Pad" and pcsx2INIConfig.has_option("USB2", "Pad_subtype") and pcsx2INIConfig.get("USB2", "Pad_subtype") == "1":
+        pcsx2INIConfig.remove_option("USB2", "Type")
     ###
 
+    # guns
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
         if len(guns) >= 1:
             if not pcsx2INIConfig.has_section("USB1"):
@@ -463,7 +473,48 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
             
             if os.path.isfile(target_file_path):
                 os.remove(target_file_path)
-    
+
+    # wheels
+    if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+        if len(wheels) >= 1:
+            wheelMapping = {
+                "up":       "Pad_DPadUp",
+                "down":     "Pad_DPadDown",
+                "left":     "Pad_DPadLeft",
+                "right":    "Pad_DPadRight",
+                "start":    "Pad_Start",
+                "select":   "Pad_Select",
+                "a":        "Pad_Circle",
+                "b":        "Pad_Cross",
+                "x":        "Pad_Triangle",
+                "y":        "Pad_Square",
+                "pageup":   "Pad_L1",
+                "pagedown": "Pad_R1"
+            }
+
+            usbx = 1
+            for controller, pad in sorted(controllers.items()):
+                if pad.dev in wheels:
+                    if not pcsx2INIConfig.has_section("USB{}".format(usbx)):
+                        pcsx2INIConfig.add_section("USB{}".format(usbx))
+                    pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")
+                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", "1")
+                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
+
+                    for i in pad.inputs:
+                        if i in wheelMapping:
+                            pcsx2INIConfig.set("USB{}".format(usbx), wheelMapping[i], "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs[i])))
+                    # wheel
+                    if "joystick1left" in pad.inputs:
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_SteeringLeft",  "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs["joystick1left"])))
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_SteeringRight", "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs["joystick1left"], True)))
+                    # pedals
+                    if "l2" in pad.inputs:
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_Brake",    "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs["l2"], None)))
+                    if "r2" in pad.inputs:
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_Throttle", "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs["r2"], None)))
+                    usbx = usbx + 1
+
     ## [Pad]
     if not pcsx2INIConfig.has_section("Pad"):
         pcsx2INIConfig.add_section("Pad")
@@ -571,3 +622,27 @@ def configureINI(config_directory, bios_directory, system, controllers, guns):
 
     with open(configFileName, 'w') as configfile:
         pcsx2INIConfig.write(configfile)
+
+def input2wheel(input, reversedAxis = False):
+    if input.type == "button":
+        pcsx2_magic_button_offset = 21 # PCSX2/SDLInputSource.cpp : const u32 button = ev->button + std::size(s_sdl_button_names)
+        return "Button{}".format(int(input.id) + pcsx2_magic_button_offset)
+    if input.type == "hat":
+        dir = "unknown"
+        if input.value == '1':
+            dir = "North"
+        elif input.value == '2':
+            dir = "East"
+        elif input.value == '4':
+            dir = "South"
+        elif input.value == '8':
+            dir = "West"
+        return "Hat{}{}".format(input.id, dir)
+    if input.type == "axis":
+        pcsx2_magic_axis_offset = 6 # PCSX2/SDLInputSource.cpp : const u32 axis = ev->axis + std::size(s_sdl_axis_names);
+        if reversedAxis is None:
+            return "{}Axis{}~".format("Full", int(input.id)+pcsx2_magic_axis_offset)
+        dir = "-"
+        if reversedAxis:
+            dir = "+"
+        return "{}Axis{}".format(dir, int(input.id)+pcsx2_magic_axis_offset)
