@@ -4147,6 +4147,18 @@ xbox360:
 
     Nota: É possível construir o Xenia para Linux, mas a funcionalidade no momento da escrita é extremamente pobre.
 
+ngage:
+  name: N-Gage
+  manufacturer: Nokia
+  release: 2003
+  hardware: portable
+  extensions: [n-gage, sisx, sis, zip]
+  platform: ngage
+  theme: ngage
+  emulators:
+    eka2l1:
+      eka2l1: { requireAnyOf: [BR2_PACKAGE_EKA2L1] }
+
 odcommander:
   name: OD-Commander
   manufacturer: Ports
