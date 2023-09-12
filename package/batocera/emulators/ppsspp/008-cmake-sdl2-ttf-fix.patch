@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2023-09-12 21:56:18.564659166 +0200
++++ b/CMakeLists.txt	2023-09-12 21:56:33.821031424 +0200
+@@ -1337,7 +1337,7 @@
+ 	endif()
+ 	if(SDL2_ttf_FOUND)
+ 		add_definitions(-DUSE_SDL2_TTF)
+-		set(nativeExtraLibs ${nativeExtraLibs} SDL2_ttf::SDL2_ttf)
++		set(nativeExtraLibs ${nativeExtraLibs} SDL2_ttf)
+ 
+ 		if(FONTCONFIG_FOUND)
+ 			add_definitions(-DUSE_SDL2_TTF_FONTCONFIG)

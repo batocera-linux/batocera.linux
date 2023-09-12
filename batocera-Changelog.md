@@ -78,7 +78,7 @@
 - duckstation to Aug 4, 2023 build
 - flycast to July 5th build
 - melonds to July 8th build
-- ppsspp to July 8th build
+- ppsspp to v1.16.1
 - lr-ppsspp to July 8th build
 - xemu to v0.7.110
 - devilutionX to 1.5.0
