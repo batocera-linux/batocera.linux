@@ -92,7 +92,7 @@
 - slang and glsl shaders to July 29th 2023
 - pcsx2 to v1.7.4857 (Aug, 1st 2023)
 - SDLPoP to v1.23 (Feb, 4th 2023)
-- BigPemu to v1071
+- BigPemu to v108
 - commander genius to v3.4.9
 - play! to v0.62
 - Vita3K to 0.1.9
@@ -102,6 +102,7 @@
 - gzdoom to Aug 26 build
 - libretro-fake08 to Aug 21 build
 - libretro-bsnes to Aug 18 build
+- rpcs3 to 0.0.29-15617
 ### Dev
 - linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
