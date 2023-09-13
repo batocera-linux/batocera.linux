@@ -1,0 +1,13 @@
+diff --git a/hatari/src/floppy_ipf.c b/hatari/src/floppy_ipf.c
+index 412ba690f3..ce14e3c0d3 100644
+--- a/hatari/src/floppy_ipf.c
++++ b/hatari/src/floppy_ipf.c
+@@ -322,7 +322,7 @@ static bool capsValid = false;
+ #ifdef WIN32
+ #define CAPS_SONAME "capsimg.dll"
+ #else
+-#define CAPS_SONAME "capsimg.so"
++#define CAPS_SONAME "libcapsimage.so.5"
+ #endif
+ 
+ #endif
