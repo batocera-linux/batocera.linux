@@ -226,7 +226,12 @@ class Rpcs3Generator(Generator):
         if system.isOptSet("rpcs3_audio_format"):
             rpcs3ymlconfig["Audio"]["Audio Format"] = system.config["rpcs3_audio_format"]
         else:
-            rpcs3ymlconfig["Audio"]["Audio Format"] = "Stereo"
+            rpcs3ymlconfig["Audio"]["Audio Format"] = "Automatic"
+        # convert to 16 bit
+        if system.isOptSet("rpcs3_audio_16bit") and system.config["rpcs3_audio_16bit"] == "True":
+            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = True
+        else:
+            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = False        
         # audio buffering
         if system.isOptSet("rpcs3_audiobuffer"):
             rpcs3ymlconfig["Audio"]["Enable Buffering"] = system.config["rpcs3_audiobuffer"]
@@ -234,7 +239,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
         # audio buffer duration
         if system.isOptSet("rpcs3_audiobuffer_duration"):
-            rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = system.config["rpcs3_audiobuffer_duration"]
+            rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = int(system.config["rpcs3_audiobuffer_duration"])
         else:
             rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = 100
         # time stretching
@@ -243,7 +248,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
         else:
             rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = False
-        rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = 75
+        # time stretching threshold
+        if system.isOptSet("rpcs3_timestretch_threshold"):
+            rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = int(system.config["rpcs3_timestretch_threshold"])
+        else:
+            rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = 75
 
         # -= [Input/Output] =-
         # gun stuff
