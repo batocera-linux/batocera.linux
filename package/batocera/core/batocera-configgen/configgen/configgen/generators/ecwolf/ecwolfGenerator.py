@@ -50,19 +50,45 @@ class ECWolfGenerator(Generator):
         if not path.isdir(ecwolfSaves):
             os.mkdir(ecwolfSaves)
 
-        try:
-            os.chdir(rom)
-        # Only game directories, not .zip
-        except Exception as e:
-            print(f"Error: couldn't go into directory {rom} ({e})")
-        return Command.Command(
-            array=[
-                'ecwolf',
-                '--joystick',
-                # savedir must be a single argument
-                "--savedir=/userdata/saves/ecwolf",
-            ],
-            env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
-            }
-        )
+        if os.path.isdir(rom):
+            try:
+                os.chdir(rom)
+            # Only game directories, not .zip
+            except Exception as e:
+                print(f"Error: couldn't go into directory {rom} ({e})")
+            return Command.Command(
+                array=[
+                    'ecwolf',
+                    '--joystick',
+                    # savedir must be a single argument
+                    "--savedir=/userdata/saves/ecwolf",
+                ],
+                env={
+                    'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                }
+            )
+
+        if os.path.isfile(rom):
+            f = open(rom,'r')
+            array=(f.readline().split())
+            f.close()
+
+            if not "--" in array[0]:
+                os.chdir(os.path.dirname(rom))
+                try:
+                    os.chdir(array[0])
+                except Exception as e:
+                    print(f"Error: couldn't go into directory {array[0]} ({e})")
+                array.pop(0)
+
+            array.insert(0, "ecwolf")
+            array.append("--joystick")
+            array.append("--savedir=/userdata/saves/ecwolf")
+
+            return Command.Command(
+                 array,
+                 env={
+                     'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+
+                }
+            )
