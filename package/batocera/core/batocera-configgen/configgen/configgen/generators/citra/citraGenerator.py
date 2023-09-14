@@ -133,6 +133,11 @@ class CitraGenerator(Generator):
         citraConfig.set("Renderer", "use_hw_renderer", "true")
         citraConfig.set("Renderer", "use_hw_shader",   "true")
         citraConfig.set("Renderer", "use_shader_jit",  "true")
+        # Software, OpenGL (default) or Vulkan
+        if system.isOptSet('citra_graphics_api'):
+            citraConfig.set("Renderer", "graphics_api", system.config["citra_graphics_api"])
+        else:
+            citraConfig.set("Renderer", "graphics_api", "1")
         # Use VSYNC
         if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
             citraConfig.set("Renderer", "use_vsync_new", "false")
@@ -145,7 +150,12 @@ class CitraGenerator(Generator):
         else:
             citraConfig.set("Renderer", "resolution_factor", "1")
         citraConfig.set("Renderer", "resolution_factor\default", "false")
-
+        # Async Shader Compilation
+        if system.isOptSet('citra_async_shader_compilation') and system.config["citra_async_shader_compilation"] == '1':
+            citraConfig.set("Renderer", "async_shader_compilation", "true")
+        else:
+            citraConfig.set("Renderer", "async_shader_compilation", "false")
+        citraConfig.set("Renderer", "async_shader_compilation\default", "false")
         # Use Frame Limit
         if system.isOptSet('citra_use_frame_limit') and system.config["citra_use_frame_limit"] == '0':
             citraConfig.set("Renderer", "use_frame_limit", "false")
