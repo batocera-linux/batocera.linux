@@ -6672,6 +6672,13 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        manual_texture_sampling:
+            submenu: RENDERING
+            prompt: MANUAL TEXTURE SAMPLING
+            description: Enabling will allow for correct emulation of texture wrapping. This comes at a cost of potential worse performance.
+            choices:
+                "Off": 0
+                "On":  1
         enable_cheats:
             group: ADVANCED OPTIONS
             prompt: ENABLE CHEATS
