@@ -1,0 +1,69 @@
+From c87b779348cd6d7be932c97875086770a545f327 Mon Sep 17 00:00:00 2001
+From: Silvestrs Timofejevs <silvestrs.timofejevs@imgtec.com>
+Date: Thu, 30 Aug 2018 13:48:53 +0100
+Subject: [PATCH 27/58] gbm: add some new GBM formats
+
+GBM_FORMAT_ARGB4444
+GBM_FORMAT_BGR888
+GBM_FORMAT_YUYV
+GBM_FORMAT_YVU444_PACK10_IMG
+---
+ src/gbm/backends/dri/gbm_dri.c | 16 ++++++++++++++++
+ src/gbm/main/gbm.h             |  2 ++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index fc0bbf5fcf9..17594589f56 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -564,11 +564,21 @@ static const struct gbm_dri_visual gbm_dri_visuals_table[] = {
+      { 10, 5, 0, 11 },
+      { 5, 5, 5, 1 },
+    },
++   {
++      GBM_FORMAT_ARGB4444, __DRI_IMAGE_FORMAT_ARGB4444,
++      { 8, 4, 0, 12 },
++      { 4, 4, 4, 4 },
++   },
+    {
+      GBM_FORMAT_RGB565, __DRI_IMAGE_FORMAT_RGB565,
+      { 11, 5, 0, -1 },
+      { 5, 6, 5, 0 },
+    },
++   {
++     GBM_FORMAT_BGR888, __DRI_IMAGE_FORMAT_BGR888,
++     { 0, 8, 16, -1 },
++     { 8, 8, 8, 0 },
++   },
+    {
+      GBM_FORMAT_XRGB8888, __DRI_IMAGE_FORMAT_XRGB8888,
+      { 16, 8, 0, -1 },
+@@ -621,6 +631,12 @@ static const struct gbm_dri_visual gbm_dri_visuals_table[] = {
+      { 16, 16, 16, 16 },
+      true,
+    },
++   {
++     GBM_FORMAT_YUYV, __DRI_IMAGE_FORMAT_YUYV,
++   },
++   {
++     GBM_FORMAT_YVU444_PACK10_IMG, __DRI_IMAGE_FORMAT_YVU444_PACK10_IMG,
++   },
+ };
+ 
+ static int
+diff --git a/src/gbm/main/gbm.h b/src/gbm/main/gbm.h
+index 57fd1b9ab47..bd4185b723f 100644
+--- a/src/gbm/main/gbm.h
++++ b/src/gbm/main/gbm.h
+@@ -174,6 +174,8 @@ enum gbm_bo_format {
+ 
+ #define GBM_FORMAT_AYUV		__gbm_fourcc_code('A', 'Y', 'U', 'V') /* [31:0] A:Y:Cb:Cr 8:8:8:8 little endian */
+ 
++#define GBM_FORMAT_YVU444_PACK10_IMG __gbm_fourcc_code('I', 'M', 'G', '2') /* [31:0] unused:Y:Cr:Cb 2:10:10:10 little endian */
++
+ /*
+  * 2 plane YCbCr
+  * index 0 = Y plane, [7:0] Y
+-- 
+2.25.1
+

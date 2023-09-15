@@ -1,0 +1,34 @@
+From 06c6ca320bf9e632a7a410f3921e81bf9fc7c3b8 Mon Sep 17 00:00:00 2001
+From: brendan King <Brendan.King@imgtec.com>
+Date: Mon, 2 Aug 2021 16:29:36 +0100
+Subject: [PATCH 51/58] vulkan/wsi: default to force_bgra8_unorm_first true
+
+If VULKAN_WSI_BGRA8_SNORM_FIRST is not defined, default to
+force_bgra8_unorm_first true.
+
+This brings Mesa WSI into line with IMG WSI with regards to the
+VK_FORMAT_B8G8R8A8_UNORM and VK_FORMAT_B8G8R8A8_SRGB formats.
+With this change, the IMG Vulkan unit test, vkbonjour, will default
+to VK_FORMAT_B8G8R8A8_UNORM rather than VK_FORMAT_B8G8R8A8_SRGB.
+---
+ src/vulkan/wsi/wsi_common.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/vulkan/wsi/wsi_common.c b/src/vulkan/wsi/wsi_common.c
+index 9919652e06e..96cd263556c 100644
+--- a/src/vulkan/wsi/wsi_common.c
++++ b/src/vulkan/wsi/wsi_common.c
+@@ -170,6 +170,10 @@ wsi_device_init(struct wsi_device *wsi,
+             driQueryOptionb(dri_options, "vk_wsi_force_bgra8_unorm_first");
+       }
+    }
++#if !defined(VULKAN_WSI_BGRA8_SNORM_FIRST)
++   else
++      wsi->force_bgra8_unorm_first = true;
++#endif
+ 
+    return VK_SUCCESS;
+ #if defined(VK_USE_PLATFORM_XCB_KHR) || \
+-- 
+2.25.1
+

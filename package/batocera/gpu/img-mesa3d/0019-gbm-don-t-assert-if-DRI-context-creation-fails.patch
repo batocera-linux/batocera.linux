@@ -1,0 +1,44 @@
+From a553d0541555b879a2f9a9645d0766983855d766 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 1 Dec 2017 08:31:15 +0000
+Subject: [PATCH 19/58] gbm: don't assert if DRI context creation fails
+
+If the DRI backend fails to create a DRI context, return an error,
+rather than asserting.
+---
+ src/gbm/backends/dri/gbm_dri.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 00fcc57f512..fc0bbf5fcf9 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -1290,8 +1290,11 @@ gbm_dri_bo_map(struct gbm_bo *_bo,
+    if (!dri->context)
+       dri->context = dri->dri2->createNewContext(dri->screen, NULL,
+                                                  NULL, NULL);
+-   assert(dri->context);
+    mtx_unlock(&dri->mutex);
++   if (!dri->context) {
++      errno = ENOSYS;
++      return NULL;
++   }
+ 
+    /* GBM flags and DRI flags are the same, so just pass them on */
+    return dri->image->mapImage(dri->context, bo->image, x, y,
+@@ -1419,8 +1422,11 @@ gbm_dri_bo_blit(struct gbm_bo *_dst_bo, struct gbm_bo *_src_bo,
+    if (!dri->context)
+       dri->context = dri->dri2->createNewContext(dri->screen, NULL,
+                                                  NULL, NULL);
+-   assert(dri->context);
+    mtx_unlock(&dri->mutex);
++   if (!dri->context) {
++      errno = ENOSYS;
++      return 0;
++   }
+ 
+    /* GBM flags and DRI flags are the same, so just pass them on */
+    dri->image->blitImage(dri->context, dst_bo->image, src_bo->image,
+-- 
+2.25.1
+

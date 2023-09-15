@@ -1,0 +1,214 @@
+From 34f6a09841f2119096676692103251b2d87ac9da Mon Sep 17 00:00:00 2001
+From: Silvestrs Timofejevs <silvestrs.timofejevs@imgtec.com>
+Date: Mon, 2 Sep 2019 09:32:01 +0100
+Subject: [PATCH 32/58] null_platform: add support for explicit synchronisation
+
+This change adds support for the 'in' fence, the 'out' fence will
+potentially be added in subsequent optimisation changes.
+
+Explicit synchronisation KMS 'in' and 'out' properties have been first
+added in Linux kernel 4.10 as an additional feature to the atomic mode
+setting.
+
+9626014258a5957ff120b3987ee72decdbe0c798 - 'in' property
+beaf5af48034c9e2ebb8b2b1fb12dc4d8aeba99e - 'out' property
+
+Unlike many other features - it doesn't have an in kernel capability
+flag, so the support for it can be tested in the following way:
+KMS creates an additional set of properties when the version of kernel
+is new enough to support it ('in' and 'out' fence properties). When
+the user-space requests all the properties from the kernel via
+drmModeObjectGetProperties it is possible to determine whether the
+required property is supported by the kernel or not.
+
+The explicit synchronisation is used when available, otherwise the
+implicit sync model is used instead. If explicit synchronisation is
+available but 'in' fence failed to attach in KMS, the system falls
+back to the implicit synchronisation model.
+
+egl_dri2.c already creates the GPU 'out' fence that is then used by
+the null_platform as KMS 'in' fence. null_platform takes owenership of
+this fence fd during the swap buffers operation, at which point the
+fence fd is no longer available to be used outside of null_platform.
+
+EGL_LOG_LEVEL=debug should give some useful information in case of
+explicit synchronisation failure. As mentioned above, this failure
+will result in implicit synchronisation being used instead.
+
+Change-Id: Ib9c4a0bc3ea1b21192ee37909d7580d6b7b366ec
+---
+ src/egl/drivers/dri2/egl_dri2.h      |  2 +
+ src/egl/drivers/dri2/platform_null.c | 77 +++++++++++++++++++++++++++-
+ 2 files changed, 77 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index f74ee282645..e2348443dc9 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -101,6 +101,7 @@ struct wl_buffer;
+ #ifdef HAVE_NULL_PLATFORM
+ struct display_output {
+    bool                   in_use;
++   bool                   in_fence_supported;
+    uint32_t               connector_id;
+    drmModePropertyRes   **connector_prop_res;
+    uint32_t               crtc_id;
+@@ -336,6 +337,7 @@ struct swap_queue_elem
+    uint32_t             swap_interval;
+    uint32_t             back_id;
+    uint32_t             fb_id;
++   int                  kms_in_fence_fd;
+ };
+ 
+ enum {
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index 5b7c1ec426c..d36dc0ced2a 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -401,6 +401,9 @@ display_output_atomic_init(int fd, struct display_output *output)
+    if (!output->atomic_state)
+       goto err_destroy_mode_prop_blob;
+ 
++   if (property_id_get_for_name(plane_prop_res, "IN_FENCE_FD"))
++      output->in_fence_supported = true;
++
+    output->connector_prop_res = connector_prop_res;
+    output->crtc_prop_res = crtc_prop_res;
+    output->plane_prop_res = plane_prop_res;
+@@ -418,6 +421,53 @@ err_free_connector_prop_res:
+    return false;
+ }
+ 
++static void
++display_output_atomic_add_in_fence(struct display_output *output,
++                                   int kms_in_fence_fd)
++{
++   const struct object_property obj_sync_props[] = {
++      object_property_set_named(output, plane, "IN_FENCE_FD", kms_in_fence_fd),
++   };
++   int err;
++
++   /* Explicit synchronisation is not being used */
++   if (kms_in_fence_fd < 0)
++      return;
++
++   err = atomic_state_add_object_properties(output->atomic_state,
++                                            obj_sync_props,
++                                            ARRAY_SIZE(obj_sync_props));
++   if (err)
++      _eglLog(_EGL_DEBUG, "%s: failed to add props ERR = %d", __func__, err);
++}
++
++static void
++atomic_claim_in_fence_fd(struct dri2_egl_surface *dri2_surf,
++                         struct swap_queue_elem *swap_data)
++{
++   /* Explicit synchronisation is not being used */
++   if (!dri2_surf->enable_out_fence)
++      return;
++
++   if (dri2_surf->out_fence_fd < 0) {
++      _eglLog(_EGL_DEBUG, "%s: missing 'in' fence", __func__);
++      return;
++   }
++
++   /* Take ownership of the fd */
++   swap_data->kms_in_fence_fd = dri2_surf->out_fence_fd;
++   dri2_surf->out_fence_fd = -1;
++}
++
++static void
++atomic_relinquish_in_fence_fd(struct dri2_egl_surface *dri2_surf,
++                              struct swap_queue_elem *swap_data)
++{
++   /* KMS is now in control of the fence (post drmModeAtomicCommit) */
++   close(swap_data->kms_in_fence_fd);
++   swap_data->kms_in_fence_fd = -1;
++}
++
+ static int
+ display_output_atomic_flip(int fd, struct display_output *output, uint32_t fb_id,
+                            uint32_t flags, void *flip_data)
+@@ -425,6 +475,8 @@ display_output_atomic_flip(int fd, struct display_output *output, uint32_t fb_id
+    const struct object_property obj_props[] = {
+       object_property_set_named(output, plane, "FB_ID", fb_id),
+    };
++   struct dri2_egl_surface *dri2_surf = flip_data;
++   struct swap_queue_elem *swap_data = dri2_surf->swap_data;
+    int err;
+ 
+    /* Reset atomic state */
+@@ -435,13 +487,19 @@ display_output_atomic_flip(int fd, struct display_output *output, uint32_t fb_id
+    if (err)
+       return err;
+ 
++   display_output_atomic_add_in_fence(output, swap_data->kms_in_fence_fd);
++
+    /*
+     * Don't block - like drmModePageFlip, drmModeAtomicCommit will return
+     * -EBUSY if the commit can't be queued in the kernel.
+     */
+    flags |= DRM_MODE_ATOMIC_NONBLOCK;
+ 
+-   return drmModeAtomicCommit(fd, output->atomic_state, flags, flip_data);
++   err = drmModeAtomicCommit(fd, output->atomic_state, flags, flip_data);
++
++   atomic_relinquish_in_fence_fd(dri2_surf, swap_data);
++
++   return err;
+ }
+ 
+ static int
+@@ -489,6 +547,8 @@ swap_enqueue_data(struct dri2_egl_surface *dri2_surf, uint32_t back_id,
+    swap_data->fb_id = dri2_surf->back->fb_id;
+    swap_data->back_id = back_id;
+ 
++   atomic_claim_in_fence_fd(dri2_surf, swap_data);
++
+    dri2_surf->swap_queue_idx_tail++;
+    dri2_surf->swap_queue_idx_tail %= ARRAY_SIZE(dri2_surf->swap_queue);
+ 
+@@ -1025,11 +1085,21 @@ err_unlock:
+    return false;
+ }
+ 
++static void surface_swap_queue_init(struct dri2_egl_surface *dri2_surf)
++{
++   struct swap_queue_elem *swap_queue = &dri2_surf->swap_queue[0];
++   const int num_el = ARRAY_SIZE(dri2_surf->swap_queue);
++
++   for (int i = 0; i < num_el; i++)
++      swap_queue[i].kms_in_fence_fd = -1;
++}
++
+ static _EGLSurface *
+ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+                const EGLint *attrib_list)
+ {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct display_output *output = &dri2_dpy->output;
+    struct dri2_egl_config *dri2_config = dri2_egl_config(config);
+    struct dri2_egl_surface *dri2_surf;
+    const __DRIconfig *dri_config;
+@@ -1043,7 +1113,8 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+    }
+    surf = &dri2_surf->base;
+ 
+-   if (!dri2_init_surface(surf, disp, type, config, attrib_list, false, NULL))
++   if (!dri2_init_surface(surf, disp, type, config, attrib_list,
++                          output->in_fence_supported, NULL))
+       goto err_free_surface;
+ 
+    dri_config = dri2_get_dri_config(dri2_config, type,
+@@ -1066,6 +1137,8 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+ 
+    dri2_surf->format = dri2_null_formats[format_idx].dri_image_format;
+ 
++   surface_swap_queue_init(dri2_surf);
++
+    return surf;
+ 
+ err_free_surface:
+-- 
+2.25.1
+

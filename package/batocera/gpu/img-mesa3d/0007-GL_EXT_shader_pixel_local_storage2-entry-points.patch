@@ -1,0 +1,84 @@
+From fbc371ceb3e97b829b3e9d3dd55674b156109646 Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Thu, 4 Feb 2016 14:09:26 +0000
+Subject: [PATCH 07/58] GL_EXT_shader_pixel_local_storage2 entry points
+
+---
+ .../gen/EXT_shader_pixel_local_storage2.xml   | 35 +++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                 |  3 ++
+ src/mapi/glapi/gen/static_data.py             |  3 ++
+ 3 files changed, 41 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml b/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+new file mode 100644
+index 00000000000..20e186c0f0d
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_shader_pixel_local_storage2.xml
+@@ -0,0 +1,35 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="EXT_shader_pixel_local_storage2" number="240">
++
++    <enum name="GL_MAX_SHADER_PIXEL_LOCAL_STORAGE_FAST_SIZE_EXT"                          value="0x8F63"/>
++    <enum name="GL_MAX_SHADER_PIXEL_LOCAL_STORAGE_SIZE_EXT"                               value="0x8F67"/>
++    <enum name="GL_SHADER_PIXEL_LOCAL_STORAGE_EXT"                                        value="0x8F64"/>
++    <enum name="GL_MAX_SHADER_COMBINED_LOCAL_STORAGE_FAST_SIZE_EXT"                       value="0x9650"/>
++    <enum name="GL_MAX_SHADER_COMBINED_LOCAL_STORAGE_SIZE_EXT"                            value="0x9651"/>
++    <enum name="GL_FRAMEBUFFER_INCOMPLETE_INSUFFICIENT_SHADER_COMBINED_LOCAL_STORAGE_EXT" value="0x9652"/>
++
++    <function name="ClearPixelLocalStorageuiEXT" es2="3.1" exec="dynamic">
++        <param name="offset" type="GLsizei"/>
++        <param name="n" type="GLsizei"/>
++        <param name="values" type="const GLuint *"/>
++    </function>
++
++    <function name="FramebufferPixelLocalStorageSizeEXT" es2="3.1"
++              exec="dynamic">
++        <param name="target" type="GLuint"/>
++        <param name="size" type="GLsizei"/>
++    </function>
++
++    <function name="GetFramebufferPixelLocalStorageSizeEXT" es2="3.1"
++              exec="dynamic">
++        <param name="target" type="GLuint"/>
++        <return type="GLsizei"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 03c78ef9ca5..0ed0e003bae 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1485,6 +1485,9 @@
+ <!-- 240. EXT_sparse_texture -->
+ <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 253. GL_EXT_shader_pixel_local_storage2 -->
++<xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <category name="GL_OES_viewport_array" number="267">
+     <function name="ViewportArrayvOES" es2="3.1" alias="ViewportArrayv">
+         <param name="first" type="GLuint"/>
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index 21af0789fee..f89dcf24e4e 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1698,6 +1698,9 @@ offsets = {
+     "WeightPointerOES" : 1662,
+     "RenderbufferStorageMultisampleIMG" : 1663,
+     "FramebufferTexture2DMultisampleIMG" : 1664,
++    "ClearPixelLocalStorageuiEXT" : 1665,
++    "FramebufferPixelLocalStorageSizeEXT" : 1666,
++    "GetFramebufferPixelLocalStorageSizeEXT" : 1667,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

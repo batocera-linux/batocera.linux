@@ -1,0 +1,85 @@
+From 81f126f4dde3fd866b480a56ae5a2c105656534c Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 18 Jul 2022 13:00:31 +0100
+Subject: [PATCH 59/60] gbm: add GBM_FORMAT_AXBXGXRX106106106106
+
+---
+ include/GL/internal/dri_interface.h | 1 +
+ src/egl/drivers/dri2/egl_dri2.c     | 1 +
+ src/gbm/backends/dri/gbm_dri.c      | 5 +++++
+ src/gbm/main/gbm.c                  | 1 +
+ src/gbm/main/gbm.h                  | 6 ++++++
+ 5 files changed, 14 insertions(+)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 618eba9eaeb..d04f6018e79 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1272,6 +1272,7 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FORMAT_YV12         0x101e
+ #define __DRI_IMAGE_FORMAT_YVYU         0x101f
+ #define __DRI_IMAGE_FORMAT_VYUY         0x1020
++#define __DRI_IMAGE_FORMAT_AXBXGXRX106106106106 0x1021
+ 
+ #define __DRI_IMAGE_USE_SHARE		0x0001
+ #define __DRI_IMAGE_USE_SCANOUT		0x0002
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 152da09881e..d803142044c 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -2865,6 +2865,7 @@ dri2_num_fourcc_format_planes(EGLint format)
+    case DRM_FORMAT_BGRA1010102:
+    case DRM_FORMAT_XBGR16161616F:
+    case DRM_FORMAT_ABGR16161616F:
++   case DRM_FORMAT_AXBXGXRX106106106106:
+    case DRM_FORMAT_YUYV:
+    case DRM_FORMAT_YVYU:
+    case DRM_FORMAT_UYVY:
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 2b60a469559..824495f6f85 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -642,6 +642,11 @@ static const struct gbm_dri_visual gbm_dri_visuals_table[] = {
+      { 0, 10, 20, 30 },
+      { 10, 10, 10, 2 },
+    },
++   {
++     GBM_FORMAT_AXBXGXRX106106106106, __DRI_IMAGE_FORMAT_AXBXGXRX106106106106,
++     { 6, 22, 38, 54 },
++     { 10, 10, 10, 10 },
++   },
+    {
+      GBM_FORMAT_XBGR16161616F, __DRI_IMAGE_FORMAT_XBGR16161616F,
+      { 0, 16, 32, -1 },
+diff --git a/src/gbm/main/gbm.c b/src/gbm/main/gbm.c
+index 3ce816f5169..e39d0656e68 100644
+--- a/src/gbm/main/gbm.c
++++ b/src/gbm/main/gbm.c
+@@ -275,6 +275,7 @@ gbm_bo_get_bpp(struct gbm_bo *bo)
+          return 32;
+       case GBM_FORMAT_XBGR16161616F:
+       case GBM_FORMAT_ABGR16161616F:
++      case GBM_FORMAT_AXBXGXRX106106106106:
+          return 64;
+    }
+ }
+diff --git a/src/gbm/main/gbm.h b/src/gbm/main/gbm.h
+index bd4185b723f..f3ab7999b58 100644
+--- a/src/gbm/main/gbm.h
++++ b/src/gbm/main/gbm.h
+@@ -166,6 +166,12 @@ enum gbm_bo_format {
+ 
+ #define GBM_FORMAT_ABGR16161616F __gbm_fourcc_code('A', 'B', '4', 'H') /* [63:0] A:B:G:R 16:16:16:16 little endian */
+ 
++/*
++ * RGBA format with 10-bit components packed in 64-bit per pixel, with 6 bits
++ * of unused padding per component:
++ */
++#define GBM_FORMAT_AXBXGXRX106106106106 __gbm_fourcc_code('A', 'B', '1', '0') /* [63:0] A:x:B:x:G:x:R:x 10:6:10:6:10:6:10:6 little endian */
++
+ /* packed YCbCr */
+ #define GBM_FORMAT_YUYV		__gbm_fourcc_code('Y', 'U', 'Y', 'V') /* [31:0] Cr0:Y1:Cb0:Y0 8:8:8:8 little endian */
+ #define GBM_FORMAT_YVYU		__gbm_fourcc_code('Y', 'V', 'Y', 'U') /* [31:0] Cb0:Y1:Cr0:Y0 8:8:8:8 little endian */
+-- 
+2.25.1
+

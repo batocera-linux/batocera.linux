@@ -1,0 +1,38 @@
+From e8236d271ec5a7ef383c1e3ea9049ef27cdd0ed1 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 25 Aug 2020 14:12:32 +0100
+Subject: [PATCH 36/58] egl/wayland: process non-resized window movement
+
+The dx and dy parameters to the wl_egl_window_resize function were
+not being processed unless the window width or height were being
+changed.
+---
+ src/egl/drivers/dri2/platform_wayland.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 10a90ff963f..be10fc6474a 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -392,6 +392,9 @@ resize_callback(struct wl_egl_window *wl_win, void *data)
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+ 
++   dri2_surf->dx = wl_win->dx;
++   dri2_surf->dy = wl_win->dy;
++
+    if (dri2_surf->base.Width == wl_win->width &&
+        dri2_surf->base.Height == wl_win->height)
+       return;
+@@ -1255,8 +1258,6 @@ update_buffers(struct dri2_egl_display *dri2_dpy,
+ 
+       dri2_surf->base.Width  = dri2_surf->wl_win->width;
+       dri2_surf->base.Height = dri2_surf->wl_win->height;
+-      dri2_surf->dx = dri2_surf->wl_win->dx;
+-      dri2_surf->dy = dri2_surf->wl_win->dy;
+    }
+ 
+    if (dri2_surf->resized || dri2_surf->received_dmabuf_feedback) {
+-- 
+2.25.1
+

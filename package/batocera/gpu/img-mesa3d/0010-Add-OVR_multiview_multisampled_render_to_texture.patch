@@ -1,0 +1,68 @@
+From caadab7fb5f2c31b767dd58321b135b78179ed7f Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 11 Jul 2016 13:29:51 +0100
+Subject: [PATCH 10/58] Add OVR_multiview_multisampled_render_to_texture
+
+---
+ ...ltiview_multisampled_render_to_texture.xml | 21 +++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml                 |  3 +++
+ src/mapi/glapi/gen/static_data.py             |  1 +
+ 3 files changed, 25 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+
+diff --git a/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml b/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+new file mode 100644
+index 00000000000..86bebc728e9
+--- /dev/null
++++ b/src/mapi/glapi/gen/OVR_multiview_multisampled_render_to_texture.xml
+@@ -0,0 +1,21 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_OVR_multiview_multisampled_render_to_texture" number="250">
++
++    <function name="FramebufferTextureMultisampleMultiviewOVR" es2="3.0"
++              exec="dynamic">
++        <param name="target" type="GLenum"/>
++        <param name="attachment"  type="GLenum"/>
++        <param name="texture"  type="GLuint"/>
++        <param name="level"  type="GLint"/>
++        <param name="samples"  type="GLsizei"/>
++        <param name="baseViewIndex"  type="GLint"/>
++        <param name="numViews"  type="GLsizei"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 94696d535b9..b59e85d3281 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1485,6 +1485,9 @@
+ <!-- 240. EXT_sparse_texture -->
+ <xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 250. GL_OVR_multiview_multisampled_render_to_texture -->
++<xi:include href="OVR_multiview_multisampled_render_to_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <!-- 253. GL_EXT_shader_pixel_local_storage2 -->
+ <xi:include href="EXT_shader_pixel_local_storage2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index f97fedabb38..fda952a1bdb 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1704,6 +1704,7 @@ offsets = {
+     "FramebufferTexture2DDownsampleIMG" : 1668,
+     "FramebufferTextureLayerDownsampleIMG" : 1669,
+     "FramebufferTextureMultiviewOVR" : 1670,
++    "FramebufferTextureMultisampleMultiviewOVR" : 1671,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

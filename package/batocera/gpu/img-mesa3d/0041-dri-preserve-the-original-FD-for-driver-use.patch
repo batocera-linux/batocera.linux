@@ -1,0 +1,442 @@
+From 2df7eb9a5b8ff08184f0759a4d842bfef4f4ec63 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 9 Mar 2021 17:15:30 +0000
+Subject: [PATCH 41/58] dri: preserve the original FD for driver use.
+
+If an application uses a different GPU from the default, allow the
+file descriptor (FD) for that original GPU/display to be preserved
+for use by drivers. Drivers may wish to use the original FD to
+allocate shared surfaces, to ensure the surface properties are
+compatible with the original GPU/display (e.g. for X11 or Wayland).
+
+This feature is only available on platforms that choose to support
+it, by implementing the new getDisplayFD function in the DRI image,
+and DRI2 loader extensions.
+
+If the feature is available, drivers can obtain the original FD
+by calling the getDisplayFD function in the relevant loader extension.
+Drivers should check the FD is valid before use (i.e. not -1). If
+the FD is valid, it may be equal to the current GPU FD if a different
+GPU is not being used. The FD is owned by the platform, not the
+driver, and the platform is responsible for closing it.
+
+The feature is currently supported by the Wayland, and DRI3 based
+X11 EGL and GLX platforms.
+---
+ include/GL/internal/dri_interface.h      | 26 +++++++++++++++++--
+ src/egl/drivers/dri2/egl_dri2.c          | 12 ++++++++-
+ src/egl/drivers/dri2/egl_dri2.h          |  1 +
+ src/egl/drivers/dri2/platform_wayland.c  | 31 ++++++++++++++++++++--
+ src/egl/drivers/dri2/platform_x11.c      |  3 +++
+ src/egl/drivers/dri2/platform_x11_dri3.c | 27 ++++++++++++++++++-
+ src/glx/dri3_glx.c                       | 33 ++++++++++++++++++++++--
+ src/glx/dri3_priv.h                      |  1 +
+ 8 files changed, 126 insertions(+), 8 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index acd58ccb559..ab6a9fb125b 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1005,7 +1005,7 @@ struct __DRIbufferRec {
+ };
+ 
+ #define __DRI_DRI2_LOADER "DRI_DRI2Loader"
+-#define __DRI_DRI2_LOADER_VERSION 5
++#define __DRI_DRI2_LOADER_VERSION 6
+ 
+ enum dri_loader_cap {
+    /* Whether the loader handles RGBA channel ordering correctly. If not,
+@@ -1086,6 +1086,17 @@ struct __DRIdri2LoaderExtensionRec {
+      * \since 5
+      */
+     void (*destroyLoaderImageState)(void *loaderPrivate);
++
++    /**
++     * Get the display FD
++     *
++     * Get the FD of the display device.
++     *
++     * \param loaderPrivate The last parameter of createNewScreen or
++     *                      createNewScreen2.
++     * \since 6
++     */
++     int (*getDisplayFD)(void *loaderPrivate);
+ };
+ 
+ /**
+@@ -2032,7 +2043,7 @@ struct __DRIimageList {
+ };
+ 
+ #define __DRI_IMAGE_LOADER "DRI_IMAGE_LOADER"
+-#define __DRI_IMAGE_LOADER_VERSION 4
++#define __DRI_IMAGE_LOADER_VERSION 5
+ 
+ struct __DRIimageLoaderExtensionRec {
+     __DRIextension base;
+@@ -2100,6 +2111,17 @@ struct __DRIimageLoaderExtensionRec {
+      * \since 4
+      */
+     void (*destroyLoaderImageState)(void *loaderPrivate);
++
++    /**
++     * Get the display FD
++     *
++     * Get the FD of the display device.
++     *
++     * \param loaderPrivate The last parameter of createNewScreen or
++     *                      createNewScreen2.
++     * \since 5
++     */
++     int (*getDisplayFD)(void *loaderPrivate);
+ };
+ 
+ /**
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 3ae5cddbc20..b0fa686581a 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1360,6 +1360,16 @@ dri2_display_destroy(_EGLDisplay *disp)
+       break;
+    }
+ 
++   switch (disp->Platform) {
++   case _EGL_PLATFORM_WAYLAND:
++   case _EGL_PLATFORM_X11:
++      if (dri2_dpy->fd_dpy >= 0 && dri2_dpy->fd_dpy != dri2_dpy->fd)
++         close(dri2_dpy->fd_dpy);
++      break;
++   default:
++      break;
++   }
++
+    if (dri2_dpy->fd >= 0)
+       close(dri2_dpy->fd);
+ 
+@@ -3471,7 +3481,7 @@ dri2_bind_wayland_display_wl(_EGLDisplay *disp, struct wl_display *wl_dpy)
+    if (dri2_dpy->wl_server_drm)
+            return EGL_FALSE;
+ 
+-   device_name = drmGetRenderDeviceNameFromFd(dri2_dpy->fd);
++   device_name = drmGetRenderDeviceNameFromFd(dri2_dpy->fd_dpy);
+    if (!device_name)
+       device_name = strdup(dri2_dpy->device_name);
+    if (!device_name)
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index e48d3d26914..a5418bd3a5b 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -260,6 +260,7 @@ struct dri2_egl_display
+    const __DRIconfigOptionsExtension *configOptions;
+    const __DRImutableRenderBufferDriverExtension *mutable_render_buffer;
+    int fd;
++   int fd_dpy;
+ 
+    /* dri2_initialize/dri2_terminate increment/decrement this count, so does
+     * dri2_make_current (tracks if there are active contexts/surfaces). */
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index be10fc6474a..d651274a85f 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -44,6 +44,7 @@
+ #include "loader.h"
+ #include "util/u_vector.h"
+ #include "util/anon_file.h"
++#include "util/os_file.h"
+ #include "eglglobals.h"
+ #include "kopper_interface.h"
+ 
+@@ -1448,21 +1449,32 @@ dri2_wl_get_capability(void *loaderPrivate, enum dri_loader_cap cap)
+    }
+ }
+ 
++static int
++dri2_wl_get_display_fd(void *loaderPrivate)
++{
++   _EGLDisplay *disp = loaderPrivate;
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   return dri2_dpy->fd_dpy;
++}
++
+ static const __DRIdri2LoaderExtension dri2_loader_extension = {
+-   .base = { __DRI_DRI2_LOADER, 4 },
++   .base = { __DRI_DRI2_LOADER, 6 },
+ 
+    .getBuffers           = dri2_wl_get_buffers,
+    .flushFrontBuffer     = dri2_wl_flush_front_buffer,
+    .getBuffersWithFormat = dri2_wl_get_buffers_with_format,
+    .getCapability        = dri2_wl_get_capability,
++   .getDisplayFD         = dri2_wl_get_display_fd,
+ };
+ 
+ static const __DRIimageLoaderExtension image_loader_extension = {
+-   .base = { __DRI_IMAGE_LOADER, 2 },
++   .base = { __DRI_IMAGE_LOADER, 5 },
+ 
+    .getBuffers          = image_get_buffers,
+    .flushFrontBuffer    = dri2_wl_flush_front_buffer,
+    .getCapability       = dri2_wl_get_capability,
++   .getDisplayFD        = dri2_wl_get_display_fd,
+ };
+ 
+ static void
+@@ -2224,12 +2236,14 @@ dri2_initialize_wayland_drm(_EGLDisplay *disp)
+ {
+    _EGLDevice *dev;
+    struct dri2_egl_display *dri2_dpy;
++   int fd_old;
+ 
+    dri2_dpy = calloc(1, sizeof *dri2_dpy);
+    if (!dri2_dpy)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    disp->DriverData = (void *) dri2_dpy;
+ 
+    if (dri2_wl_formats_init(&dri2_dpy->formats) < 0)
+@@ -2303,8 +2317,20 @@ dri2_initialize_wayland_drm(_EGLDisplay *disp)
+          goto cleanup;
+    }
+ 
++   fd_old = dri2_dpy->fd;
++   dri2_dpy->fd_dpy = os_dupfd_cloexec(dri2_dpy->fd);
+    dri2_dpy->fd = loader_get_user_preferred_fd(dri2_dpy->fd,
+                                                &dri2_dpy->is_different_gpu);
++   if (dri2_dpy->fd == fd_old) {
++      if (dri2_dpy->fd_dpy != -1)
++         close(dri2_dpy->fd_dpy);
++
++      dri2_dpy->fd_dpy = dri2_dpy->fd;
++   } else if (dri2_dpy->fd_dpy == -1) {
++      _eglError(EGL_NOT_INITIALIZED, "DRI2: failed to dup display FD");
++      goto cleanup;
++   }
++
+    dev = _eglAddDevice(dri2_dpy->fd, false);
+    if (!dev) {
+       _eglError(EGL_NOT_INITIALIZED, "DRI2: failed to find EGLDevice");
+@@ -2868,6 +2894,7 @@ dri2_initialize_wayland_swrast(_EGLDisplay *disp)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    disp->DriverData = (void *) dri2_dpy;
+ 
+    if (dri2_wl_formats_init(&dri2_dpy->formats) < 0)
+diff --git a/src/egl/drivers/dri2/platform_x11.c b/src/egl/drivers/dri2/platform_x11.c
+index 53302981fc2..730a91d14c3 100644
+--- a/src/egl/drivers/dri2/platform_x11.c
++++ b/src/egl/drivers/dri2/platform_x11.c
+@@ -1413,6 +1413,7 @@ dri2_initialize_x11_swrast(_EGLDisplay *disp)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    if (!dri2_get_xcb_connection(disp, dri2_dpy))
+       goto cleanup;
+ 
+@@ -1497,6 +1498,7 @@ dri2_initialize_x11_dri3(_EGLDisplay *disp)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    if (!dri2_get_xcb_connection(disp, dri2_dpy))
+       goto cleanup;
+ 
+@@ -1605,6 +1607,7 @@ dri2_initialize_x11_dri2(_EGLDisplay *disp)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    if (!dri2_get_xcb_connection(disp, dri2_dpy))
+       goto cleanup;
+ 
+diff --git a/src/egl/drivers/dri2/platform_x11_dri3.c b/src/egl/drivers/dri2/platform_x11_dri3.c
+index 3d7c2ae4401..860d975ba5c 100644
+--- a/src/egl/drivers/dri2/platform_x11_dri3.c
++++ b/src/egl/drivers/dri2/platform_x11_dri3.c
+@@ -32,6 +32,7 @@
+ 
+ #include <xf86drm.h>
+ #include "util/macros.h"
++#include "util/os_file.h"
+ 
+ #include "egl_dri2.h"
+ #include "platform_x11_dri3.h"
+@@ -431,11 +432,21 @@ dri3_flush_front_buffer(__DRIdrawable *driDrawable, void *loaderPrivate)
+       _eglLog(_EGL_WARNING, "FIXME: egl/x11 doesn't support front buffer rendering.");
+ }
+ 
++static int
++dri3_get_display_fd(void *loaderPrivate)
++{
++   _EGLDisplay *disp = loaderPrivate;
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   return dri2_dpy->fd_dpy;
++}
++
+ const __DRIimageLoaderExtension dri3_image_loader_extension = {
+-   .base = { __DRI_IMAGE_LOADER, 1 },
++   .base = { __DRI_IMAGE_LOADER, 5 },
+ 
+    .getBuffers          = loader_dri3_get_buffers,
+    .flushFrontBuffer    = dri3_flush_front_buffer,
++   .getDisplayFD        = dri3_get_display_fd,
+ };
+ 
+ static EGLBoolean
+@@ -554,6 +565,7 @@ dri3_x11_connect(struct dri2_egl_display *dri2_dpy)
+    xcb_xfixes_query_version_cookie_t xfixes_query_cookie;
+    xcb_generic_error_t *error;
+    const xcb_query_extension_reply_t *extension;
++   int fd_old;
+ 
+    xcb_prefetch_extension_data (dri2_dpy->conn, &xcb_dri3_id);
+    xcb_prefetch_extension_data (dri2_dpy->conn, &xcb_present_id);
+@@ -633,12 +645,25 @@ dri3_x11_connect(struct dri2_egl_display *dri2_dpy)
+       return EGL_FALSE;
+    }
+ 
++   fd_old = dri2_dpy->fd;
++   dri2_dpy->fd_dpy = os_dupfd_cloexec(dri2_dpy->fd);
+    dri2_dpy->fd = loader_get_user_preferred_fd(dri2_dpy->fd, &dri2_dpy->is_different_gpu);
++   if (dri2_dpy->fd == fd_old) {
++      if (dri2_dpy->fd_dpy != -1)
++         close(dri2_dpy->fd_dpy);
++
++      dri2_dpy->fd_dpy = dri2_dpy->fd;
++   } else if (dri2_dpy->fd_dpy == -1) {
++      _eglLog(_EGL_WARNING, "DRI3: failed to dup display FD");
++      close(dri2_dpy->fd);
++      return EGL_FALSE;
++   }
+ 
+    dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
+    if (!dri2_dpy->driver_name) {
+       _eglLog(_EGL_WARNING, "DRI3: No driver found");
+       close(dri2_dpy->fd);
++      close(dri2_dpy->fd_dpy);
+       return EGL_FALSE;
+    }
+ 
+diff --git a/src/glx/dri3_glx.c b/src/glx/dri3_glx.c
+index 6370ca05beb..cf7fc613c86 100644
+--- a/src/glx/dri3_glx.c
++++ b/src/glx/dri3_glx.c
+@@ -77,6 +77,7 @@
+ #include "dri3_priv.h"
+ #include "loader.h"
+ #include "dri2.h"
++#include "util/os_file.h"
+ 
+ static struct dri3_drawable *
+ loader_drawable_to_dri3_drawable(struct loader_dri3_drawable *draw) {
+@@ -543,6 +544,14 @@ dri3_flush_swap_buffers(__DRIdrawable *driDrawable, void *loaderPrivate)
+    loader_dri3_swapbuffer_barrier(draw);
+ }
+ 
++static int
++dri3_get_display_fd(void *loaderPrivate)
++{
++   struct dri3_screen *psc = (struct dri3_screen *)loaderPrivate;
++
++   return psc->fd_dpy;
++}
++
+ static void
+ dri_set_background_context(void *loaderPrivate)
+ {
+@@ -562,11 +571,12 @@ dri_is_thread_safe(void *loaderPrivate)
+ /* The image loader extension record for DRI3
+  */
+ static const __DRIimageLoaderExtension imageLoaderExtension = {
+-   .base = { __DRI_IMAGE_LOADER, 3 },
++   .base = { __DRI_IMAGE_LOADER, 5 },
+ 
+    .getBuffers          = loader_dri3_get_buffers,
+    .flushFrontBuffer    = dri3_flush_front_buffer,
+    .flushSwapBuffers    = dri3_flush_swap_buffers,
++   .getDisplayFD        = dri3_get_display_fd,
+ };
+ 
+ const __DRIuseInvalidateExtension dri3UseInvalidate = {
+@@ -632,6 +642,10 @@ dri3_destroy_screen(struct glx_screen *base)
+    loader_dri3_close_screen(psc->driScreen);
+    (*psc->core->destroyScreen) (psc->driScreen);
+    driDestroyConfigs(psc->driver_configs);
++
++   if (psc->fd_dpy != psc->fd)
++      close(psc->fd_dpy);
++
+    close(psc->fd);
+    free(psc);
+ }
+@@ -858,8 +872,9 @@ dri3_create_screen(int screen, struct glx_display * priv)
+    struct dri3_screen *psc;
+    __GLXDRIscreen *psp;
+    struct glx_config *configs = NULL, *visuals = NULL;
+-   char *driverName, *driverNameDisplayGPU, *tmp;
++   char *driverName = NULL, *driverNameDisplayGPU, *tmp;
+    int i;
++   int fd_old;
+ 
+    psc = calloc(1, sizeof *psc);
+    if (psc == NULL)
+@@ -867,6 +882,7 @@ dri3_create_screen(int screen, struct glx_display * priv)
+ 
+    psc->fd = -1;
+    psc->fd_display_gpu = -1;
++   psc->fd_dpy = -1;
+ 
+    if (!glx_screen_init(&psc->base, screen, priv)) {
+       free(psc);
+@@ -887,12 +903,23 @@ dri3_create_screen(int screen, struct glx_display * priv)
+       return NULL;
+    }
+ 
++   fd_old = psc->fd;
++   psc->fd_dpy = os_dupfd_cloexec(psc->fd);
+    psc->fd_display_gpu = fcntl(psc->fd, F_DUPFD_CLOEXEC, 3);
+    psc->fd = loader_get_user_preferred_fd(psc->fd, &psc->is_different_gpu);
+    if (!psc->is_different_gpu) {
+       close(psc->fd_display_gpu);
+       psc->fd_display_gpu = -1;
+    }
++   if (psc->fd == fd_old) {
++      if (psc->fd_dpy != -1)
++         close(psc->fd_dpy);
++
++      psc->fd_dpy = psc->fd;
++   } else if (psc->fd_dpy == -1) {
++         ErrorMessageF("Unable to dup the display FD");
++         goto handle_error;
++   }
+ 
+    driverName = loader_get_driver_for_fd(psc->fd);
+    if (!driverName) {
+@@ -1098,6 +1125,8 @@ handle_error:
+    if (psc->driScreenDisplayGPU)
+        psc->core->destroyScreen(psc->driScreenDisplayGPU);
+    psc->driScreenDisplayGPU = NULL;
++   if (psc->fd_dpy >= 0 && psc->fd_dpy != psc->fd)
++      close(psc->fd_dpy);
+    if (psc->fd >= 0)
+       close(psc->fd);
+    if (psc->fd_display_gpu >= 0)
+diff --git a/src/glx/dri3_priv.h b/src/glx/dri3_priv.h
+index 192238fde14..bac8a358e3b 100644
+--- a/src/glx/dri3_priv.h
++++ b/src/glx/dri3_priv.h
+@@ -107,6 +107,7 @@ struct dri3_screen {
+ 
+    void *driver;
+    int fd;
++   int fd_dpy;
+    bool is_different_gpu;
+    bool prefer_back_buffer_reuse;
+ 
+-- 
+2.25.1
+

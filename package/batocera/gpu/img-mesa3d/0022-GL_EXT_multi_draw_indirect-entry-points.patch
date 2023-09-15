@@ -1,0 +1,56 @@
+From 663288d629863e919d509df0678bfea6b3be5d51 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 30 Jan 2018 10:25:11 +0000
+Subject: [PATCH 22/58] GL_EXT_multi_draw_indirect entry points
+
+---
+ src/mapi/glapi/gen/es_EXT.xml     | 19 +++++++++++++++++++
+ src/mapi/glapi/gen/static_data.py |  2 ++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index b59e85d3281..6ff5432e029 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1140,6 +1140,25 @@
+ 
+ </category>
+ 
++<category name="GL_EXT_multi_draw_indirect" number="205">
++
++    <function name="MultiDrawArraysIndirectEXT" es2="3.1" exec="dynamic">
++        <param name="mode" type="GLenum"/>
++        <param name="indirect" type="const GLvoid *"/>
++        <param name="drawcount" type="GLsizei"/>
++        <param name="stride" type="GLsizei"/>
++    </function>
++
++    <function name="MultiDrawElementsIndirectEXT" es2="3.1" exec="dynamic">
++        <param name="mode" type="GLenum"/>
++        <param name="type" type="GLenum"/>
++        <param name="indirect" type="const GLvoid *"/>
++        <param name="drawcount" type="GLsizei"/>
++        <param name="stride" type="GLsizei"/>
++    </function>
++
++</category>
++
+ <category name="GL_EXT_copy_image" number="208">
+ 
+     <function name="CopyImageSubDataEXT" alias="CopyImageSubData" es2="3.0">
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index fda952a1bdb..53f381e9297 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1705,6 +1705,8 @@ offsets = {
+     "FramebufferTextureLayerDownsampleIMG" : 1669,
+     "FramebufferTextureMultiviewOVR" : 1670,
+     "FramebufferTextureMultisampleMultiviewOVR" : 1671,
++    "MultiDrawArraysIndirectEXT" : 1672,
++    "MultiDrawElementsIndirectEXT" : 1673,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

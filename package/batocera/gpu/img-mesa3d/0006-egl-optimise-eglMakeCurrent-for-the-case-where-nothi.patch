@@ -1,0 +1,46 @@
+From 403a583fd53ac1bcd40179e62bc0692d838cc23b Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Tue, 15 Sep 2015 14:15:31 +0100
+Subject: [PATCH 06/58] egl: optimise eglMakeCurrent for the case where nothing
+ has changed
+
+When an application calls eglMakeCurrent with a context, draw surface and
+read surface that match those that are currently bound to the calling
+thread don't perform a flush as this is an expensive operation.
+---
+ src/egl/main/eglapi.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index ddad85d3beb..7e2542bae6d 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -858,6 +858,7 @@ eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
+                EGLContext ctx)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
++   _EGLContext *current_context = _eglGetCurrentContext();
+    _EGLContext *context = _eglLookupContext(ctx, disp);
+    _EGLSurface *draw_surf = _eglLookupSurface(draw, disp);
+    _EGLSurface *read_surf = _eglLookupSurface(read, disp);
+@@ -911,7 +912,16 @@ eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
+        draw_surf && !draw_surf->ProtectedContent)
+       RETURN_EGL_ERROR(disp, EGL_BAD_ACCESS, EGL_FALSE);
+ 
+-   ret = disp->Driver->MakeCurrent(disp, draw_surf, read_surf, context);
++   /* As an optimisation don't do anything unless something has changed */
++   if (context != current_context ||
++       (current_context &&
++        (draw_surf != current_context->DrawSurface ||
++         read_surf != current_context->ReadSurface)) ||
++       (!current_context && (draw_surf || read_surf))) {
++           ret = disp->Driver->MakeCurrent(disp, draw_surf, read_surf, context);
++   } else {
++	   ret = EGL_TRUE;
++   }
+ 
+    RETURN_EGL_EVAL(disp, ret);
+ }
+-- 
+2.25.1
+

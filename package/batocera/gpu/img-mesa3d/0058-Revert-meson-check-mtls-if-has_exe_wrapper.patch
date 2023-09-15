@@ -1,0 +1,42 @@
+From cd53160de9ca913e68a1d826b701e5569fa0ef42 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Fri, 29 Apr 2022 14:48:06 +0100
+Subject: [PATCH 58/58] Revert "meson: check -mtls if has_exe_wrapper"
+
+This reverts commit 558bc2227ed00fc6a29c2a10c0b99719cd445c6c.
+
+The change breaks 32 bit x86 cross compilation on x86_64 systems, as
+meson.has_exe_wrapper returns true, but Meson fails with:
+
+    Build machine cpu family: x86_64
+    Build machine cpu: x86_64
+    Host machine cpu family: x86
+    Host machine cpu: i686
+    Target machine cpu family: x86
+    Target machine cpu: i686
+    Checking if "thread_local" compiles: YES
+
+    meson.build:555:4: ERROR: Can not run test applications in this
+    cross environment.
+
+See also https://github.com/mesonbuild/meson/issues/9845
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 31b6ffdb060..63d487ae7b1 100644
+--- a/meson.build
++++ b/meson.build
+@@ -550,7 +550,7 @@ endforeach
+ if not have_mtls_dialect
+   # need .run to check libc support. meson aborts when calling .run when
+   # cross-compiling, but because this is just an optimization we can skip it
+-  if meson.is_cross_build() and not meson.has_exe_wrapper()
++  if meson.is_cross_build()
+     warning('cannot auto-detect -mtls-dialect when cross-compiling, using compiler default')
+   else
+     # -fpic to force dynamic tls, otherwise TLS relaxation defeats check
+-- 
+2.25.1
+

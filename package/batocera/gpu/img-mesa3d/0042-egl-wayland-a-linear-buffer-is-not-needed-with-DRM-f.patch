@@ -1,0 +1,131 @@
+From 6f85acbf79443bdfe18ae68d5c023ea946c7fcd0 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Wed, 28 Apr 2021 10:57:15 +0100
+Subject: [PATCH 42/58] egl/wayland: a linear buffer is not needed with DRM
+ format modifiers
+
+If the compositor supports DRM format modifiers, there is no
+need for an additional linear buffer, as the client can allocate
+buffers with attributes known to the compositor.
+---
+ src/egl/drivers/dri2/platform_wayland.c | 36 ++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 15 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index d651274a85f..64c7a42eaeb 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -1014,7 +1014,7 @@ create_dri_image_diff_gpu(struct dri2_egl_surface *dri2_surf,
+                               &linear_mod, 1, NULL);
+ }
+ 
+-static void
++static bool
+ create_dri_image_from_dmabuf_feedback(struct dri2_egl_surface *dri2_surf,
+                                       unsigned int dri_image_format, uint32_t use_flags)
+ {
+@@ -1027,7 +1027,7 @@ create_dri_image_from_dmabuf_feedback(struct dri2_egl_surface *dri2_surf,
+ 
+    /* We don't have valid dma-buf feedback, so return */
+    if (dri2_surf->dmabuf_feedback.main_device == 0)
+-      return;
++      return false;
+ 
+    visual_idx = dri2_wl_visual_idx_from_fourcc(dri2_surf->format);
+    assert(visual_idx != -1);
+@@ -1071,11 +1071,13 @@ create_dri_image_from_dmabuf_feedback(struct dri2_egl_surface *dri2_surf,
+                                  modifiers, num_modifiers, NULL);
+ 
+       if (dri2_surf->back->dri_image)
+-         return;
++         return num_modifiers != 0;
+    }
++
++   return false;
+ }
+ 
+-static void
++static bool
+ create_dri_image(struct dri2_egl_surface *dri2_surf,
+                  unsigned int dri_image_format, uint32_t use_flags)
+ {
+@@ -1107,6 +1109,8 @@ create_dri_image(struct dri2_egl_surface *dri2_surf,
+                               dri_image_format,
+                               dri2_dpy->is_different_gpu ? 0 : use_flags,
+                               modifiers, num_modifiers, NULL);
++
++   return num_modifiers != 0;
+ }
+ 
+ static int
+@@ -1118,6 +1122,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+    int visual_idx;
+    unsigned int dri_image_format;
+    unsigned int linear_dri_image_format;
++   bool have_modifiers = false;
+ 
+    visual_idx = dri2_wl_visual_idx_from_fourcc(dri2_surf->format);
+    assert(visual_idx != -1);
+@@ -1177,23 +1182,24 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+       use_flags |= __DRI_IMAGE_USE_PROTECTED;
+    }
+ 
+-   if (dri2_dpy->is_different_gpu && dri2_surf->back->linear_copy == NULL) {
+-      create_dri_image_diff_gpu(dri2_surf, linear_dri_image_format, use_flags);
+-      if (dri2_surf->back->linear_copy == NULL)
+-          return -1;
+-   }
+-
+    if (dri2_surf->back->dri_image == NULL) {
+       if (dri2_surf->wl_dmabuf_feedback)
+-         create_dri_image_from_dmabuf_feedback(dri2_surf, dri_image_format, use_flags);
++         have_modifiers = create_dri_image_from_dmabuf_feedback(dri2_surf, dri_image_format, use_flags);
+       if (dri2_surf->back->dri_image == NULL)
+-         create_dri_image(dri2_surf, dri_image_format, use_flags);
++         have_modifiers = create_dri_image(dri2_surf, dri_image_format, use_flags);
+       dri2_surf->back->age = 0;
+    }
+ 
+    if (dri2_surf->back->dri_image == NULL)
+       return -1;
+ 
++   if (dri2_dpy->is_different_gpu && !have_modifiers &&
++       dri2_surf->back->linear_copy == NULL) {
++      create_dri_image_diff_gpu(dri2_surf, linear_dri_image_format, use_flags);
++      if (dri2_surf->back->linear_copy == NULL)
++          return -1;
++   }
++
+    dri2_surf->back->locked = true;
+ 
+    return 0;
+@@ -1283,7 +1289,7 @@ update_buffers(struct dri2_egl_display *dri2_dpy,
+           dri2_surf->color_buffers[i].age > BUFFER_TRIM_AGE_HYSTERESIS) {
+          wl_buffer_destroy(dri2_surf->color_buffers[i].wl_buffer);
+          dri2_dpy->image->destroyImage(dri2_surf->color_buffers[i].dri_image);
+-         if (dri2_dpy->is_different_gpu)
++         if (dri2_surf->color_buffers[i].linear_copy)
+             dri2_dpy->image->destroyImage(dri2_surf->color_buffers[i].linear_copy);
+          dri2_surf->color_buffers[i].wl_buffer = NULL;
+          dri2_surf->color_buffers[i].dri_image = NULL;
+@@ -1700,7 +1706,7 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+    if (!dri2_surf->current->wl_buffer) {
+       __DRIimage *image;
+ 
+-      if (dri2_dpy->is_different_gpu)
++      if (dri2_surf->current->linear_copy)
+          image = dri2_surf->current->linear_copy;
+       else
+          image = dri2_surf->current->dri_image;
+@@ -1734,7 +1740,7 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+ 
+    dri2_flush_drawable_for_swapbuffers(disp, draw);
+ 
+-   if (dri2_dpy->is_different_gpu) {
++   if (dri2_surf->current->linear_copy) {
+       _EGLContext *ctx = _eglGetCurrentContext();
+       struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
+       dri2_dpy->image->blitImage(dri2_ctx->dri_context,
+-- 
+2.25.1
+

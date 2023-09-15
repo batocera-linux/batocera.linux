@@ -1,0 +1,66 @@
+From 035839e9ee7778b46fe643056df35c3879e20d4a Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Wed, 4 Jun 2014 13:43:03 +0100
+Subject: [PATCH 54/58] egl_dri2: set pbuffer config attribs to 0 for
+ non-pbuffer configs
+
+If the EGL_PBUFFER_BIT isn't set in the surface type, don't set the
+EGL_MAX_PBUFFER_WIDTH, EGL_MAX_PBUFFER_HEIGHT and
+EGL_MAX_PBUFFER_PIXELS attributes to non-zero values when adding an
+EGL config. If the EGL_PBUFFER_BIT is set, don't override non-zero
+values from the DRI config.
+---
+ src/egl/drivers/dri2/egl_dri2.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index fce277c6874..152da09881e 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -403,6 +403,7 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    _EGLConfig base;
+    unsigned int attrib, value, double_buffer;
++   unsigned int pbuffer_width = 0, pbuffer_height = 0, pbuffer_pixels = 0;
+    bool srgb = false;
+    EGLint key, bind_to_texture_rgb, bind_to_texture_rgba;
+    int dri_shifts[4] = { -1, -1, -1, -1 };
+@@ -526,11 +527,17 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+          break;
+ 
+       case __DRI_ATTRIB_MAX_PBUFFER_WIDTH:
+-         base.MaxPbufferWidth = _EGL_MAX_PBUFFER_WIDTH;
++         pbuffer_width = (value != 0) ? value : _EGL_MAX_PBUFFER_WIDTH;
+          break;
++
+       case __DRI_ATTRIB_MAX_PBUFFER_HEIGHT:
+-         base.MaxPbufferHeight = _EGL_MAX_PBUFFER_HEIGHT;
++         pbuffer_height = (value != 0) ? value : _EGL_MAX_PBUFFER_HEIGHT;
++         break;
++
++      case __DRI_ATTRIB_MAX_PBUFFER_PIXELS:
++         pbuffer_pixels = value;
+          break;
++
+       case __DRI_ATTRIB_MUTABLE_RENDER_BUFFER:
+          if (disp->Extensions.KHR_mutable_render_buffer)
+             surface_type |= EGL_MUTABLE_RENDER_BUFFER_BIT_KHR;
+@@ -610,6 +617,15 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+       }
+    }
+ 
++   if (surface_type & EGL_PBUFFER_BIT) {
++      if (pbuffer_pixels == 0)
++         pbuffer_pixels = pbuffer_width * pbuffer_height;
++
++      base.MaxPbufferWidth = pbuffer_width;
++      base.MaxPbufferHeight = pbuffer_height;
++      base.MaxPbufferPixels = pbuffer_pixels;
++   }
++
+    if (attr_list)
+       for (int i = 0; attr_list[i] != EGL_NONE; i += 2)
+          _eglSetConfigKey(&base, attr_list[i], attr_list[i+1]);
+-- 
+2.25.1
+

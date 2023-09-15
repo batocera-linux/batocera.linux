@@ -1,0 +1,285 @@
+From fa1e5e1225aecbf5228dbc5092d7a02141cd98f7 Mon Sep 17 00:00:00 2001
+From: brendan King <Brendan.King@imgtec.com>
+Date: Thu, 9 Sep 2021 17:55:13 +0100
+Subject: [PATCH 56/58] egl/wayland: add EGL_BUFFER_PRESERVED support
+
+When the next back buffer is obtained, and the swap method is
+EGL_BUFFER_PRESERVED, the current buffer contents are preserved with
+a blit, unless the DRI driver is using the image loader extension,
+and the DRI driver requests the current buffer contents
+(__DRI_IMAGE_BUFFER_PREV) as well as the back buffer. This allows the
+blit to be avoided for GPUs that can support EGL_BUFFER_PRESERVED
+directly.
+
+Querying the age of a back buffer may force a blit, but outside of EGL
+conformance testing, this would be an odd thing to do, as the buffer
+age can always be assumed to be 1 with EGL_BUFFER_PRESERVED.
+
+Any received dmabuf feedback may also force a blit.
+
+The IMG PVR driver does not support the DRI2 loader extension, which
+is why the buffer preserved support for the extension is less optimal,
+with the current buffer always being preserved with a blit.
+
+EGL_BUFFER_PRESERVED support has not been added for the Mesa software
+rasteriser.
+---
+ include/GL/internal/dri_interface.h     |  4 ++
+ src/egl/drivers/dri2/platform_wayland.c | 94 +++++++++++++++++++++----
+ 2 files changed, 83 insertions(+), 15 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 123349acb72..618eba9eaeb 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -2036,12 +2036,16 @@ enum __DRIimageBufferMask {
+     * OpenGL ES API and little change to the SurfaceFlinger API.
+     */
+    __DRI_IMAGE_BUFFER_SHARED = (1 << 2),
++#define DRI_IMAGE_HAS_BUFFER_PREV
++   __DRI_IMAGE_BUFFER_PREV = (1 << 31),
++
+ };
+ 
+ struct __DRIimageList {
+    uint32_t image_mask;
+    __DRIimage *back;
+    __DRIimage *front;
++   __DRIimage *prev;
+ };
+ 
+ #define __DRI_IMAGE_LOADER "DRI_IMAGE_LOADER"
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 64c7a42eaeb..156a4524a54 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -962,12 +962,22 @@ dri2_wl_swap_interval(_EGLDisplay *disp, _EGLSurface *surf, EGLint interval)
+ }
+ 
+ static void
+-dri2_wl_release_buffers(struct dri2_egl_surface *dri2_surf)
++dri2_wl_release_buffers(struct dri2_egl_surface *dri2_surf,
++                        bool release_non_current,
++                        bool release_current)
+ {
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+ 
+    for (int i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
++      if (dri2_surf->current == &dri2_surf->color_buffers[i]) {
++         if (!release_current)
++            continue;
++      } else {
++         if (!release_non_current)
++            continue;
++      }
++
+       if (dri2_surf->color_buffers[i].wl_buffer) {
+          if (dri2_surf->color_buffers[i].locked) {
+             dri2_surf->color_buffers[i].wl_release = true;
+@@ -992,6 +1002,9 @@ dri2_wl_release_buffers(struct dri2_egl_surface *dri2_surf)
+ 
+    if (dri2_dpy->dri2)
+       dri2_egl_surface_free_local_buffers(dri2_surf);
++
++   if (release_current)
++      dri2_surf->current = NULL;
+ }
+ 
+ static void
+@@ -1114,7 +1127,8 @@ create_dri_image(struct dri2_egl_surface *dri2_surf,
+ }
+ 
+ static int
+-get_back_bo(struct dri2_egl_surface *dri2_surf)
++get_back_bo(struct dri2_egl_surface *dri2_surf, bool allow_preserve,
++            bool preserve_current)
+ {
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+@@ -1200,6 +1214,28 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+           return -1;
+    }
+ 
++   if ((allow_preserve || preserve_current) &&
++       dri2_surf->base.SwapBehavior == EGL_BUFFER_PRESERVED &&
++       dri2_surf->current && dri2_surf->back->age != 1) {
++         _EGLContext *ctx = _eglGetCurrentContext();
++         struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
++
++         if (dri2_ctx) {
++            dri2_dpy->image->blitImage(dri2_ctx->dri_context,
++                                       dri2_surf->back->dri_image,
++                                       dri2_surf->current->dri_image,
++                                       0, 0, dri2_surf->base.Width,
++                                       dri2_surf->base.Height,
++                                       0, 0, dri2_surf->base.Width,
++                                       dri2_surf->base.Height,
++                                       __BLIT_FLAG_FLUSH);
++            dri2_surf->back->age = 1;
++
++	    if (!preserve_current)
++               dri2_surf->current = NULL;
++	 }
++   }
++
+    dri2_surf->back->locked = true;
+ 
+    return 0;
+@@ -1257,8 +1293,12 @@ front_bo_to_dri_buffer(struct dri2_egl_display *dri2_dpy,
+ 
+ static int
+ update_buffers(struct dri2_egl_display *dri2_dpy,
+-               struct dri2_egl_surface *dri2_surf)
++               struct dri2_egl_surface *dri2_surf,
++               bool allow_preserve)
+ {
++   bool preserve_current = false;
++   int res;
++
+    if (dri2_surf->wl_win &&
+        (dri2_surf->base.Width != dri2_surf->wl_win->width ||
+         dri2_surf->base.Height != dri2_surf->wl_win->height)) {
+@@ -1268,12 +1308,20 @@ update_buffers(struct dri2_egl_display *dri2_dpy,
+    }
+ 
+    if (dri2_surf->resized || dri2_surf->received_dmabuf_feedback) {
+-      dri2_wl_release_buffers(dri2_surf);
++      preserve_current = !dri2_surf->resized &&
++         dri2_surf->base.SwapBehavior == EGL_BUFFER_PRESERVED;
++
++      dri2_wl_release_buffers(dri2_surf, true, !preserve_current);
+       dri2_surf->resized = false;
+       dri2_surf->received_dmabuf_feedback = false;
+    }
+ 
+-   if (get_back_bo(dri2_surf) < 0) {
++   res = get_back_bo(dri2_surf, allow_preserve, preserve_current);
++
++   if (preserve_current)
++         dri2_wl_release_buffers(dri2_surf, false, true);
++
++   if (res < 0) {
+       _eglError(EGL_BAD_ALLOC, "failed to allocate color buffer");
+       return -1;
+    }
+@@ -1303,12 +1351,13 @@ update_buffers(struct dri2_egl_display *dri2_dpy,
+ 
+ static int
+ update_buffers_if_needed(struct dri2_egl_display *dri2_dpy,
+-                         struct dri2_egl_surface *dri2_surf)
++                         struct dri2_egl_surface *dri2_surf,
++                         bool allow_preserve)
+ {
+    if (dri2_surf->back != NULL)
+       return 0;
+ 
+-   return update_buffers(dri2_dpy, dri2_surf);
++   return update_buffers(dri2_dpy, dri2_surf, allow_preserve);
+ }
+ 
+ static __DRIbuffer *
+@@ -1327,7 +1376,7 @@ dri2_wl_get_buffers_with_format(__DRIdrawable * driDrawable,
+ 
+       switch (attachments[i]) {
+       case __DRI_BUFFER_BACK_LEFT:
+-         if (update_buffers_if_needed(dri2_dpy, dri2_surf) < 0)
++         if (update_buffers_if_needed(dri2_dpy, dri2_surf, true) < 0)
+             return NULL;
+ 
+          back_bo_to_dri_buffer(dri2_dpy, dri2_surf, &dri2_surf->buffers[j]);
+@@ -1412,14 +1461,25 @@ image_get_buffers(__DRIdrawable *driDrawable,
+    buffers->image_mask = 0;
+    buffers->front = NULL;
+    buffers->back = NULL;
++   buffers->prev = NULL;
+ 
+    if (buffer_mask & __DRI_IMAGE_BUFFER_BACK)
+    {
+-      if (update_buffers_if_needed(dri2_dpy, dri2_surf) < 0)
++      bool buffer_prev = buffer_mask & __DRI_IMAGE_BUFFER_PREV;
++
++      if (update_buffers_if_needed(dri2_dpy, dri2_surf, !buffer_prev) < 0)
+          return 0;
+ 
+       buffers->image_mask |= __DRI_IMAGE_BUFFER_BACK;
+       buffers->back = dri2_surf->back->dri_image;
++
++      if (buffer_prev && dri2_surf->current &&
++          dri2_surf->base.SwapBehavior == EGL_BUFFER_PRESERVED)
++      {
++         buffers->image_mask |= __DRI_IMAGE_BUFFER_PREV;
++         buffers->prev = dri2_surf->current->dri_image;
++         dri2_surf->back->age = 1;
++      }
+    }
+ 
+    if (buffer_mask & __DRI_IMAGE_BUFFER_FRONT)
+@@ -1689,7 +1749,7 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+ 
+    /* Make sure we have a back buffer in case we're swapping without ever
+     * rendering. */
+-   if (update_buffers_if_needed(dri2_dpy, dri2_surf) < 0)
++   if (update_buffers_if_needed(dri2_dpy, dri2_surf, true) < 0)
+       return _eglError(EGL_BAD_ALLOC, "dri2_swap_buffers");
+ 
+    if (draw->SwapInterval > 0) {
+@@ -1780,7 +1840,7 @@ dri2_wl_query_buffer_age(_EGLDisplay *disp, _EGLSurface *surface)
+    if (surface->Type != EGL_WINDOW_BIT)
+       return 0;
+ 
+-   if (update_buffers_if_needed(dri2_dpy, dri2_surf) < 0) {
++   if (update_buffers_if_needed(dri2_dpy, dri2_surf, true) < 0) {
+       _eglError(EGL_BAD_ALLOC, "dri2_query_buffer_age");
+       return -1;
+    }
+@@ -2157,7 +2217,7 @@ static const __DRIextension *image_loader_extensions[] = {
+ };
+ 
+ static EGLBoolean
+-dri2_wl_add_configs_for_visuals(_EGLDisplay *disp)
++dri2_wl_add_configs_for_visuals(_EGLDisplay *disp, bool allow_preserve)
+ {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    unsigned int format_count[ARRAY_SIZE(dri2_wl_visuals)] = { 0 };
+@@ -2178,6 +2238,10 @@ dri2_wl_add_configs_for_visuals(_EGLDisplay *disp)
+          if (dri2_wl_visuals[j].wl_drm_format != WL_DRM_FORMAT_YUYV)
+             surface_type |= EGL_PBUFFER_BIT;
+ 
++         if (allow_preserve &&
++             dri2_dpy->image->base.version >= 9 && dri2_dpy->image->blitImage)
++            surface_type |= EGL_SWAP_BEHAVIOR_PRESERVED_BIT;
++
+          dri2_conf = dri2_add_config(disp, dri2_dpy->driver_configs[i],
+                count + 1, surface_type, NULL, dri2_wl_visuals[j].rgba_shifts, dri2_wl_visuals[j].rgba_sizes);
+          if (dri2_conf) {
+@@ -2403,7 +2467,7 @@ dri2_initialize_wayland_drm(_EGLDisplay *disp)
+       goto cleanup;
+    }
+ 
+-   if (!dri2_wl_add_configs_for_visuals(disp)) {
++   if (!dri2_wl_add_configs_for_visuals(disp, true)) {
+       _eglError(EGL_NOT_INITIALIZED, "DRI2: failed to add configs");
+       goto cleanup;
+    }
+@@ -2515,7 +2579,7 @@ swrast_update_buffers(struct dri2_egl_surface *dri2_surf)
+         dri2_surf->base.Height != dri2_surf->wl_win->height)) {
+ 
+       if (!zink)
+-         dri2_wl_release_buffers(dri2_surf);
++         dri2_wl_release_buffers(dri2_surf, true, true);
+ 
+       dri2_surf->base.Width  = dri2_surf->wl_win->width;
+       dri2_surf->base.Height = dri2_surf->wl_win->height;
+@@ -2962,7 +3026,7 @@ dri2_initialize_wayland_swrast(_EGLDisplay *disp)
+ 
+    dri2_wl_setup_swap_interval(disp);
+ 
+-   if (!dri2_wl_add_configs_for_visuals(disp)) {
++   if (!dri2_wl_add_configs_for_visuals(disp, false)) {
+       _eglError(EGL_NOT_INITIALIZED, "DRI2: failed to add configs");
+       goto cleanup;
+    }
+-- 
+2.25.1
+

@@ -1,0 +1,642 @@
+From 5e9022211de798b72b7bbcd5a451f38a4f667dee Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 17 Jun 2021 17:17:07 +0100
+Subject: [PATCH 48/58] vulkan/wsi: make the display FD available
+
+Pass the display FD to the Vulkan image create and memory
+allocation functions when allocating swapchain images.
+
+The wl_drm interface code has been partially restored, in order
+to obtain the display FD from the compositor.
+---
+ src/vulkan/wsi/meson.build          |   2 +
+ src/vulkan/wsi/wsi_common.c         |  24 +++++-
+ src/vulkan/wsi/wsi_common.h         |  14 ++++
+ src/vulkan/wsi/wsi_common_display.c |   3 +-
+ src/vulkan/wsi/wsi_common_drm.c     |  19 ++++-
+ src/vulkan/wsi/wsi_common_private.h |  10 ++-
+ src/vulkan/wsi/wsi_common_wayland.c | 126 ++++++++++++++++++++++++++--
+ src/vulkan/wsi/wsi_common_win32.c   |   4 +-
+ src/vulkan/wsi/wsi_common_x11.c     |  25 +++++-
+ 9 files changed, 206 insertions(+), 21 deletions(-)
+
+diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
+index e234e31d340..84ae5c5f690 100644
+--- a/src/vulkan/wsi/meson.build
++++ b/src/vulkan/wsi/meson.build
+@@ -31,6 +31,8 @@ endif
+ if with_platform_wayland
+   files_vulkan_wsi += files('wsi_common_wayland.c')
+   files_vulkan_wsi += [
++    wayland_drm_client_protocol_h,
++    wayland_drm_protocol_c,
+     linux_dmabuf_unstable_v1_client_protocol_h,
+     linux_dmabuf_unstable_v1_protocol_c,
+   ]
+diff --git a/src/vulkan/wsi/wsi_common.c b/src/vulkan/wsi/wsi_common.c
+index 562efdd529c..385e83803dd 100644
+--- a/src/vulkan/wsi/wsi_common.c
++++ b/src/vulkan/wsi/wsi_common.c
+@@ -360,6 +360,7 @@ VkResult
+ wsi_configure_image(const struct wsi_swapchain *chain,
+                     const VkSwapchainCreateInfoKHR *pCreateInfo,
+                     VkExternalMemoryHandleTypeFlags handle_types,
++                    int display_fd,
+                     struct wsi_image_info *info)
+ {
+    memset(info, 0, sizeof(*info));
+@@ -418,6 +419,12 @@ wsi_configure_image(const struct wsi_swapchain *chain,
+    };
+    __vk_append_struct(&info->create, &info->wsi);
+ 
++   info->wsi2 = (struct wsi_image_create_info2) {
++      .sType = VK_STRUCTURE_TYPE_WSI_IMAGE_CREATE_INFO2_MESA,
++      .display_fd = display_fd,
++   };
++   __vk_append_struct(&info->create, &info->wsi2);
++
+    if (pCreateInfo->flags & VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR) {
+       info->create.flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT |
+                             VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR;
+@@ -471,6 +478,7 @@ wsi_destroy_image_info(const struct wsi_swapchain *chain,
+ VkResult
+ wsi_create_image(const struct wsi_swapchain *chain,
+                  const struct wsi_image_info *info,
++                 int display_fd,
+                  struct wsi_image *image)
+ {
+    const struct wsi_device *wsi = chain->wsi;
+@@ -485,7 +493,7 @@ wsi_create_image(const struct wsi_swapchain *chain,
+    if (result != VK_SUCCESS)
+       goto fail;
+ 
+-   result = info->create_mem(chain, info, image);
++   result = info->create_mem(chain, info, display_fd, image);
+    if (result != VK_SUCCESS)
+       goto fail;
+ 
+@@ -1152,7 +1160,8 @@ wsi_create_buffer_image_mem(const struct wsi_swapchain *chain,
+                             const struct wsi_image_info *info,
+                             struct wsi_image *image,
+                             VkExternalMemoryHandleTypeFlags handle_types,
+-                            bool implicit_sync)
++                            bool implicit_sync,
++                            int display_fd)
+ {
+    const struct wsi_device *wsi = chain->wsi;
+    VkResult result;
+@@ -1186,9 +1195,14 @@ wsi_create_buffer_image_mem(const struct wsi_swapchain *chain,
+       .pNext = NULL,
+       .implicit_sync = implicit_sync,
+    };
++  const struct wsi_memory_allocate_info2 memory_wsi_info2 = {
++      .sType = VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO2_MESA,
++      .pNext = &memory_wsi_info,
++      .display_fd = display_fd,
++   };
+    const VkExportMemoryAllocateInfo memory_export_info = {
+       .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+-      .pNext = &memory_wsi_info,
++      .pNext = &memory_wsi_info2,
+       .handleTypes = handle_types,
+    };
+    const VkMemoryDedicatedAllocateInfo buf_mem_dedicated_info = {
+@@ -1347,10 +1361,12 @@ wsi_finish_create_buffer_image(const struct wsi_swapchain *chain,
+ VkResult
+ wsi_configure_buffer_image(UNUSED const struct wsi_swapchain *chain,
+                            const VkSwapchainCreateInfoKHR *pCreateInfo,
++                           int display_fd,
+                            struct wsi_image_info *info)
+ {
+    VkResult result = wsi_configure_image(chain, pCreateInfo,
+-                                         0 /* handle_types */, info);
++                                         0 /* handle_types */,
++                                         display_fd, info);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+diff --git a/src/vulkan/wsi/wsi_common.h b/src/vulkan/wsi/wsi_common.h
+index f96632308df..13502fc6507 100644
+--- a/src/vulkan/wsi/wsi_common.h
++++ b/src/vulkan/wsi/wsi_common.h
+@@ -50,6 +50,8 @@ extern const struct vk_device_entrypoint_table wsi_device_entrypoints;
+ #define VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO_MESA (VkStructureType)1000001003
+ #define VK_STRUCTURE_TYPE_WSI_SURFACE_SUPPORTED_COUNTERS_MESA (VkStructureType)1000001005
+ #define VK_STRUCTURE_TYPE_WSI_MEMORY_SIGNAL_SUBMIT_INFO_MESA (VkStructureType)1000001006
++#define VK_STRUCTURE_TYPE_WSI_IMAGE_CREATE_INFO2_MESA (VkStructureType)1000001007
++#define VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO2_MESA (VkStructureType)1000001008
+ 
+ /* This is always chained to VkImageCreateInfo when a wsi image is created.
+  * It indicates that the image can be transitioned to/from
+@@ -86,6 +88,18 @@ struct wsi_memory_signal_submit_info {
+     VkDeviceMemory memory;
+ };
+ 
++struct wsi_image_create_info2 {
++    VkStructureType sType;
++    const void *pNext;
++    int display_fd;
++};
++
++struct wsi_memory_allocate_info2 {
++    VkStructureType sType;
++    const void *pNext;
++    int display_fd;
++};
++
+ struct wsi_interface;
+ 
+ struct driOptionCache;
+diff --git a/src/vulkan/wsi/wsi_common_display.c b/src/vulkan/wsi/wsi_common_display.c
+index 3c9f3b1c32b..d237dfc092a 100644
+--- a/src/vulkan/wsi/wsi_common_display.c
++++ b/src/vulkan/wsi/wsi_common_display.c
+@@ -1097,7 +1097,7 @@ wsi_display_image_init(VkDevice device_h,
+       return VK_ERROR_DEVICE_LOST;
+ 
+    VkResult result = wsi_create_image(&chain->base, &chain->base.image_info,
+-                                      &image->base);
++                                      wsi->fd, &image->base);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -1980,6 +1980,7 @@ wsi_display_surface_create_swapchain(
+    result = wsi_configure_native_image(&chain->base, create_info,
+                                        0, NULL, NULL,
+                                        NULL /* alloc_shm */,
++                                       wsi->fd,
+                                        &chain->base.image_info);
+    if (result != VK_SUCCESS) {
+       vk_free(allocator, chain);
+diff --git a/src/vulkan/wsi/wsi_common_drm.c b/src/vulkan/wsi/wsi_common_drm.c
+index 72af5b2c820..beb87d7336f 100644
+--- a/src/vulkan/wsi/wsi_common_drm.c
++++ b/src/vulkan/wsi/wsi_common_drm.c
+@@ -142,6 +142,7 @@ get_modifier_props(const struct wsi_image_info *info, uint64_t modifier)
+ static VkResult
+ wsi_create_native_image_mem(const struct wsi_swapchain *chain,
+                             const struct wsi_image_info *info,
++                            int display_fd,
+                             struct wsi_image *image);
+ 
+ VkResult
+@@ -152,6 +153,7 @@ wsi_configure_native_image(const struct wsi_swapchain *chain,
+                            const uint64_t *const *modifiers,
+                            uint8_t *(alloc_shm)(struct wsi_image *image,
+                                                 unsigned size),
++                           int display_fd,
+                            struct wsi_image_info *info)
+ {
+    const struct wsi_device *wsi = chain->wsi;
+@@ -160,7 +162,8 @@ wsi_configure_native_image(const struct wsi_swapchain *chain,
+       wsi->sw ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT :
+                 VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+ 
+-   VkResult result = wsi_configure_image(chain, pCreateInfo, handle_type, info);
++   VkResult result = wsi_configure_image(chain, pCreateInfo, handle_type,
++                                         display_fd, info);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -290,6 +293,7 @@ fail_oom:
+ static VkResult
+ wsi_create_native_image_mem(const struct wsi_swapchain *chain,
+                             const struct wsi_image_info *info,
++                            int display_fd,
+                             struct wsi_image *image)
+ {
+    const struct wsi_device *wsi = chain->wsi;
+@@ -316,9 +320,14 @@ wsi_create_native_image_mem(const struct wsi_swapchain *chain,
+       .pNext = NULL,
+       .implicit_sync = true,
+    };
++   const struct wsi_memory_allocate_info2 memory_wsi_info2 = {
++      .sType = VK_STRUCTURE_TYPE_WSI_MEMORY_ALLOCATE_INFO2_MESA,
++      .pNext = &memory_wsi_info,
++      .display_fd = display_fd,
++   };
+    const VkExportMemoryAllocateInfo memory_export_info = {
+       .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+-      .pNext = &memory_wsi_info,
++      .pNext = &memory_wsi_info2,
+       .handleTypes = wsi->sw ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT :
+       VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+    };
+@@ -427,13 +436,14 @@ wsi_create_native_image_mem(const struct wsi_swapchain *chain,
+ static VkResult
+ wsi_create_prime_image_mem(const struct wsi_swapchain *chain,
+                            const struct wsi_image_info *info,
++                           int display_fd,
+                            struct wsi_image *image)
+ {
+    const struct wsi_device *wsi = chain->wsi;
+    VkResult result =
+       wsi_create_buffer_image_mem(chain, info, image,
+                                   VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+-                                  true);
++                                  true, display_fd);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -459,10 +469,11 @@ VkResult
+ wsi_configure_prime_image(UNUSED const struct wsi_swapchain *chain,
+                           const VkSwapchainCreateInfoKHR *pCreateInfo,
+                           bool use_modifier,
++                          int display_fd,
+                           struct wsi_image_info *info)
+ {
+    VkResult result =
+-      wsi_configure_buffer_image(chain, pCreateInfo, info);
++      wsi_configure_buffer_image(chain, pCreateInfo, display_fd, info);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+diff --git a/src/vulkan/wsi/wsi_common_private.h b/src/vulkan/wsi/wsi_common_private.h
+index af190ce501b..b6c1fc0bb85 100644
+--- a/src/vulkan/wsi/wsi_common_private.h
++++ b/src/vulkan/wsi/wsi_common_private.h
+@@ -32,6 +32,7 @@ struct wsi_swapchain;
+ struct wsi_image_info {
+    VkImageCreateInfo create;
+    struct wsi_image_create_info wsi;
++   struct wsi_image_create_info2 wsi2;
+    VkExternalMemoryImageCreateInfo ext_mem;
+    VkImageFormatListCreateInfoKHR format_list;
+    VkImageDrmFormatModifierListCreateInfoEXT drm_mod_list;
+@@ -57,6 +58,7 @@ struct wsi_image_info {
+ 
+    VkResult (*create_mem)(const struct wsi_swapchain *chain,
+                           const struct wsi_image_info *info,
++                          int display_fd,
+                           struct wsi_image *image);
+ 
+    VkResult (*finish_create)(const struct wsi_swapchain *chain,
+@@ -145,12 +147,14 @@ wsi_configure_native_image(const struct wsi_swapchain *chain,
+                            const uint64_t *const *modifiers,
+                            uint8_t *(alloc_shm)(struct wsi_image *image,
+                                                 unsigned size),
++                           int display_fd,
+                            struct wsi_image_info *info);
+ 
+ VkResult
+ wsi_configure_prime_image(UNUSED const struct wsi_swapchain *chain,
+                           const VkSwapchainCreateInfoKHR *pCreateInfo,
+                           bool use_modifier,
++                          int display_fd,
+                           struct wsi_image_info *info);
+ 
+ VkResult
+@@ -158,7 +162,8 @@ wsi_create_buffer_image_mem(const struct wsi_swapchain *chain,
+                             const struct wsi_image_info *info,
+                             struct wsi_image *image,
+                             VkExternalMemoryHandleTypeFlags handle_types,
+-                            bool implicit_sync);
++                            bool implicit_sync,
++                            int display_fd);
+ 
+ VkResult
+ wsi_finish_create_buffer_image(const struct wsi_swapchain *chain,
+@@ -168,12 +173,14 @@ wsi_finish_create_buffer_image(const struct wsi_swapchain *chain,
+ VkResult
+ wsi_configure_buffer_image(UNUSED const struct wsi_swapchain *chain,
+                            const VkSwapchainCreateInfoKHR *pCreateInfo,
++                           int display_fd,
+                            struct wsi_image_info *info);
+ 
+ VkResult
+ wsi_configure_image(const struct wsi_swapchain *chain,
+                     const VkSwapchainCreateInfoKHR *pCreateInfo,
+                     VkExternalMemoryHandleTypeFlags handle_types,
++                    int display_fd,
+                     struct wsi_image_info *info);
+ void
+ wsi_destroy_image_info(const struct wsi_swapchain *chain,
+@@ -181,6 +188,7 @@ wsi_destroy_image_info(const struct wsi_swapchain *chain,
+ VkResult
+ wsi_create_image(const struct wsi_swapchain *chain,
+                  const struct wsi_image_info *info,
++                 int display_fd,
+                  struct wsi_image *image);
+ void
+ wsi_destroy_image(const struct wsi_swapchain *chain,
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index 0678556105e..c01c4079d61 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -32,6 +32,8 @@
+ #include <pthread.h>
+ #include <poll.h>
+ #include <sys/mman.h>
++#include <fcntl.h>
++#include <xf86drm.h>
+ 
+ #include "drm-uapi/drm_fourcc.h"
+ 
+@@ -64,12 +66,15 @@ struct wsi_wl_display {
+    struct wl_event_queue *                      queue;
+ 
+    struct wl_shm *                              wl_shm;
++   struct wl_drm *                              wl_drm;
+    struct zwp_linux_dmabuf_v1 *                 wl_dmabuf;
+ 
+    struct wsi_wayland *wsi_wl;
+ 
+    /* Formats populated by zwp_linux_dmabuf_v1 or wl_shm interfaces */
+    struct u_vector                              formats;
++   int                                          fd;
++   bool                                         authenticated;
+ 
+    /* Only used for displays created by wsi_wl_display_create */
+    uint32_t                                     refcount;
+@@ -444,6 +449,79 @@ wl_shm_format_for_vk_format(VkFormat vk_format, bool alpha)
+    }
+ }
+ 
++static int
++open_display_device(const char *name)
++{
++   int fd;
++
++#ifdef O_CLOEXEC
++   fd = open(name, O_RDWR | O_CLOEXEC);
++   if (fd != -1 || errno != EINVAL) {
++      return fd;
++   }
++#endif
++
++   fd = open(name, O_RDWR);
++   if (fd != -1) {
++      long flags = fcntl(fd, F_GETFD);
++
++      if (flags != -1) {
++         if (!fcntl(fd, F_SETFD, flags | FD_CLOEXEC))
++             return fd;
++      }
++      close (fd);
++   }
++
++   return -1;
++}
++
++static void
++drm_handle_device(void *data, struct wl_drm *drm, const char *name)
++{
++   struct wsi_wl_display *display = data;
++   const int fd = open_display_device(name);
++
++   if (fd != -1) {
++      if (drmGetNodeTypeFromFd(fd) != DRM_NODE_RENDER) {
++         drm_magic_t magic;
++
++         if (drmGetMagic(fd, &magic)) {
++            close(fd);
++	    return;
++         }
++	 wl_drm_authenticate(drm, magic);
++      } else {
++         display->authenticated = true;
++      }
++      display->fd = fd;
++   }
++}
++
++static void
++drm_handle_format(void *data, struct wl_drm *drm, uint32_t wl_format)
++{
++}
++
++static void
++drm_handle_authenticated(void *data, struct wl_drm *drm)
++{
++   struct wsi_wl_display *display = data;
++
++   display->authenticated = true;
++}
++
++static void
++drm_handle_capabilities(void *data, struct wl_drm *drm, uint32_t capabilities)
++{
++}
++
++static const struct wl_drm_listener drm_listener = {
++   drm_handle_device,
++   drm_handle_format,
++   drm_handle_authenticated,
++   drm_handle_capabilities,
++};
++
+ static void
+ dmabuf_handle_format(void *data, struct zwp_linux_dmabuf_v1 *dmabuf,
+                      uint32_t format)
+@@ -496,6 +574,15 @@ registry_handle_global(void *data, struct wl_registry *registry,
+       return;
+    }
+ 
++   if (strcmp(interface, "wl_drm") == 0) {
++      assert(display->wl_drm == NULL);
++      assert(version >= 2);
++
++      display->wl_drm =
++         wl_registry_bind(registry, name, &wl_drm_interface, 2);
++      wl_drm_add_listener(display->drm.wl_drm, &drm_listener, display);
++   }
++
+    if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0 && version >= 3) {
+       display->wl_dmabuf =
+          wl_registry_bind(registry, name, &zwp_linux_dmabuf_v1_interface, 3);
+@@ -525,12 +612,17 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+    u_vector_finish(&display->formats);
+    if (display->wl_shm)
+       wl_shm_destroy(display->wl_shm);
++   if (display->wl_drm)
++      wl_drm_destroy(display->wl_drm);
+    if (display->wl_dmabuf)
+       zwp_linux_dmabuf_v1_destroy(display->wl_dmabuf);
+    if (display->wl_display_wrapper)
+       wl_proxy_wrapper_destroy(display->wl_display_wrapper);
+    if (display->queue)
+       wl_event_queue_destroy(display->queue);
++
++   if (display->fd != -1)
++      close(display->fd);
+ }
+ 
+ static VkResult
+@@ -548,6 +640,7 @@ wsi_wl_display_init(struct wsi_wayland *wsi_wl,
+    display->wsi_wl = wsi_wl;
+    display->wl_display = wl_display;
+    display->sw = sw;
++   display->fd = -1;
+ 
+    display->queue = wl_display_create_queue(wl_display);
+    if (!display->queue) {
+@@ -573,25 +666,45 @@ wsi_wl_display_init(struct wsi_wayland *wsi_wl,
+ 
+    wl_registry_add_listener(registry, &registry_listener, display);
+ 
+-   /* Round-trip to get wl_shm and zwp_linux_dmabuf_v1 globals */
++   /* Round-trip to get wl_shm, wl_drm and zwp_linux_dmabuf_v1 globals */
+    wl_display_roundtrip_queue(display->wl_display, display->queue);
+    if (!display->wl_dmabuf && !display->wl_shm) {
+       result = VK_ERROR_SURFACE_LOST_KHR;
+       goto fail_registry;
+    }
+ 
++   if (display->wl_dmabuf && !display->wl_drm) {
++      result = VK_ERROR_SURFACE_LOST_KHR;
++      goto fail_registry;
++   }
++
++   /* Round-trip to get display FD, formats and modifiers */
++   if (display->wl_drm || get_format_list)
++      wl_display_roundtrip_queue(display->wl_display, display->queue);
++
++   if (display->wl_drm && display->fd == -1) {
++      result = VK_ERROR_SURFACE_LOST_KHR;
++      goto fail_registry;
++   }
++
++   if (display->wl_drm) {
++      wl_display_roundtrip_queue(display->wl_display, display->queue);
++
++      if (!display->authenticated) {
++         result = VK_ERROR_SURFACE_LOST_KHR;
++         goto fail_registry;
++      }
++   }
++
+    /* Caller doesn't expect us to query formats/modifiers, so return */
+    if (!get_format_list)
+       goto out;
+ 
+-   /* Round-trip again to get formats and modifiers */
+-   wl_display_roundtrip_queue(display->wl_display, display->queue);
+-
+    if (wsi_wl->wsi->force_bgra8_unorm_first) {
+       /* Find BGRA8_UNORM in the list and swap it to the first position if we
+        * can find it.  Some apps get confused if SRGB is first in the list.
+        */
+-      struct wsi_wl_format *first_fmt = u_vector_head(&display->formats);
++      struct wsi_wl_format *first_fmt = u_vector_tail(&display->formats);
+       struct wsi_wl_format *f, tmp_fmt;
+       f = find_format(&display->formats, VK_FORMAT_B8G8R8A8_UNORM);
+       if (f) {
+@@ -1122,7 +1235,7 @@ wsi_wl_image_init(struct wsi_wl_swapchain *chain,
+    VkResult result;
+ 
+    result = wsi_create_image(&chain->base, &chain->base.image_info,
+-                             &image->base);
++                             display->fd, &image->base);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -1323,6 +1436,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+                                        &chain->num_drm_modifiers,
+                                        &chain->drm_modifiers,
+                                        NULL /* alloc_shm */,
++                                       chain->display->fd,
+                                        &chain->base.image_info);
+    if (result != VK_SUCCESS)
+       goto fail;
+diff --git a/src/vulkan/wsi/wsi_common_win32.c b/src/vulkan/wsi/wsi_common_win32.c
+index 69b331642d9..6075891a702 100644
+--- a/src/vulkan/wsi/wsi_common_win32.c
++++ b/src/vulkan/wsi/wsi_common_win32.c
+@@ -357,7 +357,7 @@ wsi_configure_win32_image(const struct wsi_swapchain *chain,
+                           struct wsi_image_info *info)
+ {
+    VkResult result =
+-      wsi_configure_buffer_image(chain, pCreateInfo, info);
++      wsi_configure_buffer_image(chain, pCreateInfo, -1, info);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -383,7 +383,7 @@ wsi_win32_image_init(VkDevice device_h,
+ {
+    assert(chain->base.use_buffer_blit);
+    VkResult result = wsi_create_image(&chain->base, &chain->base.image_info,
+-                                      &image->base);
++                                      -1, &image->base);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+diff --git a/src/vulkan/wsi/wsi_common_x11.c b/src/vulkan/wsi/wsi_common_x11.c
+index b12512aad18..8d9123c0494 100644
+--- a/src/vulkan/wsi/wsi_common_x11.c
++++ b/src/vulkan/wsi/wsi_common_x11.c
+@@ -1576,6 +1576,7 @@ static VkResult
+ x11_image_init(VkDevice device_h, struct x11_swapchain *chain,
+                const VkSwapchainCreateInfoKHR *pCreateInfo,
+                const VkAllocationCallbacks* pAllocator,
++               int display_fd,
+                struct x11_image *image)
+ {
+    xcb_void_cookie_t cookie;
+@@ -1584,7 +1585,7 @@ x11_image_init(VkDevice device_h, struct x11_swapchain *chain,
+    int fence_fd;
+ 
+    result = wsi_create_image(&chain->base, &chain->base.image_info,
+-                             &image->base);
++                             display_fd, &image->base);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+@@ -2021,16 +2022,26 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+                                  modifiers, num_modifiers, &num_tranches,
+                                  pAllocator);
+ 
++   int display_fd = -1;
++   if (!wsi_device->sw) {
++      xcb_screen_iterator_t screen_iter =
++         xcb_setup_roots_iterator(xcb_get_setup(conn));
++      xcb_screen_t *screen = screen_iter.data;
++
++      display_fd = wsi_dri3_open(conn, screen->root, None);
++   }
++
+    if (chain->base.use_buffer_blit) {
+       bool use_modifier = num_tranches > 0;
+       result = wsi_configure_prime_image(&chain->base, pCreateInfo,
+-                                         use_modifier,
++                                         use_modifier, display_fd,
+                                          &chain->base.image_info);
+    } else {
+       result = wsi_configure_native_image(&chain->base, pCreateInfo,
+                                           num_tranches, num_modifiers,
+                                           (const uint64_t *const *)modifiers,
+                                           chain->has_mit_shm ? &alloc_shm : NULL,
++                                          display_fd,
+                                           &chain->base.image_info);
+    }
+    if (result != VK_SUCCESS)
+@@ -2039,11 +2050,16 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    uint32_t image = 0;
+    for (; image < chain->base.image_count; image++) {
+       result = x11_image_init(device, chain, pCreateInfo, pAllocator,
+-                              &chain->images[image]);
++                              display_fd, &chain->images[image]);
+       if (result != VK_SUCCESS)
+          goto fail_init_images;
+    }
+ 
++   if (display_fd >= 0) {
++      close(display_fd);
++      display_fd = -1;
++   }
++
+    /* Initialize queues for images in our swapchain. Possible queues are:
+     * - Present queue: for images sent to the X server but not yet presented.
+     * - Acquire queue: for images already presented but not yet released by the
+@@ -2122,6 +2138,9 @@ fail_modifiers:
+    for (int i = 0; i < ARRAY_SIZE(modifiers); i++)
+       vk_free(pAllocator, modifiers[i]);
+ 
++   if (display_fd >= 0)
++     close(display_fd);
++
+ fail_register:
+    xcb_unregister_for_special_event(chain->conn, chain->special_event);
+ 
+-- 
+2.25.1
+

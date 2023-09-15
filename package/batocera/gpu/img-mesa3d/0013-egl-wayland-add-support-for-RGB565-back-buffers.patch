@@ -1,0 +1,46 @@
+From 5b0fbff52f731f510afb48245f9880681aed7b6d Mon Sep 17 00:00:00 2001
+From: James Glanville <James.Glanville@imgtec.com>
+Date: Tue, 28 Feb 2017 16:08:47 +0000
+Subject: [PATCH 13/58] egl/wayland: add support for RGB565 back buffers
+
+---
+ src/egl/drivers/dri2/platform_wayland.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 5b886f8d62d..6eca68efe41 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -1096,18 +1096,27 @@ back_bo_to_dri_buffer(struct dri2_egl_surface *dri2_surf, __DRIbuffer *buffer)
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+    __DRIimage *image;
+-   int name, pitch;
++   int name, pitch, format;
+ 
+    image = dri2_surf->back->dri_image;
+ 
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_NAME, &name);
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_STRIDE, &pitch);
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_FORMAT, &format);
+ 
+    buffer->attachment = __DRI_BUFFER_BACK_LEFT;
+    buffer->name = name;
+    buffer->pitch = pitch;
+-   buffer->cpp = 4;
+    buffer->flags = 0;
++
++   switch (format) {
++   case __DRI_IMAGE_FORMAT_RGB565:
++      buffer->cpp = 2;
++      break;
++   default:
++      buffer->cpp = 4;
++      break;
++   }
+ }
+ 
+ /* Value chosen empirically as a compromise between avoiding frequent
+-- 
+2.25.1
+

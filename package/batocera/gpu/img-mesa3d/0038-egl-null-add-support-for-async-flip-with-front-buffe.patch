@@ -1,0 +1,321 @@
+From 70ff151898723ed28d6afed41ba15a6d88e798a8 Mon Sep 17 00:00:00 2001
+From: Luigi Santivetti <luigi.santivetti@imgtec.com>
+Date: Mon, 21 Oct 2019 09:21:52 +0100
+Subject: [PATCH 38/58] egl/null: add support for async flip with front buffer
+ rendering
+
+This change enables the application to render into the buffer being
+scanned out if the display driver doesn't support
+DRM_CAP_ASYNC_PAGE_FLIP.
+
+The egl display now tracks the DRM async flip capabilities, allowing
+platform_null to always return the buffer on screen to the application
+when the swap interval is set to 0, but the DRM driver doesn't support
+async flip.
+
+platform_null can be in several alternative states by the time
+eglSwapInterval() is called, following is a summary of them.
+
+  1. platform_null was initialised and it has already flipped. In this
+  case, return to the client API a reference to the buffer on screen
+
+  2. platform_null was initialised but no back buffer was requested yet
+  from the client API. In this case, return a reference to the front
+  buffer
+
+  3. platform_null was initialised and the client API has already got
+  a back buffer, but no flip was scheduled. In this case, make sure
+  to flip and return the buffer on the screen
+
+Note that this change also refactors the color buffers and front
+buffer code. Platform null after this change has a dedicated struct
+for storing front buffer DRI data and framebuffer id.
+
+Also be noted that min_swap_interval is no longer clamped to 1 when
+DRM_CAP_ASYNC_PAGE_FLIP isn't supported. This is because,
+if min_swap_interval is automatically promoted to 1, Mesa EGL will de
+facto prevent the application from requesting any swap interval less
+than 1.
+
+Change-Id: I3930cfcdb30bfb5358166911bcf84a78bdb4548d
+Signed-off-by: Luigi Santivetti <luigi.santivetti@imgtec.com>
+---
+ src/egl/drivers/dri2/egl_dri2.h      |   8 +-
+ src/egl/drivers/dri2/platform_null.c | 153 +++++++++++++++++++++------
+ 2 files changed, 129 insertions(+), 32 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 5b382685d38..c8cc3e22a7f 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -313,6 +313,7 @@ struct dri2_egl_display
+ #ifdef HAVE_NULL_PLATFORM
+    bool                      atomic_enabled;
+    bool                      in_formats_enabled;
++   bool                      async_flip_enabled;
+    struct display_output     output;
+ #endif
+ 
+@@ -431,8 +432,12 @@ struct dri2_egl_surface
+ #endif
+       bool locked;
+       int age;
++#ifdef HAVE_NULL_PLATFORM
++   } color_buffers[DRI2_SURFACE_NUM_COLOR_BUFFERS], *back, *current, front_buffer;
++#else
+    } color_buffers[DRI2_SURFACE_NUM_COLOR_BUFFERS], *back, *current;
+ #endif
++#endif
+ 
+ #ifdef HAVE_ANDROID_PLATFORM
+    struct ANativeWindow *window;
+@@ -465,12 +470,13 @@ struct dri2_egl_surface
+ #endif
+ 
+ #ifdef HAVE_NULL_PLATFORM
+-   uint32_t                front_fb_id;
+    struct swap_queue_elem  swap_queue[DRI2_SURFACE_NUM_COLOR_BUFFERS];
+    struct swap_queue_elem  *swap_data;
+    int                     swap_state;
+    bool                    mutex_init;
+    bool                    cond_init;
++   bool                    front_render_enabled;
++   bool                    front_render_init;
+    bool                    cond_init_unlock_buffer;
+ #endif
+ 
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index 2c79199da26..0ce7e60030b 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -602,6 +602,15 @@ swap_dequeue_data_finish(struct dri2_egl_surface *dri2_surf)
+    pthread_mutex_unlock(&dri2_surf->mutex);
+ }
+ 
++static void
++swap_drain_queue_data(struct dri2_egl_surface *dri2_surf)
++{
++   pthread_mutex_lock(&dri2_surf->mutex);
++   while (dri2_surf->swap_queue_idx_head != dri2_surf->swap_queue_idx_tail)
++      pthread_cond_wait(&dri2_surf->swap_unlock_buffer_cond, &dri2_surf->mutex);
++   pthread_mutex_unlock(&dri2_surf->mutex);
++}
++
+ static void
+ flip_handler(int fd, unsigned int sequence, unsigned int tv_sec,
+              unsigned int tv_usec, void *flip_data)
+@@ -1146,15 +1155,15 @@ get_front_bo(struct dri2_egl_surface *dri2_surf)
+    if (dri2_surf->base.Type == EGL_WINDOW_BIT)
+       use |= __DRI_IMAGE_USE_SCANOUT;
+ 
+-   dri2_surf->front = create_image(dri2_surf, use);
+-   if (!dri2_surf->front)
++   dri2_surf->front_buffer.dri_image = create_image(dri2_surf, use);
++   if (!dri2_surf->front_buffer.dri_image)
+       return false;
+ 
+    if (dri2_surf->base.Type == EGL_WINDOW_BIT) {
+-      if (!add_fb_for_dri_image(dri2_dpy, dri2_surf->front,
+-                                &dri2_surf->front_fb_id)) {
+-         dri2_dpy->image->destroyImage(dri2_surf->front);
+-         dri2_surf->front = NULL;
++      if (!add_fb_for_dri_image(dri2_dpy, dri2_surf->front_buffer.dri_image,
++                                &dri2_surf->front_buffer.fb_id)) {
++         dri2_dpy->image->destroyImage(dri2_surf->front_buffer.dri_image);
++         dri2_surf->front_buffer.dri_image = NULL;
+          return false;
+       }
+    }
+@@ -1362,7 +1371,7 @@ dri2_null_create_window_surface(_EGLDisplay *disp, _EGLConfig *config,
+    }
+ 
+    err = display_output_modeset(dri2_dpy->fd, &dri2_dpy->output,
+-                                dri2_surf->front_fb_id);
++                                dri2_surf->front_buffer.fb_id);
+    if (err) {
+       _eglError(EGL_BAD_NATIVE_WINDOW, "window set mode");
+       goto err_destroy_surface;
+@@ -1392,6 +1401,60 @@ dri2_null_create_pbuffer_surface(_EGLDisplay *disp, _EGLConfig *config,
+    return create_surface(disp, config, EGL_PBUFFER_BIT, attrib_list);
+ }
+ 
++static void
++dri2_null_init_front_buffer_render(_EGLSurface *draw)
++{
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
++
++   dri2_surf->front_render_init = true;
++
++   /* Drain the queue. swap_buffer_unlock_cond signals for the last time
++    * when the last back buffer in the queue went on screen and it's being
++    * tracked as current by then.
++    */
++   swap_drain_queue_data(dri2_surf);
++
++   /* If previously flipped, take a reference to the current buffer */
++   if (dri2_surf->current) {
++      assert(dri2_surf->current->dri_image);
++      dri2_surf->back = dri2_surf->current;
++
++      for (unsigned i = 0; i < DRI2_SURFACE_NUM_COLOR_BUFFERS; i++)
++         dri2_surf->color_buffers[i].age = 0;
++
++      return;
++   }
++
++   /* If the application hasn't yet fetched a back buffer, then it's not too
++    * late to use front buffer's dri_image and fb_id.
++    */
++   if (!dri2_surf->back) {
++      assert(dri2_surf->front_buffer.dri_image);
++      dri2_surf->back = &dri2_surf->front_buffer;
++
++      /* Don't need to reset buffer age since no flip was requested yet */
++
++      return;
++   }
++
++   /* In order to initialise one color buffer for front buffer rendering,
++    * one page flip must occur.
++    */
++   swap_enqueue_data(dri2_surf, get_back_buffer_id(dri2_surf), 1);
++
++   return dri2_null_init_front_buffer_render(draw);
++}
++
++static void
++dri2_null_disable_front_buffer_render(_EGLSurface *draw)
++{
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
++
++   dri2_surf->front_render_enabled = false;
++   dri2_surf->front_render_init = false;
++   dri2_surf->back = NULL;
++}
++
+ static EGLBoolean
+ dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
+ {
+@@ -1403,14 +1466,7 @@ dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
+     * sure we process the flip event.
+     */
+    if (dri2_surf->swap_queue_processor) {
+-      pthread_mutex_lock(&dri2_surf->mutex);
+-
+-      /* Wait for any outstanding swaps to complete */
+-      while (dri2_surf->swap_queue_idx_head != dri2_surf->swap_queue_idx_tail)
+-         pthread_cond_wait(&dri2_surf->swap_unlock_buffer_cond,
+-                           &dri2_surf->mutex);
+-
+-      pthread_mutex_unlock(&dri2_surf->mutex);
++      swap_drain_queue_data(dri2_surf);
+       pthread_cancel(dri2_surf->swap_queue_processor);
+       pthread_join(dri2_surf->swap_queue_processor, NULL);
+    }
+@@ -1424,11 +1480,11 @@ dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
+    if (dri2_surf->mutex_init)
+       pthread_mutex_destroy(&dri2_surf->mutex);
+ 
+-   if (dri2_surf->front)
+-      dri2_dpy->image->destroyImage(dri2_surf->front);
++   if (dri2_surf->front_buffer.dri_image)
++      dri2_dpy->image->destroyImage(dri2_surf->front_buffer.dri_image);
+ 
+-   if (dri2_surf->front_fb_id)
+-         drmModeRmFB(dri2_dpy->fd, dri2_surf->front_fb_id);
++   if (dri2_surf->front_buffer.fb_id)
++         drmModeRmFB(dri2_dpy->fd, dri2_surf->front_buffer.fb_id);
+ 
+    for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
+       if (dri2_surf->color_buffers[i].fb_id)
+@@ -1455,6 +1511,16 @@ dri2_null_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
+    if (dri2_surf->base.Type != EGL_WINDOW_BIT)
+       return EGL_TRUE;
+ 
++   /* Flush and early return, no swap takes place */
++   if (dri2_surf->front_render_enabled) {
++      dri2_flush_drawable_for_swapbuffers(disp, draw);
++
++      if (!dri2_surf->front_render_init)
++         dri2_null_init_front_buffer_render(draw);
++
++      return EGL_TRUE;
++   }
++
+    for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++)
+       if (dri2_surf->color_buffers[i].age > 0)
+          dri2_surf->color_buffers[i].age++;
+@@ -1497,6 +1563,22 @@ dri2_null_query_buffer_age(_EGLDisplay *disp, _EGLSurface *surface)
+ static EGLBoolean
+ dri2_null_swap_interval(_EGLDisplay *dpy, _EGLSurface *draw, EGLint interval)
+ {
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++
++   /* dri2_dpy tracks whether the display driver is async flip capable.
++    * If it isn't, enable front buffer rendering when swap interval
++    * 0 is passed in from the application.
++    */
++   if (!interval && !dri2_dpy->async_flip_enabled) {
++      if (!dri2_surf->front_render_enabled)
++         dri2_surf->front_render_enabled = true;
++   } else {
++      if (dri2_surf->front_render_enabled)
++         dri2_null_disable_front_buffer_render(draw);
++   }
++
+    _eglLog(_EGL_DEBUG, "DRI2: set swap interval to %d", interval);
+    draw->SwapInterval = interval;
+    return EGL_TRUE;
+@@ -1534,7 +1616,7 @@ dri2_null_image_get_buffers(__DRIdrawable *driDrawable, unsigned int format,
+ 
+    if (buffer_mask & __DRI_IMAGE_BUFFER_FRONT) {
+       buffers->image_mask |= __DRI_IMAGE_BUFFER_FRONT;
+-      buffers->front = dri2_surf->front;
++      buffers->front = dri2_surf->front_buffer.dri_image;
+    }
+ 
+    if (buffer_mask & __DRI_IMAGE_BUFFER_BACK) {
+@@ -1672,18 +1754,27 @@ dri2_null_setup_swap_interval(_EGLDisplay *disp)
+    dri2_setup_swap_interval(disp, swap_max_interval);
+ 
+    err = drmGetCap(dri2_dpy->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
+-   if (err || value == 0)
+-      dri2_dpy->min_swap_interval = 1;
++   if (err || value == 0) {
+ 
+-   /**
+-    * drm/atomic: Reject FLIP_ASYNC unconditionally
+-    * upstream f2cbda2dba11de868759cae9c0d2bab5b8411406
+-    *
+-    * Only allow swap interval 0 for legacy DRM/KMS and let
+-    * the app be aware that swap interval is clamped to 1.
+-    */
+-   if (dri2_dpy->atomic_enabled)
+-      dri2_dpy->min_swap_interval = 1;
++      /* DRM/KMS does not support async page flip. In order to support
++       * swap interval 0, use front buffer rendering.
++       */
++      _eglLog(_EGL_DEBUG,
++              "drm async flip not supported, use front buffer");
++   } else {
++
++      /* drm/atomic: Reject FLIP_ASYNC unconditionally
++       * upstream f2cbda2dba11de868759cae9c0d2bab5b8411406
++       *
++       * Legacy DRM/KMS can use DRM_MODE_PAGE_FLIP_ASYNC, for atomic
++       * drivers fallback to front buffer rendering.
++       */
++      if (dri2_dpy->atomic_enabled)
++         _eglLog(_EGL_DEBUG,
++                 "async flip not supported by atomic, use front buffer");
++      else
++         dri2_dpy->async_flip_enabled = true;
++   }
+ }
+ 
+ EGLBoolean
+-- 
+2.25.1
+
