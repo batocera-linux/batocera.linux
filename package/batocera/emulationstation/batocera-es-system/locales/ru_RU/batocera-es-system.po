@@ -367,6 +367,21 @@ msgstr "ИСП. СВЕТОВОЙ ПИСТОЛЕТ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "Use wheels instead of pads if wheels are connected."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEELS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "USE WHEELS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Для эмуляторов и контроллеров, поддерживающих вибрацию."
 
@@ -3780,13 +3795,18 @@ msgstr "Camputers Lynx cassettes"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
+msgid "Camputers Lynx floppies"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/pcsx2
+msgctxt "game_options"
 msgid "LYNX MODEL"
 msgstr "МОДЕЛЬ LYNX"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 128k (Default)"
-msgstr "Lynx 128k (Default)"
+msgid "Lynx 48k"
+msgstr "Lynx 48k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3795,8 +3815,8 @@ msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 48k"
-msgstr "Lynx 48k"
+msgid "Lynx 128k"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -6941,7 +6961,7 @@ msgstr ""
 "Выберите, какую API библиотеку использовать. Vulkan может работать не на "
 "каждом ядре."
 
-#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
+#. TRANSLATION: libretro, cemu, citra, daphne, dolphin, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "ГРАФИЧЕСКИЙ API"
@@ -6956,7 +6976,7 @@ msgctxt "game_options"
 msgid "GLCore"
 msgstr "GLCore"
 
-#. TRANSLATION: libretro, daphne, dolphin, duckstation, flycast, ...
+#. TRANSLATION: libretro, citra, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -7086,7 +7106,7 @@ msgctxt "game_options"
 msgid "HIGH RESOLUTION MODE"
 msgstr "РЕЖИМ ВЫСОКОГО РАЗРЕШЕНИЯ"
 
-#. TRANSLATION: cemu, dolphin, duckstation, melonds, pcsx2, ...
+#. TRANSLATION: cemu, citra, dolphin, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Выберите, какую API библиотеку использовать."
@@ -7350,6 +7370,21 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 4"
 msgstr "hybrid bottom ratio 4"
 
+#. TRANSLATION: citra, citra, citra, citra, citra, ...
+msgctxt "game_options"
+msgid "GRAPHICS"
+msgstr ""
+
+#. TRANSLATION: citra, duckstation, melonds, pcsx2, scummvm, ...
+msgctxt "game_options"
+msgid "Software"
+msgstr "Software"
+
+#. TRANSLATION: citra, flycast, scummvm, play, gzdoom
+msgctxt "game_options"
+msgid "OpenGL (Default)"
+msgstr "OpenGL (по умолчанию)"
+
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
@@ -7374,6 +7409,18 @@ msgstr "Уменьшает заикание, возникающее при ко�
 msgctxt "game_options"
 msgid "DISK SHADER CACHE"
 msgstr "ПРЕДВАРИТЕЛЬНЫЙ КЭШ ШЕЙДЕРОВ"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr ""
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7727,6 +7774,18 @@ msgstr "SSAA"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
+msgid ""
+"Enabling will allow for correct emulation of texture wrapping. This comes at "
+"a cost of potential worse performance."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "MANUAL TEXTURE SAMPLING"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
 msgid "To use game cheats or 16/9 Aspect Ratio Fix codes."
 msgstr "Для использования читов или кодов соотношения сторон 16/9."
 
@@ -7875,11 +7934,6 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "ОПТИМАЛЬНАЯ СТРУКТУРА КАДРОВ"
 
-#. TRANSLATION: duckstation, melonds, pcsx2, scummvm, thextech
-msgctxt "game_options"
-msgid "Software"
-msgstr "Software"
-
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Improve performance if VSync is disabled and using Vulkan."
@@ -8006,7 +8060,7 @@ msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr "При работе за пределами 100% регулирует temp вместо пропуска кадров."
 
-#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3
+#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "AUDIO"
 msgstr "АУДИО"
@@ -8308,11 +8362,6 @@ msgstr "0.5x (320x240)"
 msgctxt "game_options"
 msgid "4.5x (2880x2160)"
 msgstr "4.5x (2880x2160)"
-
-#. TRANSLATION: flycast, scummvm, play, gzdoom
-msgctxt "game_options"
-msgid "OpenGL (Default)"
-msgstr "OpenGL (по умолчанию)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -9966,6 +10015,18 @@ msgstr "Surround 7.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid ""
+"Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
+"use if you get no audio."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "CONVERT TO 16-BIT"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "Can reduce crackle and stutter but increases audio latency."
 msgstr "Может уменьшить треск и заикание, но увеличивает задержку звука."
 
@@ -9976,8 +10037,10 @@ msgstr "ВКЛЮЧИТЬ БУФЕРИЗАЦИЮ ЗВУКА"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Duration of audio buffer in milliseconds."
-msgstr "Продолжительность звукового буфера в миллисекундах."
+msgid ""
+"Duration of audio buffer in milliseconds. Higher numbers may cause audio "
+"latency."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9986,8 +10049,68 @@ msgstr "ПРОДОЛЖИТЕЛЬНОСТЬ АУДИО БУФЕРА"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "100 (Default)"
-msgstr "100 (по умолчанию)"
+msgid "10ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "20ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "40ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "60ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "80ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "100ms (Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "120ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "140ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "160ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "180ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "200ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "220ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "240ms"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10002,6 +10125,22 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "ВКЛЮЧИТЬ РАСТЯГИВАНИЕ ВРЕМЕНИ"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Buffer fill level (in percentage) below which time stretching will start."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TIME STRETCHING THRESHOLD"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "75% (Default)"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10904,6 +11043,17 @@ msgstr "Заставить Nvidia GPU всегда указывать как AMD
 msgctxt "game_options"
 msgid "HIDE NVIDIA GPU"
 msgstr "СКРЫТЬ NVIDIA GPU"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NVAPI"
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12497,6 +12647,18 @@ msgstr "Быстрое меню"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Перемотка"
+
+#~ msgctxt "game_options"
+#~ msgid "Lynx 128k (Default)"
+#~ msgstr "Lynx 128k (Default)"
+
+#~ msgctxt "game_options"
+#~ msgid "Duration of audio buffer in milliseconds."
+#~ msgstr "Продолжительность звукового буфера в миллисекундах."
+
+#~ msgctxt "game_options"
+#~ msgid "100 (Default)"
+#~ msgstr "100 (по умолчанию)"
 
 #~ msgctxt "keys_files"
 #~ msgid "Aspect ratio correction on/off"

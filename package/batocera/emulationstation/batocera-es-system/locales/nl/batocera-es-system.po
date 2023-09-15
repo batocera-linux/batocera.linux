@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: THa MuSHeR \n"
 "Language-Team: Dutch (Netherlands)\n"
 "Language: nl-NL\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: nl_NL\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -363,6 +363,21 @@ msgstr "Light Gun"
 msgctxt "game_options"
 msgid "USE LIGHT GUNS"
 msgstr "Gebruik Light Guns"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Use wheels instead of pads if wheels are connected."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEELS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "USE WHEELS"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1004,8 +1019,7 @@ msgstr "Handig voor speedruns/glitches."
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "DEFAULT POWER ON RAM STATE"
-msgstr ""
-"STANDAARD INSCHAKELDE RAM STAAT"
+msgstr "STANDAARD INSCHAKELDE RAM STAAT"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -1919,8 +1933,7 @@ msgstr "2de Joystick (2 Axis, 2 Knoppen)"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Type of emulated SoundBlaster card."
-msgstr ""
-"Type geëmuleerde SoundBlaster-kaart."
+msgstr "Type geëmuleerde SoundBlaster-kaart."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -3781,12 +3794,17 @@ msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
+msgid "Camputers Lynx floppies"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/pcsx2
+msgctxt "game_options"
 msgid "LYNX MODEL"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 128k (Default)"
+msgid "Lynx 48k"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
@@ -3796,7 +3814,7 @@ msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 48k"
+msgid "Lynx 128k"
 msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
@@ -6934,7 +6952,7 @@ msgstr ""
 "Kies welke grafische API-bibliotheek u wilt gebruiken. Vulkan werkt mogelijk "
 "niet voor elke core."
 
-#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
+#. TRANSLATION: libretro, cemu, citra, daphne, dolphin, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "GRAPHICS API"
@@ -6949,7 +6967,7 @@ msgctxt "game_options"
 msgid "GLCore"
 msgstr "GLCore"
 
-#. TRANSLATION: libretro, daphne, dolphin, duckstation, flycast, ...
+#. TRANSLATION: libretro, citra, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -7078,7 +7096,7 @@ msgctxt "game_options"
 msgid "HIGH RESOLUTION MODE"
 msgstr "HOGE RESOLUTIE MODUS"
 
-#. TRANSLATION: cemu, dolphin, duckstation, melonds, pcsx2, ...
+#. TRANSLATION: cemu, citra, dolphin, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Kies welke grafische API-bibliotheek u wilt gebruiken."
@@ -7262,8 +7280,7 @@ msgstr "Dichtsbijzijnde Neighbour"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Choose downscaling method."
-msgstr ""
-"Kies de downscaling methode."
+msgstr "Kies de downscaling methode."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7344,6 +7361,21 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 4"
 msgstr "hybride bodem ratio 4"
 
+#. TRANSLATION: citra, citra, citra, citra, citra, ...
+msgctxt "game_options"
+msgid "GRAPHICS"
+msgstr ""
+
+#. TRANSLATION: citra, duckstation, melonds, pcsx2, scummvm, ...
+msgctxt "game_options"
+msgid "Software"
+msgstr "Software"
+
+#. TRANSLATION: citra, flycast, scummvm, play, gzdoom
+msgctxt "game_options"
+msgid "OpenGL (Default)"
+msgstr ""
+
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
@@ -7369,6 +7401,18 @@ msgstr "Verminder stotteren wanneer shaderes gecompileerd worden."
 msgctxt "game_options"
 msgid "DISK SHADER CACHE"
 msgstr "DISK SHADER CACHE"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr ""
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7729,6 +7773,18 @@ msgstr "SSAA"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
+msgid ""
+"Enabling will allow for correct emulation of texture wrapping. This comes at "
+"a cost of potential worse performance."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "MANUAL TEXTURE SAMPLING"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
 msgid "To use game cheats or 16/9 Aspect Ratio Fix codes."
 msgstr "Om spelcheats of 16:9 Aspect Ratio Fix-codes te gebruiken."
 
@@ -7879,11 +7935,6 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "OPTIMALE FRAME PACING"
 
-#. TRANSLATION: duckstation, melonds, pcsx2, scummvm, thextech
-msgctxt "game_options"
-msgid "Software"
-msgstr "Software"
-
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Improve performance if VSync is disabled and using Vulkan."
@@ -8012,7 +8063,7 @@ msgstr ""
 "Wanneer u buiten de 100% gaat, wordt de temperatuur aangepast in plaats van "
 "frames te laten vallen."
 
-#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3
+#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "AUDIO"
 msgstr "AUDIO"
@@ -8312,11 +8363,6 @@ msgstr ""
 #. TRANSLATION: flycast
 msgctxt "game_options"
 msgid "4.5x (2880x2160)"
-msgstr ""
-
-#. TRANSLATION: flycast, scummvm, play, gzdoom
-msgctxt "game_options"
-msgid "OpenGL (Default)"
 msgstr ""
 
 #. TRANSLATION: flycast
@@ -8897,8 +8943,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en DK64),"
-" kan vertraging veroorzaken."
+"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en "
+"DK64), kan vertraging veroorzaken."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9948,6 +9994,18 @@ msgstr "Surround 7.1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid ""
+"Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
+"use if you get no audio."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "CONVERT TO 16-BIT"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "Can reduce crackle and stutter but increases audio latency."
 msgstr ""
 
@@ -9958,7 +10016,9 @@ msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Duration of audio buffer in milliseconds."
+msgid ""
+"Duration of audio buffer in milliseconds. Higher numbers may cause audio "
+"latency."
 msgstr ""
 
 #. TRANSLATION: rpcs3
@@ -9968,7 +10028,67 @@ msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "100 (Default)"
+msgid "10ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "20ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "40ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "60ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "80ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "100ms (Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "120ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "140ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "160ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "180ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "200ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "220ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "240ms"
 msgstr ""
 
 #. TRANSLATION: rpcs3
@@ -9981,6 +10101,22 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Buffer fill level (in percentage) below which time stretching will start."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TIME STRETCHING THRESHOLD"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "75% (Default)"
 msgstr ""
 
 #. TRANSLATION: rpcs3
@@ -10612,8 +10748,8 @@ msgstr ""
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 
 #. TRANSLATION: mame
@@ -10865,6 +11001,17 @@ msgstr "Forceer Nvidia GPUs om altijd te worden gerapporteert als AMD GPUs."
 msgctxt "game_options"
 msgid "HIDE NVIDIA GPU"
 msgstr "NVIDIA GPU VERBERGEN"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NVAPI"
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12279,8 +12426,7 @@ msgstr ""
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Restart Emulation"
-msgstr ""
-"Herstart Emulatie"
+msgstr "Herstart Emulatie"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"

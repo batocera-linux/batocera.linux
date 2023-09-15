@@ -356,6 +356,21 @@ msgstr "使用光枪"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "Use wheels instead of pads if wheels are connected."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEELS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "USE WHEELS"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "用于支持力反馈的模拟器和控制器."
 
@@ -3730,13 +3745,18 @@ msgstr "Camputers Lynx 卡式磁带"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
+msgid "Camputers Lynx floppies"
+msgstr ""
+
+#. TRANSLATION: libretro/mame, mame/pcsx2
+msgctxt "game_options"
 msgid "LYNX MODEL"
 msgstr "Lynx机型"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 128k (Default)"
-msgstr "Lynx 128k (默认)"
+msgid "Lynx 48k"
+msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3745,8 +3765,8 @@ msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
-msgid "Lynx 48k"
-msgstr "Lynx 96k"
+msgid "Lynx 128k"
+msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -6866,7 +6886,7 @@ msgid ""
 "Choose which graphics API library to use. Vulkan may not work for every core."
 msgstr "选择要使用的图形API库,Vulkan可能不适合每个核心."
 
-#. TRANSLATION: libretro, cemu, daphne, dolphin, duckstation, ...
+#. TRANSLATION: libretro, cemu, citra, daphne, dolphin, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "图形API"
@@ -6881,7 +6901,7 @@ msgctxt "game_options"
 msgid "GLCore"
 msgstr "GLCore"
 
-#. TRANSLATION: libretro, daphne, dolphin, duckstation, flycast, ...
+#. TRANSLATION: libretro, citra, daphne, dolphin, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -7008,7 +7028,7 @@ msgctxt "game_options"
 msgid "HIGH RESOLUTION MODE"
 msgstr "高分辨率模式"
 
-#. TRANSLATION: cemu, dolphin, duckstation, melonds, pcsx2, ...
+#. TRANSLATION: cemu, citra, dolphin, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "选择要使用的图形API库."
@@ -7270,6 +7290,21 @@ msgctxt "game_options"
 msgid "hybrid bottom ratio 4"
 msgstr "混合式底部比例4"
 
+#. TRANSLATION: citra, citra, citra, citra, citra, ...
+msgctxt "game_options"
+msgid "GRAPHICS"
+msgstr ""
+
+#. TRANSLATION: citra, duckstation, melonds, pcsx2, scummvm, ...
+msgctxt "game_options"
+msgid "Software"
+msgstr "软件"
+
+#. TRANSLATION: citra, flycast, scummvm, play, gzdoom
+msgctxt "game_options"
+msgid "OpenGL (Default)"
+msgstr "OpenGL (默认)"
+
 #. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
@@ -7294,6 +7329,18 @@ msgstr "减少编译着色器时发生的卡顿."
 msgctxt "game_options"
 msgid "DISK SHADER CACHE"
 msgstr "磁盘着色器缓存"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr ""
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7635,6 +7682,18 @@ msgstr "SSAA抗锯齿"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
+msgid ""
+"Enabling will allow for correct emulation of texture wrapping. This comes at "
+"a cost of potential worse performance."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "MANUAL TEXTURE SAMPLING"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
 msgid "To use game cheats or 16/9 Aspect Ratio Fix codes."
 msgstr "使用游戏金手指或16/9纵横比修正码."
 
@@ -7782,11 +7841,6 @@ msgctxt "game_options"
 msgid "OPTIMAL FRAME PACING"
 msgstr "最佳帧率控制"
 
-#. TRANSLATION: duckstation, melonds, pcsx2, scummvm, thextech
-msgctxt "game_options"
-msgid "Software"
-msgstr "软件"
-
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Improve performance if VSync is disabled and using Vulkan."
@@ -7910,7 +7964,7 @@ msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr "当运行超出100％时，会调整速度而非丢帧."
 
-#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3
+#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "AUDIO"
 msgstr "音频"
@@ -8208,11 +8262,6 @@ msgstr "0.5倍 (320x240)"
 msgctxt "game_options"
 msgid "4.5x (2880x2160)"
 msgstr "4.5x (2880x2160)"
-
-#. TRANSLATION: flycast, scummvm, play, gzdoom
-msgctxt "game_options"
-msgid "OpenGL (Default)"
-msgstr "OpenGL (默认)"
 
 #. TRANSLATION: flycast
 msgctxt "game_options"
@@ -9804,6 +9853,18 @@ msgstr "环绕7.1声道"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
+msgid ""
+"Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
+"use if you get no audio."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "CONVERT TO 16-BIT"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
 msgid "Can reduce crackle and stutter but increases audio latency."
 msgstr "可以减少裂纹和卡顿，但增加音频延迟。"
 
@@ -9814,8 +9875,10 @@ msgstr "启用音频缓冲"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "Duration of audio buffer in milliseconds."
-msgstr "音频缓冲区的持续时间(以毫秒为单位)."
+msgid ""
+"Duration of audio buffer in milliseconds. Higher numbers may cause audio "
+"latency."
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9824,8 +9887,68 @@ msgstr "音频缓冲持续时间"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "100 (Default)"
-msgstr "100 (默认)"
+msgid "10ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "20ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "40ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "60ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "80ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "100ms (Default)"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "120ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "140ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "160ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "180ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "200ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "220ms"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "240ms"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9838,6 +9961,22 @@ msgstr "进一步减少了噼啪声和卡顿，但在较慢的CPU上可能会导
 msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "启用时间拉伸"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid ""
+"Buffer fill level (in percentage) below which time stretching will start."
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "TIME STRETCHING THRESHOLD"
+msgstr ""
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "75% (Default)"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10714,6 +10853,17 @@ msgstr "强制Nvidia GPU始终报告为AMD GPU。"
 msgctxt "game_options"
 msgid "HIDE NVIDIA GPU"
 msgstr "隐藏NVIDIA GPU"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
+msgstr ""
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "ENABLE NVAPI"
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12284,6 +12434,18 @@ msgstr "快速菜单"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "快进"
+
+#~ msgctxt "game_options"
+#~ msgid "Lynx 128k (Default)"
+#~ msgstr "Lynx 128k (默认)"
+
+#~ msgctxt "game_options"
+#~ msgid "Duration of audio buffer in milliseconds."
+#~ msgstr "音频缓冲区的持续时间(以毫秒为单位)."
+
+#~ msgctxt "game_options"
+#~ msgid "100 (Default)"
+#~ msgstr "100 (默认)"
 
 #~ msgctxt "keys_files"
 #~ msgid "Aspect ratio correction on/off"
