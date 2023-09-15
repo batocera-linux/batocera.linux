@@ -3,8 +3,8 @@
 # r8125
 #
 ################################################################################
-
-R8125_VERSION = 9.010.01-1
+# Version: 9.011.01-1
+R8125_VERSION = d5cd96a875d7b59448f4916c077b60c69a9c843e
 R8125_SITE = $(call github,awesometic,realtek-r8125-dkms,$(R8125_VERSION))
 R8125_LICENSE = GPL-2.0
 R8125_LICENSE_FILES = LICENSE
