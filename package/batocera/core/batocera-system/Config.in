@@ -115,7 +115,7 @@ config BR2_PACKAGE_BATOCERA_VULKAN
     bool "batocera.linux Vulkan support"
 
     # Vulkan headers, loaders, SPIR-V, glsLang
-    select BR2_PACKAGE_VULKAN_TOOLS
+    select BR2_PACKAGE_VULKAN_TOOLS			if !BR2_riscv
     select BR2_PACKAGE_SPIRV_TOOLS
 
     # Vulkan mesa drivers
@@ -174,7 +174,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PM_UTILS                             # suspend
     select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
     select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
-    select BR2_PACKAGE_EVSIEVE                              # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
+    select BR2_PACKAGE_EVSIEVE                              if !BR2_riscv # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT                  # for util-linux compilation to work (so, may be removed in the future)
     select BR2_PACKAGE_FBDUMP                               # tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
     select BR2_PACKAGE_FBGRAB                               # framebuffer screenshot program, capturing the linux frambuffer and converting it to a png-picture
@@ -246,14 +246,14 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BTOP                                 # htop alternative
 
     # Controllers
-    select BR2_PACKAGE_XONE                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
-    select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
-    select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.18)
+    select BR2_PACKAGE_XONE                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.15)
+    select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.15)
+    select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.18)
     select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
-    select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
+    select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_riscv # wiimotes
     select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
-    select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
-    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # updated nintendo switch controller driver, requires kernel > 4.4
+    select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_riscv
+    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4  && !BR2_riscv # updated nintendo switch controller driver, requires kernel > 4.4
     select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
     select BR2_PACKAGE_JAMMASD
 
@@ -271,7 +271,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PICADE                  if BR2_PACKAGE_BATOCERA_RPI_ANY # picade arcade case
 
     # screens
-    select BR2_PACKAGE_PIXELCADE
+    select BR2_PACKAGE_PIXELCADE		if !BR2_riscv
 
     # swap
     select BR2_PACKAGE_SWAPIT if BR2_PACKAGE_BATOCERA_TARGET_RK3128
@@ -284,7 +284,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # vulkan
     select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
-                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RISCV
 
     # wireless drivers
     # use the morrownr RTL8812au & RTL8821au drivers
@@ -644,7 +645,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
     select BR2_PACKAGE_BATOCERA_PYGAME if !BR2_PACKAGE_BATOCERA_TARGET_H3
 
     # RPG engine : Solarus
-    select BR2_PACKAGE_SOLARUS_ENGINE   # ALL
+    select BR2_PACKAGE_SOLARUS_ENGINE  if !BR2_riscv # LuajIT does not support riscv ?
 
     # RPG engine : EasyRPG / RPG MAker
     select BR2_PACKAGE_EASYRPG_PLAYER   # standalone
@@ -668,14 +669,14 @@ config BR2_PACKAGE_BATOCERA_SEGADC
     bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
 
     # Dreamcast / Naomi / Atomiswave emulation
-    select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+    select BR2_PACKAGE_FLYCAST              if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2836	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_H3
 
-    select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+    select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2836	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_BCM2837	&& \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
@@ -726,8 +727,8 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
     # RetroArch MAME derivatives
     select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS   # ALL
     select BR2_PACKAGE_LIBRETRO_IMAME           if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # IMAME
-    select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # MAME2010
-    select BR2_PACKAGE_LIBRETRO_MAME            if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && \
+    select BR2_PACKAGE_LIBRETRO_MAME2010        if !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # MAME2010
+    select BR2_PACKAGE_LIBRETRO_MAME            if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && \
 						    !BR2_PACKAGE_BATOCERA_TARGET_H3      && \
 						    !BR2_PACKAGE_BATOCERA_TARGET_RK3128
     select BR2_PACKAGE_LIBRETRO_SAME_CDI        if	BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -940,7 +941,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_VICE        # ALL
 
     # Commodore Amiga
-    select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+    select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && !BR2_riscv
     select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_LIBRETRO_PUAE        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3
     select BR2_PACKAGE_LIBRETRO_PUAE2021    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -957,8 +958,8 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_81          # ALL
 
     # Atari ST/TT/Falcon
-    select BR2_PACKAGE_HATARI               if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
-    select BR2_PACKAGE_LIBRETRO_HATARI      # ALL
+    select BR2_PACKAGE_HATARI               if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_riscv
+    select BR2_PACKAGE_LIBRETRO_HATARI      if !BR2_riscv # ALL
     select BR2_PACKAGE_LIBRETRO_HATARIB     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
     # MSX range
@@ -1003,7 +1004,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     # Nintendo 64
     select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # mupen64 (n64) runs too slow on these platforms
 
-    select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3 && !BR2_PACKAGE_BATOCERA_TARGET_H5
+    select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3 && !BR2_PACKAGE_BATOCERA_TARGET_H5
 
     select BR2_PACKAGE_LIBRETRO_PARALLEL_N64        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
@@ -1019,13 +1020,13 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_BATOCERA_SEGADC
 
     # PSX
-    select BR2_PACKAGE_DUCKSTATION                  if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+    select BR2_PACKAGE_DUCKSTATION                  if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H3         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3128     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
-    select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	&& \
+    select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_X86	&& \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H3		&& \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
@@ -1041,8 +1042,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
     select BR2_PACKAGE_LIBRETRO_KRONOS              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-    select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
-                                                        BR2_PACKAGE_BATOCERA_GLES3
+    select BR2_PACKAGE_LIBRETRO_YABASANSHIRO        if  !BR2_riscv && (BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
+                                                        BR2_PACKAGE_BATOCERA_GLES3)
 
     # Gamecube / Wii
     select BR2_PACKAGE_DOLPHIN_EMU                  if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
@@ -1111,7 +1112,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_BIGPEMU		                if BR2_PACKAGE_BATOCERA_WINE
 
     # NEC PC-FX
-    select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX         if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
+    select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX         if  !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2836        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_BCM2837        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H3             && \
@@ -1196,7 +1197,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_LIBRETRO_EMUSCV              # ALL
 
     # Apple 2 GS
-    select BR2_PACKAGE_GSPLUS                       # ALL
+    select BR2_PACKAGE_GSPLUS                       if !BR2_riscv # ALL
 
     # Uzebox
     select BR2_PACKAGE_LIBRETRO_UZEM                if !BR2_PACKAGE_BATOCERA_TARGET_H3 # speed issue on weak SBCs
@@ -1278,7 +1279,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
     select BR2_PACKAGE_SAMCO_GUNS       # samco guns
     select BR2_PACKAGE_FUSION_LIGHTGUNS # fusion lightguns
     select BR2_PACKAGE_DOLPHINBAR_GUNS  # dolphinbar guns
-    select BR2_PACKAGE_SINDEN_GUNS      # sinden guns
+    select BR2_PACKAGE_SINDEN_GUNS      if !BR2_riscv # sinden guns
     select BR2_PACKAGE_AELIGHTGUN       # ae light gun
     select BR2_PACKAGE_GUN4IR_GUNS      # gun4ir guns
     select BR2_PACKAGE_GUNCON           if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # guncon
