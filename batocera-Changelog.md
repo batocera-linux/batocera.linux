@@ -68,7 +68,7 @@
 ### Updated
 - xenia to v1.0.2805
 - xenia canary to 9554f82 (Commits on Sep 4, 2023)
-- citra to nightly-1973
+- citra to nightly-1989 (now includes Vulkan support)
 - groovy mame to 0.258
 - libretro-mame to 0.258
 - cemu to v2.0-48
