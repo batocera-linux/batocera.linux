@@ -281,6 +281,12 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "SSAA", "True")
         else:
             dolphinGFXSettings.set("Settings", "SSAA", "False")
+        
+        # Manual texture sampling
+        if system.isOptSet('manual_texture_sampling') and system.getOptBoolean('manual_texture_sampling'):
+            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "False")
+        else:
+            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "True")        
 
         # Save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
