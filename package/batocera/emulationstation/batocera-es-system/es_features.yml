@@ -6342,10 +6342,10 @@ cemu:
                "Enabled":            true
 
 citra:
-  shared: [videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
         citra_screen_layout:
-            prompt:      SCREEN LAYOUT
+            prompt: SCREEN LAYOUT
             description: Arrange the dual screen layout.
             choices:
                 "top/bottom":            4-false
@@ -6357,54 +6357,71 @@ citra:
                 "hybrid top ratio 4":    2-false
                 "hybrid bottom ratio 4": 2-true
         citra_resolution_factor:
-            prompt:      RENDERING RESOLUTION
+            submenu: GRAPHICS
+            prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x (400x240)":          1
-                "2x (800x480)":          2
-                "3x (1200x720)":         3
-                "4x (1600x960)":         4
-                "5x (2000x1200)":        5
-                "6x (2400x1440)":        6
-                "7x (2800x1680)":        7
-                "8x (3200x1920)":        8
-                "9x (3600x2160)":        9
-                "10x (4000x2400)":       10
-        use_vsync_new:
-            group: ADVANCED OPTIONS
-            prompt:      VSYNC
+                "1x (400x240)":    1
+                "2x (800x480)":    2
+                "3x (1200x720)":   3
+                "4x (1600x960)":   4
+                "5x (2000x1200)":  5
+                "6x (2400x1440)":  6
+                "7x (2800x1680)":  7
+                "8x (3200x1920)":  8
+                "9x (3600x2160)":  9
+                "10x (4000x2400)": 10
+        citra_graphics_api:
+            submenu: GRAPHICS
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use.
+            choices:
+                "Software":         0 
+                "OpenGL (Default)": 1
+                "Vulkan":           2
+        citra_use_vsync_new:
+            submenu: GRAPHICS
+            prompt: VSYNC
             description: Fix screen tearing. CPU heavy.
             choices:
-                "Off":                   0
-                "On":                    1
+                "Off": 0
+                "On":  1
         citra_use_frame_limit:
-            prompt:      FRAME LIMIT
+            submenu: GRAPHICS
+            prompt: FRAME LIMIT
             description: Off will help some games, others will run too fast.
             choices:
-                "Off":                   0
-                "On":                    1
+                "Off": 0
+                "On":  1
         citra_use_disk_shader_cache:
-            group: ADVANCED OPTIONS
-            prompt:      DISK SHADER CACHE
+            submenu: GRAPHICS
+            prompt: DISK SHADER CACHE
             description: Reduce stutter that happens when compiling shaders.
             choices:
-                "Off":                   0
-                "On":                    1
+                "Off": 0
+                "On":  1
+        citra_async_shader_compilation:
+            submenu: GRAPHICS
+            prompt: ENABLE ASYNC SHADER COMPILATION
+            description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
+            choices:
+                "Off": 0
+                "On":  1            
         citra_custom_textures:
-            group: ADVANCED OPTIONS
-            prompt:      LOAD CUSTOM TEXTURES
+            submenu: GRAPHICS
+            prompt: LOAD CUSTOM TEXTURES
             description: Preloading is impossible from ES.
             choices:
-                "Off":                   0
-                "On":                    1-normal
-                #"Preload":               1-preload
+                "Off": 0
+                "On":  1-normal
+                #"Preload": 1-preload
         citra_is_new_3ds:
             group: ADVANCED OPTIONS
-            prompt:      NEW 3DS MODE
+            prompt: NEW 3DS MODE
             description: The New 3DS has a faster processor, ZL/ZR buttons and a C-stick.
             choices:
-                "Off":                   0
-                "On":                    1
+                "Off": 0
+                "On":  1
 
 daphne:
   features: [padtokeyboard]
