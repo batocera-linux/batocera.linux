@@ -2513,13 +2513,14 @@ libretro:
                       choices:
                           "Don't Use (Default)":      none
                           "Camputers Lynx cassettes": camplynx_cass
+                          "Camputers Lynx floppies":  camplynx_flop
                   altmodel:
                       group: ADVANCED OPTIONS
                       prompt:      LYNX MODEL
                       choices:
-                          "Lynx 128k (Default)": lynx128k
-                          "Lynx 96k":            lynx96k
-                          "Lynx 48k":            lynx48k
+                          "Lynx 48k":  lynx48k
+                          "Lynx 96k":  lynx96k
+                          "Lynx 128k": lynx128k
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -9213,13 +9214,14 @@ mame:
                     choices:
                         "Don't Use (Default)":      none
                         "Camputers Lynx cassettes": camplynx_cass
+                        "Camputers Lynx floppies":  camplynx_flop
                 altmodel:
                     group: ADVANCED OPTIONS
                     prompt:      LYNX MODEL
                     choices:
-                        "Lynx 128k (Default)": lynx128k
-                        "Lynx 96k":            lynx96k
-                        "Lynx 48k":            lynx48k
+                        "Lynx 48k":  lynx48k
+                        "Lynx 96k":  lynx96k
+                        "Lynx 128k": lynx128k
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS
