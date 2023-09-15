@@ -1266,6 +1266,8 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
 						BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
 						BR2_PACKAGE_BATOCERA_TARGET_H616
+    # Apple 2
+    select BR2_PACKAGE_APPLEWIN			    # ALL
 
     help
         Emulators under development (Experimental)
