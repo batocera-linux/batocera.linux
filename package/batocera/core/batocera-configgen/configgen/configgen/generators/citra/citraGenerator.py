@@ -29,8 +29,11 @@ class CitraGenerator(Generator):
 
     # Show mouse on screen
     def getMouseMode(self, config):
-        return True
-
+        if "citra_screen_layout" in config and config["citra_screen_layout"] == "1-false":
+            return False
+        else:
+            return True
+    
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):
         # Pads
