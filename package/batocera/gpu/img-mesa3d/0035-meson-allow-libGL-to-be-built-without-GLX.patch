@@ -1,0 +1,153 @@
+From d798e80cc8262955ea57d516249c0969e298a395 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 11 Jun 2020 12:29:51 +0100
+Subject: [PATCH 35/58] meson: allow libGL to be built without GLX
+
+If Meson is run with option "glx" set to "null", build the
+OpenGL library without GLX.
+
+The "eglBindAPI workaround for dEQP bug" change to eglcurrent.h
+(commit 2d46c91040aeb8ebad486214159c34417fbc87db) has been
+modified to use a new EGL_WITH_OPENGL define, which indicates
+whether OpenGL is present or not. This allows EGL to be used
+with OpenGL on platforms other than X11.
+---
+ meson.build               | 10 +++++++---
+ meson_options.txt         |  2 +-
+ src/egl/main/eglcurrent.h |  7 +++----
+ src/glx/meson.build       | 20 ++++++++++++++++----
+ src/meson.build           |  2 +-
+ 5 files changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index b4d5b849f8b..e021a896a0a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -484,7 +484,7 @@ elif _egl == 'enabled'
+     error('EGL requires dri, haiku, or windows')
+   elif not with_shared_glapi
+     error('EGL requires shared-glapi')
+-  elif not ['disabled', 'dri'].contains(with_glx)
++  elif not ['disabled', 'dri', 'null'].contains(with_glx)
+     error('EGL requires dri, but a GLX is being built without dri')
+   elif host_machine.system() == 'darwin'
+     error('EGL is not available on MacOS')
+@@ -510,6 +510,10 @@ if with_egl and not _platforms.contains(egl_native_platform)
+   error('-Degl-native-platform does not specify an enabled platform')
+ endif
+ 
++if with_egl and with_opengl and with_glx != 'disabled'
++   pre_args += '-DEGL_WITH_OPENGL'
++endif
++
+ if 'x11' in _platforms
+   _platforms += 'xcb'
+ endif
+@@ -572,7 +576,7 @@ if with_platform_windows and with_shared_glapi
+   pre_args += '-DUSE_TLS_BEHIND_FUNCTIONS'
+ endif
+ 
+-if with_glx != 'disabled'
++if with_glx != 'disabled' and with_glx != 'null'
+   if not (with_platform_x11 and with_any_opengl)
+     error('Cannot build GLX support without X11 platform support and at least one OpenGL API')
+   elif with_glx == 'xlib'
+@@ -630,7 +634,7 @@ if with_any_vk and (with_platform_x11 and not with_dri3)
+   error('Vulkan drivers require dri3 for X11 support')
+ endif
+ if with_dri
+-  if with_glx == 'disabled' and not with_egl and not with_gbm
++  if (with_glx == 'disabled' or with_glx == 'null') and not with_egl and not with_gbm
+     error('building dri drivers require at least one windowing system')
+   endif
+ endif
+diff --git a/meson_options.txt b/meson_options.txt
+index d76cc4b0405..65f32547267 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -306,7 +306,7 @@ option(
+   'glx',
+   type : 'combo',
+   value : 'auto',
+-  choices : ['auto', 'disabled', 'dri', 'xlib'],
++  choices : ['auto', 'disabled', 'dri', 'xlib', 'null'],
+   description : 'Build support for GLX platform'
+ )
+ option(
+diff --git a/src/egl/main/eglcurrent.h b/src/egl/main/eglcurrent.h
+index 32570970947..dcc418afd6f 100644
+--- a/src/egl/main/eglcurrent.h
++++ b/src/egl/main/eglcurrent.h
+@@ -71,11 +71,10 @@ struct _egl_thread_info
+ static inline EGLBoolean
+ _eglIsApiValid(EGLenum api)
+ {
+-#ifndef HAVE_X11_PLATFORM
+-   /* OpenGL is not a valid/supported API on Android */
+-   return api == EGL_OPENGL_ES_API;
+-#else
++#ifdef EGL_WITH_OPENGL
+    return (api == EGL_OPENGL_ES_API || api == EGL_OPENGL_API);
++#else
++   return api == EGL_OPENGL_ES_API;
+ #endif
+ }
+ 
+diff --git a/src/glx/meson.build b/src/glx/meson.build
+index 8f642d5e14b..605a9717e37 100644
+--- a/src/glx/meson.build
++++ b/src/glx/meson.build
+@@ -122,7 +122,15 @@ else
+   )
+ endif
+ 
+-libglx = static_library(
++gl_lib_cargs = [
++  '-D_REENTRANT',
++]
++
++if with_glx == 'null'
++  libglx_link = [libglapi]
++  libglx_link_whole = [libglapi_static]
++else
++  libglx = static_library(
+   'glx',
+   [files_libglx, glx_generated],
+   include_directories : [inc_include, inc_src, inc_mapi, inc_mesa, inc_gallium, inc_gallium_aux, inc_glapi, inc_loader],
+@@ -138,13 +146,17 @@ libglx = static_library(
+     idep_mesautil, idep_xmlconfig,
+     dep_libdrm, dep_dri2proto, dep_glproto, dep_x11, dep_glvnd,
+   ],
+-)
++  )
++
++  libglx_link = [libglapi_static,libglapi]
++  libglx_link_whole = [libglx]
++endif
+ 
+ libgl = shared_library(
+   gl_lib_name,
+   [],
+-  link_with : [libglapi_static, libglapi],
+-  link_whole : libglx,
++  link_with : libglx_link,
++  link_whole : libglx_link_whole,
+   link_args : [ld_args_bsymbolic, ld_args_gc_sections, extra_ld_args_libgl],
+   dependencies : [
+     dep_libdrm, dep_dl, dep_m, dep_thread, dep_x11, dep_xcb_glx, dep_xcb,
+diff --git a/src/meson.build b/src/meson.build
+index 91aca307c87..0846a6035c9 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -127,7 +127,7 @@ endif
+ if with_gallium
+   subdir('mesa')
+   subdir('gallium')
+-  if with_glx == 'dri'
++  if with_glx == 'dri' or with_glx == 'null'
+      subdir('glx')
+   endif
+   # This has to be here since it requires libgallium, and subdir cannot
+-- 
+2.25.1
+

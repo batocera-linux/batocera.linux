@@ -18,6 +18,9 @@ endif
 ifeq ($(BR2_x86_64),y)
 GOARCH=amd64
 endif
+ifeq ($(BR2_riscv),y)
+GOARCH=riscv64
+endif
 
 # GOFLAGS="-modcacherw" used to fix directory permissions to make sure cleanbuild works.
 # For details see: https://github.com/golang/go/issues/27161 https://github.com/golang/go/issues/27455

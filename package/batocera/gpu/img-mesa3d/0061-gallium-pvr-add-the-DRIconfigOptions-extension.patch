@@ -1,0 +1,73 @@
+From 7f8aed6fcc4cd6cf02c031e510d55c2081feeec8 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 8 Aug 2022 13:04:39 +0100
+Subject: [PATCH 61/61] gallium/pvr: add the DRIconfigOptions extension
+
+Add the DRIconfigOptions DRI extension, which is needed by the EGL
+MESA_query_driver extension. The PVR driver does not support the DRI
+configuration mechanism, and returns a minimal XML string for use
+by eglGetDisplayDriverConfig.
+
+IMG NOTE: This patch should be merged into the "Add PVR Gallium
+driver" patch the next time the Mesa version is upgraded in the
+IMG DDK.
+---
+ src/gallium/frontends/pvr/pvrdri.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/src/gallium/frontends/pvr/pvrdri.c b/src/gallium/frontends/pvr/pvrdri.c
+index d7d620cc6d2..0b8c4cfe282 100644
+--- a/src/gallium/frontends/pvr/pvrdri.c
++++ b/src/gallium/frontends/pvr/pvrdri.c
+@@ -27,6 +27,8 @@
+ 
+ #include "util/u_atomic.h"
+ #include "utils.h"
++#include <util/xmlconfig.h>
++#include <util/driconf.h>
+ 
+ #include "dri_screen.h"
+ 
+@@ -577,6 +579,22 @@ PVRDRIReleaseBuffer(__DRIscreen *psDRIScreen, __DRIbuffer *psDRIBuffer)
+    free(psPVRBuffer);
+ }
+ 
++static char *
++PVRDRIGetXMLConfigOptions(const char *pszDriverName)
++{
++   const driOptionDescription asConfigOptions[] =
++   {
++      DRI_CONF_SECTION_MISCELLANEOUS
++      DRI_CONF_OPT_B("pvr_driconf_not_used", true,
++                     "The PowerVR driver does not use DRIConf")
++      DRI_CONF_SECTION_END
++   };
++
++   (void) pszDriverName;
++
++   return driGetOptionsXml(&asConfigOptions[0], ARRAY_SIZE(asConfigOptions));
++}
++
+ const struct __DriverAPIRec pvr_driver_api = {
+    .InitScreen = PVRDRIInitScreen,
+    .DestroyScreen = PVRDRIDestroyScreen,
+@@ -596,10 +614,16 @@ static const struct __DRIDriverVtableExtensionRec pvr_vtable = {
+    .vtable = &pvr_driver_api,
+ };
+ 
++const __DRIconfigOptionsExtension pvr_config_options = {
++   .base = { __DRI_CONFIG_OPTIONS, 2 },
++   .getXml = PVRDRIGetXMLConfigOptions,
++};
++
+ const __DRIextension *pvr_driver_extensions[] = {
+    &driCoreExtension.base,
+    &driImageDriverExtension.base,
+    &pvrDRI2Extension.base,
+    &pvr_vtable.base,
++   &pvr_config_options.base,
+    NULL
+ };
+-- 
+2.25.1
+

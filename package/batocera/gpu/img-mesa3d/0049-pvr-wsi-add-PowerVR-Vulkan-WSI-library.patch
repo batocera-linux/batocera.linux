@@ -1,0 +1,3114 @@
+From 0e2da64a2bfc10ec25d4e24c050f765587ea09b3 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 18 Mar 2021 13:44:57 +0000
+Subject: [PATCH 49/58] pvr/wsi: add PowerVR Vulkan WSI library
+
+The old (pre-Mesa 22.0.0) Mesa WSI interface has been restored.
+The new interface provides API entry points, ready to be plugged
+into a Vulkan dispatch table. The new interface is not useable by
+PowerVR Vulkan, as the interface make assumptions about some Vulkan
+data structures which are not valid on the PowerVR side (e.g.
+VkPhysicalDevice being a handle to a Mesa vk_physical_device
+structure). The new and old interfaces share code. Where an old
+interface function has been reintroduced, the corresponding function
+in the new interface has become a wrapper around it.
+
+PowerVR Vulkan will load the WSI library, libpvr_mesa_wsi.so,
+and lookup the symbol pvr_mesa_wsi_sym_addr, which is a used to
+lookup all other symbols required by Vulkan from the library.
+The function is used by Vulkan to lookup the library initialisation
+function, pvr_mesa_wsi_init. That function is passed the address
+of another lookup function, pvr_vk_mesa_wsi_sym_addr, which is used
+by the WSI library to lookup symbols in Vulkan.
+
+The interface between PowerVR Vulkan and Mesa WSI is defined in
+pvr_mesa_wsi_interface.h. Most of the functions defined on the WSI
+side are wrappers around Mesa WSI functions.
+---
+ meson.build                          |   1 +
+ meson_options.txt                    |   2 +-
+ src/meson.build                      |   3 +
+ src/pvr/meson.build                  |  23 ++
+ src/pvr/wsi/meson.build              |  82 +++++
+ src/pvr/wsi/pvr_mesa_wsi_interface.h | 306 +++++++++++++++++
+ src/pvr/wsi/pvr_wsi.c                | 335 +++++++++++++++++++
+ src/pvr/wsi/pvr_wsi.h                |  78 +++++
+ src/pvr/wsi/pvr_wsi_display.c        | 293 ++++++++++++++++
+ src/pvr/wsi/pvr_wsi_wayland.c        |  45 +++
+ src/pvr/wsi/pvr_wsi_x11.c            |  62 ++++
+ src/vulkan/wsi/wsi_common.c          | 248 ++++++++++----
+ src/vulkan/wsi/wsi_common.h          |  60 ++++
+ src/vulkan/wsi/wsi_common_display.c  | 479 +++++++++++++++++++++------
+ src/vulkan/wsi/wsi_common_display.h  | 126 +++++++
+ src/vulkan/wsi/wsi_common_wayland.c  |  57 +++-
+ src/vulkan/wsi/wsi_common_wayland.h  |  35 ++
+ src/vulkan/wsi/wsi_common_x11.c      |  88 +++--
+ src/vulkan/wsi/wsi_common_x11.h      |  41 +++
+ 19 files changed, 2162 insertions(+), 202 deletions(-)
+ create mode 100644 src/pvr/meson.build
+ create mode 100644 src/pvr/wsi/meson.build
+ create mode 100644 src/pvr/wsi/pvr_mesa_wsi_interface.h
+ create mode 100644 src/pvr/wsi/pvr_wsi.c
+ create mode 100644 src/pvr/wsi/pvr_wsi.h
+ create mode 100644 src/pvr/wsi/pvr_wsi_display.c
+ create mode 100644 src/pvr/wsi/pvr_wsi_wayland.c
+ create mode 100644 src/pvr/wsi/pvr_wsi_x11.c
+ create mode 100644 src/vulkan/wsi/wsi_common_wayland.h
+ create mode 100644 src/vulkan/wsi/wsi_common_x11.h
+
+diff --git a/meson.build b/meson.build
+index a37add42a6d..31b6ffdb060 100644
+--- a/meson.build
++++ b/meson.build
+@@ -298,6 +298,7 @@ with_broadcom_vk = _vulkan_drivers.contains('broadcom')
+ with_imagination_vk = _vulkan_drivers.contains('imagination-experimental')
+ with_imagination_srv = get_option('imagination-srv')
+ with_microsoft_vk = _vulkan_drivers.contains('microsoft-experimental')
++with_pvr_vk = _vulkan_drivers.contains('pvr')
+ with_any_vk = _vulkan_drivers.length() != 0
+ 
+ with_any_broadcom = with_gallium_vc4 or with_gallium_v3d or with_broadcom_vk
+diff --git a/meson_options.txt b/meson_options.txt
+index 84661fb851f..c78b19a1380 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -204,7 +204,7 @@ option(
+   'vulkan-drivers',
+   type : 'array',
+   value : ['auto'],
+-  choices : ['auto', 'amd', 'broadcom', 'freedreno', 'imagination-experimental', 'intel', 'microsoft-experimental', 'panfrost', 'swrast', 'virtio-experimental'],
++  choices : ['auto', 'amd', 'broadcom', 'freedreno', 'imagination-experimental', 'intel', 'microsoft-experimental', 'panfrost', 'pvr', 'swrast', 'virtio-experimental'],
+   description : 'List of vulkan drivers to build. If this is set to auto all drivers applicable to the target OS/architecture will be built'
+ )
+ option(
+diff --git a/src/meson.build b/src/meson.build
+index 0846a6035c9..a70c695518e 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -103,6 +103,9 @@ endif
+ if with_gallium_panfrost or with_gallium_lima or with_panfrost_vk or with_tools.contains('panfrost')
+   subdir('panfrost')
+ endif
++if with_pvr_vk
++  subdir('pvr')
++endif
+ if with_gallium_virgl or with_virtio_vk
+   subdir('virtio')
+ endif
+diff --git a/src/pvr/meson.build b/src/pvr/meson.build
+new file mode 100644
+index 00000000000..09a6986a4c9
+--- /dev/null
++++ b/src/pvr/meson.build
+@@ -0,0 +1,23 @@
++# Copyright (c) Imagination Technologies Ltd.
++
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++if with_pvr_vk
++  subdir('wsi')
++endif
+diff --git a/src/pvr/wsi/meson.build b/src/pvr/wsi/meson.build
+new file mode 100644
+index 00000000000..ec911321400
+--- /dev/null
++++ b/src/pvr/wsi/meson.build
+@@ -0,0 +1,82 @@
++# Copyright (c) Imagination Technologies Ltd.
++
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++
++# The above copyright notice and this permission notice shall be included in
++# all copies or substantial portions of the Software.
++
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++pvr_wsi_args = vulkan_wsi_args
++
++pvr_wsi_depends = [
++  dep_libdrm,
++  idep_vulkan_util,
++  idep_xmlconfig,
++  idep_vulkan_wsi,
++  idep_vulkan_runtime_headers,
++  idep_vulkan_runtime,
++  idep_nir
++]
++
++pvr_wsi_includes = [
++  inc_include,
++  inc_src,
++  inc_vulkan_util
++]
++
++pvr_wsi_src = [ 'pvr_wsi.c' ]
++
++if with_platform_wayland
++  pvr_wsi_args += '-DVK_USE_PLATFORM_WAYLAND_KHR'
++
++  pvr_wsi_depends += dep_wayland_client
++
++  pvr_wsi_src += 'pvr_wsi_wayland.c'
++endif
++
++if with_platform_x11
++  pvr_wsi_args += [
++    '-DVK_USE_PLATFORM_XCB_KHR',
++    '-DVK_USE_PLATFORM_XLIB_KHR',
++  ]
++
++  pvr_wsi_depends += dep_xcb_dri2
++
++  pvr_wsi_src += 'pvr_wsi_x11.c'
++endif
++
++if system_has_kms_drm and not with_platform_android
++  pvr_wsi_args += '-DVK_USE_PLATFORM_DISPLAY_KHR'
++
++  pvr_wsi_src += 'pvr_wsi_display.c'
++endif
++
++if with_xlib_lease
++  pvr_wsi_args += '-DVK_USE_PLATFORM_XLIB_XRANDR_EXT'
++
++  pvr_wsi_depends += dep_xlib_xrandr
++endif
++
++libpvr_mesa_wsi = shared_library(
++  'pvr_mesa_wsi',
++  pvr_wsi_src,
++  include_directories : pvr_wsi_includes,
++  dependencies : pvr_wsi_depends,
++  c_args : pvr_wsi_args,
++  link_with: libvulkan_wsi,
++  gnu_symbol_visibility : 'hidden',
++  build_by_default : true,
++  install : true
++)
+diff --git a/src/pvr/wsi/pvr_mesa_wsi_interface.h b/src/pvr/wsi/pvr_mesa_wsi_interface.h
+new file mode 100644
+index 00000000000..b4b1bcb0c9d
+--- /dev/null
++++ b/src/pvr/wsi/pvr_mesa_wsi_interface.h
+@@ -0,0 +1,306 @@
++/*************************************************************************/ /*!
++@File
++@Title          PVR interface to the Vulkan WSI layer in Mesa
++@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
++@License        MIT
++
++The contents of this file are subject to the MIT license as set out below.
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/ /**************************************************************************/
++
++#ifndef PVR_MESA_WSI_INTERFACE_H
++#define PVR_MESA_WSI_INTERFACE_H
++
++#include <stdbool.h>
++#include <stdint.h>
++
++#include <vulkan/vulkan.h>
++
++/*
++ * The pvr_mesa_wsi structure holds the Mesa WSI state, and is opaque to
++ * the PowerVK DDK.
++ */
++struct pvr_mesa_wsi;
++
++/*
++ * Functions defined in Mesa for use by the PowerVR DDK.
++ * All functions have a "pvr_mesa_wsi" prefix.
++ */
++
++void *
++pvr_mesa_wsi_sym_addr(struct pvr_mesa_wsi *mwsi,
++                      const char *name);
++
++VkResult
++pvr_mesa_wsi_init(struct pvr_mesa_wsi **mwsi,
++                  VkPhysicalDevice physicalDevice,
++                  PFN_vkVoidFunction (VKAPI_PTR *pvr_vk_mesa_wsi_sym_addr)
++                     (VkPhysicalDevice physicalDevice, const char *),
++                  const VkAllocationCallbacks *alloc,
++                  int fd,
++                  bool sw);
++
++void
++pvr_mesa_wsi_finish(struct pvr_mesa_wsi *mwsi,
++                    const VkAllocationCallbacks *alloc);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_support(struct pvr_mesa_wsi *mwsi,
++                                        uint32_t queueFamilyIndex,
++                                        VkSurfaceKHR surface,
++                                        VkBool32 *pSupported);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities(struct pvr_mesa_wsi *mwsi,
++                                             VkSurfaceKHR surface,
++                                             VkSurfaceCapabilitiesKHR *pSurfaceCapabilities);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities2(struct pvr_mesa_wsi *mwsi,
++                                              const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                              VkSurfaceCapabilities2KHR *pSurfaceCapabilities);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities2ext(struct pvr_mesa_wsi *mwsi,
++                                                 VkSurfaceKHR surface,
++                                                 VkSurfaceCapabilities2EXT *pSurfaceCapabilities);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_formats(struct pvr_mesa_wsi *mwsi,
++                                        VkSurfaceKHR surface,
++                                        uint32_t *pSurfaceFormatCount,
++                                        VkSurfaceFormatKHR *pSurfaceFormats);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_formats2(struct pvr_mesa_wsi *mwsi,
++                                         const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                         uint32_t *pSurfaceFormatCount,
++                                         VkSurfaceFormat2KHR *pSurfaceFormats);
++
++VkResult
++pvr_mesa_wsi_common_get_surface_present_modes(struct pvr_mesa_wsi *mwsi,
++                                              VkSurfaceKHR surface,
++                                              uint32_t *pPresentModeCount,
++                                              VkPresentModeKHR *pPresentModes);
++
++VkResult
++pvr_mesa_wsi_common_create_swapchain(struct pvr_mesa_wsi *mwsi,
++                                     VkDevice device,
++                                     const VkSwapchainCreateInfoKHR *pCreateInfo,
++                                     const VkAllocationCallbacks *pAllocator,
++                                     VkSwapchainKHR *pSwapchain);
++void
++pvr_mesa_wsi_common_destroy_swapchain(struct pvr_mesa_wsi *mwsi,
++                                      VkDevice device,
++                                      VkSwapchainKHR swapchain,
++                                      const VkAllocationCallbacks *pAllocator);
++
++VkResult
++pvr_mesa_wsi_common_get_images(struct pvr_mesa_wsi *mwsi,
++                               VkSwapchainKHR swapchain,
++                               uint32_t *pSwapchainImageCount,
++                               VkImage *pSwapchainImages);
++
++VkResult
++pvr_mesa_wsi_common_acquire_next_image2(struct pvr_mesa_wsi *mwsi,
++                                        VkDevice device,
++                                        const VkAcquireNextImageInfoKHR *pAcquireInfo,
++                                        uint32_t *pImageIndex);
++
++VkResult
++pvr_mesa_wsi_common_queue_present(struct pvr_mesa_wsi *mwsi,
++                                  VkDevice device,
++                                  VkQueue queue,
++                                  int queue_family_index,
++                                  const VkPresentInfoKHR *pPresentInfo);
++
++VkResult
++pvr_mesa_wsi_common_get_present_rectangles(struct pvr_mesa_wsi *mwsi,
++                                           VkSurfaceKHR surface,
++                                           uint32_t* pRectCount,
++                                           VkRect2D* pRects);
++
++#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
++VkBool32
++pvr_mesa_wsi_get_physical_device_wayland_presentation_support(struct pvr_mesa_wsi *mwsi,
++                                                              uint32_t queueFamilyIndex,
++                                                              void *display);
++
++VkResult
++pvr_mesa_wsi_create_wayland_surface(struct pvr_mesa_wsi *mwsi,
++                                    const VkAllocationCallbacks *pAllocator,
++                                    const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
++                                    VkSurfaceKHR *pSurface);
++#endif
++
++#if defined(VK_USE_PLATFORM_XCB_KHR)
++VkBool32
++pvr_mesa_wsi_get_physical_device_xcb_presentation_support(struct pvr_mesa_wsi *mwsi,
++                                                          uint32_t queueFamilyIndex,
++                                                          void *connection,
++                                                          uint32_t visualId);
++VkResult
++pvr_mesa_wsi_create_xcb_surface(struct pvr_mesa_wsi *mwsi,
++                                const VkAllocationCallbacks *pAllocator,
++                                const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
++                                VkSurfaceKHR *pSurface);
++#endif
++
++#if defined(VK_USE_PLATFORM_XLIB_KHR)
++VkResult
++pvr_mesa_wsi_create_xlib_surface(struct pvr_mesa_wsi *mwsi,
++                                 const VkAllocationCallbacks *pAllocator,
++                                 const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
++                                 VkSurfaceKHR *pSurface);
++#endif
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_properties(struct pvr_mesa_wsi *mwsi,
++							    VkPhysicalDevice physicalDevice,
++							    uint32_t *pPropertyCount,
++							    VkDisplayPropertiesKHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_properties2(struct pvr_mesa_wsi *mwsi,
++							     VkPhysicalDevice physicalDevice,
++							     uint32_t *pPropertyCount,
++							     VkDisplayProperties2KHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_plane_properties(struct pvr_mesa_wsi *mwsi,
++								  VkPhysicalDevice physicalDevice,
++								  uint32_t *pPropertyCount,
++								  VkDisplayPlanePropertiesKHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_plane_properties2(struct pvr_mesa_wsi *mwsi,
++								   VkPhysicalDevice physicalDevice,
++								   uint32_t *pPropertyCount,
++								   VkDisplayPlaneProperties2KHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_get_display_plane_supported_displays(struct pvr_mesa_wsi *mwsi,
++							  VkPhysicalDevice physicalDevice,
++							  uint32_t planeIndex,
++							  uint32_t *pDisplayCount,
++							  VkDisplayKHR *pDisplays);
++
++VkResult
++pvr_mesa_wsi_display_get_display_mode_properties(struct pvr_mesa_wsi *mwsi,
++						 VkPhysicalDevice physicalDevice,
++						 VkDisplayKHR display,
++						 uint32_t *pPropertyCount,
++						 VkDisplayModePropertiesKHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_get_display_mode_properties2(struct pvr_mesa_wsi *mwsi,
++                                                  VkPhysicalDevice physicalDevice,
++                                                  VkDisplayKHR display,
++                                                  uint32_t *pPropertyCount,
++                                                  VkDisplayModeProperties2KHR *pProperties);
++
++VkResult
++pvr_mesa_wsi_display_create_display_mode(struct pvr_mesa_wsi *mwsi,
++                                         VkPhysicalDevice physicalDevice,
++                                         VkDisplayKHR display,
++                                         const VkDisplayModeCreateInfoKHR *pCreateInfo,
++                                         const VkAllocationCallbacks *pAllocator,
++                                         VkDisplayModeKHR *pMode);
++
++VkResult
++pvr_mesa_wsi_get_display_plane_capabilities(struct pvr_mesa_wsi *mwsi,
++                                            VkPhysicalDevice physicalDevice,
++                                            VkDisplayModeKHR modeKhr,
++                                            uint32_t planeIndex,
++                                            VkDisplayPlaneCapabilitiesKHR *pCapabilities);
++
++VkResult
++pvr_mesa_wsi_get_display_plane_capabilities2(struct pvr_mesa_wsi *mwsi,
++                                             VkPhysicalDevice physicalDevice,
++                                             const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
++                                             VkDisplayPlaneCapabilities2KHR *pCapabilities);
++
++VkResult
++pvr_mesa_wsi_create_display_surface(struct pvr_mesa_wsi *mwsi,
++                                    VkInstance instance,
++                                    const VkAllocationCallbacks *pAllocator,
++                                    const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
++                                    VkSurfaceKHR *pSurface);
++
++VkResult
++pvr_mesa_wsi_release_display(struct pvr_mesa_wsi *mwsi,
++                             VkPhysicalDevice physicalDevice,
++                             VkDisplayKHR display);
++
++#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
++VkResult
++pvr_mesa_wsi_acquire_xlib_display(struct pvr_mesa_wsi *mwsi,
++                                  VkPhysicalDevice physicalDevice,
++                                  void *dpy,
++                                  VkDisplayKHR display);
++
++VkResult
++pvr_mesa_wsi_get_randr_output_display(struct pvr_mesa_wsi *mwsi,
++                                      VkPhysicalDevice  physicalDevice,
++                                      void *dpy,
++                                      uint32_t output,
++                                      VkDisplayKHR *pDisplay);
++
++#endif
++
++VkResult
++pvr_mesa_wsi_display_power_control(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   VkDisplayKHR display,
++                                   const VkDisplayPowerInfoEXT *pDisplayPowerInfo);
++
++VkResult
++pvr_mesa_wsi_register_device_event(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   const VkDeviceEventInfoEXT *pDeviceEventInfo,
++                                   const VkAllocationCallbacks *pAllocator,
++                                   void **pFence,
++                                   int syncFd);
++
++VkResult
++pvr_mesa_wsi_register_display_event(struct pvr_mesa_wsi *mwsi,
++                                    VkDevice device,
++                                    VkDisplayKHR display,
++                                    const VkDisplayEventInfoEXT *pDisplayEventInfo,
++                                    const VkAllocationCallbacks  *pAllocator,
++                                    void **pFence,
++                                    int syncFd);
++
++VkResult
++pvr_mesa_wsi_get_swapchain_counter(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   VkSwapchainKHR swapchain,
++                                   VkSurfaceCounterFlagBitsEXT flagBits,
++                                   uint64_t *pValue);
++
++/*
++ * Functions defined in the PowerVR DDK for use by Mesa.
++ * All functions have a "pvr_vk_mesa_wsi" prefix.
++ */
++VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL
++pvr_vk_mesa_wsi_sym_addr(VkPhysicalDevice physicalDevice,
++                         const char *name);
++
++#endif /* PVR_MESA_WSI_INTERFACE_H */
+diff --git a/src/pvr/wsi/pvr_wsi.c b/src/pvr/wsi/pvr_wsi.c
+new file mode 100644
+index 00000000000..c8a5813fbe7
+--- /dev/null
++++ b/src/pvr/wsi/pvr_wsi.c
+@@ -0,0 +1,335 @@
++/*
++ * Copyright © Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
++
++#include <string.h>
++
++#include "pvr_wsi.h"
++#include "pvr_mesa_wsi_interface.h"
++
++VkResult
++pvr_mesa_wsi_init(struct pvr_mesa_wsi **pmwsi,
++                  VkPhysicalDevice physicalDevice,
++                  PFN_vkVoidFunction (VKAPI_PTR *pvr_vk_mesa_wsi_sym_addr)
++                     (VkPhysicalDevice physicalDevice, const char *),
++                  const VkAllocationCallbacks *alloc,
++                  int fd,
++                  bool sw)
++{
++   struct pvr_mesa_wsi *mwsi;
++   VkResult result;
++
++   mwsi = vk_zalloc(alloc, sizeof(*mwsi), 8,
++                    VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE);
++   if (!mwsi)
++      return VK_ERROR_OUT_OF_HOST_MEMORY;
++
++   mwsi->symtab.pvr_vk_mesa_wsi_sym_addr = pvr_vk_mesa_wsi_sym_addr;
++   mwsi->physicalDevice = physicalDevice;
++
++   result = wsi_device_init(&mwsi->wsi,
++                            physicalDevice,
++                            pvr_vk_mesa_wsi_sym_addr,
++                            alloc,
++                            fd, NULL, sw);
++   if (result != VK_SUCCESS) {
++      vk_free(alloc, mwsi);
++      return result;
++   }
++
++   mwsi->wsi.opaque_vk_handles = true;
++
++   if (!sw)
++      mwsi->wsi.supports_modifiers = true;
++
++   *pmwsi = mwsi;
++
++   return VK_SUCCESS;
++}
++
++void
++pvr_mesa_wsi_finish(struct pvr_mesa_wsi *mwsi,
++		    const VkAllocationCallbacks *alloc)
++{
++   wsi_device_finish(&mwsi->wsi, alloc);
++
++   vk_free(alloc, mwsi);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_support(struct pvr_mesa_wsi *mwsi,
++                                        uint32_t queueFamilyIndex,
++                                        VkSurfaceKHR surface,
++                                        VkBool32 *pSupported)
++{
++   return wsi_common_get_surface_support(&mwsi->wsi,
++                                         queueFamilyIndex,
++                                         surface,
++                                         pSupported);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities(struct pvr_mesa_wsi *mwsi,
++                                             VkSurfaceKHR surface,
++                                             VkSurfaceCapabilitiesKHR *pSurfaceCapabilities)
++{
++   return wsi_common_get_surface_capabilities(&mwsi->wsi,
++                                              surface,
++                                              pSurfaceCapabilities);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities2(struct pvr_mesa_wsi *mwsi,
++                                              const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                              VkSurfaceCapabilities2KHR *pSurfaceCapabilities)
++{
++   return wsi_common_get_surface_capabilities2(&mwsi->wsi,
++                                               pSurfaceInfo,
++                                               pSurfaceCapabilities);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_capabilities2ext(struct pvr_mesa_wsi *mwsi,
++                                                 VkSurfaceKHR surface,
++                                                 VkSurfaceCapabilities2EXT *pSurfaceCapabilities)
++{
++   return wsi_common_get_surface_capabilities2ext(&mwsi->wsi,
++                                                  surface,
++                                                  pSurfaceCapabilities);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_formats(struct pvr_mesa_wsi *mwsi,
++                                        VkSurfaceKHR surface,
++                                        uint32_t *pSurfaceFormatCount,
++                                        VkSurfaceFormatKHR *pSurfaceFormats)
++{
++   return wsi_common_get_surface_formats(&mwsi->wsi,
++                                         surface,
++                                         pSurfaceFormatCount,
++                                         pSurfaceFormats);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_formats2(struct pvr_mesa_wsi *mwsi,
++                                         const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                         uint32_t *pSurfaceFormatCount,
++                                         VkSurfaceFormat2KHR *pSurfaceFormats)
++{
++   return wsi_common_get_surface_formats2(&mwsi->wsi,
++                                          pSurfaceInfo,
++                                          pSurfaceFormatCount,
++                                          pSurfaceFormats);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_surface_present_modes(struct pvr_mesa_wsi *mwsi,
++                                              VkSurfaceKHR surface,
++                                              uint32_t *pPresentModeCount,
++                                              VkPresentModeKHR *pPresentModes)
++{
++   return wsi_common_get_surface_present_modes(&mwsi->wsi,
++                                               surface,
++                                               pPresentModeCount,
++                                               pPresentModes);
++}
++
++VkResult
++pvr_mesa_wsi_common_create_swapchain(struct pvr_mesa_wsi *mwsi,
++                                     VkDevice device,
++                                     const VkSwapchainCreateInfoKHR *pCreateInfo,
++                                     const VkAllocationCallbacks *pAllocator,
++                                     VkSwapchainKHR *pSwapchain)
++{
++   return wsi_common_create_swapchain(&mwsi->wsi,
++                                      device,
++                                      pCreateInfo,
++                                      pAllocator,
++                                      pSwapchain);
++}
++
++void
++pvr_mesa_wsi_common_destroy_swapchain(UNUSED struct pvr_mesa_wsi *mwsi,
++                                      VkDevice device,
++                                      VkSwapchainKHR swapchain,
++                                      const VkAllocationCallbacks *pAllocator)
++{
++   return wsi_common_destroy_swapchain(device,
++                                       swapchain,
++                                       pAllocator);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_images(UNUSED struct pvr_mesa_wsi *mwsi,
++                               VkSwapchainKHR swapchain,
++                               uint32_t *pSwapchainImageCount,
++                               VkImage *pSwapchainImages)
++{
++   return wsi_common_get_images(swapchain,
++                                pSwapchainImageCount,
++                                pSwapchainImages);
++}
++
++VkResult
++pvr_mesa_wsi_common_acquire_next_image2(struct pvr_mesa_wsi *mwsi,
++                                        VkDevice device,
++                                        const VkAcquireNextImageInfoKHR *pAcquireInfo,
++                                        uint32_t *pImageIndex)
++{
++   return wsi_common_acquire_next_image2(&mwsi->wsi,
++                                         device,
++                                         pAcquireInfo,
++                                         pImageIndex);
++}
++
++VkResult
++pvr_mesa_wsi_common_queue_present(struct pvr_mesa_wsi *mwsi,
++                                  VkDevice device,
++                                  VkQueue queue,
++                                  int queue_family_index,
++                                  const VkPresentInfoKHR *pPresentInfo)
++{
++   return wsi_common_queue_present(&mwsi->wsi,
++                                   device,
++                                   queue,
++                                   queue_family_index,
++                                   pPresentInfo);
++}
++
++VkResult
++pvr_mesa_wsi_common_get_present_rectangles(struct pvr_mesa_wsi *mwsi,
++                                           VkSurfaceKHR surface,
++                                           uint32_t* pRectCount,
++                                           VkRect2D* pRects)
++{
++   return wsi_common_get_present_rectangles(&mwsi->wsi,
++                                            surface,
++                                            pRectCount,
++                                            pRects);
++}
++
++/*
++ * The mwsi parameter is currently unused. Note that it is invalid for
++ * pvr_mesa_wsi_init, which is responsible for allocating it.
++*/
++PUBLIC void *
++pvr_mesa_wsi_sym_addr(UNUSED struct pvr_mesa_wsi *mwsi, const char *name)
++{
++   static const struct {
++      char *name;
++      void *addr;
++   } lookup[] = {
++      { "pvr_mesa_wsi_init",
++            pvr_mesa_wsi_init },
++      { "pvr_mesa_wsi_finish",
++            pvr_mesa_wsi_finish },
++      { "pvr_mesa_wsi_common_get_surface_support",
++            pvr_mesa_wsi_common_get_surface_support },
++      { "pvr_mesa_wsi_common_get_surface_capabilities",
++            pvr_mesa_wsi_common_get_surface_capabilities },
++      { "pvr_mesa_wsi_common_get_surface_capabilities2",
++            pvr_mesa_wsi_common_get_surface_capabilities2 },
++      { "pvr_mesa_wsi_common_get_surface_capabilities2ext",
++            pvr_mesa_wsi_common_get_surface_capabilities2ext },
++      { "pvr_mesa_wsi_common_get_surface_formats",
++            pvr_mesa_wsi_common_get_surface_formats },
++      { "pvr_mesa_wsi_common_get_surface_formats2",
++            pvr_mesa_wsi_common_get_surface_formats2 },
++      { "pvr_mesa_wsi_common_get_surface_present_modes",
++            pvr_mesa_wsi_common_get_surface_present_modes },
++      { "pvr_mesa_wsi_common_create_swapchain",
++            pvr_mesa_wsi_common_create_swapchain },
++      { "pvr_mesa_wsi_common_destroy_swapchain",
++            pvr_mesa_wsi_common_destroy_swapchain },
++      { "pvr_mesa_wsi_common_get_images",
++            pvr_mesa_wsi_common_get_images },
++      { "pvr_mesa_wsi_common_acquire_next_image2",
++            pvr_mesa_wsi_common_acquire_next_image2 },
++      { "pvr_mesa_wsi_common_queue_present",
++            pvr_mesa_wsi_common_queue_present },
++      { "pvr_mesa_wsi_common_get_present_rectangles",
++            pvr_mesa_wsi_common_get_present_rectangles },
++#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
++      { "pvr_mesa_wsi_get_physical_device_wayland_presentation_support",
++            pvr_mesa_wsi_get_physical_device_wayland_presentation_support },
++      { "pvr_mesa_wsi_create_wayland_surface",
++            pvr_mesa_wsi_create_wayland_surface },
++#endif
++#if defined(VK_USE_PLATFORM_XCB_KHR)
++      { "pvr_mesa_wsi_get_physical_device_xcb_presentation_support",
++            pvr_mesa_wsi_get_physical_device_xcb_presentation_support },
++      { "pvr_mesa_wsi_create_xcb_surface",
++            pvr_mesa_wsi_create_xcb_surface },
++#endif
++#if defined(VK_USE_PLATFORM_XLIB_KHR)
++      { "pvr_mesa_wsi_create_xlib_surface",
++            pvr_mesa_wsi_create_xlib_surface },
++#endif
++      { "pvr_mesa_wsi_display_get_physical_device_display_properties",
++            pvr_mesa_wsi_display_get_physical_device_display_properties },
++      { "pvr_mesa_wsi_display_get_physical_device_display_properties2",
++            pvr_mesa_wsi_display_get_physical_device_display_properties2 },
++      { "pvr_mesa_wsi_display_get_physical_device_display_plane_properties",
++            pvr_mesa_wsi_display_get_physical_device_display_plane_properties },
++      { "pvr_mesa_wsi_display_get_physical_device_display_plane_properties2",
++            pvr_mesa_wsi_display_get_physical_device_display_plane_properties2 },
++      { "pvr_mesa_wsi_display_get_display_plane_supported_displays",
++            pvr_mesa_wsi_display_get_display_plane_supported_displays },
++      { "pvr_mesa_wsi_display_get_display_mode_properties",
++            pvr_mesa_wsi_display_get_display_mode_properties },
++      { "pvr_mesa_wsi_display_get_display_mode_properties2",
++            pvr_mesa_wsi_display_get_display_mode_properties2 },
++      { "pvr_mesa_wsi_display_create_display_mode",
++            pvr_mesa_wsi_display_create_display_mode },
++      { "pvr_mesa_wsi_get_display_plane_capabilities",
++            pvr_mesa_wsi_get_display_plane_capabilities },
++      { "pvr_mesa_wsi_get_display_plane_capabilities2",
++            pvr_mesa_wsi_get_display_plane_capabilities2 },
++      { "pvr_mesa_wsi_create_display_surface",
++            pvr_mesa_wsi_create_display_surface },
++      { "pvr_mesa_wsi_release_display",
++            pvr_mesa_wsi_release_display },
++#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
++      { "pvr_mesa_wsi_acquire_xlib_display",
++            pvr_mesa_wsi_acquire_xlib_display },
++      { "pvr_mesa_wsi_get_randr_output_display",
++            pvr_mesa_wsi_get_randr_output_display },
++#endif
++      { "pvr_mesa_wsi_display_power_control",
++            pvr_mesa_wsi_display_power_control },
++      { "pvr_mesa_wsi_register_device_event",
++            pvr_mesa_wsi_register_device_event },
++      { "pvr_mesa_wsi_register_display_event",
++            pvr_mesa_wsi_register_display_event },
++      { "pvr_mesa_wsi_get_swapchain_counter",
++            pvr_mesa_wsi_get_swapchain_counter },
++   };
++   unsigned i;
++
++   for (i = 0; i < ARRAY_SIZE(lookup); i++) {
++      if (!strcmp(name, lookup[i].name))
++         return lookup[i].addr;
++   }
++
++   return NULL;
++}
+diff --git a/src/pvr/wsi/pvr_wsi.h b/src/pvr/wsi/pvr_wsi.h
+new file mode 100644
+index 00000000000..142358db3de
+--- /dev/null
++++ b/src/pvr/wsi/pvr_wsi.h
+@@ -0,0 +1,78 @@
++/*
++ * Copyright © Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
++
++#if !defined PVR_WSI_H
++#define PVR_WSI_H
++
++#include "util/macros.h"
++#include "util/u_memory.h"
++#include "util/u_atomic.h"
++
++#include "wsi_common.h"
++
++#define  Container(p, s, m) ((s *) ((uintptr_t)(p) - Offset(s, m)))
++
++#define _MAKE_STRING(x) # x
++#define MAKE_STRING(x) _MAKE_STRING(x)
++
++#define LOOKUP_DDK(mwsi, sym) \
++   mwsi->symtab.pvr_vk_mesa_wsi_sym_addr(MAKE_STRING(sym))
++
++#define JUMP_DDK(mwsi, sym, ...)                          \
++   do {                                                   \
++      void *_entry = p_atomic_read(&mwsi->symtab.sym);    \
++                                                          \
++      if (!_entry) {                                      \
++         _entry = LOOKUP_DDK(mwsi, sym);                  \
++                                                          \
++         if (_entry)                                      \
++            p_atomic_set(&mwsi->symtab.sym, _entry);      \
++      }                                                   \
++                                                          \
++      if (_entry) {                                       \
++         __typeof__(mwsi->symtab.sym) _func = _entry;     \
++                                                          \
++         return _func(__VA_ARGS__);                       \
++      }                                                   \
++   } while(0)
++
++struct pvr_vk_mesa_wsi_sym_tab
++{
++   PFN_vkVoidFunction (VKAPI_PTR *pvr_vk_mesa_wsi_sym_addr)
++      (VkPhysicalDevice physicalDevice, const char *);
++};
++
++struct pvr_mesa_wsi
++{
++   struct wsi_device wsi;
++   struct pvr_vk_mesa_wsi_sym_tab symtab;
++   VkPhysicalDevice physicalDevice;
++};
++
++static inline struct pvr_mesa_wsi *pvr_mesa_wsi(struct wsi_device *wsi_ptr)
++{
++   return Container(wsi_ptr, struct pvr_mesa_wsi, wsi);
++}
++
++#endif
+diff --git a/src/pvr/wsi/pvr_wsi_display.c b/src/pvr/wsi/pvr_wsi_display.c
+new file mode 100644
+index 00000000000..8ee13896ee9
+--- /dev/null
++++ b/src/pvr/wsi/pvr_wsi_display.c
+@@ -0,0 +1,293 @@
++/*
++ * Copyright © Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
++
++#include "wsi_common_display.h"
++
++#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
++#include "wsi_common_x11.h"
++#endif
++
++#include "pvr_wsi.h"
++#include "pvr_mesa_wsi_interface.h"
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_properties(struct pvr_mesa_wsi *mwsi,
++							    VkPhysicalDevice physicalDevice,
++							    uint32_t *pPropertyCount,
++							    VkDisplayPropertiesKHR *pProperties)
++{
++   return wsi_display_get_physical_device_display_properties(physicalDevice,
++                                                             &mwsi->wsi,
++                                                             pPropertyCount,
++                                                             pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_properties2(struct pvr_mesa_wsi *mwsi,
++							     VkPhysicalDevice physicalDevice,
++							     uint32_t *pPropertyCount,
++							     VkDisplayProperties2KHR *pProperties)
++{
++   return wsi_display_get_physical_device_display_properties2(physicalDevice,
++                                                              &mwsi->wsi,
++                                                              pPropertyCount,
++                                                              pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_plane_properties(struct pvr_mesa_wsi *mwsi,
++								  VkPhysicalDevice physicalDevice,
++								  uint32_t *pPropertyCount,
++								  VkDisplayPlanePropertiesKHR *pProperties)
++{
++   return wsi_display_get_physical_device_display_plane_properties(physicalDevice,
++                                                                   &mwsi->wsi,
++                                                                   pPropertyCount,
++                                                                   pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_get_physical_device_display_plane_properties2(struct pvr_mesa_wsi *mwsi,
++								   VkPhysicalDevice physicalDevice,
++								   uint32_t *pPropertyCount,
++								   VkDisplayPlaneProperties2KHR *pProperties)
++{
++   return wsi_display_get_physical_device_display_plane_properties2(physicalDevice,
++                                                                    &mwsi->wsi,
++                                                                    pPropertyCount,
++                                                                    pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_get_display_plane_supported_displays(struct pvr_mesa_wsi *mwsi,
++							  VkPhysicalDevice physicalDevice,
++							  uint32_t planeIndex,
++							  uint32_t *pDisplayCount,
++							  VkDisplayKHR *pDisplays)
++{
++   return wsi_display_get_display_plane_supported_displays(physicalDevice,
++                                                           &mwsi->wsi,
++                                                           planeIndex,
++                                                           pDisplayCount,
++                                                           pDisplays);
++
++}
++
++VkResult
++pvr_mesa_wsi_display_get_display_mode_properties(struct pvr_mesa_wsi *mwsi,
++						 VkPhysicalDevice physicalDevice,
++						 VkDisplayKHR display,
++						 uint32_t *pPropertyCount,
++						 VkDisplayModePropertiesKHR *pProperties)
++{
++   return wsi_display_get_display_mode_properties(physicalDevice,
++                                                  &mwsi->wsi,
++                                                  display,
++                                                  pPropertyCount,
++                                                  pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_get_display_mode_properties2(struct pvr_mesa_wsi *mwsi,
++                                                  VkPhysicalDevice physicalDevice,
++                                                  VkDisplayKHR display,
++                                                  uint32_t *pPropertyCount,
++                                                  VkDisplayModeProperties2KHR *pProperties)
++{
++   return wsi_display_get_display_mode_properties2(physicalDevice,
++                                                   &mwsi->wsi,
++                                                   display,
++                                                   pPropertyCount,
++                                                   pProperties);
++}
++
++VkResult
++pvr_mesa_wsi_display_create_display_mode(struct pvr_mesa_wsi *mwsi,
++                                         VkPhysicalDevice physicalDevice,
++                                         VkDisplayKHR display,
++                                         const VkDisplayModeCreateInfoKHR *pCreateInfo,
++                                         const VkAllocationCallbacks *pAllocator,
++                                         VkDisplayModeKHR *pMode)
++{
++   return wsi_display_create_display_mode(physicalDevice,
++                                          &mwsi->wsi,
++                                          display,
++                                          pCreateInfo,
++                                          pAllocator,
++                                          pMode);
++}
++
++VkResult
++pvr_mesa_wsi_get_display_plane_capabilities(struct pvr_mesa_wsi *mwsi,
++                                            VkPhysicalDevice physicalDevice,
++                                            VkDisplayModeKHR modeKhr,
++                                            uint32_t planeIndex,
++                                            VkDisplayPlaneCapabilitiesKHR *pCapabilities)
++{
++   return wsi_get_display_plane_capabilities(physicalDevice,
++                                             &mwsi->wsi,
++                                             modeKhr,
++                                             planeIndex,
++                                             pCapabilities);
++}
++
++VkResult
++pvr_mesa_wsi_get_display_plane_capabilities2(struct pvr_mesa_wsi *mwsi,
++                                             VkPhysicalDevice physicalDevice,
++                                             const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
++                                             VkDisplayPlaneCapabilities2KHR *pCapabilities)
++{
++   return wsi_get_display_plane_capabilities2(physicalDevice,
++                                              &mwsi->wsi,
++                                              pDisplayPlaneInfo,
++                                              pCapabilities);
++}
++
++VkResult
++pvr_mesa_wsi_create_display_surface(UNUSED struct pvr_mesa_wsi *mwsi,
++                                    VkInstance instance,
++                                    const VkAllocationCallbacks *pAllocator,
++                                    const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
++                                    VkSurfaceKHR *pSurface)
++{
++   return wsi_create_display_surface(instance,
++                                      pAllocator,
++                                      pCreateInfo,
++                                      pSurface);
++}
++
++VkResult
++pvr_mesa_wsi_release_display(struct pvr_mesa_wsi *mwsi,
++                             VkPhysicalDevice physicalDevice,
++                             VkDisplayKHR display)
++{
++   return wsi_release_display(physicalDevice,
++                              &mwsi->wsi,
++                              display);
++}
++
++#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
++VkResult
++pvr_mesa_wsi_acquire_xlib_display(struct pvr_mesa_wsi *mwsi,
++                                  VkPhysicalDevice physicalDevice,
++                                  void *dpy,
++                                  VkDisplayKHR display)
++{
++   return wsi_acquire_xlib_display(physicalDevice,
++                                   &mwsi->wsi,
++                                   dpy,
++                                   display);
++}
++
++VkResult
++pvr_mesa_wsi_get_randr_output_display(struct pvr_mesa_wsi *mwsi,
++                                      VkPhysicalDevice  physicalDevice,
++                                      void *dpy,
++                                      uint32_t output,
++                                      VkDisplayKHR *pDisplay)
++{
++   return wsi_get_randr_output_display(physicalDevice,
++                                       &mwsi->wsi,
++                                       dpy,
++                                       output,
++                                       pDisplay);
++}
++#endif
++
++VkResult
++pvr_mesa_wsi_display_power_control(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   VkDisplayKHR display,
++                                   const VkDisplayPowerInfoEXT *pDisplayPowerInfo)
++{
++   return wsi_display_power_control(device,
++                                    &mwsi->wsi,
++                                    display,
++                                    pDisplayPowerInfo);
++}
++
++VkResult
++pvr_mesa_wsi_register_device_event(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   const VkDeviceEventInfoEXT *pDeviceEventInfo,
++                                   const VkAllocationCallbacks *pAllocator,
++                                   void **pFence,
++                                   int syncFd)
++{
++   struct vk_sync *fence;
++   VkResult ret;
++
++   ret = wsi_register_device_event(device,
++                                   &mwsi->wsi,
++                                   pDeviceEventInfo,
++                                   pAllocator,
++                                   pFence ? &fence : NULL,
++                                   syncFd);
++
++   if (ret == VK_SUCCESS && pFence != NULL)
++	   *pFence = fence;
++
++   return ret;
++}
++
++VkResult
++pvr_mesa_wsi_register_display_event(struct pvr_mesa_wsi *mwsi,
++                                    VkDevice device,
++                                    VkDisplayKHR display,
++                                    const VkDisplayEventInfoEXT *pDisplayEventInfo,
++                                    const VkAllocationCallbacks  *pAllocator,
++                                    void **pFence,
++                                    int syncFd)
++{
++   struct vk_sync *fence;
++   VkResult ret;
++
++   ret = wsi_register_display_event(device,
++                                    &mwsi->wsi,
++                                    display,
++                                    pDisplayEventInfo,
++                                    pAllocator,
++                                    pFence ? &fence : NULL,
++                                    syncFd);
++
++   if (ret == VK_SUCCESS && pFence != NULL)
++	   *pFence = fence;
++
++   return ret;
++}
++
++VkResult
++pvr_mesa_wsi_get_swapchain_counter(struct pvr_mesa_wsi *mwsi,
++                                   VkDevice device,
++                                   VkSwapchainKHR swapchain,
++                                   VkSurfaceCounterFlagBitsEXT flagBits,
++                                   uint64_t *pValue)
++{
++   return wsi_get_swapchain_counter(device,
++                                    &mwsi->wsi,
++                                    swapchain,
++                                    flagBits,
++                                    pValue);
++}
++
+diff --git a/src/pvr/wsi/pvr_wsi_wayland.c b/src/pvr/wsi/pvr_wsi_wayland.c
+new file mode 100644
+index 00000000000..5b052667ac9
+--- /dev/null
++++ b/src/pvr/wsi/pvr_wsi_wayland.c
+@@ -0,0 +1,45 @@
++/*
++ * Copyright © Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
++
++#include "wsi_common_wayland.h"
++
++#include "pvr_wsi.h"
++#include "pvr_mesa_wsi_interface.h"
++
++VkBool32
++pvr_mesa_wsi_get_physical_device_wayland_presentation_support(struct pvr_mesa_wsi *mwsi,
++                                                              uint32_t queueFamilyIndex,
++                                                              void *display)
++{
++   return wsi_wl_get_presentation_support(&mwsi->wsi, display);
++}
++
++VkResult
++pvr_mesa_wsi_create_wayland_surface(UNUSED struct pvr_mesa_wsi *mwsi,
++                                    const VkAllocationCallbacks *pAllocator,
++                                    const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
++                                    VkSurfaceKHR *pSurface)
++{
++   return wsi_create_wl_surface(pAllocator, pCreateInfo, pSurface);
++}
+diff --git a/src/pvr/wsi/pvr_wsi_x11.c b/src/pvr/wsi/pvr_wsi_x11.c
+new file mode 100644
+index 00000000000..0a69e92ac9e
+--- /dev/null
++++ b/src/pvr/wsi/pvr_wsi_x11.c
+@@ -0,0 +1,62 @@
++/*
++ * Copyright © Imagination Technologies Ltd.
++ *
++ * The contents of this file are subject to the MIT license as set out below.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ * copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ * THE SOFTWARE.
++ */
++
++#include "wsi_common_x11.h"
++
++#include "pvr_wsi.h"
++#include "pvr_mesa_wsi_interface.h"
++
++VkBool32
++pvr_mesa_wsi_get_physical_device_xcb_presentation_support(struct pvr_mesa_wsi *mwsi,
++                                                          uint32_t queueFamilyIndex,
++                                                          void *connection,
++                                                          uint32_t visual_id)
++{
++   return wsi_get_physical_device_xcb_presentation_support(&mwsi->wsi,
++                                                           queueFamilyIndex,
++                                                           connection,
++                                                           visual_id);
++}
++
++VkResult
++pvr_mesa_wsi_create_xcb_surface(UNUSED struct pvr_mesa_wsi *mwsi,
++                                const VkAllocationCallbacks *pAllocator,
++                                const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
++                                VkSurfaceKHR *pSurface)
++{
++   return wsi_create_xcb_surface(pAllocator,
++				 pCreateInfo,
++				 pSurface);
++}
++
++VkResult
++pvr_mesa_wsi_create_xlib_surface(UNUSED struct pvr_mesa_wsi *mwsi,
++                                 const VkAllocationCallbacks *pAllocator,
++                                 const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
++                                 VkSurfaceKHR *pSurface)
++{
++   return wsi_create_xlib_surface(pAllocator,
++				  pCreateInfo,
++				  pSurface);
++}
+diff --git a/src/vulkan/wsi/wsi_common.c b/src/vulkan/wsi/wsi_common.c
+index 385e83803dd..6032401b37c 100644
+--- a/src/vulkan/wsi/wsi_common.c
++++ b/src/vulkan/wsi/wsi_common.c
+@@ -227,12 +227,17 @@ wsi_swapchain_init(const struct wsi_device *wsi,
+                    const VkAllocationCallbacks *pAllocator,
+                    bool use_buffer_blit)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+    VkResult result;
+ 
+    memset(chain, 0, sizeof(*chain));
+ 
+-   vk_object_base_init(device, &chain->base, VK_OBJECT_TYPE_SWAPCHAIN_KHR);
++   if (wsi->opaque_vk_handles) {
++      vk_object_base_init(NULL, &chain->base, VK_OBJECT_TYPE_SWAPCHAIN_KHR);
++   } else {
++      VK_FROM_HANDLE(vk_device, device, _device);
++
++      vk_object_base_init(device, &chain->base, VK_OBJECT_TYPE_SWAPCHAIN_KHR);
++   }
+ 
+    chain->wsi = wsi;
+    chain->device = _device;
+@@ -538,6 +543,19 @@ wsi_destroy_image(const struct wsi_swapchain *chain,
+    wsi->DestroyBuffer(chain->device, image->buffer.buffer, &chain->alloc);
+ }
+ 
++VkResult
++wsi_common_get_surface_support(struct wsi_device *wsi_device,
++                               uint32_t queueFamilyIndex,
++                               VkSurfaceKHR _surface,
++                               VkBool32 *pSupported)
++{
++   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
++   struct wsi_interface *iface = wsi_device->wsi[surface->platform];
++
++   return iface->get_support(surface, wsi_device,
++                             queueFamilyIndex, pSupported);
++}
++
+ VKAPI_ATTR VkResult VKAPI_CALL
+ wsi_GetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice,
+                                        uint32_t queueFamilyIndex,
+@@ -545,23 +563,20 @@ wsi_GetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice,
+                                        VkBool32 *pSupported)
+ {
+    VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+-   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_device *wsi_device = device->wsi_device;
+-   struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+-   return iface->get_support(surface, wsi_device,
+-                             queueFamilyIndex, pSupported);
++   return wsi_common_get_surface_support(wsi_device,
++					 queueFamilyIndex,
++					 _surface,
++					 pSupported);
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceSurfaceCapabilitiesKHR(
+-   VkPhysicalDevice physicalDevice,
+-   VkSurfaceKHR _surface,
+-   VkSurfaceCapabilitiesKHR *pSurfaceCapabilities)
++VkResult
++wsi_common_get_surface_capabilities(struct wsi_device *wsi_device,
++                                    VkSurfaceKHR _surface,
++                                    VkSurfaceCapabilitiesKHR *pSurfaceCapabilities)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+    ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+-   struct wsi_device *wsi_device = device->wsi_device;
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+    VkSurfaceCapabilities2KHR caps2 = {
+@@ -577,14 +592,26 @@ wsi_GetPhysicalDeviceSurfaceCapabilitiesKHR(
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceSurfaceCapabilities2KHR(
++wsi_GetPhysicalDeviceSurfaceCapabilitiesKHR(
+    VkPhysicalDevice physicalDevice,
++   VkSurfaceKHR _surface,
++   VkSurfaceCapabilitiesKHR *pSurfaceCapabilities)
++{
++   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
++   struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_capabilities(wsi_device,
++                                              _surface,
++                                              pSurfaceCapabilities);
++}
++
++VkResult
++wsi_common_get_surface_capabilities2(
++   struct wsi_device *wsi_device,
+    const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
+    VkSurfaceCapabilities2KHR *pSurfaceCapabilities)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+    ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, pSurfaceInfo->surface);
+-   struct wsi_device *wsi_device = device->wsi_device;
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+    return iface->get_capabilities2(surface, wsi_device, pSurfaceInfo->pNext,
+@@ -592,14 +619,26 @@ wsi_GetPhysicalDeviceSurfaceCapabilities2KHR(
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceSurfaceCapabilities2EXT(
++wsi_GetPhysicalDeviceSurfaceCapabilities2KHR(
+    VkPhysicalDevice physicalDevice,
++   const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++   VkSurfaceCapabilities2KHR *pSurfaceCapabilities)
++{
++   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
++   struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_capabilities2(wsi_device,
++                                               pSurfaceInfo,
++                                               pSurfaceCapabilities);
++}
++
++VkResult
++wsi_common_get_surface_capabilities2ext(
++   struct wsi_device *wsi_device,
+    VkSurfaceKHR _surface,
+    VkSurfaceCapabilities2EXT *pSurfaceCapabilities)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+    ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+-   struct wsi_device *wsi_device = device->wsi_device;
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+    assert(pSurfaceCapabilities->sType ==
+@@ -638,6 +677,33 @@ wsi_GetPhysicalDeviceSurfaceCapabilities2EXT(
+    return result;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetPhysicalDeviceSurfaceCapabilities2EXT(
++   VkPhysicalDevice physicalDevice,
++   VkSurfaceKHR _surface,
++   VkSurfaceCapabilities2EXT *pSurfaceCapabilities)
++{
++   VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
++   struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_capabilities2ext(wsi_device,
++                                                  _surface,
++                                                  pSurfaceCapabilities);
++}
++
++VkResult
++wsi_common_get_surface_formats(struct wsi_device *wsi_device,
++                               VkSurfaceKHR _surface,
++                               uint32_t *pSurfaceFormatCount,
++                               VkSurfaceFormatKHR *pSurfaceFormats)
++{
++   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
++   struct wsi_interface *iface = wsi_device->wsi[surface->platform];
++
++   return iface->get_formats(surface, wsi_device,
++                             pSurfaceFormatCount, pSurfaceFormats);
++}
++
+ VKAPI_ATTR VkResult VKAPI_CALL
+ wsi_GetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice,
+                                        VkSurfaceKHR _surface,
+@@ -645,12 +711,25 @@ wsi_GetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice,
+                                        VkSurfaceFormatKHR *pSurfaceFormats)
+ {
+    VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+-   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_formats(wsi_device,
++                                         _surface,
++                                         pSurfaceFormatCount,
++                                         pSurfaceFormats);
++}
++
++VkResult
++wsi_common_get_surface_formats2(struct wsi_device *wsi_device,
++                                const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                uint32_t *pSurfaceFormatCount,
++                                VkSurfaceFormat2KHR *pSurfaceFormats)
++{
++   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, pSurfaceInfo->surface);
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+-   return iface->get_formats(surface, wsi_device,
+-                             pSurfaceFormatCount, pSurfaceFormats);
++   return iface->get_formats2(surface, wsi_device, pSurfaceInfo->pNext,
++                              pSurfaceFormatCount, pSurfaceFormats);
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+@@ -660,12 +739,25 @@ wsi_GetPhysicalDeviceSurfaceFormats2KHR(VkPhysicalDevice physicalDevice,
+                                         VkSurfaceFormat2KHR *pSurfaceFormats)
+ {
+    VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+-   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, pSurfaceInfo->surface);
+    struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_formats2(wsi_device,
++                                          pSurfaceInfo,
++                                          pSurfaceFormatCount,
++                                          pSurfaceFormats);
++}
++
++VkResult
++wsi_common_get_surface_present_modes(struct wsi_device *wsi_device,
++                                     VkSurfaceKHR _surface,
++                                     uint32_t *pPresentModeCount,
++                                     VkPresentModeKHR *pPresentModes)
++{
++   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+-   return iface->get_formats2(surface, wsi_device, pSurfaceInfo->pNext,
+-                              pSurfaceFormatCount, pSurfaceFormats);
++   return iface->get_present_modes(surface, pPresentModeCount,
++                                   pPresentModes);
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+@@ -675,12 +767,25 @@ wsi_GetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice physicalDevice,
+                                             VkPresentModeKHR *pPresentModes)
+ {
+    VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+-   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_device *wsi_device = device->wsi_device;
++
++   return wsi_common_get_surface_present_modes(wsi_device,
++                                               _surface,
++                                               pPresentModeCount,
++                                               pPresentModes);
++}
++
++VkResult
++wsi_common_get_present_rectangles(struct wsi_device *wsi_device,
++                                  VkSurfaceKHR _surface,
++                                  uint32_t* pRectCount,
++                                  VkRect2D* pRects)
++{
++   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+-   return iface->get_present_modes(surface, pPresentModeCount,
+-                                   pPresentModes);
++   return iface->get_present_rectangles(surface, wsi_device,
++                                        pRectCount, pRects);
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+@@ -690,54 +795,47 @@ wsi_GetPhysicalDevicePresentRectanglesKHR(VkPhysicalDevice physicalDevice,
+                                           VkRect2D *pRects)
+ {
+    VK_FROM_HANDLE(vk_physical_device, device, physicalDevice);
+-   ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, _surface);
+    struct wsi_device *wsi_device = device->wsi_device;
+-   struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+ 
+-   return iface->get_present_rectangles(surface, wsi_device,
+-                                        pRectCount, pRects);
++   return wsi_common_get_present_rectangles(wsi_device,
++                                            _surface,
++                                            pRectCount,
++                                            pRects);
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateSwapchainKHR(VkDevice _device,
+-                       const VkSwapchainCreateInfoKHR *pCreateInfo,
+-                       const VkAllocationCallbacks *pAllocator,
+-                       VkSwapchainKHR *pSwapchain)
++VkResult
++wsi_common_create_swapchain(struct wsi_device *wsi_device,
++                            VkDevice _device,
++                            const VkSwapchainCreateInfoKHR *pCreateInfo,
++                            const VkAllocationCallbacks *allocator,
++                            VkSwapchainKHR *pSwapchain)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+    ICD_FROM_HANDLE(VkIcdSurfaceBase, surface, pCreateInfo->surface);
+-   struct wsi_device *wsi_device = device->physical->wsi_device;
+    struct wsi_interface *iface = wsi_device->wsi[surface->platform];
+-   const VkAllocationCallbacks *alloc;
+    struct wsi_swapchain *swapchain;
+ 
+-   if (pAllocator)
+-     alloc = pAllocator;
+-   else
+-     alloc = &device->alloc;
+-
+    VkResult result = iface->create_swapchain(surface, _device, wsi_device,
+-                                             pCreateInfo, alloc,
++                                             pCreateInfo, allocator,
+                                              &swapchain);
+    if (result != VK_SUCCESS)
+       return result;
+ 
+-   swapchain->fences = vk_zalloc(alloc,
++   swapchain->fences = vk_zalloc(allocator,
+                                  sizeof (*swapchain->fences) * swapchain->image_count,
+                                  sizeof (*swapchain->fences),
+                                  VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (!swapchain->fences) {
+-      swapchain->destroy(swapchain, alloc);
++      swapchain->destroy(swapchain, allocator);
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+ 
+    if (swapchain->buffer_blit_queue != VK_NULL_HANDLE) {
+-      swapchain->buffer_blit_semaphores = vk_zalloc(alloc,
++      swapchain->buffer_blit_semaphores = vk_zalloc(allocator,
+                                          sizeof (*swapchain->buffer_blit_semaphores) * swapchain->image_count,
+                                          sizeof (*swapchain->buffer_blit_semaphores),
+                                          VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+       if (!swapchain->buffer_blit_semaphores) {
+-         swapchain->destroy(swapchain, alloc);
++         swapchain->destroy(swapchain, allocator);
+          return VK_ERROR_OUT_OF_HOST_MEMORY;
+       }
+    }
+@@ -747,24 +845,55 @@ wsi_CreateSwapchainKHR(VkDevice _device,
+    return VK_SUCCESS;
+ }
+ 
+-VKAPI_ATTR void VKAPI_CALL
+-wsi_DestroySwapchainKHR(VkDevice _device,
+-                        VkSwapchainKHR _swapchain,
+-                        const VkAllocationCallbacks *pAllocator)
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_CreateSwapchainKHR(VkDevice _device,
++                       const VkSwapchainCreateInfoKHR *pCreateInfo,
++                       const VkAllocationCallbacks *pAllocator,
++                       VkSwapchainKHR *pSwapchain)
+ {
+    VK_FROM_HANDLE(vk_device, device, _device);
++   struct wsi_device *wsi_device = device->physical->wsi_device;
++   const VkAllocationCallbacks *allocator;
++
++   if (pAllocator)
++     allocator = pAllocator;
++   else
++     allocator = &device->alloc;
++
++   return wsi_common_create_swapchain(wsi_device,
++                                      _device,
++                                      pCreateInfo,
++                                      allocator,
++                                      pSwapchain);
++}
++
++void
++wsi_common_destroy_swapchain(VkDevice _device,
++                             VkSwapchainKHR _swapchain,
++                             const VkAllocationCallbacks *allocator)
++{
+    VK_FROM_HANDLE(wsi_swapchain, swapchain, _swapchain);
+-   const VkAllocationCallbacks *alloc;
+ 
+    if (!swapchain)
+       return;
+ 
++   swapchain->destroy(swapchain, allocator);
++}
++
++VKAPI_ATTR void VKAPI_CALL
++wsi_DestroySwapchainKHR(VkDevice _device,
++                        VkSwapchainKHR _swapchain,
++                        const VkAllocationCallbacks *pAllocator)
++{
++   VK_FROM_HANDLE(vk_device, device, _device);
++   const VkAllocationCallbacks *allocator;
++
+    if (pAllocator)
+-     alloc = pAllocator;
++     allocator = pAllocator;
+    else
+-     alloc = &device->alloc;
++     allocator = &device->alloc;
+ 
+-   swapchain->destroy(swapchain, alloc);
++   wsi_common_destroy_swapchain(_device, _swapchain, allocator);
+ }
+ 
+ VkResult
+@@ -833,7 +962,6 @@ wsi_common_acquire_next_image2(const struct wsi_device *wsi,
+                                uint32_t *pImageIndex)
+ {
+    VK_FROM_HANDLE(wsi_swapchain, swapchain, pAcquireInfo->swapchain);
+-   VK_FROM_HANDLE(vk_device, device, _device);
+ 
+    VkResult result = swapchain->acquire_next_image(swapchain, pAcquireInfo,
+                                                    pImageIndex);
+@@ -847,6 +975,7 @@ wsi_common_acquire_next_image2(const struct wsi_device *wsi,
+ 
+    if (pAcquireInfo->semaphore != VK_NULL_HANDLE &&
+        wsi->signal_semaphore_with_memory) {
++      VK_FROM_HANDLE(vk_device, device, _device);
+       VK_FROM_HANDLE(vk_semaphore, semaphore, pAcquireInfo->semaphore);
+       struct wsi_image *image =
+          swapchain->get_wsi_image(swapchain, *pImageIndex);
+@@ -862,6 +991,7 @@ wsi_common_acquire_next_image2(const struct wsi_device *wsi,
+ 
+    if (pAcquireInfo->fence != VK_NULL_HANDLE &&
+        wsi->signal_fence_with_memory) {
++      VK_FROM_HANDLE(vk_device, device, _device);
+       VK_FROM_HANDLE(vk_fence, fence, pAcquireInfo->fence);
+       struct wsi_image *image =
+          swapchain->get_wsi_image(swapchain, *pImageIndex);
+diff --git a/src/vulkan/wsi/wsi_common.h b/src/vulkan/wsi/wsi_common.h
+index 13502fc6507..3ef630080f2 100644
+--- a/src/vulkan/wsi/wsi_common.h
++++ b/src/vulkan/wsi/wsi_common.h
+@@ -125,6 +125,10 @@ struct wsi_device {
+     * available. Not all window systems might support this. */
+    bool enable_adaptive_sync;
+ 
++   /* Handles, such as VKDevice, cannot be converted to Mesa data
++    * structures using VK_FROM_HANDLE. */
++   bool opaque_vk_handles;
++
+    /* List of fences to signal when hotplug event happens. */
+    struct list_head hotplug_fences;
+ 
+@@ -272,6 +276,51 @@ wsi_device_setup_syncobj_fd(struct wsi_device *wsi_device,
+ 
+ ICD_DEFINE_NONDISP_HANDLE_CASTS(VkIcdSurfaceBase, VkSurfaceKHR)
+ 
++VkResult
++wsi_common_get_surface_support(struct wsi_device *wsi_device,
++                               uint32_t queueFamilyIndex,
++                               VkSurfaceKHR surface,
++                               VkBool32 *pSupported);
++
++VkResult
++wsi_common_get_surface_capabilities(struct wsi_device *wsi_device,
++                                    VkSurfaceKHR surface,
++                                    VkSurfaceCapabilitiesKHR *pSurfaceCapabilities);
++
++VkResult
++wsi_common_get_surface_capabilities2(struct wsi_device *wsi_device,
++                                     const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                     VkSurfaceCapabilities2KHR *pSurfaceCapabilities);
++
++VkResult
++wsi_common_get_surface_formats(struct wsi_device *wsi_device,
++                               VkSurfaceKHR surface,
++                               uint32_t *pSurfaceFormatCount,
++                               VkSurfaceFormatKHR *pSurfaceFormats);
++
++VkResult
++wsi_common_get_surface_formats2(struct wsi_device *wsi_device,
++                                const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
++                                uint32_t *pSurfaceFormatCount,
++                                VkSurfaceFormat2KHR *pSurfaceFormats);
++
++VkResult
++wsi_common_get_surface_present_modes(struct wsi_device *wsi_device,
++                                     VkSurfaceKHR surface,
++                                     uint32_t *pPresentModeCount,
++                                     VkPresentModeKHR *pPresentModes);
++
++VkResult
++wsi_common_get_present_rectangles(struct wsi_device *wsi_device,
++                                  VkSurfaceKHR surface,
++                                  uint32_t* pRectCount,
++                                  VkRect2D* pRects);
++
++VkResult
++wsi_common_get_surface_capabilities2ext(struct wsi_device *wsi_device,
++                                        VkSurfaceKHR surface,
++                                        VkSurfaceCapabilities2EXT *pSurfaceCapabilities);
++
+ VkResult
+ wsi_common_get_images(VkSwapchainKHR _swapchain,
+                       uint32_t *pSwapchainImageCount,
+@@ -286,6 +335,17 @@ wsi_common_acquire_next_image2(const struct wsi_device *wsi,
+                                const VkAcquireNextImageInfoKHR *pAcquireInfo,
+                                uint32_t *pImageIndex);
+ 
++VkResult
++wsi_common_create_swapchain(struct wsi_device *wsi,
++                            VkDevice device,
++                            const VkSwapchainCreateInfoKHR *pCreateInfo,
++                            const VkAllocationCallbacks *pAllocator,
++                            VkSwapchainKHR *pSwapchain);
++void
++wsi_common_destroy_swapchain(VkDevice device,
++                             VkSwapchainKHR swapchain,
++                             const VkAllocationCallbacks *pAllocator);
++
+ VkResult
+ wsi_common_queue_present(const struct wsi_device *wsi,
+                          VkDevice device_h,
+diff --git a/src/vulkan/wsi/wsi_common_display.c b/src/vulkan/wsi/wsi_common_display.c
+index d237dfc092a..5b020f9fdc0 100644
+--- a/src/vulkan/wsi/wsi_common_display.c
++++ b/src/vulkan/wsi/wsi_common_display.c
+@@ -434,20 +434,19 @@ wsi_display_fill_in_display_properties(struct wsi_device *wsi_device,
+    properties->persistentContent = VK_FALSE;
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physicalDevice,
+-                                          uint32_t *pPropertyCount,
+-                                          VkDisplayPropertiesKHR *pProperties)
++VkResult
++wsi_display_get_physical_device_display_properties(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   uint32_t *pPropertyCount,
++   VkDisplayPropertiesKHR *pProperties)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+    if (pProperties == NULL) {
+-      return wsi_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
+-                                                        pPropertyCount,
+-                                                        NULL);
++      return wsi_display_get_physical_device_display_properties2(
++            physicalDevice, wsi_device, pPropertyCount, NULL);
+    } else {
+       /* If we're actually returning properties, allocate a temporary array of
+        * VkDisplayProperties2KHR structs, call properties2 to fill them out,
+@@ -465,9 +464,8 @@ wsi_GetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physicalDevice,
+       for (uint32_t i = 0; i < *pPropertyCount; i++)
+          props2[i].sType = VK_STRUCTURE_TYPE_DISPLAY_PROPERTIES_2_KHR;
+ 
+-      VkResult result =
+-         wsi_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
+-                                                    pPropertyCount, props2);
++      VkResult result = wsi_display_get_physical_device_display_properties2(
++            physicalDevice, wsi_device, pPropertyCount, props2);
+ 
+       if (result == VK_SUCCESS || result == VK_INCOMPLETE) {
+          for (uint32_t i = 0; i < *pPropertyCount; i++)
+@@ -480,14 +478,23 @@ wsi_GetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physicalDevice,
+    }
+ }
+ 
+-static VkResult
+-wsi_get_connectors(VkPhysicalDevice physicalDevice)
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physicalDevice,
++                                          uint32_t *pPropertyCount,
++                                          VkDisplayPropertiesKHR *pProperties)
+ {
+    VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+    struct wsi_device *wsi_device = pdevice->wsi_device;
+-   struct wsi_display *wsi =
+-      (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
++   return wsi_display_get_physical_device_display_properties(physicalDevice,
++                                                             wsi_device,
++                                                             pPropertyCount,
++                                                             pProperties);
++}
++
++static VkResult
++wsi_get_connectors(struct wsi_device *wsi_device, struct wsi_display *wsi)
++{
+    if (wsi->fd < 0)
+       return VK_SUCCESS;
+ 
+@@ -511,18 +518,18 @@ wsi_get_connectors(VkPhysicalDevice physicalDevice)
+    return VK_SUCCESS;
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceDisplayProperties2KHR(VkPhysicalDevice physicalDevice,
+-                                           uint32_t *pPropertyCount,
+-                                           VkDisplayProperties2KHR *pProperties)
++VkResult
++wsi_display_get_physical_device_display_properties2(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   uint32_t *pPropertyCount,
++   VkDisplayProperties2KHR *pProperties)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+    /* Get current information */
+-   VkResult result = wsi_get_connectors(physicalDevice);
++   VkResult result = wsi_get_connectors(wsi_device, wsi);
+    if (result != VK_SUCCESS)
+       goto bail;
+ 
+@@ -546,6 +553,20 @@ bail:
+    return result;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetPhysicalDeviceDisplayProperties2KHR(VkPhysicalDevice physicalDevice,
++                                           uint32_t *pPropertyCount,
++                                           VkDisplayProperties2KHR *pProperties)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_physical_device_display_properties2(physicalDevice,
++                                                              wsi_device,
++                                                              pPropertyCount,
++                                                              pProperties);
++}
++
+ /*
+  * Implement vkGetPhysicalDeviceDisplayPlanePropertiesKHR (VK_KHR_display
+  */
+@@ -567,17 +588,17 @@ wsi_display_fill_in_display_plane_properties(
+    }
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDevice physicalDevice,
+-                                               uint32_t *pPropertyCount,
+-                                               VkDisplayPlanePropertiesKHR *pProperties)
++VkResult
++wsi_display_get_physical_device_display_plane_properties(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   uint32_t *pPropertyCount,
++   VkDisplayPlanePropertiesKHR *pProperties)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+-   VkResult result = wsi_get_connectors(physicalDevice);
++   VkResult result = wsi_get_connectors(wsi_device, wsi);
+    if (result != VK_SUCCESS)
+       goto bail;
+ 
+@@ -602,17 +623,32 @@ bail:
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetPhysicalDeviceDisplayPlaneProperties2KHR(VkPhysicalDevice physicalDevice,
+-                                                uint32_t *pPropertyCount,
+-                                                VkDisplayPlaneProperties2KHR *pProperties)
++wsi_GetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDevice physicalDevice,
++                                               uint32_t *pPropertyCount,
++                                               VkDisplayPlanePropertiesKHR *pProperties)
+ {
+    VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+    struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_physical_device_display_plane_properties(
++            physicalDevice,
++            wsi_device,
++            pPropertyCount,
++            pProperties);
++}
++
++VkResult
++wsi_display_get_physical_device_display_plane_properties2(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   uint32_t *pPropertyCount,
++   VkDisplayPlaneProperties2KHR *pProperties)
++{
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+    /* Get current information */
+-   VkResult result = wsi_get_connectors(physicalDevice);
++   VkResult result = wsi_get_connectors(wsi_device, wsi);
+    if (result != VK_SUCCESS)
+       goto bail;
+ 
+@@ -632,18 +668,34 @@ bail:
+    return result;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetPhysicalDeviceDisplayPlaneProperties2KHR(VkPhysicalDevice physicalDevice,
++                                                uint32_t *pPropertyCount,
++                                                VkDisplayPlaneProperties2KHR *pProperties)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_physical_device_display_plane_properties2(
++            physicalDevice,
++            wsi_device,
++            pPropertyCount,
++            pProperties);
++}
++
++
+ /*
+  * Implement vkGetDisplayPlaneSupportedDisplaysKHR (VK_KHR_display)
+  */
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice,
+-                                        uint32_t planeIndex,
+-                                        uint32_t *pDisplayCount,
+-                                        VkDisplayKHR *pDisplays)
++VkResult
++wsi_display_get_display_plane_supported_displays(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   uint32_t planeIndex,
++   uint32_t *pDisplayCount,
++   VkDisplayKHR *pDisplays)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+@@ -662,6 +714,22 @@ wsi_GetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice,
+    return vk_outarray_status(&conn);
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice,
++                                        uint32_t planeIndex,
++                                        uint32_t *pDisplayCount,
++                                        VkDisplayKHR *pDisplays)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_display_plane_supported_displays(physicalDevice,
++                                                           wsi_device,
++                                                           planeIndex,
++                                                           pDisplayCount,
++                                                           pDisplays);
++}
++
+ /*
+  * Implement vkGetDisplayModePropertiesKHR (VK_KHR_display)
+  */
+@@ -682,14 +750,13 @@ wsi_display_fill_in_display_mode_properties(
+       (uint32_t) (wsi_display_mode_refresh(display_mode) * 1000 + 0.5);
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDisplayModePropertiesKHR(VkPhysicalDevice physicalDevice,
+-                                VkDisplayKHR display,
+-                                uint32_t *pPropertyCount,
+-                                VkDisplayModePropertiesKHR *pProperties)
++VkResult
++wsi_display_get_display_mode_properties(VkPhysicalDevice physicalDevice,
++                                        struct wsi_device *wsi_device,
++                                        VkDisplayKHR display,
++                                        uint32_t *pPropertyCount,
++                                        VkDisplayModePropertiesKHR *pProperties)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display_connector *connector =
+       wsi_display_connector_from_handle(display);
+ 
+@@ -713,13 +780,28 @@ wsi_GetDisplayModePropertiesKHR(VkPhysicalDevice physicalDevice,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDisplayModeProperties2KHR(VkPhysicalDevice physicalDevice,
+-                                 VkDisplayKHR display,
+-                                 uint32_t *pPropertyCount,
+-                                 VkDisplayModeProperties2KHR *pProperties)
++wsi_GetDisplayModePropertiesKHR(VkPhysicalDevice physicalDevice,
++                                VkDisplayKHR display,
++                                uint32_t *pPropertyCount,
++                                VkDisplayModePropertiesKHR *pProperties)
+ {
+    VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+    struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_display_mode_properties(physicalDevice,
++                                                  wsi_device,
++                                                  display,
++                                                  pPropertyCount,
++                                                  pProperties);
++}
++
++VkResult
++wsi_display_get_display_mode_properties2(VkPhysicalDevice physicalDevice,
++                                         struct wsi_device *wsi_device,
++                                         VkDisplayKHR display,
++                                         uint32_t *pPropertyCount,
++                                         VkDisplayModeProperties2KHR *pProperties)
++{
+    struct wsi_display_connector *connector =
+       wsi_display_connector_from_handle(display);
+ 
+@@ -738,6 +820,22 @@ wsi_GetDisplayModeProperties2KHR(VkPhysicalDevice physicalDevice,
+    return vk_outarray_status(&conn);
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetDisplayModeProperties2KHR(VkPhysicalDevice physicalDevice,
++                                 VkDisplayKHR display,
++                                 uint32_t *pPropertyCount,
++                                 VkDisplayModeProperties2KHR *pProperties)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_get_display_mode_properties2(physicalDevice,
++                                                   wsi_device,
++                                                   display,
++                                                   pPropertyCount,
++                                                   pProperties);
++}
++
+ static bool
+ wsi_display_mode_matches_vk(wsi_display_mode *wsi,
+                             const VkDisplayModeParametersKHR *vk)
+@@ -750,12 +848,13 @@ wsi_display_mode_matches_vk(wsi_display_mode *wsi,
+ /*
+  * Implement vkCreateDisplayModeKHR (VK_KHR_display)
+  */
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateDisplayModeKHR(VkPhysicalDevice physicalDevice,
+-                         VkDisplayKHR display,
+-                         const VkDisplayModeCreateInfoKHR *pCreateInfo,
+-                         const VkAllocationCallbacks *pAllocator,
+-                         VkDisplayModeKHR *pMode)
++VkResult
++wsi_display_create_display_mode(VkPhysicalDevice physicalDevice,
++                                struct wsi_device *wsi_device,
++                                VkDisplayKHR display,
++                                const VkDisplayModeCreateInfoKHR *pCreateInfo,
++                                const VkAllocationCallbacks *pAllocator,
++                                VkDisplayModeKHR *pMode)
+ {
+    struct wsi_display_connector *connector =
+       wsi_display_connector_from_handle(display);
+@@ -779,11 +878,31 @@ wsi_CreateDisplayModeKHR(VkPhysicalDevice physicalDevice,
+    return VK_ERROR_INITIALIZATION_FAILED;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_CreateDisplayModeKHR(VkPhysicalDevice physicalDevice,
++                         VkDisplayKHR display,
++                         const VkDisplayModeCreateInfoKHR *pCreateInfo,
++                         const VkAllocationCallbacks *pAllocator,
++                         VkDisplayModeKHR *pMode)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_display_create_display_mode(physicalDevice,
++                                          wsi_device,
++                                          display,
++                                          pCreateInfo,
++                                          pAllocator,
++                                          pMode);
++}
++
++
+ /*
+  * Implement vkGetDisplayPlaneCapabilities
+  */
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice physicalDevice,
++VkResult
++wsi_get_display_plane_capabilities(VkPhysicalDevice physicalDevice,
++                                   struct wsi_device *wsi_device,
+                                    VkDisplayModeKHR _mode,
+                                    uint32_t planeIndex,
+                                    VkDisplayPlaneCapabilitiesKHR *pCapabilities)
+@@ -812,15 +931,33 @@ wsi_GetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice physicalDevice,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDisplayPlaneCapabilities2KHR(VkPhysicalDevice physicalDevice,
+-                                    const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
+-                                    VkDisplayPlaneCapabilities2KHR *pCapabilities)
++wsi_GetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice physicalDevice,
++                                   VkDisplayModeKHR _mode,
++                                   uint32_t planeIndex,
++                                   VkDisplayPlaneCapabilitiesKHR *pCapabilities)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_get_display_plane_capabilities(physicalDevice,
++                                             wsi_device,
++                                             _mode,
++                                             planeIndex,
++                                             pCapabilities);
++}
++
++VkResult
++wsi_get_display_plane_capabilities2(
++   VkPhysicalDevice physicalDevice,
++   struct wsi_device *wsi_device,
++   const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
++   VkDisplayPlaneCapabilities2KHR *pCapabilities)
+ {
+    assert(pCapabilities->sType ==
+           VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR);
+ 
+    VkResult result =
+-      wsi_GetDisplayPlaneCapabilitiesKHR(physicalDevice,
++      wsi_get_display_plane_capabilities(physicalDevice, wsi_device,
+                                          pDisplayPlaneInfo->mode,
+                                          pDisplayPlaneInfo->planeIndex,
+                                          &pCapabilities->capabilities);
+@@ -843,18 +980,31 @@ wsi_GetDisplayPlaneCapabilities2KHR(VkPhysicalDevice physicalDevice,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateDisplayPlaneSurfaceKHR(VkInstance _instance,
+-                                 const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
+-                                 const VkAllocationCallbacks *pAllocator,
+-                                 VkSurfaceKHR *pSurface)
++wsi_GetDisplayPlaneCapabilities2KHR(VkPhysicalDevice physicalDevice,
++                                    const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
++                                    VkDisplayPlaneCapabilities2KHR *pCapabilities)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_get_display_plane_capabilities2(physicalDevice,
++                                              wsi_device,
++                                              pDisplayPlaneInfo,
++                                              pCapabilities);
++}
++
++VkResult
++wsi_create_display_surface(VkInstance instance,
++                           const VkAllocationCallbacks *allocator,
++                           const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
++                           VkSurfaceKHR *pSurface)
+ {
+-   VK_FROM_HANDLE(vk_instance, instance, _instance);
+    VkIcdSurfaceDisplay *surface;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR);
+ 
+-   surface = vk_zalloc2(&instance->alloc, pAllocator, sizeof(*surface), 8,
+-                        VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
++   surface = vk_zalloc(allocator, sizeof(*surface), 8,
++                       VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (surface == NULL)
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+ 
+@@ -873,6 +1023,27 @@ wsi_CreateDisplayPlaneSurfaceKHR(VkInstance _instance,
+    return VK_SUCCESS;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_CreateDisplayPlaneSurfaceKHR(VkInstance _instance,
++                                 const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
++                                 const VkAllocationCallbacks *pAllocator,
++                                 VkSurfaceKHR *pSurface)
++{
++   VK_FROM_HANDLE(vk_instance, instance, _instance);
++   const VkAllocationCallbacks *allocator;
++
++   if (pAllocator)
++     allocator = pAllocator;
++   else
++     allocator = &instance->alloc;
++
++   return wsi_create_display_surface(_instance,
++                                     allocator,
++                                     pCreateInfo,
++                                     pSurface);
++}
++
++
+ static VkResult
+ wsi_display_surface_get_support(VkIcdSurfaceBase *surface,
+                                 struct wsi_device *wsi_device,
+@@ -2236,12 +2407,11 @@ wsi_display_finish_wsi(struct wsi_device *wsi_device,
+ /*
+  * Implement vkReleaseDisplay
+  */
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_ReleaseDisplayEXT(VkPhysicalDevice physicalDevice,
+-                      VkDisplayKHR display)
++VkResult
++wsi_release_display(VkPhysicalDevice            physicalDevice,
++                    struct wsi_device           *wsi_device,
++                    VkDisplayKHR                display)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+ 
+@@ -2656,12 +2826,23 @@ wsi_display_find_crtc_for_output(xcb_connection_t *connection,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_AcquireXlibDisplayEXT(VkPhysicalDevice physicalDevice,
+-                          Display *dpy,
+-                          VkDisplayKHR display)
++wsi_ReleaseDisplayEXT(VkPhysicalDevice physicalDevice,
++                      VkDisplayKHR display)
+ {
+    VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+    struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_release_display(physicalDevice,
++                              wsi_device,
++                              display);
++}
++
++VkResult
++wsi_acquire_xlib_display(VkPhysicalDevice physicalDevice,
++                         struct wsi_device *wsi_device,
++                         Display *dpy,
++                         VkDisplayKHR display)
++{
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+    xcb_connection_t *connection = XGetXCBConnection(dpy);
+@@ -2720,13 +2901,26 @@ wsi_AcquireXlibDisplayEXT(VkPhysicalDevice physicalDevice,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetRandROutputDisplayEXT(VkPhysicalDevice physicalDevice,
++wsi_AcquireXlibDisplayEXT(VkPhysicalDevice physicalDevice,
++                          Display *dpy,
++                          VkDisplayKHR display)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_acquire_xlib_display(physicalDevice,
++                                   wsi_device,
++                                   dpy,
++                                   display);
++}
++
++VkResult
++wsi_get_randr_output_display(VkPhysicalDevice physicalDevice,
++                             struct wsi_device *wsi_device,
+                              Display *dpy,
+                              RROutput rrOutput,
+                              VkDisplayKHR *pDisplay)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    xcb_connection_t *connection = XGetXCBConnection(dpy);
+    struct wsi_display_connector *connector =
+       wsi_display_get_output(wsi_device, connection,
+@@ -2739,16 +2933,31 @@ wsi_GetRandROutputDisplayEXT(VkPhysicalDevice physicalDevice,
+    return VK_SUCCESS;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetRandROutputDisplayEXT(VkPhysicalDevice physicalDevice,
++                             Display *dpy,
++                             RROutput rrOutput,
++                             VkDisplayKHR *pDisplay)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_get_randr_output_display(physicalDevice,
++                                       wsi_device,
++                                       dpy,
++                                       rrOutput,
++                                       pDisplay);
++}
++
+ #endif
+ 
+ /* VK_EXT_display_control */
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_DisplayPowerControlEXT(VkDevice _device,
+-                           VkDisplayKHR display,
+-                           const VkDisplayPowerInfoEXT *pDisplayPowerInfo)
++VkResult
++wsi_display_power_control(VkDevice _device,
++                          struct wsi_device *wsi_device,
++                          VkDisplayKHR display,
++                          const VkDisplayPowerInfoEXT *pDisplayPowerInfo)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+-   struct wsi_device *wsi_device = device->physical->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+    struct wsi_display_connector *connector =
+@@ -2776,6 +2985,20 @@ wsi_DisplayPowerControlEXT(VkDevice _device,
+    return VK_SUCCESS;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_DisplayPowerControlEXT(VkDevice _device,
++                           VkDisplayKHR display,
++                           const VkDisplayPowerInfoEXT *pDisplayPowerInfo)
++{
++   VK_FROM_HANDLE(vk_device, device, _device);
++   struct wsi_device *wsi_device = device->physical->wsi_device;
++
++   return wsi_display_power_control(_device,
++                                    wsi_device,
++                                    display,
++                                    pDisplayPowerInfo);
++}
++
+ VkResult
+ wsi_register_device_event(VkDevice _device,
+                           struct wsi_device *wsi_device,
+@@ -2784,7 +3007,6 @@ wsi_register_device_event(VkDevice _device,
+                           struct vk_sync **sync_out,
+                           int sync_fd)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+    VkResult ret = VK_SUCCESS;
+@@ -2818,6 +3040,8 @@ wsi_register_device_event(VkDevice _device,
+    mtx_unlock(&wsi->wait_mutex);
+ 
+    if (sync_out) {
++      VK_FROM_HANDLE(vk_device, device, _device);
++
+       ret = wsi_display_sync_create(device, fence, sync_out);
+       if (ret != VK_SUCCESS)
+          wsi_display_fence_destroy(fence);
+@@ -2866,7 +3090,6 @@ wsi_register_display_event(VkDevice _device,
+                            struct vk_sync **sync_out,
+                            int sync_fd)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+    struct wsi_display_fence *fence;
+@@ -2885,6 +3108,8 @@ wsi_register_display_event(VkDevice _device,
+ 
+       if (ret == VK_SUCCESS) {
+          if (sync_out) {
++            VK_FROM_HANDLE(vk_device, device, _device);
++
+             ret = wsi_display_sync_create(device, fence, sync_out);
+             if (ret != VK_SUCCESS)
+                wsi_display_fence_destroy(fence);
+@@ -2943,14 +3168,13 @@ wsi_display_setup_syncobj_fd(struct wsi_device *wsi_device,
+    wsi->syncobj_fd = fd;
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetSwapchainCounterEXT(VkDevice _device,
+-                           VkSwapchainKHR _swapchain,
+-                           VkSurfaceCounterFlagBitsEXT counter,
+-                           uint64_t *pCounterValue)
++VkResult
++wsi_get_swapchain_counter(VkDevice _device,
++                          struct wsi_device *wsi_device,
++                          VkSwapchainKHR _swapchain,
++                          VkSurfaceCounterFlagBitsEXT counter,
++                          uint64_t *pCounterValue)
+ {
+-   VK_FROM_HANDLE(vk_device, device, _device);
+-   struct wsi_device *wsi_device = device->physical->wsi_device;
+    struct wsi_display *wsi =
+       (struct wsi_display *) wsi_device->wsi[VK_ICD_WSI_PLATFORM_DISPLAY];
+    struct wsi_display_swapchain *swapchain =
+@@ -2975,13 +3199,27 @@ wsi_GetSwapchainCounterEXT(VkDevice _device,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_AcquireDrmDisplayEXT(VkPhysicalDevice physicalDevice,
+-                         int32_t drmFd,
+-                         VkDisplayKHR display)
++wsi_GetSwapchainCounterEXT(VkDevice _device,
++                           VkSwapchainKHR _swapchain,
++                           VkSurfaceCounterFlagBitsEXT counter,
++                           uint64_t *pCounterValue)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
++   VK_FROM_HANDLE(vk_device, device, _device);
++   struct wsi_device *wsi_device = device->physical->wsi_device;
+ 
++   return wsi_get_swapchain_counter(_device,
++                                    wsi_device,
++                                    _swapchain,
++                                    counter,
++                                    pCounterValue);
++}
++
++VkResult
++wsi_acquire_drm_display(VkPhysicalDevice     physicalDevice,
++                        struct wsi_device    *wsi_device,
++                        int                  drmFd,
++                        VkDisplayKHR         display)
++{
+    if (!wsi_device_matches_drm_fd(wsi_device, drmFd))
+       return VK_ERROR_UNKNOWN;
+ 
+@@ -3008,14 +3246,26 @@ wsi_AcquireDrmDisplayEXT(VkPhysicalDevice physicalDevice,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_GetDrmDisplayEXT(VkPhysicalDevice physicalDevice,
+-                     int32_t drmFd,
+-                     uint32_t connectorId,
+-                     VkDisplayKHR *pDisplay)
++wsi_AcquireDrmDisplayEXT(VkPhysicalDevice physicalDevice,
++                         int32_t drmFd,
++                         VkDisplayKHR display)
+ {
+    VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+    struct wsi_device *wsi_device = pdevice->wsi_device;
+ 
++   return wsi_acquire_drm_display(physicalDevice,
++                                  wsi_device,
++                                  drmFd,
++                                  display);
++}
++
++VkResult
++wsi_get_drm_display(VkPhysicalDevice      physicalDevice,
++                    struct wsi_device     *wsi_device,
++                    int                   drmFd,
++                    int                   connectorId,
++                    VkDisplayKHR          *pDisplay)
++{
+    if (!wsi_device_matches_drm_fd(wsi_device, drmFd))
+       return VK_ERROR_UNKNOWN;
+ 
+@@ -3030,3 +3280,20 @@ wsi_GetDrmDisplayEXT(VkPhysicalDevice physicalDevice,
+    *pDisplay = wsi_display_connector_to_handle(connector);
+    return VK_SUCCESS;
+ }
++
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_GetDrmDisplayEXT(VkPhysicalDevice physicalDevice,
++                     int32_t drmFd,
++                     uint32_t connectorId,
++                     VkDisplayKHR *pDisplay)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_get_drm_display(physicalDevice,
++                              wsi_device,
++                              drmFd,
++                              connectorId,
++                              pDisplay);
++}
++
+diff --git a/src/vulkan/wsi/wsi_common_display.h b/src/vulkan/wsi/wsi_common_display.h
+index dd54b9b775f..cdfbda50107 100644
+--- a/src/vulkan/wsi/wsi_common_display.h
++++ b/src/vulkan/wsi/wsi_common_display.h
+@@ -29,7 +29,112 @@
+ 
+ struct vk_sync;
+ 
++VkResult
++wsi_display_get_physical_device_display_properties(
++   VkPhysicalDevice physical_device,
++   struct wsi_device *wsi_device,
++   uint32_t *property_count,
++   VkDisplayPropertiesKHR *properties);
++
++VkResult
++wsi_display_get_physical_device_display_properties2(
++   VkPhysicalDevice physical_device,
++   struct wsi_device *wsi_device,
++   uint32_t *pPropertyCount,
++   VkDisplayProperties2KHR *pProperties);
++
++VkResult
++wsi_display_get_physical_device_display_plane_properties(
++   VkPhysicalDevice physical_device,
++   struct wsi_device *wsi_device,
++   uint32_t *property_count,
++   VkDisplayPlanePropertiesKHR *properties);
++
++VkResult
++wsi_display_get_physical_device_display_plane_properties2(
++   VkPhysicalDevice physical_device,
++   struct wsi_device *wsi_device,
++   uint32_t *property_count,
++   VkDisplayPlaneProperties2KHR *properties);
++
++VkResult
++wsi_display_get_display_plane_supported_displays(
++   VkPhysicalDevice physical_device,
++   struct wsi_device *wsi_device,
++   uint32_t plane_index,
++   uint32_t *display_count,
++   VkDisplayKHR *displays);
++
++VkResult
++wsi_display_get_display_mode_properties(VkPhysicalDevice physical_device,
++                                        struct wsi_device *wsi_device,
++                                        VkDisplayKHR display,
++                                        uint32_t *property_count,
++                                        VkDisplayModePropertiesKHR *properties);
++
++VkResult
++wsi_display_get_display_mode_properties2(VkPhysicalDevice physical_device,
++                                         struct wsi_device *wsi_device,
++                                         VkDisplayKHR display,
++                                         uint32_t *property_count,
++                                         VkDisplayModeProperties2KHR *properties);
++
++VkResult
++wsi_display_create_display_mode(VkPhysicalDevice physical_device,
++                                struct wsi_device *wsi_device,
++                                VkDisplayKHR display,
++                                const VkDisplayModeCreateInfoKHR *create_info,
++                                const VkAllocationCallbacks *allocator,
++                                VkDisplayModeKHR *mode);
++
++VkResult
++wsi_get_display_plane_capabilities(VkPhysicalDevice physical_device,
++                                   struct wsi_device *wsi_device,
++                                   VkDisplayModeKHR mode_khr,
++                                   uint32_t plane_index,
++                                   VkDisplayPlaneCapabilitiesKHR *capabilities);
++
++VkResult
++wsi_get_display_plane_capabilities2(VkPhysicalDevice physical_device,
++                                    struct wsi_device *wsi_device,
++                                    const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
++                                    VkDisplayPlaneCapabilities2KHR *capabilities);
++
++VkResult
++wsi_create_display_surface(VkInstance instance,
++                           const VkAllocationCallbacks *pAllocator,
++                           const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
++                           VkSurfaceKHR *pSurface);
++
++VkResult
++wsi_release_display(VkPhysicalDevice            physical_device,
++                    struct wsi_device           *wsi_device,
++                    VkDisplayKHR                display);
++
++
++#ifdef VK_USE_PLATFORM_XLIB_XRANDR_EXT
++VkResult
++wsi_acquire_xlib_display(VkPhysicalDevice       physical_device,
++                         struct wsi_device      *wsi_device,
++                         Display                *dpy,
++                         VkDisplayKHR           display);
++
++VkResult
++wsi_get_randr_output_display(VkPhysicalDevice   physical_device,
++                             struct wsi_device  *wsi_device,
++                             Display            *dpy,
++                             RROutput           output,
++                             VkDisplayKHR       *display);
++
++#endif /* VK_USE_PLATFORM_XLIB_XRANDR_EXT */
++
+ /* VK_EXT_display_control */
++VkResult
++wsi_display_power_control(VkDevice                      device,
++                          struct wsi_device             *wsi_device,
++                          VkDisplayKHR                  display,
++                          const VkDisplayPowerInfoEXT   *display_power_info);
++
+ VkResult
+ wsi_register_device_event(VkDevice                      device,
+                           struct wsi_device             *wsi_device,
+@@ -47,4 +152,25 @@ wsi_register_display_event(VkDevice                     device,
+                            struct vk_sync               **sync,
+                            int sync_fd);
+ 
++VkResult
++wsi_get_swapchain_counter(VkDevice                      device,
++                          struct wsi_device             *wsi_device,
++                          VkSwapchainKHR                swapchain,
++                          VkSurfaceCounterFlagBitsEXT   flag_bits,
++                          uint64_t                      *value);
++
++/* VK_EXT_acquire_drm_display */
++VkResult
++wsi_acquire_drm_display(VkPhysicalDevice     pDevice,
++                        struct wsi_device    *wsi_device,
++                        int                  drmFd,
++                        VkDisplayKHR         display);
++
++VkResult
++wsi_get_drm_display(VkPhysicalDevice      pDevice,
++                    struct wsi_device     *wsi_device,
++                    int                   drmFd,
++                    int                   connectorId,
++                    VkDisplayKHR          *display);
++
+ #endif
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index c01c4079d61..1a364c0c478 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -42,6 +42,8 @@
+ #include "vk_util.h"
+ #include "wsi_common_entrypoints.h"
+ #include "wsi_common_private.h"
++#include "wsi_common_wayland.h"
++#include "wayland-drm-client-protocol.h"
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
+ 
+ #include <util/compiler.h>
+@@ -580,7 +582,7 @@ registry_handle_global(void *data, struct wl_registry *registry,
+ 
+       display->wl_drm =
+          wl_registry_bind(registry, name, &wl_drm_interface, 2);
+-      wl_drm_add_listener(display->drm.wl_drm, &drm_listener, display);
++      wl_drm_add_listener(display->wl_drm, &drm_listener, display);
+    }
+ 
+    if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0 && version >= 3) {
+@@ -773,13 +775,10 @@ wsi_wl_display_unref(struct wsi_wl_display *display)
+    vk_free(wsi->alloc, display);
+ }
+ 
+-VKAPI_ATTR VkBool32 VKAPI_CALL
+-wsi_GetPhysicalDeviceWaylandPresentationSupportKHR(VkPhysicalDevice physicalDevice,
+-                                                   uint32_t queueFamilyIndex,
+-                                                   struct wl_display *wl_display)
++VkBool32
++wsi_wl_get_presentation_support(struct wsi_device *wsi_device,
++                                struct wl_display *wl_display)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_wayland *wsi =
+       (struct wsi_wayland *)wsi_device->wsi[VK_ICD_WSI_PLATFORM_WAYLAND];
+ 
+@@ -792,6 +791,18 @@ wsi_GetPhysicalDeviceWaylandPresentationSupportKHR(VkPhysicalDevice physicalDevi
+    return ret == VK_SUCCESS;
+ }
+ 
++VKAPI_ATTR VkBool32 VKAPI_CALL
++wsi_GetPhysicalDeviceWaylandPresentationSupportKHR(VkPhysicalDevice physicalDevice,
++                                                   uint32_t queueFamilyIndex,
++                                                   struct wl_display *wl_display)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_wl_get_presentation_support(wsi_device,
++                                          wl_display);
++}
++
+ static VkResult
+ wsi_wl_surface_get_support(VkIcdSurfaceBase *surface,
+                            struct wsi_device *wsi_device,
+@@ -993,19 +1004,16 @@ wsi_wl_surface_get_present_rectangles(VkIcdSurfaceBase *surface,
+    return vk_outarray_status(&out);
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateWaylandSurfaceKHR(VkInstance _instance,
+-                            const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
+-                            const VkAllocationCallbacks *pAllocator,
+-                            VkSurfaceKHR *pSurface)
++VkResult wsi_create_wl_surface(const VkAllocationCallbacks *allocator,
++                               const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
++                               VkSurfaceKHR *pSurface)
+ {
+-   VK_FROM_HANDLE(vk_instance, instance, _instance);
+    VkIcdSurfaceWayland *surface;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR);
+ 
+-   surface = vk_alloc2(&instance->alloc, pAllocator, sizeof *surface, 8,
+-                       VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
++   surface = vk_alloc(allocator, sizeof *surface, 8,
++                      VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (surface == NULL)
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+ 
+@@ -1018,6 +1026,25 @@ wsi_CreateWaylandSurfaceKHR(VkInstance _instance,
+    return VK_SUCCESS;
+ }
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_CreateWaylandSurfaceKHR(VkInstance _instance,
++                            const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
++                            const VkAllocationCallbacks *pAllocator,
++                            VkSurfaceKHR *pSurface)
++{
++   VK_FROM_HANDLE(vk_instance, instance, _instance);
++   const VkAllocationCallbacks *allocator;
++
++   if (pAllocator)
++     allocator = pAllocator;
++   else
++     allocator = &instance->alloc;
++
++   return wsi_create_wl_surface(allocator,
++                                pCreateInfo,
++                                pSurface);
++}
++
+ struct wsi_wl_image {
+    struct wsi_image                             base;
+    struct wl_buffer *                           buffer;
+diff --git a/src/vulkan/wsi/wsi_common_wayland.h b/src/vulkan/wsi/wsi_common_wayland.h
+new file mode 100644
+index 00000000000..effba0ebba4
+--- /dev/null
++++ b/src/vulkan/wsi/wsi_common_wayland.h
+@@ -0,0 +1,35 @@
++/*
++ * Copyright © 2015 Intel Corporation
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
++ * IN THE SOFTWARE.
++ */
++#ifndef WSI_COMMON_WAYLAND_H
++#define WSI_COMMON_WAYLAND_H
++
++#include "wsi_common.h"
++
++VkBool32
++wsi_wl_get_presentation_support(struct wsi_device *wsi_device,
++				struct wl_display *wl_display);
++
++VkResult wsi_create_wl_surface(const VkAllocationCallbacks *pAllocator,
++			       const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
++			       VkSurfaceKHR *pSurface);
++#endif
+diff --git a/src/vulkan/wsi/wsi_common_x11.c b/src/vulkan/wsi/wsi_common_x11.c
+index 8d9123c0494..f1977cf7ec1 100644
+--- a/src/vulkan/wsi/wsi_common_x11.c
++++ b/src/vulkan/wsi/wsi_common_x11.c
+@@ -51,6 +51,7 @@
+ #include "vk_enum_to_str.h"
+ #include "wsi_common_entrypoints.h"
+ #include "wsi_common_private.h"
++#include "wsi_common_x11.h"
+ #include "wsi_common_queue.h"
+ 
+ #ifdef HAVE_SYS_SHM_H
+@@ -506,14 +507,12 @@ visual_supported(xcb_visualtype_t *visual)
+    return visual->bits_per_rgb_value == 8 || visual->bits_per_rgb_value == 10;
+ }
+ 
+-VKAPI_ATTR VkBool32 VKAPI_CALL
+-wsi_GetPhysicalDeviceXcbPresentationSupportKHR(VkPhysicalDevice physicalDevice,
+-                                               uint32_t queueFamilyIndex,
+-                                               xcb_connection_t *connection,
+-                                               xcb_visualid_t visual_id)
++VkBool32 wsi_get_physical_device_xcb_presentation_support(
++    struct wsi_device *wsi_device,
++    uint32_t queueFamilyIndex,
++    xcb_connection_t *connection,
++    xcb_visualid_t visual_id)
+ {
+-   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
+-   struct wsi_device *wsi_device = pdevice->wsi_device;
+    struct wsi_x11_connection *wsi_conn =
+       wsi_x11_get_connection(wsi_device, connection);
+ 
+@@ -531,6 +530,21 @@ wsi_GetPhysicalDeviceXcbPresentationSupportKHR(VkPhysicalDevice physicalDevice,
+    return true;
+ }
+ 
++VKAPI_ATTR VkBool32 VKAPI_CALL
++wsi_GetPhysicalDeviceXcbPresentationSupportKHR(VkPhysicalDevice physicalDevice,
++                                               uint32_t queueFamilyIndex,
++                                               xcb_connection_t *connection,
++                                               xcb_visualid_t visual_id)
++{
++   VK_FROM_HANDLE(vk_physical_device, pdevice, physicalDevice);
++   struct wsi_device *wsi_device = pdevice->wsi_device;
++
++   return wsi_get_physical_device_xcb_presentation_support(wsi_device,
++                                                           queueFamilyIndex,
++                                                           connection,
++                                                           visual_id);
++}
++
+ VKAPI_ATTR VkBool32 VKAPI_CALL
+ wsi_GetPhysicalDeviceXlibPresentationSupportKHR(VkPhysicalDevice physicalDevice,
+                                                 uint32_t queueFamilyIndex,
+@@ -837,19 +851,16 @@ x11_surface_get_present_rectangles(VkIcdSurfaceBase *icd_surface,
+    return vk_outarray_status(&out);
+ }
+ 
+-VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateXcbSurfaceKHR(VkInstance _instance,
+-                        const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
+-                        const VkAllocationCallbacks *pAllocator,
+-                        VkSurfaceKHR *pSurface)
++VkResult wsi_create_xcb_surface(const VkAllocationCallbacks *allocator,
++				const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
++				VkSurfaceKHR *pSurface)
+ {
+-   VK_FROM_HANDLE(vk_instance, instance, _instance);
+    VkIcdSurfaceXcb *surface;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR);
+ 
+-   surface = vk_alloc2(&instance->alloc, pAllocator, sizeof *surface, 8,
+-                       VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
++   surface = vk_alloc(allocator, sizeof *surface, 8,
++                      VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (surface == NULL)
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+ 
+@@ -862,18 +873,34 @@ wsi_CreateXcbSurfaceKHR(VkInstance _instance,
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+-wsi_CreateXlibSurfaceKHR(VkInstance _instance,
+-                         const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
+-                         const VkAllocationCallbacks *pAllocator,
+-                         VkSurfaceKHR *pSurface)
++wsi_CreateXcbSurfaceKHR(VkInstance _instance,
++                        const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
++                        const VkAllocationCallbacks *pAllocator,
++                        VkSurfaceKHR *pSurface)
+ {
+    VK_FROM_HANDLE(vk_instance, instance, _instance);
++   const VkAllocationCallbacks *allocator;
++
++   if (pAllocator)
++     allocator = pAllocator;
++   else
++     allocator = &instance->alloc;
++
++   return wsi_create_xcb_surface(allocator,
++                                 pCreateInfo,
++                                 pSurface);
++}
++
++VkResult wsi_create_xlib_surface(const VkAllocationCallbacks *allocator,
++				 const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
++				 VkSurfaceKHR *pSurface)
++{
+    VkIcdSurfaceXlib *surface;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR);
+ 
+-   surface = vk_alloc2(&instance->alloc, pAllocator, sizeof *surface, 8,
+-                       VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
++   surface = vk_alloc(allocator, sizeof *surface, 8,
++                      VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+    if (surface == NULL)
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+ 
+@@ -898,6 +925,25 @@ struct x11_image {
+    uint8_t *                                 shmaddr;
+ };
+ 
++VKAPI_ATTR VkResult VKAPI_CALL
++wsi_CreateXlibSurfaceKHR(VkInstance _instance,
++                         const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
++                         const VkAllocationCallbacks *pAllocator,
++                         VkSurfaceKHR *pSurface)
++{
++   VK_FROM_HANDLE(vk_instance, instance, _instance);
++   const VkAllocationCallbacks *allocator;
++
++   if (pAllocator)
++     allocator = pAllocator;
++   else
++     allocator = &instance->alloc;
++
++   return wsi_create_xlib_surface(allocator,
++                                  pCreateInfo,
++                                  pSurface);
++}
++
+ struct x11_swapchain {
+    struct wsi_swapchain                        base;
+ 
+diff --git a/src/vulkan/wsi/wsi_common_x11.h b/src/vulkan/wsi/wsi_common_x11.h
+new file mode 100644
+index 00000000000..e4b1e94a8c8
+--- /dev/null
++++ b/src/vulkan/wsi/wsi_common_x11.h
+@@ -0,0 +1,41 @@
++/*
++ * Copyright © 2015 Intel Corporation
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
++ * IN THE SOFTWARE.
++ */
++#ifndef WSI_COMMON_X11_H
++#define WSI_COMMON_X11_H
++
++#include "wsi_common.h"
++
++VkBool32 wsi_get_physical_device_xcb_presentation_support(
++    struct wsi_device *wsi_device,
++    uint32_t                                    queueFamilyIndex,
++    xcb_connection_t*                           connection,
++    xcb_visualid_t                              visual_id);
++
++VkResult wsi_create_xcb_surface(const VkAllocationCallbacks *pAllocator,
++				const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
++				VkSurfaceKHR *pSurface);
++
++VkResult wsi_create_xlib_surface(const VkAllocationCallbacks *pAllocator,
++				 const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
++				 VkSurfaceKHR *pSurface);
++#endif
+-- 
+2.25.1
+

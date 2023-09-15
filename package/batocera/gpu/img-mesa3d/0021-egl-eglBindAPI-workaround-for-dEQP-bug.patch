@@ -1,0 +1,29 @@
+From 1ae8f535fa7ce80768011d045d17281c264a3ab0 Mon Sep 17 00:00:00 2001
+From: Eric Engestrom <eric.engestrom@imgtec.com>
+Date: Mon, 25 Sep 2017 15:58:49 +0100
+Subject: [PATCH 21/58] egl: eglBindAPI workaround for dEQP bug
+
+dEQP relies on eglBindAPI to only return true if the API can
+successfully be used to create contexts, which the spec does not
+require.
+Until dEQP is fixed, just disable GL on non-X11 platforms.
+---
+ src/egl/main/eglcurrent.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglcurrent.h b/src/egl/main/eglcurrent.h
+index d9a4a90174e..32570970947 100644
+--- a/src/egl/main/eglcurrent.h
++++ b/src/egl/main/eglcurrent.h
+@@ -71,7 +71,7 @@ struct _egl_thread_info
+ static inline EGLBoolean
+ _eglIsApiValid(EGLenum api)
+ {
+-#ifdef ANDROID
++#ifndef HAVE_X11_PLATFORM
+    /* OpenGL is not a valid/supported API on Android */
+    return api == EGL_OPENGL_ES_API;
+ #else
+-- 
+2.25.1
+

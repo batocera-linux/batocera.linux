@@ -1,0 +1,46 @@
+From eddfa511f99790d87c66bdf848052ad065b83650 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Wed, 8 Nov 2017 15:26:25 +0000
+Subject: [PATCH 16/58] egl/wayland: flush the drawable before blitting
+
+Flush the drawable before blitting in the "is_different_gpu" case when
+swapping buffers, and pass the flush flag to the blitImage call. The
+change brings the code into line with the way the DRI3 GLX code works.
+
+For the PowerVR driver, the drawable parameters that will be used in
+the flush have been obtained previously, including any native fence
+associated with the blit source. The blit will result in a new native
+fence for the source, and make the one in the drawable parameters
+invalid.
+---
+ src/egl/drivers/dri2/platform_wayland.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 17133ca9cd4..a699f735583 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -1570,6 +1570,8 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+       wl_surface_damage(dri2_surf->wl_surface_wrapper,
+                         0, 0, INT32_MAX, INT32_MAX);
+ 
++   dri2_flush_drawable_for_swapbuffers(disp, draw);
++
+    if (dri2_dpy->is_different_gpu) {
+       _EGLContext *ctx = _eglGetCurrentContext();
+       struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
+@@ -1579,10 +1581,9 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+                                  0, 0, dri2_surf->base.Width,
+                                  dri2_surf->base.Height,
+                                  0, 0, dri2_surf->base.Width,
+-                                 dri2_surf->base.Height, 0);
++                                 dri2_surf->base.Height, __BLIT_FLAG_FLUSH);
+    }
+ 
+-   dri2_flush_drawable_for_swapbuffers(disp, draw);
+    dri2_dpy->flush->invalidate(dri2_surf->dri_drawable);
+ 
+    wl_surface_commit(dri2_surf->wl_surface_wrapper);
+-- 
+2.25.1
+

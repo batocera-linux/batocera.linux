@@ -1,0 +1,541 @@
+From c8cf03b4aee762cca6498be16156a914d62d4895 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Wed, 20 Dec 2017 17:41:38 +0000
+Subject: [PATCH 24/58] egl: add support for EXT_yuv_surface
+
+This implements EXT_yuv_surface but doesn't expose it for any platform.
+---
+ include/GL/internal/dri_interface.h |   1 +
+ src/egl/drivers/dri2/egl_dri2.c     |  83 +++++++++
+ src/egl/main/eglapi.c               |   1 +
+ src/egl/main/eglconfig.c            | 255 +++++++++++++++++++++++++++-
+ src/egl/main/eglconfig.h            |  12 ++
+ src/egl/main/egldisplay.h           |   1 +
+ 6 files changed, 348 insertions(+), 5 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 24ccf864f74..b1b5937a012 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1013,6 +1013,7 @@ enum dri_loader_cap {
+     */
+    DRI_LOADER_CAP_RGBA_ORDERING,
+    DRI_LOADER_CAP_FP16,
++   DRI_LOADER_CAP_YUV_SURFACE_IMG = 0x7001,
+ };
+ 
+ struct __DRIdri2LoaderExtensionRec {
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index d3a8fbe4ef7..b8e7bb08619 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -302,6 +302,7 @@ static const EGLint dri2_to_egl_attribute_map[__DRI_ATTRIB_MAX] = {
+    [__DRI_ATTRIB_MAX_SWAP_INTERVAL]     = EGL_MAX_SWAP_INTERVAL,
+    [__DRI_ATTRIB_MIN_SWAP_INTERVAL]     = EGL_MIN_SWAP_INTERVAL,
+    [__DRI_ATTRIB_YINVERTED]             = EGL_Y_INVERTED_NOK,
++   [__DRI_ATTRIB_YUV_NUMBER_OF_PLANES]  = EGL_YUV_NUMBER_OF_PLANES_EXT,
+ };
+ 
+ const __DRIconfig *
+@@ -428,6 +429,8 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+             value = EGL_RGB_BUFFER;
+          else if (value & __DRI_ATTRIB_LUMINANCE_BIT)
+             value = EGL_LUMINANCE_BUFFER;
++         else if (value & __DRI_ATTRIB_YUV_BIT)
++            value = EGL_YUV_BUFFER_EXT;
+          else
+             return NULL;
+          base.ColorBufferType = value;
+@@ -532,6 +535,73 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+          if (disp->Extensions.KHR_mutable_render_buffer)
+             surface_type |= EGL_MUTABLE_RENDER_BUFFER_BIT_KHR;
+          break;
++
++      case __DRI_ATTRIB_YUV_ORDER:
++         if (value & __DRI_ATTRIB_YUV_ORDER_YUV_BIT)
++            value = EGL_YUV_ORDER_YUV_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_YVU_BIT)
++            value = EGL_YUV_ORDER_YVU_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_YUYV_BIT)
++            value = EGL_YUV_ORDER_YUYV_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_UYVY_BIT)
++            value = EGL_YUV_ORDER_UYVY_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_YVYU_BIT)
++            value = EGL_YUV_ORDER_YVYU_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_VYUY_BIT)
++            value = EGL_YUV_ORDER_VYUY_EXT;
++         else if (value & __DRI_ATTRIB_YUV_ORDER_AYUV_BIT)
++            value = EGL_YUV_ORDER_AYUV_EXT;
++         else
++            value = EGL_NONE;
++         _eglSetConfigKey(&base, EGL_YUV_ORDER_EXT, value);
++         break;
++
++      case __DRI_ATTRIB_YUV_SUBSAMPLE:
++         if (value & __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT)
++            value = EGL_YUV_SUBSAMPLE_4_2_0_EXT;
++         else if (value & __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT)
++            value = EGL_YUV_SUBSAMPLE_4_2_2_EXT;
++         else if (value & __DRI_ATTRIB_YUV_SUBSAMPLE_4_4_4_BIT)
++            value = EGL_YUV_SUBSAMPLE_4_4_4_EXT;
++         else
++            value = EGL_NONE;
++         _eglSetConfigKey(&base, EGL_YUV_SUBSAMPLE_EXT, value);
++         break;
++
++      case __DRI_ATTRIB_YUV_DEPTH_RANGE:
++         if (value & __DRI_ATTRIB_YUV_DEPTH_RANGE_LIMITED_BIT)
++            value = EGL_YUV_DEPTH_RANGE_LIMITED_EXT;
++         else if (value & __DRI_ATTRIB_YUV_DEPTH_RANGE_FULL_BIT)
++            value = EGL_YUV_DEPTH_RANGE_FULL_EXT;
++         else
++            value = EGL_NONE;
++         _eglSetConfigKey(&base, EGL_YUV_DEPTH_RANGE_EXT, value);
++         break;
++
++      case __DRI_ATTRIB_YUV_CSC_STANDARD:
++         if (value & __DRI_ATTRIB_YUV_CSC_STANDARD_601_BIT)
++            value = EGL_YUV_CSC_STANDARD_601_EXT;
++         else if (value & __DRI_ATTRIB_YUV_CSC_STANDARD_709_BIT)
++            value = EGL_YUV_CSC_STANDARD_709_EXT;
++         else if (value & __DRI_ATTRIB_YUV_CSC_STANDARD_2020_BIT)
++            value = EGL_YUV_CSC_STANDARD_2020_EXT;
++         else
++            value = EGL_NONE;
++         _eglSetConfigKey(&base, EGL_YUV_CSC_STANDARD_EXT, value);
++         break;
++
++      case __DRI_ATTRIB_YUV_PLANE_BPP:
++         if (value & __DRI_ATTRIB_YUV_PLANE_BPP_0_BIT)
++            value = EGL_YUV_PLANE_BPP_0_EXT;
++         else if (value & __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT)
++            value = EGL_YUV_PLANE_BPP_8_EXT;
++         else if (value & __DRI_ATTRIB_YUV_PLANE_BPP_10_BIT)
++            value = EGL_YUV_PLANE_BPP_10_EXT;
++         else
++            value = EGL_NONE;
++         _eglSetConfigKey(&base, EGL_YUV_PLANE_BPP_EXT, value);
++         break;
++
+       default:
+          key = dri2_to_egl_attribute_map[attrib];
+          if (key != 0)
+@@ -570,6 +640,17 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
+    base.RenderableType = disp->ClientAPIs;
+    base.Conformant = disp->ClientAPIs;
+ 
++   /*
++    * We assume that if dri_config is YUV then GL_EXT_YUV_target must be
++    * supported, which requires OpenGL ES 3.0.
++    */
++   if (base.ColorBufferType == EGL_YUV_BUFFER_EXT) {
++      base.RenderableType &= EGL_OPENGL_ES3_BIT;
++      base.Conformant &= EGL_OPENGL_ES3_BIT;
++   }
++   if (!base.RenderableType)
++      return NULL;
++
+    base.MinSwapInterval = dri2_dpy->min_swap_interval;
+    base.MaxSwapInterval = dri2_dpy->max_swap_interval;
+ 
+@@ -1022,6 +1103,8 @@ dri2_setup_screen(_EGLDisplay *disp)
+    disp->Extensions.EXT_protected_surface =
+       dri2_renderer_query_integer(dri2_dpy,
+                                   __DRI2_RENDERER_HAS_PROTECTED_CONTENT);
++
++   disp->Extensions.EXT_yuv_surface = EGL_TRUE;
+ }
+ 
+ void
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 7e2542bae6d..b7e0d0f53a5 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -506,6 +506,7 @@ _eglCreateExtensionsString(_EGLDisplay *disp)
+    _EGL_CHECK_EXTENSION(EXT_surface_CTA861_3_metadata);
+    _EGL_CHECK_EXTENSION(EXT_surface_SMPTE2086_metadata);
+    _EGL_CHECK_EXTENSION(EXT_swap_buffers_with_damage);
++   _EGL_CHECK_EXTENSION(EXT_yuv_surface);
+ 
+    _EGL_CHECK_EXTENSION(IMG_context_priority);
+ 
+diff --git a/src/egl/main/eglconfig.c b/src/egl/main/eglconfig.c
+index eff7733c071..bc4313adcc5 100644
+--- a/src/egl/main/eglconfig.c
++++ b/src/egl/main/eglconfig.c
+@@ -259,6 +259,24 @@ static const struct {
+    { EGL_COLOR_COMPONENT_TYPE_EXT,  ATTRIB_TYPE_ENUM,
+                                     ATTRIB_CRITERION_EXACT,
+                                     EGL_COLOR_COMPONENT_TYPE_FIXED_EXT },
++   { EGL_YUV_ORDER_EXT,             ATTRIB_TYPE_ENUM,
++                                    ATTRIB_CRITERION_EXACT,
++                                    EGL_DONT_CARE },
++   { EGL_YUV_NUMBER_OF_PLANES_EXT,  ATTRIB_TYPE_INTEGER,
++                                    ATTRIB_CRITERION_ATLEAST,
++                                    0 },
++   { EGL_YUV_SUBSAMPLE_EXT,         ATTRIB_TYPE_ENUM,
++                                    ATTRIB_CRITERION_EXACT,
++                                    EGL_DONT_CARE },
++   { EGL_YUV_DEPTH_RANGE_EXT,       ATTRIB_TYPE_ENUM,
++                                    ATTRIB_CRITERION_EXACT,
++                                    EGL_DONT_CARE },
++   { EGL_YUV_CSC_STANDARD_EXT,      ATTRIB_TYPE_ENUM,
++                                    ATTRIB_CRITERION_EXACT,
++                                    EGL_DONT_CARE },
++   { EGL_YUV_PLANE_BPP_EXT,         ATTRIB_TYPE_ENUM,
++                                    ATTRIB_CRITERION_EXACT,
++                                    EGL_DONT_CARE },
+ };
+ 
+ 
+@@ -297,6 +315,28 @@ _eglValidateConfig(const _EGLConfig *conf, EGLBoolean for_matching)
+             if (val > 1 || val < 0)
+                valid = EGL_FALSE;
+             break;
++         case EGL_YUV_NUMBER_OF_PLANES_EXT:
++            /* From the EGL_EXT_yuv_surface spec (v9):
++             *
++             *     The allowed values for EGL_YUV_NUMBER_OF_PLANES_EXT must
++             *     be greater than zero and not more than three.
++             *
++             * However, it also says:
++             *
++             *     Attribute                     Default  Selection  Sort   Sort
++             *                                            Criteria   Order  Priority
++             *     ----------------------------  -------  ---------  -----  --------
++             *     EGL_YUV_NUMBER_OF_PLANES_EXT     0     At least   None
++             *
++             * This means that we need to allow the value 0 when doing config
++             * matching (where it's essentially treated as EGL_DONT_CARE).
++             * Furthermore, this attribute isn't applicable to non-YUV EGL
++             * color buffer types. Allow 0 through here and then do further
++             * validation later on.
++             */
++            if (val < 0 || val > 3)
++               valid = EGL_FALSE;
++            break;
+          default:
+             if (val < 0)
+                valid = EGL_FALSE;
+@@ -319,7 +359,43 @@ _eglValidateConfig(const _EGLConfig *conf, EGLBoolean for_matching)
+                valid = EGL_FALSE;
+             break;
+          case EGL_COLOR_BUFFER_TYPE:
+-            if (val != EGL_RGB_BUFFER && val != EGL_LUMINANCE_BUFFER)
++            if (val != EGL_RGB_BUFFER && val != EGL_LUMINANCE_BUFFER &&
++                val != EGL_YUV_BUFFER_EXT)
++               valid = EGL_FALSE;
++            break;
++         case EGL_YUV_ORDER_EXT:
++            if (val != EGL_NONE &&
++                val != EGL_YUV_ORDER_YUV_EXT && val != EGL_YUV_ORDER_YVU_EXT &&
++                val != EGL_YUV_ORDER_YUYV_EXT && val != EGL_YUV_ORDER_UYVY_EXT &&
++                val != EGL_YUV_ORDER_YVYU_EXT && val != EGL_YUV_ORDER_VYUY_EXT &&
++                val != EGL_YUV_ORDER_AYUV_EXT)
++               valid = EGL_FALSE;
++            break;
++         case EGL_YUV_SUBSAMPLE_EXT:
++            if (val != EGL_NONE &&
++                val != EGL_YUV_SUBSAMPLE_4_2_0_EXT &&
++                val != EGL_YUV_SUBSAMPLE_4_2_2_EXT &&
++                val != EGL_YUV_SUBSAMPLE_4_4_4_EXT)
++               valid = EGL_FALSE;
++            break;
++         case EGL_YUV_DEPTH_RANGE_EXT:
++            if (val != EGL_NONE &&
++                val != EGL_YUV_DEPTH_RANGE_LIMITED_EXT &&
++                val != EGL_YUV_DEPTH_RANGE_FULL_EXT)
++               valid = EGL_FALSE;
++            break;
++         case EGL_YUV_CSC_STANDARD_EXT:
++            if (val != EGL_NONE &&
++                val != EGL_YUV_CSC_STANDARD_601_EXT &&
++                val != EGL_YUV_CSC_STANDARD_709_EXT &&
++                val != EGL_YUV_CSC_STANDARD_2020_EXT)
++               valid = EGL_FALSE;
++            break;
++         case EGL_YUV_PLANE_BPP_EXT:
++            if (val != EGL_NONE &&
++                val != EGL_YUV_PLANE_BPP_0_EXT &&
++                val != EGL_YUV_PLANE_BPP_8_EXT &&
++                val != EGL_YUV_PLANE_BPP_10_EXT)
+                valid = EGL_FALSE;
+             break;
+          case EGL_COLOR_COMPONENT_TYPE_EXT:
+@@ -405,6 +481,11 @@ _eglValidateConfig(const _EGLConfig *conf, EGLBoolean for_matching)
+       if (conf->LuminanceSize + conf->AlphaSize != conf->BufferSize)
+          valid = EGL_FALSE;
+       break;
++   case EGL_YUV_BUFFER_EXT:
++      if (conf->RedSize || conf->GreenSize || conf->BlueSize ||
++          conf->AlphaSize || conf->LuminanceSize)
++         valid = EGL_FALSE;
++      break;
+    }
+    if (!valid) {
+       _eglLog(_EGL_DEBUG, "conflicting color buffer type and channel sizes");
+@@ -431,6 +512,88 @@ _eglValidateConfig(const _EGLConfig *conf, EGLBoolean for_matching)
+       return EGL_FALSE;
+    }
+ 
++   /* From the EGL_EXT_yuv_surface spec (v9):
++    *
++    *   SUBSAMPLE_EXT        NUMBER_OF_PLANES_EXT  ORDER_EXT          PLANE_BPP_EXT
++    *   -------------------  --------------------  -----------------  ------------------
++    *   SUBSAMPLE_4_2_0_EXT         2 or 3         ORDER_YUV_EXT or   PLANE_BPP_8_EXT or
++    *                                              ORDER_YVU_EXT      PLANE_BPP_10_EXT
++    */
++   if (conf->YUVSubsampleEXT == EGL_YUV_SUBSAMPLE_4_2_0_EXT) {
++      if ((!for_matching || conf->YUVNumberOfPlanesEXT != 0) &&
++          conf->YUVNumberOfPlanesEXT != 2 &&
++          conf->YUVNumberOfPlanesEXT != 3)
++         valid = EGL_FALSE;
++      if (conf->YUVOrderEXT != EGL_DONT_CARE &&
++          conf->YUVOrderEXT != EGL_YUV_ORDER_YUV_EXT &&
++          conf->YUVOrderEXT != EGL_YUV_ORDER_YVU_EXT)
++         valid = EGL_FALSE;
++      if (conf->YUVPlaneBPPEXT != EGL_DONT_CARE &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_8_EXT &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_10_EXT)
++         valid = EGL_FALSE;
++   }
++   /* From the EGL_EXT_yuv_surface spec (v9):
++    *
++    *   SUBSAMPLE_EXT        NUMBER_OF_PLANES_EXT  ORDER_EXT          PLANE_BPP_EXT
++    *   -------------------  --------------------  -----------------  ------------------
++    *   SUBSAMPLE_4_2_2_EXT            1           ORDER_YUYV_EXT or  PLANE_BPP_8_EXT or
++    *                                              ORDER_YVYU_EXT or  PLANE_BPP_10_EXT
++    *                                              ORDER_UYVY_EXT or
++    *                                              ORDER_VYUY_EXT
++    *
++    *   SUBSAMPLE_4_2_2_EXT          2 or 3        ORDER_YUV_EXT or   PLANE_BPP_8_EXT or
++    *                                              ORDER_YVU_EXT      PLANE_BPP_10_EXT
++    */
++   else if (conf->YUVSubsampleEXT == EGL_YUV_SUBSAMPLE_4_2_2_EXT) {
++      if ((!for_matching || conf->YUVNumberOfPlanesEXT != 0) &&
++          conf->YUVNumberOfPlanesEXT != 1 &&
++          conf->YUVNumberOfPlanesEXT != 2 &&
++          conf->YUVNumberOfPlanesEXT != 3)
++         valid = EGL_FALSE;
++      if (conf->YUVNumberOfPlanesEXT == 1) {
++         if (conf->YUVOrderEXT != EGL_DONT_CARE &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_YUYV_EXT &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_YVYU_EXT &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_UYVY_EXT &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_VYUY_EXT)
++            valid = EGL_FALSE;
++      } else if (conf->YUVNumberOfPlanesEXT == 2 ||
++                 conf->YUVNumberOfPlanesEXT == 3) {
++         if (conf->YUVOrderEXT != EGL_DONT_CARE &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_YUV_EXT &&
++             conf->YUVOrderEXT != EGL_YUV_ORDER_YVU_EXT)
++            valid = EGL_FALSE;
++      }
++      if (conf->YUVPlaneBPPEXT != EGL_DONT_CARE &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_8_EXT &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_10_EXT)
++         valid = EGL_FALSE;
++   }
++   /* From the EGL_EXT_yuv_surface spec (v9):
++    *
++    *   SUBSAMPLE_EXT        NUMBER_OF_PLANES_EXT  ORDER_EXT          PLANE_BPP_EXT
++    *   -------------------  --------------------  -----------------  ------------------
++    *   SUBSAMPLE_4_4_4_EXT            1           ORDER_AYUV_EXT     PLANE_BPP_8_EXT or
++    *                                                                 PLANE_BPP_10_EXT
++    */
++   else if (conf->YUVSubsampleEXT == EGL_YUV_SUBSAMPLE_4_4_4_EXT) {
++      if ((!for_matching || conf->YUVNumberOfPlanesEXT != 0) &&
++          conf->YUVNumberOfPlanesEXT != 1)
++         valid = EGL_FALSE;
++      if (conf->YUVOrderEXT != EGL_DONT_CARE &&
++          conf->YUVOrderEXT != EGL_YUV_ORDER_AYUV_EXT)
++         valid = EGL_FALSE;
++      if (conf->YUVPlaneBPPEXT != EGL_DONT_CARE &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_8_EXT &&
++          conf->YUVPlaneBPPEXT != EGL_YUV_PLANE_BPP_10_EXT)
++         valid = EGL_FALSE;
++   }
++   if (!valid) {
++      _eglLog(_EGL_DEBUG, "invalid YUV subsample/num planes/order/bpp combination");
++      return EGL_FALSE;
++   }
++
+    return valid;
+ }
+ 
+@@ -510,6 +673,28 @@ _eglIsConfigAttribValid(_EGLConfig *conf, EGLint attr)
+       return conf->Display->Extensions.ANDROID_framebuffer_target;
+    case EGL_RECORDABLE_ANDROID:
+       return conf->Display->Extensions.ANDROID_recordable;
++   case EGL_YUV_ORDER_EXT:
++   case EGL_YUV_NUMBER_OF_PLANES_EXT:
++   case EGL_YUV_SUBSAMPLE_EXT:
++   case EGL_YUV_DEPTH_RANGE_EXT:
++   case EGL_YUV_CSC_STANDARD_EXT:
++   case EGL_YUV_PLANE_BPP_EXT:
++      return conf->Display->Extensions.EXT_yuv_surface;
++   default:
++      break;
++   }
++
++   return EGL_TRUE;
++}
++
++static inline EGLBoolean
++_eglIsConfigAttribValueValid(_EGLConfig *conf, EGLint attr, EGLint val)
++{
++   switch (attr) {
++   case EGL_COLOR_BUFFER_TYPE:
++      if (!conf->Display->Extensions.EXT_yuv_surface && val == EGL_YUV_BUFFER_EXT)
++         return EGL_FALSE;
++      break;
+    default:
+       break;
+    }
+@@ -544,6 +729,9 @@ _eglParseConfigAttribList(_EGLConfig *conf, _EGLDisplay *disp,
+       if (!_eglIsConfigAttribValid(conf, attr))
+          return EGL_FALSE;
+ 
++      if (!_eglIsConfigAttribValueValid(conf, attr, val))
++         return EGL_FALSE;
++
+       _eglSetConfigKey(conf, attr, val);
+    }
+ 
+@@ -618,6 +806,7 @@ _eglCompareConfigs(const _EGLConfig *conf1, const _EGLConfig *conf2,
+ 
+    /* the enum values have the desired ordering */
+    STATIC_ASSERT(EGL_RGB_BUFFER < EGL_LUMINANCE_BUFFER);
++   STATIC_ASSERT(EGL_LUMINANCE_BUFFER < EGL_YUV_BUFFER_EXT);
+    val1 = conf1->ColorBufferType - conf2->ColorBufferType;
+    if (val1)
+       return val1;
+@@ -637,16 +826,42 @@ _eglCompareConfigs(const _EGLConfig *conf1, const _EGLConfig *conf2,
+             val1 += conf1->BlueSize;
+             val2 += conf2->BlueSize;
+          }
++         if (criteria->AlphaSize > 0) {
++            val1 += conf1->AlphaSize;
++            val2 += conf2->AlphaSize;
++         }
+       }
+-      else {
++      else if (conf1->ColorBufferType == EGL_LUMINANCE_BUFFER) {
+          if (criteria->LuminanceSize > 0) {
+             val1 += conf1->LuminanceSize;
+             val2 += conf2->LuminanceSize;
+          }
++         if (criteria->AlphaSize > 0) {
++            val1 += conf1->AlphaSize;
++            val2 += conf2->AlphaSize;
++         }
+       }
+-      if (criteria->AlphaSize > 0) {
+-         val1 += conf1->AlphaSize;
+-         val2 += conf2->AlphaSize;
++      else {
++         /* From the EGL_EXT_yuv_surface spec (v9):
++          *
++          *     Special: by larger total number of color bits
++          *     ...
++          *     for YUV color buffers, this returns the integer value with
++          *     respect to the enumeration provided for EGL_YUV_PLANE_BPP_EXT
++          *
++          * and:
++          *
++          *     EGL_BUFFER_SIZE gives the total of the color component bits of
++          *     the color buffer for EGL_RGB_BUFFER or for EGL_LUMINANCE_BUFFER.
++          *     ...
++          *     When EGL_COLOR_BUFFER_TYPE is of type EGL_YUV_BUFFER_EXT,
++          *     this will reflect the enumeration provided as an integer)
++          *     for EGL_YUV_PLANE_BPP_EXT, giving a value of 0, 8 or 10
++          */
++         if (criteria->BufferSize > 0) {
++            val1 = conf1->BufferSize;
++            val2 = conf2->BufferSize;
++         }
+       }
+    }
+    else {
+@@ -665,6 +880,36 @@ _eglCompareConfigs(const _EGLConfig *conf1, const _EGLConfig *conf2,
+          return (val1 - val2);
+    }
+ 
++   if (conf1->YUVOrderEXT != conf2->YUVOrderEXT)
++   {
++      const EGLint yuv_order[] = {
++         EGL_NONE,
++         EGL_YUV_ORDER_YUV_EXT,
++         EGL_YUV_ORDER_YVU_EXT,
++         EGL_YUV_ORDER_YUYV_EXT,
++         EGL_YUV_ORDER_YVYU_EXT,
++         EGL_YUV_ORDER_UYVY_EXT,
++         EGL_YUV_ORDER_VYUY_EXT,
++         EGL_YUV_ORDER_AYUV_EXT,
++      };
++
++      val1 = val2 = 0;
++      for (i = 0; i < ARRAY_SIZE(yuv_order); i++) {
++         if (yuv_order[i] == conf1->YUVOrderEXT) {
++            val1 = i;
++            break;
++         }
++      }
++      for (i = 0; i < ARRAY_SIZE(yuv_order); i++) {
++         if (yuv_order[i] == conf2->YUVOrderEXT) {
++            val2 = i;
++            break;
++         }
++      }
++      if (val1 != val2)
++         return val1 - val2;
++   }
++
+    /* EGL_NATIVE_VISUAL_TYPE cannot be compared here */
+ 
+    return (compare_id) ? (conf1->ConfigID - conf2->ConfigID) : 0;
+diff --git a/src/egl/main/eglconfig.h b/src/egl/main/eglconfig.h
+index 1f2a4008f12..d4a748970b5 100644
+--- a/src/egl/main/eglconfig.h
++++ b/src/egl/main/eglconfig.h
+@@ -89,6 +89,12 @@ struct _egl_config
+    EGLint FramebufferTargetAndroid;
+    EGLint RecordableAndroid;
+    EGLint ComponentType;
++   EGLint YUVOrderEXT;
++   EGLint YUVNumberOfPlanesEXT;
++   EGLint YUVSubsampleEXT;
++   EGLint YUVDepthRangeEXT;
++   EGLint YUVCSCStandardEXT;
++   EGLint YUVPlaneBPPEXT;
+ };
+ 
+ 
+@@ -139,6 +145,12 @@ _eglOffsetOfConfig(EGLint attr)
+    ATTRIB_MAP(EGL_FRAMEBUFFER_TARGET_ANDROID, FramebufferTargetAndroid);
+    ATTRIB_MAP(EGL_RECORDABLE_ANDROID,        RecordableAndroid);
+    ATTRIB_MAP(EGL_COLOR_COMPONENT_TYPE_EXT,  ComponentType);
++   ATTRIB_MAP(EGL_YUV_ORDER_EXT,             YUVOrderEXT);
++   ATTRIB_MAP(EGL_YUV_NUMBER_OF_PLANES_EXT,  YUVNumberOfPlanesEXT);
++   ATTRIB_MAP(EGL_YUV_SUBSAMPLE_EXT,         YUVSubsampleEXT);
++   ATTRIB_MAP(EGL_YUV_DEPTH_RANGE_EXT,       YUVDepthRangeEXT);
++   ATTRIB_MAP(EGL_YUV_CSC_STANDARD_EXT,      YUVCSCStandardEXT);
++   ATTRIB_MAP(EGL_YUV_PLANE_BPP_EXT,         YUVPlaneBPPEXT);
+ #undef ATTRIB_MAP
+    default:
+       return -1;
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index d95c7b9144a..f59d43325a6 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -113,6 +113,7 @@ struct _egl_extensions
+    EGLBoolean EXT_surface_CTA861_3_metadata;
+    EGLBoolean EXT_surface_SMPTE2086_metadata;
+    EGLBoolean EXT_swap_buffers_with_damage;
++   EGLBoolean EXT_yuv_surface;
+ 
+    unsigned int IMG_context_priority;
+ #define  __EGL_CONTEXT_PRIORITY_LOW_BIT    0
+-- 
+2.25.1
+

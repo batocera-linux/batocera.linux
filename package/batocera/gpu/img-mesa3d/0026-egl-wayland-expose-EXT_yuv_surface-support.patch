@@ -1,0 +1,74 @@
+From 61658c083ff6704357075e857923a2901301f642 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 11 Jan 2018 09:38:47 +0000
+Subject: [PATCH 26/58] egl/wayland: expose EXT_yuv_surface support
+
+This adds support for YUYV configs.
+---
+ src/egl/drivers/dri2/egl_dri2.c         |  1 +
+ src/egl/drivers/dri2/platform_wayland.c | 15 ++++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index b8e7bb08619..635c445d234 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -2420,6 +2420,7 @@ static const struct wl_drm_components_descriptor {
+    { __DRI_IMAGE_COMPONENTS_Y_U_V, EGL_TEXTURE_Y_U_V_WL, 3 },
+    { __DRI_IMAGE_COMPONENTS_Y_UV, EGL_TEXTURE_Y_UV_WL, 2 },
+    { __DRI_IMAGE_COMPONENTS_Y_XUXV, EGL_TEXTURE_Y_XUXV_WL, 2 },
++   { __DRI_IMAGE_COMPONENTS_EXTERNAL, EGL_TEXTURE_EXTERNAL_WL, 1 },
+ };
+ 
+ static _EGLImage *
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 185c52c110f..10a90ff963f 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -151,6 +151,13 @@ static const struct dri2_wl_visual {
+       { 11, 5, 0, -1 },
+       { 5, 6, 5, 0 },
+    },
++   {
++     "YUYV",
++     WL_DRM_FORMAT_YUYV, WL_SHM_FORMAT_YUYV,
++     __DRI_IMAGE_FORMAT_YUYV, __DRI_IMAGE_FORMAT_NONE, 32,
++     { -1, -1, -1, -1 },
++     { 0, 0, 0, 0 },
++   },
+ };
+ 
+ static int
+@@ -1431,6 +1438,7 @@ dri2_wl_get_capability(void *loaderPrivate, enum dri_loader_cap cap)
+ {
+    switch (cap) {
+    case DRI_LOADER_CAP_FP16:
++   case DRI_LOADER_CAP_YUV_SURFACE_IMG:
+       return 1;
+    case DRI_LOADER_CAP_RGBA_ORDERING:
+       return 1;
+@@ -2135,6 +2143,7 @@ dri2_wl_add_configs_for_visuals(_EGLDisplay *disp)
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    unsigned int format_count[ARRAY_SIZE(dri2_wl_visuals)] = { 0 };
+    unsigned int count = 0;
++   EGLint surface_type;
+    bool assigned;
+ 
+    for (unsigned i = 0; dri2_dpy->driver_configs[i]; i++) {
+@@ -2146,8 +2155,12 @@ dri2_wl_add_configs_for_visuals(_EGLDisplay *disp)
+          if (!BITSET_TEST(dri2_dpy->formats.formats_bitmap, j))
+             continue;
+ 
++         surface_type = EGL_WINDOW_BIT;
++         if (dri2_wl_visuals[j].wl_drm_format != WL_DRM_FORMAT_YUYV)
++            surface_type |= EGL_PBUFFER_BIT;
++
+          dri2_conf = dri2_add_config(disp, dri2_dpy->driver_configs[i],
+-               count + 1, EGL_WINDOW_BIT | EGL_PBUFFER_BIT, NULL, dri2_wl_visuals[j].rgba_shifts, dri2_wl_visuals[j].rgba_sizes);
++               count + 1, surface_type, NULL, dri2_wl_visuals[j].rgba_shifts, dri2_wl_visuals[j].rgba_sizes);
+          if (dri2_conf) {
+             if (dri2_conf->base.ConfigID == count + 1)
+                count++;
+-- 
+2.25.1
+

@@ -1,0 +1,53 @@
+From c6e612d89356cd0df802ebd849108d7124c80427 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 11 Jul 2016 12:45:30 +0100
+Subject: [PATCH 09/58] GL_OVR_multiview entry points
+
+---
+ src/mapi/glapi/gen/gl_API.xml     | 17 +++++++++++++++++
+ src/mapi/glapi/gen/static_data.py |  1 +
+ 2 files changed, 18 insertions(+)
+
+diff --git a/src/mapi/glapi/gen/gl_API.xml b/src/mapi/glapi/gen/gl_API.xml
+index cc5d9488d84..f6657e6ffeb 100644
+--- a/src/mapi/glapi/gen/gl_API.xml
++++ b/src/mapi/glapi/gen/gl_API.xml
+@@ -12664,6 +12664,23 @@
+     </function>
+ </category>
+ 
++<category name="GL_OVR_multiview" number="478">
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR" value="0x9630" />
++    <enum name="FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR" value="0x9632" />
++    <enum name="MAX_VIEWS_OVR" value="0x9631">
++        <size name="Get" mode="get"/>
++    </enum>
++    <enum name="FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR" value="0x9633" />
++    <function name="FramebufferTextureMultiviewOVR" es2="3.0" exec="dynamic">
++        <param name="target" type="GLenum"/>
++        <param name="attachment"  type="GLenum"/>
++        <param name="texture"  type="GLuint"/>
++        <param name="level"  type="GLint"/>
++        <param name="baseViewIndex"  type="GLint"/>
++        <param name="numViews"  type="GLsizei"/>
++    </function>
++</category>
++
+ <xi:include href="EXT_window_rectangles.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
+ <!-- 520. GL_EXT_shader_framebuffer_fetch -->
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index e363994a298..f97fedabb38 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1703,6 +1703,7 @@ offsets = {
+     "GetFramebufferPixelLocalStorageSizeEXT" : 1667,
+     "FramebufferTexture2DDownsampleIMG" : 1668,
+     "FramebufferTextureLayerDownsampleIMG" : 1669,
++    "FramebufferTextureMultiviewOVR" : 1670,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

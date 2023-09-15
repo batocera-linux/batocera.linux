@@ -49,6 +49,14 @@ else
     COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -l > $(BINARIES_DIR)/initrd.lz4)
 endif
 
+ifeq ($(BR2_riscv),y)
+define BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
+	mkdir -p $(INITRAMFS_DIR)
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/riscv/initrd/* $(INITRAMFS_DIR)/
+endef
+BATOCERA_INITRAMFS_PRE_INSTALL_TARGET_HOOKS += BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
+endif
+
 define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	mkdir -p $(INITRAMFS_DIR)
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init

@@ -1,0 +1,347 @@
+From b50d678b86c1102a84c2b5fb55dd46f6e466974b Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 18 Aug 2022 19:14:29 +0100
+Subject: [PATCH 62/62] gallium/pvr: support DRI Image extension v21
+
+IMG NOTE: This patch should be merged into the "Add PVR Gallium
+driver" patch the next time the Mesa version is upgraded in the
+IMG DDK.
+---
+ src/gallium/frontends/pvr/dri_support.h    | 46 +++++++++++
+ src/gallium/frontends/pvr/pvrcompat.c      | 74 +++++++++++++++++
+ src/gallium/frontends/pvr/pvrdri_support.h | 27 +++++++
+ src/gallium/frontends/pvr/pvrext.c         | 94 +++++++++++++++++++++-
+ 4 files changed, 240 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/frontends/pvr/dri_support.h b/src/gallium/frontends/pvr/dri_support.h
+index b0b31060dcb..3cc8f290d4d 100644
+--- a/src/gallium/frontends/pvr/dri_support.h
++++ b/src/gallium/frontends/pvr/dri_support.h
+@@ -489,6 +489,52 @@ struct  PVRDRISupportInterfaceV2
+ 	struct {
+ 		bool (*HaveGetFenceFromCLEvent)(void);
+ 	} v4;
++	/* The v5 interface is an extension of v4, so v4 is required as well */
++	struct {
++		__DRIimage *(*CreateImageFromDMABufs3)
++			(struct DRISUPScreen *psDRISUPScreen,
++			 int iWidth,
++			 int iHeight,
++			 int iFourCC,
++			 uint64_t uModifier,
++			 int *piFDs,
++			 int iNumFDs,
++			 int *piStrides,
++			 int *piOffsets,
++			 unsigned int uColorSpace,
++			 unsigned int uSampleRange,
++			 unsigned int uHorizSiting,
++			 unsigned int uVertSiting,
++			 uint32_t uFlags,
++			 unsigned int *puError,
++			 void *pvLoaderPrivate);
++
++		__DRIimage *(*CreateImageWithModifiers2)
++			(struct DRISUPScreen *psDRISUPScreen,
++			 int iWidth,
++			 int iHeight,
++			 int iFourCC,
++			 const uint64_t *puModifiers,
++			 const unsigned int uModifierCount,
++			 unsigned int uUsage,
++			 void *pvLoaderPrivate);
++
++		__DRIimage *(*CreateImageFromFDs2)
++			(struct DRISUPScreen *psDRISUPcreen,
++			 int iWidth,
++			 int iHeight,
++			 int iFourCC,
++			 int *piFDs,
++			 int iNumFDs,
++			 uint32_t uFlags,
++			 int *piStrides,
++			 int *piOffsets,
++			 void *pvLoaderPrivate);
++
++		void (*SetInFenceFD)
++			(__DRIimage *psImage,
++			 int iFD);
++	} v5;
+ };
+ 
+ struct PVRDRIImageList {
+diff --git a/src/gallium/frontends/pvr/pvrcompat.c b/src/gallium/frontends/pvr/pvrcompat.c
+index 23a57dde682..782c900101c 100644
+--- a/src/gallium/frontends/pvr/pvrcompat.c
++++ b/src/gallium/frontends/pvr/pvrcompat.c
+@@ -55,6 +55,10 @@ static pthread_mutex_t gsCompatLock = PTHREAD_MUTEX_INITIALIZER;
+       ptr = dlsym(gpvSupLib, MAKESTRING(func)); \
+    } while(0)
+ 
++/* Check if a function exists in the DRI Support interface structure */
++#define HaveFuncV2(field)                       \
++      ((gsSupV2.field) != NULL)                 \
++
+ /* Call a function via the DRI Support interface structure */
+ #define CallFuncV2(field, ...)                  \
+    do {                                         \
+@@ -238,6 +242,7 @@ MODSUPRegisterSupportInterfaceV2(const void *pvInterface,
+    case 2:
+    case 3:
+    case 4:
++   case 5:
+       /* These versions require version 0 */
+       return false;
+    default:
+@@ -247,6 +252,13 @@ MODSUPRegisterSupportInterfaceV2(const void *pvInterface,
+    /* The "default" case should be associated with the latest version */
+    switch (uVersion) {
+    default:
++   case 5:
++      /* This version is an extension of versions 0 to 4 */
++      if (uMinVersion > 0)
++         return false;
++
++      uEnd = PVRDRIInterfaceV2End(v5);
++      break;
+    case 4:
+       /* This version is an extension of versions 0 to 3 */
+       if (uMinVersion > 0)
+@@ -836,3 +848,65 @@ DRISUPHaveGetFenceFromCLEvent(void)
+ 
+    return true;
+ }
++
++__DRIimage *
++DRISUPCreateImageFromDMABufs3(struct DRISUPScreen *psDRISUPScreen,
++                              int iWidth, int iHeight, int iFourCC,
++                              uint64_t uModifier, int *piFDs, int iNumFDs,
++                              int *piStrides, int *piOffsets,
++                              unsigned int uColorSpace,
++                              unsigned int uSampleRange,
++                              unsigned int uHorizSiting,
++                              unsigned int uVertSiting,
++                              uint32_t uFlags,
++                              unsigned int *puError, void *pvLoaderPrivate)
++{
++   CallFuncV2(v5.CreateImageFromDMABufs3,
++              psDRISUPScreen, iWidth, iHeight, iFourCC, uModifier,
++              piFDs, iNumFDs, piStrides, piOffsets, uColorSpace, uSampleRange,
++              uHorizSiting, uVertSiting, uFlags, puError, pvLoaderPrivate);
++
++   return NULL;
++}
++
++__DRIimage *
++DRISUPCreateImageWithModifiers2(struct DRISUPScreen *psDRISUPScreen,
++                                int iWidth, int iHeight, int iFourCC,
++                                const uint64_t *puModifiers,
++                                const unsigned int uModifierCount,
++                                unsigned int uUse,
++                                void *pvLoaderPrivate)
++{
++   CallFuncV2(v5.CreateImageWithModifiers2,
++              psDRISUPScreen, iWidth, iHeight, iFourCC, puModifiers,
++              uModifierCount, uUse, pvLoaderPrivate);
++
++   return NULL;
++}
++
++__DRIimage *
++DRISUPCreateImageFromFDs2(struct DRISUPScreen *psDRISUPcreen,
++                          int iWidth, int iHeight, int iFourCC,
++                          int *piFDs, int iNumFDs, uint32_t uFlags,
++                          int *piStrides, int *piOffsets,
++                          void *pvLoaderPrivate)
++{
++   CallFuncV2(v5.CreateImageFromFDs2,
++              psDRISUPcreen, iWidth, iHeight, iFourCC, piFDs, iNumFDs,
++              uFlags, piStrides, piOffsets, pvLoaderPrivate);
++
++   return NULL;
++}
++
++bool
++DRISUPHaveSetInFenceFd(void)
++{
++	return HaveFuncV2(v5.SetInFenceFD);
++}
++
++void
++DRISUPSetInFenceFd(__DRIimage *psImage, int iFd)
++{
++   CallFuncV2(v5.SetInFenceFD,
++              psImage, iFd);
++}
+diff --git a/src/gallium/frontends/pvr/pvrdri_support.h b/src/gallium/frontends/pvr/pvrdri_support.h
+index 58ea3505a4d..f735354440c 100644
+--- a/src/gallium/frontends/pvr/pvrdri_support.h
++++ b/src/gallium/frontends/pvr/pvrdri_support.h
+@@ -203,4 +203,31 @@ void DRISUPSetDamageRegion(struct DRISUPDrawable *psDRISUPDrawable,
+ 
+ bool DRISUPHaveGetFenceFromCLEvent(void);
+ 
++__DRIimage *DRISUPCreateImageFromDMABufs3(struct DRISUPScreen *psDRISUPScreen,
++                                          int iWidth, int iHeight,
++                                          int iFourCC, uint64_t uModifier,
++                                          int *piFDs, int iNumFDs,
++                                          int *piStrides, int *piOffsets,
++                                          unsigned int uColorSpace,
++                                          unsigned int uSampleRange,
++                                          unsigned int uHorizSiting,
++                                          unsigned int uVertSiting,
++                                          uint32_t uFlags,
++                                          unsigned int *puError,
++                                          void *pvLoaderPrivate);
++__DRIimage *DRISUPCreateImageWithModifiers2(struct DRISUPScreen *psDRISUPScreen,
++                                            int iWidth, int iHeight,
++                                            int iFourCC,
++                                            const uint64_t *puModifiers,
++                                            const unsigned int uModifierCount,
++                                            unsigned int uUse,
++                                            void *pvLoaderPrivate);
++__DRIimage *DRISUPCreateImageFromFDs2(struct DRISUPScreen *psDRISUPcreen,
++                                      int iWidth, int iHeight, int iFourCC,
++                                      int *piFDs, int iNumFDs, uint32_t uFlags,
++                                      int *piStrides, int *piOffsets,
++                                      void *pvLoaderPrivate);
++
++bool DRISUPHaveSetInFenceFd(void);
++void DRISUPSetInFenceFd(__DRIimage *psImage, int iFd);
+ #endif /* defined(__PVRDRI_SUPPORT_H__) */
+diff --git a/src/gallium/frontends/pvr/pvrext.c b/src/gallium/frontends/pvr/pvrext.c
+index 478399618df..826e84f502f 100644
+--- a/src/gallium/frontends/pvr/pvrext.c
++++ b/src/gallium/frontends/pvr/pvrext.c
+@@ -71,7 +71,7 @@
+ /* Maximum version numbers for each supported extension */
+ #define PVR_DRI_TEX_BUFFER_VERSION      3
+ #define PVR_DRI2_FLUSH_VERSION          4
+-#define PVR_DRI_IMAGE_VERSION           17
++#define PVR_DRI_IMAGE_VERSION           21
+ #define PVR_DRI2_ROBUSTNESS_VERSION     1
+ #define PVR_DRI2_FENCE_VERSION          2
+ #define PVR_DRI2_RENDERER_QUERY_VERSION 1
+@@ -445,6 +445,68 @@ PVRDRICreateImageFromRenderbuffer2(__DRIcontext *psDRIContext,
+                                              pvLoaderPrivate, puError);
+ }
+ 
++static __DRIimage *
++PVRDRICreateImageFromDmaBufs3(__DRIscreen *psDRIScreen,
++                              int iWidth, int iHeight,
++                              int iFourCC, uint64_t uModifier,
++                              int *piFDs, int iNumFDs,
++                              int *piStrides, int *piOffsets,
++                              enum __DRIYUVColorSpace eColorSpace,
++                              enum __DRISampleRange eSampleRange,
++                              enum __DRIChromaSiting eHorizSiting,
++                              enum __DRIChromaSiting eVertSiting,
++                              uint32_t uFlags, unsigned int *puError,
++                              void *pvLoaderPrivate)
++{
++   PVRDRIScreen *psPVRScreen = psDRIScreen->driverPrivate;
++
++   return DRISUPCreateImageFromDMABufs3(psPVRScreen->psDRISUPScreen,
++                                        iWidth, iHeight, iFourCC, uModifier,
++                                        piFDs, iNumFDs, piStrides, piOffsets,
++                                        (unsigned int) eColorSpace,
++                                        (unsigned int) eSampleRange,
++                                        (unsigned int) eHorizSiting,
++                                        (unsigned int) eVertSiting,
++                                        uFlags, puError, pvLoaderPrivate);
++}
++
++static __DRIimage *
++PVRDRICreateImageWithModifiers2(__DRIscreen *psDRIScreen,
++                                int iWidth, int iHeight, int iFormat,
++                                const uint64_t *puModifiers,
++                                const unsigned int uModifierCount,
++                                unsigned int uUse,
++                                void *pvLoaderPrivate)
++{
++   PVRDRIScreen *psPVRScreen = psDRIScreen->driverPrivate;
++   int iFourCC = PVRDRIFormatToFourCC(iFormat);
++
++   return DRISUPCreateImageWithModifiers2(psPVRScreen->psDRISUPScreen,
++                                          iWidth, iHeight, iFourCC,
++                                          puModifiers, uModifierCount,
++                                          uUse, pvLoaderPrivate);
++}
++
++static __DRIimage *
++PVRDRICreateImageFromFds2(__DRIscreen *psDRIScreen, int iWidth, int iHeight,
++                          int iFourCC, int *piFDs, int iNumFDs,
++                          uint32_t uFlags, int *piStrides, int *piOffsets,
++                          void *pvLoaderPrivate)
++{
++   PVRDRIScreen *psPVRScreen = psDRIScreen->driverPrivate;
++
++   return DRISUPCreateImageFromFDs2(psPVRScreen->psDRISUPScreen,
++                                    iWidth, iHeight, iFourCC, piFDs, iNumFDs,
++                                    uFlags, piStrides, piOffsets,
++                                    pvLoaderPrivate);
++}
++
++static void
++PVRDRISetInFenceFd(__DRIimage *psImage, int iFd)
++{
++   return DRISUPSetInFenceFd(psImage, iFd);
++}
++
+ #if defined(EGL_IMG_cl_image)
+ static __DRIimage *
+ PVRDRICreateImageFromBuffer(__DRIcontext *psDRIContext, int iTarget,
+@@ -486,6 +548,10 @@ static __DRIimageExtension pvrDRIImage = {
+    .queryDmaBufFormatModifierAttribs =
+    PVRDRIQueryDmaBufFormatModifierAttribs,
+    .createImageFromRenderbuffer2 = PVRDRICreateImageFromRenderbuffer2,
++   .createImageFromDmaBufs3 = PVRDRICreateImageFromDmaBufs3,
++   .createImageWithModifiers2 = PVRDRICreateImageWithModifiers2,
++   .createImageFromFds2 = PVRDRICreateImageFromFds2,
++   .setInFenceFd = PVRDRISetInFenceFd,
+ #if defined(EGL_IMG_cl_image)
+    .createImageFromBuffer = PVRDRICreateImageFromBuffer,
+ #endif
+@@ -684,8 +750,10 @@ PVRDRIScreenExtensionVersionInfo(void)
+ void
+ PVRDRIAdjustExtensions(unsigned int uVersion, unsigned int uMinVersion)
+ {
++   /* __DRI2fenceExtension adjustment */
+    switch (uVersion) {
+    default:
++   case 5:
+    case 4:
+       /* Is the KHR_cl_event2 EGL extension supported? */
+       if (!DRISUPHaveGetFenceFromCLEvent())
+@@ -701,4 +769,28 @@ PVRDRIAdjustExtensions(unsigned int uVersion, unsigned int uMinVersion)
+       pvrDRIFenceExtension.get_fence_from_cl_event = NULL;
+       break;
+    }
++
++   /* __DRIimageExtension adjustment */
++   switch (uVersion) {
++   default:
++   case 5:
++      if (!DRISUPHaveSetInFenceFd())
++         pvrDRIImage.setInFenceFd = NULL;
++
++      break;
++   case 4:
++   case 3:
++   case 2:
++   case 1:
++   case 0:
++      /*
++       * The following are not supported:
++       *    createImageFromDmaBufs3
++       *    createImageWithModifiers2
++       *    createImageFromFds2
++       *    setInFenceFd
++       */
++      pvrDRIImage.base.version = 17;
++      break;
++   }
+ }
+-- 
+2.34.1
+

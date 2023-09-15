@@ -1,0 +1,78 @@
+From eb4fecd3e6ef59580a32801e8689f3071d0a9f00 Mon Sep 17 00:00:00 2001
+From: Iosif Antochi <iosif.antochi@imgtec.com>
+Date: Wed, 14 Jun 2017 14:49:55 +0100
+Subject: [PATCH 14/58] egl: automatically call eglReleaseThread on thread
+ termination
+
+EGL thread cleanup conformance tests could run out of memory as the contexts
+were not freed even though the application requested to have them deleted.
+This was caused by the fact that the contexts were still current on their
+threads when delete was called and (in order not to block any potential
+pending renders) they were just marked for delete.
+
+Fix this by calling eglReleaseThread on thread termination. This is safe to
+do even if this was already called by the application since, according to the
+EGL 1.5 spec, eglReleaseThread can be called multiple times without error.
+
+Fixes:
+dEQP-EGL.functional.thread_cleanup.multi_context_*
+dEQP-EGL.functional.robustness.create_context.query_robust_access
+---
+ src/egl/main/eglcurrent.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglcurrent.c b/src/egl/main/eglcurrent.c
+index 3a82a2d0d77..6342e00ee45 100644
+--- a/src/egl/main/eglcurrent.c
++++ b/src/egl/main/eglcurrent.c
+@@ -45,6 +45,7 @@ static mtx_t _egl_TSDMutex = _MTX_INITIALIZER_NP;
+ static EGLBoolean _egl_TSDInitialized;
+ static tss_t _egl_TSD;
+ static void _eglDestroyThreadInfo(_EGLThreadInfo *t);
++static void _eglDestroyThreadInfoCallback(_EGLThreadInfo *t);
+ 
+ #ifdef USE_ELF_TLS
+ static __THREAD_INITIAL_EXEC const _EGLThreadInfo *_egl_TLS;
+@@ -87,7 +88,7 @@ static inline EGLBoolean _eglInitTSD()
+ 
+       /* check again after acquiring lock */
+       if (!_egl_TSDInitialized) {
+-         if (tss_create(&_egl_TSD, (void (*)(void *)) _eglDestroyThreadInfo) != thrd_success) {
++         if (tss_create(&_egl_TSD, (void (*)(void *)) _eglDestroyThreadInfoCallback) != thrd_success) {
+             mtx_unlock(&_egl_TSDMutex);
+             return EGL_FALSE;
+          }
+@@ -142,6 +143,30 @@ _eglDestroyThreadInfo(_EGLThreadInfo *t)
+ }
+ 
+ 
++/**
++ * Delete/free a _EGLThreadInfo object.
++ */
++static void
++_eglDestroyThreadInfoCallback(_EGLThreadInfo *t)
++{
++   /* If this callback is called on thread termination then try to also give a
++    * chance to cleanup to the client drivers. If called for module termination
++    * then just release the thread information as calling eglReleaseThread
++    * would result in a deadlock.
++    */
++   if (_egl_TSDInitialized) {
++      /* The callback handler has replaced the TLS entry, which is passed in as
++       * 't', with NULL. Restore it here so that the release thread finds it in
++       * the TLS entry.
++       */
++      _eglSetTSD(t);
++      eglReleaseThread();
++   } else {
++      _eglDestroyThreadInfo(t);
++   }
++}
++
++
+ /**
+  * Make sure TSD is initialized and return current value.
+  */
+-- 
+2.25.1
+

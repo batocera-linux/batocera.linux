@@ -1,0 +1,364 @@
+From 42ecc1e6f730932fe4dcb9125652fe2e96aba1e9 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 20 May 2021 20:16:18 +0100
+Subject: [PATCH 45/58] egl/null: add support for DRI_PRIME GPU selection
+
+Add support for selecting the GPU to be used for rendering using
+the DRI_PRIME environment variable. If a different GPU is selected,
+a duplicate of the file descriptor for the original GPU/display is
+preserved, which can be obtained by calling the getDisplayFD
+function in the image loader extension.
+
+This change includes code, in function dri2_null_try_device, to
+optionally skip display devices that are not supported by a
+particular DRI driver. This can be enabled by setting Meson build
+option null-dri-driver-name. This feature is to prevent failure
+on PC based test systems, that may have display and GPU hardware
+other than that being tested.
+---
+ meson.build                          |   4 +
+ meson_options.txt                    |   6 ++
+ src/egl/drivers/dri2/egl_dri2.c      |   1 +
+ src/egl/drivers/dri2/platform_null.c | 135 +++++++++++++++++++--------
+ src/egl/meson.build                  |   5 +
+ 5 files changed, 114 insertions(+), 37 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index e021a896a0a..a37add42a6d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -361,6 +361,10 @@ with_platform_haiku = _platforms.contains('haiku')
+ with_platform_windows = _platforms.contains('windows')
+ with_platform_null = _platforms.contains('null')
+ 
++if with_platform_null
++  null_dri_driver_name = get_option('null-dri-driver-name')
++endif
++
+ with_glx = get_option('glx')
+ if with_glx == 'auto'
+   if with_platform_android
+diff --git a/meson_options.txt b/meson_options.txt
+index 65f32547267..84661fb851f 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -37,6 +37,12 @@ option(
+   ],
+   description : 'the window system EGL assumes for EGL_DEFAULT_DISPLAY',
+ )
++option(
++  'null-dri-driver-name',
++  type : 'string',
++  value : '',
++  description : 'For the null platform, ignore all dri drivers apart from this one. By default, no dri drivers are ignored.'
++)
+ option(
+   'android-stub',
+   type : 'boolean',
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index d0503f614f6..fce277c6874 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1362,6 +1362,7 @@ dri2_display_destroy(_EGLDisplay *disp)
+ 
+    switch (disp->Platform) {
+    case _EGL_PLATFORM_DRM:
++   case _EGL_PLATFORM_NULL:
+    case _EGL_PLATFORM_WAYLAND:
+    case _EGL_PLATFORM_X11:
+       if (dri2_dpy->fd_dpy >= 0 && dri2_dpy->fd_dpy != dri2_dpy->fd)
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index c78e1fe0880..e2a138367f9 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -45,6 +45,7 @@
+ 
+ #include "egl_dri2.h"
+ #include "loader.h"
++#include "util/os_file.h"
+ 
+ #define NULL_CARD_MINOR_MAX 63U
+ 
+@@ -1045,7 +1046,7 @@ swap_idle_get_target_frame(struct dri2_egl_surface *dri2_surf,
+     * current vblank by the number of intervals set at the time swapBuffer
+     * is called. For intervals of 1 or 0, we don't need a target frame.
+     */
+-   err = display_get_vblank_sequence(dri2_dpy->fd, current_vblank_out);
++   err = display_get_vblank_sequence(dri2_dpy->fd_dpy, current_vblank_out);
+    if (err)
+       return err;
+ 
+@@ -1095,7 +1096,7 @@ swap_vblank_state_transition(struct dri2_egl_surface *dri2_surf,
+    uint32_t flags = DRM_VBLANK_ABSOLUTE | DRM_VBLANK_EVENT;
+    int err;
+ 
+-   err = display_request_vblank(dri2_dpy->fd, target_frame,
++   err = display_request_vblank(dri2_dpy->fd_dpy, target_frame,
+                                 flags, dri2_surf);
+    if (err) {
+       dri2_surf->swap_state = SWAP_ERROR;
+@@ -1121,7 +1122,7 @@ swap_flip_state_transition(struct dri2_egl_surface *dri2_surf)
+       flags |= DRM_MODE_PAGE_FLIP_ASYNC;
+    }
+ 
+-   err = display_output_flip(dri2_dpy->fd, &dri2_dpy->output,
++   err = display_output_flip(dri2_dpy->fd_dpy, &dri2_dpy->output,
+                              dri2_surf->swap_data->fb_id, flags, dri2_surf);
+    if (err) {
+       dri2_surf->swap_state = SWAP_ERROR;
+@@ -1141,7 +1142,7 @@ swap_poll_state_transition(struct dri2_egl_surface *dri2_surf)
+    int err;
+ 
+    /* dri2_surf->swap_state is being set inside the handler */
+-   err = drm_event_process(dri2_dpy->fd);
++   err = drm_event_process(dri2_dpy->fd_dpy);
+    if (err) {
+       dri2_surf->swap_state = SWAP_ERROR;
+       return err;
+@@ -1296,7 +1297,7 @@ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+       handles[i] = (uint32_t) handle;
+    }
+ 
+-   return !drmModeAddFB2WithModifiers(dri2_dpy->fd, width, height,
++   return !drmModeAddFB2WithModifiers(dri2_dpy->fd_dpy, width, height,
+                                       dri2_null_formats[format_idx].drm_format,
+                                       handles, pitches, offsets, modifiers,
+                                       fb_id_out, flags);
+@@ -1486,7 +1487,7 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+    dri2_surf->format = dri2_null_formats[format_idx].dri_image_format;
+ 
+    if (dri2_dpy->in_formats_enabled) {
+-      ret = in_formats_get_modifiers(dri2_dpy->fd,
++      ret = in_formats_get_modifiers(dri2_dpy->fd_dpy,
+                                      dri2_dpy->output.in_formats_id,
+                                      dri2_null_formats[format_idx].drm_format,
+                                      &dri2_dpy->output.modifiers);
+@@ -1564,7 +1565,7 @@ dri2_null_create_window_surface(_EGLDisplay *disp, _EGLConfig *config,
+       goto err_destroy_surface;
+    }
+ 
+-   err = display_output_modeset(dri2_dpy->fd, &dri2_dpy->output,
++   err = display_output_modeset(dri2_dpy->fd_dpy, &dri2_dpy->output,
+                                 dri2_surf->front_buffer.fb_id);
+    if (err) {
+       _eglError(EGL_BAD_NATIVE_WINDOW, "window set mode");
+@@ -1678,11 +1679,11 @@ dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
+       dri2_dpy->image->destroyImage(dri2_surf->front_buffer.dri_image);
+ 
+    if (dri2_surf->front_buffer.fb_id)
+-         drmModeRmFB(dri2_dpy->fd, dri2_surf->front_buffer.fb_id);
++         drmModeRmFB(dri2_dpy->fd_dpy, dri2_surf->front_buffer.fb_id);
+ 
+    for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
+       if (dri2_surf->color_buffers[i].fb_id)
+-         drmModeRmFB(dri2_dpy->fd, dri2_surf->color_buffers[i].fb_id);
++         drmModeRmFB(dri2_dpy->fd_dpy, dri2_surf->color_buffers[i].fb_id);
+       if (dri2_surf->color_buffers[i].dri_image)
+          dri2_dpy->image->destroyImage(dri2_surf->color_buffers[i].dri_image);
+    }
+@@ -1839,12 +1840,22 @@ dri2_null_flush_front_buffer(__DRIdrawable * driDrawable, void *loaderPrivate)
+    (void) loaderPrivate;
+ }
+ 
++static int
++dri2_null_get_display_fd(void *loaderPrivate)
++{
++   _EGLDisplay *disp = loaderPrivate;
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   return dri2_dpy->fd_dpy;
++}
++
+ static const __DRIimageLoaderExtension image_loader_extension = {
+-   .base = { __DRI_IMAGE_LOADER, 2 },
++   .base = { __DRI_IMAGE_LOADER, 5 },
+ 
+    .getBuffers          = dri2_null_image_get_buffers,
+    .flushFrontBuffer    = dri2_null_flush_front_buffer,
+    .getCapability       = dri2_null_get_capability,
++   .getDisplayFD        = dri2_null_get_display_fd,
+ };
+ 
+ static const __DRIextension *image_loader_extensions[] = {
+@@ -1873,12 +1884,74 @@ dri2_null_device_is_kms(int fd)
+    return is_kms;
+ }
+ 
++static bool
++dri2_null_try_device(_EGLDisplay *disp)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   if (!dri2_null_device_is_kms(dri2_dpy->fd_dpy))
++      return false;
++
++#if defined(NULL_DRI_DRIVER_NAME)
++   /* Skip devices not handled by NULL_DRI_DRIVER_NAME */
++   {
++      char *driver_name = loader_get_driver_for_fd(dri2_dpy->fd_dpy);
++      bool skip = !driver_name || !!strcmp(driver_name, NULL_DRI_DRIVER_NAME);
++
++      free(driver_name);
++
++      if (skip)
++         return false;
++   }
++#endif
++
++   dri2_dpy->fd = os_dupfd_cloexec(dri2_dpy->fd_dpy);
++   if (dri2_dpy->fd < 0) {
++      _eglLog(_EGL_WARNING, "DRI2: failed to dup display FD");
++      dri2_dpy->fd = dri2_dpy->fd_dpy;
++   } else {
++      int fd_old;
++      bool is_different_gpu;
++
++      fd_old = dri2_dpy->fd;
++      dri2_dpy->fd = loader_get_user_preferred_fd(dri2_dpy->fd,
++                                                  &is_different_gpu);
++      if (dri2_dpy->fd == fd_old) {
++         close (dri2_dpy->fd);
++         dri2_dpy->fd = dri2_dpy->fd_dpy;
++      }
++   }
++
++   dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
++   if (!dri2_dpy->driver_name)
++      return false;
++
++   if (dri2_load_driver_dri3(disp)) {
++      _EGLDevice *dev = _eglAddDevice(dri2_dpy->fd, false);
++      if (!dev) {
++         dlclose(dri2_dpy->driver);
++         _eglLog(_EGL_WARNING, "DRI2: failed to find EGLDevice");
++      } else {
++         dri2_dpy->loader_extensions = image_loader_extensions;
++         dri2_dpy->own_device = 1;
++         disp->Device = dev;
++         return true;
++      }
++   }
++
++   free(dri2_dpy->driver_name);
++   dri2_dpy->driver_name = NULL;
++
++   return false;
++}
++
+ static bool
+ dri2_null_probe_device(_EGLDisplay *disp)
+ {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+ 
+    for (unsigned i = 0; i <= NULL_CARD_MINOR_MAX; i++) {
+       char *card_path;
+@@ -1886,32 +1959,20 @@ dri2_null_probe_device(_EGLDisplay *disp)
+       if (asprintf(&card_path, DRM_DEV_NAME, DRM_DIR_NAME, i) < 0)
+          continue;
+ 
+-      dri2_dpy->fd = loader_open_device(card_path);
++      dri2_dpy->fd_dpy = loader_open_device(card_path);
+       free(card_path);
+-      if (dri2_dpy->fd < 0)
++      if (dri2_dpy->fd_dpy < 0)
+          continue;
+ 
+-      if (dri2_null_device_is_kms(dri2_dpy->fd)) {
+-         dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
+-         if (dri2_dpy->driver_name) {
+-            if (dri2_load_driver_dri3(disp)) {
+-               _EGLDevice *dev = _eglAddDevice(dri2_dpy->fd, false);
+-               if (!dev) {
+-                  dlclose(dri2_dpy->driver);
+-                  _eglLog(_EGL_WARNING, "DRI2: failed to find EGLDevice");
+-               } else {
+-                  dri2_dpy->loader_extensions = image_loader_extensions;
+-                  dri2_dpy->own_device = 1;
+-                  disp->Device = dev;
+-                  return true;
+-               }
+-            }
+-            free(dri2_dpy->driver_name);
+-            dri2_dpy->driver_name = NULL;
+-         }
+-      }
++      if (dri2_null_try_device(disp))
++         return true;
++
++      close(dri2_dpy->fd_dpy);
++
++      if (dri2_dpy->fd >= 0 && dri2_dpy->fd != dri2_dpy->fd_dpy)
++         close(dri2_dpy->fd);
+ 
+-      close(dri2_dpy->fd);
++      dri2_dpy->fd_dpy = -1;
+       dri2_dpy->fd = -1;
+    }
+ 
+@@ -1972,7 +2033,7 @@ dri2_null_setup_swap_interval(_EGLDisplay *disp)
+ 
+    dri2_setup_swap_interval(disp, swap_max_interval);
+ 
+-   err = drmGetCap(dri2_dpy->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
++   err = drmGetCap(dri2_dpy->fd_dpy, DRM_CAP_ASYNC_PAGE_FLIP, &value);
+    if (err || value == 0) {
+ 
+       /* DRM/KMS does not support async page flip. In order to support
+@@ -2020,7 +2081,7 @@ dri2_initialize_null(_EGLDisplay *disp)
+     * modesetting if not. If this succeeds then universal planes will also have
+     * been enabled.
+     */
+-   err = drmSetClientCap(dri2_dpy->fd, DRM_CLIENT_CAP_ATOMIC, 1);
++   err = drmSetClientCap(dri2_dpy->fd_dpy, DRM_CLIENT_CAP_ATOMIC, 1);
+    dri2_dpy->atomic_enabled = !err;
+ 
+    if (!dri2_dpy->atomic_enabled) {
+@@ -2028,7 +2089,7 @@ dri2_initialize_null(_EGLDisplay *disp)
+        * Enable universal planes so that we can get the pixel formats for the
+        * primary plane
+        */
+-      err = drmSetClientCap(dri2_dpy->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
++      err = drmSetClientCap(dri2_dpy->fd_dpy, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+       if (err) {
+          _eglError(EGL_NOT_INITIALIZED, "failed to enable universal planes");
+          goto cleanup;
+@@ -2064,7 +2125,7 @@ dri2_initialize_null(_EGLDisplay *disp)
+          dri2_dpy->image->createImageWithModifiers;
+    }
+ 
+-   if (!display_output_init(dri2_dpy->fd, &dri2_dpy->output,
++   if (!display_output_init(dri2_dpy->fd_dpy, &dri2_dpy->output,
+                             dri2_dpy->atomic_enabled,
+                             prefer_in_formats,
+                             &dri2_dpy->in_formats_enabled)) {
+@@ -2098,7 +2159,7 @@ dri2_teardown_null(struct dri2_egl_display *dri2_dpy)
+    drmModeAtomicFree(dri2_dpy->output.atomic_state);
+ 
+    if (dri2_dpy->output.mode_blob_id)
+-      drmModeDestroyPropertyBlob(dri2_dpy->fd, dri2_dpy->output.mode_blob_id);
++      drmModeDestroyPropertyBlob(dri2_dpy->fd_dpy, dri2_dpy->output.mode_blob_id);
+ 
+    if (dri2_dpy->output.plane_prop_res) {
+       for (unsigned i = 0; dri2_dpy->output.plane_prop_res[i]; i++)
+diff --git a/src/egl/meson.build b/src/egl/meson.build
+index a08f1c71847..4aa9f5fb0de 100644
+--- a/src/egl/meson.build
++++ b/src/egl/meson.build
+@@ -151,6 +151,11 @@ elif with_platform_windows
+   link_for_egl += libgallium_wgl
+ endif
+ if with_platform_null
++  if null_dri_driver_name != ''
++    c_args_for_egl += [
++      '-DNULL_DRI_DRIVER_NAME="@0@"'.format(null_dri_driver_name),
++    ]
++  endif
+   files_egl += files('drivers/dri2/platform_null.c')
+   incs_for_egl += [inc_loader]
+   deps_for_egl += dep_libdrm
+-- 
+2.25.1
+

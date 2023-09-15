@@ -1,0 +1,267 @@
+From 43b1db77a10ff200b4732951d054b75db121cf42 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Thu, 20 May 2021 14:43:29 +0100
+Subject: [PATCH 44/58] egl/drm: add support for DRI_PRIME GPU selection
+
+Add support for selecting the GPU to be used for rendering using
+the DRI_PRIME environment variable. If a different GPU is selected,
+a duplicate of the file descriptor for the original GPU/display is
+preserved, which can be obtained by calling the getDisplayFD
+function in the image loader extension.
+
+For server side Wayland, the ability to support PRIME is
+determined by checking for the PRIME import and export
+capabilities on the driver file descriptor, which may no
+longer support them if a different GPU from the default has
+been selected. It may be that the driver can still support
+PRIME; for example, by making use of the original (default)
+file descriptor. The driver can indicate it supports PRIME
+via the getCapabilities function in the DRI Image extension.
+---
+ include/GL/internal/dri_interface.h |  2 ++
+ src/egl/drivers/dri2/egl_dri2.c     | 10 ++++++++
+ src/egl/drivers/dri2/platform_drm.c | 19 ++++++++++-----
+ src/gbm/backends/dri/gbm_dri.c      | 38 +++++++++++++++++++++++++----
+ src/gbm/backends/dri/gbm_driint.h   |  8 ++++++
+ 5 files changed, 66 insertions(+), 11 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index ab6a9fb125b..123349acb72 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1397,6 +1397,8 @@ enum __DRIChromaSiting {
+  */
+ /*@{*/
+ #define __DRI_IMAGE_CAP_GLOBAL_NAMES 1
++#define __DRI_IMAGE_CAP_PRIME_IMPORT 0x2000
++#define __DRI_IMAGE_CAP_PRIME_EXPORT 0x4000
+ /*@}*/
+ 
+ /**
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index b0fa686581a..d0503f614f6 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1361,6 +1361,7 @@ dri2_display_destroy(_EGLDisplay *disp)
+    }
+ 
+    switch (disp->Platform) {
++   case _EGL_PLATFORM_DRM:
+    case _EGL_PLATFORM_WAYLAND:
+    case _EGL_PLATFORM_X11:
+       if (dri2_dpy->fd_dpy >= 0 && dri2_dpy->fd_dpy != dri2_dpy->fd)
+@@ -3492,6 +3493,15 @@ dri2_bind_wayland_display_wl(_EGLDisplay *disp, struct wl_display *wl_dpy)
+        dri2_dpy->image->base.version >= 7 &&
+        dri2_dpy->image->createImageFromFds != NULL)
+       flags |= WAYLAND_DRM_PRIME;
++   else if (dri2_dpy->image->base.version >= 10 &&
++            dri2_dpy->image->getCapabilities != NULL) {
++         int capabilities;
++
++         capabilities = dri2_dpy->image->getCapabilities(dri2_dpy->dri_screen);
++         if ((capabilities & __DRI_IMAGE_CAP_PRIME_IMPORT) != 0 &&
++             (capabilities & __DRI_IMAGE_CAP_PRIME_EXPORT) != 0)
++            flags |= WAYLAND_DRM_PRIME;
++   }
+ 
+    dri2_dpy->wl_server_drm =
+            wayland_drm_init(wl_dpy, device_name,
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
+index 4d08851c782..19c50c25128 100644
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
+@@ -595,7 +595,7 @@ dri2_drm_authenticate(_EGLDisplay *disp, uint32_t id)
+ {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+ 
+-   return drmAuthMagic(dri2_dpy->fd, id);
++   return drmAuthMagic(dri2_dpy->fd_dpy, id);
+ }
+ 
+ static void
+@@ -782,6 +782,7 @@ dri2_initialize_drm(_EGLDisplay *disp)
+       return _eglError(EGL_BAD_ALLOC, "eglInitialize");
+ 
+    dri2_dpy->fd = -1;
++   dri2_dpy->fd_dpy = -1;
+    disp->DriverData = (void *) dri2_dpy;
+ 
+    gbm = disp->PlatformDisplay;
+@@ -789,16 +790,16 @@ dri2_initialize_drm(_EGLDisplay *disp)
+       char buf[64];
+       int n = snprintf(buf, sizeof(buf), DRM_DEV_NAME, DRM_DIR_NAME, 0);
+       if (n != -1 && n < sizeof(buf))
+-         dri2_dpy->fd = loader_open_device(buf);
+-      gbm = gbm_create_device(dri2_dpy->fd);
++         dri2_dpy->fd_dpy = loader_open_device(buf);
++      gbm = gbm_create_device(dri2_dpy->fd_dpy);
+       if (gbm == NULL) {
+          err = "DRI2: failed to create gbm device";
+          goto cleanup;
+       }
+       dri2_dpy->own_device = true;
+    } else {
+-      dri2_dpy->fd = os_dupfd_cloexec(gbm_device_get_fd(gbm));
+-      if (dri2_dpy->fd < 0) {
++      dri2_dpy->fd_dpy = os_dupfd_cloexec(gbm_device_get_fd(gbm));
++      if (dri2_dpy->fd_dpy < 0) {
+          err = "DRI2: failed to fcntl() existing gbm device";
+          goto cleanup;
+       }
+@@ -810,6 +811,12 @@ dri2_initialize_drm(_EGLDisplay *disp)
+       goto cleanup;
+    }
+ 
++   if (gbm_dri_device_get_fd(dri2_dpy->gbm_dri) ==
++       gbm_device_get_fd(gbm))
++      dri2_dpy->fd = dri2_dpy->fd_dpy;
++   else
++      dri2_dpy->fd = os_dupfd_cloexec(gbm_dri_device_get_fd(dri2_dpy->gbm_dri));
++
+    dev = _eglAddDevice(dri2_dpy->fd, dri2_dpy->gbm_dri->software);
+    if (!dev) {
+       err = "DRI2: failed to find EGLDevice";
+@@ -875,7 +882,7 @@ dri2_initialize_drm(_EGLDisplay *disp)
+       disp->Extensions.EXT_buffer_age = EGL_TRUE;
+ 
+ #ifdef HAVE_WAYLAND_PLATFORM
+-   dri2_dpy->device_name = loader_get_device_name_for_fd(dri2_dpy->fd);
++   dri2_dpy->device_name = loader_get_device_name_for_fd(dri2_dpy->fd_dpy);
+ #endif
+    dri2_set_WL_bind_wayland_display(disp);
+ 
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 17594589f56..2b60a469559 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -52,6 +52,7 @@
+ #include "loader.h"
+ #include "util/debug.h"
+ #include "util/macros.h"
++#include "util/os_file.h"
+ 
+ /* For importing wl_buffer */
+ #if HAVE_WAYLAND_PLATFORM
+@@ -164,6 +165,14 @@ image_get_buffers(__DRIdrawable *driDrawable,
+                                  surf->dri_private, buffer_mask, buffers);
+ }
+ 
++static int
++dri_get_display_fd(void *loaderPrivate)
++{
++   struct gbm_dri_device *dri = loaderPrivate;
++
++   return dri->base.v0.fd;
++}
++
+ static void
+ swrast_get_drawable_info(__DRIdrawable *driDrawable,
+                          int           *x,
+@@ -245,20 +254,22 @@ static const __DRIimageLookupExtension image_lookup_extension = {
+ };
+ 
+ static const __DRIdri2LoaderExtension dri2_loader_extension = {
+-   .base = { __DRI_DRI2_LOADER, 4 },
++   .base = { __DRI_DRI2_LOADER, 6 },
+ 
+    .getBuffers              = dri_get_buffers,
+    .flushFrontBuffer        = dri_flush_front_buffer,
+    .getBuffersWithFormat    = dri_get_buffers_with_format,
+    .getCapability           = dri_get_capability,
++   .getDisplayFD            = dri_get_display_fd,
+ };
+ 
+ static const __DRIimageLoaderExtension image_loader_extension = {
+-   .base = { __DRI_IMAGE_LOADER, 2 },
++   .base = { __DRI_IMAGE_LOADER, 5 },
+ 
+    .getBuffers          = image_get_buffers,
+    .flushFrontBuffer    = dri_flush_front_buffer,
+    .getCapability       = dri_get_capability,
++   .getDisplayFD        = dri_get_display_fd,
+ };
+ 
+ static const __DRIswrastLoaderExtension swrast_loader_extension = {
+@@ -431,12 +442,12 @@ dri_screen_create_dri2(struct gbm_dri_device *dri, char *driver_name)
+       return -1;
+ 
+    if (dri->dri2->base.version >= 4) {
+-      dri->screen = dri->dri2->createNewScreen2(0, dri->base.v0.fd,
++      dri->screen = dri->dri2->createNewScreen2(0, dri->fd,
+                                                 dri->loader_extensions,
+                                                 dri->driver_extensions,
+                                                 &dri->driver_configs, dri);
+    } else {
+-      dri->screen = dri->dri2->createNewScreen(0, dri->base.v0.fd,
++      dri->screen = dri->dri2->createNewScreen(0, dri->fd,
+                                                dri->loader_extensions,
+                                                &dri->driver_configs, dri);
+    }
+@@ -503,8 +514,20 @@ static int
+ dri_screen_create(struct gbm_dri_device *dri)
+ {
+    char *driver_name;
++   int dup_fd, new_fd;
++   bool is_different_gpu;
+ 
+-   driver_name = loader_get_driver_for_fd(dri->base.v0.fd);
++   dup_fd = os_dupfd_cloexec(dri->fd);
++   if (dup_fd < 0)
++      return -1;
++
++   new_fd = loader_get_user_preferred_fd(dup_fd, &is_different_gpu);
++   if (new_fd == dup_fd)
++      close(new_fd);
++   else
++      dri->fd = new_fd;
++
++   driver_name = loader_get_driver_for_fd(dri->fd);
+    if (!driver_name)
+       return -1;
+ 
+@@ -1469,6 +1492,9 @@ dri_destroy(struct gbm_device *gbm)
+    dlclose(dri->driver);
+    free(dri->driver_name);
+ 
++   if (dri->fd >= 0 && dri->fd != dri->base.v0.fd)
++      close (dri->fd);
++
+    free(dri);
+ }
+ 
+@@ -1490,6 +1516,8 @@ dri_device_create(int fd, uint32_t gbm_backend_version)
+    if (!dri)
+       return NULL;
+ 
++   dri->fd = fd;
++
+    dri->base.v0.fd = fd;
+    dri->base.v0.backend_version = gbm_backend_version;
+    dri->base.v0.bo_create = gbm_dri_bo_create;
+diff --git a/src/gbm/backends/dri/gbm_driint.h b/src/gbm/backends/dri/gbm_driint.h
+index 31f6b67a40f..3f94352185f 100644
+--- a/src/gbm/backends/dri/gbm_driint.h
++++ b/src/gbm/backends/dri/gbm_driint.h
+@@ -62,6 +62,8 @@ struct gbm_dri_visual {
+ struct gbm_dri_device {
+    struct gbm_device base;
+ 
++   int fd;
++
+    void *driver;
+    char *driver_name; /* Name of the DRI module, without the _dri suffix */
+    bool software; /* A software driver was loaded */
+@@ -195,4 +197,10 @@ gbm_dri_bo_unmap_dumb(struct gbm_dri_bo *bo)
+    bo->map = NULL;
+ }
+ 
++static inline int
++gbm_dri_device_get_fd(struct gbm_dri_device *dri)
++{
++   return dri->fd;
++}
++
+ #endif
+-- 
+2.25.1
+

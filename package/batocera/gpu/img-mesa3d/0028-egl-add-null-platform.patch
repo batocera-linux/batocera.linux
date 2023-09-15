@@ -1,0 +1,1485 @@
+From 7bcf7068e551b5b78381f8a9d7f848af6efe7e36 Mon Sep 17 00:00:00 2001
+From: Frank Binns <francisbinns@gmail.com>
+Date: Sun, 5 Jun 2016 12:04:40 +0100
+Subject: [PATCH 28/58] egl: add "null" platform
+
+---
+ meson.build                          |   10 +-
+ meson_options.txt                    |    2 +-
+ src/egl/drivers/dri2/egl_dri2.c      |   11 +-
+ src/egl/drivers/dri2/egl_dri2.h      |   59 +-
+ src/egl/drivers/dri2/platform_null.c | 1179 ++++++++++++++++++++++++++
+ src/egl/main/eglapi.c                |    5 +-
+ src/egl/main/egldisplay.c            |    1 +
+ src/egl/main/egldisplay.h            |    1 +
+ src/egl/meson.build                  |    5 +
+ 9 files changed, 1264 insertions(+), 9 deletions(-)
+ create mode 100644 src/egl/drivers/dri2/platform_null.c
+
+diff --git a/meson.build b/meson.build
+index d9fbb1fd8d9..ce81c7d0f9e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -335,7 +335,7 @@ endif
+ _platforms = get_option('platforms')
+ if _platforms.contains('auto')
+   if system_has_kms_drm
+-    _platforms = ['x11', 'wayland']
++    _platforms = ['x11', 'wayland', 'null']
+   elif ['darwin', 'cygwin'].contains(host_machine.system())
+     _platforms = ['x11']
+   elif ['haiku'].contains(host_machine.system())
+@@ -353,6 +353,7 @@ with_platform_x11 = _platforms.contains('x11')
+ with_platform_wayland = _platforms.contains('wayland')
+ with_platform_haiku = _platforms.contains('haiku')
+ with_platform_windows = _platforms.contains('windows')
++with_platform_null = _platforms.contains('null')
+ 
+ with_glx = get_option('glx')
+ if with_glx == 'auto'
+@@ -1014,6 +1015,10 @@ if with_platform_android
+   ]
+ endif
+ 
++if with_platform_null
++  pre_args += '-DHAVE_NULL_PLATFORM'
++endif
++
+ prog_python = import('python').find_installation('python3')
+ has_mako = run_command(
+   prog_python, '-c',
+@@ -1640,7 +1645,8 @@ with_gallium_drisw_kms = false
+ dep_libdrm = dependency(
+   'libdrm', version : '>=' + _drm_ver,
+   # GNU/Hurd includes egl_dri2, without drm.
+-  required : (with_dri2 and host_machine.system() != 'gnu') or with_dri3
++  required : (with_dri2 and host_machine.system() != 'gnu') or with_dri3 or
++             with_platform_null
+ )
+ if dep_libdrm.found()
+   pre_args += '-DHAVE_LIBDRM'
+diff --git a/meson_options.txt b/meson_options.txt
+index 3f401d39225..d76cc4b0405 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -23,7 +23,7 @@ option(
+   type : 'array',
+   value : ['auto'],
+   choices : [
+-    'auto', 'x11', 'wayland', 'haiku', 'android', 'windows',
++    'auto', 'x11', 'wayland', 'haiku', 'android', 'windows', 'null',
+   ],
+   description : 'window systems to support. If this is set to `auto`, all platforms applicable will be enabled.'
+ )
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 635c445d234..68b8fa7346a 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1261,6 +1261,9 @@ dri2_initialize(_EGLDisplay *disp)
+    case _EGL_PLATFORM_DEVICE:
+       ret = dri2_initialize_device(disp);
+       break;
++   case _EGL_PLATFORM_NULL:
++      ret = dri2_initialize_null(disp);
++      break;
+    case _EGL_PLATFORM_X11:
+    case _EGL_PLATFORM_XCB:
+       ret = dri2_initialize_x11(disp);
+@@ -1321,8 +1324,6 @@ dri2_display_destroy(_EGLDisplay *disp)
+          dri2_dpy->vtbl->close_screen_notify(disp);
+       dri2_dpy->core->destroyScreen(dri2_dpy->dri_screen);
+    }
+-   if (dri2_dpy->fd >= 0)
+-      close(dri2_dpy->fd);
+ 
+    /* Don't dlclose the driver when building with the address sanitizer, so you
+     * get good symbols from the leak reports.
+@@ -1348,11 +1349,17 @@ dri2_display_destroy(_EGLDisplay *disp)
+    case _EGL_PLATFORM_WAYLAND:
+       dri2_teardown_wayland(dri2_dpy);
+       break;
++   case _EGL_PLATFORM_NULL:
++      dri2_teardown_null(dri2_dpy);
++      break;
+    default:
+       /* TODO: add teardown for other platforms */
+       break;
+    }
+ 
++   if (dri2_dpy->fd >= 0)
++      close(dri2_dpy->fd);
++
+    /* The drm platform does not create the screen/driver_configs but reuses
+     * the ones from the gbm device. As such the gbm itself is responsible
+     * for the cleanup.
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 35f66ad5453..5de5f0f9a16 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -77,6 +77,10 @@ struct zwp_linux_dmabuf_feedback_v1;
+ 
+ #endif /* HAVE_ANDROID_PLATFORM */
+ 
++#ifdef HAVE_NULL_PLATFORM
++#include <xf86drmMode.h>
++#endif
++
+ #include "eglconfig.h"
+ #include "eglcontext.h"
+ #include "egldevice.h"
+@@ -94,6 +98,22 @@ struct zwp_linux_dmabuf_feedback_v1;
+ 
+ struct wl_buffer;
+ 
++#ifdef HAVE_NULL_PLATFORM
++struct display_output {
++   bool                   in_use;
++   uint32_t               connector_id;
++   drmModePropertyRes   **connector_prop_res;
++   uint32_t               crtc_id;
++   drmModePropertyRes   **crtc_prop_res;
++   uint32_t               plane_id;
++   drmModePropertyRes   **plane_prop_res;
++   drmModeModeInfo        mode;
++   uint32_t               mode_blob_id;
++   unsigned               formats;
++   drmModeAtomicReq      *atomic_state;
++};
++#endif
++
+ struct dri2_egl_display_vtbl {
+    /* mandatory on Wayland, unused otherwise */
+    int (*authenticate)(_EGLDisplay *disp, uint32_t id);
+@@ -287,6 +307,11 @@ struct dri2_egl_display
+    char *device_name;
+ #endif
+ 
++#ifdef HAVE_NULL_PLATFORM
++   bool                      atomic_enabled;
++   struct display_output     output;
++#endif
++
+ #ifdef HAVE_ANDROID_PLATFORM
+    const gralloc_module_t *gralloc;
+    /* gralloc vendor usage bit for front rendering */
+@@ -331,11 +356,14 @@ struct dri2_egl_surface
+    struct zwp_linux_dmabuf_feedback_v1 *wl_dmabuf_feedback;
+    struct dmabuf_feedback dmabuf_feedback, pending_dmabuf_feedback;
+    bool compositor_using_another_device;
+-   int format;
+    bool resized;
+    bool received_dmabuf_feedback;
+ #endif
+ 
++#if defined(HAVE_WAYLAND_PLATFORM) || defined(HAVE_NULL_PLATFORM)
++   int format;
++#endif
++
+ #ifdef HAVE_DRM_PLATFORM
+    struct gbm_dri_surface *gbm_surf;
+ #endif
+@@ -343,12 +371,15 @@ struct dri2_egl_surface
+    /* EGL-owned buffers */
+    __DRIbuffer *local_buffers[__DRI_BUFFER_COUNT];
+ 
+-#if defined(HAVE_WAYLAND_PLATFORM) || defined(HAVE_DRM_PLATFORM)
++#if defined(HAVE_WAYLAND_PLATFORM) || defined(HAVE_DRM_PLATFORM) || \
++    defined(HAVE_NULL_PLATFORM)
+    struct {
++#if defined(HAVE_WAYLAND_PLATFORM) || defined(HAVE_NULL_PLATFORM)
++      __DRIimage *dri_image;
++#endif
+ #ifdef HAVE_WAYLAND_PLATFORM
+       struct wl_buffer *wl_buffer;
+       bool wl_release;
+-      __DRIimage *dri_image;
+       /* for is_different_gpu case. NULL else */
+       __DRIimage *linear_copy;
+       /* for swrast */
+@@ -357,6 +388,9 @@ struct dri2_egl_surface
+ #endif
+ #ifdef HAVE_DRM_PLATFORM
+       struct gbm_bo *bo;
++#endif
++#ifdef HAVE_NULL_PLATFORM
++      uint32_t fb_id;
+ #endif
+       bool locked;
+       int age;
+@@ -393,6 +427,10 @@ struct dri2_egl_surface
+    void                 *swrast_front;
+ #endif
+ 
++#ifdef HAVE_NULL_PLATFORM
++   uint32_t             front_fb_id;
++#endif
++
+    int out_fence_fd;
+    EGLBoolean enable_out_fence;
+ 
+@@ -571,6 +609,21 @@ dri2_initialize_android(_EGLDisplay *disp)
+ EGLBoolean
+ dri2_initialize_surfaceless(_EGLDisplay *disp);
+ 
++#ifdef HAVE_NULL_PLATFORM
++EGLBoolean
++dri2_initialize_null(_EGLDisplay *disp);
++void
++dri2_teardown_null(struct dri2_egl_display *dri2_dpy);
++#else
++static inline EGLBoolean
++dri2_initialize_null(_EGLDisplay *disp)
++{
++   return _eglError(EGL_NOT_INITIALIZED, "Null platform not built");
++}
++static inline void
++dri2_teardown_null(struct dri2_egl_display *dri2_dpy) {}
++#endif
++
+ EGLBoolean
+ dri2_initialize_device(_EGLDisplay *disp);
+ static inline void
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+new file mode 100644
+index 00000000000..fb03ecc36fd
+--- /dev/null
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -0,0 +1,1179 @@
++/*
++ * Copyright (c) Imagination Technologies Ltd.
++ *
++ * Parts based on platform_wayland, which has:
++ *
++ * Copyright © 2011-2012 Intel Corporation
++ * Copyright © 2012 Collabora, Ltd.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ */
++
++#include <dlfcn.h>
++#include <drm_fourcc.h>
++#include <fcntl.h>
++#include <poll.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <unistd.h>
++#include <xf86drm.h>
++
++#include "egl_dri2.h"
++#include "loader.h"
++
++#define NULL_CARD_MINOR_MAX 63U
++
++/*
++ * Need at least version 4 for __DRI_IMAGE_ATTRIB_WIDTH and
++ * __DRI_IMAGE_ATTRIB_HEIGHT
++ */
++#define NULL_IMAGE_EXTENSION_VERSION_MIN 4
++
++struct object_property {
++   uint32_t object_id;
++   uint32_t prop_id;
++   uint64_t prop_value;
++};
++
++#define object_property_set_named(output, object_type, prop_name, value)    \
++   {                                                                        \
++      .object_id = (output)->object_type##_id,                              \
++      .prop_id = property_id_get_for_name((output)->object_type##_prop_res, \
++                                          prop_name),                       \
++      .prop_value = value,                                                  \
++   }
++
++/*
++ * The index of entries in this table is used as a bitmask in
++ * dri2_dpy->formats, which tracks the formats supported by the display.
++ */
++static const struct dri2_null_format {
++   uint32_t drm_format;
++   int dri_image_format;
++   int rgba_shifts[4];
++   unsigned int rgba_sizes[4];
++} dri2_null_formats[] = {
++   {
++      .drm_format = DRM_FORMAT_XRGB8888,
++      .dri_image_format = __DRI_IMAGE_FORMAT_XRGB8888,
++      .rgba_shifts = { 16, 8, 0, -1 },
++      .rgba_sizes = { 8, 8, 8, 0 },
++   },
++   {
++      .drm_format = DRM_FORMAT_ARGB8888,
++      .dri_image_format = __DRI_IMAGE_FORMAT_ARGB8888,
++      .rgba_shifts = { 16, 8, 0, 24 },
++      .rgba_sizes = { 8, 8, 8, 8 },
++   },
++   {
++      .drm_format = DRM_FORMAT_RGB565,
++      .dri_image_format = __DRI_IMAGE_FORMAT_RGB565,
++      .rgba_shifts = { 11, 5, 0, -1 },
++      .rgba_sizes = { 5, 6, 5, 0 },
++   },
++};
++
++
++static int
++format_idx_get_from_config(struct dri2_egl_display *dri2_dpy,
++                           const __DRIconfig *config)
++{
++   int shifts[4];
++   unsigned int sizes[4];
++
++   dri2_get_shifts_and_sizes(dri2_dpy->core, config, shifts, sizes);
++
++   for (unsigned int i = 0; i < ARRAY_SIZE(dri2_null_formats); i++) {
++      const struct dri2_null_format *format = &dri2_null_formats[i];
++
++      if (shifts[0] == format->rgba_shifts[0] &&
++          shifts[1] == format->rgba_shifts[1] &&
++          shifts[2] == format->rgba_shifts[2] &&
++          shifts[3] == format->rgba_shifts[3] &&
++          sizes[0] == format->rgba_sizes[0] &&
++          sizes[1] == format->rgba_sizes[1] &&
++          sizes[2] == format->rgba_sizes[2] &&
++          sizes[3] == format->rgba_sizes[3]) {
++         return i;
++      }
++   }
++
++   return -1;
++}
++
++static int
++format_idx_get_from_dri_image_format(uint32_t dri_image_format)
++{
++   for (unsigned int i = 0; i < ARRAY_SIZE(dri2_null_formats); i++)
++      if (dri2_null_formats[i].dri_image_format == dri_image_format)
++         return i;
++
++   return -1;
++}
++
++static int
++format_idx_get_from_drm_format(uint32_t drm_format)
++{
++   for (unsigned int i = 0; i < ARRAY_SIZE(dri2_null_formats); i++)
++      if (dri2_null_formats[i].drm_format == drm_format)
++         return i;
++
++   return -1;
++}
++
++static int
++atomic_state_add_object_properties(drmModeAtomicReq *atomic_state,
++                                   const struct object_property *props,
++                                   const unsigned prop_count)
++{
++   for (unsigned i = 0; i < prop_count; i++) {
++      int err;
++
++      if (props[i].prop_id == 0)
++         return -EINVAL;
++
++      err = drmModeAtomicAddProperty(atomic_state, props[i].object_id,
++                                     props[i].prop_id, props[i].prop_value);
++      if (err < 0)
++         return err;
++   }
++
++   return 0;
++}
++
++
++static uint32_t
++property_id_get_for_name(drmModePropertyRes **prop_res, const char *prop_name)
++{
++   if (prop_res)
++      for (unsigned i = 0; prop_res[i]; i++)
++         if (!strcmp(prop_res[i]->name, prop_name))
++            return prop_res[i]->prop_id;
++
++   return 0;
++}
++
++static void
++flip_handler(int fd, unsigned int sequence, unsigned int tv_sec,
++             unsigned int tv_usec, void *user_data)
++{
++   bool *plocked = user_data;
++
++   if (plocked)
++      *plocked = false;
++}
++
++static bool
++flip_process(int fd)
++{
++   static drmEventContext evctx =
++      {.version = 2, .page_flip_handler = flip_handler};
++   struct pollfd pfd = {.fd = fd, .events = POLLIN};
++   int ret;
++
++   do {
++      ret = poll(&pfd, 1, -1);
++   } while (ret > 0 && pfd.revents != pfd.events);
++
++   if (ret <= 0)
++      return false;
++
++   drmHandleEvent(fd, &evctx);
++
++   return true;
++}
++
++static drmModePropertyRes **
++object_get_property_resources(int fd, uint32_t object_id, uint32_t object_type)
++{
++   drmModeObjectProperties *props;
++   drmModePropertyRes **prop_res;
++
++   props = drmModeObjectGetProperties(fd, object_id, object_type);
++   if (!props)
++      return NULL;
++
++   prop_res = malloc((props->count_props + 1) * sizeof(*prop_res));
++   if (prop_res) {
++      prop_res[props->count_props] = NULL;
++
++      for (unsigned i = 0; i < props->count_props; i++) {
++         prop_res[i] = drmModeGetProperty(fd, props->props[i]);
++         if (!prop_res[i]) {
++            while (i--) {
++               drmModeFreeProperty(prop_res[i]);
++               free(prop_res);
++               prop_res = NULL;
++            }
++            break;
++         }
++      }
++   }
++
++   drmModeFreeObjectProperties(props);
++
++   return prop_res;
++}
++
++static void
++object_free_property_resources(int fd, drmModePropertyRes **prop_res)
++{
++   for (unsigned i = 0; prop_res[i]; i++)
++      drmModeFreeProperty(prop_res[i]);
++   free(prop_res);
++}
++
++static bool
++object_property_value_for_name(int fd, uint32_t object_id, uint32_t object_type,
++                               const char *prop_name, uint64_t *value_out)
++{
++   drmModeObjectProperties *plane_props;
++   bool found = false;
++
++   plane_props = drmModeObjectGetProperties(fd, object_id, object_type);
++   if (!plane_props)
++      return false;
++
++   for (unsigned i = 0; i < plane_props->count_props; i++) {
++      drmModePropertyRes *prop;
++
++      prop = drmModeGetProperty(fd, plane_props->props[i]);
++      if (!prop)
++         continue;
++
++      found = !strcmp(prop->name, prop_name);
++      drmModeFreeProperty(prop);
++      if (found) {
++         *value_out = plane_props->prop_values[i];
++         break;
++      }
++   }
++
++   drmModeFreeObjectProperties(plane_props);
++
++   return found;
++}
++
++static int
++connector_choose_mode(drmModeConnector *connector)
++{
++   if (!connector->count_modes)
++      return -1;
++
++   for (unsigned i = 0; i < connector->count_modes; i++) {
++      if (connector->modes[i].flags & DRM_MODE_FLAG_INTERLACE)
++         continue;
++
++      if (connector->modes[i].type & DRM_MODE_TYPE_PREFERRED)
++         return i;
++   }
++
++   return 0;
++}
++
++static drmModeConnector *
++connector_get(int fd, drmModeRes *resources)
++{
++   /* Find the first connected connector */
++   for (unsigned i = 0; i < resources->count_connectors; i++) {
++      drmModeConnector *connector;
++
++      connector = drmModeGetConnector(fd, resources->connectors[i]);
++      if (!connector)
++         continue;
++
++      if (connector->connection == DRM_MODE_CONNECTED)
++         return connector;
++
++      drmModeFreeConnector(connector);
++   }
++
++   return NULL;
++}
++
++static drmModeCrtc *
++crtc_get_for_connector(int fd, drmModeRes *resources,
++                       drmModeConnector *connector)
++{
++   for (unsigned i = 0; i < connector->count_encoders; i++) {
++      drmModeEncoder *encoder;
++
++      encoder = drmModeGetEncoder(fd, connector->encoders[i]);
++      if (!encoder)
++         continue;
++
++      for (unsigned j = 0; j < resources->count_crtcs; j++) {
++         if (encoder->possible_crtcs & (1 << j)) {
++            drmModeCrtc *crtc;
++
++            crtc = drmModeGetCrtc(fd, resources->crtcs[j]);
++            if (crtc) {
++               drmModeFreeEncoder(encoder);
++               return crtc;
++            }
++         }
++      }
++
++      drmModeFreeEncoder(encoder);
++   }
++
++   return NULL;
++}
++
++static drmModePlane *
++primary_plane_get_for_crtc(int fd, drmModeRes *resources, drmModeCrtc *crtc)
++{
++   drmModePlaneRes *plane_resources;
++   unsigned crtc_idx;
++
++   plane_resources = drmModeGetPlaneResources(fd);
++   if (!plane_resources)
++      return NULL;
++
++   for (crtc_idx = 0; crtc_idx < resources->count_crtcs; crtc_idx++)
++      if (resources->crtcs[crtc_idx] == crtc->crtc_id)
++         break;
++   assert(crtc_idx != resources->count_crtcs);
++
++   for (unsigned i = 0; i < plane_resources->count_planes; i++) {
++      const uint32_t crtc_bit = 1 << crtc_idx;
++      drmModePlane *plane;
++
++      plane = drmModeGetPlane(fd, plane_resources->planes[i]);
++      if (!plane)
++         continue;
++
++      if (plane->possible_crtcs & crtc_bit) {
++         uint64_t type;
++         bool res;
++
++         res = object_property_value_for_name(fd, plane->plane_id,
++                                              DRM_MODE_OBJECT_PLANE,
++                                              "type", &type);
++         if (res && type == DRM_PLANE_TYPE_PRIMARY) {
++            drmModeFreePlaneResources(plane_resources);
++            return plane;
++         }
++      }
++
++      drmModeFreePlane(plane);
++   }
++
++   drmModeFreePlaneResources(plane_resources);
++
++   return NULL;
++}
++
++static bool
++display_output_atomic_init(int fd, struct display_output *output)
++{
++   drmModePropertyRes **connector_prop_res;
++   drmModePropertyRes **crtc_prop_res;
++   drmModePropertyRes **plane_prop_res;
++   int err;
++
++   connector_prop_res = object_get_property_resources(fd, output->connector_id,
++                                                      DRM_MODE_OBJECT_CONNECTOR);
++   if (!connector_prop_res)
++      return false;
++
++   crtc_prop_res = object_get_property_resources(fd, output->crtc_id,
++                                                 DRM_MODE_OBJECT_CRTC);
++   if (!crtc_prop_res)
++      goto err_free_connector_prop_res;
++
++   plane_prop_res = object_get_property_resources(fd, output->plane_id,
++                                                  DRM_MODE_OBJECT_PLANE);
++   if (!plane_prop_res)
++      goto err_free_crtc_prop_res;
++
++   err = drmModeCreatePropertyBlob(fd, &output->mode, sizeof(output->mode),
++                                   &output->mode_blob_id);
++   if (err)
++      goto err_free_plane_prop_res;
++
++   output->atomic_state = drmModeAtomicAlloc();
++   if (!output->atomic_state)
++      goto err_destroy_mode_prop_blob;
++
++   output->connector_prop_res = connector_prop_res;
++   output->crtc_prop_res = crtc_prop_res;
++   output->plane_prop_res = plane_prop_res;
++
++   return true;
++
++err_destroy_mode_prop_blob:
++   drmModeDestroyPropertyBlob(fd, output->mode_blob_id);
++err_free_plane_prop_res:
++   object_free_property_resources(fd, plane_prop_res);
++err_free_crtc_prop_res:
++   object_free_property_resources(fd, crtc_prop_res);
++err_free_connector_prop_res:
++   object_free_property_resources(fd, connector_prop_res);
++   return false;
++}
++
++static int
++display_output_atomic_flip(int fd, struct display_output *output, uint32_t fb_id,
++                           uint32_t flags, void *flip_data)
++{
++   const struct object_property obj_props[] = {
++      object_property_set_named(output, plane, "FB_ID", fb_id),
++   };
++   int err;
++
++   /* Reset atomic state */
++   drmModeAtomicSetCursor(output->atomic_state, 0);
++
++   err = atomic_state_add_object_properties(output->atomic_state, obj_props,
++                                            ARRAY_SIZE(obj_props));
++   if (err)
++      return err;
++
++   /*
++    * Don't block - like drmModePageFlip, drmModeAtomicCommit will return
++    * -EBUSY if the commit can't be queued in the kernel.
++    */
++   flags |= DRM_MODE_ATOMIC_NONBLOCK;
++
++   return drmModeAtomicCommit(fd, output->atomic_state, flags, flip_data);
++}
++
++static int
++display_output_atomic_modeset(int fd, struct display_output *output, uint32_t fb_id)
++{
++   /* SRC_W and SRC_H in 16.16 fixed point */
++   const struct object_property obj_props[] = {
++      object_property_set_named(output, connector, "CRTC_ID", output->crtc_id),
++      object_property_set_named(output, crtc, "ACTIVE", 1),
++      object_property_set_named(output, crtc, "MODE_ID", output->mode_blob_id),
++      object_property_set_named(output, plane, "FB_ID", fb_id),
++      object_property_set_named(output, plane, "CRTC_ID", output->crtc_id),
++      object_property_set_named(output, plane, "CRTC_X", 0),
++      object_property_set_named(output, plane, "CRTC_Y", 0),
++      object_property_set_named(output, plane, "CRTC_W", output->mode.hdisplay),
++      object_property_set_named(output, plane, "CRTC_H", output->mode.vdisplay),
++      object_property_set_named(output, plane, "SRC_X", 0),
++      object_property_set_named(output, plane, "SRC_Y", 0),
++      object_property_set_named(output, plane, "SRC_W", output->mode.hdisplay << 16),
++      object_property_set_named(output, plane, "SRC_H", output->mode.vdisplay << 16),
++   };
++   int err;
++
++   /* Reset atomic state */
++   drmModeAtomicSetCursor(output->atomic_state, 0);
++
++   err = atomic_state_add_object_properties(output->atomic_state, obj_props,
++                                            ARRAY_SIZE(obj_props));
++   if (err)
++      return false;
++
++   return drmModeAtomicCommit(fd, output->atomic_state,
++                              DRM_MODE_ATOMIC_ALLOW_MODESET, NULL);
++}
++
++static bool
++display_output_init(int fd, struct display_output *output, bool use_atomic)
++{
++   drmModeRes *resources;
++   drmModeConnector *connector;
++   drmModeCrtc *crtc;
++   drmModePlane *plane;
++   unsigned mode_idx;
++
++   resources = drmModeGetResources(fd);
++   if (!resources)
++      return false;
++
++   connector = connector_get(fd, resources);
++   if (!connector)
++      goto err_free_resources;
++
++   crtc = crtc_get_for_connector(fd, resources, connector);
++   if (!crtc)
++      goto err_free_connector;
++
++   plane = primary_plane_get_for_crtc(fd, resources, crtc);
++   if (!plane)
++      goto err_free_crtc;
++
++   mode_idx = connector_choose_mode(connector);
++   if (mode_idx < 0)
++      goto err_free_plane;
++   output->mode = connector->modes[mode_idx];
++
++   /* Record the display supported formats */
++   for (unsigned i = 0; i < plane->count_formats; i++) {
++      int format_idx;
++
++      format_idx = format_idx_get_from_drm_format(plane->formats[i]);
++      if (format_idx == -1)
++         continue;
++
++      output->formats |= (1 << format_idx);
++   }
++   if (!output->formats)
++      goto err_free_plane;
++
++   output->connector_id = connector->connector_id;
++   output->crtc_id = crtc->crtc_id;
++   output->plane_id = plane->plane_id;
++
++   drmModeFreePlane(plane);
++   drmModeFreeCrtc(crtc);
++   drmModeFreeConnector(connector);
++   drmModeFreeResources(resources);
++
++   if (use_atomic) {
++      if (!display_output_atomic_init(fd, output)) {
++         _eglLog(_EGL_DEBUG,
++                 "failed to initialise atomic support (using legacy mode)");
++      }
++   }
++
++   return true;
++
++err_free_plane:
++   drmModeFreePlane(plane);
++err_free_crtc:
++   drmModeFreeCrtc(crtc);
++err_free_connector:
++   drmModeFreeConnector(connector);
++err_free_resources:
++   drmModeFreeResources(resources);
++   return false;
++}
++
++static int
++display_output_flip(int fd, struct display_output *output, uint32_t fb_id,
++                    uint32_t flags, void *flip_data)
++{
++   if (output->atomic_state)
++      return display_output_atomic_flip(fd, output, fb_id, flags, flip_data);
++
++   return drmModePageFlip(fd, output->crtc_id, fb_id, flags, flip_data);
++}
++
++static int
++display_output_modeset(int fd, struct display_output *output, uint32_t fb_id)
++{
++   if (output->atomic_state)
++      return display_output_atomic_modeset(fd, output, fb_id);
++
++   return drmModeSetCrtc(fd, output->crtc_id, fb_id, 0, 0,
++                         &output->connector_id, 1, &output->mode);
++}
++
++static bool
++add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
++                     uint32_t *fb_id_out)
++{
++   uint32_t handles[4] = {0};
++   uint32_t pitches[4] = {0};
++   uint32_t offsets[4] = {0};
++   int handle, stride, width, height, format;
++   int format_idx;
++
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_HANDLE, &handle);
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_STRIDE, &stride);
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_WIDTH, &width);
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_HEIGHT, &height);
++   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_FORMAT, &format);
++
++   handles[0] = (uint32_t) handle;
++   pitches[0] = (uint32_t) stride;
++
++   format_idx = format_idx_get_from_dri_image_format(format);
++   assert(format_idx != -1);
++
++   return !drmModeAddFB2(dri2_dpy->fd, width, height,
++                         dri2_null_formats[format_idx].drm_format,
++                         handles, pitches, offsets, fb_id_out, 0);
++}
++
++static bool
++get_front_bo(struct dri2_egl_surface *dri2_surf)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   unsigned int use = 0;
++
++   if (dri2_surf->base.Type == EGL_WINDOW_BIT)
++      use |= __DRI_IMAGE_USE_SCANOUT;
++
++   dri2_surf->front = dri2_dpy->image->createImage(dri2_dpy->dri_screen,
++                                                   dri2_surf->base.Width,
++                                                   dri2_surf->base.Height,
++                                                   dri2_surf->format,
++                                                   use,
++                                                   NULL);
++   if (!dri2_surf->front)
++      return false;
++
++   if (dri2_surf->base.Type == EGL_WINDOW_BIT) {
++      if (!add_fb_for_dri_image(dri2_dpy, dri2_surf->front,
++                                &dri2_surf->front_fb_id)) {
++         dri2_dpy->image->destroyImage(dri2_surf->front);
++         dri2_surf->front = NULL;
++         return false;
++      }
++   }
++
++   return true;
++}
++
++static bool
++get_back_bo(struct dri2_egl_surface *dri2_surf)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++
++   if (!dri2_surf->back) {
++      for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
++         if (!dri2_surf->color_buffers[i].locked) {
++            dri2_surf->back = &dri2_surf->color_buffers[i];
++            break;
++         }
++      }
++      if (!dri2_surf->back)
++         return false;
++   }
++
++   if (!dri2_surf->back->dri_image) {
++      dri2_surf->back->dri_image =
++         dri2_dpy->image->createImage(dri2_dpy->dri_screen,
++                                      dri2_surf->base.Width,
++                                      dri2_surf->base.Height,
++                                      dri2_surf->format,
++                                      __DRI_IMAGE_USE_SCANOUT,
++                                      NULL);
++      if (!dri2_surf->back->dri_image)
++         return false;
++   }
++
++   if (!dri2_surf->back->fb_id) {
++      if (!add_fb_for_dri_image(dri2_dpy, dri2_surf->back->dri_image,
++                                &dri2_surf->back->fb_id)) {
++         return false;
++      }
++   }
++
++   dri2_surf->back->locked = 1;
++
++   return true;
++}
++
++static _EGLSurface *
++create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
++               const EGLint *attrib_list)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_config *dri2_config = dri2_egl_config(config);
++   struct dri2_egl_surface *dri2_surf;
++   const __DRIconfig *dri_config;
++   _EGLSurface *surf;
++   int format_idx;
++
++   dri2_surf = calloc(1, sizeof(*dri2_surf));
++   if (!dri2_surf) {
++      _eglError(EGL_BAD_ALLOC, "failed to create surface");
++      return NULL;
++   }
++   surf = &dri2_surf->base;
++
++   if (!dri2_init_surface(surf, disp, type, config, attrib_list, false, NULL))
++      goto err_free_surface;
++
++   dri_config = dri2_get_dri_config(dri2_config, type,
++                                    dri2_surf->base.GLColorspace);
++   if (!dri_config) {
++      _eglError(EGL_BAD_MATCH, "Unsupported surfacetype/colorspace configuration");
++      goto err_free_surface;
++   }
++
++   dri2_surf->dri_drawable =
++      dri2_dpy->image_driver->createNewDrawable(dri2_dpy->dri_screen,
++                                                dri_config, dri2_surf);
++   if (!dri2_surf->dri_drawable) {
++      _eglError(EGL_BAD_ALLOC, "failed to create drawable");
++       goto err_free_surface;
++   }
++
++   format_idx = format_idx_get_from_config(dri2_dpy, dri_config);
++   assert(format_idx != -1);
++
++   dri2_surf->format = dri2_null_formats[format_idx].dri_image_format;
++
++   return surf;
++
++err_free_surface:
++   free(dri2_surf);
++   return NULL;
++}
++
++static void
++destroy_surface(_EGLSurface *surf)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(surf->Resource.Display);
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(surf);
++
++   dri2_dpy->core->destroyDrawable(dri2_surf->dri_drawable);
++   dri2_fini_surface(surf);
++   free(surf);
++}
++
++static EGLBoolean
++dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf);
++
++static _EGLSurface *
++dri2_null_create_window_surface(_EGLDisplay *disp, _EGLConfig *config,
++                                void *native_window, const EGLint *attrib_list)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_surface *dri2_surf;
++   _EGLSurface *surf;
++   int err;
++
++   if (dri2_dpy->output.in_use) {
++      _eglError(EGL_BAD_NATIVE_WINDOW, "window in use");
++      return NULL;
++   }
++
++   surf = create_surface(disp, config, EGL_WINDOW_BIT, attrib_list);
++   if (!surf)
++      return NULL;
++   dri2_surf = dri2_egl_surface(surf);
++
++   dri2_surf->base.Width = dri2_dpy->output.mode.hdisplay;
++   dri2_surf->base.Height = dri2_dpy->output.mode.vdisplay;
++
++   if (!get_front_bo(dri2_surf))  {
++      _eglError(EGL_BAD_NATIVE_WINDOW, "window get buffer");
++      goto err_destroy_surface;
++   }
++
++   err = display_output_modeset(dri2_dpy->fd, &dri2_dpy->output,
++                                dri2_surf->front_fb_id);
++   if (err) {
++      _eglError(EGL_BAD_NATIVE_WINDOW, "window set mode");
++      goto err_destroy_surface;
++   }
++
++   dri2_dpy->output.in_use = true;
++
++   return surf;
++
++err_destroy_surface:
++   dri2_null_destroy_surface(disp, surf);
++   return NULL;
++}
++
++static _EGLSurface *
++dri2_null_create_pbuffer_surface(_EGLDisplay *disp, _EGLConfig *config,
++                                 const EGLint *attrib_list)
++{
++   return create_surface(disp, config, EGL_PBUFFER_BIT, attrib_list);
++}
++
++static EGLBoolean
++dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(surf);
++   EGLint type = surf->Type;
++
++   /* If there's a current surface then a page flip has been performed, so make
++    * sure we process the flip event.
++    */
++   if (dri2_surf->current)
++      flip_process(dri2_dpy->fd);
++
++   if (dri2_surf->front)
++      dri2_dpy->image->destroyImage(dri2_surf->front);
++
++   if (dri2_surf->front_fb_id)
++         drmModeRmFB(dri2_dpy->fd, dri2_surf->front_fb_id);
++
++   for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
++      if (dri2_surf->color_buffers[i].fb_id)
++         drmModeRmFB(dri2_dpy->fd, dri2_surf->color_buffers[i].fb_id);
++      if (dri2_surf->color_buffers[i].dri_image)
++         dri2_dpy->image->destroyImage(dri2_surf->color_buffers[i].dri_image);
++   }
++
++   destroy_surface(surf);
++
++   if (type == EGL_WINDOW_BIT)
++      dri2_dpy->output.in_use = false;
++
++   return EGL_TRUE;
++}
++
++static EGLBoolean
++dri2_null_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
++   bool *plocked = NULL;
++   uint32_t flags;
++   int err;
++
++   if (dri2_surf->base.Type != EGL_WINDOW_BIT)
++      return EGL_TRUE;
++
++   for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++)
++      if (dri2_surf->color_buffers[i].age > 0)
++         dri2_surf->color_buffers[i].age++;
++
++   /* Make sure we have a back buffer in case we're swapping without
++    * ever rendering. */
++   if (!get_back_bo(dri2_surf)) {
++      _eglError(EGL_BAD_ALLOC, "dri2_null_swap_buffers");
++      return EGL_FALSE;
++   }
++
++   dri2_flush_drawable_for_swapbuffers(disp, draw);
++   dri2_dpy->flush->invalidate(dri2_surf->dri_drawable);
++
++   if (dri2_surf->current) {
++      /* Wait for the previous flip to happen so the next one can be queued */
++      if (!flip_process(dri2_dpy->fd)) {
++         _eglError(EGL_BAD_NATIVE_WINDOW, "dri2_null_swap_buffers process");
++         return EGL_FALSE;
++      }
++
++      plocked = &dri2_surf->current->locked;
++   }
++
++   flags = DRM_MODE_PAGE_FLIP_EVENT;
++   if (draw->SwapInterval == 0)
++      flags |= DRM_MODE_PAGE_FLIP_ASYNC;
++
++   do {
++      err = display_output_flip(dri2_dpy->fd, &dri2_dpy->output,
++                                dri2_surf->back->fb_id, flags, plocked);
++   } while (err == -EBUSY);
++
++   if (err) {
++      _eglError(EGL_BAD_NATIVE_WINDOW, "dri2_null_swap_buffers flip");
++      dri2_surf->back->locked = false;
++      dri2_surf->back = NULL;
++      return EGL_FALSE;
++   }
++
++   dri2_surf->back->age = 1;
++   dri2_surf->current = dri2_surf->back;
++   dri2_surf->back = NULL;
++
++   return EGL_TRUE;
++}
++
++static EGLint
++dri2_null_query_buffer_age(_EGLDisplay *disp, _EGLSurface *surface)
++{
++   struct dri2_egl_surface *dri2_surf = dri2_egl_surface(surface);
++
++   if (!get_back_bo(dri2_surf)) {
++      _eglError(EGL_BAD_ALLOC, "failed to get back buffer to query age");
++      return -1;
++   }
++
++   return dri2_surf->back->age;
++}
++
++static struct dri2_egl_display_vtbl dri2_null_display_vtbl = {
++   .create_window_surface = dri2_null_create_window_surface,
++   .create_pbuffer_surface = dri2_null_create_pbuffer_surface,
++   .destroy_surface = dri2_null_destroy_surface,
++   .create_image = dri2_create_image_khr,
++   .swap_buffers = dri2_null_swap_buffers,
++   .query_buffer_age = dri2_null_query_buffer_age,
++   .get_dri_drawable = dri2_surface_get_dri_drawable,
++};
++
++static int
++dri2_null_image_get_buffers(__DRIdrawable *driDrawable, unsigned int format,
++                            uint32_t *stamp, void *loaderPrivate,
++                            uint32_t buffer_mask, struct __DRIimageList *buffers)
++{
++   struct dri2_egl_surface *dri2_surf = loaderPrivate;
++
++   buffers->image_mask = 0;
++   buffers->back = NULL;
++   buffers->front = NULL;
++
++   if (buffer_mask & __DRI_IMAGE_BUFFER_FRONT)
++      if (!get_front_bo(dri2_surf))
++         return 0;
++
++   if (buffer_mask & __DRI_IMAGE_BUFFER_BACK)
++      if (!get_back_bo(dri2_surf))
++         return 0;
++
++   if (buffer_mask & __DRI_IMAGE_BUFFER_FRONT) {
++      buffers->image_mask |= __DRI_IMAGE_BUFFER_FRONT;
++      buffers->front = dri2_surf->front;
++   }
++
++   if (buffer_mask & __DRI_IMAGE_BUFFER_BACK) {
++      buffers->image_mask |= __DRI_IMAGE_BUFFER_BACK;
++      buffers->back = dri2_surf->back->dri_image;
++   }
++
++   return 1;
++}
++
++static void
++dri2_null_flush_front_buffer(__DRIdrawable * driDrawable, void *loaderPrivate)
++{
++   (void) driDrawable;
++   (void) loaderPrivate;
++}
++
++static const __DRIimageLoaderExtension image_loader_extension = {
++   .base = { __DRI_IMAGE_LOADER, 1 },
++
++   .getBuffers          = dri2_null_image_get_buffers,
++   .flushFrontBuffer    = dri2_null_flush_front_buffer,
++};
++
++static const __DRIextension *image_loader_extensions[] = {
++   &image_loader_extension.base,
++   &image_lookup_extension.base,
++   &use_invalidate.base,
++   NULL,
++};
++
++static bool
++dri2_null_device_is_kms(int fd)
++{
++   drmModeRes *resources;
++   bool is_kms;
++
++   resources = drmModeGetResources(fd);
++   if (!resources)
++      return false;
++
++   is_kms = resources->count_crtcs != 0 &&
++      resources->count_connectors != 0 &&
++      resources->count_encoders != 0;
++
++   drmModeFreeResources(resources);
++
++   return is_kms;
++}
++
++static bool
++dri2_null_probe_device(_EGLDisplay *disp)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++
++   dri2_dpy->fd = -1;
++
++   for (unsigned i = 0; i <= NULL_CARD_MINOR_MAX; i++) {
++      char *card_path;
++
++      if (asprintf(&card_path, DRM_DEV_NAME, DRM_DIR_NAME, i) < 0)
++         continue;
++
++      dri2_dpy->fd = loader_open_device(card_path);
++      free(card_path);
++      if (dri2_dpy->fd < 0)
++         continue;
++
++      if (dri2_null_device_is_kms(dri2_dpy->fd)) {
++         dri2_dpy->driver_name = loader_get_driver_for_fd(dri2_dpy->fd);
++         if (dri2_dpy->driver_name) {
++            if (dri2_load_driver_dri3(disp)) {
++               _EGLDevice *dev = _eglAddDevice(dri2_dpy->fd, false);
++               if (!dev) {
++                  dlclose(dri2_dpy->driver);
++                  _eglLog(_EGL_WARNING, "DRI2: failed to find EGLDevice");
++               } else {
++                  dri2_dpy->loader_extensions = image_loader_extensions;
++                  dri2_dpy->own_device = 1;
++                  disp->Device = dev;
++                  return true;
++               }
++            }
++            free(dri2_dpy->driver_name);
++            dri2_dpy->driver_name = NULL;
++         }
++      }
++
++      close(dri2_dpy->fd);
++      dri2_dpy->fd = -1;
++   }
++
++   return false;
++}
++
++static EGLBoolean
++dri2_null_add_configs_for_formats(_EGLDisplay *disp)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   unsigned int count = 0;
++
++   for (unsigned i = 0; dri2_dpy->driver_configs[i]; i++) {
++      struct dri2_egl_config *dri2_conf;
++      int format_idx;
++
++      format_idx = format_idx_get_from_config(dri2_dpy,
++                                              dri2_dpy->driver_configs[i]);
++      if (format_idx == -1)
++         continue;
++
++      if (!(dri2_dpy->output.formats & (1 << format_idx))) {
++         _eglLog(_EGL_DEBUG, "unsupported drm format 0x%04x",
++                 dri2_null_formats[format_idx].drm_format);
++         continue;
++      }
++
++      dri2_conf = dri2_add_config(disp,
++                                  dri2_dpy->driver_configs[i], count + 1,
++                                  EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
++                                  NULL, NULL, NULL);
++      if (dri2_conf)
++         count++;
++   }
++
++   return count != 0;
++}
++
++EGLBoolean
++dri2_initialize_null(_EGLDisplay *disp)
++{
++   struct dri2_egl_display *dri2_dpy;
++   uint64_t value;
++   int err;
++
++   dri2_dpy = calloc(1, sizeof(*dri2_dpy));
++   if (!dri2_dpy)
++      return _eglError(EGL_BAD_ALLOC, "eglInitialize");
++
++   disp->DriverData = (void *) dri2_dpy;
++
++   if (!dri2_null_probe_device(disp)) {
++      _eglError(EGL_NOT_INITIALIZED, "failed to load driver");
++      goto cleanup;
++   }
++
++   /*
++    * Try to use atomic modesetting if available and fallback to legacy kernel
++    * modesetting if not. If this succeeds then universal planes will also have
++    * been enabled.
++    */
++   err = drmSetClientCap(dri2_dpy->fd, DRM_CLIENT_CAP_ATOMIC, 1);
++   dri2_dpy->atomic_enabled = !err;
++
++   if (!dri2_dpy->atomic_enabled) {
++      /*
++       * Enable universal planes so that we can get the pixel formats for the
++       * primary plane
++       */
++      err = drmSetClientCap(dri2_dpy->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
++      if (err) {
++         _eglError(EGL_NOT_INITIALIZED, "failed to enable universal planes");
++         goto cleanup;
++      }
++
++      dri2_dpy->atomic_enabled = false;
++   }
++
++   if (!dri2_create_screen(disp)) {
++      _eglError(EGL_NOT_INITIALIZED, "failed to create screen");
++      goto cleanup;
++   }
++
++   if (!dri2_setup_extensions(disp)) {
++      _eglError(EGL_NOT_INITIALIZED, "failed to find required DRI extensions");
++      goto cleanup;
++   }
++
++   dri2_setup_screen(disp);
++   dri2_setup_swap_interval(disp, 1);
++
++   err = drmGetCap(dri2_dpy->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
++   if (err || value == 0)
++      dri2_dpy->min_swap_interval = 1;
++
++   if (dri2_dpy->image->base.version < NULL_IMAGE_EXTENSION_VERSION_MIN) {
++      _eglError(EGL_NOT_INITIALIZED, "image extension version too old");
++      goto cleanup;
++   }
++
++   if (!display_output_init(dri2_dpy->fd, &dri2_dpy->output,
++                            dri2_dpy->atomic_enabled)) {
++      _eglError(EGL_NOT_INITIALIZED, "failed to create output");
++      goto cleanup;
++   }
++
++   if (!dri2_null_add_configs_for_formats(disp)) {
++      _eglError(EGL_NOT_INITIALIZED, "failed to add configs");
++      goto cleanup;
++   }
++
++   disp->Extensions.EXT_buffer_age = EGL_TRUE;
++   disp->Extensions.KHR_image_base = EGL_TRUE;
++
++   /* Fill vtbl last to prevent accidentally calling virtual function during
++    * initialization.
++    */
++   dri2_dpy->vtbl = &dri2_null_display_vtbl;
++
++   return EGL_TRUE;
++
++cleanup:
++   dri2_display_destroy(disp);
++   return EGL_FALSE;
++}
++
++void
++dri2_teardown_null(struct dri2_egl_display *dri2_dpy)
++{
++   drmModeAtomicFree(dri2_dpy->output.atomic_state);
++
++   if (dri2_dpy->output.mode_blob_id)
++      drmModeDestroyPropertyBlob(dri2_dpy->fd, dri2_dpy->output.mode_blob_id);
++
++   if (dri2_dpy->output.plane_prop_res) {
++      for (unsigned i = 0; dri2_dpy->output.plane_prop_res[i]; i++)
++         drmModeFreeProperty(dri2_dpy->output.plane_prop_res[i]);
++      free(dri2_dpy->output.plane_prop_res);
++   }
++
++   if (dri2_dpy->output.crtc_prop_res) {
++      for (unsigned i = 0; dri2_dpy->output.crtc_prop_res[i]; i++)
++         drmModeFreeProperty(dri2_dpy->output.crtc_prop_res[i]);
++      free(dri2_dpy->output.crtc_prop_res);
++   }
++
++   if (dri2_dpy->output.connector_prop_res) {
++      for (unsigned i = 0; dri2_dpy->output.connector_prop_res[i]; i++)
++         drmModeFreeProperty(dri2_dpy->output.connector_prop_res[i]);
++      free(dri2_dpy->output.connector_prop_res);
++   }
++}
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index b7e0d0f53a5..b3d6f3599e5 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -982,7 +982,10 @@ _eglCreateWindowSurfaceCommon(_EGLDisplay *disp, EGLConfig config,
+ 
+ 
+    if (native_window == NULL)
+-      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_NO_SURFACE);
++#ifdef HAVE_NULL_PLATFORM
++      if (disp && disp->Platform != _EGL_PLATFORM_NULL)
++#endif
++         RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_NO_SURFACE);
+ 
+    if (disp && (disp->Platform == _EGL_PLATFORM_SURFACELESS ||
+                 disp->Platform == _EGL_PLATFORM_DEVICE)) {
+diff --git a/src/egl/main/egldisplay.c b/src/egl/main/egldisplay.c
+index 131fc22786f..2ce70818929 100644
+--- a/src/egl/main/egldisplay.c
++++ b/src/egl/main/egldisplay.c
+@@ -85,6 +85,7 @@ static const struct {
+    { _EGL_PLATFORM_SURFACELESS, "surfaceless" },
+    { _EGL_PLATFORM_DEVICE, "device" },
+    { _EGL_PLATFORM_WINDOWS, "windows" },
++   { _EGL_PLATFORM_NULL, "null" },
+ };
+ 
+ 
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index f59d43325a6..a2d91679fd7 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -53,6 +53,7 @@ enum _egl_platform_type {
+    _EGL_PLATFORM_SURFACELESS,
+    _EGL_PLATFORM_DEVICE,
+    _EGL_PLATFORM_WINDOWS,
++   _EGL_PLATFORM_NULL,
+ 
+    _EGL_NUM_PLATFORMS,
+    _EGL_INVALID_PLATFORM = -1
+diff --git a/src/egl/meson.build b/src/egl/meson.build
+index 315a95013f3..a08f1c71847 100644
+--- a/src/egl/meson.build
++++ b/src/egl/meson.build
+@@ -150,6 +150,11 @@ elif with_platform_windows
+   incs_for_egl += [inc_wgl, inc_gallium, inc_gallium_aux]
+   link_for_egl += libgallium_wgl
+ endif
++if with_platform_null
++  files_egl += files('drivers/dri2/platform_null.c')
++  incs_for_egl += [inc_loader]
++  deps_for_egl += dep_libdrm
++endif
+ 
+ if cc.has_function('mincore')
+   c_args_for_egl += '-DHAVE_MINCORE'
+-- 
+2.25.1
+

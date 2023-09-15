@@ -1,0 +1,91 @@
+From e82e274b5dc8393e405bce1fc36926f24fc6ee13 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Wed, 12 Aug 2015 09:11:51 +0100
+Subject: [PATCH 03/58] GL_EXT_sparse_texture entry points
+
+---
+ src/mapi/glapi/gen/EXT_sparse_texture.xml | 44 +++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml             |  3 ++
+ src/mapi/glapi/gen/static_data.py         |  1 +
+ 3 files changed, 48 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/EXT_sparse_texture.xml
+
+diff --git a/src/mapi/glapi/gen/EXT_sparse_texture.xml b/src/mapi/glapi/gen/EXT_sparse_texture.xml
+new file mode 100644
+index 00000000000..ebeab7d1f9a
+--- /dev/null
++++ b/src/mapi/glapi/gen/EXT_sparse_texture.xml
+@@ -0,0 +1,44 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="EXT_sparse_texture" number="240">
++
++    <enum name="TEXTURE_SPARSE_EXT"                         value="0x91A6"/>
++    <enum name="VIRTUAL_PAGE_SIZE_INDEX_EXT"                value="0x91A7"/>
++
++    <enum name="NUM_SPARSE_LEVELS_EXT"                      value="0x91AA"/>
++
++    <enum name="NUM_VIRTUAL_PAGE_SIZES_EXT"                 value="0x91A8"/>
++
++    <enum name="VIRTUAL_PAGE_SIZE_X_EXT"                    value="0x9195"/>
++    <enum name="VIRTUAL_PAGE_SIZE_Y_EXT"                    value="0x9196"/>
++    <enum name="VIRTUAL_PAGE_SIZE_Z_EXT"                    value="0x9197"/>
++
++    <enum name="TEXTURE_2D"                                 value="0x0DE1"/>
++    <enum name="TEXTURE_2D_ARRAY"                           value="0x8C1A"/>
++    <enum name="TEXTURE_CUBE_MAP"                           value="0x8513"/>
++    <enum name="TEXTURE_CUBE_MAP_ARRAY_OES"                 value="0x9009"/>
++    <enum name="TEXTURE_3D"                                 value="0x806F"/>
++
++    <enum name="MAX_SPARSE_TEXTURE_SIZE_EXT"                value="0x9198"/>
++    <enum name="MAX_SPARSE_3D_TEXTURE_SIZE_EXT"             value="0x9199"/>
++    <enum name="MAX_SPARSE_ARRAY_TEXTURE_LAYERS_EXT"        value="0x919A"/>
++    <enum name="SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_EXT" value="0x91A9"/>
++
++    <function name="TexPageCommitmentEXT" es2="3.1" exec="dynamic">
++        <param name="target" type="GLenum"/>
++        <param name="level" type="GLint"/>
++        <param name="xoffset" type="GLint"/>
++        <param name="yoffset" type="GLint"/>
++        <param name="zoffset" type="GLint"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++        <param name="depth" type="GLsizei"/>
++        <param name="commit" type="GLboolean"/>
++    </function>
++
++</category>
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index e96f5b83f71..79761210760 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -1459,6 +1459,9 @@
+ 
+ </category>
+ 
++<!-- 240. EXT_sparse_texture -->
++<xi:include href="EXT_sparse_texture.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
+ <category name="GL_OES_viewport_array" number="267">
+     <function name="ViewportArrayvOES" es2="3.1" alias="ViewportArrayv">
+         <param name="first" type="GLuint"/>
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index c634304d925..82acbf627ef 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1691,6 +1691,7 @@ offsets = {
+     "VertexAttribs4hvNV": 1655,
+     "TexPageCommitmentARB": 1656,
+     "TexturePageCommitmentEXT": 1657,
++    "TexPageCommitmentEXT": 1658,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

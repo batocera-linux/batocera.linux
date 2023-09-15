@@ -23,6 +23,10 @@ ifeq ($(BR2_aarch64)$(BR2_arm),y)
     SCUMMVM_CONF_OPTS += --host=arm-linux
 endif
 
+ifeq ($(BR2_riscv),y)
+    SCUMMVM_CONF_OPTS += --host=riscv64-linux
+endif
+
 SCUMMVM_CONF_ENV += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" 
 SCUMMVM_CONF_ENV += AR="$(TARGET_AR) cru" AS="$(TARGET_AS)"
 

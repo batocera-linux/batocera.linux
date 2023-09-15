@@ -1,0 +1,33 @@
+From 2aa69df0cf419a376581cb48f8cf43cc92d98102 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Wed, 8 Nov 2017 15:15:20 +0000
+Subject: [PATCH 15/58] egl/wayland: post maximum damage when blitting
+
+When blitting, as part of the "is_different_gpu" case when swapping
+buffers, the blit is done using the full surface dimensions, ignoring
+the damage region. This results in corruption of the non damaged region
+on screen. Workaround this by posting maximum damage when blitting.
+
+A better fix would be to limit the blit to the damaged region, at least
+when the number of damage rectangles is 1.
+---
+ src/egl/drivers/dri2/platform_wayland.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 6eca68efe41..17133ca9cd4 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -1565,7 +1565,8 @@ dri2_wl_swap_buffers_with_damage(_EGLDisplay *disp,
+    /* If the compositor doesn't support damage_buffer, we deliberately
+     * ignore the damage region and post maximum damage, due to
+     * https://bugs.freedesktop.org/78190 */
+-   if (!n_rects || !try_damage_buffer(dri2_surf, rects, n_rects))
++   if (dri2_dpy->is_different_gpu ||
++       !n_rects || !try_damage_buffer(dri2_surf, rects, n_rects))
+       wl_surface_damage(dri2_surf->wl_surface_wrapper,
+                         0, 0, INT32_MAX, INT32_MAX);
+ 
+-- 
+2.25.1
+

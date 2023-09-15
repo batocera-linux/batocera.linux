@@ -153,6 +153,10 @@ ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
     RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader slang-shaders
 endif
 
+ifeq ($(BR2_riscv),y)
+	RETROARCH_TARGET_CFLAGS += -DMESA_EGL_NO_X11_HEADERS=1
+endif
+
 define RETROARCH_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \

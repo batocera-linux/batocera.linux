@@ -1,0 +1,376 @@
+From ec732c0f4dc70991c670fb2995d2505a91b18a68 Mon Sep 17 00:00:00 2001
+From: Luigi Santivetti <luigi.santivetti@imgtec.com>
+Date: Thu, 2 Sep 2021 22:47:54 +0100
+Subject: [PATCH 40/58] egl/null: expose EXT_yuv_surface support
+
+---
+ src/egl/drivers/dri2/platform_null.c | 247 +++++++++++++++++++++++++--
+ 1 file changed, 233 insertions(+), 14 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index 0ce7e60030b..c78e1fe0880 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -79,6 +79,70 @@ uint32_t get_back_buffer_id(struct dri2_egl_surface *dri2_surf)
+       .prop_value = value,                                                  \
+    }
+ 
++static const struct dri2_null_yuv_attrib {
++   uint32_t order;
++   uint32_t subsample;
++   uint32_t num_planes;
++   uint32_t plane_bpp;
++} dri2_null_yuv_attribs[] = {
++   {
++      /* __DRI_IMAGE_FORMAT_YUYV */
++      .order = __DRI_ATTRIB_YUV_ORDER_YUYV_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT,
++      .num_planes = 1,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_NV12 */
++      .order = __DRI_ATTRIB_YUV_ORDER_YUV_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT,
++      .num_planes = 2,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_NV21 */
++      .order = __DRI_ATTRIB_YUV_ORDER_YVU_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT,
++      .num_planes = 2,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_YU12 */
++      .order = __DRI_ATTRIB_YUV_ORDER_YUV_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT,
++      .num_planes = 3,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_YV12 */
++      .order = __DRI_ATTRIB_YUV_ORDER_YVU_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT,
++      .num_planes = 3,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_UYVY */
++      .order = __DRI_ATTRIB_YUV_ORDER_UYVY_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT,
++      .num_planes = 1,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_YVYU */
++      .order = __DRI_ATTRIB_YUV_ORDER_YVYU_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT,
++      .num_planes = 1,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++   {
++      /* __DRI_IMAGE_FORMAT_VYUY */
++      .order = __DRI_ATTRIB_YUV_ORDER_VYUY_BIT,
++      .subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT,
++      .num_planes = 1,
++      .plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT,
++   },
++};
++
+ /*
+  * The index of entries in this table is used as a bitmask in
+  * dri2_dpy->formats, which tracks the formats supported by the display.
+@@ -88,24 +152,84 @@ static const struct dri2_null_format {
+    int dri_image_format;
+    int rgba_shifts[4];
+    unsigned int rgba_sizes[4];
++   const struct dri2_null_yuv_attrib *yuv;
+ } dri2_null_formats[] = {
+    {
+       .drm_format = DRM_FORMAT_XRGB8888,
+       .dri_image_format = __DRI_IMAGE_FORMAT_XRGB8888,
+       .rgba_shifts = { 16, 8, 0, -1 },
+       .rgba_sizes = { 8, 8, 8, 0 },
++      .yuv = NULL,
+    },
+    {
+       .drm_format = DRM_FORMAT_ARGB8888,
+       .dri_image_format = __DRI_IMAGE_FORMAT_ARGB8888,
+       .rgba_shifts = { 16, 8, 0, 24 },
+       .rgba_sizes = { 8, 8, 8, 8 },
++      .yuv = NULL,
+    },
+    {
+       .drm_format = DRM_FORMAT_RGB565,
+       .dri_image_format = __DRI_IMAGE_FORMAT_RGB565,
+       .rgba_shifts = { 11, 5, 0, -1 },
+       .rgba_sizes = { 5, 6, 5, 0 },
++      .yuv = NULL,
++   },
++   {
++      .drm_format = DRM_FORMAT_YUYV,
++      .dri_image_format = __DRI_IMAGE_FORMAT_YUYV,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[0],
++   },
++   {
++      .drm_format = DRM_FORMAT_NV12,
++      .dri_image_format = __DRI_IMAGE_FORMAT_NV12,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[1],
++   },
++   {
++      .drm_format = DRM_FORMAT_NV21,
++      .dri_image_format = __DRI_IMAGE_FORMAT_NV21,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[2],
++   },
++   {
++      .drm_format = DRM_FORMAT_YUV420,
++      .dri_image_format = __DRI_IMAGE_FORMAT_YU12,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[3],
++   },
++   {
++      .drm_format = DRM_FORMAT_YVU420,
++      .dri_image_format = __DRI_IMAGE_FORMAT_YV12,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[4],
++   },
++   {
++      .drm_format = DRM_FORMAT_UYVY,
++      .dri_image_format = __DRI_IMAGE_FORMAT_UYVY,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[5],
++   },
++   {
++      .drm_format = DRM_FORMAT_YVYU,
++      .dri_image_format = __DRI_IMAGE_FORMAT_YVYU,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[6],
++   },
++   {
++      .drm_format = DRM_FORMAT_VYUY,
++      .dri_image_format = __DRI_IMAGE_FORMAT_VYUY,
++      .rgba_shifts = { -1, -1, -1, -1 },
++      .rgba_sizes = { 0, 0, 0, 0 },
++      .yuv = &dri2_null_yuv_attribs[7],
+    },
+ };
+ 
+@@ -137,6 +261,36 @@ format_idx_get_from_config(struct dri2_egl_display *dri2_dpy,
+    return -1;
+ }
+ 
++static int
++yuv_format_idx_get_from_config(struct dri2_egl_display *dri2_dpy,
++                               const __DRIconfig *dri_config)
++{
++   for (unsigned int i = 0; i < ARRAY_SIZE(dri2_null_formats); i++) {
++      const struct dri2_null_yuv_attrib *yuv = dri2_null_formats[i].yuv;
++      unsigned order, subsample, num_planes, plane_bpp;
++
++      if (!yuv)
++         continue;
++
++      dri2_dpy->core->getConfigAttrib(dri_config, __DRI_ATTRIB_YUV_ORDER,
++                                      &order);
++      dri2_dpy->core->getConfigAttrib(dri_config, __DRI_ATTRIB_YUV_SUBSAMPLE,
++                                      &subsample);
++      dri2_dpy->core->getConfigAttrib(dri_config, __DRI_ATTRIB_YUV_NUMBER_OF_PLANES,
++                                      &num_planes);
++      dri2_dpy->core->getConfigAttrib(dri_config, __DRI_ATTRIB_YUV_PLANE_BPP,
++                                      &plane_bpp);
++
++      if (order != yuv->order || subsample != yuv->subsample ||
++          num_planes != yuv->num_planes || plane_bpp != yuv->plane_bpp)
++         continue;
++
++      return i;
++   }
++
++   return -1;
++}
++
+ static int
+ format_idx_get_from_dri_image_format(uint32_t dri_image_format)
+ {
+@@ -1082,23 +1236,21 @@ static bool
+ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+                      uint32_t *fb_id_out)
+ {
+-   uint64_t modifiers[4] = {0};
++   int handle, stride, width, height, format, l_mod, h_mod, offset;
++   uint64_t modifier = DRM_FORMAT_MOD_INVALID;
++   uint64_t *modifiers = NULL, mods[4] = {0};
+    uint32_t handles[4] = {0};
+    uint32_t pitches[4] = {0};
+    uint32_t offsets[4] = {0};
++   __DRIimage *p_image;
+    uint32_t flags = 0;
+-   int handle, stride, width, height, format, l_mod, h_mod;
+    int format_idx;
++   int num_planes;
+ 
+-   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_HANDLE, &handle);
+-   dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_STRIDE, &stride);
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_WIDTH, &width);
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_HEIGHT, &height);
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_FORMAT, &format);
+ 
+-   handles[0] = (uint32_t) handle;
+-   pitches[0] = (uint32_t) stride;
+-
+    format_idx = format_idx_get_from_dri_image_format(format);
+    assert(format_idx != -1);
+ 
+@@ -1106,10 +1258,44 @@ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+       dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_MODIFIER_UPPER, &h_mod);
+       dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_MODIFIER_LOWER, &l_mod);
+ 
+-      modifiers[0] = combine_u32_into_u64((uint32_t) h_mod, (uint32_t) l_mod);
++      modifier = combine_u32_into_u64((uint32_t) h_mod, (uint32_t) l_mod);
++      modifiers = mods;
++
+       flags |= DRM_MODE_FB_MODIFIERS;
+    }
+ 
++   dri2_dpy->image->queryImage(image,
++                               __DRI_IMAGE_ATTRIB_NUM_PLANES, &num_planes);
++   if (num_planes <= 0)
++      num_planes = 1;
++
++   for (int i = 0; i < num_planes; i++) {
++      if (dri2_dpy->in_formats_enabled) {
++         assert(modifiers && modifier != DRM_FORMAT_MOD_INVALID);
++         modifiers[i] = modifier;
++      }
++
++      p_image = dri2_dpy->image->fromPlanar(image, i, NULL);
++      if (!p_image) {
++         assert(i == 0);
++         p_image = image;
++      }
++
++      dri2_dpy->image->queryImage(p_image, __DRI_IMAGE_ATTRIB_STRIDE,
++                                  &stride);
++      dri2_dpy->image->queryImage(p_image, __DRI_IMAGE_ATTRIB_OFFSET,
++                                  &offset);
++      dri2_dpy->image->queryImage(p_image, __DRI_IMAGE_ATTRIB_HANDLE,
++                                  &handle);
++
++      if (p_image != image)
++         dri2_dpy->image->destroyImage(p_image);
++
++      pitches[i] = (uint32_t) stride;
++      offsets[i] = (uint32_t) offset;
++      handles[i] = (uint32_t) handle;
++   }
++
+    return !drmModeAddFB2WithModifiers(dri2_dpy->fd, width, height,
+                                       dri2_null_formats[format_idx].drm_format,
+                                       handles, pitches, offsets, modifiers,
+@@ -1256,6 +1442,7 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+    struct dri2_egl_config *dri2_config = dri2_egl_config(config);
+    struct dri2_egl_surface *dri2_surf;
+    const __DRIconfig *dri_config;
++   unsigned int render_type;
+    _EGLSurface *surf;
+    int format_idx;
+    bool ret;
+@@ -1286,7 +1473,14 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+        goto err_free_surface;
+    }
+ 
+-   format_idx = format_idx_get_from_config(dri2_dpy, dri_config);
++   if (!dri2_dpy->core->getConfigAttrib(dri_config, __DRI_ATTRIB_RENDER_TYPE,
++                                        &render_type))
++      goto err_free_surface;
++
++   if (render_type & __DRI_ATTRIB_YUV_BIT)
++      format_idx = yuv_format_idx_get_from_config(dri2_dpy, dri_config);
++   else
++      format_idx = format_idx_get_from_config(dri2_dpy, dri_config);
+    assert(format_idx != -1);
+ 
+    dri2_surf->format = dri2_null_formats[format_idx].dri_image_format;
+@@ -1627,6 +1821,17 @@ dri2_null_image_get_buffers(__DRIdrawable *driDrawable, unsigned int format,
+    return 1;
+ }
+ 
++static unsigned
++dri2_null_get_capability(void *loaderPrivate, enum dri_loader_cap cap)
++{
++   switch (cap) {
++   case DRI_LOADER_CAP_YUV_SURFACE_IMG:
++      return 1;
++   default:
++      return 0;
++   }
++}
++
+ static void
+ dri2_null_flush_front_buffer(__DRIdrawable * driDrawable, void *loaderPrivate)
+ {
+@@ -1635,10 +1840,11 @@ dri2_null_flush_front_buffer(__DRIdrawable * driDrawable, void *loaderPrivate)
+ }
+ 
+ static const __DRIimageLoaderExtension image_loader_extension = {
+-   .base = { __DRI_IMAGE_LOADER, 1 },
++   .base = { __DRI_IMAGE_LOADER, 2 },
+ 
+    .getBuffers          = dri2_null_image_get_buffers,
+    .flushFrontBuffer    = dri2_null_flush_front_buffer,
++   .getCapability       = dri2_null_get_capability,
+ };
+ 
+ static const __DRIextension *image_loader_extensions[] = {
+@@ -1720,10 +1926,24 @@ dri2_null_add_configs_for_formats(_EGLDisplay *disp)
+ 
+    for (unsigned i = 0; dri2_dpy->driver_configs[i]; i++) {
+       struct dri2_egl_config *dri2_conf;
++      EGLint surface_type = EGL_WINDOW_BIT;
++      unsigned int render_type;
+       int format_idx;
+ 
+-      format_idx = format_idx_get_from_config(dri2_dpy,
+-                                              dri2_dpy->driver_configs[i]);
++      if (!dri2_dpy->core->getConfigAttrib(dri2_dpy->driver_configs[i],
++                                           __DRI_ATTRIB_RENDER_TYPE,
++                                           &render_type))
++         continue;
++
++      if (render_type & __DRI_ATTRIB_YUV_BIT) {
++         format_idx = yuv_format_idx_get_from_config(dri2_dpy,
++                                                     dri2_dpy->driver_configs[i]);
++      } else {
++         format_idx = format_idx_get_from_config(dri2_dpy,
++                                                 dri2_dpy->driver_configs[i]);
++         surface_type |= EGL_PBUFFER_BIT;
++      }
++
+       if (format_idx == -1)
+          continue;
+ 
+@@ -1735,8 +1955,7 @@ dri2_null_add_configs_for_formats(_EGLDisplay *disp)
+ 
+       dri2_conf = dri2_add_config(disp,
+                                   dri2_dpy->driver_configs[i], count + 1,
+-                                  EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
+-                                  NULL, NULL, NULL);
++                                  surface_type, NULL, NULL, NULL);
+       if (dri2_conf)
+          count++;
+    }
+-- 
+2.25.1
+

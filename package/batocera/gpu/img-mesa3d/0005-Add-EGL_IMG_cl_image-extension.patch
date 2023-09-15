@@ -1,0 +1,187 @@
+From bf3d2c972cd028d906abccd6777968bfd7c21451 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 11 Mar 2014 11:50:53 +0000
+Subject: [PATCH 05/58] Add EGL_IMG_cl_image extension
+
+Add support for the experimental EGL_IMG_cl_image extension to EGL, and
+the DRI2 EGL driver.
+---
+ include/EGL/eglmesaext.h            |  5 +++
+ include/GL/internal/dri_interface.h | 13 +++++++
+ src/egl/drivers/dri2/egl_dri2.c     | 60 +++++++++++++++++++++++++----
+ src/egl/main/eglapi.c               |  1 +
+ src/egl/main/egldisplay.h           |  2 +
+ 5 files changed, 73 insertions(+), 8 deletions(-)
+
+diff --git a/include/EGL/eglmesaext.h b/include/EGL/eglmesaext.h
+index f0395a8a58c..5d11f3e488e 100644
+--- a/include/EGL/eglmesaext.h
++++ b/include/EGL/eglmesaext.h
+@@ -49,6 +49,11 @@ typedef EGLBoolean (EGLAPIENTRYP PFNEGLSWAPBUFFERSREGIONNOK) (EGLDisplay dpy, EG
+ #define EGL_DRM_BUFFER_FORMAT_RGB565_MESA       0x3292
+ #endif /* EGL_MESA_drm_image_formats */
+ 
++#ifndef EGL_IMG_cl_image
++#define EGL_IMG_cl_image 1
++#define EGL_CL_IMAGE_IMG			0x6010
++#endif /* Experimental eglCreateImageKHR target */
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 7f8872f48dd..ef2f44fad02 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1704,6 +1704,19 @@ struct __DRIimageExtensionRec {
+     * \since 21
+     */
+    void (*setInFenceFd)(__DRIimage *image, int fd);
++
++   /**
++    * Support for experimental EGL_CL_IMAGE_IMG.
++    * Like createImageFromTexture, but from a buffer, the contents
++    * of which depend on the target.
++    *
++    * \since 8
++    */
++   __DRIimage *(*createImageFromBuffer)(__DRIcontext *context,
++                                        int target,
++                                        void *buffer,
++                                        unsigned *error,
++                                        void *loaderPrivate);
+ };
+ 
+ 
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index a583b913335..d3a8fbe4ef7 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1007,6 +1007,10 @@ dri2_setup_screen(_EGLDisplay *disp)
+          disp->Extensions.EXT_image_dma_buf_import_modifiers = EGL_TRUE;
+       }
+ #endif
++      if (dri2_dpy->image->base.version >= 8 &&
++          dri2_dpy->image->createImageFromBuffer) {
++         disp->Extensions.IMG_cl_image = EGL_TRUE;
++      }
+    }
+ 
+    if (dri2_dpy->flush_control)
+@@ -2386,17 +2390,13 @@ dri2_get_sync_values_chromium(_EGLDisplay *disp, _EGLSurface *surf,
+    return dri2_dpy->vtbl->get_sync_values(disp, surf, ust, msc, sbc);
+ }
+ 
+-/**
+- * Set the error code after a call to
+- * dri2_egl_image::dri_image::createImageFromTexture.
+- */
+ static void
+-dri2_create_image_khr_texture_error(int dri_error)
++dri2_create_image_khr_error(int dri_error)
+ {
+    EGLint egl_error = egl_error_from_dri_image_error(dri_error);
+ 
+    if (egl_error != EGL_SUCCESS)
+-      _eglError(egl_error, "dri2_create_image_khr_texture");
++      _eglError(egl_error, "dri2_create_image_khr");
+ }
+ 
+ static _EGLImage *
+@@ -2475,7 +2475,49 @@ dri2_create_image_khr_texture(_EGLDisplay *disp, _EGLContext *ctx,
+                                               attrs.GLTextureLevel,
+                                               &error,
+                                               NULL);
+-   dri2_create_image_khr_texture_error(error);
++   dri2_create_image_khr_error(error);
++
++   if (!dri2_img->dri_image) {
++      free(dri2_img);
++      return EGL_NO_IMAGE_KHR;
++   }
++   return &dri2_img->base;
++}
++
++static _EGLImage *
++dri2_create_image_img_buffer(_EGLDisplay *disp, _EGLContext *ctx,
++				   EGLenum target,
++				   EGLClientBuffer buffer,
++				   const EGLint *attr_list)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
++   struct dri2_egl_image *dri2_img;
++   unsigned error;
++
++   switch (target) {
++   case EGL_CL_IMAGE_IMG:
++      break;
++   default:
++      _eglError(EGL_BAD_PARAMETER, "dri2_create_image_khr");
++      return EGL_NO_IMAGE_KHR;
++   }
++
++   dri2_img = malloc(sizeof *dri2_img);
++   if (!dri2_img) {
++      _eglError(EGL_BAD_ALLOC, "dri2_create_image_khr");
++      return EGL_NO_IMAGE_KHR;
++   }
++
++   _eglInitImage(&dri2_img->base, disp);
++
++   dri2_img->dri_image =
++      dri2_dpy->image->createImageFromBuffer(dri2_ctx->dri_context,
++                                              target,
++                                              buffer,
++                                              &error,
++                                              NULL);
++   dri2_create_image_khr_error(error);
+ 
+    if (!dri2_img->dri_image) {
+       free(dri2_img);
+@@ -2942,7 +2984,7 @@ dri2_create_image_dma_buf(_EGLDisplay *disp, _EGLContext *ctx,
+             &error,
+             NULL);
+    }
+-   dri2_create_image_khr_texture_error(error);
++   dri2_create_image_khr_error(error);
+ 
+    if (!dri_image)
+       return EGL_NO_IMAGE_KHR;
+@@ -3178,6 +3220,8 @@ dri2_create_image_khr(_EGLDisplay *disp, _EGLContext *ctx, EGLenum target,
+    case EGL_WAYLAND_BUFFER_WL:
+       return dri2_create_image_wayland_wl_buffer(disp, ctx, buffer, attr_list);
+ #endif
++   case EGL_CL_IMAGE_IMG:
++      return dri2_create_image_img_buffer(disp, ctx, target, buffer, attr_list);
+    default:
+       _eglError(EGL_BAD_PARAMETER, "dri2_create_image_khr");
+       return EGL_NO_IMAGE_KHR;
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index d0238fe95e4..ddad85d3beb 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -550,6 +550,7 @@ _eglCreateExtensionsString(_EGLDisplay *disp)
+    _EGL_CHECK_EXTENSION(WL_bind_wayland_display);
+    _EGL_CHECK_EXTENSION(WL_create_wayland_buffer_from_image);
+ 
++   _EGL_CHECK_EXTENSION(IMG_cl_image);
+ #undef _EGL_CHECK_EXTENSION
+ }
+ 
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index 25b4ea79541..d95c7b9144a 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -152,6 +152,8 @@ struct _egl_extensions
+ 
+    EGLBoolean WL_bind_wayland_display;
+    EGLBoolean WL_create_wayland_buffer_from_image;
++
++   EGLBoolean IMG_cl_image;
+ };
+ 
+ struct _egl_display
+-- 
+2.25.1
+

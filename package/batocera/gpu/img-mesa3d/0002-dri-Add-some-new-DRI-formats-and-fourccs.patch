@@ -1,0 +1,80 @@
+From e7a7ee27d09c79038f5a3772f6d5148d56a15af2 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 5 Jun 2014 12:07:01 +0100
+Subject: [PATCH 02/58] dri: Add some new DRI formats and fourccs
+
+Add ARGB4444 DRI format and fourcc.
+Add YVU444_PACK10_IMG DRI format and fourcc.
+Add BGR888 DRI format and fourcc.
+---
+ include/GL/internal/dri_interface.h  | 4 ++++
+ include/drm-uapi/drm_fourcc.h        | 1 +
+ src/egl/drivers/dri2/egl_dri2.c      | 1 +
+ src/gallium/frontends/dri/dri_util.c | 5 +++++
+ 4 files changed, 11 insertions(+)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 6099b2a296f..7f8872f48dd 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1211,6 +1211,9 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FORMAT_ABGR16161616F 0x1015
+ #define __DRI_IMAGE_FORMAT_SXRGB8       0x1016
+ #define __DRI_IMAGE_FORMAT_ABGR16161616 0x1017
++#define __DRI_IMAGE_FORMAT_ARGB4444     0x1018
++#define __DRI_IMAGE_FORMAT_YVU444_PACK10_IMG 0x1019
++#define __DRI_IMAGE_FORMAT_BGR888       0x101a
+ 
+ #define __DRI_IMAGE_USE_SHARE		0x0001
+ #define __DRI_IMAGE_USE_SCANOUT		0x0002
+@@ -1242,6 +1245,7 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FOURCC_SABGR8888	0x84324258
+ #define __DRI_IMAGE_FOURCC_SXRGB8888	0x85324258
+ #define __DRI_IMAGE_FOURCC_RGBA16161616 0x38344152  /* fourcc_code('R', 'A', '4', '8' ) */
++#define __DRI_IMAGE_FOURCC_SBGR888	0xff324742
+ 
+ /**
+  * Queryable on images created by createImageFromNames.
+diff --git a/include/drm-uapi/drm_fourcc.h b/include/drm-uapi/drm_fourcc.h
+index e5074162bcd..da592ba023f 100644
+--- a/include/drm-uapi/drm_fourcc.h
++++ b/include/drm-uapi/drm_fourcc.h
+@@ -357,6 +357,7 @@ extern "C" {
+ #define DRM_FORMAT_YUV444	fourcc_code('Y', 'U', '2', '4') /* non-subsampled Cb (1) and Cr (2) planes */
+ #define DRM_FORMAT_YVU444	fourcc_code('Y', 'V', '2', '4') /* non-subsampled Cr (1) and Cb (2) planes */
+ 
++#define DRM_FORMAT_YVU444_PACK10_IMG fourcc_code('I', 'M', 'G', '2')
+ 
+ /*
+  * Format Modifiers:
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 3682d05be95..a583b913335 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -2678,6 +2678,7 @@ dri2_num_fourcc_format_planes(EGLint format)
+    case DRM_FORMAT_Y410:
+    case DRM_FORMAT_Y412:
+    case DRM_FORMAT_Y416:
++   case DRM_FORMAT_YVU444_PACK10_IMG:
+       return 1;
+ 
+    case DRM_FORMAT_NV12:
+diff --git a/src/gallium/frontends/dri/dri_util.c b/src/gallium/frontends/dri/dri_util.c
+index b562572a15f..abc84a22ac6 100644
+--- a/src/gallium/frontends/dri/dri_util.c
++++ b/src/gallium/frontends/dri/dri_util.c
+@@ -912,6 +912,11 @@ static const struct {
+       .mesa_format     =        MESA_FORMAT_B5G5R5A1_UNORM,
+       .internal_format =        GL_RGB5_A1,
+    },
++   {
++      .image_format    = __DRI_IMAGE_FORMAT_ARGB4444,
++      .mesa_format     =        MESA_FORMAT_B4G4R4A4_UNORM,
++      .internal_format =        GL_RGBA4,
++   },
+    {
+       .image_format    = __DRI_IMAGE_FORMAT_XRGB8888,
+       .mesa_format     =        MESA_FORMAT_B8G8R8X8_UNORM,
+-- 
+2.25.1
+
