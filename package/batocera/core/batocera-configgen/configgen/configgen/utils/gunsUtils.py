@@ -72,5 +72,5 @@ def precalibration(systemName, emulator, core, rom):
         if emulator == "play":
             baserom_noext = os.path.splitext(baserom)[0]
             src = "{}/play/{}".format(dir, baserom_noext)
-            dst = "/userdata/system/configs/Play Data Files/arcadesaves/{}.backupram".format(baserom_noext)
+            dst = "/userdata/system/configs/play/Play Data Files/arcadesaves/{}.backupram".format(baserom_noext)
             precalibration_copyFile(src, dst)
