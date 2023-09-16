@@ -1,0 +1,13 @@
+diff --git a/src/common/fs/path_util.cpp b/src/common/fs/path_util.cpp
+index dce219fcf8..b40082575e 100644
+--- a/src/common/fs/path_util.cpp
++++ b/src/common/fs/path_util.cpp
+@@ -120,7 +120,7 @@ public:
+         GenerateYuzuPath(YuzuPath::CacheDir, yuzu_path_cache);
+         GenerateYuzuPath(YuzuPath::ConfigDir, yuzu_path_config);
+         GenerateYuzuPath(YuzuPath::DumpDir, yuzu_path / DUMP_DIR);
+-        GenerateYuzuPath(YuzuPath::KeysDir, yuzu_path / KEYS_DIR);
++        GenerateYuzuPath(YuzuPath::KeysDir, "/userdata/bios/switch");
+         GenerateYuzuPath(YuzuPath::LoadDir, yuzu_path / LOAD_DIR);
+         GenerateYuzuPath(YuzuPath::LogDir, yuzu_path / LOG_DIR);
+         GenerateYuzuPath(YuzuPath::NANDDir, yuzu_path / NAND_DIR);
