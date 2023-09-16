@@ -1,0 +1,19 @@
+diff --git a/src/common/fs/path_util.cpp b/src/common/fs/path_util.cpp.new
+index dce219fcf8..4875ec404d 100644
+--- a/src/common/fs/path_util.cpp
++++ b/src/common/fs/path_util.cpp.new
+@@ -120,11 +120,11 @@ public:
+         GenerateYuzuPath(YuzuPath::CacheDir, yuzu_path_cache);
+         GenerateYuzuPath(YuzuPath::ConfigDir, yuzu_path_config);
+         GenerateYuzuPath(YuzuPath::DumpDir, yuzu_path / DUMP_DIR);
+-        GenerateYuzuPath(YuzuPath::KeysDir, yuzu_path / KEYS_DIR);
++        GenerateYuzuPath(YuzuPath::KeysDir, "/userdata/bios/switch");
+         GenerateYuzuPath(YuzuPath::LoadDir, yuzu_path / LOAD_DIR);
+-        GenerateYuzuPath(YuzuPath::LogDir, yuzu_path / LOG_DIR);
++        GenerateYuzuPath(YuzuPath::LogDir, "/userdata/system/logs");
+         GenerateYuzuPath(YuzuPath::NANDDir, yuzu_path / NAND_DIR);
+-        GenerateYuzuPath(YuzuPath::ScreenshotsDir, yuzu_path / SCREENSHOTS_DIR);
++        GenerateYuzuPath(YuzuPath::ScreenshotsDir, "/userdata/screenshots/switch/yuzu");
+         GenerateYuzuPath(YuzuPath::SDMCDir, yuzu_path / SDMC_DIR);
+         GenerateYuzuPath(YuzuPath::ShaderDir, yuzu_path / SHADER_DIR);
+         GenerateYuzuPath(YuzuPath::TASDir, yuzu_path / TAS_DIR);
