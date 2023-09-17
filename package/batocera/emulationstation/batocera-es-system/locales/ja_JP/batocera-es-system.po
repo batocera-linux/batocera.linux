@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v38beta(2023/09/06)\n"
+"Project-Id-Version: batocera-es v38beta(2023/09/16)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-09-07 00:25+0900\n"
+"PO-Revision-Date: 2023-09-16 19:25+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -361,17 +361,17 @@ msgstr "ライトガン(ガンコン)を使用"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
-msgstr ""
+msgstr "ホイールが接続されている場合は、パッドの代わりに使用します"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "WHEELS"
-msgstr ""
+msgstr "ホイール(ハンドル)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE WHEELS"
-msgstr ""
+msgstr "ホイール(ハンドル)を使用"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1155,7 +1155,7 @@ msgstr "DSシステムメニューをスキップ"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "Use language and username from the NDS Firmware"
-msgstr "NDS ファームウェアの言語とユーザー名を使用する"
+msgstr "NDS ファームウェアの言語とユーザー名を使用"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -3766,7 +3766,7 @@ msgstr "Camputers Lynx カセット"
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Camputers Lynx floppies"
-msgstr ""
+msgstr "Camputers Lynx フロッピー"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3784,9 +3784,11 @@ msgid "Lynx 96k"
 msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
+#| msgctxt "game_options"
+#| msgid "Lynx 48k"
 msgctxt "game_options"
 msgid "Lynx 128k"
-msgstr ""
+msgstr "Lynx 128k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7326,7 +7328,7 @@ msgstr "ハイブリッド下/上比率4"
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
 msgid "GRAPHICS"
-msgstr ""
+msgstr "グラフィック"
 
 #. TRANSLATION: citra, duckstation, melonds, pcsx2, scummvm, ...
 msgctxt "game_options"
@@ -7370,11 +7372,13 @@ msgid ""
 "Compile shaders using background threads to avoid shader compilation "
 "stutter. May cause graphical glitches."
 msgstr ""
+"シェーダーのコンパイル途切れを避けるために、バックグラウンド スレッドを使用し"
+"てシェーダーをコンパイルします。グラフィック不具合の可能性があります"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "ENABLE ASYNC SHADER COMPILATION"
-msgstr ""
+msgstr "非同期シェーダーのコンパイルを有効"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7725,11 +7729,13 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
+"有効にすると、テクスチャ ラッピングを正しくエミュレーションできるようになりま"
+"す。パフォーマンスが低下する可能性があります"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "MANUAL TEXTURE SAMPLING"
-msgstr ""
+msgstr "手動テクスチャサンプリング"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9935,11 +9941,13 @@ msgid ""
 "Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
 "use if you get no audio."
 msgstr ""
+"32 ビットをサポートしていないオーディオ ドライバーには 16 ビット オーディオ "
+"サンプルを使用してください。音声が聞こえない場合にのみ使用してください"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "CONVERT TO 16-BIT"
-msgstr ""
+msgstr "16ビットに変換"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9957,6 +9965,8 @@ msgid ""
 "Duration of audio buffer in milliseconds. Higher numbers may cause audio "
 "latency."
 msgstr ""
+"音声バッファーの持続時間 (ミリ秒単位)。数値を大きくすると、音声遅延が発生する"
+"可能性があります"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9966,67 +9976,67 @@ msgstr "音声バッファの効果"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "10ms"
-msgstr ""
+msgstr "10ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "20ms"
-msgstr ""
+msgstr "20ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "40ms"
-msgstr ""
+msgstr "40ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "60ms"
-msgstr ""
+msgstr "60ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "80ms"
-msgstr ""
+msgstr "80ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "100ms (Default)"
-msgstr ""
+msgstr "100ミリ秒 (通常)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "120ms"
-msgstr ""
+msgstr "120ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "140ms"
-msgstr ""
+msgstr "140ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "160ms"
-msgstr ""
+msgstr "160ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "180ms"
-msgstr ""
+msgstr "180ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "200ms"
-msgstr ""
+msgstr "200ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "220ms"
-msgstr ""
+msgstr "220ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "240ms"
-msgstr ""
+msgstr "240ミリ秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10046,17 +10056,17 @@ msgstr "タイムストレッチを有効"
 msgctxt "game_options"
 msgid ""
 "Buffer fill level (in percentage) below which time stretching will start."
-msgstr ""
+msgstr "バッファー充填レベル (％) を下回るとタイム ストレッチを開始します"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "TIME STRETCHING THRESHOLD"
-msgstr ""
+msgstr "タイムストレッチしきい値"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "75% (Default)"
-msgstr ""
+msgstr "75%（通常）"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10074,6 +10084,8 @@ msgid ""
 "Enables controller specific capabilities. Sony DS won't work with clone "
 "controllers."
 msgstr ""
+"コントローラー固有の機能を有効にします。 Sony DualSense のクローンコントロー"
+"ラーは動作しません"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10083,7 +10095,7 @@ msgstr "PS3 コントローラ 1"
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "DirectInput"
-msgstr ""
+msgstr "DirectInput"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -10947,11 +10959,12 @@ msgctxt "game_options"
 msgid ""
 "NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
 msgstr ""
+"NVAPIは、NVIDIAGPUへの直接アクセスを可能にするNVIDIAのコアソフトウェアです"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "ENABLE NVAPI"
-msgstr ""
+msgstr "NVAPIを有効"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11125,7 +11138,7 @@ msgstr "音声の精度を向上（実験的）"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "USE DSP AUDIO"
-msgstr "DSP オーディオを使用する"
+msgstr "DSP オーディオを使用"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -12550,22 +12563,6 @@ msgstr "早送り"
 #~ msgctxt "game_options"
 #~ msgid "Lynx 128k (Default)"
 #~ msgstr "Lynx 128k (標準)"
-
-#~ msgctxt "game_options"
-#~ msgid "Duration of audio buffer in milliseconds."
-#~ msgstr "音声バッファの持続時間 (ミリ秒単位)"
-
-#~ msgctxt "game_options"
-#~ msgid "100 (Default)"
-#~ msgstr "100 (通常)"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Enables Sony DualSense / DualShock capabilities. Won't work with clone "
-#~ "controllers."
-#~ msgstr ""
-#~ "Sony DualSense / DualShock 機能を有効にします。クローンコントローラーでは"
-#~ "動作しません"
 
 #~ msgctxt "game_options"
 #~ msgid "Other"
