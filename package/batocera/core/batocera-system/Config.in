@@ -89,6 +89,7 @@ endif
 config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
     bool "batocera is limited to abandoned systems"
 
+
 ##########################################
 config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
     bool "batocera.linux music formats support"
@@ -115,7 +116,7 @@ config BR2_PACKAGE_BATOCERA_VULKAN
     bool "batocera.linux Vulkan support"
 
     # Vulkan headers, loaders, SPIR-V, glsLang
-    select BR2_PACKAGE_VULKAN_TOOLS			if !BR2_riscv
+    select BR2_PACKAGE_VULKAN_TOOLS
     select BR2_PACKAGE_SPIRV_TOOLS
 
     # Vulkan mesa drivers
@@ -131,6 +132,9 @@ config BR2_PACKAGE_BATOCERA_VULKAN
 
 config BR2_PACKAGE_BATOCERA_SYSTEM
     bool "batocera.linux minimal"
+
+    # RISC-V support needs a hack here to declare as RV64GC, needed for Rust
+    select BR2_RISCV_ISA_RVC				if BR2_PACKAGE_BATOCERA_TARGET_RISCV
 
     # minimal system required packages
     select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
@@ -174,7 +178,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PM_UTILS                             # suspend
     select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
     select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
-    select BR2_PACKAGE_EVSIEVE                              if !BR2_riscv # linux tool to manipuate events (like joining them) ; armv8 in 32 bits seems not supported
+    select BR2_PACKAGE_EVSIEVE                              # linux tool to manipulate events (like joining them) ; armv8 in 32 bits seems not supported
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT                  # for util-linux compilation to work (so, may be removed in the future)
     select BR2_PACKAGE_FBDUMP                               # tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
     select BR2_PACKAGE_FBGRAB                               # framebuffer screenshot program, capturing the linux frambuffer and converting it to a png-picture
@@ -246,14 +250,14 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BTOP                                 # htop alternative
 
     # Controllers
-    select BR2_PACKAGE_XONE                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.15)
-    select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.15)
-    select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_riscv # xbox receiver (require linux >= 4.18)
+    select BR2_PACKAGE_XONE                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
+    select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
+    select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.18)
     select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
-    select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_riscv # wiimotes
+    select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
     select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
-    select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_riscv
-    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4  && !BR2_riscv # updated nintendo switch controller driver, requires kernel > 4.4
+    select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # updated nintendo switch controller driver, requires kernel > 4.4
     select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
     select BR2_PACKAGE_JAMMASD
 
