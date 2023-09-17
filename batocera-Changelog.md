@@ -96,7 +96,7 @@
 - commander genius to v3.4.9
 - play! to v0.62
 - Vita3K to 0.1.9
-- vcmi to 1.3.1
+- vcmi to 1.3.2
 - libretro-mupen64plus-next to Aug 8 build
 - raze to 1.7.1
 - gzdoom to Aug 26 build
