@@ -37,7 +37,7 @@ class Pcsx2Generator(Generator):
         
         # Config files
         configureReg(pcsx2ConfigDir)
-        configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, playersControllers, guns, wheels)
+        configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, rom, playersControllers, guns, wheels)
         configureAudio(pcsx2ConfigDir)
 
         # write our own game_controller_db.txt file before launching the game
@@ -109,7 +109,7 @@ def configureAudio(config_directory):
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory, bios_directory, system, controllers, guns, wheels):
+def configureINI(config_directory, bios_directory, system, rom, controllers, guns, wheels):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2.ini")
 
     if not os.path.exists(config_directory + "/inis"):
@@ -414,6 +414,10 @@ def configureINI(config_directory, bios_directory, system, controllers, guns, wh
         pcsx2INIConfig.remove_option("USB1", "guncon2_Start")
     if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "guncon2_Start"):
         pcsx2INIConfig.remove_option("USB2", "guncon2_Start")
+    if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "guncon2_numdevice"):
+        pcsx2INIConfig.remove_option("USB1", "guncon2_numdevice")
+    if pcsx2INIConfig.has_section("USB2") and pcsx2INIConfig.has_option("USB2", "guncon2_numdevice"):
+        pcsx2INIConfig.remove_option("USB2", "guncon2_numdevice")
 
     # clean wheel sections
     if pcsx2INIConfig.has_section("USB1") and pcsx2INIConfig.has_option("USB1", "Type") and pcsx2INIConfig.get("USB1", "Type") == "Pad" and pcsx2INIConfig.has_option("USB1", "Pad_subtype") and pcsx2INIConfig.get("USB1", "Pad_subtype") == "1":
@@ -424,26 +428,31 @@ def configureINI(config_directory, bios_directory, system, controllers, guns, wh
 
     # guns
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
-        if len(guns) >= 1:
+        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+        gun1onport2 = len(guns) == 1 and "gun1port" in gunsmetadata and gunsmetadata["gun1port"] == "2"
+
+        if len(guns) >= 1 and not gun1onport2:
             if not pcsx2INIConfig.has_section("USB1"):
                 pcsx2INIConfig.add_section("USB1")
             pcsx2INIConfig.set("USB1", "Type", "guncon2")
             nc = 1
             for controller, pad in sorted(controllers.items()):
-                if nc == 1:
+                if nc == 1 and not gun1onport2:
                     if "start" in pad.inputs:
                         pcsx2INIConfig.set("USB1", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
                 nc = nc + 1
-        if len(guns) >= 2:
+        if len(guns) >= 2 or gun1onport2:
             if not pcsx2INIConfig.has_section("USB2"):
                 pcsx2INIConfig.add_section("USB2")
             pcsx2INIConfig.set("USB2", "Type", "guncon2")
             nc = 1
             for controller, pad in sorted(controllers.items()):
-                if nc == 2:
+                if nc == 2 or gun1onport2:
                     if "start" in pad.inputs:
                         pcsx2INIConfig.set("USB2", "guncon2_Start", "SDL-{}/{}".format(pad.index, "Start"))
                 nc = nc + 1
+            if gun1onport2:
+                pcsx2INIConfig.set("USB2", "guncon2_numdevice", "0")
 
     # hack for the fog bug for guns (time crisis - crisis zone)
     fog_files = [
