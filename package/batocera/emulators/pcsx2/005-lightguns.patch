@@ -1,5 +1,5 @@
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
-index 6b8de71..21bcd37 100644
+index a69dbb1..d6d0e04 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.cpp
 +++ b/pcsx2/USB/usb-lightgun/guncon2.cpp
 @@ -31,6 +31,12 @@
@@ -23,7 +23,15 @@ index 6b8de71..21bcd37 100644
  
  		USBDevice dev{};
  		USBDesc desc{};
-@@ -175,6 +182,12 @@ namespace usb_lightgun
+@@ -148,6 +155,7 @@ namespace usb_lightgun
+ 		float center_y = 120;
+ 		float scale_x = 1.0f;
+ 		float scale_y = 1.0f;
++		int numdevice = -1;
+ 
+ 		//////////////////////////////////////////////////////////////////////////
+ 		// Host State (Not Saved)
+@@ -175,6 +183,12 @@ namespace usb_lightgun
  
  		std::tuple<s16, s16> CalculatePosition();
  
@@ -36,7 +44,7 @@ index 6b8de71..21bcd37 100644
  		// 0..1, not -1..1.
  		std::pair<float, float> GetAbsolutePositionFromRelativeAxes() const;
  		u32 GetSoftwarePointerIndex() const;
-@@ -240,6 +253,12 @@ namespace usb_lightgun
+@@ -240,6 +254,12 @@ namespace usb_lightgun
  		0x08, // Polling interval (frame counts)
  	};
  
@@ -49,7 +57,7 @@ index 6b8de71..21bcd37 100644
  	static void guncon2_handle_control(
  		USBDevice* dev, USBPacket* p, int request, int value, int index, int length, uint8_t* data)
  	{
-@@ -269,9 +288,93 @@ namespace usb_lightgun
+@@ -269,9 +289,93 @@ namespace usb_lightgun
  		p->status = USB_RET_STALL;
  	}
  
@@ -143,7 +151,7 @@ index 6b8de71..21bcd37 100644
  
  		switch (p->pid)
  		{
-@@ -350,8 +453,16 @@ namespace usb_lightgun
+@@ -350,8 +454,16 @@ namespace usb_lightgun
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
@@ -160,7 +168,7 @@ index 6b8de71..21bcd37 100644
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -384,6 +495,13 @@ namespace usb_lightgun
+@@ -384,6 +496,13 @@ namespace usb_lightgun
  			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
  		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
  
@@ -174,7 +182,7 @@ index 6b8de71..21bcd37 100644
  		s16 pos_x, pos_y;
  		if (pointer_x < 0.0f || pointer_y < 0.0f)
  		{
-@@ -458,9 +576,148 @@ namespace usb_lightgun
+@@ -458,9 +577,151 @@ namespace usb_lightgun
  		return "guncon2";
  	}
  
@@ -271,7 +279,7 @@ index 6b8de71..21bcd37 100644
 +		  sizeof(struct event_udev_entry), sort_devnodes);
 +
 +	    for (i = 0; i < sorted_count; i++) {
-+	      if(i == us->port) {
++	      if((i == us->port && us->numdevice == -1) || (i == us->numdevice && us->numdevice >= 0 )) {
 +		const char *name = udev_list_entry_get_name(sorted[i].item);
 +
 +		/* Get the filename of the /sys entry for the device
@@ -317,6 +325,9 @@ index 6b8de71..21bcd37 100644
  	USBDevice* GunCon2Device::CreateDevice(SettingsInterface& si, u32 port, u32 subtype) const
  	{
  		GunCon2State* s = new GunCon2State(port);
++
++		// gun device
++		s->numdevice = USB::GetConfigInt(si, s->port, TypeName(), "numdevice", -1);
 +
 +		udev_open_gun(s);
 +
