@@ -1,0 +1,98 @@
+diff -u -r a/Makefile b/Makefile
+--- a/Makefile	2023-09-17 19:39:11.561720476 +0200
++++ b/Makefile	2023-09-17 20:04:12.563406426 +0200
+@@ -248,6 +248,11 @@
+ else ifeq ($(PLATFORM),x86-64)
+ 	CPPFLAGS += -DUSE_RENDER_THREAD
+ 
++# Generic EXPERIMENTAL riscv64 target
++else ifeq ($(PLATFORM),riscv64)
++	# USE_RENDER_THREAD fails under sway on VisionFive2
++	# CPPFLAGS += -DUSE_RENDER_THREAD
++
+ # RK3588 e.g. RockPi 5
+ else ifeq ($(PLATFORM),rk3588)
+ 	CPUFLAGS ?= -mcpu=cortex-a76+fp
+@@ -599,6 +604,8 @@
+ 	USE_JIT = 0
+ else ifeq ($(PLATFORM),$(filter $(PLATFORM),x86-64))
+ 	USE_JIT = 0
++else ifeq ($(PLATFORM),$(filter $(PLATFORM),riscv64))
++	USE_JIT = 0
+ else
+ OBJS += src/osdep/neon_helper.o
+ src/osdep/neon_helper.o: src/osdep/neon_helper.s
+diff -u -r a/src/include/sysdeps.h b/src/include/sysdeps.h
+--- a/src/include/sysdeps.h	2023-09-17 19:39:11.641722285 +0200
++++ b/src/include/sysdeps.h	2023-09-17 19:40:03.000000000 +0200
+@@ -58,6 +58,9 @@
+ #define SAHF_SETO_PROFITABLE
+ #elif defined(__powerpc__) || defined(_M_PPC)
+ #define CPU_powerpc 1
++#elif defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
++#define CPU_riscv64 1
++#define CPU_64_BIT 1
+ #else
+ #error unrecognized CPU type
+ #endif
+diff -u -r a/src/machdep/m68k.h b/src/machdep/m68k.h
+--- a/src/machdep/m68k.h	2023-09-17 19:39:11.649722467 +0200
++++ b/src/machdep/m68k.h	2023-09-17 19:40:03.000000000 +0200
+@@ -129,12 +129,12 @@
+ 
+ #endif /* REGS_DEFINED */
+ 
+-#elif defined(CPU_arm) && (defined(ARMV6_ASSEMBLY) || defined(CPU_AARCH64))
++#elif defined(CPU_riscv64) || defined(CPU_arm) && (defined(ARMV6_ASSEMBLY) || defined(CPU_AARCH64))
+ 
+ #ifndef REGS_DEFINED
+ 
+ struct flag_struct {
+-#if defined (CPU_AARCH64)
++#if defined(CPU_riscv64) || defined (CPU_AARCH64)
+ 	uae_u64 nzcv;
+ 	uae_u64 x;
+ #else
+diff -u -r a/src/osdep/sigsegv_handler.cpp b/src/osdep/sigsegv_handler.cpp
+--- a/src/osdep/sigsegv_handler.cpp	2023-09-17 19:39:11.657722647 +0200
++++ b/src/osdep/sigsegv_handler.cpp	2023-09-17 19:40:03.000000000 +0200
+@@ -36,7 +36,7 @@
+ #endif
+ #include "uae.h"
+ 
+-#if !defined(__MACH__) && !defined(CPU_AMD64) && !defined(__x86_64__)
++#if !defined(__MACH__) && !defined(CPU_AMD64) && !defined(__x86_64__) && !defined(__riscv)
+ #include <asm/sigcontext.h>
+ #else
+ #include <sys/ucontext.h>
+diff -u -r a/src/osdep/sysconfig.h b/src/osdep/sysconfig.h
+--- a/src/osdep/sysconfig.h	2023-09-17 19:39:11.657722647 +0200
++++ b/src/osdep/sysconfig.h	2023-09-17 19:40:03.000000000 +0200
+@@ -18,7 +18,7 @@
+ #define FILESYS /* filesys emulation */
+ #define UAE_FILESYS_THREADS
+ #define AUTOCONFIG /* autoconfig support, fast ram, harddrives etc.. */
+-#if !defined (CPU_AMD64) && !defined (__x86_64__) && !defined (__MACH__)
++#if !defined (CPU_AMD64) && !defined (__x86_64__) && !defined(__riscv) && !defined (__MACH__)
+ #define JIT /* JIT compiler support */
+ #endif
+ #if defined(ARMV6T2) || defined(CPU_AARCH64)
+@@ -116,7 +116,7 @@
+ 
+ #include <stdint.h>
+ 
+-#if defined(__x86_64__) || defined(CPU_AARCH64) || defined(CPU_AMD64)
++#if defined(__x86_64__) || defined(CPU_AARCH64) || defined(CPU_AMD64) || defined(__LP64__)
+ #define SIZEOF_VOID_P 8
+ #else
+ #define SIZEOF_VOID_P 4
+@@ -263,7 +263,7 @@
+ #define SIZEOF_INT 4
+ 
+ /* The number of bytes in a long.  */
+-#if defined(__x86_64__) || defined(CPU_AARCH64) || defined(CPU_AMD64)
++#if defined(__x86_64__) || defined(CPU_AARCH64) || defined(CPU_AMD64) || defined(__LP64__)
+ #define SIZEOF_LONG 8
+ #else
+ #define SIZEOF_LONG 4
+ 
