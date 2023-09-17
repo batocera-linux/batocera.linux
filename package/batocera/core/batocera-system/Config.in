@@ -1627,6 +1627,7 @@ config BR2_PACKAGE_BATOCERA_XORG
     select BR2_PACKAGE_XAPP_XINPUT
     select BR2_PACKAGE_XAPP_XRANDR                  # required for resolution manipulation
     select BR2_PACKAGE_XAPP_XSET                    # X11 Xset command
+    select BR2_PACKAGE_XAPP_XBACKLIGHT              # set the backlight
 
     select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
     select BR2_PACKAGE_LIBGTK3                      # gtk3 library
