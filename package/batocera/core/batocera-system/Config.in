@@ -1236,7 +1236,7 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     bool "add experimental cores"
 
     # CorsixTH (Theme Hospital engine)
-    select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64
+    select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64 || BR2_riscv
 
     # Jazz Jackrabbit
     select BR2_PACKAGE_OPENJAZZ             # ALL
@@ -1260,7 +1260,7 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     select BR2_PACKAGE_SUGARBOX             if BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3
 
     # Symbian OS / Nokia N-Gage emulator
-    select BR2_PACKAGE_EKA2L1		    if BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3
+    select BR2_PACKAGE_EKA2L1		    if !BR2_riscv && (BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3)
 
     # Supermodel OpenGL ES port
     select BR2_PACKAGE_SUPERMODEL_ES        if	BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
