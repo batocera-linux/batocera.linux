@@ -3784,8 +3784,6 @@ msgid "Lynx 96k"
 msgstr "Lynx 96k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
-#| msgctxt "game_options"
-#| msgid "Lynx 48k"
 msgctxt "game_options"
 msgid "Lynx 128k"
 msgstr "Lynx 128k"
@@ -10081,11 +10079,9 @@ msgstr "グラフィカル ユーザー インターフェース"
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid ""
-"Enables controller specific capabilities. Sony DS won't work with clone "
-"controllers."
+"Default uses SDL2, otherwise enable controller specific capabilities. Sony "
+"DS won't work with clone controllers."
 msgstr ""
-"コントローラー固有の機能を有効にします。 Sony DualSense のクローンコントロー"
-"ラーは動作しません"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10094,8 +10090,8 @@ msgstr "PS3 コントローラ 1"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
-msgid "DirectInput"
-msgstr "DirectInput"
+msgid "Legacy Evdev"
+msgstr ""
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -12559,6 +12555,18 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enables controller specific capabilities. Sony DS won't work with clone "
+#~ "controllers."
+#~ msgstr ""
+#~ "コントローラー固有の機能を有効にします。 Sony DualSense のクローンコント"
+#~ "ローラーは動作しません"
+
+#~ msgctxt "game_options"
+#~ msgid "DirectInput"
+#~ msgstr "DirectInput"
 
 #~ msgctxt "game_options"
 #~ msgid "Lynx 128k (Default)"
