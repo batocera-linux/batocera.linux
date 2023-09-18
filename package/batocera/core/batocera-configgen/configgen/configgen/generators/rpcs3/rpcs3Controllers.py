@@ -45,7 +45,11 @@ def generateControllerConfig(system, controllers, rom):
         ("a", "Cross", [("BTN_A", "A")]),
         ("b", "Circle", [("BTN_B", "B")]),
         ("x", "Square", [("BTN_X", "X")]),
-        ("y", "Triangle", [("BTN_Y", "Y")])
+        ("y", "Triangle", [("BTN_Y", "Y")]),
+        ("joystick1up", "Left Stick Up", [("ABS_Y", "LY-")]),
+        ("joystick1left", "Left Stick Left", [("ABS_X", "LX-")]),
+        ("joystick2up", "Right Stick Up", [("ABS_RY", "RY-")]),
+        ("joystick2left", "Right Stick Left", [("ABS_RX", "RX-")])
     ]
     
     mapping_dict = {}
@@ -56,6 +60,7 @@ def generateControllerConfig(system, controllers, rom):
         }
     
     nplayer, ds3player, ds4player, dsplayer = 1, 1, 1, 1
+    controller_counts = {}
 
     configFileName = f"{rpcs3_input_dir}/Default.yml"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
@@ -159,21 +164,13 @@ def generateControllerConfig(system, controllers, rom):
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
-            else:
+            elif f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Evdev":
                 eslog.debug("*** Using EVDEV configuration ***")
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: Evdev\n')
                 f.write(f'  Device: {pad.dev}\n')
                 f.write('  Config:\n')
-                f.write('    Left Stick Left: LX-\n')
-                f.write('    Left Stick Down: LY+\n')
-                f.write('    Left Stick Right: LX+\n')
-                f.write('    Left Stick Up: LY-\n')
-                f.write('    Right Stick Left: RX-\n')
-                f.write('    Right Stick Down: RY+\n')
-                f.write('    Right Stick Right: RX+\n')
-                f.write('    Right Stick Up: RY-\n')
                 f.write('    Start: Start\n')
                 f.write('    Select: Select\n')
                 f.write('    PS Button: Mode\n')
@@ -184,19 +181,30 @@ def generateControllerConfig(system, controllers, rom):
                         event_variations = mapping_dict[input.name]["event_variations"]
                         for event_type, value_name in event_variations:
                             if "BTN" in event_type and input.type == "button":
-                                if config_name == "Circle" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
-                                    config_name = "Cross"
-                                elif config_name == "Cross" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
-                                    config_name = "Circle"
-                                elif config_name == "Square" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
-                                    config_name = "Triangle"
-                                elif config_name == "Triangle" and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Direct":
-                                    config_name = "Square"
                                 f.write(f"    {config_name}: {value_name}\n")
                             elif "HAT" in event_type and input.type == "hat":
                                 f.write(f"    {config_name}: {value_name}\n")
                             elif "ABS" in event_type and input.type == "axis":
-                                f.write(f"    {config_name}: {value_name}\n")
+                                # handle axis for sticks
+                                if config_name == "Left Stick Up":
+                                    f.write(f"    {config_name}: {value_name}\n")
+                                    # write the down values also
+                                    f.write(f"    Left Stick Down: LY+\n")
+                                elif config_name == "Left Stick Left":
+                                    f.write(f"    {config_name}: {value_name}\n")
+                                    # write the right values also
+                                    f.write(f"    Left Stick Right: LX+\n")
+                                # here's the complicated bit, DirectInput uses z axis
+                                elif config_name == "Right Stick Up":
+                                    f.write(f"    {config_name}: {value_name}\n")
+                                    # write the down values
+                                    f.write(f"    Right Stick Down: RY+\n")
+                                elif config_name == "Right Stick Left":
+                                    f.write(f"    {config_name}: {value_name}\n")
+                                    # write the right values
+                                    f.write(f"    Right Stick Right: RX+\n")
+                                else:
+                                    f.write(f"    {config_name}: {value_name}\n")
                 # continue with default settings
                 f.write('    R1: TR\n')
                 f.write('    R3: Thumb R\n')
@@ -252,5 +260,100 @@ def generateControllerConfig(system, controllers, rom):
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
+            else:
+                eslog.debug("*** Using default SDL2 configuration ***")
+                f.write(f'Player {nplayer} Input:\n')
+                f.write(f'  Handler: SDL\n')
+                # workaround controllers with commas in their name - like Nintendo
+                ctrlname = pad.realName.split(',')[0].strip()
+                # rpcs3 appends a unique number per controller name
+                if ctrlname in controller_counts:
+                    controller_counts[ctrlname] += 1
+                else:
+                    controller_counts[ctrlname] = 1
+                f.write(f'  Device: {ctrlname} {controller_counts[ctrlname]}\n')
+                f.write(f'  Config:\n')
+                f.write(f'    Left Stick Left: LS X-\n')
+                f.write(f'    Left Stick Down: LS Y-\n')
+                f.write(f'    Left Stick Right: LS X+\n')
+                f.write(f'    Left Stick Up: LS Y+\n')
+                f.write(f'    Right Stick Left: RS X-\n')
+                f.write(f'    Right Stick Down: RS Y-\n')
+                f.write(f'    Right Stick Right: RS X+\n')
+                f.write(f'    Right Stick Up: RS Y+\n')
+                f.write(f'    Start: Start\n')
+                f.write(f'    Select: Back\n')
+                f.write(f'    PS Button: Guide\n')
+                f.write(f'    Square: X\n')
+                f.write(f'    Cross: A\n')
+                f.write(f'    Circle: B\n')
+                f.write(f'    Triangle: Y\n')
+                f.write(f'    Left: Left\n')
+                f.write(f'    Down: Down\n')
+                f.write(f'    Right: Right\n')
+                f.write(f'    Up: Up\n')
+                f.write(f'    R1: RB\n')
+                f.write(f'    R2: RT\n')
+                f.write(f'    R3: RS\n')
+                f.write(f'    L1: LB\n')
+                f.write(f'    L2: LT\n')
+                f.write(f'    L3: LS\n')
+                f.write(f'    IR Nose: ""\n')
+                f.write(f'    IR Tail: ""\n')
+                f.write(f'    IR Left: ""\n')
+                f.write(f'    IR Right: ""\n')
+                f.write(f'    Tilt Left: ""\n')
+                f.write(f'    Tilt Right: ""\n')
+                f.write(f'    Motion Sensor X:\n')
+                f.write(f'      Axis: X\n')
+                f.write(f'      Mirrored: false\n')
+                f.write(f'      Shift: 0\n')
+                f.write(f'    Motion Sensor Y:\n')
+                f.write(f'      Axis: Y\n')
+                f.write(f'      Mirrored: false\n')
+                f.write(f'      Shift: 0\n')
+                f.write(f'    Motion Sensor Z:\n')
+                f.write(f'      Axis: Z\n')
+                f.write(f'      Mirrored: false\n')
+                f.write(f'      Shift: 0\n')
+                f.write(f'    Motion Sensor G:\n')
+                f.write(f'      Axis: RY\n')
+                f.write(f'      Mirrored: false\n')
+                f.write(f'      Shift: 0\n')
+                f.write(f'    Pressure Intensity Button: ""\n')
+                f.write(f'    Pressure Intensity Percent: 50\n')
+                f.write(f'    Pressure Intensity Toggle Mode: false\n')
+                f.write(f'    Pressure Intensity Deadzone: 0\n')
+                f.write(f'    Left Stick Multiplier: 100\n')
+                f.write(f'    Right Stick Multiplier: 100\n')
+                f.write(f'    Left Stick Deadzone: 8000\n')
+                f.write(f'    Right Stick Deadzone: 8000\n')
+                f.write(f'    Left Trigger Threshold: 0\n')
+                f.write(f'    Right Trigger Threshold: 0\n')
+                f.write(f'    Left Pad Squircling Factor: 8000\n')
+                f.write(f'    Right Pad Squircling Factor: 8000\n')
+                f.write(f'    Color Value R: 0\n')
+                f.write(f'    Color Value G: 0\n')
+                f.write(f'    Color Value B: 20\n')
+                f.write(f'    Blink LED when battery is below 20%: true\n')
+                f.write(f'    Use LED as a battery indicator: false\n')
+                f.write(f'    LED battery indicator brightness: 10\n')
+                f.write(f'    Player LED enabled: true\n')
+                f.write(f'    Enable Large Vibration Motor: true\n')
+                f.write(f'    Enable Small Vibration Motor: true\n')
+                f.write(f'    Switch Vibration Motors: false\n')
+                f.write(f'    Mouse Movement Mode: Relative\n')
+                f.write(f'    Mouse Deadzone X Axis: 60\n')
+                f.write(f'    Mouse Deadzone Y Axis: 60\n')
+                f.write(f'    Mouse Acceleration X Axis: 200\n')
+                f.write(f'    Mouse Acceleration Y Axis: 250\n')
+                f.write(f'    Left Stick Lerp Factor: 100\n')
+                f.write(f'    Right Stick Lerp Factor: 100\n')
+                f.write(f'    Analog Button Lerp Factor: 100\n')
+                f.write(f'    Trigger Lerp Factor: 100\n')
+                f.write(f'    Device Class Type: 0\n')
+                f.write(f'    Vendor ID: 1356\n')
+                f.write(f'    Product ID: 616\n')
+                f.write(f'  Buddy Device: ""\n')
         nplayer += 1
     f.close()

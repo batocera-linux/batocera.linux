@@ -3,8 +3,8 @@
 # rpcs3
 #
 ################################################################################
-# Version: 0.0.29-15617 - Commits on Sep 11, 2023
-RPCS3_VERSION = c7c81ed95d3d23b37d78aad49dab6beddac200bc
+# Version: 0.0.29-15620 - Commits on Sep 13, 2023
+RPCS3_VERSION = f398f1113de8e1e316e95d345dcae0b7523cd132
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
@@ -25,11 +25,11 @@ RPCS3_CONF_OPTS += -DUSE_PRECOMPILED_HEADERS=OFF
 RPCS3_CONF_OPTS += -DSTATIC_LINK_LLVM=OFF
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_FFMPEG=OFF
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_CURL=ON
+RPCS3_CONF_OPTS += -DUSE_SYSTEM_LIBUSB=ON
 RPCS3_CONF_OPTS += -DUSE_LIBEVDEV=ON
-# sdl controller config seems broken...
-RPCS3_CONF_OPTS += -DUSE_SDL=OFF
+RPCS3_CONF_OPTS += -DUSE_SYSTEM_FAUDIO=OFF
 # this is ugly, but necessary... for now...
-RPCS3_CONF_OPTS += -DFFMPEG_LIB_AVCODEC=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libavcodec.a
+RPCS3_CONF_OPTS += -DUSE_SYSTEM_FFMPEG=OFF
 RPCS3_CONF_OPTS += -DFFMPEG_LIB_AVFORMAT=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libavformat.a
 RPCS3_CONF_OPTS += -DFFMPEG_LIB_AVUTIL=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libavutil.a
 RPCS3_CONF_OPTS += -DFFMPEG_LIB_SWSCALE=../3rdparty/ffmpeg/lib/linux/ubuntu-22.04/x86_64/libswscale.a
@@ -37,6 +37,11 @@ RPCS3_CONF_OPTS += -DFFMPEG_LIB_SWRESAMPLE=../3rdparty/ffmpeg/lib/linux/ubuntu-2
 
 RPCS3_CONF_ENV = LIBS="-ncurses -ltinfo"
 
+ifeq ($(BR2_PACKAGE_SDL2),y)
+    RPCS3_CONF_OPTS += -DUSE_SDL=ON
+else
+    RPCS3_CONF_OPTS += -DUSE_SDL=OFF
+endif
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     RPCS3_CONF_OPTS += -DUSE_VULKAN=ON
 else

@@ -11,6 +11,7 @@ import configparser
 import ruamel.yaml as yaml
 import json
 import re
+import controllersConfig
 from . import rpcs3Controllers
 
 class Rpcs3Generator(Generator):
@@ -288,6 +289,10 @@ class Rpcs3Generator(Generator):
             romBasename = path.basename(rom)
             romName = rom + "/PS3_GAME/USRDIR/EBOOT.BIN"
         
+        # write our own gamecontrollerdb.txt file before launching the game
+        dbfile = "/userdata/system/configs/rpcs3/input_configs/gamecontrollerdb.txt"
+        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
+        
         commandArray = [batoceraFiles.batoceraBins[system.config["emulator"]], romName]
 
         if not (system.isOptSet("rpcs3_gui") and system.getOptBoolean("rpcs3_gui")):
@@ -300,9 +305,15 @@ class Rpcs3Generator(Generator):
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"}
+            env={
+                "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                "XDG_CACHE_HOME":batoceraFiles.CACHE,
+                "QT_QPA_PLATFORM":"xcb",
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
         )
-
+    
     def getClosestRatio(gameResolution):
         screenRatio = gameResolution["width"] / gameResolution["height"]
         if screenRatio < 1.6:
