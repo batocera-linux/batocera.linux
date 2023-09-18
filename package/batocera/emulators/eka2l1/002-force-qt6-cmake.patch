@@ -1,0 +1,11 @@
+--- a/src/emu/qt/CMakeLists.txt	2023-09-18 11:48:50.534482929 +0200
++++ b/src/emu/qt/CMakeLists.txt	2023-09-18 11:50:42.293015552 +0200
+@@ -13,7 +11,7 @@
+     endif()
+ endif()
+ 
+-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools Gui REQUIRED)
++find_package(QT NAMES Qt6 COMPONENTS Widgets LinguistTools Gui REQUIRED)
+ 
+ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+     set(EXCLUSIVE_QT_COMPONENTS OpenGLWidgets)
