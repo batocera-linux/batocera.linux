@@ -1,0 +1,10 @@
+--- a/src/libprojectM/Renderer/SOIL2/SOIL2.c	2023-09-18 18:11:31.238528663 +0200
++++ b/src/libprojectM/Renderer/SOIL/SOIL2.c2	2023-09-18 18:20:09.365425652 +0200
+@@ -42,6 +42,7 @@
+ #endif
+ 
+ #if ( defined( SOIL_GLES2 ) || defined( SOIL_GLES1 ) ) && !defined( SOIL_NO_EGL ) && !defined( SOIL_PLATFORM_IOS )
++	#define MESA_EGL_NO_X11_HEADERS 1
+ 	#include <EGL/egl.h>
+ #endif
+ 

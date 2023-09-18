@@ -32,11 +32,10 @@ BR2_LINUX_KERNEL_INTREE_DTS_NAME="starfive/jh7110-visionfive-v2"
 
 # use blob + patched mesa
 BR2_PACKAGE_IMG_GPU_POWERVR=y
-# sway works in SSH manual launch, not at boot
 BR2_PACKAGE_BATOCERA_WAYLAND=y
 
 # batocera splash screen
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Batocera system
-BR2_PACKAGE_BATOCERA_KODI20=n
+BR2_PACKAGE_BATOCERA_KODI20=y
