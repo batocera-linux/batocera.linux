@@ -1,0 +1,38 @@
+--- a/src/debug_shell.re2c	2023-09-19 01:38:28.626516923 +0200
++++ g/src/debug_shell.re2c	2023-09-19 01:38:39.454749471 +0200
+@@ -973,7 +973,7 @@
+ 	REG_K,
+ 	REG_MX,
+ 	REG_P,
+-	REG_PC,
++	REGISTER_PC,
+ 	REG_S,
+ 	REG_X,
+ 	REG_Y,
+@@ -1077,7 +1077,7 @@
+ 
+ next:
+ 
+-	if (has_bank && reg != REG_PC) return -1;
++	if (has_bank && reg != REGISTER_PC) return -1;
+ 
+ 	switch(reg) {
+ 		case REG_A: engine.acc = addr; break;
+@@ -1097,7 +1097,7 @@
+ 			engine.kpc = (engine.kpc & 0xffff) | addr;
+ 			break;
+ 
+-		case REG_PC:
++		case REGISTER_PC:
+ 			if (!has_bank) addr |= (engine.kpc & 0xff0000);
+ 			engine.kpc = addr;
+ 			break;
+@@ -1509,7 +1509,7 @@
+ 		"%k=" { return do_assign(YYCURSOR, REG_K); }
+ 		"%b=" { return do_assign(YYCURSOR, REG_B); }
+ 		"%p=" { return do_assign(YYCURSOR, REG_P); }
+-		"%pc=" { return do_assign(YYCURSOR, REG_PC); }
++		"%pc=" { return do_assign(YYCURSOR, REGISTER_PC); }
+ 		"%mx=" { return do_assign(YYCURSOR, REG_MX); }
+ 
+ 
