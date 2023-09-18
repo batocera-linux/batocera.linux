@@ -102,7 +102,7 @@
 - gzdoom to Aug 26 build
 - libretro-fake08 to Aug 21 build
 - libretro-bsnes to Aug 18 build
-- rpcs3 to 0.0.29-15617
+- rpcs3 to 0.0.29-15620
 ### Dev
 - linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
