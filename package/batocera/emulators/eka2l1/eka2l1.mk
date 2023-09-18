@@ -6,7 +6,7 @@
 # Dirty version and repo while:
 # -fixing gcc13
 # - upstreaming needed changes (wayland, ffmpeg, gles)
-EKA2L1_VERSION = e2aaf64c5b0e2081d640d358bdd5fad69726ab2e
+EKA2L1_VERSION = 8bf21e354c7aa3ea8f287a5f47825d1370b1c14f
 EKA2L1_SITE = https://github.com/rtissera/EKA2L1.git
 EKA2L1_SITE_METHOD=git
 EKA2L1_GIT_SUBMODULES=YES
