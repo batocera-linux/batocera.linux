@@ -930,6 +930,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # OpenTyrian (shmup game)
     select BR2_PACKAGE_TYRIAN               # ALL
 
+    # CorsixTH (Theme Hospital engine)
+    select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64 || BR2_riscv
+
     help
         Ports
 
@@ -1238,9 +1241,6 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 #### Cores Experimental ####
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     bool "add experimental cores"
-
-    # CorsixTH (Theme Hospital engine)
-    select BR2_PACKAGE_CORSIXTH             if BR2_x86_64 || BR2_aarch64 || BR2_riscv
 
     # Jazz Jackrabbit
     select BR2_PACKAGE_OPENJAZZ             # ALL
