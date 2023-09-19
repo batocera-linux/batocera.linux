@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-09-09 01:09+0800\n"
+"PO-Revision-Date: 2023-09-17 23:49+0800\n"
 "Last-Translator: wanger\n"
 "Language-Team: 王二\n"
 "Language: zh_CN\n"
@@ -357,17 +357,17 @@ msgstr "使用光枪"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
-msgstr ""
+msgstr "如果已连接方向盘, 请使用方向盘而不是手柄."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "WHEELS"
-msgstr ""
+msgstr "方向盘"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE WHEELS"
-msgstr ""
+msgstr "使用方向盘"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -3746,7 +3746,7 @@ msgstr "Camputers Lynx 卡式磁带"
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Camputers Lynx floppies"
-msgstr ""
+msgstr "Camputers Lynx软盘"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -3766,7 +3766,7 @@ msgstr "Lynx 96k"
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Lynx 128k"
-msgstr ""
+msgstr "Lynx 128k"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7293,7 +7293,7 @@ msgstr "混合式底部比例4"
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
 msgid "GRAPHICS"
-msgstr ""
+msgstr "图形"
 
 #. TRANSLATION: citra, duckstation, melonds, pcsx2, scummvm, ...
 msgctxt "game_options"
@@ -7335,12 +7335,12 @@ msgctxt "game_options"
 msgid ""
 "Compile shaders using background threads to avoid shader compilation "
 "stutter. May cause graphical glitches."
-msgstr ""
+msgstr "使用后台线程编译着色器以避免着色器编译造成的卡顿, 可能会导致图形故障."
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "ENABLE ASYNC SHADER COMPILATION"
-msgstr ""
+msgstr "启用异步着色器编译"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7685,12 +7685,12 @@ msgctxt "game_options"
 msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
-msgstr ""
+msgstr "启用此选项将允许正确模拟纹理环绕效果, 但可能会导致性能下降."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "MANUAL TEXTURE SAMPLING"
-msgstr ""
+msgstr "手动纹理采样"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9857,11 +9857,13 @@ msgid ""
 "Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
 "use if you get no audio."
 msgstr ""
+"对于不支持32位音频的音频驱动程序, 可以使用16位音频样本. 只有在没有音频输出的"
+"情况下才应该使用此选项."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "CONVERT TO 16-BIT"
-msgstr ""
+msgstr "转换为16位"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9878,7 +9880,7 @@ msgctxt "game_options"
 msgid ""
 "Duration of audio buffer in milliseconds. Higher numbers may cause audio "
 "latency."
-msgstr ""
+msgstr "音频缓冲区的持续毫秒时间, 较高的数字可能会导致音频延迟."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9888,67 +9890,67 @@ msgstr "音频缓冲持续时间"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "10ms"
-msgstr ""
+msgstr "10毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "20ms"
-msgstr ""
+msgstr "20毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "40ms"
-msgstr ""
+msgstr "40毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "60ms"
-msgstr ""
+msgstr "60毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "80ms"
-msgstr ""
+msgstr "80毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "100ms (Default)"
-msgstr ""
+msgstr "100毫秒(默认)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "120ms"
-msgstr ""
+msgstr "120毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "140ms"
-msgstr ""
+msgstr "140毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "160ms"
-msgstr ""
+msgstr "160毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "180ms"
-msgstr ""
+msgstr "180毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "200ms"
-msgstr ""
+msgstr "200毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "220ms"
-msgstr ""
+msgstr "220毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "240ms"
-msgstr ""
+msgstr "240毫秒"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9966,17 +9968,17 @@ msgstr "启用时间拉伸"
 msgctxt "game_options"
 msgid ""
 "Buffer fill level (in percentage) below which time stretching will start."
-msgstr ""
+msgstr "缓冲区填充级别(百分比), 低于该级别将开始时间拉伸."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "TIME STRETCHING THRESHOLD"
-msgstr ""
+msgstr "时间拉伸阈值"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "75% (Default)"
-msgstr ""
+msgstr "75% (默认)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9991,9 +9993,9 @@ msgstr "图形用户界面"
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid ""
-"Default uses SDL2, otherwise enable controller specific capabilities. Sony "
-"DS won't work with clone controllers."
-msgstr ""
+"Enables controller specific capabilities. Sony DS won't work with clone "
+"controllers."
+msgstr "启用特定于控制器的功能. Sony DS无法与克隆控制器配合使用."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10002,8 +10004,8 @@ msgstr "PS3 控制器1"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
-msgid "Legacy Evdev"
-msgstr ""
+msgid "DirectInput"
+msgstr "直接输入"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -10858,12 +10860,12 @@ msgstr "隐藏NVIDIA GPU"
 msgctxt "game_options"
 msgid ""
 "NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
-msgstr ""
+msgstr "NVAPI是NVIDIA的核心软件, 允许直接访问NVIDIA GPU."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "ENABLE NVAPI"
-msgstr ""
+msgstr "启用NVAPI"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12434,16 +12436,6 @@ msgstr "快速菜单"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "快进"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Enables controller specific capabilities. Sony DS won't work with clone "
-#~ "controllers."
-#~ msgstr "启用特定于控制器的功能. Sony DS无法与克隆控制器配合使用."
-
-#~ msgctxt "game_options"
-#~ msgid "DirectInput"
-#~ msgstr "直接输入"
 
 #~ msgctxt "game_options"
 #~ msgid "Lynx 128k (Default)"
