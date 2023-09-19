@@ -310,9 +310,14 @@ def getGenerator(emulator):
     if emulator == 'vpinball':
         from generators.vpinball.vpinballGenerator import VPinballGenerator
         return VPinballGenerator()
+
     if emulator == 'applewin':
         from generators.applewin.applewinGenerator import AppleWinGenerator
         return AppleWinGenerator()
+
+    if emulator == 'corsixth':
+        from generators.corsixth.corsixthGenerator import CorsixTHGenerator
+        return CorsixTHGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator

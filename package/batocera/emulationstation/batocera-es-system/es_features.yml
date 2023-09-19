@@ -11046,6 +11046,17 @@ gzdoom:
         "OpenGL (Default)": 0
         "Vulkan":           1
 
+corsixth:
+  shared: [videomode]
+  features: [padtokeyboard]
+  cfeatures:
+    cth_new_graphics:
+      prompt: USE NEW GRAPHICS
+      description: Use new graphics created from CorsixTH project
+      choices:
+        "Enabled (Default)": "true"
+        "Disabled": "false"
+
 eduke32:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   features: []
