@@ -1,0 +1,12 @@
+config BR2_PACKAGE_INNOEXTRACT
+    bool "innoextract"
+    select BR2_PACKAGE_XZ
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_IOSTREAMS
+    select BR2_PACKAGE_BOOST_DATE_TIME
+    select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+
+    help
+      innoextract - A tool to unpack installers created by Inno Setup
+
+	    https://constexpr.org/innoextract/
