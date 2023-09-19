@@ -60,6 +60,18 @@ class CorsixTHGenerator(Generator):
         else:
           source_config_file.write("use_new_graphics = true\n")
 
+        # Values coming from ES configuration : Sandbox Mode
+        if system.isOptSet('cth_free_build_mode'):
+          source_config_file.write("free_build_mode = "+ system.config['cth_free_build_mode'] +"\n")
+        else:
+          source_config_file.write("free_build_mode = false\n")
+
+        # Values coming from ES configuration : Intro Movie
+        if system.isOptSet('cth_play_intro'):
+          source_config_file.write("play_intro = "+ system.config['cth_play_intro'] +"\n")
+        else:
+          source_config_file.write("play_intro = true\n")
+
         # Now auto-set the language from batocera ES locale
         # 1. Grab batocera system language
         language = 'en_US'
@@ -133,7 +145,7 @@ class CorsixTHGenerator(Generator):
             os.chdir(corsixthDataPath +"/MP3")
             source_config_file.write("audio_music = [[" + corsixthDataPath + "/MP3" +"]]\n")
         except:
-            eslog.warning("NOTICE: Audio system loaded, but found no background tracks. Missing MP3 folder")
+            eslog.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
 
         # Close config file as we are done
