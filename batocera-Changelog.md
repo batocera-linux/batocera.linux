@@ -79,8 +79,8 @@
 - duckstation to Aug 4, 2023 build
 - flycast to July 5th build
 - melonds to July 8th build
-- ppsspp to v1.16.1
-- lr-ppsspp to July 8th build
+- ppsspp to v1.16.2
+- lr-ppsspp to v1.16.2
 - xemu to v0.7.110
 - devilutionX to 1.5.0
 - ScummVM (standalone and libretro core) to July 18th build
