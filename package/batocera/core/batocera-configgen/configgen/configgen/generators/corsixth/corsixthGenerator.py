@@ -73,70 +73,37 @@ class CorsixTHGenerator(Generator):
           source_config_file.write("play_intro = true\n")
 
         # Now auto-set the language from batocera ES locale
+        language_mapping = {
+            'en_US': 'en',
+            'en_GB': 'en',
+            'fr_FR': 'fr',
+            'oc_FR': 'fr',
+            'de_DE': 'de',
+            'es_ES': 'es',
+            'es_MX': 'es',
+            'it_IT': 'it',
+            'nl_NL': 'nl',
+            'ru_RU': 'ru',
+            'sv_SE': 'sv',
+            'cs_CZ': 'cs',
+            'fi_FI': 'fi',
+            'pl_PL': 'pl',
+            'hu_HU': 'hu',
+            'pt_PT': 'pt',
+            'pt_BR': 'br',
+            'zh_CN': 'zhs',
+            'zh_TW': 'zht',
+            'ko_KR': 'ko',
+            'nb_NO': 'nb',
+            'nn_NO': 'nb',
+        }
         # 1. Grab batocera system language
-        language = 'en_US'
-        corsixthLanguage = 'en'
         try:
             language = subprocess.check_output("batocera-settings-get system.language", shell=True, text=True).strip()
         except subprocess.CalledProcessError:
             language = 'en_US'
         # 2. Map it
-        # English = en
-        if language == 'en_US' or language == 'en_GB':
-            corsixthLanguage = 'en'
-        # French = fr
-        elif language == 'fr_FR' or language == 'oc_FR':
-            corsixthLanguage = 'fr'
-        # German = de
-        elif language == 'de_DE':
-            corsixthLanguage = 'de'
-        # Spanish = es
-        elif language == 'es_ES' or language == 'es_MX':
-            corsixthLanguage = 'es'
-        # Italian = it
-        elif language == 'it_IT':
-            corsixthLanguage = 'it'
-        # Dutch = nl
-        elif language == 'nl_NL':
-            corsixthLanguage = 'nl'
-        # Russian = ru
-        elif language == 'ru_RU':
-            corsixthLanguage = 'ru'
-        # Swedish = sv
-        elif language == 'sv_SE':
-            corsixthLanguage = 'sv'
-        # Czech = cs
-        elif language == 'cs_CZ':
-            corsixthLanguage = 'cs'
-        # Finnish = fi
-        elif language == 'fi_FI':
-            corsixthLanguage = 'fi'
-        # Polish = pl
-        elif language == 'pl_PL':
-            corsixthLanguage = 'pl'
-        # Hungarian = hu
-        elif language == 'hu_HU':
-            corsixthLanguage = 'hu'
-        # Portuguese = pt
-        elif language == 'pt_PT':
-            corsixthLanguage = 'pt'
-        # Brazilian Portuguese = br
-        elif language == 'pt_BR':
-            corsixthLanguage = 'br'
-        # Chinese (simplified) = zhs
-        elif language == 'zh_CN':
-            corsixthLanguage = 'zhs'
-        # Chinese (traditional) = zht
-        elif language == 'zh_TW':
-            corsixthLanguage = 'zht'
-        # Korean = ko
-        elif language == 'ko_KR':
-            corsixthLanguage = 'ko'
-        # Norwegian = nb
-        elif language == 'nb_NO' or language == 'nn_NO':
-            corsixthLanguage = 'nb'
-        # Danish = da
-        # TODO
+        corsixthLanguage = language_mapping.get(language, 'en')
         # 3. Write it
         source_config_file.write("language = [[" + corsixthLanguage +"]]\n")
 
@@ -158,4 +125,5 @@ class CorsixTHGenerator(Generator):
             array=commandArray,
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
-            })
+            }
+        )
