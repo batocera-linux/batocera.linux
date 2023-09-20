@@ -202,9 +202,6 @@ def configPadsIni(system, rom, playersControllers, guns, altControl):
     for section in targetConfig.sections():
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
         if section.strip() in [ "Global", romBase ]:
-            # force an input section
-            if section.strip() != "Global":
-                targetConfig.set(section, "InputSystem", "to be defined")
             for key, value in targetConfig.items(section):
                 if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
                     if key == "InputSystem":
