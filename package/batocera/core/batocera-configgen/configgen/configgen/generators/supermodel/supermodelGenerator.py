@@ -213,11 +213,11 @@ def configPadsIni(system, playersControllers, guns, altControl):
                 elif key == "InputOffscreen" or key == "InputAnalogTriggerRight":
                     targetConfig.set(section, key, "MOUSE1_RIGHT_BUTTON")
                 elif key == "InputStart1":
-                    targetConfig.set(section, key, "MOUSE1_BUTTONX1,JOY1_BUTTON9")
+                    targetConfig.set(section, key, "MOUSE1_BUTTONX1," + transformElement("JOY1_BUTTON9", playersControllers, mapping, mapping_fallback))
                 elif key == "InputCoin1":
-                    targetConfig.set(section, key, "MOUSE1_BUTTONX2,JOY1_BUTTON10")
+                    targetConfig.set(section, key, "MOUSE1_BUTTONX2," + transformElement("JOY1_BUTTON10", playersControllers, mapping, mapping_fallback))
                 elif key == "InputAnalogJoyEvent":
-                    targetConfig.set(section, key, "KEY_S,JOY_BUTTON2,MOUSE1_MIDDLE_BUTTON")
+                    targetConfig.set(section, key, "KEY_S,MOUSE1_MIDDLE_BUTTON," + transformElement("JOY1_BUTTON2", playersControllers, mapping, mapping_fallback))
                 elif len(guns) >= 2:
                     if key == "InputGunX2" or key == "InputAnalogGunX2":
                         targetConfig.set(section, key, "MOUSE2_XAXIS")
@@ -228,11 +228,11 @@ def configPadsIni(system, playersControllers, guns, altControl):
                     elif key == "InputOffscreen2" or key == "InputAnalogTriggerRight2":
                         targetConfig.set(section, key, "MOUSE2_RIGHT_BUTTON")
                     elif key == "InputStart2":
-                        targetConfig.set(section, key, "MOUSE2_BUTTONX1,JOY2_BUTTON9")
+                        targetConfig.set(section, key, "MOUSE2_BUTTONX1," + transformElement("JOY2_BUTTON9", playersControllers, mapping, mapping_fallback))
                     elif key == "InputCoin1":
-                        targetConfig.set(section, key, "MOUSE2_BUTTONX2,JOY1_BUTTON10")
+                        targetConfig.set(section, key, "MOUSE2_BUTTONX2," + transformElement("JOY2_BUTTON10", playersControllers, mapping, mapping_fallback))
                     elif key == "InputAnalogJoyEvent2":
-                        targetConfig.set(section, key, "JOY2_BUTTON2,MOUSE2_MIDDLE_BUTTON")
+                        targetConfig.set(section, key, "MOUSE2_MIDDLE_BUTTON," + transformElement("JOY2_BUTTON2", playersControllers, mapping, mapping_fallback))
             else:
                 if key == "InputSystem":
                     targetConfig.set(section, key, "sdl")
