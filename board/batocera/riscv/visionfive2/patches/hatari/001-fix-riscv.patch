@@ -1,0 +1,33 @@
+--- a/src/debug/debugcpu.c	2022-08-03 22:10:30.000000000 +0200
++++ b/src/debug/debugcpu.c	2023-09-21 00:17:39.817637508 +0200
+@@ -325,7 +325,7 @@
+ 	{
+ 		if (r1 >= 0 && r1 <= 7)
+ 		{
+-			*addr = &(regs.regs[REG_A0 + r1]);
++			*addr = &(regs.regs[_REG_A0 + r1]);
+ 			return 32;
+ 		}
+ 		fprintf(stderr,"\tBad address register, valid values are 0-7\n");
+--- a/src/gemdos.c	2022-08-03 22:10:30.000000000 +0200
++++ b/src/gemdos.c	2023-09-21 00:18:04.546141891 +0200
+@@ -4400,7 +4400,7 @@
+ 	errcode = GemDOS_LoadAndReloc(sFileName, Regs[REG_D0], false);
+ 	if (errcode)
+ 	{
+-		Regs[REG_A0] = Regs[REG_D0];
++		Regs[_REG_A0] = Regs[REG_D0];
+ 		Regs[REG_D0] = errcode;
+ 		sr &= ~SR_ZERO;
+ 	} else if (mode == 0)
+--- a/src/includes/m68000.h	2022-08-03 22:10:30.000000000 +0200
++++ b/src/includes/m68000.h	2023-09-21 00:17:54.309933089 +0200
+@@ -36,7 +36,7 @@
+   REG_D5,
+   REG_D6,
+   REG_D7,    /* ..D7 */
+-  REG_A0,    /* A0.. */
++  _REG_A0,    /* A0.. */
+   REG_A1,
+   REG_A2,
+   REG_A3,
