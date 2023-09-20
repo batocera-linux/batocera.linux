@@ -31,7 +31,7 @@ f_minTomaxResolution() {
         MAXHEIGHT="$MHEIGHT"
     # check if a resolution is set
     elif [ -n "${BOOTRESOLUTION}" ]; then
-        RESOLUTION=$(echo "$BOOTRESOLUTION" | cut -d '.' -f 1)
+        RESOLUTION=$(echo "$BOOTRESOLUTION" | sed 's/max-//;s/\..*//')
         MAXWIDTH=$(echo "$RESOLUTION" | cut -d 'x' -f 1)
         MAXHEIGHT=$(echo "$RESOLUTION" | cut -d 'x' -f 2)
         # Extract refresh rate if present
