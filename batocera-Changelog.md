@@ -84,7 +84,7 @@
 - xemu to v0.7.110
 - devilutionX to 1.5.0
 - ScummVM (standalone and libretro core) to July 18th build
-- redream to 1.5.0-1079-g5ac7859
+- redream to 1.5.0-1080
 - kodi to 20.2
 - EDuke32 to July, 3th 2023
 - OpenMSX to v19.1
