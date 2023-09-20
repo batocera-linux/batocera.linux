@@ -202,15 +202,22 @@ def configPadsIni(system, rom, playersControllers, guns, altControl):
     for section in targetConfig.sections():
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
         if section.strip() in [ "Global", romBase ]:
+            # for an input sytem
+            if section.strip() != "Global":
+                targetConfig.set(section, "InputSystem", "to be defined")
             for key, value in targetConfig.items(section):
                 if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
                     if key == "InputSystem":
                         targetConfig.set(section, key, "evdev")
+                    elif key == "InputAnalogJoyX":
+                        targetConfig.set(section, key, "MOUSE1_XAXIS_INV")
+                    elif key == "InputAnalogJoyY":
+                        targetConfig.set(section, key, "MOUSE1_YAXIS_INV")
                     elif key == "InputGunX" or key == "InputAnalogGunX":
                         targetConfig.set(section, key, "MOUSE1_XAXIS")
                     elif key == "InputGunY" or key == "InputAnalogGunY":
                         targetConfig.set(section, key, "MOUSE1_YAXIS")
-                    elif key == "InputTrigger" or key == "InputAnalogTriggerLeft":
+                    elif key == "InputTrigger" or key == "InputAnalogTriggerLeft" or key == "InputAnalogJoyTrigger":
                         targetConfig.set(section, key, "MOUSE1_LEFT_BUTTON")
                     elif key == "InputOffscreen" or key == "InputAnalogTriggerRight":
                         targetConfig.set(section, key, "MOUSE1_RIGHT_BUTTON")
@@ -221,11 +228,15 @@ def configPadsIni(system, rom, playersControllers, guns, altControl):
                     elif key == "InputAnalogJoyEvent":
                         targetConfig.set(section, key, "KEY_S,MOUSE1_MIDDLE_BUTTON," + transformElement("JOY1_BUTTON2", playersControllers, mapping, mapping_fallback))
                     elif len(guns) >= 2:
-                        if key == "InputGunX2" or key == "InputAnalogGunX2":
+                        if key == "InputAnalogJoyX2":
+                            targetConfig.set(section, key, "MOUSE2_XAXIS_INV")
+                        elif key == "InputAnalogJoyY2":
+                            targetConfig.set(section, key, "MOUSE2_YAXIS_INV")
+                        elif key == "InputGunX2" or key == "InputAnalogGunX2":
                             targetConfig.set(section, key, "MOUSE2_XAXIS")
                         elif key == "InputGunY2" or key == "InputAnalogGunY2":
                             targetConfig.set(section, key, "MOUSE2_YAXIS")
-                        elif key == "InputTrigger2" or key == "InputAnalogTriggerLeft2":
+                        elif key == "InputTrigger2" or key == "InputAnalogTriggerLeft2" or key == "InputAnalogJoyTrigger2":
                             targetConfig.set(section, key, "MOUSE2_LEFT_BUTTON")
                         elif key == "InputOffscreen2" or key == "InputAnalogTriggerRight2":
                             targetConfig.set(section, key, "MOUSE2_RIGHT_BUTTON")
