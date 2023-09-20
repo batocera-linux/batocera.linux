@@ -31,6 +31,10 @@ class OpenmsxGenerator(Generator):
         # create folder if needed
         if not os.path.isdir(openMSX_Homedir):
             os.mkdir(openMSX_Homedir)
+        
+        # screenshot folder
+        if not os.path.isdir("/userdata/screenshots/openmsx"):
+            os.mkdir("/userdata/screenshots/openmsx")
 
         # copy files if needed
         if not os.path.exists(share_dir):
@@ -88,6 +92,10 @@ class OpenmsxGenerator(Generator):
             file.write("\n")
             file.write("# -= Save state =-\n")
             file.write('savestate "{}"\n'.format(save_name))
+            # set the screenshot
+            file.write("\n")
+            file.write("# -= Screenshots =-\n")
+            file.write('bind F5 {screenshot [utils::get_next_numbered_filename /userdata/screenshots/openmsx "[guess_title] " ".png"]}\n')
             # setup the controller
             file.write("\n")
             file.write("# -= Controller config =-\n")
@@ -104,8 +112,6 @@ class OpenmsxGenerator(Generator):
                             file.write('bind "joy{} button{} down" "keymatrixdown 6 0x40"\n'.format(nplayer, input.id))
                         if input.name == "x":
                             file.write('bind "joy{} button{} down" "keymatrixdown 6 0x80"\n'.format(nplayer, input.id))
-                        if input.name == "pageup":
-                            file.write('bind "joy{} button{} down" "screenshot -raw"\n'.format(nplayer, input.id))
                         if input.name == "pagedown":
                             file.write('bind "joy{} button{} up" "set fastforward off"\n'.format(nplayer, input.id))
                             file.write('bind "joy{} button{} down" "set fastforward on"\n'.format(nplayer, input.id))
