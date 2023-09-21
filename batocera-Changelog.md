@@ -1,4 +1,4 @@
-# 2023/xx/xx - batocera.linux 38 -
+# 2023/xx/xx - batocera.linux 38 - Blue Moon
 ### Hardware
 - Added support for:
   - Orange Pi 5B
