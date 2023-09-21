@@ -756,7 +756,7 @@ libretro:
       shared: [autosave]
       cfeatures:
                     wii_resolution:
-                        prompt:      RENDERING RESOLUTION
+                        prompt: RENDERING RESOLUTION
                         description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                         choices:
                             "1x native (640x528)":  'x1 (640 x 528)'
@@ -766,7 +766,7 @@ libretro:
                             "5x (3200x2640)":       'x5 (3200 x 2640)'
                             "6x 4K (3840x3168)":    'x6 (3840 x 3168)'
                     wii_language:
-                        prompt:      LANGUAGE
+                        prompt: LANGUAGE
                         description: Wii NAND's language setting.
                         choices:
                             "English":             English
@@ -780,10 +780,10 @@ libretro:
                             "Traditional Chinese": Traditional Chinese
                             "Korean":              Korean
                     wii_widescreen_hack:
-                        prompt:      WIDESCREEN HACK (GLITCHY)
+                        prompt: WIDESCREEN HACK (GLITCHY)
                         description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
                         choices:
-                            "Off":   disabled
+                            "Off": disabled
                             "On":  enabled
                     wii_shader_mode:
                         group: ADVANCED OPTIONS
@@ -804,6 +804,13 @@ libretro:
                             "4x":   4x
                             "8x":   8x
                             "16x":  16x
+                    wii_osd:
+                        group: ADVANCED OPTIONS
+                        prompt: OSD MESSAGES
+                        description: Enables or disable on screen messages.
+                        choices:
+                            "Disabled": disabled
+                            "Enabled":  enabled
       systems:
             wii:
                 cfeatures:
