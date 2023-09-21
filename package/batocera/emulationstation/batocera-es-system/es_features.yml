@@ -4122,6 +4122,15 @@ libretro:
       features: [cheevos]
       shared: [autosave]
       cfeatures:
+            parallel-n64-gfxplugin:
+                prompt: GRAPHICS PLUGIN
+                description: Choose the Parallel N64 graphics plugin.
+                choices:
+                    "Glide64":   glide64
+                    "Gln64":     gln64
+                    "Rice":      rice
+                    "Angrylion": angrylion
+                    "Parallel":  parallel            
             parallel-n64-screensize:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
