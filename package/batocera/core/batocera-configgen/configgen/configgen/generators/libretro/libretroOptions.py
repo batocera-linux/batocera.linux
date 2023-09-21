@@ -1129,6 +1129,15 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
         coreSettings.save('parallel-n64-boot-device',   '"Default"')
 
+        # Graphics Plugin
+        if system.isOptSet('parallel-n64-gfxplugin'):
+            coreSettings.save('parallel-n64-gfxplugin', '"' + system.config['parallel-n64-gfxplugin'] + '"')
+        else:
+            # vulkan doesn't work with auto
+            if system.isOptSet('gfxbackend') and system.config['gfxbackend'] == "vulkan":
+                coreSettings.save('parallel-n64-gfxplugin', '"parallel"')
+            else:
+                coreSettings.save('parallel-n64-gfxplugin', '"auto"')
         # Video Resolution
         if system.isOptSet('parallel-n64-screensize'):
             coreSettings.save('parallel-n64-screensize', '"' + system.config['parallel-n64-screensize'] + '"')
