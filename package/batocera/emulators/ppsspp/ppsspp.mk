@@ -3,8 +3,8 @@
 # ppsspp
 #
 ################################################################################
-# Version: Release on Sep 19, 2023
-PPSSPP_VERSION = v1.16.2
+# Version: Release on Sep 22, 2023
+PPSSPP_VERSION = v1.16.3
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
