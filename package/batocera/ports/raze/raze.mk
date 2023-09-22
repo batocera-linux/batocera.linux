@@ -34,22 +34,19 @@ endif
 
 define RAZE_COPY_GENERATED_HEADERS
 	mkdir -p $(RAZE_BUILDDIR)/libraries/gdtoa/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/arith_$(RAZE_GENERATED_HEADER_SUFFIX).h $(RAZE_BUILDDIR)/libraries/gdtoa/arith.h
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/gd_qnan_$(RAZE_GENERATED_HEADER_SUFFIX).h $(RAZE_BUILDDIR)/libraries/gdtoa/gd_qnan.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/arith_$(RAZE_GENERATED_HEADER_SUFFIX).h \
+        $(RAZE_BUILDDIR)/libraries/gdtoa/arith.h
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/gd_qnan_$(RAZE_GENERATED_HEADER_SUFFIX).h \
+        $(RAZE_BUILDDIR)/libraries/gdtoa/gd_qnan.h
 endef
 
 RAZE_PRE_CONFIGURE_HOOKS += RAZE_COPY_GENERATED_HEADERS
 
 # ZVulkan has an X11 dependency
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    ifeq ($(BR2_PACKAGE_XORG7),y)
-        RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
-        HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
-        RAZE_DEPENDENCIES += vulkan-headers vulkan-loader
-    else
-        RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
-        HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
-    endif
+    RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
+    HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
+    RAZE_DEPENDENCIES += vulkan-headers vulkan-loader
 else
     RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
     HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
@@ -60,15 +57,22 @@ ifeq ($(BR2_PACKAGE_BATOCERA_GLES3)$(BR2_PACKAGE_BATOCERA_GLES2),y)
     RAZE_DEPENDENCIES += libgles
 else
     RAZE_CONF_OPTS += -DHAVE_GLES2=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
     RAZE_DEPENDENCIES += libgl
 endif
 
 define RAZE_INSTALL_TARGET_CMDS
-    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/raze $(TARGET_DIR)/usr/bin/raze
-    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/raze.pk3 $(TARGET_DIR)/usr/share/raze/raze.pk3
-    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/soundfonts/raze.sf2 $(TARGET_DIR)/usr/share/raze/soundfonts/raze.sf2
+    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/raze \
+        $(TARGET_DIR)/usr/bin/raze
+    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/raze.pk3 \
+        $(TARGET_DIR)/usr/share/raze/raze.pk3
+    $(INSTALL) -D -m 0755 $(@D)/buildroot-build/soundfonts/raze.sf2 \
+        $(TARGET_DIR)/usr/share/raze/soundfonts/raze.sf2
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/raze.keys $(TARGET_DIR)/usr/share/evmapy
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/raze.keys \
+        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
