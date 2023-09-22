@@ -368,7 +368,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
     else:
         pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", "false")
     # OSD messages
-        if system.isOptSet('pcsx2_osd_messages'):
+    if system.isOptSet('pcsx2_osd_messages'):
         pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", system.config["pcsx2_osd_messages"])
     else:
         pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", "false")
