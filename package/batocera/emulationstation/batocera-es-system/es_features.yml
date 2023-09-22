@@ -7852,6 +7852,13 @@ pcsx2:
       shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels]
       features: [cheevos]
       cfeatures:
+        pcsx2_osd_messages:
+            submenu: DISPLAY
+            prompt: OSD MESSAGES
+            description: Display on screen information like savestate, config warning etc...
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
         pcsx2_ratio:
             submenu: DISPLAY
             prompt: GAME ASPECT RATIO
