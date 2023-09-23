@@ -16,4 +16,4 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
     # button_8 / right
 
 DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
-evsieve --input "${DEVNAME}" persist=exit --map btn:middle btn:1 --map btn:right btn:middle --map key:1 btn:3 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --map btn:c btn:right --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
+evsieve --input "${DEVNAME}" persist=exit --map btn:middle btn:1 --map btn:right btn:middle --map key:1 btn:3 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --map btn:side btn:right --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
