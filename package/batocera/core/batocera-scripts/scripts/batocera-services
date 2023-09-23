@@ -53,14 +53,14 @@ do_list() {
 		then
 		    printf "%-10s %s\n" "${SNAME}" "*"
 		else
-		    printf "%s %s\n" "${SNAME}" "*"
+		    printf "%s;%s\n" "${SNAME}" "*"
 		fi
 	    else
 		if test -t 1
 		then
 		    printf "%-10s %s\n" "${SNAME}" "-"
 		else
-	    	    printf "%s %s\n" "${SNAME}" "-"
+	    	    printf "%s;%s\n" "${SNAME}" "-"
 		fi
 	    fi
 	done
