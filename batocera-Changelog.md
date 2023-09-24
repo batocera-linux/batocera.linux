@@ -41,7 +41,8 @@
 - Fixed crop overscan settings for NES to work with newer core builds
 - DVD playback in Kodi
 - Workaround BT firmware for Intel AX101 chipset
-- Fix Star Wars Trilogy (supermodel) not working with the light gun
+- Fixed Star Wars Trilogy (supermodel) light gun controls
+- Fixed Endgame (pcsx2) light gun controls
 - Mame2003plus light gun controls properly mapped
 - Libretro-swanstation light gun controls properly mapped
 - Sinden Lightgun will now start when booting Batocera
