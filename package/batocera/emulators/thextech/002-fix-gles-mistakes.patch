@@ -1,0 +1,30 @@
+--- a/src/core/opengl/render_gl_backend.cpp	2023-08-26 19:42:51.000000000 +0200
++++ b/src/core/opengl/render_gl_backend.cpp	2023-09-24 12:25:08.628141009 +0200
+@@ -34,6 +34,10 @@
+ #endif
+ 
+ 
++#ifndef GL_STREAM_DRAW
++#define GL_STREAM_DRAW 0x88E0
++#endif
++
+ // arguments
+ constexpr bool s_prefer_fb_copyTex = false;
+ static int s_num_pass = 2;
+--- a/src/core/opengl/render_gl_frontend.cpp	2023-08-26 19:42:51.000000000 +0200
++++ b/src/core/opengl/render_gl_frontend.cpp	2023-09-24 12:28:15.656541030 +0200
+@@ -234,12 +234,13 @@
+             m_vertex_buffer[i] = 0;
+     }
+ 
++#ifdef RENDERGL_HAS_SHADERS
+     if(m_light_ubo)
+     {
+         glDeleteBuffers(1, &m_light_ubo);
+         m_light_ubo = 0;
+     }
+-
++#endif
+ #endif
+ 
+ #ifdef RENDERGL_HAS_VAO
