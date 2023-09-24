@@ -77,6 +77,10 @@ def generateRetroarchCustom():
 
     # Disable builtin image viewer (done in ES, and prevents from loading pico-8 .png carts)
     retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
+    
+    # Set fps counter interval (in frames)
+    retroarchSettings.save('fps_update_interval',               '"30"')
+    
 
     retroarchSettings.write()
 
