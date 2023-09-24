@@ -253,25 +253,11 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
     if not pcsx2INIConfig.has_section("Filenames"):
         pcsx2INIConfig.add_section("Filenames")
     
-    # Find the first BIOS
-    bios_filenames = [
-        "SCPH30004R.bin",
-        "PS2 Bios 30004R V6 Pal.bin",
-        "scph39001.bin",
-        "SCPH-70004_BIOS_V12_PAL_200.BIN",
-        "scph10000.bin"
-    ]
-
-    for bio in bios_filenames:
-        if os.path.exists(os.path.join(bios_directory, bio)):
-            bios_file = bio
-            bios_found = True
-            break
-    
-    if not bios_found:
-        raise Exception("No bios found")
-    
-    pcsx2INIConfig.set("Filenames", "BIOS", bios_file)
+    # Bios File
+    if system.isOptSet('pcsx2_bios'):
+        pcsx2INIConfig.set("Filenames", "BIOS", system.config["pcsx2_bios"])
+    else:
+        pcsx2INIConfig.set("Filenames", "BIOS", "scph39001.bin")
 
     ## [EMUCORE/GS]
     if not pcsx2INIConfig.has_section("EmuCore/GS"):

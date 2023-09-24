@@ -8024,6 +8024,12 @@ pcsx2:
                 "None":              0
                 "Partial":           1
                 "Full (Hash Cache)": 2
+        pcsx2_bios:
+            prompt: PS2 BIOS
+            description: Choose PS2 Bios to use (USA Recommended)
+            choices:
+                "USA (Default)": "scph39001.bin"
+                "Europe":        "SCPH30004R.bin"
         pcsx2_fastboot:
             prompt: SHOW BIOS BOOTLOGO
             description: Some games have issues when the animation is shown, others require it.
