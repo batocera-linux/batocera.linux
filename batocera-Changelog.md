@@ -14,7 +14,7 @@
 - Remaining battery life in batocera-info (f2)
 - Libretro core boom3, A Doom 3 port
 - Libretro core reminiscence, A Flashback port
-- libretro core openlara, An original Tomb Raider port
+- Libretro core openlara, An original Tomb Raider port
 - Mosquitto client command line tools
 - ES you can now change the resolution from developer menu
 - Xenia canary can now apply patches and load ZAR (ZArchive) files
@@ -31,10 +31,10 @@
 - Added Tyrian, a vertical shooter (through content downloader)
 - Re-enabled lr-sameduck for MegaDuck with retroachievements and zip/7z support
 - Initialize wheel support : new automatic collection ; es wheel icon ; wheel game database
-- ps2 native wheel support with force feedback
+- Ps2 native wheel support with force feedback
 - Guncon3 support
 - Plane mode (enable/disable wifi/bt on the fly)
-- hatariB libretro core
+- HatariB libretro core
 - Better Chromebook audio support
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
@@ -107,8 +107,9 @@
 ### Dev
 - linux kernel for x86_64 to 6.5
 - linux kernel for RPI to 6.1.47
-- linux kernel for most ARM SBCs to 6.1.51
+- linux kernel for most ARM SBCs to 6.1.55
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.12
+- linux kernel for S812 to 6.3
 - xf86-video-amdgpu to 23.0.0
 - xf86-video-ati to 22.0.0
 - xwayland to 23.1.2
