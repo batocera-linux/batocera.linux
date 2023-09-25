@@ -11116,6 +11116,13 @@ raze:
   shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   features: [padtokeyboard]
   cfeatures:
+    raze_api:
+      prompt: GRAPHICS API
+      description: Choose which graphics API library to use.
+      choices:
+        "OpenGL (x86 only)":  0
+        "Vulkan":             1
+        "OpenGLES (Default)": 2
     nologo:
       prompt: SKIP INTRO VIDEOS
       choices:
