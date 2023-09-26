@@ -499,7 +499,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         elif systemConfig['ratio'] == "custom":
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
         else:
-            retroarchConfig['video_aspect_ratio_auto'] = 'true'
+            retroarchConfig['video_aspect_ratio_auto'] = 'false'
             retroarchConfig['aspect_ratio_index'] = '22'
 
     # Rewind option
