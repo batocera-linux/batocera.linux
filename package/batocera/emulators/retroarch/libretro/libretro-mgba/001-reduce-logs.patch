@@ -1,0 +1,17 @@
+diff --git a/src/gba/dma.c b/src/gba/dma.c
+index a5d94dd..80e9df5 100644
+--- a/src/gba/dma.c
++++ b/src/gba/dma.c
+@@ -96,9 +96,9 @@ uint16_t GBADMAWriteCNT_HI(struct GBA* gba, int dma, uint16_t control) {
+ 		if (currentDma->nextDest & (width - 1)) {
+ 			mLOG(GBA_DMA, GAME_ERROR, "Misaligned DMA destination address: 0x%08X", currentDma->nextDest);
+ 		}
+-		mLOG(GBA_DMA, INFO, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
+-		     currentDma->nextSource, currentDma->nextDest,
+-		     currentDma->reg, currentDma->count & 0xFFFF);
++		//mLOG(GBA_DMA, INFO, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
++		//     currentDma->nextSource, currentDma->nextDest,
++		//     currentDma->reg, currentDma->count & 0xFFFF);
+ 
+ 		currentDma->nextSource &= -width;
+ 		currentDma->nextDest &= -width;
