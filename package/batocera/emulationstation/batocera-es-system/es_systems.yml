@@ -579,12 +579,13 @@ sg1000:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 multivision:
-  name:       Othello Multivision
+  name: Othello Multivision
   manufacturer: Tsukuda Original
   release: 1983
   hardware: console
   extensions: [bin, sg, zip, 7z]
-  theme:      multivision
+  platform: sg-1000
+  theme: multivision
   emulators:
     libretro:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
