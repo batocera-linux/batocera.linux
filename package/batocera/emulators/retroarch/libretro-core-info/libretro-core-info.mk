@@ -23,6 +23,7 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_fast_libretro.info    pce_fast_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_libretro.info         pce_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pcfx_libretro.info        pcfx_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2002_libretro.info           pocketsnes_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2010_libretro.info           snes9x_next_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf vbam_libretro.info                 vba-m_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_vb_libretro.info          vb_libretro.info
