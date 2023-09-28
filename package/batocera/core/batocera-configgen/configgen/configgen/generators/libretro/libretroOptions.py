@@ -652,7 +652,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('wii_osd'):
             coreSettings.save('dolphin_osd_enabled', '"' + system.config['wii_osd'] + '"')
         else:
-            coreSettings.save('dolphin_osd_enabled', '"disabled"')
+            coreSettings.save('dolphin_osd_enabled', '"enabled"')
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
