@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Batocera\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-05 13:13+0100\n"
-"PO-Revision-Date: 2023-09-27 15:04+0200\n"
+"PO-Revision-Date: 2023-09-28 13:11+0200\n"
 "Last-Translator: Roman Paholik <wizzardsk@gmail.com>\n"
 "Language-Team: Slovak (Slovakia)\n"
 "Language: sk_SK\n"
@@ -369,10 +369,9 @@ msgid "USE LIGHT GUNS"
 msgstr "Použiť svetelné pištole"
 
 #. TRANSLATION: shared
-#, fuzzy
 msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
-msgstr "Použiť svetelné pištole namiesto ovládačov, ak sú pripojené."
+msgstr "Použiť kolieska namiesto ovládačov, ak sú pripojené."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -597,7 +596,7 @@ msgstr "Znížiť blikanie spritov"
 #. TRANSLATION: libretro/bsnes, libretro/snes9x, libretro/snes9x_next
 msgctxt "game_options"
 msgid "Apply a video filter to mimic various NTSC TV signals."
-msgstr ""
+msgstr "Použiť video filter na napodobnenie rôznych TV signálov NTSC."
 
 #. TRANSLATION: libretro/bsnes
 msgctxt "game_options"
@@ -1350,10 +1349,9 @@ msgid "ANISOTROPIC FILTERING"
 msgstr "Anizotropické filtrovanie"
 
 #. TRANSLATION: libretro/dolphin
-#, fuzzy
 msgctxt "game_options"
 msgid "Enables or disable on screen messages."
-msgstr "Zakázať správy na obrazovke"
+msgstr "Povolí alebo zakáže správy na obrazovke."
 
 #. TRANSLATION: libretro/dolphin, pcsx2
 msgctxt "game_options"
@@ -1988,6 +1986,8 @@ msgid ""
 "Enable Gravis Utrasound emulation. Ensure the ULTRASND folder is in the root "
 "of your <game>.pc rom folder."
 msgstr ""
+"Povoliť emuláciu Gravis Utrasound. Uistite sa, že priečinok ULTRASND je v "
+"koreňovom adresári vášho priečinka .pc rom <game>."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -2940,7 +2940,7 @@ msgstr "Rozšírená obrazovka"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired Atari machine type."
-msgstr ""
+msgstr "Vyberte želaný typ stroja Atari."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -2980,7 +2980,7 @@ msgstr "Falcon"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired Atari CPU type."
-msgstr ""
+msgstr "Vyberte želaný typ CPU Atari."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -2990,7 +2990,7 @@ msgstr "Typ Atari CPU"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired Atari CPU clock rate."
-msgstr ""
+msgstr "Vyberte želanú rýchlosť CPU Atari."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3015,12 +3015,12 @@ msgstr "32 MHz"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired Atari ST memory size."
-msgstr ""
+msgstr "Vyberte želanú veľkosť pamäte Atari ST."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "ATARI ST MEMORY SIZE"
-msgstr ""
+msgstr "Veľkosť pamäte Atari ST"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3070,7 +3070,7 @@ msgstr "14 MB"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired Atari Monitor."
-msgstr ""
+msgstr "Vyberte želaný monitor Atari."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3078,15 +3078,14 @@ msgid "ATARI MONITOR TYPE"
 msgstr "Typ Atari monitora"
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "Monochrome High-Resolution"
-msgstr "Režim vysokého rozlíšenia"
+msgstr "Monochromatické vysoké rozlíšenie"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "RGB Colour Low/Medium-Resolution"
-msgstr ""
+msgstr "RGB farebné nízke/stredné rozlíšenie"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3094,10 +3093,9 @@ msgid "TV"
 msgstr "TV"
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "Choose your desired pixel aspect ratio."
-msgstr "Vyberte preferovaný pomer strán."
+msgstr "Vyberte preferovaný pomer strán bodu."
 
 #. TRANSLATION: libretro/hatarib, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, ...
 msgctxt "game_options"
@@ -3130,6 +3128,8 @@ msgid ""
 "Atari ST monitors had a visible border around the main screen area, but most "
 "software does not display anything in it."
 msgstr ""
+"Monitory Atari ST mali viditeľný okraj okolo oblasti hlavnej obrazovky, no "
+"väčšina softvéru v ňom nič nezobrazuje."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3154,13 +3154,12 @@ msgstr "Orezať 1080p (270, 540)"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired pause screen display type."
-msgstr ""
+msgstr "Vyberte požadovaný typ zobrazenia obrazovky s pozastavením."
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "PAUSE SCREEN DISPLAY"
-msgstr "Pozastaviť na preloženej obrazovke"
+msgstr "Zobrazenie pri pozastavení"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3168,16 +3167,14 @@ msgid "Help and Information"
 msgstr "Pomocník a informácie"
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "Floppy Disk List"
-msgstr "Pružný disk"
+msgstr "Zoznam pružných diskov"
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "Bouncing Box"
-msgstr "Krabica"
+msgstr "Skákací box"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3190,10 +3187,9 @@ msgid "Darken"
 msgstr "Stmaviť"
 
 #. TRANSLATION: libretro/hatarib
-#, fuzzy
 msgctxt "game_options"
 msgid "No Indicator"
-msgstr "Zobraziť indikátor siete"
+msgstr "Žiadny indikátor"
 
 #. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
 msgctxt "game_options"
@@ -3796,10 +3792,9 @@ msgid "Camputers Lynx cassettes"
 msgstr "Camputers Lynx kazety"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
-#, fuzzy
 msgctxt "game_options"
 msgid "Camputers Lynx floppies"
-msgstr "Camputers Lynx kazety"
+msgstr "Camputers Lynx diskety"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4738,6 +4733,8 @@ msgid ""
 "Useful for N64 style controllers. Limited hotkeys for controllers without "
 "dedicated hotkey."
 msgstr ""
+"Užitočné pre ovládače štýlu N64. Obmedzené klávesové skratky pre ovládače "
+"bez vyhradenej klávesovej skratky."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
@@ -4760,15 +4757,14 @@ msgid "N64"
 msgstr "N64"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus
-#, fuzzy
 msgctxt "game_options"
 msgid "N64 (Limited Hotkeys)"
-msgstr "N64 3-bodový"
+msgstr "N64 (limitované klávesy)"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Useful for N64 style controllers."
-msgstr ""
+msgstr "Užitočné pre ovládače typu N64."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
@@ -4796,10 +4792,9 @@ msgid "CONTOLLER 1"
 msgstr "Ovládač 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "CONTROLLER PAK"
-msgstr "Ovládač pak 1"
+msgstr "Ovládač pak"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -5325,7 +5320,7 @@ msgstr "Podľa hry"
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
-msgstr ""
+msgstr "Vyberte grafický doplnok Parallel N64."
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
@@ -5348,10 +5343,9 @@ msgid "Rice"
 msgstr "Rice"
 
 #. TRANSLATION: libretro/parallel_n64
-#, fuzzy
 msgctxt "game_options"
 msgid "Angrylion"
-msgstr "Angrylion (najkompatibilnejší)"
+msgstr "Angrylion"
 
 #. TRANSLATION: libretro/parallel_n64
 msgctxt "game_options"
@@ -7451,12 +7445,13 @@ msgid ""
 "Compile shaders using background threads to avoid shader compilation "
 "stutter. May cause graphical glitches."
 msgstr ""
+"Kompilovať shadery pomocou vlákien na pozadí, aby ste sa vyhli zaseknutiu "
+"kompilácie shaderov. Môže spôsobiť grafické chyby."
 
 #. TRANSLATION: citra
-#, fuzzy
 msgctxt "game_options"
 msgid "ENABLE ASYNC SHADER COMPILATION"
-msgstr "Zrýchli kompiláciu shadera."
+msgstr "Povoliť async. kompiláciu shadera"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7592,6 +7587,8 @@ msgid ""
 "Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in "
 "appropriate user directory)."
 msgstr ""
+"Povoliť animáciu zavádzania Gamecube a prístup k systému BIOS (vyžaduje IPL."
+"bin BIOS v príslušnom používateľskom adresári)."
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7624,10 +7621,9 @@ msgid "Classic Controller"
 msgstr "Klasický ovládač"
 
 #. TRANSLATION: dolphin/uzem
-#, fuzzy
 msgctxt "game_options"
 msgid "Classic Controller Pro"
-msgstr "WiiMote + klasický ovládač Pro"
+msgstr "Klasický ovládač Pro"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7813,12 +7809,13 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
+"Povolenie umožní správnu emuláciu obalu textúry. Je to za cenu potenciálneho "
+"horšieho výkonu."
 
 #. TRANSLATION: dolphin
-#, fuzzy
 msgctxt "game_options"
 msgid "MANUAL TEXTURE SAMPLING"
-msgstr "Ručný vstup"
+msgstr "Manuálne vzorkovanie textúr"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8994,10 +8991,9 @@ msgid "Enable"
 msgstr "Povoliť"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-#, fuzzy
 msgctxt "game_options"
 msgid "Set the sensitivity of the joystick analog sticks."
-msgstr "Nastavte mŕtvu zónu analógových páčok joysticku."
+msgstr "Nastaviť citlivosť analógových páčok joysticku."
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
@@ -9038,6 +9034,8 @@ msgstr "Jednoduché 2x"
 msgctxt "game_options"
 msgid "Display on screen information like savestate, config warning etc..."
 msgstr ""
+"Zobrazenie informácií na obrazovke, ako je stav uloženia, varovanie "
+"konfigurácie atď."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -9712,12 +9710,13 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
+"Môže poskytnúť zvýšenie výkonu na CPU s nízkym počtom jadier/vlákien na úkor "
+"možného prerušeného časovania."
 
 #. TRANSLATION: rpcs3
-#, fuzzy
 msgctxt "game_options"
 msgid "SPU LOOP DETECTION"
-msgstr "HraZapnuté so správou o detekcii hry"
+msgstr "Detekcia SPU loop"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9725,12 +9724,13 @@ msgid ""
 "Mega and Giga modes may improve performance. Use the Safe mode for maximum "
 "compatibility."
 msgstr ""
+"Režimy Mega a Giga môžu zlepšiť výkon. Pre maximálnu kompatibilitu použite "
+"núdzový režim."
 
 #. TRANSLATION: rpcs3
-#, fuzzy
 msgctxt "game_options"
 msgid "SPU BLOCK SIZE"
-msgstr "SPU dekodér"
+msgstr "Veľkosť bloku SPU"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9753,11 +9753,13 @@ msgid ""
 "Helps reduce CPU power consumption by throttling the CPU when not needed. "
 "Useful for handhelds."
 msgstr ""
+"Pomáha znižovať spotrebu CPU tým, že znižuje výkon CPU, keď nie je potrebný. "
+"Užitočné pre handheldy."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "MAX POWER SAVING CPU-PREEMPTIONS"
-msgstr ""
+msgstr "Maximálna úspora energie procesora"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10039,11 +10041,13 @@ msgid ""
 "Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
 "use if you get no audio."
 msgstr ""
+"Použite 16-bitové zvukové vzorky pre zvukové ovládače, ktoré nepodporujú 32-"
+"bitové. Používajte iba vtedy, ak nemáte žiadny zvuk."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "CONVERT TO 16-BIT"
-msgstr ""
+msgstr "Konvertovať na 16-bit"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10061,6 +10065,8 @@ msgid ""
 "Duration of audio buffer in milliseconds. Higher numbers may cause audio "
 "latency."
 msgstr ""
+"Trvanie zvukovej vyrovnávacej pamäte v milisekundách. Vyššie čísla môžu "
+"spôsobiť oneskorenie zvuku."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10151,12 +10157,13 @@ msgctxt "game_options"
 msgid ""
 "Buffer fill level (in percentage) below which time stretching will start."
 msgstr ""
+"Úroveň naplnenia vyrovnávacej pamäte (v percentách), pod ktorou sa začne "
+"časové rozťahovanie."
 
 #. TRANSLATION: rpcs3
-#, fuzzy
 msgctxt "game_options"
 msgid "TIME STRETCHING THRESHOLD"
-msgstr "Povoliť rozťahovanie času"
+msgstr "Prah natiahnutia času"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10179,6 +10186,8 @@ msgid ""
 "Default uses SDL2, otherwise enable controller specific capabilities. Sony "
 "DS won't work with clone controllers."
 msgstr ""
+"V predvolenom nastavení sa používa SDL2, inak povoľte funkcie špecifické pre "
+"ovládač. Sony DS nebude fungovať s klonovými ovládačmi."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10186,10 +10195,9 @@ msgid "PS3 CONTROLLER 1"
 msgstr "PS3 ovládač 1"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Legacy Evdev"
-msgstr "Staré (lagové)"
+msgstr "Staré Evdev"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -10227,10 +10235,9 @@ msgid "PS3 CONTROLLER 7"
 msgstr "PS3 ovládač 7"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Select scale resolution of the game."
-msgstr "Vybrať rozlíšenie hry pri spustení"
+msgstr "Vyberte mierku rozlíšenia hry."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10240,7 +10247,7 @@ msgstr "Faktor mierky"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Sets the scaler filter mode when rendering."
-msgstr ""
+msgstr "Nastaví režim filtra mierky pri vykreslení."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10253,10 +10260,9 @@ msgid "HQ (bilinear filter)"
 msgstr "HQ (bilineárne filtrovanie)"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Edge (sharper filet)"
-msgstr "JINC2 (pomalé, bez prelínania okrajov)"
+msgstr "Edge (ostrejší filet)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10266,7 +10272,7 @@ msgstr "AdvMame"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Scanline Interpolation Filter (SAI)"
-msgstr ""
+msgstr "Filter interpolácie sken riadkov (SAI)"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10291,13 +10297,12 @@ msgstr "DotMatrix"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "TV2x CRT Television Filter"
-msgstr ""
+msgstr "Televízny filter TV2x CRT"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Stretches the output to fill the display area."
-msgstr "Skresľuje výstup tak, aby úplne vyplnil displej."
+msgstr "Roztiahne výstup tak, aby úplne vyplnil displej."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10315,10 +10320,9 @@ msgid "Even Pixels"
 msgstr "Párne pixely"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Fit resolution scale"
-msgstr "Najlepšie prispôsobenie"
+msgstr "Prispôsobiť mierku rozlíšenia"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10328,13 +10332,12 @@ msgstr "Roztiahnuť na obrazovku"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
-msgstr ""
+msgstr "Prispôsobiť pre 4:3"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
-msgstr "Vyberte preferovaný pomer strán."
+msgstr "Vyberte preferovaný vykresľovač."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10347,10 +10350,9 @@ msgid "OpenGL with Shaders"
 msgstr "OpenGL so shadermi"
 
 #. TRANSLATION: scummvm
-#, fuzzy
 msgctxt "game_options"
 msgid "Choose your preferred language."
-msgstr "Vyberte preferovaný pomer strán."
+msgstr "Vyberte preferovaný jazyk."
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -10830,12 +10832,9 @@ msgid "Fix screen tearing, but may drop frames."
 msgstr "Opraví trhanie obrazovky, ale môže vynechať snímky."
 
 #. TRANSLATION: mame
-#, fuzzy
 msgctxt "game_options"
 msgid "Depends on video mode being set to BGFX."
-msgstr ""
-"Závisí od režimu videa, ktorý je nastavený na BGFX. Vulkan je lepší, keď je "
-"podporovaný."
+msgstr "Závisí od režimu videa, ktorý je nastavený na BGFX."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -10917,6 +10916,8 @@ msgid ""
 "Choose whether to pass SDL Game Controller config to the Windows game. "
 "Disabling may help with some games."
 msgstr ""
+"Vyberte, či chcete odovzdať konfiguráciu herného ovládača SDL do hry pre "
+"Windows. Vypnutie môže pomôcť pri niektorých hrách."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11068,6 +11069,7 @@ msgctxt "game_options"
 msgid ""
 "NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
 msgstr ""
+"NVAPI je základný softvér NVIDIA, ktorý umožňuje priamy prístup k NVIDIA GPU."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11366,10 +11368,9 @@ msgid "ENABLE WIDESCREEN"
 msgstr "Povoliť širokouhlú obrazovku"
 
 #. TRANSLATION: model2emu
-#, fuzzy
 msgctxt "game_options"
 msgid "Enable scanlines for roms that support it."
-msgstr "Povoliť podporu XIM."
+msgstr "Povoliť sken riadky pre romy, ktoré to podporujú."
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -11531,7 +11532,7 @@ msgstr "Pôvodná veľkosť"
 #. TRANSLATION: play
 msgctxt "game_options"
 msgid "Only applicable when using OpenGL."
-msgstr ""
+msgstr "Použiteľné iba pre OpenGL."
 
 #. TRANSLATION: yuzu, ryujinx
 msgctxt "game_options"
@@ -12143,7 +12144,7 @@ msgstr "Použiť nastavenie joysticku GZDoom"
 #. TRANSLATION: corsixth
 msgctxt "game_options"
 msgid "Use new graphics created from CorsixTH project"
-msgstr ""
+msgstr "Použiť novú grafiku vytvorená z projektu Corsix TH"
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -12156,23 +12157,24 @@ msgid ""
 "Free Build or Sandbox mode. You cannot win or lose custom made maps if this "
 "is set to true. You also don't have to worry about money."
 msgstr ""
+"Voľná zostava alebo režim Sandbox. Ak je táto možnosť nastavená na hodnotu "
+"true, nemôžete vyhrať ani stratiť mapy vyrobené na mieru. O peniaze sa tiež "
+"báť nemusíte."
 
 #. TRANSLATION: corsixth
-#, fuzzy
 msgctxt "game_options"
 msgid "ENABLE SANDBOX MODE"
-msgstr "Povoliť režim lietadlo"
+msgstr "Povoliť režim pieskoviska"
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
 msgid "Enable or Disable Intro movie (Enabled by default)."
-msgstr ""
+msgstr "Povoliť alebo zakázať úvodný film (predvolene povolený)"
 
 #. TRANSLATION: corsixth
-#, fuzzy
 msgctxt "game_options"
 msgid "PLAY INTRO MOVIE"
-msgstr "Interaktívny film"
+msgstr "Prehrať úvodný film"
 
 #. TRANSLATION: eduke32, fury, raze
 msgctxt "game_options"
@@ -12229,6 +12231,8 @@ msgid ""
 "Select how much graphics memory is allocated for the GPU, may need modifying "
 "for some games / systems."
 msgstr ""
+"Vyberte, koľko grafickej pamäte je alokované pre GPU, môže byť potrebné "
+"upraviť pre niektoré hry/systémy."
 
 #. TRANSLATION: ioquake3
 msgctxt "game_options"
@@ -12248,7 +12252,7 @@ msgstr "Zapnuté (predvolené)"
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "Better performance with hardware rendering."
-msgstr ""
+msgstr "Lepší výkon pri hardvérovom vykresľovaní."
 
 #. TRANSLATION: thextech
 msgctxt "game_options"
@@ -12308,13 +12312,12 @@ msgstr "Spustiť / platné"
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Shows or hides the menu bar"
-msgstr ""
+msgstr "Zobrazí alebo skryje ponuku"
 
 #. TRANSLATION: corsixth.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Rotates the current object"
-msgstr "Zobrazí aktuálnu verziu Recalboxu"
+msgstr "Otočí aktuálny objekt"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12354,7 +12357,7 @@ msgstr "Obnoviť aplikáciu"
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Hire staff"
-msgstr ""
+msgstr "Najať personál"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12362,16 +12365,14 @@ msgid "Edit room"
 msgstr "Upraviť izbu"
 
 #. TRANSLATION: corsixth.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Open build room menu"
-msgstr "Otvoriť rýchlu ponuku DuckStation"
+msgstr "Otvoriť ponuku výstavby izby"
 
 #. TRANSLATION: corsixth.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Open furnish corridor menu"
-msgstr "Otvoriť rýchlu ponuku DuckStation"
+msgstr "Otvorená ponuka vybavenia chodby"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12389,10 +12390,9 @@ msgid "Set speed normal"
 msgstr "Nastaviť normálnu rýchlosť"
 
 #. TRANSLATION: corsixth.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Show the cheat menu"
-msgstr "Širokouhlý podvod (prioritné)"
+msgstr "Zobraziť ponuku cheatov"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12417,18 +12417,17 @@ msgstr "Mapa mesta"
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Casebook"
-msgstr ""
+msgstr "Kniha prípadov"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Research"
-msgstr ""
+msgstr "Výskum"
 
 #. TRANSLATION: corsixth.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Manage Staff"
-msgstr "Spravovať zabezpečenie Recalboxu"
+msgstr "Riadiť zamestnancov"
 
 #. TRANSLATION: switch.ryujinx.keys, vpinball.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, ...
 msgctxt "keys_files"
@@ -12518,7 +12517,7 @@ msgstr "Uložiť slot stavu 1"
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Reset the table, sometimes required for PinMame"
-msgstr ""
+msgstr "Vynulovať tabuľku, niekedy potrebné pre PinMame"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -12531,39 +12530,34 @@ msgid "Insert coin"
 msgstr "Vhoďte mincu"
 
 #. TRANSLATION: vpinball.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Nudge up"
-msgstr "Hore"
+msgstr "Postrčiť hore"
 
 #. TRANSLATION: vpinball.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Nudge left"
-msgstr "Vľavo"
+msgstr "Postrčiť vľavo"
 
 #. TRANSLATION: vpinball.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Nudge right"
-msgstr "Vpravo"
+msgstr "Postrčiť vpravo"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Pull plunger"
-msgstr ""
+msgstr "Vytiahnuť piest"
 
 #. TRANSLATION: vpinball.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Left flipper"
-msgstr "Vľavo"
+msgstr "Ľavá plutva"
 
 #. TRANSLATION: vpinball.keys
-#, fuzzy
 msgctxt "keys_files"
 msgid "Right flipper"
-msgstr "Vpravo"
+msgstr "Pravá plutva"
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
