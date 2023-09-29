@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Function to check if led module is loaded
+is_module_loaded() {
+    lsmod | grep -q "^$1 "
+}
+
+# Functions to set the LED mode parameters
+# ayn-platform
+set_ayn_led_mode() {
+    # turn off rainbow effect if enabled
+    echo 1 | tee /sys/class/leds/multicolor:chassis/device/led_mode
+}
+
+case "$1" in
+    start)
+        # ayn-platform is used for ayn handhelds
+        if is_module_loaded ayn_platform; then
+            set_ayn_led_mode
+        ;;
+    stop)
+        ;;
+    restart)
+        # Add any restart logic if needed later
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
+
