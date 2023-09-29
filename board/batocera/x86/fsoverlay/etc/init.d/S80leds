@@ -17,11 +17,14 @@ case "$1" in
         # ayn-platform is used for ayn handhelds
         if is_module_loaded ayn_platform; then
             set_ayn_led_mode
+        fi
         ;;
     stop)
         ;;
     restart)
         # Add any restart logic if needed later
+		stop
+		start
         ;;
     *)
         echo "Usage: $0 {start|stop|restart}"
@@ -30,4 +33,3 @@ case "$1" in
 esac
 
 exit 0
-
