@@ -11,8 +11,8 @@ unclutter --noevents -b
 xset -dpms
 xset s off
 
-# allow coredumps for ES
-ulimit -c unlimited
+# uncomment to allow coredumps for ES
+# ulimit -c unlimited
 
 # Check if there are two GPUs in the system
 gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
