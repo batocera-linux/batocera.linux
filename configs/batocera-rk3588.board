@@ -21,9 +21,8 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10=y
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
-BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/stvhay/kernel.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="32c838340e547ab3bb154ee0f6af03a3721487d8"
-#BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="49b392d4e1f12f6bd8dc14172f9168bab7931ada"
+BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/armbian/linux-rockchip.git"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="f27702096f0c9b2b4aa423e492db6369fc0fe979"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
@@ -32,7 +31,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-rock-5b rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-rock-5b rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-khadas-edge2"
 
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
@@ -50,3 +49,4 @@ BR2_PACKAGE_ROCKCHIP_MPP=y
 # Bootloader Packages
 BR2_PACKAGE_UBOOT_RK3588=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5_PLUS=y
+BR2_PACKAGE_UBOOT_KHADAS_EDGE_2=y
