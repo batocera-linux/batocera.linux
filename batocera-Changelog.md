@@ -113,7 +113,7 @@
 - libretro-bsnes to Aug 18 build
 - rpcs3 to 0.0.29-15620
 ### Dev
-- linux kernel for x86_64 to 6.5
+- linux kernel for x86_64 to 6.4.16
 - linux kernel for RPI to 6.1.47
 - linux kernel for most ARM SBCs to 6.1.55
 - linux kernel for Rockchip RK3566/RK3568 to 6.4.12
