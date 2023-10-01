@@ -36,6 +36,8 @@
 - Plane mode (enable/disable wifi/bt on the fly)
 - HatariB libretro core
 - Better Chromebook audio support
+- Added eject(1) command to safely remove removable media
+- Added efibootmgr(1) command to manage EFI configuration on x86_64
 ### Fixed
 - Fix wifi/bluetooth on Tinkerboard
 - Fixed crop overscan settings for NES to work with newer core builds
@@ -48,6 +50,12 @@
 - Sinden Lightgun will now start when booting Batocera
 - Fixed PS3 controllers not repairing after standby or poweroff
 - Fixed USB 2.0 for the Orange Pi 5.
+- Fixed trash can on file manager
+- Fixed dropbear SSH slow performance on receive
+- Fixed dropbear for compatibility with ssh-copy-id from remote systems
+- Partitions in x86_64 image aligned to 1M
+- Monitor refresh rates displayed in correct units on Wayland systems
+- Allow libretro games to start without START button being mapped
 ### Changed
 - ES music volume on a logarithmic scale instead of linear one
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
