@@ -1,0 +1,22 @@
+--- a/Makefile	2023-09-30 15:02:34.331468243 +0200
++++ b/Makefile	2023-09-30 15:14:27.783899288 +0200
+@@ -771,6 +771,10 @@
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, dangling-pointer)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, unused-function)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, address)
++KBUILD_CFLAGS	+= $(call cc-disable-warning, stringop-overread)
+ 
+ ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+ KBUILD_CFLAGS += -O2
+@@ -1034,7 +1038,7 @@
+ KBUILD_CFLAGS   += -Werror=date-time
+ 
+ # enforce correct pointer usage
+-KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
++#KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
+ 
+ # Require designated initializers for all marked structures
+ KBUILD_CFLAGS   += $(call cc-option,-Werror=designated-init)
