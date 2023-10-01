@@ -4,6 +4,10 @@ import controllersConfig
 from generators.Generator import Generator
 import os
 from utils.buildargs import parse_args
+import platform
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class RazeGenerator(Generator):
     
@@ -70,6 +74,10 @@ class RazeGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+        
+        architecture = get_cpu_architecture()
+        eslog.debug(f"*** Detected architecture is: {architecture} ***")
+        
         for path in [self.config_dir, self.saves_dir]:
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -97,9 +105,18 @@ class RazeGenerator(Generator):
 
                 # Modify options in the [GlobalSettings] section
                 if global_settings_found:
-                    # always set gl_es to true
+                    # OpenGL / GLES workaround
+                    # always set gl_es to true for arm or false for x86 if GLES
                     if line.strip().startswith("gl_es="):
-                        line = "gl_es=true\n"
+                        if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
+                            line = "gl_es=false\n"
+                        else:
+                            if architecture in ["x86_64", "amd64", "i686", "i386"]:
+                                eslog.debug(f"*** Architecture is: {architecture} therefore es is false ***")
+                                line = "gl_es=false\n"
+                            else:
+                                eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                                line = "gl_es=true\n"
                         modified_global_settings = True
                     elif line.strip().startswith("vid_preferbackend="):
                         if system.isOptSet("raze_api"):
@@ -113,8 +130,17 @@ class RazeGenerator(Generator):
             
             # If [GlobalSettings] was not found, add it with the modified options
             if not global_settings_found:
+                eslog.debug("Global Settings NOT found")
                 config_file.write("[GlobalSettings]\n")
-                config_file.write("gl_es=true\n")
+                if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
+                    config_file.write("gl_es=false\n")
+                else:
+                    if architecture in ["x86_64", "amd64", "i686", "i386"]:
+                        eslog.debug(f"*** Architecture is: {architecture} therefore es is false ***")
+                        config_file.write("gl_es=false\n")
+                    else:
+                        eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                        config_file.write("gl_es=true\n")
                 if system.isOptSet("raze_api"):
                     config_file.write(f"vid_preferbackend={system.config['raze_api']}\n")
                 else:
@@ -149,3 +175,9 @@ class RazeGenerator(Generator):
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9
+
+def get_cpu_architecture():
+    return platform.uname().machine
