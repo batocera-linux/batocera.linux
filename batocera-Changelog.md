@@ -69,7 +69,7 @@
 - Model2 now allows you to enable scanlines
 - batocera-services - custom.sh is deprecated and may be removed in a later version.
 - Put your services into /userdata/system/services, and enable them in batocera.conf (syncthing may be reenabled).
-- Model2 now loads 16:9 bezels accordingly to your screen and border size in ES
+- Model2 now loads white border accordingly to your screen and border size in ES (Sinden Lightgun)
 - Model2 crosshair disabled by default with light guns connected
 - Laptops / Systems with 2 GPUs will now automatically set the environment variables to use the best GPU.
 - Model2 start and coins now mapped on light guns when playing gun games
