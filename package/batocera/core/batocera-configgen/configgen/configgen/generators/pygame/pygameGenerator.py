@@ -12,3 +12,6 @@ class PygameGenerator(Generator):
 
     def executionDirectory(self, config, rom):
         return os.path.dirname(rom)
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9
