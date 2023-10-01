@@ -1,4 +1,18 @@
-# 2023/xx/xx - batocera.linux 38 - Blue Moon
+# 202x/xx/xx - batocera.linux 39 - 
+### Hardware
+
+### Added
+
+### Fixed
+
+### Changed
+
+### Updated
+
+### System
+
+
+# 2023/10/xx - batocera.linux 38 - Blue Moon
 ### Hardware
 - Added support for:
   - Orange Pi 5B
@@ -6,6 +20,7 @@
   - Orange Pi Zero 2
   - HardKernel ODROID-M1
   - HardKernel ODROID-GO ULTRA
+  - Ayn Loki Zero (Early release)
 ### Added
 - ES settings for both types of classic controllers for dolphin.
 - Additional ES settings for rpcs3
@@ -56,6 +71,7 @@
 - Partitions in x86_64 image aligned to 1M
 - Monitor refresh rates displayed in correct units on Wayland systems
 - Allow libretro games to start without START button being mapped
+- Pygame borders
 ### Changed
 - ES music volume on a logarithmic scale instead of linear one
 - if using the manual batocera.conf `splash.screen.resize` option, this will now adjust the playback resolution too
@@ -112,7 +128,7 @@
 - libretro-fake08 to Aug 21 build
 - libretro-bsnes to Aug 18 build
 - rpcs3 to 0.0.29-15620
-### Dev
+### System
 - linux kernel for x86_64 to 6.4.16
 - linux kernel for RPI to 6.1.47
 - linux kernel for most ARM SBCs to 6.1.55
