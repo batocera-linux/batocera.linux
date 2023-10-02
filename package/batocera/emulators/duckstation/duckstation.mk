@@ -20,10 +20,6 @@ DUCKSTATION_CONF_OPTS += -DUSE_DRMKMS=ON
 
 DUCKSTATION_CONF_ENV += LDFLAGS=-lpthread
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
-  DUCKSTATION_CONF_OPTS += -DUSE_EVDEV=ON -DCMAKE_EXE_LINKER_FLAGS="-lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali"
-endif
-
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
     DUCKSTATION_CONF_OPTS += -DUSE_WAYLAND=ON
 else
