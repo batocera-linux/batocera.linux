@@ -902,9 +902,13 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Super Mario War
     select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
+    # EDuke32 requires OpenGL or GLES 3.0
     select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_GLES3
-    select BR2_PACKAGE_GZDOOM                   if BR2_PACKAGE_BATOCERA_GLES3
-    select BR2_PACKAGE_RAZE                     if BR2_PACKAGE_BATOCERA_GLES3
+    
+    # GZDoom and Raze require both 64-bit arch (x86,arm,riscv,....) AND OpenGL or GLES 3.0
+    select BR2_PACKAGE_GZDOOM                   if BR2_ARCH_IS_64 && BR2_PACKAGE_BATOCERA_GLES3
+    select BR2_PACKAGE_RAZE                     if BR2_ARCH_IS_64 && BR2_PACKAGE_BATOCERA_GLES3
+
     # ZMusic: standalone library used by gzdoom and raze source ports
     select BR2_PACKAGE_ZMUSIC                   if BR2_PACKAGE_GZDOOM || BR2_PACKAGE_RAZE
 
