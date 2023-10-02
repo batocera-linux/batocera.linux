@@ -52,7 +52,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 endef
 
 # symlink BT firmware - workaround until AX101 BT firmware is added
-define LINK_INTEL_BT
+define ALLLINUXFIRMWARES_LINK_INTEL_BT
     ln -sf /lib/firmware/intel/ibt-1040-4150.ddc \
         $(TARGET_DIR)/lib/firmware/intel/ibt-0040-1050.ddc
     ln -sf /lib/firmware/intel/ibt-1040-4150.sfi \
@@ -60,7 +60,19 @@ define LINK_INTEL_BT
 endef
 
 ifeq ($(BR2_x86_64),y)
-    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = LINK_INTEL_BT
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_INTEL_BT
+endif
+
+# symlink BT firmware for RK3588 kernel
+define ALLLINUXFIRMWARES_LINK_RTL_BT
+    ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin \
+        $(TARGET_DIR)/lib/firmware/rtl8852bu_fw
+    ln -sf /lib/firmware/rtl_bt/rtl8852bu_config.bin \
+        $(TARGET_DIR)/lib/firmware/rtl8852bu_config
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_RTL_BT
 endif
 
 $(eval $(generic-package))
