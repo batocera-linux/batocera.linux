@@ -31,6 +31,7 @@ define FIRMWARE_RADXA_RKWIFIBT_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/lib/firmware/ap6275p
 	$(INSTALL) -m 0644 -D $(@D)/firmware/broadcom/AP6275P/wifi/* $(TARGET_DIR)/lib/firmware/ap6275p
 	# install the AP6275P BT firmware
+	mkdir -p $(TARGET_DIR)/lib/firmware/brcm
 	$(INSTALL) -m 0644 -D $(@D)/firmware/broadcom/AP6275P/bt/BCM4362A2.hcd $(TARGET_DIR)/lib/firmware/brcm
 endef
 
