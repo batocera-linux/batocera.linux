@@ -12,7 +12,7 @@ EDUKE32_LICENSE = GPL-2.0
 # Some build options are documented here: https://wiki.eduke32.com/wiki/Building_EDuke32_on_Linux
 EDUKE32_BUILD_ARGS = STARTUP_WINDOW=0
 EDUKE32_BUILD_ARGS += HAVE_GTK2=0
-ifeq ($(BR2_aarch64)$(BR2_riscv),y)
+ifeq ($(BR2_arm)$(BR2_aarch64)$(BR2_riscv),y)
     EDUKE32_BUILD_ARGS += USE_OPENGL=0
     EDUKE32_BUILD_ARGS += OPTOPT="-ffast-math"
 endif
