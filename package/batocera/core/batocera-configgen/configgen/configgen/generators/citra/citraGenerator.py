@@ -78,7 +78,7 @@ class CitraGenerator(Generator):
             citraConfig.set("Layout", "layout_option", tab[0])
         else:
             citraConfig.set("Layout", "swap_screen", "false")
-            citraConfig.set("Layout", "layout_option", "2")
+            citraConfig.set("Layout", "layout_option", "0")
         citraConfig.set("Layout", "swap_screen\default", "false")
         citraConfig.set("Layout", "layout_option\default", "false")
 
