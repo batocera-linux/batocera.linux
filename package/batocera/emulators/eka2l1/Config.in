@@ -1,14 +1,7 @@
 config BR2_PACKAGE_EKA2L1
     bool "eka2l1"
 
-    select BR2_PACKAGE_QT6
-    select BR2_PACKAGE_QT6BASE
-    select BR2_PACKAGE_QT6BASE_GUI
-    select BR2_PACKAGE_QT6BASE_NETWORK
-    select BR2_PACKAGE_QT6BASE_OPENGL
-    select BR2_PACKAGE_QT6BASE_WIDGETS
-    select BR2_PACKAGE_QT6MULTIMEDIA
-    select BR2_PACKAGE_QT6SVG
+    select BR2_PACKAGE_BATOCERA_QT6
 
     help
       Symbian OS / N-Gage emulator
