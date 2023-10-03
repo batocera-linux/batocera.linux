@@ -1,0 +1,35 @@
+From 4a7950dc1f0f6007b164a34f3fb3a83b2b88b79f Mon Sep 17 00:00:00 2001
+From: Vas Crabb <vas@vastheman.com>
+Date: Tue, 3 Oct 2023 13:48:27 +1100
+Subject: [PATCH] cpu/sh: Explicitly #include prefix header (fixes GitHub
+ #11591).
+
+---
+ src/devices/cpu/sh/sh7021.cpp | 1 +
+ src/devices/cpu/sh/sh7032.cpp | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/devices/cpu/sh/sh7021.cpp b/src/devices/cpu/sh/sh7021.cpp
+index 18aa0c1574d4..458e4ff7aacf 100644
+--- a/src/devices/cpu/sh/sh7021.cpp
++++ b/src/devices/cpu/sh/sh7021.cpp
+@@ -1,6 +1,7 @@
+ // license:BSD-3-Clause
+ // copyright-holders:Angelo Salese
+ 
++#include "emu.h"
+ #include "sh7021.h"
+ 
+ DEFINE_DEVICE_TYPE(SH2A_SH7021, sh2a_sh7021_device, "sh2a_sh7021", "Hitachi SH-2A (SH7021)")
+diff --git a/src/devices/cpu/sh/sh7032.cpp b/src/devices/cpu/sh/sh7032.cpp
+index 775e7e72f230..e65e86c1ffd5 100644
+--- a/src/devices/cpu/sh/sh7032.cpp
++++ b/src/devices/cpu/sh/sh7032.cpp
+@@ -1,6 +1,7 @@
+ // license:BSD-3-Clause
+ // copyright-holders:Angelo Salese
+ 
++#include "emu.h"
+ #include "sh7032.h"
+ 
+ DEFINE_DEVICE_TYPE(SH1_SH7032,  sh1_sh7032_device,  "sh1_sh7032",  "Hitachi SH-1 (SH7032)")
