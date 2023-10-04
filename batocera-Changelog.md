@@ -8,7 +8,7 @@
 ### Changed
 
 ### Updated
-
+- Retroarch to 1.16.0.3
 ### System
 
 
