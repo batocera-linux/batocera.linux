@@ -285,7 +285,6 @@
 - add multiple Qt6 packages
 - alsa stack to 1.2.10
 
-
 # 2023/03/09 - batocera.linux 36 - Luna Moth
 ### EmulationStation
 - volume for libretro cores can be changed per-game from es, may be extended to other emulators in future
@@ -564,7 +563,7 @@
 - fix: boot logo rotation on 720x1280 devices such as win600
 - fix: multiplayer for dolphin now detects all four connected controllers
 
-# 2022/05/24 - batocera.linux 34 - blue morpho
+# 2022/05/24 - batocera.linux 34 - Blue Morpho
 - add: board Anbernic RG552
 - add: board PS5000
 - add: board PS7000
@@ -1398,7 +1397,7 @@
 - add: libretro-mame2016 (x86_32 and x86_64)
 - add: libretro-vice (x86_32 and x86_64)
 
-# 2018/09/02 - batocera.linux 5.17 - release
+# 2018/09/02 - batocera.linux 5.17
 - fix moonlight
 - fix n64 (crashes for some games on some plateforms)
 - remove virtualgamepads (useless)
@@ -1407,7 +1406,7 @@
 - various fixes (bluetooth, ps3 pads, ...)
 - fix all architectures
 
-# 2018/06/25 - batocera.linux 5.16 - release
+# 2018/06/25 - batocera.linux 5.16
 - x86: better mouse handling (fixing scummvm)
 - retroarch: update to 1.7.3
 - scummvm: update to 2.0.0
@@ -1422,7 +1421,7 @@
 - better wifi support
 - better bluetooth support
 
-# 2018/05/01 - batocera.linux 5.15 - release
+# 2018/05/01 - batocera.linux 5.15
 - rpi3+ support
 - Atari 5200
 - theme update (light version)
@@ -1434,7 +1433,7 @@
 - fix ssh on external storage
 - some minor fixes
 
-# 2018/03/08 - batocera.linux 5.14 - release
+# 2018/03/08 - batocera.linux 5.14
 - rpi: new splash video
 - rpi: mutable splash video (add splashsound=false in /boot/batocera-boot.conf to disable the sound)
 - rpi: customizable splash video (put a video in /boot/splash.mp4)
@@ -1448,10 +1447,10 @@
 - reicast: you can choose 16/9 in advanced options. not set automatically, because it's buggy in some cases
 - wii: automatically set 16/9 by default if your resolution is 16/9 or higher (or if set to auto or 16/9 in advanced options)
 
-# 2018/02/02 - batocera.linux 5.13 - release
+# 2018/02/02 - batocera.linux 5.13
 - fix the bluetooth bug
 
-# 2018/01/22 - batocera.linux 5.12 - release
+# 2018/01/22 - batocera.linux 5.12
 - buildroot upgrade to 2017/12
 - kodi 17.6
 - joystick battery information (information menu)
@@ -1464,7 +1463,7 @@
 - bezel support (1920x1080 game resolution only, decoration option in the game menu)
 - some bugfixes
 
-# 2017/11/22 - batocera.linux 5.11 - release
+# 2017/11/22 - batocera.linux 5.11
 - x86*: (others coming later) : amiga support : amiga500 amiga500+ amiga600 amiga1000 amiga1200 amiga3000 amiga4000 amigacd32 amigacdtv
 - amiga: caps img plugin
 - rpi3: optimize the psp ini
@@ -1482,7 +1481,7 @@
 - es: fix the mp3 player
 - kodi: fix plugins
 
-# 2017/10/10 - batocera.linux 5.10 - release
+# 2017/10/10 - batocera.linux 5.10
 - rpi3 overclocking options
 - system: update to buildroot 201708
 - system: update to kodi 17.3
@@ -1494,7 +1493,7 @@
 - xu4: add nintendo ds (desmume)
 - several bugs fixed
 
-# 2017/09/06 - batocera.linux 5.9 - release
+# 2017/09/06 - batocera.linux 5.9
 - system: new video output option (for multiple outputs computer, plugged on the tv via hdmi)
 - system: make the overlay rw by default (instead of ro)
 - system: change the hostname to batocera
@@ -1511,10 +1510,10 @@
 - multimedia: add libaccs, libdvdcss, x265 for a better media support
 - multimedia: fix the kodi joystick mapping in some cases
 
-# 2017/06/25 - batocera.linux 5.8 - release
+# 2017/06/25 - batocera.linux 5.8
 - fix some pads not working with kodi (mainly xbox 360)
 
-# 2017/06/04 - batocera.linux 5.7 - release
+# 2017/06/04 - batocera.linux 5.7
 - technical upgrade (buildroot 201704, gcc 5.4)
 - rpi*: bump to linux 4.9
 - support of the rapsberry pi zero W (including wifi and bluetooth)
@@ -1530,7 +1529,7 @@
 - mount sdcards
 - pt_PT language
 
-# 2017/04/21 - batocera.linux 5.6 - release
+# 2017/04/21 - batocera.linux 5.6
 - x86* : add nintendo ds (desmume)
 - rpi3: add mame2010
 - add an automatic scraping menu using sselph/scraper and screenscraper
@@ -1551,10 +1550,10 @@
   - libretro-pocketsnes
   - mupen64plus-video-glide64mk2
 
-# 2017/03/18 - batocera.linux 5.5 - release
+# 2017/03/18 - batocera.linux 5.5
 - fix playstation 1
 
-# 2017/03/17 - batocera.linux 5.4 - release
+# 2017/03/17 - batocera.linux 5.4
 - wii/gamecube: add hotkeys (exit, pause, screenshot, save/load state)
 - wii/gamecube: support for 3d tv (hotkey + r1)
 - add scummmvm for x86*
@@ -1567,7 +1566,7 @@
 - fix: gamecube pads (some were not working)
 - x86*: add the xrandr tool (for screen resolution/rotation)
 
-# 2017/02/19 - batocera.linux 5.3 - release
+# 2017/02/19 - batocera.linux 5.3
 - Upgrade several emulators
 - Fix the autosave function
 - Fix randomly blinking black borders on x86*
@@ -1581,7 +1580,7 @@
   to restore, boot on the backup, and restore on the internal device
   Special thanks to Vincent, Gérard and Antoine for the new logo.
 
-# 2017/01/30 - batocera.linux 5.2 - release
+# 2017/01/30 - batocera.linux 5.2
 - saturn emulator for x86/x86_64 (yabause)
 - snes9x emulator (by default on xu4, change it if you have saves to load)
 - ps1 emulator upgraded to support 3 players or more
@@ -1592,7 +1591,7 @@
 - download percentage during the upgrade process
 - fix the automatic upgrade process (see the manual upgrade in the wiki section if needed)
 
-# 2017/01/04 -  batocera.linux 5.1 - release
+# 2017/01/04 - batocera.linux 5.1
 - Technical upgrade to buildroot (december 2016)
 - Linux kernel 4.9 (more supported hardware)
 - HDD driver compiled into the kernel (you can now install batocera.linux on an HDD)
