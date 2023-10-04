@@ -16,6 +16,10 @@ ifeq ($(BR2_x86_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
 else ifeq ($(BR2_i386),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
+else ifeq ($(BR2_RISCV_64),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=riscv64 PLATFORM=riscv64
+else ifeq ($(BR2_riscv),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=riscv PLATFORM=riscv
 else ifeq ($(BR2_arm),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
 # workaround for linkage failure using ld on arm 32-bit targets
