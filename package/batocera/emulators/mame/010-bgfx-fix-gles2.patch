@@ -1,0 +1,31 @@
+From 66d50eb721334d6538a7eccdfdabb997667af1db Mon Sep 17 00:00:00 2001
+From: issam3105 <67145992+issam3105@users.noreply.github.com>
+Date: Sat, 9 Sep 2023 17:25:07 +0200
+Subject: [PATCH] Fixed duplicate import of functions on Linux using gles20
+ (#3117)
+
+Co-authored-by: Issam <issam.dahmen@fittingbox.com>
+---
+ src/glimports.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/glimports.h b/src/glimports.h
+index e1d35878ef..67f2f48cd2 100644
+--- a/3rdparty/bgfx/src/glimports.h
++++ b/3rdparty/bgfx/src/glimports.h
+@@ -580,6 +580,7 @@ GL_IMPORT_____x(true,  PFNGLBLENDEQUATIONSEPARATEIPROC,            glBlendEquati
+ GL_IMPORT_____x(true,  PFNGLBLENDFUNCIPROC,                        glBlendFunci);
+ GL_IMPORT_____x(true,  PFNGLBLENDFUNCSEPARATEIPROC,                glBlendFuncSeparatei);
+ 
++#if !BGFX_USE_GL_DYNAMIC_LIB
+ GL_IMPORT______(true,  PFNGLDRAWBUFFERPROC,                        glDrawBuffer);
+ GL_IMPORT______(true,  PFNGLREADBUFFERPROC,                        glReadBuffer);
+ GL_IMPORT______(true,  PFNGLGENSAMPLERSPROC,                       glGenSamplers);
+@@ -588,6 +589,7 @@ GL_IMPORT______(true,  PFNGLBINDSAMPLERPROC,                       glBindSampler
+ GL_IMPORT______(true,  PFNGLSAMPLERPARAMETERFPROC,                 glSamplerParameterf);
+ GL_IMPORT______(true,  PFNGLSAMPLERPARAMETERIPROC,                 glSamplerParameteri);
+ GL_IMPORT______(true,  PFNGLSAMPLERPARAMETERFVPROC,                glSamplerParameterfv);
++#endif // !BGFX_USE_GL_DYNAMIC_LIB
+ 
+ GL_IMPORT_____x(true,  PFNGLBINDBUFFERBASEPROC,                    glBindBufferBase);
+ GL_IMPORT_____x(true,  PFNGLBINDBUFFERRANGEPROC,                   glBindBufferRange);

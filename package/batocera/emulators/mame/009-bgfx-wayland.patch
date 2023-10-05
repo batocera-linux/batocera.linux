@@ -1,0 +1,3890 @@
+From 80155dfa8c8fd3ebcdb304ab97e967d276014f74 Mon Sep 17 00:00:00 2001
+From: Julian Sikorski <belegdol+github@gmail.com>
+Date: Thu, 28 Sep 2023 17:14:29 +0200
+Subject: [PATCH] 3rdparty/bgfx: Cherry-picked upstream commits needed to
+ support Wayland on Linux. (#11539)
+
+---
+ .../examples/00-helloworld/helloworld.cpp     |   1 +
+ 3rdparty/bgfx/examples/01-cubes/cubes.cpp     |   1 +
+ .../bgfx/examples/02-metaballs/metaballs.cpp  |   1 +
+ .../bgfx/examples/03-raymarch/raymarch.cpp    |   1 +
+ 3rdparty/bgfx/examples/04-mesh/mesh.cpp       |   1 +
+ .../examples/05-instancing/instancing.cpp     |   1 +
+ 3rdparty/bgfx/examples/06-bump/bump.cpp       |   1 +
+ .../bgfx/examples/07-callback/callback.cpp    |   1 +
+ 3rdparty/bgfx/examples/08-update/update.cpp   |   1 +
+ 3rdparty/bgfx/examples/09-hdr/hdr.cpp         |   1 +
+ 3rdparty/bgfx/examples/10-font/font.cpp       |   1 +
+ 3rdparty/bgfx/examples/11-fontsdf/fontsdf.cpp |   1 +
+ 3rdparty/bgfx/examples/12-lod/lod.cpp         |   1 +
+ 3rdparty/bgfx/examples/13-stencil/stencil.cpp |   1 +
+ .../14-shadowvolumes/shadowvolumes.cpp        |   1 +
+ .../shadowmaps_simple.cpp                     |   1 +
+ .../examples/16-shadowmaps/shadowmaps.cpp     |   1 +
+ .../examples/17-drawstress/drawstress.cpp     |   1 +
+ 3rdparty/bgfx/examples/18-ibl/ibl.cpp         |   1 +
+ 3rdparty/bgfx/examples/19-oit/oit.cpp         |   1 +
+ 3rdparty/bgfx/examples/20-nanovg/nanovg.cpp   |   1 +
+ .../bgfx/examples/21-deferred/deferred.cpp    |   1 +
+ 3rdparty/bgfx/examples/22-windows/windows.cpp |   1 +
+ 3rdparty/bgfx/examples/24-nbody/nbody.cpp     |   1 +
+ 3rdparty/bgfx/examples/25-c99/helloworld.c    |   2 +
+ .../bgfx/examples/26-occlusion/occlusion.cpp  |   1 +
+ 3rdparty/bgfx/examples/27-terrain/terrain.cpp |   1 +
+ .../bgfx/examples/28-wireframe/wireframe.cpp  |   1 +
+ .../bgfx/examples/29-debugdraw/debugdraw.cpp  |   1 +
+ 3rdparty/bgfx/examples/30-picking/picking.cpp |   1 +
+ .../examples/31-rsm/reflectiveshadowmap.cpp   |   1 +
+ .../bgfx/examples/32-particles/particles.cpp  |   1 +
+ 3rdparty/bgfx/examples/33-pom/pom.cpp         |   1 +
+ 3rdparty/bgfx/examples/34-mvs/mvs.cpp         |   1 +
+ 3rdparty/bgfx/examples/35-dynamic/dynamic.cpp |   1 +
+ 3rdparty/bgfx/examples/36-sky/sky.cpp         |   1 +
+ .../gpudrivenrendering.cpp                    |   1 +
+ 3rdparty/bgfx/examples/38-bloom/bloom.cpp     |   1 +
+ 3rdparty/bgfx/examples/39-assao/assao.cpp     |   1 +
+ 3rdparty/bgfx/examples/40-svt/svt.cpp         |   1 +
+ 3rdparty/bgfx/examples/41-tess/tess.cpp       |   1 +
+ .../bgfx/examples/42-bunnylod/bunnylod.cpp    |   1 +
+ 3rdparty/bgfx/examples/43-denoise/denoise.cpp |   1 +
+ .../examples/44-sss/screen_space_shadows.cpp  |   1 +
+ 3rdparty/bgfx/examples/45-bokeh/bokeh.cpp     |   1 +
+ .../examples/47-pixelformats/pixelformats.cpp |   1 +
+ .../examples/48-drawindirect/drawindirect.cpp |   1 +
+ 3rdparty/bgfx/examples/49-hextile/hextile.cpp |   1 +
+ 3rdparty/bgfx/examples/common/entry/entry.cpp |   5 +
+ 3rdparty/bgfx/examples/common/entry/entry.h   |   4 +
+ .../examples/common/entry/entry_android.cpp   |   6 +
+ .../bgfx/examples/common/entry/entry_glfw.cpp |  13 +
+ .../examples/common/entry/entry_html5.cpp     |   6 +
+ .../bgfx/examples/common/entry/entry_ios.mm   |   6 +
+ .../bgfx/examples/common/entry/entry_noop.cpp |   6 +
+ .../bgfx/examples/common/entry/entry_osx.mm   |   6 +
+ .../bgfx/examples/common/entry/entry_sdl.cpp  |  61 ++-
+ .../examples/common/entry/entry_windows.cpp   |   6 +
+ .../bgfx/examples/common/entry/entry_x11.cpp  |   6 +
+ 3rdparty/bgfx/include/bgfx/bgfx.h             |  35 +-
+ 3rdparty/bgfx/include/bgfx/c99/bgfx.h         |  18 +
+ 3rdparty/bgfx/src/amalgamated.cpp             |   1 -
+ 3rdparty/bgfx/src/bgfx.cpp                    |   1 +
+ 3rdparty/bgfx/src/glcontext_egl.cpp           | 184 +++++---
+ 3rdparty/bgfx/src/glcontext_egl.h             |  11 +-
+ 3rdparty/bgfx/src/glcontext_glx.cpp           | 393 ------------------
+ 3rdparty/bgfx/src/glcontext_glx.h             |  58 ---
+ 3rdparty/bgfx/src/renderer_gl.h               |  38 +-
+ 3rdparty/bgfx/src/renderer_vk.cpp             |  68 +--
+ 3rdparty/bgfx/src/renderer_vk.h               |  42 +-
+ scripts/src/3rdparty.lua                      |   1 -
+ 71 files changed, 432 insertions(+), 592 deletions(-)
+ delete mode 100644 3rdparty/bgfx/src/glcontext_glx.cpp
+ delete mode 100644 3rdparty/bgfx/src/glcontext_glx.h
+
+diff --git a/3rdparty/bgfx/examples/00-helloworld/helloworld.cpp b/3rdparty/bgfx/examples/00-helloworld/helloworld.cpp
+index 97a794633573..68815ba347d0 100644
+--- a/3rdparty/bgfx/examples/00-helloworld/helloworld.cpp
++++ b/3rdparty/bgfx/examples/00-helloworld/helloworld.cpp
+@@ -34,6 +34,7 @@ class ExampleHelloWorld : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/01-cubes/cubes.cpp b/3rdparty/bgfx/examples/01-cubes/cubes.cpp
+index de4566739aa9..a178f7379fd7 100644
+--- a/3rdparty/bgfx/examples/01-cubes/cubes.cpp
++++ b/3rdparty/bgfx/examples/01-cubes/cubes.cpp
+@@ -149,6 +149,7 @@ class ExampleCubes : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/02-metaballs/metaballs.cpp b/3rdparty/bgfx/examples/02-metaballs/metaballs.cpp
+index 305bf53b3295..293ed276ecc7 100644
+--- a/3rdparty/bgfx/examples/02-metaballs/metaballs.cpp
++++ b/3rdparty/bgfx/examples/02-metaballs/metaballs.cpp
+@@ -508,6 +508,7 @@ class ExampleMetaballs : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/03-raymarch/raymarch.cpp b/3rdparty/bgfx/examples/03-raymarch/raymarch.cpp
+index 6fb30b91a881..7478eec47f3e 100644
+--- a/3rdparty/bgfx/examples/03-raymarch/raymarch.cpp
++++ b/3rdparty/bgfx/examples/03-raymarch/raymarch.cpp
+@@ -121,6 +121,7 @@ class ExampleRaymarch : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/04-mesh/mesh.cpp b/3rdparty/bgfx/examples/04-mesh/mesh.cpp
+index 59c6c070618c..3457a9f2f496 100644
+--- a/3rdparty/bgfx/examples/04-mesh/mesh.cpp
++++ b/3rdparty/bgfx/examples/04-mesh/mesh.cpp
+@@ -32,6 +32,7 @@ class ExampleMesh : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/05-instancing/instancing.cpp b/3rdparty/bgfx/examples/05-instancing/instancing.cpp
+index 6b066c16d9fe..eac31fc25c0a 100644
+--- a/3rdparty/bgfx/examples/05-instancing/instancing.cpp
++++ b/3rdparty/bgfx/examples/05-instancing/instancing.cpp
+@@ -84,6 +84,7 @@ class ExampleInstancing : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/06-bump/bump.cpp b/3rdparty/bgfx/examples/06-bump/bump.cpp
+index bbfe793fea9d..2725e65d9710 100644
+--- a/3rdparty/bgfx/examples/06-bump/bump.cpp
++++ b/3rdparty/bgfx/examples/06-bump/bump.cpp
+@@ -104,6 +104,7 @@ class ExampleBump : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/07-callback/callback.cpp b/3rdparty/bgfx/examples/07-callback/callback.cpp
+index 418b2a96eaed..04b098a56c57 100644
+--- a/3rdparty/bgfx/examples/07-callback/callback.cpp
++++ b/3rdparty/bgfx/examples/07-callback/callback.cpp
+@@ -331,6 +331,7 @@ class ExampleCallback : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/08-update/update.cpp b/3rdparty/bgfx/examples/08-update/update.cpp
+index 9e9f63fcb3d7..e7e54f56f780 100644
+--- a/3rdparty/bgfx/examples/08-update/update.cpp
++++ b/3rdparty/bgfx/examples/08-update/update.cpp
+@@ -247,6 +247,7 @@ class ExampleUpdate : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/09-hdr/hdr.cpp b/3rdparty/bgfx/examples/09-hdr/hdr.cpp
+index 6184611b4c0f..e76fbd612597 100644
+--- a/3rdparty/bgfx/examples/09-hdr/hdr.cpp
++++ b/3rdparty/bgfx/examples/09-hdr/hdr.cpp
+@@ -159,6 +159,7 @@ class ExampleHDR : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/10-font/font.cpp b/3rdparty/bgfx/examples/10-font/font.cpp
+index 34daca64e417..7d0921ddc411 100644
+--- a/3rdparty/bgfx/examples/10-font/font.cpp
++++ b/3rdparty/bgfx/examples/10-font/font.cpp
+@@ -73,6 +73,7 @@ class ExampleFont : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/11-fontsdf/fontsdf.cpp b/3rdparty/bgfx/examples/11-fontsdf/fontsdf.cpp
+index a7e7362a577a..4308a4981162 100644
+--- a/3rdparty/bgfx/examples/11-fontsdf/fontsdf.cpp
++++ b/3rdparty/bgfx/examples/11-fontsdf/fontsdf.cpp
+@@ -56,6 +56,7 @@ class ExampleFontSDF : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/12-lod/lod.cpp b/3rdparty/bgfx/examples/12-lod/lod.cpp
+index b717c961e012..b429334a843e 100644
+--- a/3rdparty/bgfx/examples/12-lod/lod.cpp
++++ b/3rdparty/bgfx/examples/12-lod/lod.cpp
+@@ -48,6 +48,7 @@ class ExampleLod : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/13-stencil/stencil.cpp b/3rdparty/bgfx/examples/13-stencil/stencil.cpp
+index 3acd5d5019bd..cfbf0615c9a9 100644
+--- a/3rdparty/bgfx/examples/13-stencil/stencil.cpp
++++ b/3rdparty/bgfx/examples/13-stencil/stencil.cpp
+@@ -814,6 +814,7 @@ class ExampleStencil : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_viewState.m_width;
+ 		init.resolution.height = m_viewState.m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/14-shadowvolumes/shadowvolumes.cpp b/3rdparty/bgfx/examples/14-shadowvolumes/shadowvolumes.cpp
+index 2df07dec0531..48828eba6a1a 100644
+--- a/3rdparty/bgfx/examples/14-shadowvolumes/shadowvolumes.cpp
++++ b/3rdparty/bgfx/examples/14-shadowvolumes/shadowvolumes.cpp
+@@ -1786,6 +1786,7 @@ class ExampleShadowVolumes : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_viewState.m_width;
+ 		init.resolution.height = m_viewState.m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/15-shadowmaps-simple/shadowmaps_simple.cpp b/3rdparty/bgfx/examples/15-shadowmaps-simple/shadowmaps_simple.cpp
+index 236b859e0eae..bfd4a75a0bea 100644
+--- a/3rdparty/bgfx/examples/15-shadowmaps-simple/shadowmaps_simple.cpp
++++ b/3rdparty/bgfx/examples/15-shadowmaps-simple/shadowmaps_simple.cpp
+@@ -80,6 +80,7 @@ class ExampleShadowmapsSimple : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/16-shadowmaps/shadowmaps.cpp b/3rdparty/bgfx/examples/16-shadowmaps/shadowmaps.cpp
+index 4ab7b7e60dd7..e85f6dfab818 100644
+--- a/3rdparty/bgfx/examples/16-shadowmaps/shadowmaps.cpp
++++ b/3rdparty/bgfx/examples/16-shadowmaps/shadowmaps.cpp
+@@ -1159,6 +1159,7 @@ class ExampleShadowmaps : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_viewState.m_width;
+ 		init.resolution.height = m_viewState.m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/17-drawstress/drawstress.cpp b/3rdparty/bgfx/examples/17-drawstress/drawstress.cpp
+index 5dd17370c1f4..9dc32cc299cb 100644
+--- a/3rdparty/bgfx/examples/17-drawstress/drawstress.cpp
++++ b/3rdparty/bgfx/examples/17-drawstress/drawstress.cpp
+@@ -131,6 +131,7 @@ class ExampleDrawStress : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/18-ibl/ibl.cpp b/3rdparty/bgfx/examples/18-ibl/ibl.cpp
+index a2d15492e6d6..96f2ff904fe4 100644
+--- a/3rdparty/bgfx/examples/18-ibl/ibl.cpp
++++ b/3rdparty/bgfx/examples/18-ibl/ibl.cpp
+@@ -420,6 +420,7 @@ class ExampleIbl : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/19-oit/oit.cpp b/3rdparty/bgfx/examples/19-oit/oit.cpp
+index 576cd091f894..d1e17b3faaab 100644
+--- a/3rdparty/bgfx/examples/19-oit/oit.cpp
++++ b/3rdparty/bgfx/examples/19-oit/oit.cpp
+@@ -171,6 +171,7 @@ class ExampleOIT : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/20-nanovg/nanovg.cpp b/3rdparty/bgfx/examples/20-nanovg/nanovg.cpp
+index 144d21b8b9f3..8330fb91fa0f 100644
+--- a/3rdparty/bgfx/examples/20-nanovg/nanovg.cpp
++++ b/3rdparty/bgfx/examples/20-nanovg/nanovg.cpp
+@@ -1404,6 +1404,7 @@ class ExampleNanoVG : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/21-deferred/deferred.cpp b/3rdparty/bgfx/examples/21-deferred/deferred.cpp
+index 6c379fd3fe18..546db681c973 100644
+--- a/3rdparty/bgfx/examples/21-deferred/deferred.cpp
++++ b/3rdparty/bgfx/examples/21-deferred/deferred.cpp
+@@ -213,6 +213,7 @@ class ExampleDeferred : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/22-windows/windows.cpp b/3rdparty/bgfx/examples/22-windows/windows.cpp
+index 03a5259e90ba..54d8671bf76e 100644
+--- a/3rdparty/bgfx/examples/22-windows/windows.cpp
++++ b/3rdparty/bgfx/examples/22-windows/windows.cpp
+@@ -88,6 +88,7 @@ class ExampleWindows : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/24-nbody/nbody.cpp b/3rdparty/bgfx/examples/24-nbody/nbody.cpp
+index 6204705421e5..b47469d8c046 100644
+--- a/3rdparty/bgfx/examples/24-nbody/nbody.cpp
++++ b/3rdparty/bgfx/examples/24-nbody/nbody.cpp
+@@ -132,6 +132,7 @@ class ExampleNbody : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/25-c99/helloworld.c b/3rdparty/bgfx/examples/25-c99/helloworld.c
+index 29b1a65d027a..5954684ab9e5 100644
+--- a/3rdparty/bgfx/examples/25-c99/helloworld.c
++++ b/3rdparty/bgfx/examples/25-c99/helloworld.c
+@@ -9,6 +9,7 @@
+ extern bool entry_process_events(uint32_t* _width, uint32_t* _height, uint32_t* _debug, uint32_t* _reset);
+ extern void* entry_get_default_native_window_handle();
+ extern void* entry_get_native_display_handle();
++extern bgfx_native_window_handle_type_t entry_get_native_window_handle_type(void);
+ 
+ uint16_t uint16_max(uint16_t _a, uint16_t _b)
+ {
+@@ -29,6 +30,7 @@ int32_t _main_(int32_t _argc, char** _argv)
+ 
+ 	init.platformData.nwh = entry_get_default_native_window_handle();
+ 	init.platformData.ndt = entry_get_native_display_handle();
++	init.platformData.type = entry_get_native_window_handle_type();
+ 
+ 	bgfx_init(&init);
+ 	bgfx_reset(width, height, reset, init.resolution.format);
+diff --git a/3rdparty/bgfx/examples/26-occlusion/occlusion.cpp b/3rdparty/bgfx/examples/26-occlusion/occlusion.cpp
+index d0149838d36e..f30dc44cf7b8 100644
+--- a/3rdparty/bgfx/examples/26-occlusion/occlusion.cpp
++++ b/3rdparty/bgfx/examples/26-occlusion/occlusion.cpp
+@@ -84,6 +84,7 @@ class ExampleOcclusion : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/27-terrain/terrain.cpp b/3rdparty/bgfx/examples/27-terrain/terrain.cpp
+index 3b493304a4cc..77053b45d1d7 100644
+--- a/3rdparty/bgfx/examples/27-terrain/terrain.cpp
++++ b/3rdparty/bgfx/examples/27-terrain/terrain.cpp
+@@ -80,6 +80,7 @@ ExampleTerrain(const char* _name, const char* _description, const char* _url)
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/28-wireframe/wireframe.cpp b/3rdparty/bgfx/examples/28-wireframe/wireframe.cpp
+index 905ab2c6a416..98bef8aedb5c 100644
+--- a/3rdparty/bgfx/examples/28-wireframe/wireframe.cpp
++++ b/3rdparty/bgfx/examples/28-wireframe/wireframe.cpp
+@@ -293,6 +293,7 @@ class ExampleWireframe : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/29-debugdraw/debugdraw.cpp b/3rdparty/bgfx/examples/29-debugdraw/debugdraw.cpp
+index fb13bb7e3c8b..64a21d858c66 100644
+--- a/3rdparty/bgfx/examples/29-debugdraw/debugdraw.cpp
++++ b/3rdparty/bgfx/examples/29-debugdraw/debugdraw.cpp
+@@ -780,6 +780,7 @@ class ExampleDebugDraw : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/30-picking/picking.cpp b/3rdparty/bgfx/examples/30-picking/picking.cpp
+index a77395e8d71f..9a5c36d8fd88 100644
+--- a/3rdparty/bgfx/examples/30-picking/picking.cpp
++++ b/3rdparty/bgfx/examples/30-picking/picking.cpp
+@@ -40,6 +40,7 @@ class ExamplePicking : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/31-rsm/reflectiveshadowmap.cpp b/3rdparty/bgfx/examples/31-rsm/reflectiveshadowmap.cpp
+index 358893f9bb85..65dfe345c2ec 100644
+--- a/3rdparty/bgfx/examples/31-rsm/reflectiveshadowmap.cpp
++++ b/3rdparty/bgfx/examples/31-rsm/reflectiveshadowmap.cpp
+@@ -213,6 +213,7 @@ class ExampleRSM : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/32-particles/particles.cpp b/3rdparty/bgfx/examples/32-particles/particles.cpp
+index d5642b4b8d2f..b9815ea7ea1f 100644
+--- a/3rdparty/bgfx/examples/32-particles/particles.cpp
++++ b/3rdparty/bgfx/examples/32-particles/particles.cpp
+@@ -248,6 +248,7 @@ class ExampleParticles : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/33-pom/pom.cpp b/3rdparty/bgfx/examples/33-pom/pom.cpp
+index 71e7e1d85eaa..2e07a1957ebd 100644
+--- a/3rdparty/bgfx/examples/33-pom/pom.cpp
++++ b/3rdparty/bgfx/examples/33-pom/pom.cpp
+@@ -130,6 +130,7 @@ class ExamplePom : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/34-mvs/mvs.cpp b/3rdparty/bgfx/examples/34-mvs/mvs.cpp
+index bbe469b9533d..731a08f1bbcb 100644
+--- a/3rdparty/bgfx/examples/34-mvs/mvs.cpp
++++ b/3rdparty/bgfx/examples/34-mvs/mvs.cpp
+@@ -126,6 +126,7 @@ class ExampleMvs : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/35-dynamic/dynamic.cpp b/3rdparty/bgfx/examples/35-dynamic/dynamic.cpp
+index 76544852ffab..0c82aca24570 100644
+--- a/3rdparty/bgfx/examples/35-dynamic/dynamic.cpp
++++ b/3rdparty/bgfx/examples/35-dynamic/dynamic.cpp
+@@ -104,6 +104,7 @@ class ExampleDynamic : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/36-sky/sky.cpp b/3rdparty/bgfx/examples/36-sky/sky.cpp
+index 3648881c627b..c82c9e502a14 100644
+--- a/3rdparty/bgfx/examples/36-sky/sky.cpp
++++ b/3rdparty/bgfx/examples/36-sky/sky.cpp
+@@ -420,6 +420,7 @@ class ExampleProceduralSky : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/37-gpudrivenrendering/gpudrivenrendering.cpp b/3rdparty/bgfx/examples/37-gpudrivenrendering/gpudrivenrendering.cpp
+index 312ef4898b2c..56f0141887a9 100644
+--- a/3rdparty/bgfx/examples/37-gpudrivenrendering/gpudrivenrendering.cpp
++++ b/3rdparty/bgfx/examples/37-gpudrivenrendering/gpudrivenrendering.cpp
+@@ -330,6 +330,7 @@ class GPUDrivenRendering : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/38-bloom/bloom.cpp b/3rdparty/bgfx/examples/38-bloom/bloom.cpp
+index 312eef0e72a0..99dcb730730b 100644
+--- a/3rdparty/bgfx/examples/38-bloom/bloom.cpp
++++ b/3rdparty/bgfx/examples/38-bloom/bloom.cpp
+@@ -200,6 +200,7 @@ class ExampleBloom : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/39-assao/assao.cpp b/3rdparty/bgfx/examples/39-assao/assao.cpp
+index 45d1e92b7b40..fbff0f29c986 100644
+--- a/3rdparty/bgfx/examples/39-assao/assao.cpp
++++ b/3rdparty/bgfx/examples/39-assao/assao.cpp
+@@ -271,6 +271,7 @@ namespace
+ 			init.vendorId = args.m_pciId;
+ 			init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 			init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 			init.resolution.width  = m_width;
+ 			init.resolution.height = m_height;
+ 			init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/40-svt/svt.cpp b/3rdparty/bgfx/examples/40-svt/svt.cpp
+index caab49c3416c..3256f64952fb 100644
+--- a/3rdparty/bgfx/examples/40-svt/svt.cpp
++++ b/3rdparty/bgfx/examples/40-svt/svt.cpp
+@@ -82,6 +82,7 @@ class ExampleSVT : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/41-tess/tess.cpp b/3rdparty/bgfx/examples/41-tess/tess.cpp
+index 45566ddcd5ff..8f0ef16433a9 100644
+--- a/3rdparty/bgfx/examples/41-tess/tess.cpp
++++ b/3rdparty/bgfx/examples/41-tess/tess.cpp
+@@ -339,6 +339,7 @@ class ExampleTessellation : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset = m_reset;
+diff --git a/3rdparty/bgfx/examples/42-bunnylod/bunnylod.cpp b/3rdparty/bgfx/examples/42-bunnylod/bunnylod.cpp
+index bd44b1f8e827..67c276c2e3cf 100644
+--- a/3rdparty/bgfx/examples/42-bunnylod/bunnylod.cpp
++++ b/3rdparty/bgfx/examples/42-bunnylod/bunnylod.cpp
+@@ -264,6 +264,7 @@ class ExampleBunnyLOD : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/43-denoise/denoise.cpp b/3rdparty/bgfx/examples/43-denoise/denoise.cpp
+index 3c9c2ef299b3..f9ff556a001f 100644
+--- a/3rdparty/bgfx/examples/43-denoise/denoise.cpp
++++ b/3rdparty/bgfx/examples/43-denoise/denoise.cpp
+@@ -253,6 +253,7 @@ class ExampleDenoise : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/44-sss/screen_space_shadows.cpp b/3rdparty/bgfx/examples/44-sss/screen_space_shadows.cpp
+index 7a142baa373f..1bf85b0e973b 100644
+--- a/3rdparty/bgfx/examples/44-sss/screen_space_shadows.cpp
++++ b/3rdparty/bgfx/examples/44-sss/screen_space_shadows.cpp
+@@ -265,6 +265,7 @@ class ExampleScreenSpaceShadows : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/45-bokeh/bokeh.cpp b/3rdparty/bgfx/examples/45-bokeh/bokeh.cpp
+index b1ed78f4240a..965db7475861 100644
+--- a/3rdparty/bgfx/examples/45-bokeh/bokeh.cpp
++++ b/3rdparty/bgfx/examples/45-bokeh/bokeh.cpp
+@@ -247,6 +247,7 @@ class ExampleBokeh : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/47-pixelformats/pixelformats.cpp b/3rdparty/bgfx/examples/47-pixelformats/pixelformats.cpp
+index 7a78f36723d0..98c27558b293 100644
+--- a/3rdparty/bgfx/examples/47-pixelformats/pixelformats.cpp
++++ b/3rdparty/bgfx/examples/47-pixelformats/pixelformats.cpp
+@@ -430,6 +430,7 @@ class ExamplePixelFormats : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/48-drawindirect/drawindirect.cpp b/3rdparty/bgfx/examples/48-drawindirect/drawindirect.cpp
+index d8b4d6d58cf4..65fffa123b7c 100644
+--- a/3rdparty/bgfx/examples/48-drawindirect/drawindirect.cpp
++++ b/3rdparty/bgfx/examples/48-drawindirect/drawindirect.cpp
+@@ -146,6 +146,7 @@ class DrawIndirect : public entry::AppI
+ 		init.vendorId = args.m_pciId;
+ 		init.platformData.nwh  = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 		init.platformData.ndt  = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 		init.resolution.width  = m_width;
+ 		init.resolution.height = m_height;
+ 		init.resolution.reset  = m_reset;
+diff --git a/3rdparty/bgfx/examples/49-hextile/hextile.cpp b/3rdparty/bgfx/examples/49-hextile/hextile.cpp
+index ecef40bf2619..58dc2c7e3a56 100644
+--- a/3rdparty/bgfx/examples/49-hextile/hextile.cpp
++++ b/3rdparty/bgfx/examples/49-hextile/hextile.cpp
+@@ -85,6 +85,7 @@ namespace
+ 			init.vendorId = args.m_pciId;
+ 			init.platformData.nwh = entry::getNativeWindowHandle(entry::kDefaultWindowHandle);
+ 			init.platformData.ndt = entry::getNativeDisplayHandle();
++		init.platformData.type = entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
+ 			init.resolution.width = m_width;
+ 			init.resolution.height = m_height;
+ 			init.resolution.reset = m_reset;
+diff --git a/3rdparty/bgfx/examples/common/entry/entry.cpp b/3rdparty/bgfx/examples/common/entry/entry.cpp
+index 58a671e6a703..07621f3cd25f 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry.cpp
+@@ -1037,3 +1037,8 @@ extern "C" void* entry_get_native_display_handle()
+ {
+ 	return entry::getNativeDisplayHandle();
+ }
++
++extern "C" bgfx::NativeWindowHandleType::Enum entry_get_native_window_handle_type()
++{
++	return entry::getNativeWindowHandleType(entry::kDefaultWindowHandle);
++}
+diff --git a/3rdparty/bgfx/examples/common/entry/entry.h b/3rdparty/bgfx/examples/common/entry/entry.h
+index 2dc7acc7b565..443066e304fb 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry.h
++++ b/3rdparty/bgfx/examples/common/entry/entry.h
+@@ -7,6 +7,7 @@
+ #define ENTRY_H_HEADER_GUARD
+ 
+ #include "dbg.h"
++#include <bgfx/bgfx.h>
+ #include <bx/bx.h>
+ #include <bx/filepath.h>
+ #include <bx/string.h>
+@@ -297,6 +298,9 @@ namespace entry
+ 	///
+ 	void* getNativeDisplayHandle();
+ 
++	///
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle);
++
+ 	///
+ 	void setCurrentDir(const char* _dir);
+ 
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_android.cpp b/3rdparty/bgfx/examples/common/entry/entry_android.cpp
+index 3a6ac8561d37..a99735b6df5d 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_android.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_android.cpp
+@@ -550,6 +550,12 @@ namespace entry
+ 		return NULL;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ 	int32_t MainThreadEntry::threadFunc(bx::Thread* _thread, void* _userData)
+ 	{
+ 		BX_UNUSED(_thread);
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_glfw.cpp b/3rdparty/bgfx/examples/common/entry/entry_glfw.cpp
+index da15502409c9..d27745d13900 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_glfw.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_glfw.cpp
+@@ -875,6 +875,19 @@ namespace entry
+ #	endif // BX_PLATFORM_*
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++#	if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
++#		if ENTRY_CONFIG_USE_WAYLAND
++		return bgfx::NativeWindowHandleType::Wayland;
++#		else
++		return bgfx::NativeWindowHandleType::Default;
++#		endif // ENTRY_CONFIG_USE_WAYLAND
++#	else
++		return bgfx::NativeWindowHandleType::Default;
++#	endif // BX_PLATFORM_*
++	}
++
+ 	int32_t MainThreadEntry::threadFunc(bx::Thread* _thread, void* _userData)
+ 	{
+ 		BX_UNUSED(_thread);
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_html5.cpp b/3rdparty/bgfx/examples/common/entry/entry_html5.cpp
+index 884a563b7832..d33879229f9b 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_html5.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_html5.cpp
+@@ -427,6 +427,12 @@ namespace entry
+ 	{
+ 		return NULL;
+ 	}
++
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
+ }
+ 
+ int main(int _argc, const char* const* _argv)
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_ios.mm b/3rdparty/bgfx/examples/common/entry/entry_ios.mm
+index f123b6684ea8..8592a33c43ee 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_ios.mm
++++ b/3rdparty/bgfx/examples/common/entry/entry_ios.mm
+@@ -161,6 +161,12 @@ void setMouseLock(WindowHandle _handle, bool _lock)
+ 		return NULL;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ } // namespace entry
+ 
+ using namespace entry;
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_noop.cpp b/3rdparty/bgfx/examples/common/entry/entry_noop.cpp
+index 22d160f592c3..5e4bb0fafa45 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_noop.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_noop.cpp
+@@ -78,6 +78,12 @@ namespace entry
+ 		return NULL;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ } // namespace entry
+ 
+ int main(int _argc, const char* const* _argv)
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_osx.mm b/3rdparty/bgfx/examples/common/entry/entry_osx.mm
+index 948483ca93ee..98869d7df04d 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_osx.mm
++++ b/3rdparty/bgfx/examples/common/entry/entry_osx.mm
+@@ -725,6 +725,12 @@ void setMouseLock(WindowHandle _handle, bool _lock)
+ 		return NULL;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ } // namespace entry
+ 
+ @implementation AppDelegate
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_sdl.cpp b/3rdparty/bgfx/examples/common/entry/entry_sdl.cpp
+index 8744b98e763d..5a862c0ca05a 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_sdl.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_sdl.cpp
+@@ -50,21 +50,24 @@ namespace entry
+ 
+ #	if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+ #		if ENTRY_CONFIG_USE_WAYLAND
+-		wl_egl_window *win_impl = (wl_egl_window*)SDL_GetWindowData(_window, "wl_egl_window");
+-		if(!win_impl)
+-		{
+-			int width, height;
+-			SDL_GetWindowSize(_window, &width, &height);
+-			struct wl_surface* surface = wmi.info.wl.surface;
+-			if(!surface)
+-				return nullptr;
+-			win_impl = wl_egl_window_create(surface, width, height);
+-			SDL_SetWindowData(_window, "wl_egl_window", win_impl);
+-		}
+-		return (void*)(uintptr_t)win_impl;
+-#		else
+-		return (void*)wmi.info.x11.window;
+-#		endif
++			if (wmi.subsystem == SDL_SYSWM_WAYLAND)
++				{
++					wl_egl_window *win_impl = (wl_egl_window*)SDL_GetWindowData(_window, "wl_egl_window");
++					if(!win_impl)
++					{
++						int width, height;
++						SDL_GetWindowSize(_window, &width, &height);
++						struct wl_surface* surface = wmi.info.wl.surface;
++						if(!surface)
++							return nullptr;
++						win_impl = wl_egl_window_create(surface, width, height);
++						SDL_SetWindowData(_window, "wl_egl_window", win_impl);
++					}
++					return (void*)(uintptr_t)win_impl;
++				}
++			else
++#		endif // ENTRY_CONFIG_USE_WAYLAND
++				return (void*)wmi.info.x11.window;
+ #	elif BX_PLATFORM_OSX || BX_PLATFORM_IOS
+ 		return wmi.info.cocoa.window;
+ #	elif BX_PLATFORM_WINDOWS
+@@ -1145,18 +1148,38 @@ namespace entry
+ 		{
+ 			return NULL;
+ 		}
+-
+ #	if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+ #		if ENTRY_CONFIG_USE_WAYLAND
+-		return wmi.info.wl.display;
+-#		else
+-		return wmi.info.x11.display;
++			if (wmi.subsystem == SDL_SYSWM_WAYLAND)
++				return wmi.info.wl.display;
++			else
+ #		endif // ENTRY_CONFIG_USE_WAYLAND
++				return wmi.info.x11.display;
+ #	else
+ 		return NULL;
+ #	endif // BX_PLATFORM_*
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		SDL_SysWMinfo wmi;
++		SDL_VERSION(&wmi.version);
++		if (!SDL_GetWindowWMInfo(s_ctx.m_window[_handle.idx], &wmi) )
++		{
++			return bgfx::NativeWindowHandleType::Default;
++		}
++#	if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
++#		if ENTRY_CONFIG_USE_WAYLAND
++		if (wmi.subsystem == SDL_SYSWM_WAYLAND)
++			return bgfx::NativeWindowHandleType::Wayland;
++		else
++#		endif // ENTRY_CONFIG_USE_WAYLAND
++			return bgfx::NativeWindowHandleType::Default;
++#	else
++		return bgfx::NativeWindowHandleType::Default;
++#	endif // BX_PLATFORM_*
++	}
++
+ 	int32_t MainThreadEntry::threadFunc(bx::Thread* _thread, void* _userData)
+ 	{
+ 		BX_UNUSED(_thread);
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_windows.cpp b/3rdparty/bgfx/examples/common/entry/entry_windows.cpp
+index 5d60573d08e9..754039a6db72 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_windows.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_windows.cpp
+@@ -1169,6 +1169,12 @@ namespace entry
+ 		return NULL;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ 	int32_t MainThreadEntry::threadFunc(bx::Thread* /*_thread*/, void* _userData)
+ 	{
+ 		MainThreadEntry* self = (MainThreadEntry*)_userData;
+diff --git a/3rdparty/bgfx/examples/common/entry/entry_x11.cpp b/3rdparty/bgfx/examples/common/entry/entry_x11.cpp
+index a5f4b3fa6da7..407a1d9e5dc2 100644
+--- a/3rdparty/bgfx/examples/common/entry/entry_x11.cpp
++++ b/3rdparty/bgfx/examples/common/entry/entry_x11.cpp
+@@ -771,6 +771,12 @@ namespace entry
+ 		return s_ctx.m_display;
+ 	}
+ 
++	bgfx::NativeWindowHandleType::Enum getNativeWindowHandleType(WindowHandle _handle)
++	{
++		BX_UNUSED(_handle);
++		return bgfx::NativeWindowHandleType::Default;
++	}
++
+ } // namespace entry
+ 
+ int main(int _argc, const char* const* _argv)
+diff --git a/3rdparty/bgfx/include/bgfx/bgfx.h b/3rdparty/bgfx/include/bgfx/bgfx.h
+index 844337d8f77e..ea061fe7e1b3 100644
+--- a/3rdparty/bgfx/include/bgfx/bgfx.h
++++ b/3rdparty/bgfx/include/bgfx/bgfx.h
+@@ -403,6 +403,22 @@ namespace bgfx
+ 		};
+ 	};
+ 
++	/// Native window handle type.
++	///
++	/// @attention C99's equivalent binding is `bgfx_native_window_handle_type_t`.
++	///
++
++	struct NativeWindowHandleType
++	{
++		 enum Enum
++		 {
++		       Default = 0, //!< Platform default handle type (X11 on Linux).
++		       Wayland,     //!< Wayland.
++
++		       Count
++		 };
++	};
++
+ 	static const uint16_t kInvalidHandle = UINT16_MAX;
+ 
+ 	BGFX_HANDLE(DynamicIndexBufferHandle)
+@@ -622,15 +638,16 @@ namespace bgfx
+ 	{
+ 		PlatformData();
+ 
+-		void* ndt;          //!< Native display type (*nix specific).
+-		void* nwh;          //!< Native window handle. If `NULL`, bgfx will create a headless
+-		                    ///  context/device, provided the rendering API supports it.
+-		void* context;      //!< GL context, D3D device, or Vulkan device. If `NULL`, bgfx
+-		                    ///  will create context/device.
+-		void* backBuffer;   //!< GL back-buffer, or D3D render target view. If `NULL` bgfx will
+-		                    ///  create back-buffer color surface.
+-		void* backBufferDS; //!< Backbuffer depth/stencil. If `NULL`, bgfx will create a back-buffer
+-		                    ///  depth/stencil surface.
++		void* ndt;                         //!< Native display type (*nix specific).
++		void* nwh;                         //!< Native window handle. If `NULL`, bgfx will create a headless
++		                                   ///  context/device, provided the rendering API supports it.
++		void* context;                     //!< GL context, D3D device, or Vulkan device. If `NULL`, bgfx
++		                                   ///  will create context/device.
++		void* backBuffer;                  //!< GL back-buffer, or D3D render target view. If `NULL` bgfx will
++		                                   ///  create back-buffer color surface.
++		void* backBufferDS;                //!< Backbuffer depth/stencil. If `NULL`, bgfx will create a back-buffer
++		                                   ///  depth/stencil surface.
++		NativeWindowHandleType::Enum type; //!< Handle type. Needed for platforms having more than one option.
+ 	};
+ 
+ 	/// Backbuffer resolution and reset parameters.
+diff --git a/3rdparty/bgfx/include/bgfx/c99/bgfx.h b/3rdparty/bgfx/include/bgfx/c99/bgfx.h
+index 04d9bcebee73..511a39cad7fe 100644
+--- a/3rdparty/bgfx/include/bgfx/c99/bgfx.h
++++ b/3rdparty/bgfx/include/bgfx/c99/bgfx.h
+@@ -391,6 +391,19 @@ typedef enum bgfx_view_mode
+ 
+ } bgfx_view_mode_t;
+ 
++/**
++ * Native window handle type..
++ *
++ */
++typedef enum bgfx_native_window_handle_type
++{
++    BGFX_NATIVE_WINDOW_HANDLE_TYPE_DEFAULT,   /** ( 0) Platform default handle type (X11 on Linux) */
++    BGFX_NATIVE_WINDOW_HANDLE_TYPE_WAYLAND,   /** ( 1) Wayland. */
++
++    BGFX_NATIVE_WINDOW_HANDLE_TYPE_COUNT
++
++} bgfx_native_window_handle_type_t;
++
+ /**
+  * Render frame enum.
+  *
+@@ -625,6 +638,11 @@ typedef struct bgfx_platform_data_s
+      */
+     void*                backBufferDS;
+ 
++    /**
++     * Handle type. Needed for platforms having more than one option.
++     */
++     bgfx_native_window_handle_type_t type;
++
+ } bgfx_platform_data_t;
+ 
+ /**
+diff --git a/3rdparty/bgfx/src/amalgamated.cpp b/3rdparty/bgfx/src/amalgamated.cpp
+index aa88b1c48983..deac46d36e71 100644
+--- a/3rdparty/bgfx/src/amalgamated.cpp
++++ b/3rdparty/bgfx/src/amalgamated.cpp
+@@ -7,7 +7,6 @@
+ #include "debug_renderdoc.cpp"
+ #include "dxgi.cpp"
+ #include "glcontext_egl.cpp"
+-#include "glcontext_glx.cpp"
+ #include "glcontext_wgl.cpp"
+ #include "glcontext_html5.cpp"
+ #include "nvapi.cpp"
+diff --git a/3rdparty/bgfx/src/bgfx.cpp b/3rdparty/bgfx/src/bgfx.cpp
+index f9ef0a6e2078..d2aa92ad8adb 100644
+--- a/3rdparty/bgfx/src/bgfx.cpp
++++ b/3rdparty/bgfx/src/bgfx.cpp
+@@ -3422,6 +3422,7 @@ namespace bgfx
+ 		, context(NULL)
+ 		, backBuffer(NULL)
+ 		, backBufferDS(NULL)
++		, type(NativeWindowHandleType::Default)
+ 	{
+ 	}
+ 
+diff --git a/3rdparty/bgfx/src/glcontext_egl.cpp b/3rdparty/bgfx/src/glcontext_egl.cpp
+index fabddd5c6632..54e0230b7783 100644
+--- a/3rdparty/bgfx/src/glcontext_egl.cpp
++++ b/3rdparty/bgfx/src/glcontext_egl.cpp
+@@ -25,36 +25,44 @@ namespace bgfx { namespace gl
+ 
+ 	typedef void (*EGLPROC)(void);
+ 
+-	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLCHOOSECONFIGPROC)(EGLDisplay dpy, const EGLint *attrib_list,	EGLConfig *configs, EGLint config_size,	EGLint *num_config);
+-	typedef EGLContext  (EGLAPIENTRY* PFNEGLCREATECONTEXTPROC)(EGLDisplay dpy, EGLConfig config, EGLContext share_context, const EGLint *attrib_list);
+-	typedef EGLSurface  (EGLAPIENTRY* PFNEGLCREATEWINDOWSURFACEPROC)(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType win, const EGLint *attrib_list);
+-	typedef EGLint      (EGLAPIENTRY* PFNEGLGETERRORPROC)(void);
+-	typedef EGLDisplay  (EGLAPIENTRY* PFNEGLGETDISPLAYPROC)(EGLNativeDisplayType display_id);
+-	typedef EGLPROC     (EGLAPIENTRY* PFNEGLGETPROCADDRESSPROC)(const char *procname);
+-	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLINITIALIZEPROC)(EGLDisplay dpy, EGLint *major, EGLint *minor);
+-	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLMAKECURRENTPROC)(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx);
++	typedef EGLBoolean  (EGLAPIENTRY* PGNEGLBINDAPIPROC)(EGLenum api);
++	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLCHOOSECONFIGPROC)(EGLDisplay dpy, const EGLint* attrib_list, EGLConfig* configs, EGLint config_size, EGLint* num_config);
++	typedef EGLContext  (EGLAPIENTRY* PFNEGLCREATECONTEXTPROC)(EGLDisplay dpy, EGLConfig config, EGLContext share_context, const EGLint* attrib_list);
++	typedef EGLSurface  (EGLAPIENTRY* PFNEGLCREATEPBUFFERSURFACEPROC)(EGLDisplay display, EGLConfig config, EGLint const* attrib_list);
++	typedef EGLSurface  (EGLAPIENTRY* PFNEGLCREATEWINDOWSURFACEPROC)(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType win, const EGLint* attrib_list);
+ 	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLDESTROYCONTEXTPROC)(EGLDisplay dpy, EGLContext ctx);
+ 	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLDESTROYSURFACEPROC)(EGLDisplay dpy, EGLSurface surface);
+-	typedef const char* (EGLAPIENTRY* PGNEGLQUERYSTRINGPROC)(EGLDisplay dpy, EGLint name);
++	typedef EGLContext  (EGLAPIENTRY* PFNEGLGETCURRENTCONTEXTPROC)(void);
++	typedef EGLSurface  (EGLAPIENTRY* PFNEGLGETCURRENTSURFACEPROC)(EGLint readdraw);
++	typedef EGLDisplay  (EGLAPIENTRY* PFNEGLGETDISPLAYPROC)(EGLNativeDisplayType display_id);
++	typedef EGLint      (EGLAPIENTRY* PFNEGLGETERRORPROC)(void);
++	typedef EGLPROC     (EGLAPIENTRY* PFNEGLGETPROCADDRESSPROC)(const char* procname);
++	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLINITIALIZEPROC)(EGLDisplay dpy, EGLint* major, EGLint* minor);
++	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLMAKECURRENTPROC)(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx);
+ 	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLSWAPBUFFERSPROC)(EGLDisplay dpy, EGLSurface surface);
+ 	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLSWAPINTERVALPROC)(EGLDisplay dpy, EGLint interval);
+ 	typedef EGLBoolean  (EGLAPIENTRY* PFNEGLTERMINATEPROC)(EGLDisplay dpy);
++	typedef const char* (EGLAPIENTRY* PGNEGLQUERYSTRINGPROC)(EGLDisplay dpy, EGLint name);
+ 
+-#define EGL_IMPORT                                                          \
+-	EGL_IMPORT_FUNC(PFNEGLCHOOSECONFIGPROC,        eglChooseConfig);        \
+-	EGL_IMPORT_FUNC(PFNEGLCREATECONTEXTPROC,       eglCreateContext);       \
+-	EGL_IMPORT_FUNC(PFNEGLCREATEWINDOWSURFACEPROC, eglCreateWindowSurface); \
+-	EGL_IMPORT_FUNC(PFNEGLGETDISPLAYPROC,          eglGetDisplay);          \
+-	EGL_IMPORT_FUNC(PFNEGLGETERRORPROC,            eglGetError);            \
+-	EGL_IMPORT_FUNC(PFNEGLGETPROCADDRESSPROC,      eglGetProcAddress);      \
+-	EGL_IMPORT_FUNC(PFNEGLDESTROYCONTEXTPROC,      eglDestroyContext);      \
+-	EGL_IMPORT_FUNC(PFNEGLDESTROYSURFACEPROC,      eglDestroySurface);      \
+-	EGL_IMPORT_FUNC(PFNEGLINITIALIZEPROC,          eglInitialize);          \
+-	EGL_IMPORT_FUNC(PFNEGLMAKECURRENTPROC,         eglMakeCurrent);         \
+-	EGL_IMPORT_FUNC(PGNEGLQUERYSTRINGPROC,         eglQueryString);         \
+-	EGL_IMPORT_FUNC(PFNEGLSWAPBUFFERSPROC,         eglSwapBuffers);         \
+-	EGL_IMPORT_FUNC(PFNEGLSWAPINTERVALPROC,        eglSwapInterval);        \
+-	EGL_IMPORT_FUNC(PFNEGLTERMINATEPROC,           eglTerminate);
++#define EGL_IMPORT                                                            \
++	EGL_IMPORT_FUNC(PGNEGLBINDAPIPROC,              eglBindAPI);              \
++	EGL_IMPORT_FUNC(PFNEGLCHOOSECONFIGPROC,         eglChooseConfig);         \
++	EGL_IMPORT_FUNC(PFNEGLCREATECONTEXTPROC,        eglCreateContext);        \
++	EGL_IMPORT_FUNC(PFNEGLCREATEPBUFFERSURFACEPROC, eglCreatePbufferSurface); \
++	EGL_IMPORT_FUNC(PFNEGLCREATEWINDOWSURFACEPROC,  eglCreateWindowSurface);  \
++	EGL_IMPORT_FUNC(PFNEGLDESTROYCONTEXTPROC,       eglDestroyContext);       \
++	EGL_IMPORT_FUNC(PFNEGLDESTROYSURFACEPROC,       eglDestroySurface);       \
++	EGL_IMPORT_FUNC(PFNEGLGETCURRENTCONTEXTPROC,    eglGetCurrentContext);    \
++	EGL_IMPORT_FUNC(PFNEGLGETCURRENTSURFACEPROC,    eglGetCurrentSurface);    \
++	EGL_IMPORT_FUNC(PFNEGLGETDISPLAYPROC,           eglGetDisplay);           \
++	EGL_IMPORT_FUNC(PFNEGLGETERRORPROC,             eglGetError);             \
++	EGL_IMPORT_FUNC(PFNEGLGETPROCADDRESSPROC,       eglGetProcAddress);       \
++	EGL_IMPORT_FUNC(PFNEGLINITIALIZEPROC,           eglInitialize);           \
++	EGL_IMPORT_FUNC(PFNEGLMAKECURRENTPROC,          eglMakeCurrent);          \
++	EGL_IMPORT_FUNC(PFNEGLSWAPBUFFERSPROC,          eglSwapBuffers);          \
++	EGL_IMPORT_FUNC(PFNEGLSWAPINTERVALPROC,         eglSwapInterval);         \
++	EGL_IMPORT_FUNC(PFNEGLTERMINATEPROC,            eglTerminate);            \
++	EGL_IMPORT_FUNC(PGNEGLQUERYSTRINGPROC,          eglQueryString);          \
+ 
+ #define EGL_IMPORT_FUNC(_proto, _func) _proto _func
+ EGL_IMPORT
+@@ -62,12 +70,19 @@ EGL_IMPORT
+ 
+ 	void* eglOpen()
+ 	{
+-		void* handle = bx::dlopen("libEGL." BX_DL_EXT);
++	    void* handle = bx::dlopen(
++#if BX_PLATFORM_LINUX
++			"libEGL.so.1"
++#else
++			"libEGL." BX_DL_EXT
++#endif // BX_PLATFORM_*
++			);
++
+ 		BGFX_FATAL(NULL != handle, Fatal::UnableToInitialize, "Failed to load libEGL dynamic library.");
+ 
+-#define EGL_IMPORT_FUNC(_proto, _func)                                        \
+-	_func = (_proto)bx::dlsym(handle, #_func);                                \
+-	BX_TRACE("%p " #_func, _func);                                            \
++#define EGL_IMPORT_FUNC(_proto, _func)         \
++	_func = (_proto)bx::dlsym(handle, #_func); \
++	BX_TRACE("%p " #_func, _func);             \
+ 	BGFX_FATAL(NULL != _func, Fatal::UnableToInitialize, "Failed get " #_func ".")
+ EGL_IMPORT
+ #undef EGL_IMPORT_FUNC
+@@ -107,9 +122,17 @@ EGL_IMPORT
+ 			: m_nwh(_nwh)
+ 			, m_display(_display)
+ 		{
+-            EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
++			EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
++
++			if (EGLNativeWindowType(0) == _nwh)
++			{
++				m_surface = eglCreatePbufferSurface(m_display, _config, NULL);
++			}
++			else
++			{
++				m_surface = eglCreateWindowSurface(m_display, _config, _nwh, NULL);
++			}
+ 
+-			m_surface = eglCreateWindowSurface(m_display, _config, _nwh, NULL);
+ 			BGFX_FATAL(m_surface != EGL_NO_SURFACE, Fatal::UnableToInitialize, "Failed to create surface.");
+ 
+ 			m_context = eglCreateContext(m_display, _config, _context, s_contextAttrs);
+@@ -119,15 +142,17 @@ EGL_IMPORT
+ 			GL_CHECK(glClearColor(0.0f, 0.0f, 0.0f, 0.0f) );
+ 			GL_CHECK(glClear(GL_COLOR_BUFFER_BIT) );
+ 			swapBuffers();
++
+ 			GL_CHECK(glClear(GL_COLOR_BUFFER_BIT) );
+ 			swapBuffers();
+-            eglMakeCurrent(m_display, defaultSurface, defaultSurface, _context);
++
++			eglMakeCurrent(m_display, defaultSurface, defaultSurface, _context);
+ 		}
+ 
+ 		~SwapChainGL()
+ 		{
+-            EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
+-            EGLContext defaultContext = eglGetCurrentContext();
++			EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
++			EGLContext defaultContext = eglGetCurrentContext();
+ 
+ 			eglMakeCurrent(m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+ 			eglDestroyContext(m_display, m_context);
+@@ -157,6 +182,8 @@ EGL_IMPORT
+ 
+ 	void GlContext::create(uint32_t _width, uint32_t _height, uint32_t _flags)
+ 	{
++		BX_UNUSED(_flags);
++
+ #	if BX_PLATFORM_RPI
+ 		bcm_host_init();
+ #	endif // BX_PLATFORM_RPI
+@@ -180,7 +207,7 @@ EGL_IMPORT
+ 			}
+ #	endif // BX_PLATFORM_WINDOWS
+ 
+-			m_display = eglGetDisplay(ndt);
++            m_display = eglGetDisplay(NULL == ndt ? EGL_DEFAULT_DISPLAY : ndt);
+ 			BGFX_FATAL(m_display != EGL_NO_DISPLAY, Fatal::UnableToInitialize, "Failed to create display %p", m_display);
+ 
+ 			EGLint major = 0;
+@@ -202,24 +229,39 @@ EGL_IMPORT
+ 			BX_TRACE("Supported EGL extensions:");
+ 			dumpExtensions(extensions);
+ 
+-			// https://www.khronos.org/registry/EGL/extensions/ANDROID/EGL_ANDROID_recordable.txt
++			if (BX_ENABLED(BGFX_CONFIG_RENDERER_OPENGL) )
++			{
++				EGLBoolean ok = eglBindAPI(EGL_OPENGL_API);
++				BGFX_FATAL(ok, Fatal::UnableToInitialize, "Could not set API! error: %d", eglGetError());
++			}
++
+ 			const bool hasEglAndroidRecordable = !bx::findIdentifierMatch(extensions, "EGL_ANDROID_recordable").isEmpty();
+ 
+-			const uint32_t gles = BGFX_CONFIG_RENDERER_OPENGLES;
++			const uint32_t glVersion = !!BGFX_CONFIG_RENDERER_OPENGL
++				? BGFX_CONFIG_RENDERER_OPENGL
++				: BGFX_CONFIG_RENDERER_OPENGLES
++				;
+ 
+ #if BX_PLATFORM_ANDROID
+-			uint32_t msaa = (_flags&BGFX_RESET_MSAA_MASK)>>BGFX_RESET_MSAA_SHIFT;
+-            uint32_t msaaSamples = msaa == 0 ? 0 : 1<<msaa;
++			const uint32_t msaa = (_flags&BGFX_RESET_MSAA_MASK)>>BGFX_RESET_MSAA_SHIFT;
++			const uint32_t msaaSamples = msaa == 0 ? 0 : 1<<msaa;
+ 			m_msaaContext = true;
+ #endif // BX_PLATFORM_ANDROID
+ 
++			const bool headless = EGLNativeWindowType(0) == nwh;
++
+ 			EGLint attrs[] =
+ 			{
+-				EGL_RENDERABLE_TYPE, (gles >= 30) ? EGL_OPENGL_ES3_BIT_KHR : EGL_OPENGL_ES2_BIT,
++				EGL_RENDERABLE_TYPE, !!BGFX_CONFIG_RENDERER_OPENGL
++					? EGL_OPENGL_BIT
++					: (glVersion >= 30) ? EGL_OPENGL_ES3_BIT_KHR : EGL_OPENGL_ES2_BIT
++					,
++
++				EGL_SURFACE_TYPE, headless ? EGL_PBUFFER_BIT : EGL_WINDOW_BIT,
+ 
+-				EGL_BLUE_SIZE, 8,
++				EGL_BLUE_SIZE,  8,
+ 				EGL_GREEN_SIZE, 8,
+-				EGL_RED_SIZE, 8,
++				EGL_RED_SIZE,   8,
+ 				EGL_ALPHA_SIZE, 8,
+ 
+ #	if BX_PLATFORM_ANDROID
+@@ -231,8 +273,8 @@ EGL_IMPORT
+ 				EGL_STENCIL_SIZE, 8,
+ 
+ 				// Android Recordable surface
+-				hasEglAndroidRecordable ? 0x3142 : EGL_NONE,
+-				hasEglAndroidRecordable ? 1      : EGL_NONE,
++				hasEglAndroidRecordable ? EGL_RECORDABLE_ANDROID : EGL_NONE,
++				hasEglAndroidRecordable ? 1                      : EGL_NONE,
+ 
+ 				EGL_NONE
+ 			};
+@@ -274,7 +316,23 @@ EGL_IMPORT
+ 			vc_dispmanx_update_submit_sync(dispmanUpdate);
+ #	endif // BX_PLATFORM_ANDROID
+ 
+-			m_surface = eglCreateWindowSurface(m_display, m_config, nwh, NULL);
++			if (headless)
++			{
++				EGLint pbAttribs[] =
++				{
++					EGL_WIDTH,  EGLint(_width),
++					EGL_HEIGHT, EGLint(_height),
++
++					EGL_NONE
++				};
++
++				m_surface = eglCreatePbufferSurface(m_display, m_config, pbAttribs);
++			}
++			else
++			{
++				m_surface = eglCreateWindowSurface(m_display, m_config, nwh, NULL);
++			}
++
+ 			BGFX_FATAL(m_surface != EGL_NO_SURFACE, Fatal::UnableToInitialize, "Failed to create surface.");
+ 
+ 			const bool hasEglKhrCreateContext = !bx::findIdentifierMatch(extensions, "EGL_KHR_create_context").isEmpty();
+@@ -291,11 +349,17 @@ EGL_IMPORT
+ #	else
+ 				if (hasEglKhrCreateContext)
+ 				{
+-					bx::write(&writer, EGLint(EGL_CONTEXT_MAJOR_VERSION_KHR), bx::ErrorAssert{} );
+-					bx::write(&writer, EGLint(gles / 10), bx::ErrorAssert{} );
++					if (BX_ENABLED(BGFX_CONFIG_RENDERER_OPENGL) )
++					{
++						bx::write(&writer, EGLint(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR), bx::ErrorAssert{});
++						bx::write(&writer, EGLint(EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR), bx::ErrorAssert{});
++					}
++
++					bx::write(&writer, EGLint(EGL_CONTEXT_MAJOR_VERSION_KHR), bx::ErrorAssert{});
++					bx::write(&writer, EGLint(glVersion / 10), bx::ErrorAssert{});
+ 
+-					bx::write(&writer, EGLint(EGL_CONTEXT_MINOR_VERSION_KHR), bx::ErrorAssert{} );
+-					bx::write(&writer, EGLint(gles % 10), bx::ErrorAssert{} );
++					bx::write(&writer, EGLint(EGL_CONTEXT_MINOR_VERSION_KHR), bx::ErrorAssert{});
++					bx::write(&writer, EGLint(glVersion % 10), bx::ErrorAssert{});
+ 
+ 					flags |= BGFX_CONFIG_DEBUG && hasEglKhrNoError ? 0
+ 						| EGL_CONTEXT_FLAG_NO_ERROR_BIT_KHR
+@@ -318,7 +382,7 @@ EGL_IMPORT
+ #	endif // BX_PLATFORM_RPI
+ 				{
+ 					bx::write(&writer, EGLint(EGL_CONTEXT_CLIENT_VERSION), bx::ErrorAssert{} );
+-					bx::write(&writer, EGLint(gles / 10), bx::ErrorAssert{} );
++					bx::write(&writer, EGLint(glVersion / 10), bx::ErrorAssert{} );
+ 				}
+ 
+ 				bx::write(&writer, EGLint(EGL_NONE), bx::ErrorAssert{} );
+@@ -397,10 +461,10 @@ EGL_IMPORT
+ 	uint64_t GlContext::getCaps() const
+ 	{
+ 		return BX_ENABLED(0
+-						| BX_PLATFORM_LINUX
+-						| BX_PLATFORM_WINDOWS
+-						| BX_PLATFORM_ANDROID
+-						)
++			| BX_PLATFORM_LINUX
++			| BX_PLATFORM_WINDOWS
++			| BX_PLATFORM_ANDROID
++			)
+ 			? BGFX_CAPS_SWAP_CHAIN
+ 			: 0
+ 			;
+@@ -458,13 +522,23 @@ EGL_IMPORT
+ 		BX_TRACE("Import:");
+ 
+ #	if BX_PLATFORM_WINDOWS || BX_PLATFORM_LINUX
+-		void* glesv2 = bx::dlopen("libGLESv2." BX_DL_EXT);
++#		if BX_PLATFORM_WINDOWS
++#			define LIBRARY_NAME "libGL.dll"
++#		elif BX_PLATFORM_LINUX
++#			if BGFX_CONFIG_RENDERER_OPENGL
++#				define LIBRARY_NAME "libGL.so.1"
++#			else
++#				define LIBRARY_NAME "libGLESv2.so.2"
++#			endif
++#		endif
++
++		void* lib = bx::dlopen(LIBRARY_NAME);
+ 
+ #		define GL_EXTENSION(_optional, _proto, _func, _import)                           \
+ 			{                                                                            \
+ 				if (NULL == _func)                                                       \
+ 				{                                                                        \
+-					_func = bx::dlsym<_proto>(glesv2, #_import);                         \
++					_func = bx::dlsym<_proto>(lib, #_import);                            \
+ 					BX_TRACE("\t%p " #_func " (" #_import ")", _func);                   \
+ 					BGFX_FATAL(_optional || NULL != _func                                \
+ 						, Fatal::UnableToInitialize                                      \
+diff --git a/3rdparty/bgfx/src/glcontext_egl.h b/3rdparty/bgfx/src/glcontext_egl.h
+index b2edb67ab3d0..2f87a32e5eb2 100644
+--- a/3rdparty/bgfx/src/glcontext_egl.h
++++ b/3rdparty/bgfx/src/glcontext_egl.h
+@@ -10,11 +10,20 @@
+ 
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
++
++// EGL pulls X11 crap...
++#if defined(None)
++#	undef None
++#endif // defined(None)
++
+ #if defined(Success)
+-// X11 defines Success
+ #	undef Success
+ #endif // defined(Success)
+ 
++#if defined(Status)
++#	undef Status
++#endif // defined(Status)
++
+ namespace bgfx { namespace gl
+ {
+ 	struct SwapChainGL;
+diff --git a/3rdparty/bgfx/src/glcontext_glx.cpp b/3rdparty/bgfx/src/glcontext_glx.cpp
+deleted file mode 100644
+index 4dd21ca013ab..000000000000
+--- a/3rdparty/bgfx/src/glcontext_glx.cpp
++++ /dev/null
+@@ -1,393 +0,0 @@
+-/*
+- * Copyright 2011-2022 Branimir Karadzic. All rights reserved.
+- * License: https://github.com/bkaradzic/bgfx/blob/master/LICENSE
+- */
+-
+-#include "bgfx_p.h"
+-
+-#if (BX_PLATFORM_BSD || BX_PLATFORM_LINUX) && (BGFX_CONFIG_RENDERER_OPENGLES || BGFX_CONFIG_RENDERER_OPENGL)
+-#	include "renderer_gl.h"
+-
+-#	if BGFX_USE_GLX
+-#		define GLX_GLXEXT_PROTOTYPES
+-#		include <glx/glxext.h>
+-
+-// glxext will include X11 which #defines None, Status, etc.
+-#undef None
+-#undef Status
+-
+-namespace bgfx { namespace gl
+-{
+-	typedef int (*PFNGLXSWAPINTERVALMESAPROC)(uint32_t _interval);
+-
+-	PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
+-	PFNGLXSWAPINTERVALEXTPROC         glXSwapIntervalEXT;
+-	PFNGLXSWAPINTERVALMESAPROC        glXSwapIntervalMESA;
+-	PFNGLXSWAPINTERVALSGIPROC         glXSwapIntervalSGI;
+-
+-#	define GL_IMPORT(_optional, _proto, _func, _import) _proto _func
+-#	include "glimports.h"
+-
+-	struct SwapChainGL
+-	{
+-		SwapChainGL(::Display* display, ::Window _window, XVisualInfo* _visualInfo, GLXContext _context)
+-			: m_display(display)
+-			, m_window(_window)
+-		{
+-			m_context = glXCreateContext(m_display, _visualInfo, _context, GL_TRUE);
+-		}
+-
+-		~SwapChainGL()
+-		{
+-			glXMakeCurrent(m_display, 0, 0);
+-			glXDestroyContext(m_display, m_context);
+-		}
+-
+-		void makeCurrent()
+-		{
+-			glXMakeCurrent(m_display, m_window, m_context);
+-		}
+-
+-		void swapBuffers()
+-		{
+-			glXSwapBuffers(m_display, m_window);
+-		}
+-
+-		::Display* m_display;
+-		Window m_window;
+-		GLXContext m_context;
+-	};
+-
+-	static bool haveGlxExtension(const char* _ext, const char* _extList)
+-	{
+-		// _extList is assumed to be a space-separated, null-terminated list of
+-		// extension names, and no extension name ever contains a space.
+-		const char* end = _extList + bx::strLen(_extList);
+-		const char* searchStart = _extList;
+-		for(;;)
+-		{
+-			bx::StringView found = bx::strFind(searchStart, _ext);
+-			if (found.isEmpty() )
+-			{
+-				return false;
+-			}
+-
+-			// We found the substring, but need an exact match, with a word
+-			// boundary at both the front and back of the found spot.
+-			if ((found.getPtr() == _extList || *(found.getPtr() - 1) == ' ')
+-			&&  (found.getTerm() == end || *found.getTerm() == ' ') )
+-			{
+-				return true;
+-			}
+-			// else, keep searching
+-			searchStart = found.getTerm();
+-		}
+-	}
+-
+-	template<typename ProtoT>
+-	static ProtoT glXGetProcAddress(const char* _name)
+-	{
+-		return reinterpret_cast<ProtoT>( (void*)::glXGetProcAddress( (const GLubyte*)_name) );
+-	}
+-
+-	void GlContext::create(uint32_t _width, uint32_t _height, uint32_t /*_flags*/)
+-	{
+-		BX_UNUSED(_width, _height);
+-
+-		m_context = (GLXContext)g_platformData.context;
+-		m_display = (::Display*)g_platformData.ndt;
+-
+-		// It's possible the user has provided the window handle, but not
+-		// the display handle. If this is the case, try opening the default
+-		// display
+-		if (NULL == m_display)
+-		{
+-			m_display = XOpenDisplay(NULL);
+-			BGFX_FATAL(m_display, Fatal::UnableToInitialize, "XOpenDisplay(NULL) : Failed to open default display");
+-		}
+-
+-		if (NULL == g_platformData.context)
+-		{
+-			XLockDisplay(m_display);
+-
+-			int major, minor;
+-			bool version = glXQueryVersion(m_display, &major, &minor);
+-			BGFX_FATAL(version, Fatal::UnableToInitialize, "Failed to query GLX version");
+-			BGFX_FATAL( (major == 1 && minor >= 2) || major > 1
+-					, Fatal::UnableToInitialize
+-					, "GLX version is not >=1.2 (%d.%d)."
+-					, major
+-					, minor
+-					);
+-
+-			int32_t screen = DefaultScreen(m_display);
+-
+-			const char* extensions = glXQueryExtensionsString(m_display, screen);
+-			BX_TRACE("GLX extensions:");
+-			dumpExtensions(extensions);
+-
+-			const int attrsGlx[] =
+-			{
+-				GLX_RENDER_TYPE, GLX_RGBA_BIT,
+-				GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+-				GLX_DOUBLEBUFFER, true,
+-				GLX_RED_SIZE, 8,
+-				GLX_BLUE_SIZE, 8,
+-				GLX_GREEN_SIZE, 8,
+-				//			GLX_ALPHA_SIZE, 8,
+-				GLX_DEPTH_SIZE, 24,
+-				GLX_STENCIL_SIZE, 8,
+-				0,
+-			};
+-
+-			// Find suitable config
+-			GLXFBConfig bestConfig = NULL;
+-
+-			int numConfigs;
+-			GLXFBConfig* configs = glXChooseFBConfig(m_display, screen, attrsGlx, &numConfigs);
+-
+-			BX_TRACE("glX num configs %d", numConfigs);
+-
+-			for (int ii = 0; ii < numConfigs; ++ii)
+-			{
+-				m_visualInfo = glXGetVisualFromFBConfig(m_display, configs[ii]);
+-				if (NULL != m_visualInfo)
+-				{
+-					BX_TRACE("---");
+-					bool valid = true;
+-					for (uint32_t attr = 6; attr < BX_COUNTOF(attrsGlx)-1 && attrsGlx[attr] != 0; attr += 2)
+-					{
+-						int value;
+-						glXGetFBConfigAttrib(m_display, configs[ii], attrsGlx[attr], &value);
+-						BX_TRACE("glX %d/%d %2d: %4x, %8x (%8x%s)"
+-								, ii
+-								, numConfigs
+-								, attr/2
+-								, attrsGlx[attr]
+-								, value
+-								, attrsGlx[attr + 1]
+-								, value < attrsGlx[attr + 1] ? " *" : ""
+-								);
+-
+-						if (value < attrsGlx[attr + 1])
+-						{
+-							valid = false;
+-#if !BGFX_CONFIG_DEBUG
+-							break;
+-#endif // BGFX_CONFIG_DEBUG
+-						}
+-					}
+-
+-					if (valid)
+-					{
+-						bestConfig = configs[ii];
+-						BX_TRACE("Best config %d.", ii);
+-						break;
+-					}
+-				}
+-
+-				XFree(m_visualInfo);
+-				m_visualInfo = NULL;
+-			}
+-
+-			XFree(configs);
+-			BGFX_FATAL(m_visualInfo, Fatal::UnableToInitialize, "Failed to find a suitable X11 display configuration.");
+-
+-			BX_TRACE("Create GL 2.1 context.");
+-			m_context = glXCreateContext(m_display, m_visualInfo, 0, GL_TRUE);
+-			BGFX_FATAL(NULL != m_context, Fatal::UnableToInitialize, "Failed to create GL 2.1 context.");
+-
+-			glXCreateContextAttribsARB = glXGetProcAddress<PFNGLXCREATECONTEXTATTRIBSARBPROC>("glXCreateContextAttribsARB");
+-
+-			if (NULL != glXCreateContextAttribsARB)
+-			{
+-				BX_TRACE("Create GL %d.%d context.", BGFX_CONFIG_RENDERER_OPENGL / 10, BGFX_CONFIG_RENDERER_OPENGL % 10);
+-				int32_t flags = BGFX_CONFIG_DEBUG ? GLX_CONTEXT_DEBUG_BIT_ARB : 0;
+-				const int contextAttrs[] =
+-				{
+-					GLX_CONTEXT_MAJOR_VERSION_ARB, BGFX_CONFIG_RENDERER_OPENGL / 10,
+-					GLX_CONTEXT_MINOR_VERSION_ARB, BGFX_CONFIG_RENDERER_OPENGL % 10,
+-					GLX_CONTEXT_FLAGS_ARB, flags,
+-					GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+-					0,
+-				};
+-
+-				GLXContext context = glXCreateContextAttribsARB(m_display, bestConfig, 0, true, contextAttrs);
+-
+-				if (NULL != context)
+-				{
+-					glXDestroyContext(m_display, m_context);
+-					m_context = context;
+-				}
+-			}
+-
+-			XUnlockDisplay(m_display);
+-		}
+-
+-		import();
+-
+-		glXMakeCurrent(m_display, (::Window)g_platformData.nwh, m_context);
+-		m_current = NULL;
+-
+-		const char* extensions = glXQueryExtensionsString(m_display, DefaultScreen(m_display) );
+-
+-		if (NULL != extensions)
+-		{
+-			bool foundSwapControl = false;
+-
+-			if (haveGlxExtension("GLX_EXT_swap_control", extensions) )
+-			{
+-				glXSwapIntervalEXT = glXGetProcAddress<PFNGLXSWAPINTERVALEXTPROC>("glXSwapIntervalEXT");
+-
+-				if (NULL != glXSwapIntervalEXT)
+-				{
+-					BX_TRACE("Using glXSwapIntervalEXT.");
+-					glXSwapIntervalEXT(m_display, (::Window)g_platformData.nwh, 0);
+-					foundSwapControl = true;
+-				}
+-			}
+-
+-			if (!foundSwapControl
+-			&&  haveGlxExtension("GLX_MESA_swap_control", extensions) )
+-			{
+-				glXSwapIntervalMESA = glXGetProcAddress<PFNGLXSWAPINTERVALMESAPROC>("glXSwapIntervalMESA");
+-
+-				if (NULL != glXSwapIntervalMESA)
+-				{
+-					BX_TRACE("Using glXSwapIntervalMESA.");
+-					glXSwapIntervalMESA(0);
+-					foundSwapControl = true;
+-				}
+-			}
+-
+-			if (!foundSwapControl
+-			&&  haveGlxExtension("GLX_SGI_swap_control", extensions) )
+-			{
+-				glXSwapIntervalSGI = glXGetProcAddress<PFNGLXSWAPINTERVALSGIPROC>("glXSwapIntervalSGI");
+-
+-				if (NULL != glXSwapIntervalSGI)
+-				{
+-					BX_TRACE("Using glXSwapIntervalSGI.");
+-					glXSwapIntervalSGI(0);
+-					foundSwapControl = true;
+-				}
+-			}
+-		}
+-
+-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+-		glClear(GL_COLOR_BUFFER_BIT);
+-		glXSwapBuffers(m_display, (::Window)g_platformData.nwh);
+-
+-		g_internalData.context = m_context;
+-	}
+-
+-	void GlContext::destroy()
+-	{
+-		glXMakeCurrent(m_display, 0, 0);
+-		if (NULL == g_platformData.context)
+-		{
+-			glXDestroyContext(m_display, m_context);
+-			XFree(m_visualInfo);
+-		}
+-		// If we opened the display, have to close it
+-		if (NULL == g_platformData.ndt)
+-		{
+-			XCloseDisplay(m_display);
+-		}
+-		m_context    = NULL;
+-		m_visualInfo = NULL;
+-		m_display    = NULL;
+-	}
+-
+-	void GlContext::resize(uint32_t /*_width*/, uint32_t /*_height*/, uint32_t _flags)
+-	{
+-		bool vsync = !!(_flags&BGFX_RESET_VSYNC);
+-		int32_t interval = vsync ? 1 : 0;
+-
+-		if (NULL != glXSwapIntervalEXT)
+-		{
+-			glXSwapIntervalEXT(m_display, (::Window)g_platformData.nwh, interval);
+-		}
+-		else if (NULL != glXSwapIntervalMESA)
+-		{
+-			glXSwapIntervalMESA(interval);
+-		}
+-		else if (NULL != glXSwapIntervalSGI)
+-		{
+-			glXSwapIntervalSGI(interval);
+-		}
+-	}
+-
+-	uint64_t GlContext::getCaps() const
+-	{
+-		return BGFX_CAPS_SWAP_CHAIN;
+-	}
+-
+-	SwapChainGL* GlContext::createSwapChain(void* _nwh)
+-	{
+-		return BX_NEW(g_allocator, SwapChainGL)(m_display, (::Window)_nwh, m_visualInfo, m_context);
+-	}
+-
+-	void GlContext::destroySwapChain(SwapChainGL* _swapChain)
+-	{
+-		BX_DELETE(g_allocator, _swapChain);
+-		glXMakeCurrent(m_display, (::Window)g_platformData.nwh, m_context);
+-	}
+-
+-	void GlContext::swap(SwapChainGL* _swapChain)
+-	{
+-		makeCurrent(_swapChain);
+-
+-		if (NULL == _swapChain)
+-		{
+-			glXSwapBuffers(m_display, (::Window)g_platformData.nwh);
+-		}
+-		else
+-		{
+-			_swapChain->swapBuffers();
+-		}
+-	}
+-
+-	void GlContext::makeCurrent(SwapChainGL* _swapChain)
+-	{
+-		if (m_current != _swapChain)
+-		{
+-			m_current = _swapChain;
+-
+-			if (NULL == _swapChain)
+-			{
+-				glXMakeCurrent(m_display, (::Window)g_platformData.nwh, m_context);
+-			}
+-			else
+-			{
+-				_swapChain->makeCurrent();
+-			}
+-		}
+-	}
+-
+-	void GlContext::import()
+-	{
+-		BX_TRACE("Import:");
+-
+-#	define GL_EXTENSION(_optional, _proto, _func, _import)                                \
+-		{                                                                                 \
+-			if (NULL == _func)                                                            \
+-			{                                                                             \
+-				_func = glXGetProcAddress<_proto>(#_import);                              \
+-				BX_TRACE("%p " #_func " (" #_import ")", _func);                          \
+-				BGFX_FATAL(_optional || NULL != _func                                     \
+-					, Fatal::UnableToInitialize                                           \
+-					, "Failed to create OpenGL context. glXGetProcAddress %s", #_import); \
+-			}                                                                             \
+-		}
+-
+-#	include "glimports.h"
+-
+-#	undef GL_EXTENSION
+-	}
+-
+-} /* namespace gl */ } // namespace bgfx
+-
+-#	endif // BGFX_USE_GLX
+-
+-#endif // (BX_PLATFORM_BSD || BX_PLATFORM_LINUX) && (BGFX_CONFIG_RENDERER_OPENGLES || BGFX_CONFIG_RENDERER_OPENGL)
+diff --git a/3rdparty/bgfx/src/glcontext_glx.h b/3rdparty/bgfx/src/glcontext_glx.h
+deleted file mode 100644
+index df87406db01c..000000000000
+--- a/3rdparty/bgfx/src/glcontext_glx.h
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/*
+- * Copyright 2011-2022 Branimir Karadzic. All rights reserved.
+- * License: https://github.com/bkaradzic/bgfx/blob/master/LICENSE
+- */
+-
+-#ifndef BGFX_GLCONTEXT_GLX_H_HEADER_GUARD
+-#define BGFX_GLCONTEXT_GLX_H_HEADER_GUARD
+-
+-#if BGFX_USE_GLX
+-
+-#	include <X11/Xlib.h>
+-#	define GLX_GLXEXT_LEGACY
+-#	include <GL/glx.h>
+-
+-namespace bgfx { namespace gl
+-{
+-	struct SwapChainGL;
+-
+-	struct GlContext
+-	{
+-		GlContext()
+-			: m_current(NULL)
+-			, m_context(0)
+-			, m_visualInfo(NULL)
+-			, m_display(NULL)
+-			, m_msaaContext(false)
+-		{
+-		}
+-
+-		void create(uint32_t _width, uint32_t _height, uint32_t _flags);
+-		void destroy();
+-		void resize(uint32_t _width, uint32_t _height, uint32_t _flags);
+-
+-		uint64_t getCaps() const;
+-		SwapChainGL* createSwapChain(void* _nwh);
+-		void destroySwapChain(SwapChainGL*  _swapChain);
+-		void swap(SwapChainGL* _swapChain = NULL);
+-		void makeCurrent(SwapChainGL* _swapChain = NULL);
+-
+-		void import();
+-
+-		bool isValid() const
+-		{
+-			return 0 != m_context;
+-		}
+-
+-		SwapChainGL* m_current;
+-		GLXContext m_context;
+-		XVisualInfo* m_visualInfo;
+-		::Display* m_display;
+-		// true when MSAA is handled by the context instead of using MSAA FBO
+-		bool m_msaaContext;
+-	};
+-} /* namespace gl */ } // namespace bgfx
+-
+-#endif // BGFX_USE_GLX
+-
+-#endif // BGFX_GLCONTEXT_GLX_H_HEADER_GUARD
+diff --git a/3rdparty/bgfx/src/renderer_gl.h b/3rdparty/bgfx/src/renderer_gl.h
+index 4c2942a03b87..6d0346f3f8b0 100644
+--- a/3rdparty/bgfx/src/renderer_gl.h
++++ b/3rdparty/bgfx/src/renderer_gl.h
+@@ -6,13 +6,12 @@
+ #ifndef BGFX_RENDERER_GL_H_HEADER_GUARD
+ #define BGFX_RENDERER_GL_H_HEADER_GUARD
+ 
+-#define BGFX_USE_EGL (BGFX_CONFIG_RENDERER_OPENGLES && (0 \
+-	|| BX_PLATFORM_ANDROID                                \
+-	|| BX_PLATFORM_BSD                                    \
+-	|| BX_PLATFORM_LINUX                                  \
+-	|| BX_PLATFORM_NX                                     \
+-	|| BX_PLATFORM_RPI                                    \
+-	|| BX_PLATFORM_WINDOWS                                \
++#define BGFX_USE_EGL ( (BGFX_CONFIG_RENDERER_OPENGL || BGFX_CONFIG_RENDERER_OPENGLES) && (0 \
++	|| BX_PLATFORM_ANDROID                                                                  \
++	|| BX_PLATFORM_BSD                                                                      \
++	|| BX_PLATFORM_LINUX                                                                    \
++	|| BX_PLATFORM_NX                                                                       \
++	|| BX_PLATFORM_RPI                                                                      \
+ 	) )
+ 
+ #define BGFX_USE_HTML5 (BGFX_CONFIG_RENDERER_OPENGLES && (0 \
+@@ -23,11 +22,6 @@
+ 	|| BX_PLATFORM_WINDOWS                              \
+ 	) )
+ 
+-#define BGFX_USE_GLX (BGFX_CONFIG_RENDERER_OPENGL && (0 \
+-	|| BX_PLATFORM_BSD                                  \
+-	|| BX_PLATFORM_LINUX                                \
+-	) )
+-
+ #define BGFX_USE_GL_DYNAMIC_LIB (0 \
+ 	|| BX_PLATFORM_BSD             \
+ 	|| BX_PLATFORM_LINUX           \
+@@ -144,14 +138,6 @@ typedef uint64_t GLuint64;
+ #		include <GLES3/gl3ext.h>
+ #	endif // BGFX_CONFIG_RENDERER_
+ 
+-#	if BGFX_USE_EGL
+-#		include "glcontext_egl.h"
+-#	endif // BGFX_USE_EGL
+-
+-#	if BGFX_USE_HTML5
+-#		include "glcontext_html5.h"
+-#	endif // BGFX_USE_EGL
+-
+ #endif // BGFX_CONFIG_RENDERER_OPENGL
+ 
+ #include "renderer.h"
+@@ -1162,18 +1148,18 @@ typedef uint64_t GLuint64;
+ #	define GL_TEXTURE_LOD_BIAS 0x8501
+ #endif // GL_TEXTURE_LOD_BIAS
+ 
+-#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+-#	include "glcontext_glx.h"
++#if BGFX_USE_EGL
++#	include "glcontext_egl.h"
++#elif BGFX_USE_HTML5
++#	include "glcontext_html5.h"
++#elif BGFX_USE_WGL
++#	include "glcontext_wgl.h"
+ #elif BX_PLATFORM_OSX
+ #	include "glcontext_nsgl.h"
+ #elif BX_PLATFORM_IOS
+ #	include "glcontext_eagl.h"
+ #endif // BX_PLATFORM_
+ 
+-#if BGFX_USE_WGL
+-#	include "glcontext_wgl.h"
+-#endif // BGFX_USE_WGL
+-
+ #ifndef GL_APIENTRY
+ #	define GL_APIENTRY APIENTRY
+ #endif // GL_APIENTRY
+diff --git a/3rdparty/bgfx/src/renderer_vk.cpp b/3rdparty/bgfx/src/renderer_vk.cpp
+index 30c7b99f1ca4..aba25e785124 100644
+--- a/3rdparty/bgfx/src/renderer_vk.cpp
++++ b/3rdparty/bgfx/src/renderer_vk.cpp
+@@ -17,6 +17,10 @@
+ #	import <Metal/Metal.h>
+ #endif // BX_PLATFORM_OSX
+ 
++#if defined(WL_EGL_PLATFORM)
++#	include <wayland-egl-backend.h>
++#endif // defined(WL_EGL_PLATFORM)
++
+ namespace bgfx { namespace vk
+ {
+ 	static char s_viewName[BGFX_CONFIG_MAX_VIEWS][BGFX_CONFIG_MAX_VIEW_NAME];
+@@ -1220,7 +1224,7 @@ VK_IMPORT
+ 						BX_TRACE("\t%s", layer.m_name);
+ 					}
+ 				}
+-#if BX_PLATFORM_OSX
++#if BX_PLATFORM_OSX || defined(WL_EGL_PLATFORM)
+ 				uint32_t numEnabledExtensions = headless ? 0 : 3;
+ 
+ 				const char* enabledExtension[Extension::Count + 3] =
+@@ -6759,41 +6763,57 @@ VK_DESTROY
+ 		}
+ #elif BX_PLATFORM_LINUX
+ 		{
+-			if (NULL != vkCreateXlibSurfaceKHR)
++#if     defined(WL_EGL_PLATFORM)
++			if (g_platformData.type == bgfx::NativeWindowHandleType::Wayland)
+ 			{
+-				VkXlibSurfaceCreateInfoKHR sci;
+-				sci.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
++				VkWaylandSurfaceCreateInfoKHR sci;
++				sci.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+ 				sci.pNext = NULL;
+-				sci.flags  = 0;
+-				sci.dpy    = (Display*)g_platformData.ndt;
+-				sci.window = (Window)m_nwh;
+-				result = vkCreateXlibSurfaceKHR(instance, &sci, allocatorCb, &m_surface);
++				sci.flags = 0;
++				sci.display = (wl_display*)g_platformData.ndt;
++				sci.surface = (wl_surface*)((wl_egl_window*)m_nwh)->surface;
++				result = vkCreateWaylandSurfaceKHR(instance, &sci, allocatorCb, &m_surface);
+ 			}
+-
+-			if (VK_SUCCESS != result)
++			else
++#endif // defined(WL_EGL_PLATFORM)
+ 			{
+-				void* xcbdll = bx::dlopen("libX11-xcb.so.1");
++				if (NULL != vkCreateXlibSurfaceKHR)
++				{
++					VkXlibSurfaceCreateInfoKHR sci;
++					sci.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
++					sci.pNext = NULL;
++					sci.flags  = 0;
++					sci.dpy    = (Display*)g_platformData.ndt;
++					sci.window = (Window)m_nwh;
++					result = vkCreateXlibSurfaceKHR(instance, &sci, allocatorCb, &m_surface);
++				}
+ 
+-				if (NULL != xcbdll
+-				&&  NULL != vkCreateXcbSurfaceKHR)
++				if (VK_SUCCESS != result)
+ 				{
+-					typedef xcb_connection_t* (*PFN_XGETXCBCONNECTION)(Display*);
+-					PFN_XGETXCBCONNECTION XGetXCBConnection = (PFN_XGETXCBCONNECTION)bx::dlsym(xcbdll, "XGetXCBConnection");
++					void* xcbdll = bx::dlopen("libX11-xcb.so.1");
++
++					if (NULL != xcbdll
++					&&  NULL != vkCreateXcbSurfaceKHR)
++					{
++						typedef xcb_connection_t* (*PFN_XGETXCBCONNECTION)(Display*);
++						PFN_XGETXCBCONNECTION XGetXCBConnection = (PFN_XGETXCBCONNECTION)bx::dlsym(xcbdll, "XGetXCBConnection");
+ 
+-					union { void* ptr; xcb_window_t window; } cast = { m_nwh };
++						union { void* ptr; xcb_window_t window; } cast = { m_nwh };
+ 
+-					VkXcbSurfaceCreateInfoKHR sci;
+-					sci.sType      = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+-					sci.pNext      = NULL;
+-					sci.flags      = 0;
+-					sci.connection = XGetXCBConnection( (Display*)g_platformData.ndt);
+-					sci.window     = cast.window;
+-					result = vkCreateXcbSurfaceKHR(instance, &sci, allocatorCb, &m_surface);
++						VkXcbSurfaceCreateInfoKHR sci;
++						sci.sType      = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
++						sci.pNext      = NULL;
++						sci.flags      = 0;
++						sci.connection = XGetXCBConnection( (Display*)g_platformData.ndt);
++						sci.window     = cast.window;
++						result = vkCreateXcbSurfaceKHR(instance, &sci, allocatorCb, &m_surface);
+ 
+-					bx::dlclose(xcbdll);
++						bx::dlclose(xcbdll);
++					}
+ 				}
+ 			}
+ 		}
++
+ #elif BX_PLATFORM_OSX
+ 		{
+ 			if (NULL != vkCreateMacOSSurfaceMVK)
+diff --git a/3rdparty/bgfx/src/renderer_vk.h b/3rdparty/bgfx/src/renderer_vk.h
+index f14e60fc7559..fdd51301ea0f 100644
+--- a/3rdparty/bgfx/src/renderer_vk.h
++++ b/3rdparty/bgfx/src/renderer_vk.h
+@@ -11,10 +11,17 @@
+ #	define KHR_SURFACE_EXTENSION_NAME VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
+ #	define VK_IMPORT_INSTANCE_PLATFORM VK_IMPORT_INSTANCE_ANDROID
+ #elif BX_PLATFORM_LINUX
++#	if defined(WL_EGL_PLATFORM)
++#		define VK_USE_PLATFORM_WAYLAND_KHR
++#	endif // defined(WL_EGL_PLATFORM)
+ #	define VK_USE_PLATFORM_XLIB_KHR
+ #	define VK_USE_PLATFORM_XCB_KHR
+-//#	define VK_USE_PLATFORM_WAYLAND_KHR
+-#	define KHR_SURFACE_EXTENSION_NAME VK_KHR_XCB_SURFACE_EXTENSION_NAME
++#	if defined(WL_EGL_PLATFORM)
++#		define KHR_SURFACE_EXTENSION_NAME VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME, \
++		VK_KHR_XCB_SURFACE_EXTENSION_NAME
++#	else
++#		define KHR_SURFACE_EXTENSION_NAME VK_KHR_XCB_SURFACE_EXTENSION_NAME
++#	endif // defined(WL_EGL_PLATFORM)
+ #	define VK_IMPORT_INSTANCE_PLATFORM VK_IMPORT_INSTANCE_LINUX
+ #elif BX_PLATFORM_WINDOWS
+ #	define VK_USE_PLATFORM_WIN32_KHR
+@@ -32,6 +39,20 @@
+ #define VK_NO_STDINT_H
+ #define VK_NO_PROTOTYPES
+ #include <vulkan-local/vulkan.h>
++
++// vulkan.h pulls X11 crap...
++#if defined(None)
++#	undef None
++#endif // defined(None)
++
++#if defined(Success)
++#	undef Success
++#endif // defined(Success)
++
++#if defined(Status)
++#	undef Status
++#endif // defined(Status)
++
+ #include "renderer.h"
+ #include "debug_renderdoc.h"
+ 
+@@ -48,6 +69,19 @@
+ 			/* VK_KHR_android_surface */                               \
+ 			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateAndroidSurfaceKHR); \
+ 
++#if defined(WL_EGL_PLATFORM)
++#define VK_IMPORT_INSTANCE_LINUX                                                              \
++			/* VK_KHR_wayland_surface */                                                      \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateWaylandSurfaceKHR);                        \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkGetPhysicalDeviceWaylandPresentationSupportKHR); \
++			/* VK_KHR_xlib_surface */                                                         \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateXlibSurfaceKHR);                           \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkGetPhysicalDeviceXlibPresentationSupportKHR);    \
++			/* VK_KHR_xcb_surface */                                                          \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateXcbSurfaceKHR);                            \
++			VK_IMPORT_INSTANCE_FUNC(true,  vkGetPhysicalDeviceXcbPresentationSupportKHR);     \
++
++#else
+ #define VK_IMPORT_INSTANCE_LINUX                                                           \
+ 			/* VK_KHR_xlib_surface */                                                      \
+ 			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateXlibSurfaceKHR);                        \
+@@ -56,9 +90,7 @@
+ 			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateXcbSurfaceKHR);                         \
+ 			VK_IMPORT_INSTANCE_FUNC(true,  vkGetPhysicalDeviceXcbPresentationSupportKHR);  \
+ 
+-//			/* VK_KHR_wayland_surface */
+-//			VK_IMPORT_INSTANCE_FUNC(true,  vkCreateWaylandSurfaceKHR);
+-//			VK_IMPORT_INSTANCE_FUNC(true,  vkGetPhysicalDeviceWaylandPresentationSupportKHR);
++#endif // defined(WL_EGL_PLATFORM)
+ 
+ #define VK_IMPORT_INSTANCE_WINDOWS                                                          \
+ 			/* VK_KHR_win32_surface */                                                      \
+diff --git a/scripts/src/3rdparty.lua b/scripts/src/3rdparty.lua
+index af84db533846..7b80101e9733 100755
+--- a/scripts/src/3rdparty.lua
++++ b/scripts/src/3rdparty.lua
+@@ -1484,7 +1484,6 @@ end
+ 		MAME_DIR .. "3rdparty/bgfx/src/debug_renderdoc.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/dxgi.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_egl.cpp",
+-		MAME_DIR .. "3rdparty/bgfx/src/glcontext_glx.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_html5.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_wgl.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/nvapi.cpp",
+From 117c384d4ac65c06481f7a0631051c8ba273c0b5 Mon Sep 17 00:00:00 2001
+From: Julian Sikorski <belegdol+github@gmail.com>
+Date: Thu, 28 Sep 2023 17:24:59 +0200
+Subject: [PATCH] render/drawbgfx.cpp: Added initial support for Wayland on
+ Linux. (#11451)
+
+---
+ makefile                            |  5 +++
+ scripts/src/3rdparty.lua            |  5 +++
+ scripts/src/osd/sdl.lua             | 15 +++++++++
+ scripts/src/osd/sdl_cfg.lua         |  6 ++++
+ src/osd/modules/render/drawbgfx.cpp | 48 ++++++++++++++++++++++++++---
+ src/osd/sdl/osdsdl.cpp              |  4 ---
+ 6 files changed, 75 insertions(+), 8 deletions(-)
+
+diff --git a/makefile b/makefile
+index bd5a442cb710..f173f8201bcb 100644
+--- a/makefile
++++ b/makefile
+@@ -37,6 +37,7 @@
+ # USE_PCAP = 1
+ # USE_QTDEBUG = 1
+ # NO_X11 = 1
++# USE_WAYLAND = 1
+ # NO_USE_XINPUT = 1
+ # NO_USE_XINPUT_WII_LIGHTGUN_HACK = 1
+ # FORCE_DRC_C_BACKEND = 1
+@@ -792,6 +793,10 @@ ifdef MESA_INSTALL_ROOT
+ PARAMS += --MESA_INSTALL_ROOT='$(MESA_INSTALL_ROOT)'
+ endif
+ 
++ifdef USE_WAYLAND
++PARAMS += --USE_WAYLAND='$(USE_WAYLAND)'
++endif
++
+ ifdef NO_X11
+ PARAMS += --NO_X11='$(NO_X11)'
+ endif
+diff --git a/scripts/src/3rdparty.lua b/scripts/src/3rdparty.lua
+index 7b80101e9733..dacb3a298acd 100755
+--- a/scripts/src/3rdparty.lua
++++ b/scripts/src/3rdparty.lua
+@@ -1469,6 +1469,11 @@ end
+ 				"BGFX_CONFIG_RENDERER_OPENGL=0",
+ 			}
+ 		end
++		if _OPTIONS["USE_WAYLAND"]=="1" then
++			defines {
++				"WL_EGL_PLATFORM=1",
++			}
++		end
+ 	end
+ 
+ 	if _OPTIONS["targetos"]=="macosx" and _OPTIONS["gcc"]~=nil then
+diff --git a/scripts/src/osd/sdl.lua b/scripts/src/osd/sdl.lua
+index abf4a90fd970..3e749d040171 100644
+--- a/scripts/src/osd/sdl.lua
++++ b/scripts/src/osd/sdl.lua
+@@ -37,6 +37,12 @@ function maintargetosdoptions(_target,_subtarget)
+ 		end
+ 	end
+ 
++	if _OPTIONS["USE_WAYLAND"]=="1" then
++		links {
++			"wayland-egl"
++		}
++	end
++
+ 	if _OPTIONS["NO_USE_XINPUT"]~="1" then
+ 		links {
+ 			"Xext",
+@@ -141,6 +147,15 @@ if not _OPTIONS["NO_X11"] then
+ 	end
+ end
+ 
++newoption {
++	trigger = "USE_WAYLAND",
++	description = "Use Wayland",
++	allowed = {
++		{ "0",  "Do not use Wayland (use XWayland or X11)"  },
++		{ "1",  "Use Wayland" },
++	},
++}
++
+ newoption {
+ 	trigger = "NO_USE_XINPUT",
+ 	description = "Disable use of Xinput",
+diff --git a/scripts/src/osd/sdl_cfg.lua b/scripts/src/osd/sdl_cfg.lua
+index 6b93c9a831e4..17132ad814a1 100644
+--- a/scripts/src/osd/sdl_cfg.lua
++++ b/scripts/src/osd/sdl_cfg.lua
+@@ -50,6 +50,12 @@ else
+ 	}
+ end
+ 
++if _OPTIONS["USE_WAYLAND"]=="1" then
++	defines {
++		"SDLMAME_USE_WAYLAND",
++	}
++end
++
+ if _OPTIONS["NO_USE_XINPUT"]=="1" then
+ 	defines {
+ 		"USE_XINPUT=0",
+diff --git a/src/osd/modules/render/drawbgfx.cpp b/src/osd/modules/render/drawbgfx.cpp
+index f1a8d2611f59..19da01898e17 100644
+--- a/src/osd/modules/render/drawbgfx.cpp
++++ b/src/osd/modules/render/drawbgfx.cpp
+@@ -56,6 +56,10 @@ extern void *GetOSWindow(void *wincontroller);
+ #endif
+ #endif
+ 
++#if defined(SDLMAME_USE_WAYLAND)
++#include <wayland-egl.h>
++#endif
++
+ #include <bgfx/bgfx.h>
+ #include <bgfx/platform.h>
+ 
+@@ -382,6 +386,36 @@ bool video_bgfx::init_bgfx_library(osd_window &window)
+ }
+ 
+ 
++//============================================================
++//  Helper for creating a wayland window
++//============================================================
++
++#if defined(SDLMAME_USE_WAYLAND)
++wl_egl_window *create_wl_egl_window(SDL_Window *window, struct wl_surface *surface)
++{
++	if (!surface)
++	{
++		osd_printf_error("Wayland surface missing, aborting\n");
++		return nullptr;
++	}
++	wl_egl_window *win_impl = (wl_egl_window *)SDL_GetWindowData(window, "wl_egl_window");
++	if (!win_impl)
++	{
++		int width, height;
++		SDL_GetWindowSize(window, &width, &height);
++		win_impl = wl_egl_window_create(surface, width, height);
++		if (!win_impl)
++		{
++			osd_printf_error("Creating wayland window failed\n");
++			return nullptr;
++		}
++		SDL_SetWindowData(window, "wl_egl_window", win_impl);
++	}
++	return win_impl;
++}
++#endif
++
++
+ //============================================================
+ //  Utility for setting up window handle
+ //============================================================
+@@ -423,10 +457,16 @@ bool video_bgfx::set_platform_data(bgfx::PlatformData &platform_data, osd_window
+ 		platform_data.nwh = wmi.info.cocoa.window;
+ 		break;
+ #endif
+-#if defined(SDL_VIDEO_DRIVER_WAYLAND) && SDL_VERSION_ATLEAST(2, 0, 16)
++#if defined(SDL_VIDEO_DRIVER_WAYLAND) && SDL_VERSION_ATLEAST(2, 0, 16) && defined(SDLMAME_USE_WAYLAND)
+ 	case SDL_SYSWM_WAYLAND:
+ 		platform_data.ndt = wmi.info.wl.display;
+-		platform_data.nwh = wmi.info.wl.egl_window;
++		platform_data.nwh = create_wl_egl_window(dynamic_cast<sdl_window_info const &>(window).platform_window(), wmi.info.wl.surface);
++		if (!platform_data.nwh)
++		{
++			osd_printf_error("BGFX: Error creating a Wayland window\n");
++			return false;
++		}
++		platform_data.type = bgfx::NativeWindowHandleType::Wayland;
+ 		break;
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_ANDROID)
+@@ -513,9 +553,9 @@ static void *sdlNativeWindowHandle(SDL_Window *window)
+ 	case SDL_SYSWM_COCOA:
+ 		return wmi.info.cocoa.window;
+ #endif
+-#if defined(SDL_VIDEO_DRIVER_WAYLAND) && SDL_VERSION_ATLEAST(2, 0, 16)
++#if defined(SDL_VIDEO_DRIVER_WAYLAND) && SDL_VERSION_ATLEAST(2, 0, 16) && defined(SDLMAME_USE_WAYLAND)
+ 	case SDL_SYSWM_WAYLAND:
+-		return wmi.info.wl.egl_window;
++		return osd::create_wl_egl_window(window, wmi.info.wl.surface);
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_ANDROID)
+ 	case SDL_SYSWM_ANDROID:
+diff --git a/src/osd/sdl/osdsdl.cpp b/src/osd/sdl/osdsdl.cpp
+index 147244ef0d43..6c5aef9f08c6 100644
+--- a/src/osd/sdl/osdsdl.cpp
++++ b/src/osd/sdl/osdsdl.cpp
+@@ -271,10 +271,6 @@ void sdl_osd_interface::init(running_machine &machine)
+ 		exit(-1);
+ 	}
+ 
+-	// bgfx does not work with wayland
+-	if ((strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0) && (strcmp(options().video(), "bgfx") == 0))
+-		fatalerror("Error: BGFX video does not work with wayland videodriver. Please change either of the options.");
+-
+ 	osd_sdl_info();
+ 
+ 	defines_verbose();
+From d71c72ba746503934102788e5dcbb487c6134396 Mon Sep 17 00:00:00 2001
+From: Vas Crabb <vas@vastheman.com>
+Date: Fri, 29 Sep 2023 01:56:51 +1000
+Subject: [PATCH] Miscellaneous change roll-up:
+
+render/drawbgfx.cpp: Return an error if Wayland EGL surface can't be
+created for additional windows.
+
+emu/emucore.h: Added explicitly defaulted copy and move constructors for
+emu_fatalerror.
+
+Fixed apparent misunderstanding of const.  Returning const value types
+and casting to const value types is pointless outside very narrow use
+cases.  Putting const value type parameters in interfaces just makes
+trouble.
+
+cpu/adsp2100: Use count_leading_ones_32 where it's simple rather than
+inverting and counting leading zeroes.
+
+util/multibyte.h: Don't pollute global namespace, constexpr implies
+inline, make narrowing casts explicit.
+
+imagedev/simh_tape_image.h: inline is implied for member functions with
+bodies supplied at declaration.
+
+Tidied up some ugly casts in various places.
+---
+ src/devices/cpu/adsp2100/2100ops.hxx   |   4 +-
+ src/devices/imagedev/simh_tape_image.h |   4 +-
+ src/devices/machine/smc91c9x.cpp       |   3 +-
+ src/emu/emucore.h                      |   2 +
+ src/lib/formats/dmk_dsk.cpp            |   2 +-
+ src/lib/formats/td0_dsk.cpp            |   2 +-
+ src/lib/util/multibyte.h               | 280 ++++++++++++-------------
+ src/lib/util/simh_tape_file.cpp        | 174 +++++++--------
+ src/lib/util/simh_tape_file.h          |  62 +++---
+ src/lib/util/tape_file_interface.h     |  40 ++--
+ src/osd/modules/render/drawbgfx.cpp    |  58 ++---
+ src/tools/imgtool/modules/fat.cpp      |  42 ++--
+ src/tools/imgtool/modules/os9.cpp      |  10 +-
+ src/tools/imgtool/modules/pc_flop.cpp  |   8 +-
+ 15 files changed, 346 insertions(+), 347 deletions(-)
+
+diff --git a/src/devices/cpu/adsp2100/2100ops.hxx b/src/devices/cpu/adsp2100/2100ops.hxx
+index bd2df9acce64..be8f4524a7a2 100644
+--- a/src/devices/cpu/adsp2100/2100ops.hxx
++++ b/src/devices/cpu/adsp2100/2100ops.hxx
+@@ -2097,7 +2097,7 @@ void adsp21xx_device::shift_op(uint32_t op)
+ 			if (xop < 0)
+ 			{
+ 				SET_SS;
+-				res = count_leading_zeros_32(~xop) - 16 - 1;
++				res = count_leading_ones_32(xop) - 16 - 1;
+ 			}
+ 			else
+ 			{
+@@ -2120,7 +2120,7 @@ void adsp21xx_device::shift_op(uint32_t op)
+ 				if (xop < 0)
+ 				{
+ 					SET_SS;
+-					res = count_leading_zeros_32(~xop) - 16 - 1;
++					res = count_leading_ones_32(xop) - 16 - 1;
+ 				}
+ 				else
+ 				{
+diff --git a/src/devices/imagedev/simh_tape_image.h b/src/devices/imagedev/simh_tape_image.h
+index 95f1c70b2e3b..cb98056b8376 100644
+--- a/src/devices/imagedev/simh_tape_image.h
++++ b/src/devices/imagedev/simh_tape_image.h
+@@ -30,8 +30,8 @@ class simh_tape_image_device : public microtape_image_device
+ 	virtual void call_unload() override;
+ 
+ 	// miscellaneous
+-	inline void set_interface(const char *interface) { m_interface = interface; }
+-	inline simh_tape_file *get_file() const { return m_file.get(); }
++	void set_interface(const char *interface) { m_interface = interface; }
++	simh_tape_file *get_file() const { return m_file.get(); }
+ 
+ protected:
+ 	// construction
+diff --git a/src/devices/machine/smc91c9x.cpp b/src/devices/machine/smc91c9x.cpp
+index a27c1f7d281c..e237d186b959 100644
+--- a/src/devices/machine/smc91c9x.cpp
++++ b/src/devices/machine/smc91c9x.cpp
+@@ -12,8 +12,9 @@
+ #include "smc91c9x.h"
+ 
+ #include "multibyte.h"
+-#include <sstream>
++
+ #include <iomanip>
++#include <sstream>
+ 
+ /***************************************************************************
+     DEBUGGING
+diff --git a/src/emu/emucore.h b/src/emu/emucore.h
+index d87ea5ca3af0..ca54f5208cd6 100644
+--- a/src/emu/emucore.h
++++ b/src/emu/emucore.h
+@@ -228,6 +228,8 @@ class emu_exception : public std::exception { };
+ class emu_fatalerror : public emu_exception
+ {
+ public:
++	emu_fatalerror(emu_fatalerror const &) = default;
++	emu_fatalerror(emu_fatalerror &&) = default;
+ 	emu_fatalerror(util::format_argument_pack<char> const &args);
+ 	emu_fatalerror(int _exitcode, util::format_argument_pack<char> const &args);
+ 
+diff --git a/src/lib/formats/dmk_dsk.cpp b/src/lib/formats/dmk_dsk.cpp
+index 0af637076a0a..6517ba9c273f 100644
+--- a/src/lib/formats/dmk_dsk.cpp
++++ b/src/lib/formats/dmk_dsk.cpp
+@@ -15,8 +15,8 @@
+ #include "dmk_dsk.h"
+ 
+ #include "coretmpl.h"
+-#include "multibyte.h"
+ #include "ioprocs.h"
++#include "multibyte.h"
+ 
+ 
+ namespace {
+diff --git a/src/lib/formats/td0_dsk.cpp b/src/lib/formats/td0_dsk.cpp
+index 65dd42f47ca4..079a1768c25d 100644
+--- a/src/lib/formats/td0_dsk.cpp
++++ b/src/lib/formats/td0_dsk.cpp
+@@ -849,7 +849,7 @@ bool td0_format::load(util::random_read &io, uint32_t form_factor, const std::ve
+ 		uint64_t image_size;
+ 		if(io.length(image_size))
+ 			return false;
+-		if(io.read_at(12, &imagebuf[0], image_size - 12, actual) || actual != image_size - 12)
++		if(io.read_at(12, &imagebuf[0], image_size - 12, actual) || actual != (image_size - 12))
+ 			return false;
+ 	}
+ 
+diff --git a/src/lib/util/multibyte.h b/src/lib/util/multibyte.h
+index 706361d9df59..6af34de83ed2 100644
+--- a/src/lib/util/multibyte.h
++++ b/src/lib/util/multibyte.h
+@@ -1,163 +1,153 @@
+ // license:BSD-3-Clause
+ // copyright-holders:Mietek Bak
+-
+-#ifndef MAME_LIB_UTIL_MULTIBYTE_H
+-#define MAME_LIB_UTIL_MULTIBYTE_H
++#ifndef MAME_UTIL_MULTIBYTE_H
++#define MAME_UTIL_MULTIBYTE_H
+ 
+ #pragma once
+ 
+ #include "coretmpl.h"
+ #include "osdcomm.h"
+ 
+-using osd::u8;
+-using osd::u16;
+-using osd::u32;
+-using osd::u64;
+-using osd::s8;
+-using osd::s16;
+-using osd::s32;
+-using osd::s64;
+-
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ // unsigned big-endian
+ 
+-inline constexpr u16 get_u16be(const u8 *const buf) noexcept
++constexpr osd::u16 get_u16be(osd::u8 const *buf) noexcept
+ {
+-	return ((const u16)buf[0] << 8)
+-		 | ((const u16)buf[1] << 0);
++	return (osd::u16(buf[0]) << 8)
++		 | (osd::u16(buf[1]) << 0);
+ }
+ 
+-inline constexpr u32 get_u24be(const u8 *const buf) noexcept
++constexpr osd::u32 get_u24be(osd::u8 const *buf) noexcept
+ {
+-	return ((const u32)buf[0] << 16)
+-		 | ((const u32)buf[1] << 8)
+-		 | ((const u32)buf[2] << 0);
++	return (osd::u32(buf[0]) << 16)
++		 | (osd::u32(buf[1]) << 8)
++		 | (osd::u32(buf[2]) << 0);
+ }
+ 
+-inline constexpr u32 get_u32be(const u8 *const buf) noexcept
++constexpr osd::u32 get_u32be(osd::u8 const *buf) noexcept
+ {
+-	return ((const u32)buf[0] << 24)
+-		 | ((const u32)buf[1] << 16)
+-		 | ((const u32)buf[2] << 8)
+-		 | ((const u32)buf[3] << 0);
++	return (osd::u32(buf[0]) << 24)
++		 | (osd::u32(buf[1]) << 16)
++		 | (osd::u32(buf[2]) << 8)
++		 | (osd::u32(buf[3]) << 0);
+ }
+ 
+-inline constexpr u64 get_u48be(const u8 *const buf) noexcept
++constexpr osd::u64 get_u48be(osd::u8 const *buf) noexcept
+ {
+-	return ((const u64)buf[0] << 40)
+-		 | ((const u64)buf[1] << 32)
+-		 | ((const u64)buf[2] << 24)
+-		 | ((const u64)buf[3] << 16)
+-		 | ((const u64)buf[4] << 8)
+-		 | ((const u64)buf[5] << 0);
++	return (osd::u64(buf[0]) << 40)
++		 | (osd::u64(buf[1]) << 32)
++		 | (osd::u64(buf[2]) << 24)
++		 | (osd::u64(buf[3]) << 16)
++		 | (osd::u64(buf[4]) << 8)
++		 | (osd::u64(buf[5]) << 0);
+ }
+ 
+-inline constexpr u64 get_u64be(const u8 *const buf) noexcept
++constexpr osd::u64 get_u64be(osd::u8 const *buf) noexcept
+ {
+-	return ((const u64)buf[0] << 56)
+-		 | ((const u64)buf[1] << 48)
+-		 | ((const u64)buf[2] << 40)
+-		 | ((const u64)buf[3] << 32)
+-		 | ((const u64)buf[4] << 24)
+-		 | ((const u64)buf[5] << 16)
+-		 | ((const u64)buf[6] << 8)
+-		 | ((const u64)buf[7] << 0);
++	return (osd::u64(buf[0]) << 56)
++		 | (osd::u64(buf[1]) << 48)
++		 | (osd::u64(buf[2]) << 40)
++		 | (osd::u64(buf[3]) << 32)
++		 | (osd::u64(buf[4]) << 24)
++		 | (osd::u64(buf[5]) << 16)
++		 | (osd::u64(buf[6]) << 8)
++		 | (osd::u64(buf[7]) << 0);
+ }
+ 
+-inline void put_u16be(u8 *buf, const u16 data) noexcept
++inline void put_u16be(osd::u8 *buf, osd::u16 data) noexcept
+ {
+-	buf[0] = data >> 8;
+-	buf[1] = data >> 0;
++	buf[0] = osd::u8(data >> 8);
++	buf[1] = osd::u8(data >> 0);
+ }
+ 
+-inline void put_u24be(u8 *buf, const u32 data) noexcept
++inline void put_u24be(osd::u8 *buf, osd::u32 data) noexcept
+ {
+-	buf[0] = data >> 16;
+-	buf[1] = data >> 8;
+-	buf[2] = data >> 0;
++	buf[0] = osd::u8(data >> 16);
++	buf[1] = osd::u8(data >> 8);
++	buf[2] = osd::u8(data >> 0);
+ }
+ 
+-inline void put_u32be(u8 *buf, const u32 data) noexcept
++inline void put_u32be(osd::u8 *buf, osd::u32 data) noexcept
+ {
+-	buf[0] = data >> 24;
+-	buf[1] = data >> 16;
+-	buf[2] = data >> 8;
+-	buf[3] = data >> 0;
++	buf[0] = osd::u8(data >> 24);
++	buf[1] = osd::u8(data >> 16);
++	buf[2] = osd::u8(data >> 8);
++	buf[3] = osd::u8(data >> 0);
+ }
+ 
+-inline void put_u48be(u8 *buf, const u64 data) noexcept
++inline void put_u48be(osd::u8 *buf, osd::u64 data) noexcept
+ {
+-	buf[0] = data >> 40;
+-	buf[1] = data >> 32;
+-	buf[2] = data >> 24;
+-	buf[3] = data >> 16;
+-	buf[4] = data >> 8;
+-	buf[5] = data >> 0;
++	buf[0] = osd::u8(data >> 40);
++	buf[1] = osd::u8(data >> 32);
++	buf[2] = osd::u8(data >> 24);
++	buf[3] = osd::u8(data >> 16);
++	buf[4] = osd::u8(data >> 8);
++	buf[5] = osd::u8(data >> 0);
+ }
+ 
+-inline void put_u64be(u8 *buf, const u64 data) noexcept
++inline void put_u64be(osd::u8 *buf, osd::u64 data) noexcept
+ {
+-	buf[0] = data >> 56;
+-	buf[1] = data >> 48;
+-	buf[2] = data >> 40;
+-	buf[3] = data >> 32;
+-	buf[4] = data >> 24;
+-	buf[5] = data >> 16;
+-	buf[6] = data >> 8;
+-	buf[7] = data >> 0;
++	buf[0] = osd::u8(data >> 56);
++	buf[1] = osd::u8(data >> 48);
++	buf[2] = osd::u8(data >> 40);
++	buf[3] = osd::u8(data >> 32);
++	buf[4] = osd::u8(data >> 24);
++	buf[5] = osd::u8(data >> 16);
++	buf[6] = osd::u8(data >> 8);
++	buf[7] = osd::u8(data >> 0);
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ // signed big-endian
+ 
+-inline constexpr s16 get_s16be(const u8 *const buf) noexcept
++constexpr osd::s16 get_s16be(osd::u8 const *buf) noexcept
+ {
+ 	return get_u16be(buf);
+ }
+ 
+-inline constexpr s32 get_s24be(const u8 *const buf) noexcept
++constexpr osd::s32 get_s24be(osd::u8 const *buf) noexcept
+ {
+ 	return util::sext(get_u24be(buf), 24);
+ }
+ 
+-inline constexpr s32 get_s32be(const u8 *const buf) noexcept
++constexpr osd::s32 get_s32be(osd::u8 const *buf) noexcept
+ {
+ 	return get_u32be(buf);
+ }
+ 
+-inline constexpr s64 get_s48be(const u8 *const buf) noexcept
++constexpr osd::s64 get_s48be(osd::u8 const *buf) noexcept
+ {
+ 	return util::sext(get_u48be(buf), 48);
+ }
+ 
+-inline constexpr s64 get_s64be(const u8 *const buf) noexcept
++constexpr osd::s64 get_s64be(osd::u8 const *buf) noexcept
+ {
+ 	return get_u64be(buf);
+ }
+ 
+-inline void put_s16be(u8 *buf, const s16 data) noexcept
++inline void put_s16be(osd::u8 *buf, osd::s16 data) noexcept
+ {
+ 	put_u16be(buf, data);
+ }
+ 
+-inline void put_s24be(u8 *buf, const s32 data) noexcept
++inline void put_s24be(osd::u8 *buf, osd::s32 data) noexcept
+ {
+ 	put_u24be(buf, data);
+ }
+ 
+-inline void put_s32be(u8 *buf, const s32 data) noexcept
++inline void put_s32be(osd::u8 *buf, osd::s32 data) noexcept
+ {
+ 	put_u32be(buf, data);
+ }
+ 
+-inline void put_s48be(u8 *buf, const s64 data) noexcept
++inline void put_s48be(osd::u8 *buf, osd::s64 data) noexcept
+ {
+ 	put_u48be(buf, data);
+ }
+ 
+-inline void put_s64be(u8 *buf, const s64 data) noexcept
++inline void put_s64be(osd::u8 *buf, osd::s64 data) noexcept
+ {
+ 	put_u64be(buf, data);
+ }
+@@ -166,146 +156,146 @@ inline void put_s64be(u8 *buf, const s64 data) noexcept
+ 
+ // unsigned little-endian
+ 
+-inline constexpr u16 get_u16le(const u8 *const buf) noexcept
++constexpr osd::u16 get_u16le(osd::u8 const *buf) noexcept
+ {
+-	return ((const u16)buf[0] << 0)
+-		 | ((const u16)buf[1] << 8);
++	return (osd::u16(buf[0]) << 0)
++		 | (osd::u16(buf[1]) << 8);
+ }
+ 
+-inline constexpr u32 get_u24le(const u8 *const buf) noexcept
++constexpr osd::u32 get_u24le(osd::u8 const *buf) noexcept
+ {
+-	return ((const u32)buf[0] << 0)
+-		 | ((const u32)buf[1] << 8)
+-		 | ((const u32)buf[2] << 16);
++	return (osd::u32(buf[0]) << 0)
++		 | (osd::u32(buf[1]) << 8)
++		 | (osd::u32(buf[2]) << 16);
+ }
+ 
+-inline constexpr u32 get_u32le(const u8 *const buf) noexcept
++constexpr osd::u32 get_u32le(osd::u8 const *buf) noexcept
+ {
+-	return ((const u32)buf[0] << 0)
+-		 | ((const u32)buf[1] << 8)
+-		 | ((const u32)buf[2] << 16)
+-		 | ((const u32)buf[3] << 24);
++	return (osd::u32(buf[0]) << 0)
++		 | (osd::u32(buf[1]) << 8)
++		 | (osd::u32(buf[2]) << 16)
++		 | (osd::u32(buf[3]) << 24);
+ }
+ 
+-inline constexpr u64 get_u48le(const u8 *const buf) noexcept
++constexpr osd::u64 get_u48le(osd::u8 const *buf) noexcept
+ {
+-	return ((const u64)buf[0] << 0)
+-		 | ((const u64)buf[1] << 8)
+-		 | ((const u64)buf[2] << 16)
+-		 | ((const u64)buf[3] << 24)
+-		 | ((const u64)buf[4] << 32)
+-		 | ((const u64)buf[5] << 40);
++	return (osd::u64(buf[0]) << 0)
++		 | (osd::u64(buf[1]) << 8)
++		 | (osd::u64(buf[2]) << 16)
++		 | (osd::u64(buf[3]) << 24)
++		 | (osd::u64(buf[4]) << 32)
++		 | (osd::u64(buf[5]) << 40);
+ }
+ 
+-inline constexpr u64 get_u64le(const u8 *const buf) noexcept
++constexpr osd::u64 get_u64le(osd::u8 const *buf) noexcept
+ {
+-	return ((const u64)buf[0] << 0)
+-		 | ((const u64)buf[1] << 8)
+-		 | ((const u64)buf[2] << 16)
+-		 | ((const u64)buf[3] << 24)
+-		 | ((const u64)buf[4] << 32)
+-		 | ((const u64)buf[5] << 40)
+-		 | ((const u64)buf[6] << 48)
+-		 | ((const u64)buf[7] << 56);
++	return (osd::u64(buf[0]) << 0)
++		 | (osd::u64(buf[1]) << 8)
++		 | (osd::u64(buf[2]) << 16)
++		 | (osd::u64(buf[3]) << 24)
++		 | (osd::u64(buf[4]) << 32)
++		 | (osd::u64(buf[5]) << 40)
++		 | (osd::u64(buf[6]) << 48)
++		 | (osd::u64(buf[7]) << 56);
+ }
+ 
+-inline void put_u16le(u8 *buf, const u16 data) noexcept
++inline void put_u16le(osd::u8 *buf, osd::u16 data) noexcept
+ {
+-	buf[0] = data >> 0;
+-	buf[1] = data >> 8;
++	buf[0] = osd::u8(data >> 0);
++	buf[1] = osd::u8(data >> 8);
+ }
+ 
+-inline void put_u24le(u8 *buf, const u32 data) noexcept
++inline void put_u24le(osd::u8 *buf, osd::u32 data) noexcept
+ {
+-	buf[0] = data >> 0;
+-	buf[1] = data >> 8;
+-	buf[2] = data >> 16;
++	buf[0] = osd::u8(data >> 0);
++	buf[1] = osd::u8(data >> 8);
++	buf[2] = osd::u8(data >> 16);
+ }
+ 
+-inline void put_u32le(u8 *buf, const u32 data) noexcept
++inline void put_u32le(osd::u8 *buf, osd::u32 data) noexcept
+ {
+-	buf[0] = data >> 0;
+-	buf[1] = data >> 8;
+-	buf[2] = data >> 16;
+-	buf[3] = data >> 24;
++	buf[0] = osd::u8(data >> 0);
++	buf[1] = osd::u8(data >> 8);
++	buf[2] = osd::u8(data >> 16);
++	buf[3] = osd::u8(data >> 24);
+ }
+ 
+-inline void put_u48le(u8 *buf, const u64 data) noexcept
++inline void put_u48le(osd::u8 *buf, osd::u64 data) noexcept
+ {
+-	buf[0] = data >> 0;
+-	buf[1] = data >> 8;
+-	buf[2] = data >> 16;
+-	buf[3] = data >> 24;
+-	buf[4] = data >> 32;
+-	buf[5] = data >> 40;
++	buf[0] = osd::u8(data >> 0);
++	buf[1] = osd::u8(data >> 8);
++	buf[2] = osd::u8(data >> 16);
++	buf[3] = osd::u8(data >> 24);
++	buf[4] = osd::u8(data >> 32);
++	buf[5] = osd::u8(data >> 40);
+ }
+ 
+-inline void put_u64le(u8 *buf, const u64 data) noexcept
++inline void put_u64le(osd::u8 *buf, osd::u64 data) noexcept
+ {
+-	buf[0] = data >> 0;
+-	buf[1] = data >> 8;
+-	buf[2] = data >> 16;
+-	buf[3] = data >> 24;
+-	buf[4] = data >> 32;
+-	buf[5] = data >> 40;
+-	buf[6] = data >> 48;
+-	buf[7] = data >> 56;
++	buf[0] = osd::u8(data >> 0);
++	buf[1] = osd::u8(data >> 8);
++	buf[2] = osd::u8(data >> 16);
++	buf[3] = osd::u8(data >> 24);
++	buf[4] = osd::u8(data >> 32);
++	buf[5] = osd::u8(data >> 40);
++	buf[6] = osd::u8(data >> 48);
++	buf[7] = osd::u8(data >> 56);
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ // signed little-endian
+ 
+-inline constexpr s16 get_s16le(const u8 *const buf) noexcept
++constexpr osd::s16 get_s16le(osd::u8 const *buf) noexcept
+ {
+ 	return get_u16le(buf);
+ }
+ 
+-inline constexpr s32 get_s24le(const u8 *const buf) noexcept
++constexpr osd::s32 get_s24le(osd::u8 const *buf) noexcept
+ {
+ 	return util::sext(get_u24le(buf), 24);
+ }
+ 
+-inline constexpr s32 get_s32le(const u8 *const buf) noexcept
++constexpr osd::s32 get_s32le(osd::u8 const *buf) noexcept
+ {
+ 	return get_u32le(buf);
+ }
+ 
+-inline constexpr s64 get_s48le(const u8 *const buf) noexcept
++constexpr osd::s64 get_s48le(osd::u8 const *buf) noexcept
+ {
+ 	return util::sext(get_u48le(buf), 48);
+ }
+ 
+-inline constexpr s64 get_s64le(const u8 *const buf) noexcept
++constexpr osd::s64 get_s64le(osd::u8 const *buf) noexcept
+ {
+ 	return get_u64le(buf);
+ }
+ 
+-inline void put_s16le(u8 *buf, const s16 data) noexcept
++inline void put_s16le(osd::u8 *buf, osd::s16 data) noexcept
+ {
+ 	put_u16le(buf, data);
+ }
+ 
+-inline void put_s24le(u8 *buf, const s32 data) noexcept
++inline void put_s24le(osd::u8 *buf, osd::s32 data) noexcept
+ {
+ 	put_u24le(buf, data);
+ }
+ 
+-inline void put_s32le(u8 *buf, const s32 data) noexcept
++inline void put_s32le(osd::u8 *buf, osd::s32 data) noexcept
+ {
+ 	put_u32le(buf, data);
+ }
+ 
+-inline void put_s48le(u8 *buf, const s64 data) noexcept
++inline void put_s48le(osd::u8 *buf, osd::s64 data) noexcept
+ {
+ 	put_u48le(buf, data);
+ }
+ 
+-inline void put_s64le(u8 *buf, const s64 data) noexcept
++inline void put_s64le(osd::u8 *buf, osd::s64 data) noexcept
+ {
+ 	put_u64le(buf, data);
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+-#endif // MAME_LIB_UTIL_MULTIBYTE_H
++#endif // MAME_UTIL_MULTIBYTE_H
+diff --git a/src/lib/util/simh_tape_file.cpp b/src/lib/util/simh_tape_file.cpp
+index 24756b782ec3..4fe1af5ae88a 100644
+--- a/src/lib/util/simh_tape_file.cpp
++++ b/src/lib/util/simh_tape_file.cpp
+@@ -4,41 +4,41 @@
+ // best read together with SIMH magtape spec (rev 17 Jan 2022)
+ // http://simh.trailing-edge.com/docs/simh_magtape.pdf
+ 
+-#include "multibyte.h"
+ #include "simh_tape_file.h"
+ 
+ #include "ioprocs.h"
++#include "multibyte.h"
+ 
+ #include <cassert>
++#include <cerrno>
+ #include <cstring>
+ #include <stdexcept>
+ 
+-#include <errno.h>
+ #include <fcntl.h>
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ // constants and helpers
+ 
+-enum class simh_marker : u32 {
++enum class simh_marker : osd::u32 {
+ 	TAPE_MARK   = 0x00000000, // filemark; TODO: SIMH doesn't define setmarks
+ 	ERASE_GAP   = 0xfffffffe,
+ 	EOM         = 0xffffffff
+ };
+ 
+-inline const bool is_simh_marker_half_gap_forward(const simh_marker marker)
++inline bool is_simh_marker_half_gap_forward(const simh_marker marker)
+ {
+ 	// this function is used when we're reading normally (from BOM to EOM); returns true for erase gap markers that have been half overwritten
+-	return (const u32)marker == 0xfffeffff;
++	return osd::u32(marker) == 0xfffeffff;
+ }
+ 
+-inline const bool is_simh_marker_half_gap_reverse(const simh_marker marker)
++inline bool is_simh_marker_half_gap_reverse(const simh_marker marker)
+ {
+ 	// this function is used when we're reading in reverse (from EOM to BOM); returns true for erase gap markers that have been half overwritten
+-	return (const u32)marker >= 0xffff0000 && (const u32)marker <= 0xfffffffd;
++	return osd::u32(marker) >= 0xffff0000 && osd::u32(marker) <= 0xfffffffd;
+ }
+ 
+-inline const bool is_simh_marker_eod_forward(const simh_marker marker)
++inline bool is_simh_marker_eod_forward(const simh_marker marker)
+ {
+ 	// this function is used when we're reading normally (from BOM to EOM); returns true for markers that we consider EOD
+ 	return marker == simh_marker::ERASE_GAP
+@@ -46,7 +46,7 @@ inline const bool is_simh_marker_eod_forward(const simh_marker marker)
+ 		|| marker == simh_marker::EOM; // logical EOM
+ }
+ 
+-inline const bool is_simh_marker_eod_reverse(const simh_marker marker)
++inline bool is_simh_marker_eod_reverse(const simh_marker marker)
+ {
+ 	// this function is used when we're reading in reverse (from EOM to BOM); returns true for markers that we consider EOD
+ 	return marker == simh_marker::ERASE_GAP
+@@ -54,7 +54,7 @@ inline const bool is_simh_marker_eod_reverse(const simh_marker marker)
+ 		|| marker == simh_marker::EOM; // logical EOM
+ }
+ 
+-enum class simh_marker_class : u8 {
++enum class simh_marker_class : osd::u8 {
+ 	GOOD_DATA_RECORD                = 0x0,
+ 	PRIVATE_DATA_RECORD_1           = 0x1,
+ 	PRIVATE_DATA_RECORD_2           = 0x2,
+@@ -73,21 +73,21 @@ enum class simh_marker_class : u8 {
+ 	RESERVED_MARKER                 = 0xf
+ };
+ 
+-inline const simh_marker_class get_simh_marker_class(const simh_marker marker)
++inline simh_marker_class get_simh_marker_class(const simh_marker marker)
+ {
+-	return (const simh_marker_class)((const u32)marker >> 28);
++	return simh_marker_class(osd::u32(marker) >> 28);
+ }
+ 
+-inline const u32 get_simh_marker_value(const simh_marker marker)
++inline osd::u32 get_simh_marker_value(const simh_marker marker)
+ {
+-	return (const u32)marker & 0x0fffffff;
++	return osd::u32(marker) & 0x0fffffff;
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ // construction
+ 
+-simh_tape_file::simh_tape_file(util::random_read_write &file, const u64 file_size, const bool read_only, const bool create)
++simh_tape_file::simh_tape_file(util::random_read_write &file, osd::u64 file_size, bool read_only, bool create)
+ 	: m_file(file)
+ 	, m_file_size(file_size)
+ 	, m_read_only(read_only)
+@@ -110,14 +110,14 @@ simh_tape_file::~simh_tape_file()
+ 
+ // internal operations
+ 
+-void simh_tape_file::raw_seek(const u64 pos) const
++void simh_tape_file::raw_seek(const osd::u64 pos) const
+ {
+ 	std::error_condition err = m_file.seek(pos, SEEK_SET);
+ 	if (err) // error: we failed to seek to expected byte offset
+ 		throw std::runtime_error(std::string("failed seek: ") + err.message());
+ }
+ 
+-void simh_tape_file::raw_read(u8 *const buf, const u32 len) const
++void simh_tape_file::raw_read(osd::u8 *const buf, const osd::u32 len) const
+ {
+ 	size_t actual_len;
+ 	std::error_condition err = m_file.read(buf, len, actual_len);
+@@ -125,7 +125,7 @@ void simh_tape_file::raw_read(u8 *const buf, const u32 len) const
+ 		throw std::runtime_error(std::string("failed read: ") + (err ? err.message() : std::string("unexpected length")));
+ }
+ 
+-void simh_tape_file::raw_write(const u8 *const buf, const u32 len) const
++void simh_tape_file::raw_write(const osd::u8 *const buf, const osd::u32 len) const
+ {
+ 	size_t actual_len;
+ 	std::error_condition err = m_file.write(buf, len, actual_len);
+@@ -133,42 +133,42 @@ void simh_tape_file::raw_write(const u8 *const buf, const u32 len) const
+ 		throw std::runtime_error(std::string("failed write: ") + (err ? err.message() : std::string("unexpected length")));
+ }
+ 
+-void simh_tape_file::read_bytes(const u64 pos, u8 *const buf, const u32 len) const
++void simh_tape_file::read_bytes(const osd::u64 pos, osd::u8 *const buf, const osd::u32 len) const
+ {
+ 	raw_seek(pos);
+ 	raw_read(buf, len);
+ }
+ 
+-const u32 simh_tape_file::read_word(const u64 pos) const
++osd::u32 simh_tape_file::read_word(const osd::u64 pos) const
+ {
+-	const u32 tmp_len = 4;
+-	u8 tmp_buf[tmp_len];
++	const osd::u32 tmp_len = 4;
++	osd::u8 tmp_buf[tmp_len];
+ 	raw_seek(pos);
+ 	raw_read(tmp_buf, tmp_len);
+ 	return get_u32le(tmp_buf);
+ }
+ 
+-void simh_tape_file::write_bytes(const u64 pos, const u8 *const buf, const u32 len) const
++void simh_tape_file::write_bytes(const osd::u64 pos, const osd::u8 *const buf, const osd::u32 len) const
+ {
+ 	raw_seek(pos);
+ 	raw_write(buf, len);
+ }
+ 
+-void simh_tape_file::write_byte_repeat(const u64 pos, const u8 data, const u32 len) const
++void simh_tape_file::write_byte_repeat(const osd::u64 pos, const osd::u8 data, const osd::u32 len) const
+ {
+-	const u32 tmp_len = 4096;
+-	u8 tmp_buf[tmp_len];
++	const osd::u32 tmp_len = 4096;
++	osd::u8 tmp_buf[tmp_len];
+ 	memset(tmp_buf, data, std::min(len, tmp_len));
+ 	raw_seek(pos);
+-	for (u32 i = 0; i < len / tmp_len; i++)
++	for (osd::u32 i = 0; i < len / tmp_len; i++)
+ 		raw_write(tmp_buf, tmp_len);
+ 	raw_write(tmp_buf, len % tmp_len);
+ }
+ 
+-void simh_tape_file::write_word(const u64 pos, const u32 data) const
++void simh_tape_file::write_word(const osd::u64 pos, const osd::u32 data) const
+ {
+-	const u32 tmp_len = 4;
+-	u8 tmp_buf[tmp_len];
++	const osd::u32 tmp_len = 4;
++	osd::u8 tmp_buf[tmp_len];
+ 	put_u32le(tmp_buf, data);
+ 	raw_seek(pos);
+ 	raw_write(tmp_buf, tmp_len);
+@@ -178,7 +178,7 @@ void simh_tape_file::write_word(const u64 pos, const u32 data) const
+ 
+ // position-preserving operations
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::read_position() const
++std::pair<tape_status, osd::u32> simh_tape_file::read_position() const
+ {
+ 	// this module only keeps track of current tape position, therefore this function scans from BOM to find and return current block address, taking linear time; TODO: this module could be rewritten to also keep track of current block address, therefore enabling this function to only take constant time
+ 	assert(m_pos <= m_file_size);
+@@ -190,13 +190,13 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_position() co
+ 		return std::pair(tape_status::EOM, 0);
+ 
+ 	// we need to count how many blocks are between BOM and us
+-	u32 blocks_num = 0;
+-	u64 tmp_pos = 0;
++	osd::u32 blocks_num = 0;
++	osd::u64 tmp_pos = 0;
+ 	while (tmp_pos < m_pos) {
+ 		if (tmp_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(tmp_pos);
++		const simh_marker marker = simh_marker(read_word(tmp_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // we skip filemarks
+ 			tmp_pos += 4;
+ 			continue;
+@@ -205,9 +205,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_position() co
+ 			return std::pair(is_ew() ? tape_status::UNKNOWN_EW : tape_status::UNKNOWN, 0);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -240,24 +240,24 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_position() co
+ 
+ // non-destructive operations
+ 
+-void simh_tape_file::rewind(const bool eom)
++void simh_tape_file::rewind(bool eom)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	m_pos = eom ? m_file_size : 0;
+ }
+ 
+-const tape_status simh_tape_file::locate_block(const u32 req_block_addr)
++tape_status simh_tape_file::locate_block(osd::u32 req_block_addr)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+-	u32 blocks_num = 0;
++	osd::u32 blocks_num = 0;
+ 	m_pos = 0;
+ 	while (m_pos < m_file_size) {
+ 		if (m_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos);
++		const simh_marker marker = simh_marker(read_word(m_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // we skip filemarks
+ 			m_pos += 4;
+ 			continue;
+@@ -266,9 +266,9 @@ const tape_status simh_tape_file::locate_block(const u32 req_block_addr)
+ 			return is_ew() ? tape_status::EOD_EW : tape_status::EOD;
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -296,7 +296,7 @@ const tape_status simh_tape_file::locate_block(const u32 req_block_addr)
+ 	return tape_status::EOM;
+ }
+ 
+-const tape_status simh_tape_file::space_eod()
++tape_status simh_tape_file::space_eod()
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+@@ -304,7 +304,7 @@ const tape_status simh_tape_file::space_eod()
+ 		if (m_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos);
++		const simh_marker marker = simh_marker(read_word(m_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // we skip filemarks
+ 			m_pos += 4;
+ 			continue;
+@@ -313,9 +313,9 @@ const tape_status simh_tape_file::space_eod()
+ 			return tape_status::OK;
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -334,17 +334,17 @@ const tape_status simh_tape_file::space_eod()
+ 	return tape_status::EOM;
+ }
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::space_blocks(const u32 req_blocks_num)
++std::pair<tape_status, osd::u32> simh_tape_file::space_blocks(osd::u32 req_blocks_num)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	assert(req_blocks_num > 0);
+-	u32 blocks_num = 0;
++	osd::u32 blocks_num = 0;
+ 	while (m_pos < m_file_size) {
+ 		if (m_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos);
++		const simh_marker marker = simh_marker(read_word(m_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // error: we reached filemark
+ 			m_pos += 4;
+ 			return std::pair(is_ew() ? tape_status::FILEMARK_EW : tape_status::FILEMARK, blocks_num);
+@@ -353,9 +353,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_blocks(const
+ 			return std::pair(is_ew() ? tape_status::EOD_EW : tape_status::EOD, blocks_num);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -383,19 +383,19 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_blocks(const
+ 	return std::pair(tape_status::EOM, blocks_num);
+ }
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks(const u32 req_filemarks_num, const bool setmarks, const bool sequential)
++std::pair<tape_status, osd::u32> simh_tape_file::space_filemarks(osd::u32 req_filemarks_num, bool setmarks, bool sequential)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	assert(req_filemarks_num > 0);
+ 	assert(!setmarks); // TODO: SIMH doesn't define setmarks
+ 	assert(!sequential); // TODO: support spacing over sequential filemarks, once we have good way to test it
+-	u32 filemarks_num = 0;
++	osd::u32 filemarks_num = 0;
+ 	while (m_pos < m_file_size) {
+ 		if (m_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos);
++		const simh_marker marker = simh_marker(read_word(m_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // we count filemarks
+ 			m_pos += 4;
+ 			filemarks_num++;
+@@ -408,9 +408,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks(co
+ 			return std::pair(is_ew() ? tape_status::EOD_EW : tape_status::EOD, filemarks_num);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -429,17 +429,17 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks(co
+ 	return std::pair(tape_status::EOM, filemarks_num);
+ }
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::space_blocks_reverse(const u32 req_blocks_num)
++std::pair<tape_status, osd::u32> simh_tape_file::space_blocks_reverse(osd::u32 req_blocks_num)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	assert(req_blocks_num > 0);
+-	u32 blocks_num = 0;
++	osd::u32 blocks_num = 0;
+ 	while (m_pos > 0) {
+ 		if (m_pos - 4 < 0) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos - 4);
++		const simh_marker marker = simh_marker(read_word(m_pos - 4));
+ 		if (marker == simh_marker::TAPE_MARK) { // error: we reached filemark
+ 			m_pos -= 4;
+ 			return std::pair(is_ew() ? tape_status::FILEMARK_EW : tape_status::FILEMARK, blocks_num);
+@@ -448,9 +448,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_blocks_rever
+ 			return std::pair(is_ew() ? tape_status::EOD_EW : tape_status::EOD, blocks_num);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -478,19 +478,19 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_blocks_rever
+ 	return std::pair(tape_status::BOM, blocks_num);
+ }
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks_reverse(const u32 req_filemarks_num, const bool setmarks, const bool sequential)
++std::pair<tape_status, osd::u32> simh_tape_file::space_filemarks_reverse(osd::u32 req_filemarks_num, bool setmarks, bool sequential)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	assert(req_filemarks_num > 0);
+ 	assert(!setmarks); // TODO: SIMH doesn't define setmarks
+ 	assert(!sequential); // TODO: support spacing over sequential filemarks, once we have good way to test it
+-	u32 filemarks_num = 0;
++	osd::u32 filemarks_num = 0;
+ 	while (m_pos > 0) {
+ 		if (m_pos - 4 < 0) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos - 4);
++		const simh_marker marker = simh_marker(read_word(m_pos - 4));
+ 		if (marker == simh_marker::TAPE_MARK) { // we count filemarks
+ 			m_pos -= 4;
+ 			filemarks_num++;
+@@ -503,9 +503,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks_re
+ 			return std::pair(is_ew() ? tape_status::EOD_EW : tape_status::EOD, filemarks_num);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -524,7 +524,7 @@ const std::pair<const tape_status, const u32> simh_tape_file::space_filemarks_re
+ 	return std::pair(tape_status::BOM, filemarks_num);
+ }
+ 
+-const std::pair<const tape_status, const u32> simh_tape_file::read_block(u8 *buf, const u32 buf_size)
++std::pair<tape_status, osd::u32> simh_tape_file::read_block(osd::u8 *buf, osd::u32 buf_size)
+ {
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+@@ -532,7 +532,7 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_block(u8 *buf
+ 		if (m_pos + 4 > m_file_size) // error: truncated marker
+ 			throw std::runtime_error("truncated marker");
+ 
+-		const simh_marker marker = (const simh_marker)read_word(m_pos);
++		const simh_marker marker = simh_marker(read_word(m_pos));
+ 		if (marker == simh_marker::TAPE_MARK) { // error: we reached filemark
+ 			m_pos += 4;
+ 			return std::pair(is_ew() ? tape_status::FILEMARK_EW : tape_status::FILEMARK, 0);
+@@ -541,9 +541,9 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_block(u8 *buf
+ 			return std::pair(is_ew() ? tape_status::EOD_EW : tape_status::EOD, 0);
+ 
+ 		const simh_marker_class marker_class = get_simh_marker_class(marker);
+-		const u32 block_len = get_simh_marker_value(marker);
+-		const u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
+-		const u32 read_len = 4 + block_len + pad_len + 4;
++		const osd::u32 block_len = get_simh_marker_value(marker);
++		const osd::u32 pad_len = block_len % 2; // pad odd-length blocks with 1 byte
++		const osd::u32 read_len = 4 + block_len + pad_len + 4;
+ 		switch (marker_class) {
+ 			case simh_marker_class::PRIVATE_MARKER: // we skip other markers
+ 			case simh_marker_class::RESERVED_MARKER:
+@@ -577,23 +577,23 @@ const std::pair<const tape_status, const u32> simh_tape_file::read_block(u8 *buf
+ 
+ // destructive operations
+ 
+-void simh_tape_file::erase(const bool eom)
++void simh_tape_file::erase(bool eom)
+ {
+ 	assert(!m_read_only);
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+-	const u32 write_len = m_file_size - m_pos; // we always erase entire remainder of tape
++	const osd::u32 write_len = m_file_size - m_pos; // we always erase entire remainder of tape
+ 	write_byte_repeat(m_pos, 0xff, write_len); // we assume simh_marker::EOM == 0xffffffff
+ 	m_pos += write_len;
+ }
+ 
+-const tape_status simh_tape_file::write_block(const u8 *const buf, const u32 req_block_len)
++tape_status simh_tape_file::write_block(const osd::u8 *buf, osd::u32 req_block_len)
+ {
+ 	assert(!m_read_only);
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+-	const u32 pad_len = req_block_len % 2; // pad odd-length blocks with 1 byte
+-	const u32 write_len = 4 + req_block_len + pad_len + 4;
++	const osd::u32 pad_len = req_block_len % 2; // pad odd-length blocks with 1 byte
++	const osd::u32 write_len = 4 + req_block_len + pad_len + 4;
+ 	if (m_pos + write_len >= m_file_size) // error: we reached physical EOM
+ 		return tape_status::EOM;
+ 
+@@ -605,18 +605,18 @@ const tape_status simh_tape_file::write_block(const u8 *const buf, const u32 req
+ 	return is_ew() ? tape_status::EW : tape_status::OK; // success: we wrote another block
+ }
+ 
+-const tape_status simh_tape_file::write_filemarks(const u32 req_filemarks_num, const bool setmarks)
++tape_status simh_tape_file::write_filemarks(osd::u32 req_filemarks_num, bool setmarks)
+ {
+ 	assert(!m_read_only);
+ 	assert(m_pos <= m_file_size);
+ 	assert(m_pos % 2 == 0);
+ 	assert(!setmarks); // TODO: SIMH doesn't define setmarks
+-	const u32 write_len = req_filemarks_num * 4;
++	const osd::u32 write_len = req_filemarks_num * 4;
+ 	if (m_pos + write_len >= m_file_size) // error: we reached physical EOM
+ 		return tape_status::EOM;
+ 
+-	for (u32 i = 0; i < write_len; i += 4)
+-		write_word(m_pos + i, (const u32)simh_marker::TAPE_MARK);
++	for (osd::u32 i = 0; i < write_len; i += 4)
++		write_word(m_pos + i, osd::u32(simh_marker::TAPE_MARK));
+ 	m_pos += write_len;
+ 	return is_ew() ? tape_status::EW : tape_status::OK; // success: we wrote all filemarks
+ }
+diff --git a/src/lib/util/simh_tape_file.h b/src/lib/util/simh_tape_file.h
+index 38edad715417..62c704a376b1 100644
+--- a/src/lib/util/simh_tape_file.h
++++ b/src/lib/util/simh_tape_file.h
+@@ -1,15 +1,15 @@
+ // license:BSD-3-Clause
+ // copyright-holders:Mietek Bak
+-
+-#ifndef MAME_LIB_UTIL_SIMH_TAPE_FILE_H
+-#define MAME_LIB_UTIL_SIMH_TAPE_FILE_H
++#ifndef MAME_UTIL_SIMH_TAPE_FILE_H
++#define MAME_UTIL_SIMH_TAPE_FILE_H
+ 
+ #pragma once
+ 
+ #include "tape_file_interface.h"
+-
+ #include "utilfwd.h"
+ 
++#include "osdcomm.h"
++
+ #include <string>
+ 
+ //////////////////////////////////////////////////////////////////////////////
+@@ -18,48 +18,48 @@ class simh_tape_file : public tape_file_interface
+ {
+ public:
+ 	// construction and destruction
+-	simh_tape_file(util::random_read_write &file, const u64 file_size, const bool read_only, const bool create = false);
++	simh_tape_file(util::random_read_write &file, osd::u64 file_size, bool read_only, bool create = false);
+ 	virtual ~simh_tape_file();
+ 
+ 	// position-preserving operations
+-	virtual const bool is_read_only() const override { return m_read_only; }
+-	virtual const bool is_ew() const override { return m_pos + 32768 >= m_file_size; } // 32KB from EOM; TODO: ANSI says EW should be 10ft from EOM regardless of density
+-	virtual const u8 get_density_code() const override { return 0; } // TODO: SIMH doesn't define density
+-	virtual const std::pair<const tape_status, const u32> read_position() const override;
++	virtual bool is_read_only() const override { return m_read_only; }
++	virtual bool is_ew() const override { return m_pos + 32768 >= m_file_size; } // 32KB from EOM; TODO: ANSI says EW should be 10ft from EOM regardless of density
++	virtual osd::u8 get_density_code() const override { return 0; } // TODO: SIMH doesn't define density
++	virtual std::pair<tape_status, osd::u32> read_position() const override;
+ 
+ 	// non-destructive operations
+-	virtual void rewind(const bool eom) override;
+-	virtual const tape_status locate_block(const u32 req_block_addr) override;
+-	virtual const tape_status space_eod() override;
+-	virtual const std::pair<const tape_status, const u32> space_blocks(const u32 req_blocks_num) override;
+-	virtual const std::pair<const tape_status, const u32> space_blocks_reverse(const u32 req_blocks_num) override;
+-	virtual const std::pair<const tape_status, const u32> space_filemarks(const u32 req_marks_num, const bool setmarks = false, const bool sequential = false) override;
+-	virtual const std::pair<const tape_status, const u32> space_filemarks_reverse(const u32 req_marks_num, const bool setmarks = false, const bool sequential = false) override;
+-	virtual const std::pair<const tape_status, const u32> read_block(u8 *const buf, const u32 buf_size) override;
++	virtual void rewind(bool eom) override;
++	virtual tape_status locate_block(osd::u32 req_block_addr) override;
++	virtual tape_status space_eod() override;
++	virtual std::pair<tape_status, osd::u32> space_blocks(osd::u32 req_blocks_num) override;
++	virtual std::pair<tape_status, osd::u32> space_blocks_reverse(osd::u32 req_blocks_num) override;
++	virtual std::pair<tape_status, osd::u32> space_filemarks(osd::u32 req_marks_num, bool setmarks = false, bool sequential = false) override;
++	virtual std::pair<tape_status, osd::u32> space_filemarks_reverse(osd::u32 req_marks_num, bool setmarks = false, bool sequential = false) override;
++	virtual std::pair<tape_status, osd::u32> read_block(osd::u8 *buf, osd::u32 buf_size) override;
+ 
+ 	// destructive operations
+-	virtual void erase(const bool eom) override;
+-	virtual const tape_status write_block(const u8 *const buf, const u32 len) override;
+-	virtual const tape_status write_filemarks(const u32 req_marks_num, const bool setmarks = false) override;
++	virtual void erase(bool eom) override;
++	virtual tape_status write_block(const osd::u8 *buf, osd::u32 len) override;
++	virtual tape_status write_filemarks(osd::u32 req_marks_num, bool setmarks = false) override;
+ 
+ protected:
+ 	// internal operations
+-	void raw_seek(const u64 pos) const;
+-	void raw_read(u8 *const buf, const u32 len) const;
+-	void raw_write(const u8 *const buf, const u32 len) const;
+-	void read_bytes(const u64 pos, u8 *const buf, const u32 len) const;
+-	const u32 read_word(const u64 pos) const;
+-	void write_bytes(const u64 pos, const u8 *const buf, const u32 len) const;
+-	void write_byte_repeat(const u64 pos, const u8 data, const u32 len) const;
+-	void write_word(const u64 pos, const u32 data) const;
++	void raw_seek(const osd::u64 pos) const;
++	void raw_read(osd::u8 *const buf, const osd::u32 len) const;
++	void raw_write(const osd::u8 *const buf, const osd::u32 len) const;
++	void read_bytes(const osd::u64 pos, osd::u8 *const buf, const osd::u32 len) const;
++	osd::u32 read_word(const osd::u64 pos) const;
++	void write_bytes(const osd::u64 pos, const osd::u8 *const buf, const osd::u32 len) const;
++	void write_byte_repeat(const osd::u64 pos, const osd::u8 data, const osd::u32 len) const;
++	void write_word(const osd::u64 pos, const osd::u32 data) const;
+ 
+ 	// state
+ 	util::random_read_write &m_file; // tape image file
+-	u64 m_file_size; // size of tape image file
++	osd::u64 m_file_size; // size of tape image file
+ 	bool m_read_only; // should we disallow destructive operations on tape image
+-	u64 m_pos; // tape position
++	osd::u64 m_pos; // tape position
+ };
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+-#endif // MAME_LIB_UTIL_SIMH_TAPE_FILE_H
++#endif // MAME_UTIL_SIMH_TAPE_FILE_H
+diff --git a/src/lib/util/tape_file_interface.h b/src/lib/util/tape_file_interface.h
+index 13c3f559b66c..8003c05777f1 100644
+--- a/src/lib/util/tape_file_interface.h
++++ b/src/lib/util/tape_file_interface.h
+@@ -1,16 +1,16 @@
+ // license:BSD-3-Clause
+ // copyright-holders:Mietek Bak
+-
+-#ifndef MAME_LIB_UTIL_TAPE_FILE_INTERFACE_H
+-#define MAME_LIB_UTIL_TAPE_FILE_INTERFACE_H
++#ifndef MAME_UTIL_TAPE_FILE_INTERFACE_H
++#define MAME_UTIL_TAPE_FILE_INTERFACE_H
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include <utility>
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+-enum class tape_status : u8 {
++enum class tape_status : std::uint8_t {
+ 	OK, // oll korrekt
+ 	BOM, // beginning of medium
+ 	EW, // early warning
+@@ -32,27 +32,27 @@ class tape_file_interface
+ 	virtual ~tape_file_interface() {}
+ 
+ 	// position-preserving operations
+-	virtual const bool is_read_only() const = 0;
+-	virtual const bool is_ew() const = 0;
+-	virtual const u8 get_density_code() const = 0;
+-	virtual const std::pair<const tape_status, const u32> read_position() const = 0;
++	virtual bool is_read_only() const = 0;
++	virtual bool is_ew() const = 0;
++	virtual std::uint8_t get_density_code() const = 0;
++	virtual std::pair<tape_status, std::uint32_t> read_position() const = 0;
+ 
+ 	// non-destructive operations
+-	virtual void rewind(const bool eom) = 0;
+-	virtual const tape_status locate_block(const u32 req_block_addr) = 0;
+-	virtual const tape_status space_eod() = 0;
+-	virtual const std::pair<const tape_status, const u32> space_blocks(const u32 req_blocks_num) = 0;
+-	virtual const std::pair<const tape_status, const u32> space_filemarks(const u32 req_marks_num, const bool setmarks = false, const bool sequential = false) = 0;
+-	virtual const std::pair<const tape_status, const u32> space_blocks_reverse(const u32 req_blocks_num) = 0;
+-	virtual const std::pair<const tape_status, const u32> space_filemarks_reverse(const u32 req_marks_num, const bool setmarks = false, const bool sequential = false) = 0;
+-	virtual const std::pair<const tape_status, const u32> read_block(u8 *const buf, const u32 buf_size) = 0;
++	virtual void rewind(bool eom) = 0;
++	virtual tape_status locate_block(std::uint32_t req_block_addr) = 0;
++	virtual tape_status space_eod() = 0;
++	virtual std::pair<tape_status, std::uint32_t> space_blocks(std::uint32_t req_blocks_num) = 0;
++	virtual std::pair<tape_status, std::uint32_t> space_filemarks(std::uint32_t req_marks_num, bool setmarks = false, bool sequential = false) = 0;
++	virtual std::pair<tape_status, std::uint32_t> space_blocks_reverse(std::uint32_t req_blocks_num) = 0;
++	virtual std::pair<tape_status, std::uint32_t> space_filemarks_reverse(std::uint32_t req_marks_num, bool setmarks = false, bool sequential = false) = 0;
++	virtual std::pair<tape_status, std::uint32_t> read_block(std::uint8_t *buf, std::uint32_t buf_size) = 0;
+ 
+ 	// destructive operations
+-	virtual void erase(const bool eom) = 0;
+-	virtual const tape_status write_block(const u8 *const buf, const u32 len) = 0;
+-	virtual const tape_status write_filemarks(const u32 req_marks_num, const bool setmarks = false) = 0;
++	virtual void erase(bool eom) = 0;
++	virtual tape_status write_block(const std::uint8_t *buf, std::uint32_t len) = 0;
++	virtual tape_status write_filemarks(std::uint32_t req_marks_num, bool setmarks = false) = 0;
+ };
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ 
+-#endif // MAME_LIB_UTIL_TAPE_FILE_INTERFACE_H
++#endif // MAME_UTIL_TAPE_FILE_INTERFACE_H
+diff --git a/src/osd/modules/render/drawbgfx.cpp b/src/osd/modules/render/drawbgfx.cpp
+index 19da01898e17..367589149614 100644
+--- a/src/osd/modules/render/drawbgfx.cpp
++++ b/src/osd/modules/render/drawbgfx.cpp
+@@ -532,37 +532,40 @@ uint32_t renderer_bgfx::s_height[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ //============================================================
+ 
+ #ifdef OSD_SDL
+-static void *sdlNativeWindowHandle(SDL_Window *window)
++static std::pair<void *, bool> sdlNativeWindowHandle(SDL_Window *window)
+ {
+ 	SDL_SysWMinfo wmi;
+ 	SDL_VERSION(&wmi.version);
+ 	if (!SDL_GetWindowWMInfo(window, &wmi))
+-		return nullptr;
++		return std::make_pair(nullptr, false);
+ 
+ 	switch (wmi.subsystem)
+ 	{
+ #if defined(SDL_VIDEO_DRIVER_WINDOWS)
+ 	case SDL_SYSWM_WINDOWS:
+-		return wmi.info.win.window;
++		return std::make_pair(wmi.info.win.window, true);
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_X11)
+ 	case SDL_SYSWM_X11:
+-		return (void *)uintptr_t(wmi.info.x11.window);
++		return std::make_pair((void *)uintptr_t(wmi.info.x11.window), true);
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_COCOA)
+ 	case SDL_SYSWM_COCOA:
+-		return wmi.info.cocoa.window;
++		return std::make_pair(wmi.info.cocoa.window, true);
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_WAYLAND) && SDL_VERSION_ATLEAST(2, 0, 16) && defined(SDLMAME_USE_WAYLAND)
+ 	case SDL_SYSWM_WAYLAND:
+-		return osd::create_wl_egl_window(window, wmi.info.wl.surface);
++		{
++			void *const platform_window = osd::create_wl_egl_window(window, wmi.info.wl.surface);
++			return std::make_pair(platform_window, platform_window != nullptr);
++		}
+ #endif
+ #if defined(SDL_VIDEO_DRIVER_ANDROID)
+ 	case SDL_SYSWM_ANDROID:
+-		return wmi.info.android.window;
++		return std::make_pair(wmi.info.android.window, true);
+ #endif
+ 	default:
+-		return nullptr;
++		return std::make_pair(nullptr, false);
+ 	}
+ }
+ #endif // OSD_SDL
+@@ -654,20 +657,6 @@ int renderer_bgfx::create()
+ 	m_textures = std::make_unique<texture_manager>();
+ 	m_targets = std::make_unique<target_manager>(*m_textures);
+ 
+-	m_shaders = std::make_unique<shader_manager>();
+-	m_effects = std::make_unique<effect_manager>(*m_shaders);
+-
+-	// Create program from shaders.
+-	m_gui_effect[0] = m_effects->get_or_load_effect(m_module().options(), "gui_opaque");
+-	m_gui_effect[1] = m_effects->get_or_load_effect(m_module().options(), "gui_blend");
+-	m_gui_effect[2] = m_effects->get_or_load_effect(m_module().options(), "gui_multiply");
+-	m_gui_effect[3] = m_effects->get_or_load_effect(m_module().options(), "gui_add");
+-
+-	m_screen_effect[0] = m_effects->get_or_load_effect(m_module().options(), "screen_opaque");
+-	m_screen_effect[1] = m_effects->get_or_load_effect(m_module().options(), "screen_blend");
+-	m_screen_effect[2] = m_effects->get_or_load_effect(m_module().options(), "screen_multiply");
+-	m_screen_effect[3] = m_effects->get_or_load_effect(m_module().options(), "screen_add");
+-
+ 	if (window().index() != 0)
+ 	{
+ #ifdef OSD_WINDOWS
+@@ -675,7 +664,14 @@ int renderer_bgfx::create()
+ #elif defined(OSD_MAC)
+ 		m_framebuffer = m_targets->create_backbuffer(GetOSWindow(dynamic_cast<mac_window_info &>(window()).platform_window()), s_width[window().index()], s_height[window().index()]);
+ #else
+-		m_framebuffer = m_targets->create_backbuffer(sdlNativeWindowHandle(dynamic_cast<sdl_window_info &>(window()).platform_window()), s_width[window().index()], s_height[window().index()]);
++		auto const [winhdl, success] = sdlNativeWindowHandle(dynamic_cast<sdl_window_info &>(window()).platform_window());
++		if (!success)
++		{
++			m_targets.reset();
++			m_textures.reset();
++			return -1;
++		}
++		m_framebuffer = m_targets->create_backbuffer(winhdl, s_width[window().index()], s_height[window().index()]);
+ #endif
+ 		bgfx::touch(window().index());
+ 
+@@ -683,6 +679,20 @@ int renderer_bgfx::create()
+ 			m_ortho_view->set_backbuffer(m_framebuffer);
+ 	}
+ 
++	m_shaders = std::make_unique<shader_manager>();
++	m_effects = std::make_unique<effect_manager>(*m_shaders);
++
++	// Create program from shaders.
++	m_gui_effect[0] = m_effects->get_or_load_effect(m_module().options(), "gui_opaque");
++	m_gui_effect[1] = m_effects->get_or_load_effect(m_module().options(), "gui_blend");
++	m_gui_effect[2] = m_effects->get_or_load_effect(m_module().options(), "gui_multiply");
++	m_gui_effect[3] = m_effects->get_or_load_effect(m_module().options(), "gui_add");
++
++	m_screen_effect[0] = m_effects->get_or_load_effect(m_module().options(), "screen_opaque");
++	m_screen_effect[1] = m_effects->get_or_load_effect(m_module().options(), "screen_blend");
++	m_screen_effect[2] = m_effects->get_or_load_effect(m_module().options(), "screen_multiply");
++	m_screen_effect[3] = m_effects->get_or_load_effect(m_module().options(), "screen_add");
++
+ 	const uint32_t max_prescale_size = std::min(2u * std::max(wdim.width(), wdim.height()), m_module().max_texture_size());
+ 	m_chains = std::make_unique<chain_manager>(
+ 			window().machine(),
+@@ -1355,7 +1365,7 @@ bool renderer_bgfx::update_dimensions()
+ #elif defined(OSD_MAC)
+ 			m_framebuffer = m_targets->create_backbuffer(GetOSWindow(dynamic_cast<mac_window_info &>(window()).platform_window()), width, height);
+ #else
+-			m_framebuffer = m_targets->create_backbuffer(sdlNativeWindowHandle(dynamic_cast<sdl_window_info &>(window()).platform_window()), width, height);
++			m_framebuffer = m_targets->create_backbuffer(sdlNativeWindowHandle(dynamic_cast<sdl_window_info &>(window()).platform_window()).first, width, height);
+ #endif
+ 			if (m_ortho_view)
+ 			{
+diff --git a/src/tools/imgtool/modules/fat.cpp b/src/tools/imgtool/modules/fat.cpp
+index ca7c8291a742..f61d073b5f87 100644
+--- a/src/tools/imgtool/modules/fat.cpp
++++ b/src/tools/imgtool/modules/fat.cpp
+@@ -423,7 +423,7 @@ static imgtoolerr_t fat_partition_open(imgtool::partition &partition, uint64_t f
+ 	if (info->sectors_per_cluster == 0)
+ 		return IMGTOOLERR_CORRUPTIMAGE;
+ 
+-	info->total_sectors = total_sectors_l + (((uint64_t) total_sectors_h) << 16);
++	info->total_sectors = total_sectors_l + (uint64_t(total_sectors_h) << 16);
+ 	available_sectors = info->total_sectors - info->reserved_sectors
+ 		- (info->sectors_per_fat * info->fat_count)
+ 		- (info->root_entries * FAT_DIRENT_SIZE + FAT_SECLEN - 1) / FAT_SECLEN;
+@@ -526,13 +526,13 @@ static imgtoolerr_t fat_partition_create(imgtool::image &image, uint64_t first_b
+ 	header[14] = reserved_sectors;
+ 	header[16] = fat_count;
+ 	put_u16le(&header[17], root_dir_count);
+-	put_u16le(&header[19], (uint16_t) (block_count >> 0));
++	put_u16le(&header[19], uint16_t(block_count >> 0));
+ 	header[21] = media_descriptor;
+ 	put_u16le(&header[22], sectors_per_fat);
+ 	put_u16le(&header[24], sectors_per_track);
+ 	put_u16le(&header[26], heads);
+ 	put_u32le(&header[28], hidden_sectors);
+-	put_u32le(&header[32], (uint32_t) (block_count >> 16));
++	put_u32le(&header[32], uint32_t(block_count >> 16));
+ 	header[36] = 0xFF;
+ 	header[38] = 0x28;
+ 	header[39] = std::rand();
+@@ -554,14 +554,14 @@ static imgtoolerr_t fat_partition_create(imgtool::image &image, uint64_t first_b
+ 	if (boot_sector_offset <= 129)
+ 	{
+ 		header[0] = 0xEB;                                    /* JMP rel8 */
+-		header[1] = (uint8_t) (boot_sector_offset - 2);        /* (offset) */
++		header[1] = uint8_t(boot_sector_offset - 2);         /* (offset) */
+ 		header[2] = 0x90;                                    /* NOP */
+ 	}
+ 	else
+ 	{
+ 		header[0] = 0xE9;                                    /* JMP rel16 */
+-		header[1] = (uint8_t) ((boot_sector_offset - 2) >> 0); /* (offset) */
+-		header[2] = (uint8_t) ((boot_sector_offset - 2) >> 8); /* (offset) */
++		header[1] = uint8_t((boot_sector_offset - 2) >> 0);  /* (offset) */
++		header[2] = uint8_t((boot_sector_offset - 2) >> 8);  /* (offset) */
+ 	}
+ 
+ 	err = image.write_block(first_block, header);
+@@ -579,9 +579,9 @@ static imgtoolerr_t fat_partition_create(imgtool::image &image, uint64_t first_b
+ 	// FIXME: this causes a corrupt PC floppy image since it doubles the FAT partition header - works without it though
+ #if 0
+ 	/* set first two FAT entries */
+-	first_fat_entries = ((uint64_t) media_descriptor) | 0xFFFFFF00;
+-	first_fat_entries &= (((uint64_t) 1) << fat_bits) - 1;
+-	first_fat_entries |= ((((uint64_t) 1) << fat_bits) - 1) << fat_bits;
++	first_fat_entries = uint64_t(media_descriptor) | 0xFFFFFF00;
++	first_fat_entries &= (uint64_t(1) << fat_bits) - 1;
++	first_fat_entries |= ((uint64_t(1) << fat_bits) - 1) << fat_bits;
+ 	first_fat_entries = little_endianize_int64(first_fat_entries);
+ 
+ 	for (i = 0; i < fat_count; i++)
+@@ -707,8 +707,8 @@ static uint32_t fat_get_fat_entry(imgtool::partition &partition, const uint8_t *
+ 		entry &= bit_mask;
+ 
+ 		if (i == 0)
+-			last_entry = (uint32_t) entry;
+-		else if (last_entry != (uint32_t) entry)
++			last_entry = uint32_t(entry);
++		else if (last_entry != uint32_t(entry))
+ 			return 1;   /* if the FATs disagree; mark this as reserved */
+ 	}
+ 
+@@ -740,8 +740,8 @@ static void fat_set_fat_entry(imgtool::partition &partition, uint8_t *fat_table,
+ 			* disk_info->sectors_per_fat) + (bit_index / 8), sizeof(entry));
+ 
+ 		entry = little_endianize_int64(entry);
+-		entry &= (~((uint64_t) 0xFFFFFFFF >> (32 - disk_info->fat_bits)) << (bit_index % 8)) | ((1 << (bit_index % 8)) - 1);
+-		entry |= ((uint64_t) value) << (bit_index % 8);
++		entry &= (~(uint64_t(0xFFFFFFFF) >> (32 - disk_info->fat_bits)) << (bit_index % 8)) | ((1 << (bit_index % 8)) - 1);
++		entry |= uint64_t(value) << (bit_index % 8);
+ 		entry = little_endianize_int64(entry);
+ 
+ 		memcpy(fat_table + (i * FAT_SECLEN
+@@ -1229,7 +1229,7 @@ static void fat_canonicalize_sfn(char *sfn, const uint8_t *sfn_bytes)
+ 	memcpy(sfn, sfn_bytes, 8);
+ 	rtrim(sfn);
+ 	if (sfn[0] == 0x05)
+-		sfn[0] = (char) 0xE5;
++		sfn[0] = char(0xE5);
+ 	if ((sfn_bytes[8] != ' ') || (sfn_bytes[9] != ' ') || (sfn_bytes[10] != ' '))
+ 	{
+ 		strcat(sfn, ".");
+@@ -1452,13 +1452,13 @@ static imgtoolerr_t fat_construct_dirent(const char *filename, creation_policy_t
+ 		/* append to short filename, if possible */
+ 		if ((ch < 32) || (ch > 128))
+ 			short_char = '\0';
+-		else if (isalnum((char) ch))
+-			short_char = toupper((char) ch);
+-		else if (strchr(".!#$%^()-@^_`{}~", (char) ch))
+-			short_char = (char) ch;
++		else if (isalnum(char(ch)))
++			short_char = toupper(char(ch));
++		else if (strchr(".!#$%^()-@^_`{}~", char(ch)))
++			short_char = char(ch);
+ 		else
+ 			short_char = '\0';  /* illegal SFN char */
+-		canonical_short_char = fat_canonicalize_sfn_char((char) ch);
++		canonical_short_char = fat_canonicalize_sfn_char(char(ch));
+ 		if (!short_char || (short_char != canonical_short_char))
+ 		{
+ 			if (toupper(short_char) == toupper(canonical_short_char))
+@@ -1606,7 +1606,7 @@ static void fat_bump_dirent(imgtool::partition &partition, uint8_t *entry, size_
+ 	sfn_entry = &entry[entry_len - FAT_DIRENT_SIZE];
+ 
+ 	digit_place = 1;
+-	for (pos = 7; (pos >= 0) && isdigit((char) sfn_entry[pos]); pos--)
++	for (pos = 7; (pos >= 0) && isdigit(char(sfn_entry[pos])); pos--)
+ 	{
+ 		val += (sfn_entry[pos] - '0') * digit_place;
+ 		digit_place *= 10;
+@@ -1946,7 +1946,7 @@ static imgtoolerr_t fat_partition_writefile(imgtool::partition &partition, const
+ 	if (file.directory)
+ 		return IMGTOOLERR_FILENOTFOUND;
+ 
+-	bytes_left = (uint32_t) sourcef.size();
++	bytes_left = uint32_t(sourcef.size());
+ 
+ 	err = fat_set_file_size(partition, &file, bytes_left);
+ 	if (err)
+diff --git a/src/tools/imgtool/modules/os9.cpp b/src/tools/imgtool/modules/os9.cpp
+index 33c4210b18a9..97fdcb9e209b 100644
+--- a/src/tools/imgtool/modules/os9.cpp
++++ b/src/tools/imgtool/modules/os9.cpp
+@@ -99,17 +99,13 @@ static void pick_string(const void *ptr, size_t offset, size_t length, char *des
+ 
+ 
+ 
+-static void place_string(void *ptr, size_t length, const char *s)
++static void place_string(uint8_t *bptr, size_t length, const char *s)
+ {
+-	size_t i;
+-	uint8_t b;
+-	uint8_t *bptr = (uint8_t *) ptr;
+-
+ 	bptr[0] = 0x80;
+ 
+-	for (i = 0; s[i] && (i < length); i++)
++	for (size_t i = 0; s[i] && (i < length); i++)
+ 	{
+-		b = ((uint8_t) s[i]) & 0x7F;
++		uint8_t b = ((uint8_t) s[i]) & 0x7F;
+ 		if (s[i+1] == '\0')
+ 			b |= 0x80;
+ 		bptr[i] = b;
+diff --git a/src/tools/imgtool/modules/pc_flop.cpp b/src/tools/imgtool/modules/pc_flop.cpp
+index 423336c6744e..6a242d16abf5 100644
+--- a/src/tools/imgtool/modules/pc_flop.cpp
++++ b/src/tools/imgtool/modules/pc_flop.cpp
+@@ -36,8 +36,8 @@ static imgtoolerr_t fat_image_create(imgtool::image &image, imgtool::stream::ptr
+ 	memset(buffer, 0, sizeof(buffer));
+ 	put_u16le(&buffer[24], sectors);
+ 	put_u16le(&buffer[26], heads);
+-	put_u16le(&buffer[19], (uint16_t) (((uint64_t) tracks * heads * sectors) >> 0));
+-	put_u32le(&buffer[32], (uint16_t) (((uint64_t) tracks * heads * sectors) >> 16));
++	put_u16le(&buffer[19], uint16_t((uint64_t(tracks) * heads * sectors) >> 0));
++	put_u32le(&buffer[32], uint16_t((uint64_t(tracks) * heads * sectors) >> 16));
+ 	err = image.write_block(0, buffer);
+ 	if (err)
+ 		goto done;
+@@ -47,7 +47,7 @@ static imgtoolerr_t fat_image_create(imgtool::image &image, imgtool::stream::ptr
+ 		imgtool_get_info_fct(&imgclass, IMGTOOLINFO_PTR_CREATE_PARTITION);
+ 
+ 	/* actually create the partition */
+-	err = fat_partition_create(image, 0, ((uint64_t) tracks) * heads * sectors);
++	err = fat_partition_create(image, 0, uint64_t(tracks) * heads * sectors);
+ 	if (err)
+ 		goto done;
+ 
+@@ -68,7 +68,7 @@ static imgtoolerr_t fat_image_get_geometry(imgtool::image &image, uint32_t *trac
+ 		return err;
+ 
+ 	total_sectors = get_u16le(&buffer[19])
+-		| (uint64_t)(get_u32le(&buffer[32]) << 16);
++		| uint64_t(get_u32le(&buffer[32]) << 16);
+ 
+ 	*sectors = get_u16le(&buffer[24]);
+ 	*heads = get_u16le(&buffer[26]);
