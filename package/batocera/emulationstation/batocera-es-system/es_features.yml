@@ -8248,9 +8248,9 @@ rpcs3:
             description: Helps reduce CPU power consumption by throttling the CPU when not needed. Useful for handhelds.
             choices:
                 "Off (Default)": "0"
-                "Minimum": "10"
-                "Moderate": "25"
-                "Maximum": "50"
+                "Minimum": "50"
+                "Moderate": "100"
+                "Maximum": "150"
         rpcs3_ratio:
             submenu: VIDEO
             prompt: ASPECT RATIO
