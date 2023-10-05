@@ -1088,7 +1088,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA)"
 msgstr "WYGŁADZANIE (MSAA)"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra, drastic
+#. TRANSLATION: libretro/desmume, libretro/melonds, drastic
 msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Rozmieść układ dwóch ekranów."
@@ -1098,32 +1098,32 @@ msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "UKŁAD EKRANU"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top/bottom"
 msgstr "góra/dół"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom/top"
 msgstr "dół/góra"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "left/right"
 msgstr "lewo/prawo"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "right/left"
 msgstr "prawo/lewo"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top only"
 msgstr "tylko góra"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom only"
 msgstr "tylko dół"
@@ -7053,6 +7053,43 @@ msgstr "Vulkan"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
+msgid ""
+"Changing driver can improve audio performance and reduce distortion. "
+"Alsathread is recommended for low-end systems."
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "AUDIO DRIVER"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSA"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSAThread"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "TinyALSA"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "SDL2"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "Pulse (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
 msgid "In milliseconds. Can reduce crackling/cutting out."
 msgstr "W milisekundach. Może zmniejszyć trzaski/wycinanie."
 
@@ -7422,10 +7459,8 @@ msgstr "WŁĄCZ POWIADOMIENIA"
 msgctxt "game_options"
 msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
-"L1+R1 to switch screens."
+"Hotkey+R2 to switch screens."
 msgstr ""
-"Włącz widok z gamepada w grach, w których interakcja odbywa się na dwóch "
-"ekranach. Użyj L1+R1, aby przełączyć ekrany."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7434,13 +7469,55 @@ msgstr "WŁĄCZ WIDOK Z GAMEPADA"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid top ratio 4"
-msgstr "hybryda góra współczynnik 4"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid bottom ratio 4"
-msgstr "hybryda dół współczynnik 4"
+msgid "Top Only"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Top"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr ""
 
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
@@ -7622,7 +7699,7 @@ msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
 msgstr "NIESTANDARDOWY KONTROLER"
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, duckstation, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "DISPLAY"
 msgstr "EKRAN"
@@ -7893,6 +7970,16 @@ msgstr "Usprawnienie. Usuwa ładowanie dysku."
 msgctxt "game_options"
 msgid "FAST DISK TRANSFER RATE"
 msgstr "SZYBKI TRANSFER DYSKU"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Show on screen display messages (memory card saves..)."
+msgstr ""
+
+#. TRANSLATION: dolphin, duckstation, melonds
+msgctxt "game_options"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr "POKAŻ KOMUNIKATY WYŚWIETLANE NA EKRANIE"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8262,11 +8349,6 @@ msgstr "Umożliwia załadowanie chronionych gier bez informacji o podkanale."
 msgctxt "game_options"
 msgid "ALLOW BOOTING WITHOUT SBI FILE"
 msgstr "ZEZWALAJ NA URUCHAMIANIE BEZ PLIKU SBI"
-
-#. TRANSLATION: duckstation, melonds
-msgctxt "game_options"
-msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
-msgstr "POKAŻ KOMUNIKATY WYŚWIETLANE NA EKRANIE"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -12806,6 +12888,11 @@ msgstr "Przełączanie limitu szybkości"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
+msgid "Swap screens"
+msgstr ""
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
 msgid "Mouse Click"
 msgstr "Kliknięcie myszą"
 
@@ -12953,6 +13040,22 @@ msgstr "Menu podręczne"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Przewijanie do przodu"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable gamepad view for games that have interaction across two screens. "
+#~ "Use L1+R1 to switch screens."
+#~ msgstr ""
+#~ "Włącz widok z gamepada w grach, w których interakcja odbywa się na dwóch "
+#~ "ekranach. Użyj L1+R1, aby przełączyć ekrany."
+
+#~ msgctxt "game_options"
+#~ msgid "hybrid top ratio 4"
+#~ msgstr "hybryda góra współczynnik 4"
+
+#~ msgctxt "game_options"
+#~ msgid "hybrid bottom ratio 4"
+#~ msgstr "hybryda dół współczynnik 4"
 
 #~ msgctxt "game_options"
 #~ msgid "Lynx 128k (Default)"

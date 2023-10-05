@@ -379,7 +379,8 @@ msgstr "LIGHTGUNS BENUTZEN"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
-msgstr "Wenn Lenkräder verbunden sind werden diese verwendet anstatt Controller."
+msgstr ""
+"Wenn Lenkräder verbunden sind werden diese verwendet anstatt Controller."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1100,7 +1101,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA)"
 msgstr "KANTENGLÄTTUNG (MSAA)"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra, drastic
+#. TRANSLATION: libretro/desmume, libretro/melonds, drastic
 msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Dual-Screen-Layouts anordnen und einstellen."
@@ -1110,32 +1111,32 @@ msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "BILDSCHIRM LAYOUT"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top/bottom"
 msgstr "Oben/Unten"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom/top"
 msgstr "Unten/Oben"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "left/right"
 msgstr "Links/Rechts"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "right/left"
 msgstr "Rechts/Links"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top only"
 msgstr "Nur Oben"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom only"
 msgstr "Nur Unten"
@@ -2017,8 +2018,9 @@ msgctxt "game_options"
 msgid ""
 "Enable Gravis Utrasound emulation. Ensure the ULTRASND folder is in the root "
 "of your <game>.pc rom folder."
-msgstr "Aktiviere Gravis Utrasound emulation. Stellen Sie sicher, dass sich "
-"der Ordner ULTRASND im Rootverzeichnis Ihres ROM-Ordners <game>.pc befindet."
+msgstr ""
+"Aktiviere Gravis Utrasound emulation. Stellen Sie sicher, dass sich der "
+"Ordner ULTRASND im Rootverzeichnis Ihres ROM-Ordners <game>.pc befindet."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -2034,7 +2036,9 @@ msgstr "Aus (Standard)"
 msgctxt "game_options"
 msgid ""
 "Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output."
-msgstr "Wählt die .SF2 SoundFont-Datei, die .ROM-Datei oder die Schnittstelle aus, die für die MIDI-Ausgabe verwendet wird."
+msgstr ""
+"Wählt die .SF2 SoundFont-Datei, die .ROM-Datei oder die Schnittstelle aus, "
+"die für die MIDI-Ausgabe verwendet wird."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -3171,8 +3175,9 @@ msgctxt "game_options"
 msgid ""
 "Atari ST monitors had a visible border around the main screen area, but most "
 "software does not display anything in it."
-msgstr "Atari ST-Monitore hatten einen sichtbaren Rand um den Hauptbildschirmbereich, "
-"aber die meisten Programme zeigen darin nichts an."
+msgstr ""
+"Atari ST-Monitore hatten einen sichtbaren Rand um den "
+"Hauptbildschirmbereich, aber die meisten Programme zeigen darin nichts an."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -4781,8 +4786,9 @@ msgctxt "game_options"
 msgid ""
 "Useful for N64 style controllers. Limited hotkeys for controllers without "
 "dedicated hotkey."
-msgstr "Nützlich für Controller im N64-Stil. Begrenzte Hotkeys für Controller "
-"ohne dedizierten Hotkey."
+msgstr ""
+"Nützlich für Controller im N64-Stil. Begrenzte Hotkeys für Controller ohne "
+"dedizierten Hotkey."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
@@ -7071,6 +7077,43 @@ msgstr "Vulkan"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
+msgid ""
+"Changing driver can improve audio performance and reduce distortion. "
+"Alsathread is recommended for low-end systems."
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "AUDIO DRIVER"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSA"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSAThread"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "TinyALSA"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "SDL2"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "Pulse (Default)"
+msgstr ""
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
 msgid "In milliseconds. Can reduce crackling/cutting out."
 msgstr "In Millisekunden. Kann Knacken/Aussetzer reduzieren."
 
@@ -7444,11 +7487,8 @@ msgstr "BENACHRICHTIGUNGEN AKTIVIEREN"
 msgctxt "game_options"
 msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
-"L1+R1 to switch screens."
+"Hotkey+R2 to switch screens."
 msgstr ""
-"Aktivierung der Gamepad-Ansicht für Spiele, bei denen Interaktionen zwischen "
-"zwei Bildschirmen möglich sind. L1+R1 verwenden, um zwischen den "
-"Bildschirmen umzuschalten."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7457,13 +7497,55 @@ msgstr "GAMEPAD-ANSICHT AKTIVIEREN"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid top ratio 4"
-msgstr "Hybride Oberseite - Verhältnis 4"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid bottom ratio 4"
-msgstr "Hybride Unterseite - Verhältnis 4"
+msgid "Top Only"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Top"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr ""
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr ""
 
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
@@ -7511,8 +7593,9 @@ msgctxt "game_options"
 msgid ""
 "Compile shaders using background threads to avoid shader compilation "
 "stutter. May cause graphical glitches."
-msgstr "Kompilieren Sie Shader mithilfe von Hintergrundthreads, "
-"um Stottern bei der Shader-Kompilierung zu vermeiden. Kann zu Grafikfehlern führen."
+msgstr ""
+"Kompilieren Sie Shader mithilfe von Hintergrundthreads, um Stottern bei der "
+"Shader-Kompilierung zu vermeiden. Kann zu Grafikfehlern führen."
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7647,7 +7730,7 @@ msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
 msgstr "BENUTZERDEFINIERTER CONTROLLER"
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, duckstation, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "DISPLAY"
 msgstr "BILDSCHIRMANZEIGE"
@@ -7657,8 +7740,9 @@ msgctxt "game_options"
 msgid ""
 "Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in "
 "appropriate user directory)."
-msgstr "Gamecube-Bootanimation und den BIOS-Zugriff aktivieren "
-"(erfordert IPL.bin BIOS im entsprechenden Benutzerverzeichnis)."
+msgstr ""
+"Gamecube-Bootanimation und den BIOS-Zugriff aktivieren (erfordert IPL.bin "
+"BIOS im entsprechenden Benutzerverzeichnis)."
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -7882,8 +7966,9 @@ msgctxt "game_options"
 msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
-msgstr "Die Aktivierung ermöglicht eine korrekte Emulation des texture wrapping. "
-"Der Preis dafür ist eine möglicherweise schlechtere Leistung."
+msgstr ""
+"Die Aktivierung ermöglicht eine korrekte Emulation des texture wrapping. Der "
+"Preis dafür ist eine möglicherweise schlechtere Leistung."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7921,6 +8006,16 @@ msgstr "Leistungsoptimierung. Entfernt die Disk-Ladefunktion."
 msgctxt "game_options"
 msgid "FAST DISK TRANSFER RATE"
 msgstr "SCHNELLE DATENTRÄGER-TRANSFERRATE"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Show on screen display messages (memory card saves..)."
+msgstr ""
+
+#. TRANSLATION: dolphin, duckstation, melonds
+msgctxt "game_options"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr "BILDSCHIRMBENACHRICHTIGUNGEN ANZEIGEN"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8294,11 +8389,6 @@ msgstr "Erlaubt das Laden von geschützten Spielen ohne Subchannel-Information."
 msgctxt "game_options"
 msgid "ALLOW BOOTING WITHOUT SBI FILE"
 msgstr "BOOTEN OHNE SBI-DATEI ERLAUBEN"
-
-#. TRANSLATION: duckstation, melonds
-msgctxt "game_options"
-msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
-msgstr "BILDSCHIRMBENACHRICHTIGUNGEN ANZEIGEN"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -9128,7 +9218,9 @@ msgstr "Simple 2x"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Display on screen information like savestate, config warning etc..."
-msgstr "Zeigt auf dem Bildschirm Informationen wie Speicherstatus, Konfigurationswarnungen usw. an."
+msgstr ""
+"Zeigt auf dem Bildschirm Informationen wie Speicherstatus, "
+"Konfigurationswarnungen usw. an."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -9813,8 +9905,9 @@ msgctxt "game_options"
 msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
-msgstr "Kann bei CPUs mit geringer Kern-/Thread-Anzahl zu Leistungssteigerungen "
-"auf Kosten möglicherweise fehlerhafter Timings führen."
+msgstr ""
+"Kann bei CPUs mit geringer Kern-/Thread-Anzahl zu Leistungssteigerungen auf "
+"Kosten möglicherweise fehlerhafter Timings führen."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9826,8 +9919,9 @@ msgctxt "game_options"
 msgid ""
 "Mega and Giga modes may improve performance. Use the Safe mode for maximum "
 "compatibility."
-msgstr "Die Modi Mega und Giga können die Leistung verbessern. Verwenden Sie "
-"den abgesicherten Modus für maximale Kompatibilität."
+msgstr ""
+"Die Modi Mega und Giga können die Leistung verbessern. Verwenden Sie den "
+"abgesicherten Modus für maximale Kompatibilität."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9854,7 +9948,8 @@ msgctxt "game_options"
 msgid ""
 "Helps reduce CPU power consumption by throttling the CPU when not needed. "
 "Useful for handhelds."
-msgstr "Hilft, den Stromverbrauch der CPU zu reduzieren, indem die CPU gedrosselt "
+msgstr ""
+"Hilft, den Stromverbrauch der CPU zu reduzieren, indem die CPU gedrosselt "
 "wird, wenn sie nicht benötigt wird. Nützlich für Handhelds."
 
 #. TRANSLATION: rpcs3
@@ -10152,7 +10247,8 @@ msgctxt "game_options"
 msgid ""
 "Use 16 bit audio samples for audio drivers that don't support 32bit. Only "
 "use if you get no audio."
-msgstr "Verwenden Sie 16-Bit-Audio für Audiotreiber, die 32-Bit nicht unterstützen. "
+msgstr ""
+"Verwenden Sie 16-Bit-Audio für Audiotreiber, die 32-Bit nicht unterstützen. "
 "Nur verwenden, wenn Sie keinen Ton hören."
 
 #. TRANSLATION: rpcs3
@@ -10176,8 +10272,9 @@ msgctxt "game_options"
 msgid ""
 "Duration of audio buffer in milliseconds. Higher numbers may cause audio "
 "latency."
-msgstr "Dauer des Audiopuffers in Millisekunden. Höhere Zahlen können "
-"zu Audio-Latenz führen."
+msgstr ""
+"Dauer des Audiopuffers in Millisekunden. Höhere Zahlen können zu Audio-"
+"Latenz führen."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10267,7 +10364,9 @@ msgstr "ZEITDEHNUNG AKTIVIEREN"
 msgctxt "game_options"
 msgid ""
 "Buffer fill level (in percentage) below which time stretching will start."
-msgstr "Pufferfüllstand (in Prozent), bei dessen Unterschreitung die Zeitstreckung beginnt."
+msgstr ""
+"Pufferfüllstand (in Prozent), bei dessen Unterschreitung die Zeitstreckung "
+"beginnt."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10296,7 +10395,8 @@ msgctxt "game_options"
 msgid ""
 "Default uses SDL2, otherwise enable controller specific capabilities. Sony "
 "DS won't work with clone controllers."
-msgstr "Standardmäßig wird SDL2 verwendet, andernfalls werden Controller-spezifische "
+msgstr ""
+"Standardmäßig wird SDL2 verwendet, andernfalls werden Controller-spezifische "
 "Funktionen aktiviert. Sony DS funktioniert nicht mit Klon-Controllern."
 
 #. TRANSLATION: rpcs3
@@ -11038,8 +11138,10 @@ msgctxt "game_options"
 msgid ""
 "Choose whether to pass SDL Game Controller config to the Windows game. "
 "Disabling may help with some games."
-msgstr "Wählen Sie aus, ob die SDL Game Controller-Konfiguration an das Windows-Spiel übergeben werden soll. "
-"Bei einigen Spielen kann das Deaktivieren hilfreich sein."
+msgstr ""
+"Wählen Sie aus, ob die SDL Game Controller-Konfiguration an das Windows-"
+"Spiel übergeben werden soll. Bei einigen Spielen kann das Deaktivieren "
+"hilfreich sein."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11192,7 +11294,9 @@ msgstr "NVIDIA-GPU AUSBLENDEN"
 msgctxt "game_options"
 msgid ""
 "NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU."
-msgstr "NVAPI ist die Kernsoftware von NVIDIA, die den direkten Zugriff auf die NVIDIA-GPU ermöglicht."
+msgstr ""
+"NVAPI ist die Kernsoftware von NVIDIA, die den direkten Zugriff auf die "
+"NVIDIA-GPU ermöglicht."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12256,7 +12360,8 @@ msgctxt "game_options"
 msgid ""
 "Enable or disable Xenia patches. These patches can fix graphics problems in "
 "some games."
-msgstr "Aktivieren oder deaktivieren von Xenia-Patches. Diese Patches können "
+msgstr ""
+"Aktivieren oder deaktivieren von Xenia-Patches. Diese Patches können "
 "Grafikprobleme in einigen Spielen beheben."
 
 #. TRANSLATION: xenia-canary
@@ -12277,7 +12382,8 @@ msgstr "GZDOOM JOYSTICKKONFIGURATION VERWENDEN"
 #. TRANSLATION: corsixth
 msgctxt "game_options"
 msgid "Use new graphics created from CorsixTH project"
-msgstr "Verwenden von neue Grafiken, die aus dem CorsixTH-Projekt erstellt wurden"
+msgstr ""
+"Verwenden von neue Grafiken, die aus dem CorsixTH-Projekt erstellt wurden"
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -12289,8 +12395,10 @@ msgctxt "game_options"
 msgid ""
 "Free Build or Sandbox mode. You cannot win or lose custom made maps if this "
 "is set to true. You also don't have to worry about money."
-msgstr "Kostenloser Build- oder Sandbox-Modus. Wenn dies auf „true“ gesetzt ist, können Sie keine "
-"benutzerdefinierten Karten gewinnen oder verlieren. Auch um Geld müssen Sie sich keine Sorgen machen."
+msgstr ""
+"Kostenloser Build- oder Sandbox-Modus. Wenn dies auf „true“ gesetzt ist, "
+"können Sie keine benutzerdefinierten Karten gewinnen oder verlieren. Auch um "
+"Geld müssen Sie sich keine Sorgen machen."
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -12363,7 +12471,8 @@ msgctxt "game_options"
 msgid ""
 "Select how much graphics memory is allocated for the GPU, may need modifying "
 "for some games / systems."
-msgstr "Wählen Sie aus, wie viel Grafikspeicher der GPU zugewiesen wird. Bei einigen "
+msgstr ""
+"Wählen Sie aus, wie viel Grafikspeicher der GPU zugewiesen wird. Bei einigen "
 "Spielen/Systemen muss möglicherweise eine Änderung vorgenommen werden."
 
 #. TRANSLATION: ioquake3
@@ -12848,6 +12957,11 @@ msgstr "Geschwindigkeitslimit umschalten"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
+msgid "Swap screens"
+msgstr ""
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
 msgid "Mouse Click"
 msgstr "Mausklick"
 
@@ -12995,6 +13109,23 @@ msgstr "Schnellmenü"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Schnelles Vorspulen"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Enable gamepad view for games that have interaction across two screens. "
+#~ "Use L1+R1 to switch screens."
+#~ msgstr ""
+#~ "Aktivierung der Gamepad-Ansicht für Spiele, bei denen Interaktionen "
+#~ "zwischen zwei Bildschirmen möglich sind. L1+R1 verwenden, um zwischen den "
+#~ "Bildschirmen umzuschalten."
+
+#~ msgctxt "game_options"
+#~ msgid "hybrid top ratio 4"
+#~ msgstr "Hybride Oberseite - Verhältnis 4"
+
+#~ msgctxt "game_options"
+#~ msgid "hybrid bottom ratio 4"
+#~ msgstr "Hybride Unterseite - Verhältnis 4"
 
 #~ msgctxt "game_options"
 #~ msgid "Lynx 128k (Default)"
