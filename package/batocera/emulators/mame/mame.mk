@@ -52,11 +52,13 @@ ifeq ($(BR2_RISCV_64),y)
 MAME_CROSS_ARCH = riscv64
 # Proper architecture flags
 MAME_CFLAGS += -mabi=lp64d -march=rv64imafdczbb_zba -mcpu=sifive-u74
+# Force OPTIMIZE level 1 to avoid fatal linking relocation issue so far....
+MAME_CROSS_OPTS += OPTIMIZE=1
 # Cast alignment warnings cause errors on riscv64
-MAME_CROSS_OPTS += NOWERROR=1
+MAME_CFLAGS += -Wno-error=cast-align
 # Do we need to change the machine code model for MAME on RISC-V ?
-#MAME_CFLAGS += -mcmodel=medany
-#MAME_LDFLAGS += -mcmodel=medany
+MAME_CFLAGS += -mcmodel=medany
+MAME_LDFLAGS += -mcmodel=medany
 endif
 
 ifeq ($(BR2_cortex_a9),y)
