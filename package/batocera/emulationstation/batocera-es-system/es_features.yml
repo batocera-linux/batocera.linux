@@ -263,6 +263,16 @@ libretro:
         "OpenGL": gl
         "GLCore": glcore
         "Vulkan": vulkan
+    audio_driver:
+      group: ADVANCED OPTIONS
+      prompt: AUDIO DRIVER
+      description: Changing driver can improve audio performance and reduce distortion. Alsathread is recommended for low-end systems.
+      choices:
+        "ALSA":            alsa
+        "ALSAThread":      alsathread
+        "TinyALSA":        tinyalsa
+        "SDL2":            sdl2
+        "Pulse (Default)": pulse    
     audio_latency:
       group: ADVANCED OPTIONS
       prompt:      AUDIO LATENCY
