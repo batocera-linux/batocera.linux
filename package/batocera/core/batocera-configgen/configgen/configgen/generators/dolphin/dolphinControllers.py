@@ -186,6 +186,7 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
         'y':             'Buttons/Y',
         'x':             'Buttons/X',
         'pagedown':      'Buttons/Z',
+        'pageup':        None, 
         'start':         'Buttons/Start',
         'l2':            'Triggers/L',
         'r2':            'Triggers/R',
@@ -393,7 +394,7 @@ def generateHotkeys(playersControllers):
 
                 # Write the configuration for this key
                 if keyname is not None:
-                    write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id)
+                    write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id, None)
                     
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
@@ -402,6 +403,33 @@ def generateHotkeys(playersControllers):
 
     f.write
     f.close()
+
+def get_AltMapping(system, nplayer, anyMapping):
+    mapping = anyMapping.copy()   
+    # Fixes default gamecube style controller mapping for ES from es_input (gc A confirm/gc B cancel)
+    if system.isOptSet(f"dolphin_port_{nplayer}_type") and system.config[f'dolphin_port_{nplayer}_type'] == '6b':
+        mapping['a'] = 'Buttons/B'
+        mapping['b'] = 'Buttons/A'
+        
+    # Only apply alt inputs for standard controller type
+    if not system.isOptSet(f"dolphin_port_{nplayer}_type") or system.config.get(f'dolphin_port_{nplayer}_type') == '6a':
+        # Check for alternative mappings settings and adjust
+        if system.isOptSet(f"alt_mappings_{nplayer}"): 
+            alt_mapping_type = system.config.get(f'alt_mappings_{nplayer}')
+            
+            if alt_mapping_type == 'buttons_ccw':
+                mapping['a'] = 'Buttons/B'
+                mapping['b'] = 'Buttons/Y'
+                mapping['y'] = 'Buttons/X'
+                mapping['x'] = 'Buttons/A'
+                
+            elif alt_mapping_type == 'buttons_cw':
+                mapping['a'] = 'Buttons/X'
+                mapping['b'] = 'Buttons/A'
+                mapping['y'] = 'Buttons/B'
+                mapping['x'] = 'Buttons/Y'
+    
+    return mapping
 
 def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
@@ -425,20 +453,20 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad):
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
+                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
         else:
-            generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
+            generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
 
         nplayer += 1
     f.write
     f.close()
 
-def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
+def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer):
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
     
-    # Recompute the mapping according to available buttons on the pads and the available replacements
-    currentMapping = anyMapping
+    # Get alt input mappings and recompute the mapping according to available buttons on the pads and the available replacements
+    currentMapping = get_AltMapping(system, nplayer, anyMapping)
     # Apply replacements
     if anyReplacements is not None:
         for x in anyReplacements:
@@ -462,12 +490,19 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
     
         # Write the configuration for this key
         if keyname is not None:
-            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
+            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, None)
             if 'Triggers' in keyname and input.type == 'axis':
-                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
+                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None, None)
+            if 'Buttons/Z' in keyname and "pageup" in pad.inputs:
+                # Create dictionary for both L1/R1 to pass to write_key
+                gcz_ids = {
+                    "pageup": pad.inputs["pageup"].id, 
+                    "pagedown": pad.inputs["pagedown"].id
+                }
+                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, gcz_ids)               
         # Write the 2nd part
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
-            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
+            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None, None)
         # DualShock Motion control
         if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
             f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
@@ -492,7 +527,22 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
         # Rumble option
         if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
             f.write("Rumble/Motor = Weak\n")
-
+        # Deadzone setting
+        if system.isOptSet(f"deadzone_{nplayer}"):
+            f.write(f"Main Stick/Dead Zone = {system.config['deadzone_' + str(nplayer)]}\n")
+            f.write(f"C-Stick/Dead Zone = {system.config['deadzone_' + str(nplayer)]}\n")
+        else:
+            f.write(f"Main Stick/Dead Zone = 5.0\n")
+            f.write(f"C-Stick/Dead Zone = 5.0\n")    
+        # JS gate size    
+        if system.isOptSet(f"jsgate_size_{nplayer}") and system.config[f'jsgate_size_{nplayer}'] != 'normal':
+            if system.config[f'jsgate_size_{nplayer}'] == 'smaller':
+                f.write(f"Main Stick/Gate Size = 64.0\n")
+                f.write(f"C-Stick/Gate Size = 56.0\n")
+            if system.config[f'jsgate_size_{nplayer}'] == 'larger':
+                f.write(f"Main Stick/Gate Size = 95.0\n")
+                f.write(f"C-Stick/Gate Size = 88.0\n")
+                
 def generateControllerConfig_any_from_profiles(f, pad):
     for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
         try:
@@ -517,13 +567,17 @@ def generateControllerConfig_any_from_profiles(f, pad):
 
     return False
 
-def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):
+def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id, gcz_ids):   
     f.write(keyname + " = ")
     if hotkey_id is not None:
         f.write("`Button " + str(hotkey_id) + "` & ")
     f.write("`")
     if input_type == "button":
-        f.write("Button " + str(input_id))
+        # Map L1 & R1 both to Z with OR operator
+        if keyname == "Buttons/Z" and gcz_ids is not None:
+            f.write(f"Button {gcz_ids['pageup']}`|`Button {gcz_ids['pagedown']}")
+        else:
+            f.write("Button " + str(input_id))
     elif input_type == "hat":
         if input_value == "1" or input_value == "4":        # up or down
             f.write("Axis " + str(int(input_global_id)+1+int(input_id)*2))
@@ -534,8 +588,10 @@ def write_key(f, keyname, input_type, input_id, input_value, input_global_id, re
         else:
             f.write("+")
     elif input_type == "axis":
+        # Ensure full values are used for analog triggers
+        prefix = "Full " if keyname in {"Triggers/L-Analog", "Triggers/R-Analog"} else ""
         if (reverse and input_value == "-1") or (not reverse and input_value == "1"):
-            f.write("Axis " + str(input_id) + "+")
+            f.write(f"{prefix}Axis " + str(input_id) + "+")
         else:
-            f.write("Axis " + str(input_id) + "-")
+            f.write(f"{prefix}Axis " + str(input_id) + "-")
     f.write("`\n")

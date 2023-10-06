@@ -6606,12 +6606,13 @@ dolphin:
                 "Off": 0
                 "On":  1
         dolphin_port_1_type:
-            submenu: CONTROLLERS
+            submenu: CONTROLLER 1
             prompt: GAMECUBE PORT 1 TYPE
             description: Change what's plugged into the virtual GameCube ports.
             choices:
                 "None":                       0
-                "Standard Controller":        6
+                "Standard Controller":        6a
+                "GameCube Controller":        6b
                 "GameCube Adapter for Wii U": 12
                 "Steering Wheel":             8
                 "Dance Mat":                  9
@@ -6619,11 +6620,13 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_2_type:
-            submenu: CONTROLLERS
+            submenu: CONTROLLER 2
             prompt: GAMECUBE PORT 2 TYPE
+            description: Change what's plugged into the virtual GameCube ports.
             choices:
                 "None":                       0
-                "Standard Controller":        6
+                "Standard Controller":        6a
+                "GameCube Controller":        6b
                 "GameCube Adapter for Wii U": 12
                 "Steering Wheel":             8
                 "Dance Mat":                  9
@@ -6631,11 +6634,13 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_3_type:
-            submenu: CONTROLLERS
+            submenu: CONTROLLER 3
             prompt: GAMECUBE PORT 3 TYPE
+            description: Change what's plugged into the virtual GameCube ports.
             choices:
                 "None":                       0
-                "Standard Controller":        6
+                "Standard Controller":        6a
+                "GameCube Controller":        6b
                 "GameCube Adapter for Wii U": 12
                 "Steering Wheel":             8
                 "Dance Mat":                  9
@@ -6643,17 +6648,47 @@ dolphin:
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
         dolphin_port_4_type:
-            submenu: CONTROLLERS
+            submenu: CONTROLLER 4
             prompt: GAMECUBE PORT 4 TYPE
+            description: Change what's plugged into the virtual GameCube ports.
             choices:
                 "None":                       0
-                "Standard Controller":        6
+                "Standard Controller":        6a
+                "GameCube Controller":        6b 
                 "GameCube Adapter for Wii U": 12
                 "Steering Wheel":             8
                 "Dance Mat":                  9
                 "DK Bongos":                  10
                 #"GBA (TCP)":                  5
                 "Keyboard":                   7
+        alt_mappings_1:
+            submenu: CONTROLLER 1
+            prompt: ALT INPUT MAPPING
+            description: Use alternative input mappings. Only applies to Standard Controller type.
+            choices:
+                "Face Buttons (CW)":         buttons_cw
+                "Face Buttons (CCW)":        buttons_ccw
+        alt_mappings_2:
+            submenu: CONTROLLER 2
+            prompt: ALT INPUT MAPPING
+            description: Use alternative input mappings. Only applies to Standard Controller type.
+            choices:
+                "Face Buttons (CW)":         buttons_cw
+                "Face Buttons (CCW)":        buttons_ccw
+        alt_mappings_3:
+            submenu: CONTROLLER 3
+            prompt: ALT INPUT MAPPING
+            description: Use alternative input mappings. Only applies to Standard Controller type.
+            choices:
+                "Face Buttons (CW)":         buttons_cw
+                "Face Buttons (CCW)":        buttons_ccw
+        alt_mappings_4:
+            submenu: CONTROLLER 4
+            prompt: ALT INPUT MAPPING
+            description: Use alternative input mappings. Only applies to Standard Controller type.
+            choices:
+                "Face Buttons (CW)":         buttons_cw
+                "Face Buttons (CCW)":        buttons_ccw        
         anisotropic_filtering:
             submenu: RENDERING
             prompt: ANISOTROPIC FILTERING
@@ -6742,20 +6777,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        dsmotion:
-            submenu: CONTROLLERS
-            prompt: DUALSHOCK MOTION CONTROL
-            description: Emulate the Wiimote pointer with a DS4's gyroscope.
-            choices:
-                "Off": 0
-                "On":  1
-        mouseir:
-            submenu: CONTROLLERS
-            prompt: MOUSE AS WIIMOTE POINTER
-            description: Emulate the Wiimote pointer with a mouse.
-            choices:
-                "Off": 0
-                "On":  1
         rumble:
             submenu: CONTROLLERS
             prompt: RUMBLE
@@ -6769,7 +6790,93 @@ dolphin:
             choices:
                 "Off": "False"
                 "On":  "True"
-
+        deadzone_1:
+            submenu: CONTROLLER 1
+            prompt: DEADZONE
+            description: Set joystick deadzone.
+            choices:
+                "0%":            0.0
+                "5% (Default)":  5.0        
+                "10%":           10.0
+                "15%":           15.0
+                "20%":           20.0
+                "25%":           25.0
+                "30%":           30.0
+        deadzone_2:
+            submenu: CONTROLLER 2
+            prompt: DEADZONE
+            description: Set joystick deadzone.
+            choices:
+                "0%":            0.0
+                "5% (Default)":  5.0        
+                "10%":           10.0
+                "15%":           15.0
+                "20%":           20.0
+                "25%":           25.0
+                "30%":           30.0
+        deadzone_3:
+            submenu: CONTROLLER 3
+            prompt: DEADZONE
+            description: Set joystick deadzone.
+            choices:
+                "0%":            0.0
+                "5% (Default)":  5.0        
+                "10%":           10.0
+                "15%":           15.0
+                "20%":           20.0
+                "25%":           25.0
+                "30%":           30.0
+        deadzone_4:
+            submenu: CONTROLLER 4
+            prompt: DEADZONE
+            description: Set joystick deadzone.
+            choices:
+                "0%":            0.0
+                "5% (Default)":  5.0        
+                "10%":           10.0
+                "15%":           15.0
+                "20%":           20.0
+                "25%":           25.0
+                "30%":           30.0
+        jsgate_size_1:
+            submenu: CONTROLLER 1
+            prompt: JOYSTICK GATE SIZE
+            description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+            choices:
+                "Smaller":          smaller
+                "Normal (Default)": normal        
+                "Larger":           larger
+        jsgate_size_2:
+            submenu: CONTROLLER 2
+            prompt: JOYSTICK GATE SIZE
+            description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+            choices:
+                "Smaller":          smaller
+                "Normal (Default)": normal        
+                "Larger":           larger 
+        jsgate_size_3:
+            submenu: CONTROLLER 3
+            prompt: JOYSTICK GATE SIZE
+            description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+            choices:
+                "Smaller":          smaller
+                "Normal (Default)": normal        
+                "Larger":           larger 
+        jsgate_size_4:
+            submenu: CONTROLLER 4
+            prompt: JOYSTICK GATE SIZE
+            description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+            choices:
+                "Smaller":          smaller
+                "Normal (Default)": normal        
+                "Larger":           larger
+        dplii:
+            group: ADVANCED OPTIONS
+            prompt: DOLBY PRO LOGIC II
+            description: Enables Dolby Pro Logic II for surround sound. May impact performance.
+            choices:
+                "Off": 0
+                "On":  1        
   systems:
     gamecube:
         shared: [use_wheels]
@@ -6816,6 +6923,20 @@ dolphin:
                     "Wiimote Sideway + Swing":   is
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
+            dsmotion:
+                submenu: CONTROLLERS
+                prompt: DUALSHOCK MOTION CONTROL
+                description: Emulate the Wiimote pointer with a DS4's gyroscope.
+                choices:
+                    "Off": 0
+                    "On":  1
+            mouseir:
+                submenu: CONTROLLERS
+                prompt: MOUSE AS WIIMOTE POINTER
+                description: Emulate the Wiimote pointer with a mouse.
+                choices:
+                    "Off": 0
+                    "On":  1
             dolphin-lightgun-hide-crosshair:
                 submenu: CONTROLLERS
                 prompt: SHOW LIGHT GUN CROSSHAIRS
