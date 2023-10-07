@@ -24,8 +24,8 @@ set_ayn_led_mode() {
             echo $led_colour | tee /sys/class/leds/multicolor:chassis/multi_intensity
         fi
     else
-        # Set blue color as default
-        echo 0 255 0 | tee /sys/class/leds/multicolor:chassis/multi_intensity
+        # Set hot pink colour as default
+        echo 255 165 0 | tee /sys/class/leds/multicolor:chassis/multi_intensity
     fi
     
     # Set the brightness
