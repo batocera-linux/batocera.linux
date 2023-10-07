@@ -13,6 +13,7 @@
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
+- Proton to 8.0-4b
 
 # 2023/10/xx - batocera.linux 38 - Blue Moon
 ### Hardware
