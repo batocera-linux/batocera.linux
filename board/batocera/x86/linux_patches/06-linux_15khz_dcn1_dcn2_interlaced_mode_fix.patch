@@ -11,16 +11,7 @@ Index: linux-6.5/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  	}
  
  	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
-@@ -6062,7 +6064,7 @@ create_stream_for_sink(struct amdgpu_dm_
- 
- 	if (recalculate_timing)
- 		drm_mode_set_crtcinfo(&saved_mode, 0);
--	else if (!old_stream)
-+	else if (!old_stream && mode.flags & DRM_MODE_FLAG_INTERLACE)
- 		drm_mode_set_crtcinfo(&mode, 0);
- 
- 	/*
-@@ -6605,8 +6607,7 @@ enum drm_mode_status amdgpu_dm_connector
+@@ -6603,8 +6605,7 @@ enum drm_mode_status amdgpu_dm_connector
  	struct dc_stream_state *stream;
  	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
  
@@ -30,7 +21,17 @@ Index: linux-6.5/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  		return result;
  
  	/*
-@@ -7301,7 +7302,7 @@ void amdgpu_dm_connector_init_helper(str
+@@ -6623,7 +6624,8 @@ enum drm_mode_status amdgpu_dm_connector
+ 		goto fail;
+ 	}
+ 
+-	drm_mode_set_crtcinfo(mode, 0);
++	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
++		drm_mode_set_crtcinfo(mode, 0);
+ 
+ 	stream = create_validate_stream_for_sink(aconnector, mode,
+ 						 to_dm_connector_state(connector->state),
+@@ -7301,7 +7303,7 @@ void amdgpu_dm_connector_init_helper(str
  	aconnector->connector_id = link_index;
  	aconnector->bl_idx = -1;
  	aconnector->dc_link = link;
@@ -82,7 +83,7 @@ Index: linux-6.5/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
 ===================================================================
 --- linux-6.5.orig/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
 +++ linux-6.5/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-@@ -1591,6 +1591,9 @@ static void dcn20_update_dchubp_dpp(
+@@ -1594,6 +1594,9 @@ static void dcn20_update_dchubp_dpp(
  		pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->plane_state->per_pixel_alpha;
  		ASSERT(pipe_ctx->plane_res.scl_data.lb_params.depth == LB_PIXEL_DEPTH_36BPP);
  		/* scaler configuration */
