@@ -82,7 +82,7 @@ BATOCERA_NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
 # legacy driver versions
 BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy.version)
 BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy390.version)
-BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
+#BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
 
 mkdir -p /var/run/nvidia/modprobe || exit 1
 
