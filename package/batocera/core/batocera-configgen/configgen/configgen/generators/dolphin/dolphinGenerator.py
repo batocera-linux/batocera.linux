@@ -65,10 +65,10 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Interface", "UsePanicHandlers",        "False")
         
         # Display message in game (Memory card save and many more...)
-        if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg"):
-            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
-        else:
+        if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg") == False:
             dolphinSettings.set("Interface", "OnScreenDisplayMessages", "False")
+        else:
+            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
 
         # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", "False")
