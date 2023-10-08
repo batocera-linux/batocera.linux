@@ -11,7 +11,7 @@ MODE=$1
 LISTDIR=/usr/share/nvidia
 
 if test "${MODE}" = "auto"; then
-    echo "Detect if we have a Nvidia GPU"
+    echo "Detect if we have a Nvidia GPU" >> $log
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
     if [ "$NVIDIA_DEV" ]; then
         echo "Detected a NVIDIA GPU" >> "$log"
@@ -67,7 +67,7 @@ if test "${MODE}" = "auto"; then
             fi
         done
     else
-        echo "No NVIDIA GPU detected" > $log
+        echo "No NVIDIA GPU detected" >> $log
         echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
@@ -506,7 +506,7 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
     fi
 
 elif test "${MODE}" = "nouveau"; then
-    echo "Using OpenSource Mesa Nouveau driver" > $log
+    echo "Using OpenSource Mesa Nouveau driver" >> $log
     test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
     test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
