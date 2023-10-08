@@ -194,6 +194,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PYTHON_HIDAPI                        # Communication with USB HID devices via Python
     select BR2_PACKAGE_LEDSPICER                            # LED Manager for Linux
     select BR2_PACKAGE_INNOEXTRACT			    # Extract InnoSetup files (useful for Wine and GOG games)
+    select BR2_PACKAGE_TREE				    # recursive directory listing (useful for generating documentation on rom directory structure)
 
     # Python and SSL
     select BR2_PACKAGE_HOST_PYTHON3
