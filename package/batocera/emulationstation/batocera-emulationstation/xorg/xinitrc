@@ -34,6 +34,7 @@ if [ "$gpu_count" -eq 2 ]; then
             export __VK_LAYER_NV_optimus=NVIDIA_only
             export __GLX_VENDOR_LIBRARY_NAME=nvidia
             echo "Using $gpu_name as primary GPU" >> "$nvidia_log"
+            echo "$gpu_name is the primary GPU" >> "$display_log"
             nvidia_conditions_met=true
         else
             # Check for nvidia-prime setting
@@ -59,6 +60,7 @@ if [ "$gpu_count" -eq 2 ]; then
                 echo "Setting AMD Prime environment variable" >> "$amd_log"
                 export DRI_PRIME=1
                 echo "Using $gpu_name as primary GPU" >> "$amd_log"
+                echo "$gpu_name is the primary GPU" >> "$display_log"
             else
                 if [ "$radeon_prime" = "true" ]; then
                     echo "'radeon-prime' manually set to true" >> "$amd_log" 
