@@ -10,6 +10,7 @@
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.259 - Switchres 2.002w
+- DosBox-X to 2023.10.6
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
