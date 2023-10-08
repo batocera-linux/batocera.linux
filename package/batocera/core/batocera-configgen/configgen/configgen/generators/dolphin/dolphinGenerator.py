@@ -122,10 +122,14 @@ class DolphinGenerator(Generator):
 
         # Gamecube ports
         # Create a for loop going 1 through to 4 and iterate through it:
-        for i in range(1,5):
-            if system.isOptSet("dolphin_port_" + str(i) + "_type"):
+        for i in range(1, 5):
+            key = "dolphin_port_" + str(i) + "_type"
+            if system.isOptSet(key):
+                value = system.config[key]
+                # Set value to 6 if it is 6a or 6b. This is to differentiate between Standard Controller and GameCube Controller type.
+                value = "6" if value in ["6a", "6b"] else value
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
-                dolphinSettings.set("Core", "SIDevice" + str(i - 1), system.config["dolphin_port_" + str(i) + "_type"])
+                dolphinSettings.set("Core", "SIDevice" + str(i - 1), value)
             else:
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
 
@@ -149,6 +153,19 @@ class DolphinGenerator(Generator):
                 dolphinSettings.set("Core", "SkipIPL", "True")
         else:
             dolphinSettings.set("Core", "SkipIPL", "True")
+        
+        # Set audio backend
+        dolphinSettings.set("DSP", "Backend", "Cubeb")
+        
+        # Dolby Pro Logic II for surround sound
+        if system.isOptSet("dplii") and system.getOptBoolean("dplii"):
+            dolphinSettings.set("Core", "DPL2Decoder", "True")
+            dolphinSettings.set("Core", "DSPHLE", "False")
+            dolphinSettings.set("DSP", "EnableJIT", "True")
+        else:
+            dolphinSettings.set("Core", "DPL2Decoder", "False")
+            dolphinSettings.set("Core", "DSPHLE", "True")
+            dolphinSettings.set("DSP", "EnableJIT", "False")   
         
         # Save dolphin.ini
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
