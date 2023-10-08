@@ -319,6 +319,10 @@ def getGenerator(emulator):
         from generators.corsixth.corsixthGenerator import CorsixTHGenerator
         return CorsixTHGenerator()
 
+    if emulator == 'stella':
+        from generators.stella.stellaGenerator import StellaGenerator
+        return StellaGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()
