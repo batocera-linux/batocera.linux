@@ -3,8 +3,8 @@
 # yuzu
 #
 ################################################################################
-# Version: Commits on Sep 15, 2023
-YUZU_VERSION = aa6afb0cfedab2b73e87f882797f4d935c899f5d
+# Version: Commits on Oct 7, 2023
+YUZU_VERSION = bd42bba71c09010c63853867c4d80573888bff81
 YUZU_SITE = https://github.com/yuzu-emu/yuzu.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
@@ -25,7 +25,6 @@ YUZU_CONF_OPTS += -DYUZU_USE_EXTERNAL_SDL2=OFF
 YUZU_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 YUZU_CONF_OPTS += -DYUZU_TESTS=OFF
 YUZU_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
-YUZU_CONF_OPTS += -DYUZU_USE_QT_MULTIMEDIA=OFF
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     YUZU_DEPENDENCIES += host-glslang vulkan-headers vulkan-loader
