@@ -1280,7 +1280,10 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # Apple 2
-    select BR2_PACKAGE_APPLEWIN			    # ALL
+    select BR2_PACKAGE_APPLEWIN		    # ALL
+
+    # Standalone Stella
+    select BR2_PACKAGE_BATOCERA_STELLA	    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     help
         Emulators under development (Experimental)
