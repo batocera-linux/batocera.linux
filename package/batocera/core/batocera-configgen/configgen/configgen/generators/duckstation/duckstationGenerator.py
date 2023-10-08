@@ -407,7 +407,7 @@ class DuckstationGenerator(Generator):
                     if nplayer > 4:
                         settings.set("ControllerPorts", "MultitapMode", "BothPorts")
                 pad_num = "Pad{}".format(nplayer)
-                sdl_num = "SDL-{}".format(nplayer - 1)
+                sdl_num = "SDL-{}".format(pad.index)
                 ctrl_num = "Controller" + str(nplayer)
                 # SDL2 configs are always the same for controllers
                 if system.isOptSet("duckstation_" + ctrl_num):
