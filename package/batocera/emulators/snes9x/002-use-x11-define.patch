@@ -1,0 +1,107 @@
+--- a/qt/src/EmuCanvasOpenGL.cpp	2023-10-09 15:40:38.129062568 +0200
++++ b/qt/src/EmuCanvasOpenGL.cpp	2023-10-09 15:43:42.921095743 +0200
+@@ -6,10 +6,12 @@
+ #include "common/video/opengl_context.hpp"
+ 
+ #ifndef _WIN32
+-#include "common/video/glx_context.hpp"
+ #include "common/video/wayland_egl_context.hpp"
+ using namespace QNativeInterface;
++#ifdef USE_X11
++#include "common/video/glx_context.hpp"
+ #include <X11/Xlib.h>
++#endif
+ #else
+ #include "common/video/wgl_context.hpp"
+ #endif
+@@ -147,6 +149,7 @@
+ 
+         context.reset(wayland_egl_context);
+     }
++#ifdef USE_X11
+     else if (platform == "xcb")
+     {
+         auto display = (Display *)pni->nativeResourceForWindow("display", windowHandle());
+@@ -162,6 +165,7 @@
+ 
+         context.reset(glx_context);
+     }
++#endif
+ #else
+     auto hwnd = winId();
+     auto wgl_context = new WGLContext();
+@@ -312,8 +316,10 @@
+ #ifndef _WIN32
+     if (QGuiApplication::platformName() == "wayland")
+         ((WaylandEGLContext *)context.get())->resize({ g.x(), g.y(), g.width(), g.height(), s });
++#ifdef USE_X11
+     else if (platform == "xcb")
+         ((GTKGLXContext *)context.get())->resize();
++#endif
+ #else
+     ((WGLContext *)context.get())->resize();
+ #endif
+--- a/qt/src/EmuMainWindow.cpp	2023-10-09 16:11:17.487525715 +0200
++++ b/qt/src/EmuMainWindow.cpp	2023-10-09 16:12:59.289673265 +0200
+@@ -372,6 +372,7 @@
+ void EmuMainWindow::setBypassCompositor(bool bypass)
+ {
+ #ifndef _WIN32
++#ifdef USE_X11
+     if (QGuiApplication::platformName() == "xcb")
+     {
+         auto pni = QGuiApplication::platformNativeInterface();
+@@ -383,6 +384,7 @@
+         XChangeProperty(display, xid, net_wm_bypass_compositor, 6, 32, PropModeReplace, (unsigned char *)&value, 1);
+     }
+ #endif
++#endif
+ }
+ 
+ void EmuMainWindow::chooseState(bool save)
+@@ -691,4 +693,4 @@
+ {
+     if (cheats_dialog)
+         cheats_dialog->close();
+-}
+\ Pas de fin de ligne à la fin du fichier
++}
+--- a/qt/src/EmuCanvasVulkan.cpp	2023-10-09 16:15:24.344739615 +0200
++++ b/qt/src/EmuCanvasVulkan.cpp	2023-10-09 16:15:47.533230400 +0200
+@@ -108,6 +108,7 @@
+             return false;
+         }
+     }
++#ifdef USE_X11
+     else if (platform == "xcb")
+     {
+         auto display = (Display *)pni->nativeResourceForWindow("display", window);
+@@ -119,6 +120,7 @@
+         }
+     }
+ #endif
++#endif
+ 
+     if (config->display_messages == EmuConfig::eOnscreen)
+         initImGui();
+--- a/qt/CMakeLists.txt	2023-10-09 16:20:25.691126709 +0200
++++ b/qt/CMakeLists.txt	2023-10-09 16:20:11.250820266 +0200
+@@ -1,6 +1,8 @@
+ cmake_minimum_required(VERSION 3.20)
+ project(snes9x-qt VERSION 1.61)
+ 
++option(USE_X11 "Build support for X11" ON)
++
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED True)
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+@@ -103,6 +105,9 @@
+     if(X11_FOUND)
+         list(APPEND INCLUDES ${X11_INCLUDE_DIRS})
+         list(APPEND LIBS ${X11_LIBRARIES})
++        if(USE_X11)
++            list(APPEND DEFINES "USE_X11")
++        endif()
+     endif()
+ 
+     list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS})

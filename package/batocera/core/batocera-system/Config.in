@@ -1285,6 +1285,9 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     # Standalone Stella
     select BR2_PACKAGE_BATOCERA_STELLA	    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
+    # Standalone SNES9X (Qt6)
+    select BR2_PACKAGE_SNES9X	            if BR2_x86_64 || BR2_PACKAGE_BATOCERA_WAYLAND
+
     help
         Emulators under development (Experimental)
 

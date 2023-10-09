@@ -1,0 +1,58 @@
+--- a/qt/CMakeLists.txt	2023-10-09 14:50:29.726163445 +0200
++++ b/qt/CMakeLists.txt	2023-10-09 14:52:03.980336589 +0200
+@@ -100,12 +100,13 @@
+ 
+     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
+     include(FindX11)
+-    if(NOT X11_FOUND)
+-        error()
++    if(X11_FOUND)
++        list(APPEND INCLUDES ${X11_INCLUDE_DIRS})
++        list(APPEND LIBS ${X11_LIBRARIES})
+     endif()
+ 
+-    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
+-    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES} ${SDL_LIBRARIES})
++    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS})
++    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${ZLIB_LIBRARIES} ${SDL_LIBRARIES})
+     list(APPEND FLAGS ${WAYLAND_CFLAGS})
+ 
+     pkg_check_modules(PULSEAUDIO libpulse)
+--- a/qt/CMakeLists.txt	2023-10-09 14:57:20.435398375 +0200
++++ b/qt/CMakeLists.txt	2023-10-09 14:57:07.851122853 +0200
+@@ -118,14 +118,18 @@
+     endif()
+ 
+     list(APPEND PLATFORM_SOURCES
+-    ../common/video/glx_context.cpp
+     ../common/video/wayland_egl_context.cpp
+     ../common/video/wayland_surface.cpp
+     ../common/video/fractional-scale-v1.c
+     ../common/video/viewporter-client-protocol.c
+     ../common/video/wayland-idle-inhibit-unstable-v1.c
+-    ../external/glad/src/glx.c
+     ../external/glad/src/egl.c)
++
++    if(X11_FOUND)
++        list(APPEND PLATFORM_SOURCES
++        ../common/video/glx_context.cpp
++        ../external/glad/src/glx.c)
++    endif()
+ endif()
+ 
+ list(APPEND QT_GUI_SOURCES
+--- a/qt/CMakeLists.txt	2023-10-09 14:59:15.425900774 +0200
++++ b/qt/CMakeLists.txt	2023-10-09 15:18:13.898089855 +0200
+@@ -211,8 +211,11 @@
+     list(APPEND DEFINES "VK_USE_PLATFORM_WIN32_KHR")
+ else()
+     list(APPEND DEFINES
+-        "VK_USE_PLATFORM_XLIB_KHR"
+         "VK_USE_PLATFORM_WAYLAND_KHR")
++    if(X11_FOUND)
++    list(APPEND DEFINES
++        "VK_USE_PLATFORM_XLIB_KHR")
++    endif()
+ endif()
+ 
+ list(APPEND DEFINES
