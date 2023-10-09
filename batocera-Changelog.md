@@ -13,6 +13,7 @@
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
+- PPSSPP (standalone) and lr-ppsspp to 1.16.5
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
