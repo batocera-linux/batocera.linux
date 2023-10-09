@@ -1,0 +1,23 @@
+diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
+index 65d88770b2..5d4eb1cfd9 100644
+--- a/src/citra_qt/main.cpp
++++ b/src/citra_qt/main.cpp
+@@ -265,12 +265,12 @@ GMainWindow::GMainWindow(Core::System& system_)
+     connect(ui->menubar, &QMenuBar::hovered, this, &GMainWindow::OnMouseActivity);
+ 
+     physical_devices = GetVulkanPhysicalDevices();
+-    if (physical_devices.empty()) {
+-        QMessageBox::warning(this, tr("No Suitable Vulkan Devices Detected"),
+-                             tr("Vulkan initialization failed during boot.<br/>"
+-                                "Your GPU may not support Vulkan 1.1, or you do not "
+-                                "have the latest graphics driver."));
+-    }
++    //if (physical_devices.empty()) {
++    //    QMessageBox::warning(this, tr("No Suitable Vulkan Devices Detected"),
++    //                         tr("Vulkan initialization failed during boot.<br/>"
++    //                            "Your GPU may not support Vulkan 1.1, or you do not "
++    //                            "have the latest graphics driver."));
++    //}
+ 
+ #if ENABLE_QT_UPDATER
+     if (UISettings::values.check_for_update_on_start) {
