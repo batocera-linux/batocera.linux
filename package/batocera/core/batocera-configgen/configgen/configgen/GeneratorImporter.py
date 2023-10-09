@@ -322,6 +322,10 @@ def getGenerator(emulator):
     if emulator == 'stella':
         from generators.stella.stellaGenerator import StellaGenerator
         return StellaGenerator()
+    
+    if emulator == "theforceengine":
+        from generators.theforceengine.theforceengineGenerator import TheForceEngineGenerator
+        return TheForceEngineGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
