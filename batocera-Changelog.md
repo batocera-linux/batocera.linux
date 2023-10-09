@@ -16,6 +16,7 @@
 - PPSSPP (standalone) and lr-ppsspp to 1.16.5
 - Libretro-MAME to 0.259 (Oct 4, 2023)
 - Libretro-picodrive to Aug 11, 2023
+- Libretro-Genesis-Plus-GX to Sep 11, 2023
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
