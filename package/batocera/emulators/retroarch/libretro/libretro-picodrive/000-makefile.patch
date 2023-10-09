@@ -2,6 +2,22 @@ diff --git a/Makefile.libretro b/Makefile.libretro
 index 967a0c3..e08f817 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
+@@ -80,6 +80,15 @@
+ 	DONT_COMPILE_IN_ZLIB = 1
+ 	CFLAGS += -DFAMEC_NO_GOTOS
+ 
++# RISCV64 generic
++else ifeq ($(platform), riscv64)
++	TARGET := $(TARGET_NAME)_libretro.so
++	ARCH = riscv64
++        fpic := -fPIC
++	SHARED := -shared
++	DONT_COMPILE_IN_ZLIB = 1
++	CFLAGS += -DFAMEC_NO_GOTOS
++
+ # Portable Linux
+ else ifeq ($(platform), linux-portable)
+ 	EXT ?= so
 @@ -235,7 +235,6 @@ else ifeq ($(platform), ctr)
  
  # Raspberry Pi

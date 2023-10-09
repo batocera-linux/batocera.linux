@@ -3,7 +3,7 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version: Commits on Sep 30, 2022
+# Version: Commits on Aug 11, 2023
 LIBRETRO_PICODRIVE_VERSION = 26719f348eb579a8372e2c58ef0132d95d9dc817
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
@@ -30,6 +30,9 @@ LIBRETRO_PICODRIVE_PLATFORM += armv neon hardfloat
 
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_PICODRIVE_PLATFORM = aarch64
+
+else ifeq ($(BR2_RISCV_64),y)
+LIBRETRO_PICODRIVE_PLATFORM = riscv64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 LIBRETRO_PICODRIVE_PLATFORM = unix
