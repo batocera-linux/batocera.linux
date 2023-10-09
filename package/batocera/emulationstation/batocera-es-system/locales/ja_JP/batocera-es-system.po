@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v38beta(2023/09/26)\n"
+"Project-Id-Version: batocera-es v38beta(2023/10/07)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-09-26 19:40+0900\n"
+"PO-Revision-Date: 2023-10-08 01:05+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -163,7 +163,7 @@ msgstr "ゲーム情報/画像"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Performance"
-msgstr "パフォーマンス"
+msgstr "性能"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1396,7 +1396,7 @@ msgctxt "game_options"
 msgid "Real Wiimote"
 msgstr "Wii リモコン"
 
-#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin, ...
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
 msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "ゲームキューブ コントローラ"
@@ -1534,7 +1534,7 @@ msgstr "モデルごとにCPUサイクルを選択します(注意して使用)"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "EMULATED CPU PERFORMANCE"
-msgstr "エミュレートCPUパフォーマンス"
+msgstr "CPUの動作をエミュレート"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -4375,7 +4375,7 @@ msgstr "100%(標準)"
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Small performance increase (may drop frames)."
-msgstr "パフォーマンスの微向上（フレームドロップする可能性）"
+msgstr "の微向上（フレームドロップする可能性）"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -4400,7 +4400,7 @@ msgstr "無効 (Beatle インタープリター)"
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "Max Performance"
-msgstr "最大パフォーマンス"
+msgstr "最大"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -4715,7 +4715,7 @@ msgstr ""
 "N64 スタイルのコントローラーで、ホットキー専用ボタンのない場合のホットキーは"
 "限定されます"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "コントローラ 1"
@@ -4745,17 +4745,17 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "N64 スタイルのコントローラーに便利"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "コントローラ 2"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 3"
 msgstr "コントローラ 3"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 4"
 msgstr "コントローラ 4"
@@ -6988,36 +6988,38 @@ msgid ""
 "Changing driver can improve audio performance and reduce distortion. "
 "Alsathread is recommended for low-end systems."
 msgstr ""
+"ドライバーを変更すると、音声再生能力が向上し、歪みが軽減されます。 "
+"Alsathread はローエンド システムに推奨されます"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "AUDIO DRIVER"
-msgstr ""
+msgstr "オーディオドライバ"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "ALSA"
-msgstr ""
+msgstr "ALSA"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "ALSAThread"
-msgstr ""
+msgstr "ALSAThread"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "TinyALSA"
-msgstr ""
+msgstr "TinyALSA"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "SDL2"
-msgstr ""
+msgstr "SDL2"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
 msgid "Pulse (Default)"
-msgstr ""
+msgstr "パルス（標準）"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -7365,12 +7367,12 @@ msgstr "マウスを有効"
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Enable Cemu's performance overlay."
-msgstr "Cemuのパフォーマンスオーバーレイを有効にします"
+msgstr "Cemuのオーバーレイを有効にします"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "ENABLE PERFORMANCE OVERLAY"
-msgstr "パフォーマンスオーバーレイを有効"
+msgstr "オーバーレイを有効"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7388,6 +7390,8 @@ msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
 "Hotkey+R2 to switch screens."
 msgstr ""
+"２画面間で相互作用を行うゲームのゲームパッド 画面を有効にします(ホットキー+R2"
+"で画面切り替え)"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7397,54 +7401,56 @@ msgstr "ゲームパッド画面を有効"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Arrange the dual screen layout. Separate windows can be changed with "
-"Hotkey+R2."
+"Arrange the dual screen layout. Separate windows can be changed with Hotkey"
+"+R2."
 msgstr ""
+"デュアルスクリーンのレイアウトを整えます。ホットキー+R2で個別のウィンドウを変"
+"更できます"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Top Only"
-msgstr ""
+msgstr "上画面のみ"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Bottom Only"
-msgstr ""
+msgstr "下画面のみ"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Large Top"
-msgstr ""
+msgstr "上画面を大きく"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Large Bottom"
-msgstr ""
+msgstr "下画面を大きく"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Left/Right"
-msgstr ""
+msgstr "左 / 右"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Right/Left"
-msgstr ""
+msgstr "右 / 左"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Separate Windows"
-msgstr ""
+msgstr "ウィンドウ独立"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Hybrid Screen Top"
-msgstr ""
+msgstr "ハイブリッドスクリーン / 上"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Hybrid Screen Bottom"
-msgstr ""
+msgstr "ハイブリッドスクリーン / 下"
 
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
@@ -7641,7 +7647,7 @@ msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "コントローラをエミュレートされたWiiリモコンにマッピングします"
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLERS"
 msgstr "コントローラー"
@@ -7685,26 +7691,6 @@ msgstr "Wii リモコン横向き + 傾き動作"
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wii リモコン横向き + ヌンチャク"
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
-msgstr "DS4のジャイロスコープでWiiポインターをエミュレートします"
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "DUALSHOCK MOTION CONTROL"
-msgstr "デュアルショックモーションコントロール"
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a mouse."
-msgstr "マウスでWiiリモコンのポインターをエミュレートします"
-
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "MOUSE AS WIIMOTE POINTER"
-msgstr "マウスをWiiリモコンにする"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7757,7 +7743,7 @@ msgstr "精度/安定性を下げて、エミュレータの動作を向上さ�
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "PERFORMANCE HACKS"
-msgstr "パフォーマンスハック"
+msgstr "性能ハック"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7769,7 +7755,7 @@ msgctxt "game_options"
 msgid "USE PAD PROFILES"
 msgstr "パッドプロファイルを使用"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+#. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Change what's plugged into the virtual GameCube ports."
 msgstr "ゲームキューブ ポートに差し込まれるものを変更します"
@@ -7818,27 +7804,6 @@ msgstr "ゲームキューブ ポート 3 タイプ"
 msgctxt "game_options"
 msgid "GAMECUBE PORT 4 TYPE"
 msgstr "ゲームキューブ ポート 4 タイプ"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid ""
-"Use alternative input mappings. Only applies to Standard Controller type."
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "ALT INPUT MAPPING"
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Face Buttons (CW)"
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Face Buttons (CCW)"
-msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7892,7 +7857,7 @@ msgid ""
 "a cost of potential worse performance."
 msgstr ""
 "有効にすると、テクスチャ ラッピングを正しくエミュレーションできるようになりま"
-"す。パフォーマンスが低下する可能性があります"
+"す。動作が低下する可能性があります"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7932,12 +7897,32 @@ msgstr "高速ディスク転送速度"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Show on screen display messages (memory card saves..)."
-msgstr ""
+msgstr "画面にメッセージを表示します (メモリカードにセーブ..)"
 
 #. TRANSLATION: dolphin, duckstation, melonds
 msgctxt "game_options"
 msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
 msgstr "オンスクリーンメッセージを表示"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
+msgstr "DS4のジャイロスコープでWiiポインターをエミュレートします"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "DUALSHOCK MOTION CONTROL"
+msgstr "デュアルショックモーションコントロール"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a mouse."
+msgstr "マウスでWiiリモコンのポインターをエミュレートします"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "MOUSE AS WIIMOTE POINTER"
+msgstr "マウスをWiiリモコンにする"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7953,58 +7938,6 @@ msgctxt "game_options"
 msgid "VBI SKIP"
 msgstr "VBI(垂直ブランク割り込み) スキップ"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Set joystick deadzone."
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
-msgctxt "game_options"
-msgid "DEADZONE"
-msgstr "遊び幅"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
-msgctxt "game_options"
-msgid "5% (Default)"
-msgstr "5%（通常）"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid ""
-"Set virtual joysticks gate size. Smaller increases sensitivity. Larger "
-"decreases it."
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "JOYSTICK GATE SIZE"
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Smaller"
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Normal (Default)"
-msgstr ""
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Larger"
-msgstr ""
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Enables Dolby Pro Logic II for surround sound. May impact performance."
-msgstr ""
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "DOLBY PRO LOGIC II"
-msgstr ""
-
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "1.5x 720p (960x792)"
@@ -8018,7 +7951,7 @@ msgstr "2.5x 1080p (1600x1320)"
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
 msgid "PERFORMANCE HACKS (needs review)"
-msgstr "パフォーマンスハック（要確認）"
+msgstr "性能ハック（要確認）"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -8094,7 +8027,7 @@ msgstr "最適なフレームペーシング"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Improve performance if VSync is disabled and using Vulkan."
-msgstr "垂直同期が無効の場合、パフォーマンスを測定可能に向上します"
+msgstr "垂直同期が無効の場合、を測定可能に向上します"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8992,8 +8925,7 @@ msgctxt "game_options"
 msgid ""
 "Enable second audio limiter. Improves audio quality at the cost of "
 "performance."
-msgstr ""
-"2番目の音声制限を有効にします。パフォーマンスを犠牲にして音声品質が向上します"
+msgstr "2番目の音声制限を有効にします。動作を犠牲にして音質を向上させます"
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9116,6 +9048,16 @@ msgstr "感度"
 msgctxt "game_options"
 msgid "100% (Default)"
 msgstr "100% (通常)"
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "DEADZONE"
+msgstr "遊び幅"
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "5% (Default)"
+msgstr "5%（通常）"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -9463,7 +9405,7 @@ msgctxt "game_options"
 msgid ""
 "Uploads entire textures at once instead of small pieces. Improves "
 "performance in most games."
-msgstr "テクスチャ全体を一度に先読みします。ゲームのパフォーマンスが向上します"
+msgstr "テクスチャ全体を一度に先読みします。ゲームのが向上します"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -9803,8 +9745,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"コア/スレッド数が少ない CPU では、タイミングが壊れる可能性があるが、パフォー"
-"マンスが向上する可能性があります"
+"コア/スレッド数が少ない CPU では、タイミングが壊れる可能性があるが、が向上す"
+"る可能性があります"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9817,8 +9759,8 @@ msgid ""
 "Mega and Giga modes may improve performance. Use the Safe mode for maximum "
 "compatibility."
 msgstr ""
-"メガ モードとギガ モードによりパフォーマンスが向上する可能性があります。互換"
-"性を最大限に高めるには、セーフ モードを使用してください"
+"メガ モードとギガ モードによりが向上する可能性があります。互換性を最大限に高"
+"めるには、セーフ モードを使用してください"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9907,7 +9849,7 @@ msgstr "異方性フィルター"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Can improve performance at the expense of graphics accuracy."
-msgstr "グラフィックスの精度を下げてパフォーマンスを向上させます"
+msgstr "グラフィックスの精度を下げて性能を向上させます"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9935,8 +9877,8 @@ msgid ""
 "Controls precision of generated shaders. Low quality can improved "
 "performance."
 msgstr ""
-"生成されたシェーダーの精度を制御します。品質を低くすると、パフォーマンスが向"
-"上する可能性があります"
+"生成されたシェーダーの精度を制御します。品質を低くすると、動作が向上する可能"
+"性があります"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10023,9 +9965,7 @@ msgstr "シェーダ コンパイラ スレッドの数"
 msgctxt "game_options"
 msgid ""
 "May fix missing graphics and broken lighting at the cost of performance."
-msgstr ""
-"パフォーマンスを犠牲にして、グラフィックや照明の不具合などを修正できる場合が"
-"あります"
+msgstr "を犠牲にして、グラフィックや照明の不具合などを修正できる場合があります"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10069,7 +10009,7 @@ msgid ""
 "output but degrade performance."
 msgstr ""
 "頂点キャッシュを無効にします。グラフィック出力の欠落や、ちらつきは解決される"
-"可能性がありますが、パフォーマンスは低下します"
+"可能性がありますが、動作は低下します"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10082,8 +10022,8 @@ msgid ""
 "Offloads some RSX operations to a secondary thread. Improves performance in "
 "high-core processors."
 msgstr ""
-"一部の RSX 操作をセカンダリ スレッドに開放します。ハイコア プロセッサのパ"
-"フォーマンスが向上します"
+"一部の RSX 操作をセカンダリ スレッドに開放します。ハイコア プロセッサのが向上"
+"します"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10096,8 +10036,8 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's."
 msgstr ""
-"テクスチャを並列で GPU にストリーミングします。より強力な GPU でパフォーマン"
-"スを向上させることができます"
+"テクスチャを並列で GPU にストリーミングします。より強力な GPU でを向上させる"
+"ことができます"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10581,7 +10521,7 @@ msgstr "ポリゴンの並べ替え精度"
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "Per-strip (Default)"
-msgstr "ストリップごと (通常)"
+msgstr "ストリップごと (標準)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -11031,7 +10971,7 @@ msgstr "DXVK HUD"
 #. TRANSLATION: wine, mugen
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
-msgstr "CPUに負荷をかけるゲームのパフォーマンスが向上します"
+msgstr "CPU に負荷がかかるゲームの動作を向上させることができます"
 
 #. TRANSLATION: wine, mugen
 msgctxt "game_options"
@@ -11238,8 +11178,8 @@ msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
 msgstr ""
-"フレームスキップしてパフォーマンスを向上させますが、動きの途切れ、視覚的な不"
-"具合が出る可能性があります"
+"フレームスキップしてを向上させますが、動きの途切れ、視覚的な不具合が出る可能"
+"性があります"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -12336,7 +12276,7 @@ msgstr "オン (標準)"
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "Better performance with hardware rendering."
-msgstr "ハードウェア レンダリングによるパフォーマンスの向上"
+msgstr "ハードウェア レンダリングによる性能の向上"
 
 #. TRANSLATION: thextech
 msgctxt "game_options"
@@ -12801,7 +12741,7 @@ msgstr "速度制限の切り替え"
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
 msgid "Swap screens"
-msgstr ""
+msgstr "画面を入れ替える"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
@@ -12960,13 +12900,6 @@ msgstr "早送り"
 #~ msgctxt "game_options"
 #~ msgid "hybrid bottom ratio 4"
 #~ msgstr "ハイブリッド下/上比率4"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Enable gamepad view for games that have interaction across two screens. "
-#~ "Use L1+R1 to switch screens."
-#~ msgstr ""
-#~ "２画面でプレイするゲームのパッド画面を有効にします (L1+R1で画面切り替え)"
 
 #~ msgctxt "game_options"
 #~ msgid "DirectInput"
