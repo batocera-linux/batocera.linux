@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: THa_MuSHeR\n"
 "Language-Team: Dutch (Netherlands)\n"
 "Language: nl-NL\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: nl_NL\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1427,7 +1427,7 @@ msgctxt "game_options"
 msgid "Real Wiimote"
 msgstr "Echte Wiimote"
 
-#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "GameCube Controller"
@@ -4762,7 +4762,7 @@ msgstr ""
 "Handig voor N64-stijl controllers. Beperkte sneltoetsen voor controllers "
 "zonder speciale sneltoets."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "CONTROLLER 1"
@@ -4792,17 +4792,17 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "Handig voor N64-stijl controllers."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "CONTROLLER 2"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 3"
 msgstr "CONTROLLER 3"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 4"
 msgstr "CONTROLLER 4"
@@ -7553,8 +7553,8 @@ msgstr "DISK SHADER CACHE"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation stutter."
-" May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 "Compileer shaders met behulp van achtergrondthreads om haperen van de shader-"
 "compilatie te voorkomen. Kan grafische problemen veroorzaken."
@@ -7715,7 +7715,7 @@ msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "Wijs uw controller toe aan een geëmuleerde Wiimote."
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin, dolphin, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, ...
 msgctxt "game_options"
 msgid "CONTROLLERS"
 msgstr "CONTROLLERS"
@@ -7759,6 +7759,26 @@ msgstr "Wiimote Zijwaarts + Tilt"
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote Zijwaarts + Nunchuk"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
+msgstr "Emuleer de Wiimote pointer met een DS4 gyroscoop."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "DUALSHOCK MOTION CONTROL"
+msgstr "DUALSHOCK MOTION CONTROL"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a mouse."
+msgstr "Emuleer de Wiimote pointer met een muis."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "MOUSE AS WIIMOTE POINTER"
+msgstr "MUIS ALS WIIMORE POINTER"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7825,7 +7845,7 @@ msgctxt "game_options"
 msgid "USE PAD PROFILES"
 msgstr "GEBRUIK CONTROLLER PROFIELEN"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "Change what's plugged into the virtual GameCube ports."
 msgstr "Wijzig wat er op de virtuele GameCube-poorten is aangesloten."
@@ -7874,6 +7894,27 @@ msgstr "GAMECUBE PORT 3 TYPE"
 msgctxt "game_options"
 msgid "GAMECUBE PORT 4 TYPE"
 msgstr "GAMECUBE PORT 4 TYPE"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"Use alternative input mappings. Only applies to Standard Controller type."
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "ALT INPUT MAPPING"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CW)"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CCW)"
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7927,8 +7968,8 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
-"Als u dit inschakelt, is een correcte emulatie van texture wrapping mogelijk."
-" Dit kan mogelijk slechtere prestaties opleveren."
+"Als u dit inschakelt, is een correcte emulatie van texture wrapping "
+"mogelijk. Dit kan mogelijk slechtere prestaties opleveren."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7977,26 +8018,6 @@ msgstr "TOON BEELDSCHERMBERICHTEN"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
-msgstr "Emuleer de Wiimote pointer met een DS4 gyroscoop."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "DUALSHOCK MOTION CONTROL"
-msgstr "DUALSHOCK MOTION CONTROL"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a mouse."
-msgstr "Emuleer de Wiimote pointer met een muis."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "MOUSE AS WIIMOTE POINTER"
-msgstr "MUIS ALS WIIMORE POINTER"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
 msgid ""
 "Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
 "audio playback when emulation speed is not 100%."
@@ -8009,6 +8030,58 @@ msgstr ""
 msgctxt "game_options"
 msgid "VBI SKIP"
 msgstr "VBI SKIP"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Set joystick deadzone."
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+msgctxt "game_options"
+msgid "DEADZONE"
+msgstr "DEADZONE"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+msgctxt "game_options"
+msgid "5% (Default)"
+msgstr "5% (Standaard)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"Set virtual joysticks gate size. Smaller increases sensitivity. Larger "
+"decreases it."
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "JOYSTICK GATE SIZE"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Smaller"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Normal (Default)"
+msgstr ""
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Larger"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Enables Dolby Pro Logic II for surround sound. May impact performance."
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "DOLBY PRO LOGIC II"
+msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -9102,8 +9175,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en DK64),"
-" kan vertraging veroorzaken."
+"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en "
+"DK64), kan vertraging veroorzaken."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9139,16 +9212,6 @@ msgstr "GEVOELIGHEID"
 msgctxt "game_options"
 msgid "100% (Default)"
 msgstr "100% (Standaard)"
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "DEADZONE"
-msgstr "DEADZONE"
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "5% (Default)"
-msgstr "5% (Standaard)"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -9857,8 +9920,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Kan prestatieverbetering opleveren op CPU's met een laag aantal "
-"cores/threads, ten koste van mogelijk kapotte timing."
+"Kan prestatieverbetering opleveren op CPU's met een laag aantal cores/"
+"threads, ten koste van mogelijk kapotte timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10967,8 +11030,8 @@ msgstr "Interton VC 4000 cartridges"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 "Schakel muisinvoer in voor trackballs, spinners, lightguns (als er geen gun "
 "is aangesloten) en soortgelijke bedieningselementen"
@@ -12799,6 +12862,11 @@ msgstr ""
 #. TRANSLATION: theforceengine.keys
 msgctxt "keys_files"
 msgid "Quick Save"
+msgstr ""
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Skip cutscene"
 msgstr ""
 
 #. TRANSLATION: moonlight.moonlight.keys
