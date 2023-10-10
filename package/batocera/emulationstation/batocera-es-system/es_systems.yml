@@ -4917,3 +4917,31 @@ spectravideo:
   emulators:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+
+theforceengine:
+  name: The Force Engine
+  manufacturer: Ports
+  release: 1995
+  hardware: port
+  extensions: [tfe]
+  platform: pc
+  group: ports
+  emulators:
+    theforceengine:
+      theforceengine: { requireAnyOf: [BR2_PACKAGE_THEFORCEENGINE] }
+  comment_en: |
+    The Force Engine (TFE) uses the games files from older LucasArts games like `Dark Forces` & soon `Outlaws` in Batocera.
+    To use TFE in Batocera, you need to do the following:
+
+    1. Install the game you wish to use with The Force Engine in Windows (Steam or GOG receommended)
+    2. In this example, go to your C:\GOG folder and copy the `Star Wars - Dark Forces` folder to your roms/theforceengine folder.
+    3. Rename the folder with the .tfe extension, like so: `Star Wars - Dark Forces.tfe`.
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
+
+    Notes: It is important to use the exact directory name above. A keyboard and mouse is required for profile & game start.
+
+    For more info: https://wiki.batocera.org/systems:theforceengine
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:theforceengine
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:theforceengine

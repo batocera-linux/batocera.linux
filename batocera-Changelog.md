@@ -2,7 +2,7 @@
 ### Hardware
 
 ### Added
-
+- The Force Engine: Play Dark Forces and Outlaws with enhanced graphics.
 ### Fixed
 
 ### Changed

@@ -401,6 +401,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/fallout1-ce/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/fallout2-ce/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dxx-rebirth/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/theforceengine/Config.in"
   endmenu
 
   menu "mupen64plus"
@@ -544,6 +545,10 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libserum/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libpinmame/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/batocera-luajit/Config.in"
+endmenu
+
+menu "Audio"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/rtmidi/Config.in"
 endmenu
 
 endmenu
