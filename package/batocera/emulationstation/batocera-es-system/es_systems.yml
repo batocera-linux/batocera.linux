@@ -4935,10 +4935,28 @@ theforceengine:
 
     1. Install the game you wish to use with The Force Engine in Windows (Steam or GOG receommended)
     2. In this example, go to your C:\GOG folder and copy the `Star Wars - Dark Forces` folder to your roms/theforceengine folder.
-    3. Rename the folder with the .tfe extension, like so: `Star Wars - Dark Forces.tfe`.
+    3. Create an initial file with a tfe extension, like so: `Star Wars - Dark Forces.tfe`.
     4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
 
-    Notes: It is important to use the exact directory name above. A keyboard and mouse is required for profile & game start.
+    Mods:
+    
+    Mods have to be installed into the /userdata/system/configs/theforceengine/Mods folder.
+    The mod files should be in zip format only.
+    To launch directly into your mod, create a file in the roms/theforceengine folder with the .tfe extension.
+    Again choose the name which makes sense, i.e. the mod game / level name.
+    i.e. `Assasssination at Nar Shaddaa.tfe`
+
+    Then edit the file with the name of the mod zip file only.
+    i.e. aons_modern.zip
+
+    Update the games list and Batocera can now launch the mod directly.
+
+    A good source of missions to try are available here: https://df-21.net/downloads/levels/
+    
+    Notes:
+    
+    It is important to use the exact directory name above.
+    A keyboard and mouse / touchscreen is required to create the initial user profile & game start.
 
     For more info: https://wiki.batocera.org/systems:theforceengine
   comment_fr: |

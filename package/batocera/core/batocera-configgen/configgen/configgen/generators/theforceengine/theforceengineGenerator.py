@@ -10,16 +10,25 @@ from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 forceConfigDir = batoceraFiles.CONF + "/theforceengine"
+forceModsDir = forceConfigDir + "/Mods"
 forceConfigFile = forceConfigDir + "/settings.ini"
 
 class TheForceEngineGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         
-        # Check if the directory exists
+        # Check if the directories exist, if not create them
         if not os.path.exists(forceConfigDir):
             os.makedirs(forceConfigDir)
         
+        if not os.path.exists(forceModsDir):
+            os.makedirs(forceModsDir)
+        
+        # Open the .tfe rom file
+        with open(rom, 'r') as file:
+            # Read the first line and store it as 'mod_name'
+            mod_name = file.readline().strip()
+                
         ## Configure
         forceConfig = configparser.ConfigParser()
         forceConfig.optionxform=str
@@ -127,7 +136,7 @@ class TheForceEngineGenerator(Generator):
         if not forceConfig.has_section("Dark_Forces"):
             forceConfig.add_section("Dark_Forces")
         # currently use this directory
-        forceConfig.set("Dark_Forces", "sourcePath", '"/userdata/roms/theforceengine/Star Wars - Dark Forces.tfe/"')
+        forceConfig.set("Dark_Forces", "sourcePath", '"/userdata/roms/theforceengine/Star Wars - Dark Forces/"')
 
         if system.isOptSet("force_fight_music") and system.getOptBoolean("force_fight_music"):
             forceConfig.set("Dark_Forces", "disableFightMusic", "true")
@@ -177,14 +186,17 @@ class TheForceEngineGenerator(Generator):
         ## Setup the command
         commandArray = ["theforceengine"]
         
-        # Accomodate Mods, skip cutscenes etc
+        ## Accomodate Mods, skip cutscenes etc
         if system.isOptSet("force_skip_cutscenes") and system.config["force_skip_cutscenes"] == "initial":
             commandArray.extend(["-c0"])
         elif system.isOptSet("force_skip_cutscenes") and system.getOptBoolean("force_skip_cutscenes") == "skip":
             commandArray.extend(["-c"])
+        # Add mod zip file if necessary
+        if mod_name:
+            commandArray.extend(["-u" + mod_name])
         
         # Run - only Dark Forces currently
-        commandArray.extend(["-gDARK", rom])
+        commandArray.extend(["-gDARK"])
 
         return Command.Command(
             array=commandArray,
