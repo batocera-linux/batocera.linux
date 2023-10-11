@@ -352,7 +352,7 @@ class YuzuGenerator(Generator):
                 inputy = padInputs["joystick1up"]
         elif key == "joystick2" and "joystick2up" in padInputs:
             inputy = padInputs["joystick2up"]
-        return ("engine:sdl,range:1.000000,deadzone:0.100000,invert_y:+,invert_x:+,offset_y:-0.000000,axis_y:{},offset_x:-0.000000,axis_x:{},guid:{},port:{}").format(inputy.id, inputx.id, padGuid, port)
+        return ("engine:sdl,range:1.000000,deadzone:0.100000,invert_y:+,invert_x:+,offset_y:-0.000000,axis_y:{},offset_x:-0.000000,axis_x:{},guid:{},port:{}").format(inputy, inputx, padGuid, port)
 
     @staticmethod
     def hatdirectionvalue(value):
@@ -364,7 +364,8 @@ class YuzuGenerator(Generator):
             return "right"
         if int(value) == 8:
             return "left"
-        return "unknown"
+        else:
+            return "unknown"
 
     @staticmethod
     def getYuzuLangFromEnvironment():
