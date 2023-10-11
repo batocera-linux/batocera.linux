@@ -3,8 +3,8 @@
 # libretro-core-info
 #
 ################################################################################
-# Version:Commits on Mar 11, 2023
-LIBRETRO_CORE_INFO_VERSION = v1.15.0
+
+LIBRETRO_CORE_INFO_VERSION = v1.16.0
 LIBRETRO_CORE_INFO_SITE = $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
 LIBRETRO_CORE_INFO_LICENSE = GPL
 
