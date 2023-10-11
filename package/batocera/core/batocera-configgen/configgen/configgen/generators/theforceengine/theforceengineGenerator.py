@@ -4,13 +4,15 @@ from generators.Generator import Generator
 import controllersConfig
 import configparser
 import os
+import shutil
 import batoceraFiles
-
-from utils.logger import get_logger
-eslog = get_logger(__name__)
 
 forceConfigDir = batoceraFiles.CONF + "/theforceengine"
 forceModsDir = forceConfigDir + "/Mods"
+forcePatchDir = "/usr/share/TheForceEngine/Mods"
+forcePatchFile = "v3.zip" # current patch version
+forcePatchPath = forcePatchDir + "/" + forcePatchFile
+forceModFile = forceModsDir + "/" + forcePatchFile
 forceConfigFile = forceConfigDir + "/settings.ini"
 
 class TheForceEngineGenerator(Generator):
@@ -20,15 +22,27 @@ class TheForceEngineGenerator(Generator):
         # Check if the directories exist, if not create them
         if not os.path.exists(forceConfigDir):
             os.makedirs(forceConfigDir)
-        
         if not os.path.exists(forceModsDir):
             os.makedirs(forceModsDir)
         
-        # Open the .tfe rom file
+        mod_name = None
+        # use the patch file if available
+        if not os.path.exists(forceModFile):
+            if os.path.exists(forcePatchPath):
+                shutil.copy(forcePatchPath, forceModFile)
+                mod_name = forcePatchFile
+        else:
+            # use the patch file as the default mod
+            mod_name = forcePatchFile
+        
+        # Open the .tfe rom file for user mods
         with open(rom, 'r') as file:
-            # Read the first line and store it as 'mod_name'
-            mod_name = file.readline().strip()
-                
+            # Read the first line and store it as 'first_line'
+            first_line = file.readline().strip()
+            # use the first_line as mod if the file isn't empty
+            if first_line:
+                mod_name = first_line
+                        
         ## Configure
         forceConfig = configparser.ConfigParser()
         forceConfig.optionxform=str
@@ -192,7 +206,7 @@ class TheForceEngineGenerator(Generator):
         elif system.isOptSet("force_skip_cutscenes") and system.getOptBoolean("force_skip_cutscenes") == "skip":
             commandArray.extend(["-c"])
         # Add mod zip file if necessary
-        if mod_name:
+        if mod_name is not None:
             commandArray.extend(["-u" + mod_name])
         
         # Run - only Dark Forces currently
