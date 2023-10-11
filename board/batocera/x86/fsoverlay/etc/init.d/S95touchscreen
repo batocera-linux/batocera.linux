@@ -11,7 +11,7 @@ case "$1" in
             export DISPLAY=:0.0
         fi
         # ayn loki zero and probably other ayn loki devices
-        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+        if [[ $info_output == *"Model: Loki_Zero"* || $info_output == *"Model: Loki_MiniPro"* ]]; then
             # pause so set-prop applies after ES starts otherwise it fails
             sleep 4s
             # Set the Coordinate Transformation Matrix to rotate by 90 degrees counterclockwise
