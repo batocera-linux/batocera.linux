@@ -76,37 +76,42 @@ class TheForceEngineGenerator(Generator):
         else:
             forceConfig.set("Graphics", "widescreen", "false")
         
-        if system.isOptSet("force_vsync") and system.getOptBoolean("force_vsync") == "0":
+        if system.isOptSet("force_vsync") and system.config["force_vsync"] == "0":
             forceConfig.set("Graphics", "vsync", "false")
         else:
             forceConfig.set("Graphics", "vsync", "true")
+        
+        if system.isOptSet("force_rate"):
+            forceConfig.set("Graphics", "frameRateLimit", system.config["force_rate"])
+        else:
+            forceConfig.set("Graphics", "frameRateLimit", "60")
         
         if system.isOptSet("force_api") and system.config["force_api"] == "Software":
             forceConfig.set("Graphics", "renderer", "0")
         else:
             forceConfig.set("Graphics", "renderer", "1")
         
-        if system.isOptSet("force_colour") and system.config["force_colour"]:
+        if system.isOptSet("force_colour") and system.getOptBoolean("force_colour"):
             forceConfig.set("Graphics", "colorMode", "1")
         else:
             forceConfig.set("Graphics", "colorMode", "0")
 
-        if system.isOptSet("force_bilinear") and system.config["force_bilinear"]:
+        if system.isOptSet("force_bilinear") and system.getOptBoolean("force_bilinear"):
             forceConfig.set("Graphics", "useBilinear", "true")
         else:
             forceConfig.set("Graphics", "useBilinear", "false")
 
-        if system.isOptSet("force_mipmapping") and system.config["force_mipmapping"]:
+        if system.isOptSet("force_mipmapping") and system.getOptBoolean("force_mipmapping"):
             forceConfig.set("Graphics", "useMipmapping", "true")
         else:
             forceConfig.set("Graphics", "useMipmapping", "false")
         
-        if system.isOptSet("force_crosshair") and system.config["force_crosshair"]:
+        if system.isOptSet("force_crosshair") and system.getOptBoolean("force_crosshair"):
             forceConfig.set("Graphics", "reticleEnable", "true")
         else:
             forceConfig.set("Graphics", "reticleEnable", "false")
         
-        if system.isOptSet("force_postfx") and system.config["force_postfx"]:
+        if system.isOptSet("force_postfx") and system.getOptBoolean("force_postfx"):
             forceConfig.set("Graphics", "bloomEnabled", "true")
         else:
             forceConfig.set("Graphics", "bloomEnabled", "false")
@@ -157,12 +162,12 @@ class TheForceEngineGenerator(Generator):
         else:
             forceConfig.set("Dark_Forces", "disableFightMusic", "false")
         
-        if system.isOptSet("force_auto_aim") and system.getOptBoolean("force_auto_aim") == "0":
+        if system.isOptSet("force_auto_aim") and system.config["force_auto_aim"] == "0":
             forceConfig.set("Dark_Forces", "enableAutoaim", "false")
         else:
             forceConfig.set("Dark_Forces", "enableAutoaim", "true")
         
-        if system.isOptSet("force_secret_msg") and system.getOptBoolean("force_secret_msg") == "0":
+        if system.isOptSet("force_secret_msg") and system.config["force_secret_msg"] == "0":
             forceConfig.set("Dark_Forces", "showSecretFoundMsg", "false")
         else:
             forceConfig.set("Dark_Forces", "showSecretFoundMsg", "true")
@@ -172,7 +177,7 @@ class TheForceEngineGenerator(Generator):
         else:
             forceConfig.set("Dark_Forces", "autorun", "false")
 
-        if system.isOptSet("force_bobba") and system.getOptBoolean("force_bobba"):
+        if system.isOptSet("force_boba") and system.getOptBoolean("force_boba"):
             forceConfig.set("Dark_Forces", "bobaFettFacePlayer", "true")
         else:
             forceConfig.set("Dark_Forces", "bobaFettFacePlayer", "false")

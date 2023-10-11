@@ -11411,6 +11411,18 @@ theforceengine:
       choices:
         "Disabled":          0
         "Enabled (Default)": 1
+    force_rate:
+      submenu: GRAPHICS
+      prompt: REFRESH RATE
+      description: Set the desired maximum refresh rate when Vsync is off.
+      choices:
+        "30 fps":           "30"
+        "50 fps":           "50"
+        "60 fps (Default)": "60"
+        "75 fps":           "75"
+        "120 fps":          "120"
+        "144 fps":          "144"
+        "240 fps":          "240"
     force_api:
       submenu: GRAPHICS
       prompt: GRAPHICS RENDERER
@@ -11484,7 +11496,7 @@ theforceengine:
       choices:
         "Disabled (Default)": 0
         "Enabled":            1
-    force_bobba:
+    force_boba:
       prompt: BOBBA FETT FIX
       description: Bobba Fett Face Player Fix
       choices:
