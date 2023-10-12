@@ -9,9 +9,7 @@ import batoceraFiles
 
 forceConfigDir = batoceraFiles.CONF + "/theforceengine"
 forceModsDir = forceConfigDir + "/Mods"
-forcePatchDir = "/usr/share/TheForceEngine/Mods"
 forcePatchFile = "v3.zip" # current patch version
-forcePatchPath = forcePatchDir + "/" + forcePatchFile
 forceModFile = forceModsDir + "/" + forcePatchFile
 forceConfigFile = forceConfigDir + "/settings.ini"
 
@@ -27,12 +25,7 @@ class TheForceEngineGenerator(Generator):
         
         mod_name = None
         # use the patch file if available
-        if not os.path.exists(forceModFile):
-            if os.path.exists(forcePatchPath):
-                shutil.copy(forcePatchPath, forceModFile)
-                mod_name = forcePatchFile
-        else:
-            # use the patch file as the default mod
+        if os.path.exists(forceModFile):
             mod_name = forcePatchFile
         
         # Open the .tfe rom file for user mods
