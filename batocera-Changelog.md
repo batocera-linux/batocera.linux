@@ -1,6 +1,6 @@
 # 202x/xx/xx - batocera.linux 39 - 
 ### Hardware
-
+- Initial support for the AYN Loki MiniPro (Speakers not working)
 ### Added
 - The Force Engine: Play Dark Forces with enhanced graphics.
 ### Fixed
