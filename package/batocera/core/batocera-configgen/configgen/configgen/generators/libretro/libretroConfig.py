@@ -1002,7 +1002,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
                 return
             else:
                 bezelNeedAdaptation = True
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
         if defined('ratio', system.config):
             if system.config['ratio'] in ratioIndexes:
                 retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
