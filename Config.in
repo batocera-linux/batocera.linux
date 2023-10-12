@@ -488,7 +488,6 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/alsa-topology-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/vdpauinfo/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/ledspicer/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/chromebook-ucm-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/innoextract/Config.in"
 endmenu
 
@@ -549,6 +548,8 @@ endmenu
 
 menu "Audio"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/rtmidi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/chromebook-ucm-conf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/chromebook-linux-audio/Config.in"
 endmenu
 
 endmenu
