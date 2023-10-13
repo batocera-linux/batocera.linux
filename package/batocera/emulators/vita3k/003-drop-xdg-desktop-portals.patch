@@ -19,34 +19,20 @@ diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
 index d4dcfc94..4cb3e1ee 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
-@@ -369,11 +369,33 @@ target_compile_definitions(tracy PUBLIC $<$<CONFIG:Debug,RelWithDebInfo>:TRACY_E
+@@ -344,11 +344,20 @@ target_compile_definitions(tracy PUBLIC $<$<CONFIG:Debug,RelWithDebInfo>:TRACY_E
+ #
  # target_compile_definitions(tracy PUBLIC TRACY_ENABLE)
  
- # Use XDG desktop portals on Linux
+-# Use XDG desktop portals on Linux
 -set(NFD_PORTAL ON)
-+#set(NFD_PORTAL ON)
- 
- # nativefiledialog-extended
--add_subdirectory(nativefiledialog-extended)
-+#add_subdirectory(nativefiledialog-extended)
- 
- # Create alias to prevent the need of multiple changes in case the target name changes
--add_library(NFDe::NFDe ALIAS nfd)
--set_property(TARGET nfd PROPERTY FOLDER externals)
-+#add_library(NFDe::NFDe ALIAS nfd)
-+#set_property(TARGET nfd PROPERTY FOLDER externals)
-+
++# Create alias to prevent the need of multiple changes in case the target name changes
 +# Batocera - bring back nativefiledialog
-+if(WIN32)
-+	add_library(nativefiledialog STATIC nativefiledialog-cmake/src/nfd_win.cpp nativefiledialog-cmake/src/nfd_common.c)
-+	target_include_directories(nativefiledialog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog-cmake/src/include")
-+elseif(APPLE)
-+	add_library(nativefiledialog STATIC nativefiledialog-cmake/src/nfd_cocoa.m nativefiledialog-cmake/src/nfd_common.c)
-+	target_include_directories(nativefiledialog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog-cmake/src/include")
-+elseif(UNIX)
++if(UNIX)
 +	find_package(PkgConfig REQUIRED)
 +	pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-+
+ 
+-# nativefiledialog-extended
+-add_subdirectory(nativefiledialog-extended)
 +	include_directories(${GTK3_INCLUDE_DIRS})
 +	link_directories(${GTK3_LIBRARY_DIRS})
 +
@@ -57,7 +43,9 @@ index d4dcfc94..4cb3e1ee 100644
 +	target_link_libraries(nativefiledialog ${GTK3_LIBRARIES})
 +endif()
 +set_property(TARGET nativefiledialog PROPERTY FOLDER externals)
-\ No newline at end of file
+ 
+-# Create alias to prevent the need of multiple changes in case the target name changes
+-add_library(NFDe::NFDe ALIAS nfd)
 diff --git a/vita3k/CMakeLists.txt b/vita3k/CMakeLists.txt
 index e1b27dfd..25d8f88b 100644
 --- a/vita3k/CMakeLists.txt
