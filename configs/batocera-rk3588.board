@@ -12,7 +12,6 @@ BR2_TARGET_GENERIC_GETTY_PORT="/dev/ttyFIQ0"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/fsoverlay"
-BR2_STRIP_EXCLUDE_DIRS="usr/bin/vpinball"
 
 # Linux headers same as kernel, a 5.10 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y

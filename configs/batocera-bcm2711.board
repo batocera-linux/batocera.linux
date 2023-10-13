@@ -11,7 +11,6 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2711/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2711/fsoverlay"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
-BR2_STRIP_EXCLUDE_DIRS="usr/bin/vpinball"
 
 # Linux headers same as kernel, a 6.1 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y
