@@ -36,6 +36,7 @@
 - Vita3k to Oct 13 build
 - Xemu to v0.7.113
 - Xenia to v1.0.2808
+- Xenia Canary to d36b1b3 (October 13 build)
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
