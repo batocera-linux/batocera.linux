@@ -2,7 +2,7 @@ diff --git a/vita3k/renderer/src/vulkan/context.cpp b/vita3k/renderer/src/vulkan
 index cbe8ff0acb..2d8d618e7d 100644
 --- a/vita3k/renderer/src/vulkan/context.cpp
 +++ b/vita3k/renderer/src/vulkan/context.cpp
-@@ -242,21 +242,21 @@ void VKContext::start_render_pass(bool create_descriptor_set) {
+@@ -247,21 +247,21 @@ void VKContext::start_render_pass(bool create_descriptor_set) {
      if (!is_recording)
          start_recording();
  
@@ -12,7 +12,7 @@ index cbe8ff0acb..2d8d618e7d 100644
          .framebuffer = current_framebuffer
      };
  
-     if (render_target->has_macroblock_sync) {
+     if (render_target->has_macroblock_sync && !ignore_macroblock) {
          // set the render area to the correct macroblock
 -        curr_renderpass_info.renderArea = {
 +        curr_renderpass_info.renderArea = vk::Rect2D{
