@@ -19,6 +19,7 @@
 - Libretro-Genesis-Plus-GX to Sep 11, 2023
 - Libretro-PCSX-ReARMed to Oct 9, 2023
 - Fheroes2 to 1.0.9
+- BigPEmu to 1.092
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
