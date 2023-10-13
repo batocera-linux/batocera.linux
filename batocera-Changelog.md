@@ -21,6 +21,7 @@
 - Fheroes2 to 1.0.9
 - BigPEmu to 1.092
 - Cemu to 2.0-55
+- Citra to nightly-2009
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
