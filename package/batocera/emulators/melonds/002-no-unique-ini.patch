@@ -2,19 +2,19 @@ diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
 index c91d6ef911..549a41ddb2 100644
 --- a/src/frontend/qt_sdl/Config.cpp
 +++ b/src/frontend/qt_sdl/Config.cpp
-@@ -335,14 +335,7 @@ ConfigEntry ConfigFile[] =
+@@ -354,14 +354,7 @@ ConfigEntry ConfigFile[] =
  void LoadFile(int inst)
  {
-     FILE* f;
+     Platform::FileHandle* f;
 -    if (inst > 0)
 -    {
 -        char name[100] = {0};
 -        snprintf(name, 99, kUniqueConfigFile, inst+1);
--        f = Platform::OpenLocalFile(name, "r");
+-        f = Platform::OpenLocalFile(name, Platform::FileMode::ReadText);
 -    }
 -    else
--        f = Platform::OpenLocalFile(kConfigFile, "r");
-+    f = Platform::OpenLocalFile(kConfigFile, "r");
+-        f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::ReadText);
++    f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::ReadText);
  
      if (!f) return;
  
@@ -42,19 +42,19 @@ index c91d6ef911..549a41ddb2 100644
 @@ -405,22 +391,12 @@ void Save()
      int inst = Platform::InstanceID();
  
-     FILE* f;
+     Platform::FileHandle* f;
 -    if (inst > 0)
 -    {
 -        char name[100] = {0};
 -        snprintf(name, 99, kUniqueConfigFile, inst+1);
--        f = Platform::OpenLocalFile(name, "w");
+-        f = Platform::OpenLocalFile(name, Platform::FileMode::WriteText);
 -    }
 -    else
--        f = Platform::OpenLocalFile(kConfigFile, "w");
-+    f = Platform::OpenLocalFile(kConfigFile, "w");
+-        f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::WriteText);
++    f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::WriteText);
  
      if (!f) return;
- 
+
      for (ConfigEntry* entry = &ConfigFile[0]; entry->Value; entry++)
      {
 -        if ((inst > 0) && (!entry->InstanceUnique))

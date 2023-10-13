@@ -25,6 +25,7 @@
 - Dolphin to 5.0-20212
 - Flycast to Oct 12, 2023
 - Libretro-flycast to Oct 12, 2023
+- MelonDS to Oct 12, 2023
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
