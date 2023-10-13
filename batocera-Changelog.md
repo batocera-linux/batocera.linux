@@ -32,6 +32,7 @@
 - Python Pyxel to v1.9.18
 - RPCS3 to Oct 12 build
 - Ruffle to nightly-2023-10-13
+- Solarus Engine to Oct 2, 2023
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
