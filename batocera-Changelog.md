@@ -28,6 +28,7 @@
 - MelonDS to Oct 12, 2023
 - PCSX2 to v1.7.5105
 - Play! to Oct 13, 2023 build
+- Python Pygame2 to 2.5.2
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
