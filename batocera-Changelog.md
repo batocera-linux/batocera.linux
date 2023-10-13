@@ -30,6 +30,7 @@
 - Play! to Oct 13, 2023 build
 - Python Pygame2 to 2.5.2
 - Python Pyxel to v1.9.18
+- RPCS3 to Oct 12 build
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
