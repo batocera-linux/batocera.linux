@@ -62,12 +62,12 @@ index 29ef124..d6ca5bb 100644
  /**
   * \brief Initializes the data from the file or from initial values if the file
   * does not exist.
-@@ -120,6 +161,8 @@ void Savegame::initialize() {
+@@ -160,6 +160,8 @@ void Savegame::initialize() {
+     empty = false;
      import_from_file();
    }
- 
++  
 +  loadPadFromIni(); // set batocera pad config
-+
-   get_equipment().load_items();
- }
  
+   // This is a main savegame ! Lets inflate an equipement
+   equipment = std::make_shared<Equipment>(shared_from_this_cast<Savegame>(), "");
