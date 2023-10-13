@@ -31,6 +31,7 @@
 - Python Pygame2 to 2.5.2
 - Python Pyxel to v1.9.18
 - RPCS3 to Oct 12 build
+- Ruffle to nightly-2023-10-13
 ### System
 - Linux kernel to 6.5.6
 - Mesa to 23.2.1
