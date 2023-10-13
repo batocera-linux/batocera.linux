@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CITRA_VERSION = nightly-1989
+CITRA_VERSION = nightly-2009
 CITRA_SITE = https://github.com/citra-emu/citra-nightly.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
