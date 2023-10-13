@@ -28,6 +28,7 @@
 
 # 2023/10/xx - batocera.linux 38 - Blue Moon
 ### Hardware
+- Warning: Batocera is now set up to the default TV resolution on most systems. If you are running a Raspberry Pi4 or a low-end PC on a display capable of higher than 1080p and notice a performance problem, please adjust a one-time configuration option in SYSTEM SETTINGS -> FRONTEND DEVELOPER OPTIONS -> VIDEO MODE for EmulationStation. You can also still set the emulators resolution in GAME SETTINGS -> VIDEO MODE.
 - Added support for:
   - Orange Pi 5B
   - Orange Pi 3 LTS
