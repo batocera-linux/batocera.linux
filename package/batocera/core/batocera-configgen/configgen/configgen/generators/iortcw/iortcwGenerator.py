@@ -40,8 +40,50 @@ class IORTCWGenerator(Generator):
             "bind PAD0_LEFTTRIGGER": '+speed',
             "bind PAD0_RIGHTTRIGGER": '+attack'
         }
-        # TODO - seta cl_renderer "opengl1" & seta cl_language "0" etc
+        
+        ## ES options
+        # Graphics API
+        if system.isOptSet("iortcw_api"):
+            options_to_set["seta cl_renderer"] = system.config["iortcw_api"]
+        else:
+            options_to_set["seta cl_renderer"] = "opengl1"
+        # VSync
+        if system.isOptSet("iortcw_vsync") and system.getOptBoolean("iortcw_vsync"):
+            options_to_set["seta r_swapInterval"] = "1"
+        else:
+            options_to_set["seta r_swapInterval"] = "0"
+        # Frame rate
+        if system.isOptSet("iortcw_fps"):
+            options_to_set["seta com_maxfps"] = system.config["iortcw_fps"]
+        else:
+            options_to_set["seta com_maxfps"] = "60"
+        # Anisotropic filtering
+        if system.isOptSet("iortcw_filtering"):
+            options_to_set["seta r_ext_texture_filter_anisotropic"] = "1"
+            options_to_set["seta r_ext_max_anisotropy"] = system.config["iortcw_filtering"]
+        else:
+            options_to_set["seta r_ext_texture_filter_anisotropic"] = "0"
+            options_to_set["seta r_ext_max_anisotropy"] = "2"
+        # Anti-aliasing
+        if system.isOptSet("iortcw_aa"):
+            options_to_set["seta r_ext_multisample"] = system.config["iortcw_aa"]
+            options_to_set["seta r_ext_framebuffer_multisample"] = system.config["iortcw_aa"]
+        else:
+            options_to_set["seta r_ext_multisample"] = "0"
+            options_to_set["seta r_ext_framebuffer_multisample"] = "0"
 
+        # Skip intro video
+        if system.isOptSet("iortcw_skip_video") and system.getOptBoolean("iortcw_skip_video"):
+            options_to_set["seta com_introplayed"] = "1"
+        else:
+            options_to_set["seta com_introplayed"] = "0"
+        
+        # Set language
+        if system.isOptSet("iortcw_language"):
+            options_to_set["seta cl_language"] = system.config["iortcw_language"]
+        else:
+            options_to_set["seta cl_language"] = "0"
+        
         # Check if the file exists
         if os.path.isfile(config_file_path):
             with open(config_file_path, 'r') as config_file:
