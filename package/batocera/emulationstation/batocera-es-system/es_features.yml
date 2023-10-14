@@ -2080,13 +2080,6 @@ libretro:
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            customcfg:
-                group: ADVANCED OPTIONS
-                prompt:      CUSTOM MAME CONFIG
-                description: Set system-wide controls via MAME menu
-                choices:
-                    "On":  1
-                    "Off": 0
     mame:
       features: [netplay]
       shared: [autosave]
@@ -2182,13 +2175,6 @@ libretro:
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            customcfg:
-                group: ADVANCED OPTIONS
-                prompt:      CUSTOM MAME CONFIG
-                description: Set system-wide controls via MAME menu
-                choices:
-                    "On":  1
-                    "Off": 0
             offscreenreload:
                 group: LIGHT GUN
                 prompt:      OFF-SCREEN RELOAD BUTTON
@@ -3273,13 +3259,6 @@ libretro:
                 choices:
                     "On":            1
                     "Off (Default)": 0
-            customcfg:
-                group: ADVANCED OPTIONS
-                prompt:      CUSTOM MAME CONFIG
-                description: Set system-wide controls via MAME menu
-                choices:
-                    "On":  1
-                    "Off": 0
       systems:
         vgmplay:
               cfeatures:
