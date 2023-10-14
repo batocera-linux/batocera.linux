@@ -3,6 +3,7 @@
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 ### Added
 - The Force Engine: Play Dark Forces with enhanced graphics.
+- IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
 ### Fixed
 
 ### Changed
