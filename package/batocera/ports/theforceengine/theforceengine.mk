@@ -32,26 +32,26 @@ ifeq ($(BR2_PACKAGE_RTMIDI),y)
     THEFORCEENGINE_CONF_OPTS += -DDISABLE_SYSMIDI=OFF
 endif
 
-CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/theforceengine/
+THEFORCEENGINE_CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/theforceengine/
 
 define THEFORCEENGINE_INSTALL_TARGET_CMDS
-    mkdir -p $(CONF_INIT)
+    mkdir -p $(THEFORCEENGINE_CONF_INIT)
     $(INSTALL) -m 0755 -D $(@D)/buildroot-build/theforceengine \
         $(TARGET_DIR)/usr/bin/theforceengine
-    rsync -arv $(@D)/TheForceEngine/Captions $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/Documentation $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/UI_Text $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/UI_Images $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/Shaders $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/SoundFonts $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/Fonts $(CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/Mods $(CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/Captions $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/Documentation $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/UI_Text $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/UI_Images $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/Shaders $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/SoundFonts $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/Fonts $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv $(@D)/TheForceEngine/Mods $(THEFORCEENGINE_CONF_INIT)
 endef
 
 define THEFORCEENGINE_PATCH_ZIP
-    mkdir -p $(CONF_INIT)/Mods
+    mkdir -p $(THEFORCEENGINE_CONF_INIT)/Mods
     cp $(THEFORCEENGINE_DL_DIR)/$(THEFORCEENGINE_PATCH_SOURCE) \
-        $(CONF_INIT)/Mods
+        $(THEFORCEENGINE_CONF_INIT)/Mods
 endef
 
 define THEFORCEENGINE_EVMAPY

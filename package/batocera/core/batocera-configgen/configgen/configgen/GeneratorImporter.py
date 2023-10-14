@@ -326,6 +326,10 @@ def getGenerator(emulator):
     if emulator == "theforceengine":
         from generators.theforceengine.theforceengineGenerator import TheForceEngineGenerator
         return TheForceEngineGenerator()
+    
+    if emulator == "iortcw":
+        from generators.iortcw.iortcwGenerator import IORTCWGenerator
+        return IORTCWGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
