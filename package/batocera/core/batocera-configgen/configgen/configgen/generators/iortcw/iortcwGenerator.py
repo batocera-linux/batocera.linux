@@ -76,3 +76,6 @@ class IORTCWGenerator(Generator):
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9
