@@ -25,32 +25,33 @@ IORTCW_BUILD_ARGS += USE_LOCAL_HEADERS=1
 IORTCW_BUILD_ARGS += USE_INTERNAL_JPEG=1
 IORTCW_BUILD_ARGS += USE_INTERNAL_OPUS=1
 IORTCW_BUILD_ARGS += USE_INTERNAL_ZLIB=1
+IORTCW_BUILD_ARGS += USE_OPENAL=1
+IORTCW_BUILD_ARGS += USE_OPENAL_DLOPEN=1
 IORTCW_BUILD_ARGS += USE_XDG=1
 
-# Add arm later if possible
 ifeq ($(BR2_x86_64),y)
     IORTCW_BUILD_ARGS += COMPILE_ARCH=x86_64
     IORTCW_ARCH = x86_64
     IORTCW_BUILD_ARGS += USE_VOIP=1
     IORTCW_BUILD_ARGS += USE_CODEC_VORBIS=1
     IORTCW_BUILD_ARGS += USE_CODEC_OPUS=1
+    IORTCW_BUILD_ARGS += USE_BLOOM=1
     IORTCW_BUILD_ARGS += USE_MUMBLE=1
+    IORTCW_BUILD_ARGS += BUILD_RENDERER_REND2=1
+else ifeq ($(BR2_aarch64),y)
+    IORTCW_BUILD_ARGS += COMPILE_ARCH=arm64
+    IORTCW_ARCH = arm64
+    IORTCW_BUILD_ARGS += USE_VOIP=0
+    IORTCW_BUILD_ARGS += USE_CODEC_VORBIS=0
+    IORTCW_BUILD_ARGS += USE_CODEC_OPUS=0
+    IORTCW_BUILD_ARGS += USE_CURL=0
+    IORTCW_BUILD_ARGS += USE_CURL_DLOPEN=0
+    IORTCW_BUILD_ARGS += USE_RENDERER_DLOPEN=0
+    IORTCW_BUILD_ARGS += USE_OPENGLES=1
+    IORTCW_BUILD_ARGS += USE_BLOOM=0
+    IORTCW_BUILD_ARGS += USE_MUMBLE=0
+    IORTCW_BUILD_ARGS += BUILD_RENDERER_REND2=0
 endif
-
-# RPi4
-#USE_CODEC_VORBIS=0 \
-	USE_CODEC_OPUS=0 \
-	USE_CURL=0 \
-	USE_CURL_DLOPEN=0 \
-	USE_OPENAL=1 \
-	USE_OPENAL_DLOPEN=1 \
-	USE_RENDERER_DLOPEN=0 \
-	USE_VOIP=0 \
-	USE_OPENGLES=1 \
-	USE_BLOOM=0 \
-	USE_MUMBLE=0 \
-	BUILD_GAME_SO=1 \
-	BUILD_RENDERER_REND2=0 \
 
 define IORTCW_BUILD_CMDS
     # Single player
@@ -62,22 +63,21 @@ endef
 IORTCW_CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/roms/iortcw/main
 
 define IORTCW_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin/iortcw
-    mkdir -p $(TARGET_DIR)/usr/bin/iortcw/main
-    # Single player
-	$(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/iowolfsp.$(IORTCW_ARCH) \
-		$(TARGET_DIR)/usr/bin/iortcw/iowolfsp
-	$(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/renderer_sp*.so \
-		$(TARGET_DIR)/usr/bin/iortcw/
-    $(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/main/*.so \
-		$(TARGET_DIR)/usr/bin/iortcw/main/
+	mkdir -p $(TARGET_DIR)/usr/bin/iortcw/main
+    mkdir -p $(TARGET_DIR)/usr/bin/iortcw
+	
+	# Single player
+	$(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/iowolfsp.$(IORTCW_ARCH) $(TARGET_DIR)/usr/bin/iortcw/iowolfsp
+	$(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/main/*.so $(TARGET_DIR)/usr/bin/iortcw/main/
+	
     # Multi player
-	$(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/iowolfmp.$(IORTCW_ARCH) \
-		$(TARGET_DIR)/usr/bin/iortcw/iowolfmp
-	$(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/renderer_mp*.so \
-		$(TARGET_DIR)/usr/bin/iortcw/
-    $(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/main/*.so \
-		$(TARGET_DIR)/usr/bin/iortcw/main/
+	$(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/iowolfmp.$(IORTCW_ARCH) $(TARGET_DIR)/usr/bin/iortcw/iowolfmp
+	$(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/main/*.so $(TARGET_DIR)/usr/bin/iortcw/main/
+
+    # Additions if x86_64
+    $(if $(BR2_x86_64),\
+		$(INSTALL) -D $(@D)/SP/build/release-linux-$(IORTCW_ARCH)/renderer_sp*.so $(TARGET_DIR)/usr/bin/iortcw/; \
+		$(INSTALL) -D $(@D)/MP/build/release-linux-$(IORTCW_ARCH)/renderer_mp*.so $(TARGET_DIR)/usr/bin/iortcw/;)
 endef
 
 # required to have fullscreen at 1st start
