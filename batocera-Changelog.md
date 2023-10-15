@@ -39,6 +39,7 @@
 - Xenia to v1.0.2808
 - Xenia Canary to d36b1b3 (October 13 build)
 - ECWolf to 1.5pre
+- EDuke32 to Oct 07, 2023 build
 ### System
 - Linux kernel to 6.5.7
 - Mesa to 23.2.1
