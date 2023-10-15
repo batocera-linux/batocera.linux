@@ -12,21 +12,17 @@ class ECWolfGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
-        ecwolfConfig = batoceraFiles.CONF + "/ecwolf"
-        ecwolfConfigDir = "/userdata/system/.config/ecwolf"
-        ecwolfConfigSrc = "/userdata/system/.config/ecwolf/ecwolf.cfg"
-        ecwolfConfigDest = batoceraFiles.CONF + "/ecwolf/ecwolf.cfg"
+        ecwolfConfigDir = batoceraFiles.CONF + "/ecwolf"
+        ecwolfConfigFile = ecwolfConfigDir + "/ecwolf.cfg"
         ecwolfSaves = batoceraFiles.SAVES + "/ecwolf/" + path.basename(rom)
         ecwolfArray = ["ecwolf"] # Binary for command array
 
         # Create config folders
-        if not path.isdir(ecwolfConfig):
-            os.mkdir(ecwolfConfig)
         if not path.isdir(ecwolfConfigDir):
             os.mkdir(ecwolfConfigDir)
         # Create config file if not there
-        if not path.isfile(ecwolfConfigSrc):
-            f = codecs.open(ecwolfConfigSrc, "x")
+        if not path.isfile(ecwolfConfigFile):
+            f = codecs.open(ecwolfConfigFile, "x")
             f.write('Vid_FullScreen = 1;\n')
             f.write('Vid_Aspect = 0;\n')
             f.write('Vid_Vsync = 1;\n')
@@ -34,26 +30,22 @@ class ECWolfGenerator(Generator):
             f.write('FullScreenWidth = {};\n'.format(gameResolution["width"]))
             f.write('FullScreenHeight = {};\n'.format(gameResolution["height"]))
             f.close()
-
-        # Symbolic link the cfg file
-        if not path.exists(ecwolfConfigDest):
-            os.symlink(ecwolfConfigSrc, ecwolfConfigDest)
-
+        
         # Set the resolution and some other defaults
-        if path.isfile(ecwolfConfigSrc):
+        if path.isfile(ecwolfConfigFile):
             #We ignore some options in default config with py-dictonary...
             IgnoreConfigKeys = {"FullScreenWidth", "FullScreenHeight", "JoystickEnabled"}
-            with codecs.open(ecwolfConfigSrc, "r") as f:
+            with codecs.open(ecwolfConfigFile, "r") as f:
                 lines = {line for line in f}
 
             # ... write all the non ignored keys back to config file ...
-            with codecs.open(ecwolfConfigSrc, "w") as f:
+            with codecs.open(ecwolfConfigFile, "w") as f:
                 for line in lines:
                     if not IgnoreConfigKeys.intersection(line.split()):
                         f.write(line)
  
             # ... and append the ignored keys with default values now ;)
-            f = codecs.open(ecwolfConfigSrc, "a")
+            f = codecs.open(ecwolfConfigFile, "a")
             f.write('JoystickEnabled = 1;\n')
             f.write('FullScreenWidth = {};\n'.format(gameResolution["width"]))
             f.write('FullScreenHeight = {};\n'.format(gameResolution["height"]))
@@ -101,6 +93,7 @@ class ECWolfGenerator(Generator):
         return Command.Command(
              ecwolfArray,
              env={
-                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                'XDG_CONFIG_HOME': batoceraFiles.CONF,
+                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )
