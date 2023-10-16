@@ -3,18 +3,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-09 21:35+0000\n"
-"PO-Revision-Date: 2023-10-09 21:47+0000\n"
+"PO-Revision-Date: 2023-10-11 12:21+0000\n"
 "Last-Translator: coiotato\n"
 "Language-Team: Portuguese (Portugal)\n"
 "Language: pt-PT\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"\n"
 "X-Loco-Source-Locale: en_PT\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Loco https://localise.biz/"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -2004,7 +2003,7 @@ msgctxt "game_options"
 msgid "ENABLE GRAVIS ULTRASOUND"
 msgstr "ATIVAR O ULTRA-SOM GRAVIS"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, ...
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Desligado (Predefinição)"
@@ -3207,15 +3206,15 @@ msgctxt "game_options"
 msgid "No Indicator"
 msgstr "Nenhum indicador"
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
 msgctxt "game_options"
-msgid "Use a custom MAME config, do not overwrite config on launch."
-msgstr ""
+msgid "Set system-wide controls via MAME menu"
+msgstr "Definir comandos de todo o sistema através do menu MAME"
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
 msgctxt "game_options"
-msgid "CUSTOM CONFIG"
-msgstr "CONFIGURAÇÃO PERSONALIZADA"
+msgid "CUSTOM MAME CONFIG"
+msgstr "CONFIGURAÇÃO PERSONALIZADA DO MAME"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -3658,7 +3657,7 @@ msgctxt "game_options"
 msgid "Select which joystick to emulate."
 msgstr "Selecione qual comando emular."
 
-#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2, iortcw
+#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Nenhum (Predefinição)"
@@ -3797,6 +3796,11 @@ msgstr "Cartucho Master BBC (Slot 1)"
 msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 2)"
 msgstr "Cartucho Master BBC (Slot 2)"
+
+#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2, ...
+msgctxt "game_options"
+msgid "CUSTOM CONFIG"
+msgstr "CONFIGURAÇÃO PERSONALIZADA"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4595,8 +4599,8 @@ msgid ""
 "Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D "
 "objects clearer."
 msgstr ""
-"Melhoria. Aumenta a resolução de renderização quando estiver na proporção "
-"16:9. Torna os objetos 3D mais nítidos."
+"Melhoria. Aumenta a resolução de renderização quando estiver na proporção 16:"
+"9. Torna os objetos 3D mais nítidos."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -7548,8 +7552,8 @@ msgstr "CACHE DO DISCO SHADER"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation stutter."
+" May cause graphical glitches."
 msgstr ""
 "Compilar shaders usando threads no fundo para evitar o travar devido a "
 "compilação de shaders. Pode causar falhas gráficas."
@@ -7932,7 +7936,7 @@ msgctxt "game_options"
 msgid "GPU SYNC"
 msgstr "SINCRONIZAÇÃO DO GPU"
 
-#. TRANSLATION: dolphin, dolphin_triforce, rpcs3, iortcw
+#. TRANSLATION: dolphin, dolphin_triforce, rpcs3
 msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "ANTI-ALIASING"
@@ -9172,8 +9176,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Necessário para alguns efeitos em jogo (transições para Banjo Kazooie e "
-"DK64), pode causar lentidão."
+"Necessário para alguns efeitos em jogo (transições para Banjo Kazooie e DK64)"
+", pode causar lentidão."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9910,8 +9914,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Pode fornecer ganho de desempenho em CPUs com baixa contagem de núcleos/"
-"threads à custa de possíveis interrupções de timing."
+"Pode fornecer ganho de desempenho em CPUs com baixa contagem de "
+"núcleos/threads à custa de possíveis interrupções de timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10540,12 +10544,12 @@ msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
 msgstr "Ajuste na proporção de ecrã 4:3"
 
-#. TRANSLATION: scummvm, iortcw
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
 msgstr "Escolha o seu renderizador preferido."
 
-#. TRANSLATION: scummvm, iortcw
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "RENDERER"
 msgstr "RENDERIZADOR"
@@ -11016,8 +11020,8 @@ msgstr "Cartuchos Interton VC 4000"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun "
-"connected), and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
+" and similar controls"
 msgstr ""
 "Ativar a entrada do rato para trackballs, spinners, pistolas (se nenhuma "
 "arma estiver conectada) e comandos semelhantes"
@@ -11109,16 +11113,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "CORTE DE ARTE"
-
-#. TRANSLATION: mame
-msgctxt "game_options"
-msgid "Set system-wide controls via MAME menu"
-msgstr "Definir comandos de todo o sistema através do menu MAME"
-
-#. TRANSLATION: mame
-msgctxt "game_options"
-msgid "CUSTOM MAME CONFIG"
-msgstr "CONFIGURAÇÃO PERSONALIZADA DO MAME"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -11383,8 +11377,8 @@ msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
 msgstr ""
-"Saltar frames para melhorar o desempenho, ao custo de movimentos "
-"irregulares. Pode causar falhas visuais."
+"Saltar frames para melhorar o desempenho, ao custo de movimentos irregulares."
+" Pode causar falhas visuais."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -12532,39 +12526,38 @@ msgctxt "game_options"
 msgid "960p"
 msgstr "960p"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Set the desired maximum refresh rate when Vsync is off."
 msgstr ""
-"Defina a taxa de atualização máxima desejada quando o Vsync estiver "
-"desligado."
+"Define a taxa de atualização máxima pretendida quando Vsync está desligado."
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "REFRESH RATE"
-msgstr "TAXA DE ATUALIZAÇÃO"
+msgstr "TAXA DE ACTUALIZAÇÃO"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "30 fps"
 msgstr "30 fps"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "50 fps"
 msgstr "50 fps"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "60 fps (Default)"
-msgstr "60 fps (Default)"
+msgstr "60 fps (Predefinição)"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "75 fps"
 msgstr "75 fps"
 
-#. TRANSLATION: theforceengine, iortcw
+#. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "120 fps"
 msgstr "120 fps"
@@ -12582,12 +12575,12 @@ msgstr "240 fps"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Choose which graphics renderer to use."
-msgstr "Escolha qual renderizador gráfico a usar."
+msgstr "Escolha o renderizador de gráficos a utilizar."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS RENDERER"
-msgstr "RENDERIZADOR GRÁFICO"
+msgstr "RENDERIZADOR DE GRÁFICOS"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12597,17 +12590,17 @@ msgstr "Software Clássico"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "GPU / OpenGL (Default)"
-msgstr "GPU/OpenGL (Padrão)"
+msgstr "GPU / OpenGL (Predefinição)"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "ENABLE TRUE COLOUR"
-msgstr "ATIVAR COR VERDADEIRA"
+msgstr "ATIVAR TRUE COLOUR"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "ENABLE BILINEAR FILTER"
-msgstr "ATIVAR FILTRO BILINEAR"
+msgstr "ACTIVAR FILTRO BILINEAR"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12617,12 +12610,12 @@ msgstr "ATIVAR MIPMAPPING"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "ENABLE CROSSHAIR"
-msgstr "ATIVAR CRUZ"
+msgstr "ATIVAR MIRA"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Choose to use Bloom post processing."
-msgstr "Escolha usar o pós-processamento Bloom."
+msgstr "Escolha utilizar o pós-processamento Bloom."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12632,12 +12625,12 @@ msgstr "ATIVAR BLOOM"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Enable / Disable sound in menus."
-msgstr "Ativar / Desativar som nos menus."
+msgstr "Ativar / desativar o som nos menus."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "MENU SOUNDS"
-msgstr "SONS DO MENU"
+msgstr "SOMS DO MENU"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12647,22 +12640,22 @@ msgstr "Ativar o áudio digital iMuse de 16 canais."
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "DIGITAL AUDIO"
-msgstr "ÁUDIO DIGITAL"
+msgstr "AUDIO DIGITAL"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Enable / Disable fight music."
-msgstr "Ativar / Desativar música de luta."
+msgstr "Ativar / Desativar a música de combate."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "FIGHT MUSIC"
-msgstr "MÚSICA DE LUTA"
+msgstr "MÚSICA DE COMBATE"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Enable / Disable automatic aiming."
-msgstr "Ativar / Desativar mira automática."
+msgstr "Ativar / Desativar a mira automática."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12672,7 +12665,7 @@ msgstr "MIRA AUTOMÁTICA"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Enable / Disable showing secret found messages."
-msgstr "Ativar / Desativar a exibição de mensagens secretas encontradas."
+msgstr "Ativar / Desativar mensagens de secredo encontrado."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -12682,77 +12675,47 @@ msgstr "MOSTRAR MENSAGENS SECRETAS"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "AUTOMATICALLY RUN"
-msgstr "EXECUTAR AUTOMATICAMENTE"
+msgstr "CORRER AUTOMATICAMENTE"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Bobba Fett Face Player Fix"
-msgstr "Correção do jogador facial de Bobba Fett"
+msgstr "Correção do rosto do Bobba Fett"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "BOBBA FETT FIX"
-msgstr "CORREÇÃO DE BOBBA FETT"
+msgstr "CORREÇÃO DO BOBBA FETT"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "SMOOTH VUES"
-msgstr "VISÕES SUAVES"
+msgstr "VUAS SUAVES"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Choose to enable or disable cutscenes."
-msgstr "Escolha ativar ou desativar cutscenes."
+msgstr "Escolha se quer ativar ou desativar as cutscenes."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "SKIP CUTSCENES"
-msgstr "SALTAR CUTSCENES"
+msgstr "SALTAR CUTSCENE"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Show All"
-msgstr "Mostrar Tudo"
+msgstr "Mostrar tudo"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Skip Initial"
-msgstr "Saltar Inicial"
+msgstr "Saltar Início"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "Skip All"
 msgstr "Saltar Tudo"
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "Standard OpenGL (Default)"
-msgstr ""
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "Enhanced OpenGL"
-msgstr ""
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "2x (Default)"
-msgstr ""
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "Skip the initial intro video."
-msgstr ""
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "SKIP INTRO VIDEO"
-msgstr ""
-
-#. TRANSLATION: iortcw
-msgctxt "game_options"
-msgid "Play (Default)"
-msgstr ""
 
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
@@ -12768,11 +12731,6 @@ msgstr "carregamento rápido"
 msgctxt "keys_files"
 msgid "screenshot"
 msgstr "captura de ecrã"
-
-#. TRANSLATION: iortcw.keys, theforceengine.keys
-msgctxt "keys_files"
-msgid "Skip cutscene"
-msgstr "Saltar Cutscenes"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12822,7 +12780,7 @@ msgstr "Select"
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Quick save"
-msgstr "Save rápido"
+msgstr "Guardar rápido"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12932,12 +12890,17 @@ msgstr "Sair do emulador"
 #. TRANSLATION: theforceengine.keys
 msgctxt "keys_files"
 msgid "Quick Load"
-msgstr "CARREGAMENTO RÁPIDO"
+msgstr "Carregamento Rápido"
 
 #. TRANSLATION: theforceengine.keys
 msgctxt "keys_files"
 msgid "Quick Save"
-msgstr "SAVE RÁPIDO"
+msgstr "Guardar Rápido"
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Skip cutscene"
+msgstr "Saltar cuscene"
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
