@@ -2,7 +2,9 @@
 
 if test "$1" != "start"
 then
-  exit 0
+    # call user script with stop condition
+    test -e /boot/postshare.sh && bash /boot/postshare.sh stop
+    exit 0
 fi
 
 IN=/usr/share/batocera/datainit
@@ -110,8 +112,8 @@ ln -sf /userdata/system/machine-id /etc/machine-id
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version
 
-# call user script
-test -e /boot/postshare.sh && bash /boot/postshare.sh
+# call user script with start condition
+test -e /boot/postshare.sh && bash /boot/postshare.sh start
 
 ### cleaning old alsa files - 08/07/2021
 rm -f /userdata/system/.asoundrc
