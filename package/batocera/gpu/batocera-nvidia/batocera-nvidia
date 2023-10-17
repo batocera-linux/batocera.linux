@@ -8,6 +8,13 @@ mkdir -p "/userdata/system/logs"
 log="/userdata/system/logs/nvidia.log"
 
 MODE=$1
+
+# check we have a user downloaded file
+if [ -e /userdata/system/.nvidia/production.list ]; then
+    PRODLISTDIR="/userdata/system/.nvidia"
+else
+    PRODLISTDIR="/usr/share/nvidia"
+fi
 LISTDIR=/usr/share/nvidia
 
 if test "${MODE}" = "auto"; then
@@ -19,10 +26,10 @@ if test "${MODE}" = "auto"; then
             CARDNAME=$(lspci -s "$d" | cut -d "[" -f2 | cut -d "]" -f1)
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }' | tr '[:lower:]' '[:upper:]')
             echo "Checking card: $CARDNAME with ID: $PCIDEVID" >> "$log"
-            if grep -q -i "$CARDNAME" "$LISTDIR/production.list" 2>/dev/null; then
+            if grep -q -i "$CARDNAME" "$PRODLISTDIR/production.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in production list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/production.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$PRODLISTDIR/production.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in production list too, yay!" >> "$log"
                     MODE=production
                     break
@@ -510,4 +517,6 @@ elif test "${MODE}" = "nouveau"; then
     test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
     test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
+# get the latest production list
+batcoera-get-nvidia-list &
 echo "The end... or is it..." >> $log

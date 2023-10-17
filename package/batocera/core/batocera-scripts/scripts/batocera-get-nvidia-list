@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Bash script to get the latest Nvidia driver list
+# which may add new boards in between versions.
+
+log="/userdata/system/logs/nvidia.log"
+
+GITHUB_URL="https://raw.githubusercontent.com/batocera-linux/nvidia-lists/main/production.list"
+DEST_DIR="/userdata/system/.nvidia"
+
+# Ensure the destination directory exists
+mkdir -p "$DEST_DIR"
+
+# Function to check internet connectivity
+check_internet() {
+    ping -c 1 8.8.8.8 &> /dev/null
+    return $?
+}
+
+# Try to check for an internet connection up to 6 times, with a 5-second delay
+tries=6
+while [ $tries -gt 0 ]; do
+    if check_internet; then
+        break
+    else
+        sleep 5s
+        tries=$((tries - 1))
+    fi
+done
+
+# Check if the download was successful
+if [ $tries -gt 0 ]; then
+    # Download the file
+    curl -sSf "$GITHUB_URL" -o "$DEST_DIR/production.list"
+    if [ $? -eq 0 ]; then
+        echo "Download successful. File saved to $DEST_DIR/production.list" >> "$log"
+    else
+        echo "Download of the latest production.list failed." >> "$log"
+    fi
+else
+    echo "Maximum retries reached. Could not establish an internet connection for the latest production.list" >> "$log"
+fi
