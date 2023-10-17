@@ -57,3 +57,6 @@ class LexaloffleGenerator(Generator):
                file.write(controllersconfig)
 
         return Command.Command(array=commandArray, env={})
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 4/3
