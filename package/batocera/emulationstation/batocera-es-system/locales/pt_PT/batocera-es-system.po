@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: coiotato\n"
 "Language-Team: Portuguese (Portugal)\n"
 "Language: pt-PT\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Loco-Source-Locale: en_PT\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Loco https://localise.biz/"
+"X-Generator: Loco https://localise.biz/\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -2003,7 +2003,7 @@ msgctxt "game_options"
 msgid "ENABLE GRAVIS ULTRASOUND"
 msgstr "ATIVAR O ULTRA-SOM GRAVIS"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, ...
+#. TRANSLATION: libretro/dosbox_pure, libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Desligado (Predefinição)"
@@ -3206,15 +3206,15 @@ msgctxt "game_options"
 msgid "No Indicator"
 msgstr "Nenhum indicador"
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
-msgid "Set system-wide controls via MAME menu"
-msgstr "Definir comandos de todo o sistema através do menu MAME"
+msgid "Use a custom MAME config, do not overwrite config on launch."
+msgstr ""
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
-msgid "CUSTOM MAME CONFIG"
-msgstr "CONFIGURAÇÃO PERSONALIZADA DO MAME"
+msgid "CUSTOM CONFIG"
+msgstr "CONFIGURAÇÃO PERSONALIZADA"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -3657,7 +3657,7 @@ msgctxt "game_options"
 msgid "Select which joystick to emulate."
 msgstr "Selecione qual comando emular."
 
-#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2
+#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2, iortcw
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Nenhum (Predefinição)"
@@ -3796,11 +3796,6 @@ msgstr "Cartucho Master BBC (Slot 1)"
 msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 2)"
 msgstr "Cartucho Master BBC (Slot 2)"
-
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2, ...
-msgctxt "game_options"
-msgid "CUSTOM CONFIG"
-msgstr "CONFIGURAÇÃO PERSONALIZADA"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4599,8 +4594,8 @@ msgid ""
 "Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D "
 "objects clearer."
 msgstr ""
-"Melhoria. Aumenta a resolução de renderização quando estiver na proporção 16:"
-"9. Torna os objetos 3D mais nítidos."
+"Melhoria. Aumenta a resolução de renderização quando estiver na proporção "
+"16:9. Torna os objetos 3D mais nítidos."
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
@@ -4756,7 +4751,7 @@ msgstr ""
 "Útil para comandos no estilo da N64. Teclas de atalho limitadas para "
 "comandos sem tecla de atalho dedicada."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "COMANDO 1"
@@ -4786,7 +4781,7 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "Útil para comandos no estilo de N64."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "COMANDO 2"
@@ -4805,11 +4800,6 @@ msgstr "COMANDO 4"
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
 msgstr "Emula um cartão de memória PAK na porta de expansão do comando."
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "CONTROLLER 1"
-msgstr "COMANDO 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -5387,11 +5377,6 @@ msgstr "AUTOMÁTICO"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-pontos"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER 2"
-msgstr "COMANDO 2"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -7552,8 +7537,8 @@ msgstr "CACHE DO DISCO SHADER"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation stutter."
-" May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 "Compilar shaders usando threads no fundo para evitar o travar devido a "
 "compilação de shaders. Pode causar falhas gráficas."
@@ -7936,7 +7921,7 @@ msgctxt "game_options"
 msgid "GPU SYNC"
 msgstr "SINCRONIZAÇÃO DO GPU"
 
-#. TRANSLATION: dolphin, dolphin_triforce, rpcs3
+#. TRANSLATION: dolphin, dolphin_triforce, rpcs3, iortcw
 msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "ANTI-ALIASING"
@@ -8399,8 +8384,8 @@ msgstr "NeGcon (Vibração)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Reduces wobbly polygongs & warping textures."
-msgstr "Reduz polígonos oscilantes e texturas deformadas."
+msgid "Reduces wobbly polygons & warping textures."
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -9176,8 +9161,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Necessário para alguns efeitos em jogo (transições para Banjo Kazooie e DK64)"
-", pode causar lentidão."
+"Necessário para alguns efeitos em jogo (transições para Banjo Kazooie e "
+"DK64), pode causar lentidão."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9914,8 +9899,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Pode fornecer ganho de desempenho em CPUs com baixa contagem de "
-"núcleos/threads à custa de possíveis interrupções de timing."
+"Pode fornecer ganho de desempenho em CPUs com baixa contagem de núcleos/"
+"threads à custa de possíveis interrupções de timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10544,12 +10529,12 @@ msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
 msgstr "Ajuste na proporção de ecrã 4:3"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, iortcw
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
 msgstr "Escolha o seu renderizador preferido."
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, iortcw
 msgctxt "game_options"
 msgid "RENDERER"
 msgstr "RENDERIZADOR"
@@ -11020,8 +11005,8 @@ msgstr "Cartuchos Interton VC 4000"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 "Ativar a entrada do rato para trackballs, spinners, pistolas (se nenhuma "
 "arma estiver conectada) e comandos semelhantes"
@@ -11113,6 +11098,16 @@ msgstr ""
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "CORTE DE ARTE"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "Set system-wide controls via MAME menu"
+msgstr "Definir comandos de todo o sistema através do menu MAME"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "CUSTOM MAME CONFIG"
+msgstr "CONFIGURAÇÃO PERSONALIZADA DO MAME"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -11377,8 +11372,8 @@ msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
 msgstr ""
-"Saltar frames para melhorar o desempenho, ao custo de movimentos irregulares."
-" Pode causar falhas visuais."
+"Saltar frames para melhorar o desempenho, ao custo de movimentos "
+"irregulares. Pode causar falhas visuais."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -12526,38 +12521,38 @@ msgctxt "game_options"
 msgid "960p"
 msgstr "960p"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "Set the desired maximum refresh rate when Vsync is off."
 msgstr ""
 "Define a taxa de atualização máxima pretendida quando Vsync está desligado."
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "REFRESH RATE"
 msgstr "TAXA DE ACTUALIZAÇÃO"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "30 fps"
 msgstr "30 fps"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "50 fps"
 msgstr "50 fps"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "60 fps (Default)"
 msgstr "60 fps (Predefinição)"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "75 fps"
 msgstr "75 fps"
 
-#. TRANSLATION: theforceengine
+#. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
 msgid "120 fps"
 msgstr "120 fps"
@@ -12717,6 +12712,36 @@ msgctxt "game_options"
 msgid "Skip All"
 msgstr "Saltar Tudo"
 
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Standard OpenGL (Default)"
+msgstr ""
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Enhanced OpenGL"
+msgstr ""
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "2x (Default)"
+msgstr ""
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Skip the initial intro video."
+msgstr ""
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "SKIP INTRO VIDEO"
+msgstr ""
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Play (Default)"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -12731,6 +12756,26 @@ msgstr "carregamento rápido"
 msgctxt "keys_files"
 msgid "screenshot"
 msgstr "captura de ecrã"
+
+#. TRANSLATION: iortcw.keys, theforceengine.keys
+msgctxt "keys_files"
+msgid "Skip cutscene"
+msgstr "Saltar cuscene"
+
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick save"
+msgstr "Guardar rápido"
+
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick load"
+msgstr "Carregamento rápido"
+
+#. TRANSLATION: iortcw.keys, psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, ...
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "Captura de ecrã"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12776,16 +12821,6 @@ msgstr "Rodar o objeto atual"
 msgctxt "keys_files"
 msgid "Select"
 msgstr "Select"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick save"
-msgstr "Guardar rápido"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick load"
-msgstr "Carregamento rápido"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12897,11 +12932,6 @@ msgctxt "keys_files"
 msgid "Quick Save"
 msgstr "Guardar Rápido"
 
-#. TRANSLATION: theforceengine.keys
-msgctxt "keys_files"
-msgid "Skip cutscene"
-msgstr "Saltar cuscene"
-
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
 msgid "Exit emulator using SDL"
@@ -12931,11 +12961,6 @@ msgstr "Abrir o menu rápido do DuckStation"
 msgctxt "keys_files"
 msgid "Restart Game"
 msgstr "Reiniciar o Jogo"
-
-#. TRANSLATION: psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, psp.ppsspp.keys
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr "Captura de ecrã"
 
 #. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
 msgctxt "keys_files"
@@ -13336,3 +13361,15 @@ msgstr "Menu Rápido"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Avanço Rápido"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTOLLER 2"
+#~ msgstr "COMANDO 2"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTOLLER 1"
+#~ msgstr "COMANDO 1"
+
+#~ msgctxt "game_options"
+#~ msgid "Reduces wobbly polygongs & warping textures."
+#~ msgstr "Reduz polígonos oscilantes e texturas deformadas."
