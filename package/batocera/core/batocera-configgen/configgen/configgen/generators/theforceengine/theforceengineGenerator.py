@@ -60,7 +60,7 @@ class TheForceEngineGenerator(Generator):
             forceConfig.set("Graphics", "gameWidth", str(res_width))
             forceConfig.set("Graphics", "gameHeight", res_height)
         else:
-            res_width = gameResolution["height"] * 4/3
+            res_width = int(gameResolution["height"] * 4/3)
             forceConfig.set("Graphics", "gameWidth", str(res_width))
             forceConfig.set("Graphics", "gameHeight", format(gameResolution["height"]))
         
