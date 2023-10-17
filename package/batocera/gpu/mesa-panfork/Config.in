@@ -1,0 +1,116 @@
+menuconfig BR2_PACKAGE_MESA_PANFORK
+	bool "mesa-panfork"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on !BR2_STATIC_LIBS
+	depends on BR2_TOOLCHAIN_HAS_SYNC_1
+	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL
+	depends on !BR2_m68k || BR2_TOOLCHAIN_GCC_AT_LEAST_7 # m68k needs gcc >= 7.x
+	select BR2_PACKAGE_EXPAT
+	select BR2_PACKAGE_LIBDRM
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS if BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_ZLIB
+	help
+	  Mesa 3D, an open-source implementation of the OpenGL
+	  specification.
+
+	  http://mesa3d.org
+
+if BR2_PACKAGE_MESA_PANFORK
+
+# Some Gallium driver needs libelf when built with LLVM support
+config BR2_PACKAGE_MESA_PANFORK_NEEDS_ELFUTILS
+	bool
+
+# inform the .mk file of gallium, dri, dri3 or vulkan driver selection
+config BR2_PACKAGE_MESA_PANFORK_DRI3
+	bool
+	select BR2_PACKAGE_XLIB_LIBXSHMFENCE
+
+config BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER
+	bool
+	select BR2_PACKAGE_MESA_PANFORK_DRIVER
+
+config BR2_PACKAGE_MESA_PANFORK_VULKAN_DRIVER
+	bool
+	select BR2_PACKAGE_MESA_PANFORK_DRIVER
+
+config BR2_PACKAGE_MESA_PANFORK_DRIVER
+	bool
+
+# Gallium xa state tracker.
+# Quote from mesa3d meson.build: "XA state tracker requires at least
+# one of the following gallium drivers: nouveau, freedreno, i915, svga.
+config BR2_PACKAGE_MESA_PANFORK_NEEDS_XA
+	bool
+
+config BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER_PANFROST
+	bool "Gallium panfrost driver"
+	depends on (BR2_TOOLCHAIN_HAS_SYNC_4 && !BR2_RISCV_32) || !BR2_PACKAGE_XORG7 # libxshmfence
+	select BR2_PACKAGE_MESA_PANFORK_DRI3 if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER
+	help
+	  Mesa driver for ARM Mali Midgard and Bifrost GPUs.
+
+if BR2_PACKAGE_MESA_PANFORK_DRIVER
+
+comment "OpenGL API Support"
+
+config BR2_PACKAGE_MESA_PANFORK_GBM
+	bool "gbm"
+	depends on BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER && \
+		BR2_PACKAGE_MESA_PANFORK_OPENGL_EGL
+	select BR2_PACKAGE_HAS_LIBGBM
+	select BR2_PACKAGE_LIBGBM_HAS_FEATURE_FORMAT_MODIFIER_PLANE_COUNT
+	select BR2_PACKAGE_LIBGBM_HAS_FEATURE_DMA_BUF
+	help
+	  Enable Generic Buffer Management (gbm)
+
+comment "gbm support needs a gallium driver w/ EGL support."
+	depends on !(BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER && BR2_PACKAGE_MESA_PANFORK_OPENGL_EGL)
+
+config BR2_PACKAGE_MESA_PANFORK_OPENGL_EGL
+	bool "OpenGL EGL"
+	depends on BR2_PACKAGE_MESA_PANFORK_GALLIUM_DRIVER
+	select BR2_PACKAGE_HAS_LIBEGL if !BR2_PACKAGE_LIBGLVND
+	select BR2_PACKAGE_LIBGLVND_DISPATCH_EGL if BR2_PACKAGE_LIBGLVND
+	select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+	select BR2_PACKAGE_MESA_PANFORK_GBM
+	help
+	  Use the Khronos EGL APIs. EGL is a window manager for OpenGL
+	  applications similar to GLX, for X, and WGL, for Windows.
+
+config BR2_PACKAGE_MESA_PANFORK_OPENGL_ES
+	bool "OpenGL ES"
+	select BR2_PACKAGE_HAS_LIBGLES if !BR2_PACKAGE_LIBGLVND
+	select BR2_PACKAGE_LIBGLVND_DISPATCH_GLES if BR2_PACKAGE_LIBGLVND
+	help
+	  Use the Khronos OpenGL ES APIs. This is commonly used on
+	  embedded systems and represents a subset of the OpenGL API.
+
+endif # BR2_PACKAGE_MESA_PANFORK_DRIVER
+
+config BR2_PACKAGE_PROVIDES_LIBGBM
+	default "mesa-panfork" if BR2_PACKAGE_MESA_PANFORK_GBM
+
+config BR2_PACKAGE_PROVIDES_LIBGL
+	default "mesa-panfork" if BR2_PACKAGE_MESA_PANFORK_OPENGL_GLX && !BR2_PACKAGE_LIBGLVND
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mesa-panfork" if BR2_PACKAGE_MESA_PANFORK_OPENGL_EGL && !BR2_PACKAGE_LIBGLVND
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mesa-panfork" if BR2_PACKAGE_MESA_PANFORK_OPENGL_ES && !BR2_PACKAGE_LIBGLVND
+
+config BR2_PACKAGE_PROVIDES_LIBOPENCL
+	default "mesa-panfork" if BR2_PACKAGE_MESA_PANFORK_OPENCL
+
+endif # BR2_PACKAGE_MESA_PANFORK
+
+comment "mesa3d needs a toolchain w/ C++, NPTL, dynamic library"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS_NPTL || \
+		BR2_STATIC_LIBS
+	depends on BR2_TOOLCHAIN_HAS_SYNC_1
+
+comment "mesa3d needs a toolchain w/ gcc >= 7"
+	depends on BR2_m68k
+	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_7

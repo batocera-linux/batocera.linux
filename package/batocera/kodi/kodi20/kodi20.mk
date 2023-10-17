@@ -220,11 +220,6 @@ ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
 KODI20_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-latomic
 endif
 
-# batocera
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
-  KODI20_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="$${CMAKE_EXE_LINKER_FLAGS} -lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali"
-endif
-
 ifeq ($(BR2_PACKAGE_KODI20_PLATFORM_GBM_GLES),y)
 KODI20_CONF_OPTS += \
         -DCORE_PLATFORM_NAME=gbm \
