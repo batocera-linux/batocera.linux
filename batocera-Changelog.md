@@ -2,12 +2,14 @@
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 ### Added
+- Additional ES controller settings for Dolphin.
+- DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
 - The Force Engine: Play Dark Forces with enhanced graphics.
 - IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
 ### Fixed
-
+- Dolphin bug that prevented full range of analog trigger axis being used.
 ### Changed
-
+- L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.259 - Switchres 2.002w
