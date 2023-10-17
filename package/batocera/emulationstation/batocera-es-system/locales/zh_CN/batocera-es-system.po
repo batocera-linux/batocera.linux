@@ -4684,7 +4684,7 @@ msgid ""
 "dedicated hotkey."
 msgstr "适用于N64风格的控制器, 对于没有专门热键的控制器, 热键功能有限."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "控制器1"
@@ -4714,7 +4714,7 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "适用于N64控制器."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, dolphin, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "控制器2"
@@ -4733,11 +4733,6 @@ msgstr "控制器4"
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
 msgstr "在控制器扩展端口中模拟一个pak."
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "CONTROLLER 1"
-msgstr "控制器1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -5313,11 +5308,6 @@ msgstr "自动"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-point"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTROLLER 2"
-msgstr "控制器2"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -8269,8 +8259,8 @@ msgstr "NeGcon (震动)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Reduces wobbly polygongs & warping textures."
-msgstr "减少不稳定的多边形和扭曲的纹理."
+msgid "Reduces wobbly polygons & warping textures."
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -12511,6 +12501,21 @@ msgctxt "keys_files"
 msgid "Skip cutscene"
 msgstr "跳过过场"
 
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick save"
+msgstr "快速保存"
+
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick load"
+msgstr "快速载入"
+
+#. TRANSLATION: iortcw.keys, psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, ...
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "截图"
+
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Move camera up"
@@ -12555,16 +12560,6 @@ msgstr "旋转当前对象"
 msgctxt "keys_files"
 msgid "Select"
 msgstr "选择"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick save"
-msgstr "快速保存"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick load"
-msgstr "快速载入"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12705,11 +12700,6 @@ msgstr "打开DuckStation快速菜单"
 msgctxt "keys_files"
 msgid "Restart Game"
 msgstr "重置游戏"
-
-#. TRANSLATION: psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, psp.ppsspp.keys
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr "截图"
 
 #. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
 msgctxt "keys_files"
@@ -13110,6 +13100,18 @@ msgstr "快速菜单"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "快进"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTOLLER 2"
+#~ msgstr "控制器2"
+
+#~ msgctxt "game_options"
+#~ msgid "CONTOLLER 1"
+#~ msgstr "控制器1"
+
+#~ msgctxt "game_options"
+#~ msgid "Reduces wobbly polygongs & warping textures."
+#~ msgstr "减少不稳定的多边形和扭曲的纹理."
 
 #~ msgctxt "game_options"
 #~ msgid "hybrid top ratio 4"
