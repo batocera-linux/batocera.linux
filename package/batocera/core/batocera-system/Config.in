@@ -1102,7 +1102,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     # Sony PS3
     select BR2_PACKAGE_RPCS3                        if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
-    # Wii U (requires Wine layer)
+    # Wii U
     select BR2_PACKAGE_CEMU                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
     # future pinball
