@@ -11,7 +11,7 @@ BR2_TOOLCHAIN_BUILDROOT_GLIBC=y
 BR2_TOOLCHAIN_BUILDROOT_CXX=y
 # required for utf-8
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
-BR2_STRIP_EXCLUDE_DIRS="usr/ryujinx usr/bin/vpinball usr/share/ecwolf"
+BR2_STRIP_EXCLUDE_DIRS="usr/ryujinx usr/bin/vpinball usr/share/ecwolf usr/bin/vita3k"
 
 # Allow to build GOLD linker, but do not use as default
 BR2_BINUTILS_EXTRA_CONFIG_OPTIONS="--enable-gold --enable-plugins"
