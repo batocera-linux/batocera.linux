@@ -50,7 +50,7 @@
 - Nvidia production driver to 535.113.01
 - SDL2 to 2.28.4
 
-# 2023/10/xx - batocera.linux 38 - Blue Moon
+# 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
 - Warning: Batocera is now set up to the default TV resolution on most systems. If you are running a Raspberry Pi4 or a low-end PC on a display capable of higher than 1080p and notice a performance problem, please adjust a one-time configuration option in SYSTEM SETTINGS -> FRONTEND DEVELOPER OPTIONS -> VIDEO MODE for EmulationStation. You can also still set the emulators resolution in GAME SETTINGS -> VIDEO MODE.
 - Added support for:
@@ -78,7 +78,7 @@
 - Play! PS2 emulator with support for Namco 246 & 256 systems
 - TheXTech game engine for Super Mario-like SMBX platform games
 - Tandy / Memorex Video Information System (VIS)
-- Visual Pinball X (Standalone) for X86_64, RPi4 & RK3588 boards
+- Visual Pinball X (Standalone) for X86_64 & RK3588 boards
 - Added Sega Pico system entry utilizing existing emulator cores
 - Added Hydra Castle Labyrinth, a 16-bit platformer game (through content downloader)
 - Added Hurrican, a Turrican clone (through content downloader)
