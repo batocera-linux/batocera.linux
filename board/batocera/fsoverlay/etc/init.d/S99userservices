@@ -39,3 +39,6 @@ find /usr/share/batocera/services -type f |
 	    bash "${SERVICE}" "${1}" &
 	fi
     done
+
+# wait so that shutdown can happen
+test "${1}" = "stop" && wait
