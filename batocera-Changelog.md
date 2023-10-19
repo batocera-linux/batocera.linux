@@ -47,6 +47,7 @@
 - Libretro-Beetle-Lynx to Jul 22, 2023 build
 - Libretro-Beetle-PCE to Oct 6, 2023 build
 - Libretro-Beetle-PCE-Fast to Oct 6, 2023 build
+- Libretro-Beetle-PCFX to May 28, 2023 build
 ### System
 - Linux kernel to 6.5.7
 - Mesa to 23.2.1
