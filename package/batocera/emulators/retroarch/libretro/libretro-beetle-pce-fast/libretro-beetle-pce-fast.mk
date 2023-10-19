@@ -3,8 +3,8 @@
 # libretro-beetle-pce-fast
 #
 ################################################################################
-# Version.: Commits on Mar 17, 2023
-LIBRETRO_BEETLE_PCE_FAST_VERSION = 69d93f14affd498fb5c71c99591422cfeeb49a33
+# Version: Commits on Oct 6, 2023
+LIBRETRO_BEETLE_PCE_FAST_VERSION = 1ce7a4a941b10aa0c2973cb441b89ee99e2c8d0e
 LIBRETRO_BEETLE_PCE_FAST_SITE = $(call github,libretro,beetle-pce-fast-libretro,$(LIBRETRO_BEETLE_PCE_FAST_VERSION))
 LIBRETRO_BEETLE_PCE_FAST_LICENSE = GPLv2
 
@@ -24,7 +24,8 @@ LIBRETRO_BEETLE_PCE_FAST_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_BEETLE_PCE_FAST_BUILD_CMDS
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) platform="$(LIBRETRO_BEETLE_PCE_FAST_PLATFORM)" \
+    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D) platform="$(LIBRETRO_BEETLE_PCE_FAST_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_BEETLE_PCE_FAST_VERSION) | cut -c 1-7)"
 endef
 
