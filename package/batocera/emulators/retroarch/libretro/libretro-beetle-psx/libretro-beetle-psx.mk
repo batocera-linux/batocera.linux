@@ -3,8 +3,8 @@
 # libretro-beetle-psx
 #
 ################################################################################
-# Version.: Commits on Mar 24, 2023
-LIBRETRO_BEETLE_PSX_VERSION = 817a1231f6e6fa4e706e16624aa3db51a0fb884d
+# Version: Commits on Oct 13, 2023
+LIBRETRO_BEETLE_PSX_VERSION = 101a43699c735a6bee196bc432a1a6ee69a3964a
 LIBRETRO_BEETLE_PSX_SITE = $(call github,libretro,beetle-psx-libretro,$(LIBRETRO_BEETLE_PSX_VERSION))
 LIBRETRO_BEETLE_PSX_LICENSE = GPLv2
 
@@ -20,7 +20,8 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 endif
 
 define LIBRETRO_BEETLE_PSX_BUILD_CMDS
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile $(LIBRETRO_BEETLE_PSX_EXTRAOPT) platform="$(LIBRETRO_PLATFORM)" \
+    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+        -C $(@D) -f Makefile $(LIBRETRO_BEETLE_PSX_EXTRAOPT) platform="$(LIBRETRO_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_BEETLE_PSX_VERSION) | cut -c 1-7)"
 endef
 
