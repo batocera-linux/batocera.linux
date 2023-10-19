@@ -3,8 +3,8 @@
 # libretro-a5200
 #
 ################################################################################
-# Version.: Commits on Feb 22, 2023
-LIBRETRO_A5200_VERSION = 44455983830bb19513bf531388ba8f7cde9e50ab
+# Version: Commits on Aug 18, 2023
+LIBRETRO_A5200_VERSION = 0942c88d64cad6853b539f51b39060a9de0cbcab
 LIBRETRO_A5200_SITE = $(call github,libretro,a5200,$(LIBRETRO_A5200_VERSION))
 LIBRETRO_A5200_LICENSE = GPLv2
 
@@ -30,7 +30,8 @@ LIBRETRO_A5200_PLATFORM = ARCH=aarch64
 endif
 
 define LIBRETRO_A5200_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_A5200_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_A5200_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_A5200_VERSION) | cut -c 1-7)"
 endef
 

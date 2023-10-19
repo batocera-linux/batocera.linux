@@ -42,6 +42,7 @@
 - Xenia Canary to d36b1b3 (October 13 build)
 - ECWolf to 1.5pre
 - EDuke32 to Oct 07, 2023 build
+- Libretro-A5200 to Aug 18th build
 ### System
 - Linux kernel to 6.5.7
 - Mesa to 23.2.1
