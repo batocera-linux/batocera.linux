@@ -3,8 +3,8 @@
 # libretro-beetle-supergrafx
 #
 ################################################################################
-# Version.: Commits on Mar 17, 2023
-LIBRETRO_BEETLE_SUPERGRAFX_VERSION = 71ae2b7b9f8736feb73459d5383ea62fcec17f35
+# Version: Commits on Oct 6, 2023
+LIBRETRO_BEETLE_SUPERGRAFX_VERSION = 733b29460bfa254ccea096d29e8cc566e48aa633
 LIBRETRO_BEETLE_SUPERGRAFX_SITE = $(call github,libretro,beetle-supergrafx-libretro,$(LIBRETRO_BEETLE_SUPERGRAFX_VERSION))
 LIBRETRO_BEETLE_SUPERGRAFX_LICENSE = GPLv2
 
@@ -24,7 +24,8 @@ LIBRETRO_BEETLE_SUPERGRAFX_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_BEETLE_SUPERGRAFX_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_BEETLE_SUPERGRAFX_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_BEETLE_SUPERGRAFX_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_BEETLE_SUPERGRAFX_VERSION) | cut -c 1-7)"
 endef
 
