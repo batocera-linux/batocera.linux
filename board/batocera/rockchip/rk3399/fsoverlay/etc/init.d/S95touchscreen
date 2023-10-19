@@ -11,11 +11,13 @@ case "$1" in
          info_output=$(batocera-info)
          if [[ $info_output == *"Model: Anbernic_RG552"* ]]; then
              # pause so set-prop applies after ES starts otherwise it fails
-	     while [[ ! -f /var/run/switch_screen_current ]]; do
-		     sleep 2
-	     done
-	     # Re-attach touchscreen to the rotated display
-	     /usr/bin/batocera-resolution setRotation 3
+             while [[ ! -f /var/run/switch_screen_current ]]; do
+                 sleep 2
+                 date >> /var/run/tscr
+             done
+             sleep 4
+             # Re-attach touchscreen to the rotated display
+             /usr/bin/batocera-resolution setRotation 3
          fi
          ;;
      stop)
