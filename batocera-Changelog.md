@@ -45,6 +45,7 @@
 - Libretro-A5200 to Aug 18th build
 - Libretro-Atari800 to Aug 1st build
 - Libretro-Beetle-Lynx to Jul 22, 2023 build
+- Libretro-Beetle-PCE to Oct 6, 2023 build
 ### System
 - Linux kernel to 6.5.7
 - Mesa to 23.2.1
