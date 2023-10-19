@@ -3,8 +3,8 @@
 # libretro-beetle-lynx
 #
 ################################################################################
-# Version.: Commits on Mar 17, 2023
-LIBRETRO_BEETLE_LYNX_VERSION = 66a4bc8d7d5328877684c20581c8cee34abb1b37
+# Version: Commits on Jul 22, 2023
+LIBRETRO_BEETLE_LYNX_VERSION = fab3ac02d5622eb53a707bd392cc037282e9d8b4
 LIBRETRO_BEETLE_LYNX_SITE = $(call github,libretro,beetle-lynx-libretro,$(LIBRETRO_BEETLE_LYNX_VERSION))
 LIBRETRO_BEETLE_LYNX_LICENSE = GPLv2
 
@@ -24,7 +24,8 @@ LIBRETRO_BEETLE_LYNX_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_BEETLE_LYNX_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_BEETLE_LYNX_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_BEETLE_LYNX_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_BEETLE_LYNX_VERSION) | cut -c 1-7)"
 endef
 
