@@ -26,16 +26,27 @@ cp "${BOARD_DIR}/boot/README.txt"                      "${BATOCERA_BINARIES_DIR}
 cp "${BOARD_DIR}/boot/uEnv.txt"                        "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 cp "${BOARD_DIR}/boot/boot.ini"                        "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 
-for DTB in meson-sm1-h96-max.dtb meson-sm1-sei610.dtb meson-sm1-khadas-vim3l.dtb meson-sm1-odroid-c4.dtb meson-sm1-x96-air.dtb meson-sm1-x96-air-gbit.dtb meson-sm1-a95xf3-air.dtb meson-sm1-a95xf3-air-gbit.dtb
-do
-        cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
-done
+DTBs=(
+    meson-sm1-h96-max.dtb
+    meson-sm1-sei610.dtb
+    meson-sm1-khadas-vim3l.dtb
+    meson-sm1-odroid-c4.dtb
+    meson-sm1-x96-air.dtb
+    meson-sm1-x96-air-gbit.dtb
+    meson-sm1-a95xf3-air.dtb
+    meson-sm1-a95xf3-air-gbit.dtb
+    meson-sm1-x96-max-plus.dtb
+    meson-sm1-x96-max-plus-100m.dtb
+    meson-sm1-x96-max-plus-2101.dtb
+)
 
+for DTB in "${DTBs[@]}"
+do
+    cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+done
 
 "${HOST_DIR}/bin/mkimage" -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BATOCERA_BINARIES_DIR}/boot/s905_autoscript" || exit 1
 "${HOST_DIR}/bin/mkimage" -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt"  "${BATOCERA_BINARIES_DIR}/boot/aml_autoscript"  || exit 1
 "${HOST_DIR}/bin/mkimage" -C none -A arm64 -T script -d "${BOARD_DIR}/boot/boot.scr.txt"        "${BATOCERA_BINARIES_DIR}/boot/boot.scr"        || exit 1
-
-
 
 exit 0
