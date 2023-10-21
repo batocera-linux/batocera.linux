@@ -12,33 +12,44 @@ if test -n "${enabled_services}"
 then
     for SERVICE in ${enabled_services}
     do
-	export __SERVICE__${SERVICE}=1
+    export __SERVICE__${SERVICE}=1
     done
 fi
 
 # user services
-find /userdata/system/services -type f |
+# printf removes path data, all non alaphanumeric chars are converted to underscore
+pushd /userdata/system/services
+
+find -type f  -printf '%f\n' |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    SANITIZE=${SERVICE//[^0-9A-Za-z]/_}
+    if ! test "${SERVICE}" = "${SANITIZE}"; then
+        mv "${SERVICE}" "${SANITIZE}"
+        SERVICE=${SANITIZE}
+    fi
+    SRVVAR=__SERVICE__${SERVICE}
+    if test "${!SRVVAR}" = 1
+    then
+        bash "${SERVICE}" "${1}" &
+    fi
     done
+popd
 
 # system user services
-find /usr/share/batocera/services -type f |
+# here the sanitize is not needed, only a-z0-9 allowed for filename
+pushd /usr/share/batocera/services
+
+find -type f -printf '%f\n' |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    SRVVAR=__SERVICE__${SERVICE}
+    if test "${!SRVVAR}" = 1
+    then
+        bash "${SERVICE}" "${1}" &
+    fi
     done
+popd
 
-# wait so that shutdown can happen
+# wait for scrtips to finish, then shutdown can happen
 test "${1}" = "stop" && wait
