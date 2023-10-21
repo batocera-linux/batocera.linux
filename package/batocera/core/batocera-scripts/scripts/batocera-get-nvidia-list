@@ -44,6 +44,7 @@ if [ $tries -gt 0 ]; then
         echo "Download of legacy.list successful. File saved to $DEST_DIR/legacy.list" >> "$log"
     else
         echo "Download of legacy.list failed." >> "$log"
+    fi
 
     # Download legacy390.list
     curl -sSf "${GITHUB_URL}legacy390.list" -o "$DEST_DIR/legacy390.list"
