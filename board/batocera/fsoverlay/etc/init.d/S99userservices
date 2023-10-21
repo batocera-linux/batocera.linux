@@ -17,28 +17,36 @@ then
 fi
 
 # user services
-find /userdata/system/services -type f |
+find -L /userdata/system/services -type f |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    BASE_SERVICE=${SERVICE##*/}
+    if [[ "${BASE_SERVICE}" =~ ^[_[:alpha:]][_[:alpha:][:digit:]]*$ ]]; then
+        SRVVAR=__SERVICE__${BASE_SERVICE}
+        if test "${!SRVVAR}" = 1; then
+    	    bash "${SERVICE}" "${1}" &
+            echo "User Service: ${BASE_SERVICE} - ${1} condition [ok]"
+        else
+            echo "User Service: ${BASE_SERVICE} - ${1} condition [ok] - service disabled"            
+        fi
+    else
+        echo "User Service: ${BASE_SERVICE} - ${1} condition [ko] - invalid filename"
+    fi
     done
 
 # system user services
-find /usr/share/batocera/services -type f |
+find -L /usr/share/batocera/services -type f |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    BASE_SERVICE=${SERVICE##*/}
+    SRVVAR=__SERVICE__${BASE_SERVICE}
+    if test "${!SRVVAR}" = 1; then
+        bash "${SERVICE}" "${1}" &
+        echo "System Service: ${BASE_SERVICE} - ${1} condition [ok]"
+    else
+        echo "System Service: ${BASE_SERVICE} - ${1} condition [ok] - service disabled"
+    fi
     done
 
-# wait so that shutdown can happen
+# wait scripts to finish on stop condition, shutdown can happen
 test "${1}" = "stop" && wait
