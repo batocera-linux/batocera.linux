@@ -57,7 +57,8 @@ then
     # --- BEGIN RESIZE ---
     # /userdata partition
     PART=$(batocera-part "share_internal")
-    echo "Partition = $PART" >> $log
+    PARTNUM=$(batocera-part "share_internal_num")
+    echo "Partition name: $PART & number: $PARTNUM" >> $log
     # boot disk
     DISK=$(batocera-part prefix "${PART}")
     echo "Disk = $DISK" >> $log
@@ -80,7 +81,7 @@ then
         3) 
            # resize the partition
            echo "Step $i: Resizing the partition to 100%" >> "$log"
-           textoutput $i 50 "parted -s -m -f ${DISK} resizepart 2 100%";;
+           textoutput $i 50 "parted -s -m -f ${DISK} resizepart ${PARTNUM} 100%";;
         
         5)
            # update the kernel
