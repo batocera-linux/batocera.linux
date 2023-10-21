@@ -32,6 +32,20 @@ determine_default_share_part() {
     echo "${BOOTPART}" | sed -e s+"${XBOOT}$"+"${XSHARE}"+
 }
 
+determine_default_share_part_num() {
+    BOOTPART=$(determine_boot_part)
+    XBOOT=$(echo "${BOOTPART}" | sed -e s+'^.*\([0-9]\)$'+'\1'+)
+
+    # check that it is a number
+    if ! echo "${XBOOT}" | grep -qE '^[0-9]$'
+    then
+	return 1
+    fi
+
+    XSHARE=$(expr ${XBOOT} + 1)
+    echo "${XSHARE}"
+}
+
 determine_share_part() {
     determine_X_part "/userdata"
 }
@@ -72,6 +86,10 @@ case "${PARTNAME}" in
 
     "share_internal")
 	determine_default_share_part
+	;;
+
+    "share_internal_num")
+	determine_default_share_part_num
 	;;
 
     "share")
