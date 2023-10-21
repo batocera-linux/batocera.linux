@@ -1,6 +1,7 @@
 # 202x/xx/xx - batocera.linux 39 - 
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
+- Initial support for the Anbernic RG353V
 ### Added
 - Additional ES controller settings for Dolphin.
 - DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
