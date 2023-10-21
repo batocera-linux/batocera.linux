@@ -15,7 +15,21 @@ if [ -e /userdata/system/.nvidia/production.list ]; then
 else
     PRODLISTDIR="/usr/share/nvidia"
 fi
-LISTDIR=/usr/share/nvidia
+if [ -e /userdata/system/.nvidia/legacy.list ]; then
+    LEGACYLISTDIR="/userdata/system/.nvidia"
+else
+    LEGACYLISTDIR="/usr/share/nvidia"
+fi
+if [ -e /userdata/system/.nvidia/legacy390.list ]; then
+    LEGACY390LISTDIR="/userdata/system/.nvidia"
+else
+    LEGACY390LISTDIR="/usr/share/nvidia"
+fi
+if [ -e /userdata/system/.nvidia/legacy340.list ]; then
+    LEGACY340LISTDIR="/userdata/system/.nvidia"
+else
+    LEGACY340LISTDIR="/usr/share/nvidia"
+fi
 
 if test "${MODE}" = "auto"; then
     echo "Detect if we have a Nvidia GPU" >> $log
@@ -36,30 +50,30 @@ if test "${MODE}" = "auto"; then
                 else
                     echo "PCI device ID: $PCIDEVID not detected in production list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACYLISTDIR/legacy.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACYLISTDIR/legacy.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy list too, yay!" >> "$log"
                     MODE=legacy
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in legacy list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy390.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACY390LISTDIR/legacy390.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy390 list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy390.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACY390LISTDIR/legacy390.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy390 list too, yay!" >> "$log"
                     MODE=legacy390
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in legacy390 list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy340.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACY340LISTDIR/legacy340.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy340 list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy340.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACY340LISTDIR/legacy340.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy340 list too, yay!" >> "$log"
                     echo "Using Mesa Nouveau driver, currently the legacy 340 driver doesn't work" >> $log
                     MODE=nouveau
