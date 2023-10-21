@@ -108,6 +108,7 @@ cp -pv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
 cp -pv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
 cp -pv "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/vdpau/"* "${TMPOUT}/lib32/vdpau" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libvkbasalt.so"* "${TMPOUT}/lib32" || exit 1
 
 # libglvnd
 echo
