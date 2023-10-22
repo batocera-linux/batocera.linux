@@ -61,8 +61,8 @@ fi
 ###
 
 V_BOARD=$(cat /boot/boot/batocera.board)
-V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
-V_CPUMAXNB=$(ls /sys/devices/system/cpu | grep -E '^cpu[0-9]*$' | wc -l)
+V_CPUNB=$(lscpu | grep 'Core(s) per socket' | awk '{print $4}')
+V_CPUMAXNB=$(lscpu | grep '^CPU(s):' | awk '{print $2}')
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
 # min freq : minimum freq among the max cpus ; consider only online cpus
@@ -101,7 +101,7 @@ if test "${V_CPUMAXNB}" = "${V_CPUNB}"
 then
     echo "CPU Cores: ${V_CPUNB}"
 else
-        echo "CPU Cores: ${V_CPUNB}/${V_CPUMAXNB}"
+        echo "CPU Cores: ${V_CPUNB} / CPU Threads: ${V_CPUMAXNB}"
 fi
 if test "${V_CPUMINFREQ}" != "${V_CPUMAXFREQ}"
 then
