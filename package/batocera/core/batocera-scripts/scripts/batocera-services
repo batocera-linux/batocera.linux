@@ -12,7 +12,7 @@ do_help() {
 }
 
 is_valid_service_name() {
-    [[ "${1}" =~ ^[_[:alpha:]][_[:alpha:][:digit:]]*$ ]]
+    [[ "${1}" == ${1//[^0-9A-Za-z_]/} ]]
 }
 
 do_list() {
