@@ -47,7 +47,7 @@ f_minTomaxResolution() {
             selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
             MAXWIDTH=$(echo "$selected_mode" | cut -d 'x' -f 1)
             MAXHEIGHT=$(echo "$selected_mode" | cut -d 'x' -f 2 | cut -d '@' -f 1)
-            MAXRATE=$(echo "$selected_mode" | cut -d '@' -f 2 | cut -d ' ' -f 1)
+            MAXRATE=$(echo "$selected_mode" | cut -d '@' -f 2 | sed 's/Hz//' | xargs)
             echo "MPV default drm resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
         fi
     fi
