@@ -35,6 +35,7 @@ BATOCERA_NVIDIA_DRIVER_LIBS_GL = \
 	libGLX_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 # batocera don't take the libEGL.so.1.1.0 library
+# or the libEGL.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 # this is provided by libglvnd
 BATOCERA_NVIDIA_DRIVER_LIBS_EGL = \
 	libEGL_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
@@ -58,8 +59,7 @@ BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-rtcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-wayland-client.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libEGL.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-wayland-client.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_DRIVER_LIBS_VDPAU = \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
