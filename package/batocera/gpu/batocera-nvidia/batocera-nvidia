@@ -134,15 +134,39 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so /usr/lib/libGLESv2_nvidia.so
     ln -sf /usr/lib/libGLESv2_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so.2
 	ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so.2 /usr/lib/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib/libnvidia-allocator.so /usr/lib/libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-allocator.so.1 /usr/lib/libnvidia-allocator.so.1
+    # libnvidia-api.so
+    ln -sf /usr/lib/libnvidia-api.so.1 /var/run/nvidia/lib/libnvidia-api.so
+	ln -sf /var/run/nvidia/lib/libnvidia-api.so /usr/lib/libnvidia-api.so
+    # libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so
+	ln -sf /var/run/nvidia/lib/libnvidia-cfg.so /usr/lib/libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-cfg.so.1 /usr/lib/libnvidia-cfg.so.1    
     # libnvidia-eglcore.so
     ln -sf /usr/lib/libnvidia-eglcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so
+    # libnvidia-egl-gbm.so
+    ln -sf /usr/lib/libnvidia-egl-gbm.so.110 /var/run/nvidia/lib/libnvidia-egl-gbm.so
+	ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so /usr/lib/libnvidia-egl-gbm.so
+    ln -sf /usr/lib/libnvidia-egl-gbm.so.110 /var/run/nvidia/lib/libnvidia-egl-gbm.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so.1 /usr/lib/libnvidia-egl-gbm.so.1    
     # libnvidia-glcore.so
     ln -sf /usr/lib/libnvidia-glcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glcore.so /usr/lib/libnvidia-glcore.so
     # libnvidia-glsi.so
     ln -sf /usr/lib/libnvidia-glsi.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glsi.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glsi.so /usr/lib/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /usr/lib/libnvidia-gpucomp.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib/libnvidia-gpucomp.so /usr/lib/libnvidia-gpucomp.so  
+    # libnvidia-rtcore.so
+    ln -sf /usr/lib/libnvidia-rtcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-rtcore.so
+	ln -sf /var/run/nvidia/lib/libnvidia-rtcore.so /usr/lib/libnvidia-rtcore.so    
     # libnvidia-tls.so
     ln -sf /usr/lib/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
@@ -161,6 +185,9 @@ if [ "$MODE" = "production" ]; then
     # libnvidia-glvkspirv.so
     ln -sf /usr/lib/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
+    # libnvidia-wayland-client.so
+    ln -sf /usr/lib/libnvidia-wayland-client.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-wayland-client.so
+    ln -sf /var/run/nvidia/lib/libnvidia-wayland-client.so /usr/lib/libnvidia-wayland-client.so
     
     # [symbolic link 32-bit library files]
     mkdir -p /var/run/nvidia/lib32
@@ -184,6 +211,11 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so /lib32/libGLESv2_nvidia.so
     ln -sf /lib32/libGLESv2_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so.2
     ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so.2 /lib32/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so /lib32/libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so.1 /lib32/libnvidia-allocator.so.1
     # libnvidia-eglcore.so
     ln -sf /lib32/libnvidia-eglcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-eglcore.so
     ln -sf /var/run/nvidia/lib32/libnvidia-eglcore.so /lib32/libnvidia-eglcore.so
@@ -193,6 +225,9 @@ if [ "$MODE" = "production" ]; then
     # libnvidia-glsi.so
     ln -sf /lib32/libnvidia-glsi.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glsi.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glsi.so /lib32/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /lib32/libnvidia-gpucomp.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-gpucomp.so /lib32/libnvidia-gpucomp.so
     # libnvidia-tls.so
     ln -sf /lib32/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
