@@ -21,7 +21,7 @@ find -L /userdata/system/services -type f |
     while read SERVICE
     do
     BASE_SERVICE=${SERVICE##*/}
-    if [[ "$BASE_SERVICE" == ${BASE_SERVICE//[^0-9A-Za-z_]/} ]]; then
+    if [[ "$BASE_SERVICE" == ${BASE_SERVICE//[^0-9A-Za-z_]/} && ${BASE_SERVICE:0:1} =~ ^[[:alpha:]] ]]; then
         SRVVAR=__SERVICE__${BASE_SERVICE}
         if test "${!SRVVAR}" = 1; then
             bash "${SERVICE}" "${1}" &
