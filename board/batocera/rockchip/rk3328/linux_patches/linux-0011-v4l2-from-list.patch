@@ -58,7 +58,7 @@ index e0fbe6ba4b6c..cb2f1acab7cf 100644
  
  	if (info->mem_planes == 1) {
  		plane = &pixfmt->plane_fmt[0];
--		plane->bytesperline = ALIGN(width, v4l2_format_block_width(info, 0)) * info->bpp[0];
+-		plane->bytesperline = ALIGN(width, v4l2_format_block_width(info, 0)) * info->bpp[0] / info->bpp_div[0];
 +		plane->bytesperline = v4l2_format_plane_width(info, 0, width);
  		plane->sizeimage = 0;
  
@@ -73,7 +73,7 @@ index e0fbe6ba4b6c..cb2f1acab7cf 100644
 -
 -			plane->sizeimage += info->bpp[i] *
 -				DIV_ROUND_UP(aligned_width, hdiv) *
--				DIV_ROUND_UP(aligned_height, vdiv);
+-				DIV_ROUND_UP(aligned_height, vdiv) / info->bpp_div[i];
 -		}
 +		for (i = 0; i < info->comp_planes; i++)
 +			plane->sizeimage +=
@@ -90,7 +90,7 @@ index e0fbe6ba4b6c..cb2f1acab7cf 100644
 -
  			plane = &pixfmt->plane_fmt[i];
  			plane->bytesperline =
--				info->bpp[i] * DIV_ROUND_UP(aligned_width, hdiv);
+-				info->bpp[i] * DIV_ROUND_UP(aligned_width, hdiv) / info->bpp_div[i];
 -			plane->sizeimage =
 -				plane->bytesperline * DIV_ROUND_UP(aligned_height, vdiv);
 +				v4l2_format_plane_width(info, i, width);
@@ -103,7 +103,7 @@ index e0fbe6ba4b6c..cb2f1acab7cf 100644
  	pixfmt->width = width;
  	pixfmt->height = height;
  	pixfmt->pixelformat = pixelformat;
--	pixfmt->bytesperline = ALIGN(width, v4l2_format_block_width(info, 0)) * info->bpp[0];
+-	pixfmt->bytesperline = ALIGN(width, v4l2_format_block_width(info, 0)) * info->bpp[0] / info->bpp_div[0];
 +	pixfmt->bytesperline = v4l2_format_plane_width(info, 0, width);
  	pixfmt->sizeimage = 0;
  
@@ -118,7 +118,7 @@ index e0fbe6ba4b6c..cb2f1acab7cf 100644
 -
 -		pixfmt->sizeimage += info->bpp[i] *
 -			DIV_ROUND_UP(aligned_width, hdiv) *
--			DIV_ROUND_UP(aligned_height, vdiv);
+-			DIV_ROUND_UP(aligned_height, vdiv) / info->bpp_div[i];
 -	}
 +	for (i = 0; i < info->comp_planes; i++)
 +		pixfmt->sizeimage +=
@@ -158,23 +158,23 @@ index cb2f1acab7cf..8446a1deffd8 100644
 --- a/drivers/media/v4l2-core/v4l2-common.c
 +++ b/drivers/media/v4l2-core/v4l2-common.c
 @@ -268,6 +268,9 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
- 		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
- 		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+ 		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 1, .vdiv = 1 },
+ 		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1 },
  
-+		{ .format = V4L2_PIX_FMT_NV15,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .hdiv = 2, .vdiv = 2, .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
-+		{ .format = V4L2_PIX_FMT_NV20,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .hdiv = 2, .vdiv = 1, .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
++		{ .format = V4L2_PIX_FMT_NV15,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 2, .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
++		{ .format = V4L2_PIX_FMT_NV20,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 2, .vdiv = 1, .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
 +
- 		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
- 		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
- 		{ .format = V4L2_PIX_FMT_YUV411P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 1 },
+ 		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 4, .vdiv = 4 },
+ 		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 4, .vdiv = 4 },
+ 		{ .format = V4L2_PIX_FMT_YUV411P, .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .bpp_div = { 1, 1, 1, 1 }, .hdiv = 4, .vdiv = 1 },
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
 index e6fd355a2e92..24771edaa4f2 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
 @@ -1354,6 +1354,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_PIX_FMT_NV24:		descr = "Y/UV 4:4:4"; break;
  	case V4L2_PIX_FMT_NV42:		descr = "Y/VU 4:4:4"; break;
  	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/UV 4:2:0"; break;
+ 	case V4L2_PIX_FMT_P012:		descr = "12-bit Y/UV 4:2:0"; break;
 +	case V4L2_PIX_FMT_NV15:		descr = "10-bit Y/UV 4:2:0 (Packed)"; break;
 +	case V4L2_PIX_FMT_NV20:		descr = "10-bit Y/UV 4:2:2 (Packed)"; break;
  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/UV 4:2:0 (4x4 Linear)"; break;
