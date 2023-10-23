@@ -58,6 +58,7 @@
 - Libretro-Cap32 to Jul 12, 2023 build
 - Libretro-ChaiLove to Sep 30, 2023 build
 - Libretro-Craft to May 28, 2023 build
+- Libretro-Desmume to Oct 6, 2023 build
 ### System
 - Linux kernel to 6.5.8
 - Mesa to 23.2.1
