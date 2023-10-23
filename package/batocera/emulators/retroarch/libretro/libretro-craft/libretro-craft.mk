@@ -3,8 +3,8 @@
 # libretro-craft
 #
 ################################################################################
-# Version: Commits on Jan 09, 2023
-LIBRETRO_CRAFT_VERSION = fce88570e83003b24cce34085928c890adae141d
+# Version: Commits on May 28, 2023
+LIBRETRO_CRAFT_VERSION = f511c567089f2eada95bceb604c203c1292c98e8
 LIBRETRO_CRAFT_SITE = $(call github,libretro,Craft,$(LIBRETRO_CRAFT_VERSION))
 LIBRETRO_CRAFT_LICENSE = MIT
 LIBRETRO_CRAFT_LICENSE_FILES = LICENSE.md
@@ -34,7 +34,8 @@ LIBRETRO_CRAFT_OPTS += FORCE_GLES=1
 endif
 
 define LIBRETRO_CRAFT_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_CRAFT_PLATFORM)" $(LIBRETRO_CRAFT_OPTS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile.libretro platform="$(LIBRETRO_CRAFT_PLATFORM)" $(LIBRETRO_CRAFT_OPTS)
 endef
 
 define LIBRETRO_CRAFT_INSTALL_TARGET_CMDS
