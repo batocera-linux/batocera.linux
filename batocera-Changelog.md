@@ -53,6 +53,7 @@
 - Libretro-Beetle-Saturn to May 28, 2023 build
 - Libretro-Beetle-Supergrafx to Oct 6, 2023 build
 - Libretro-Beetle-WSwan to May 27, 2023 build
+- Libretro-Bluemsx to Apr 18, 2023 build
 ### System
 - Linux kernel to 6.5.8
 - Mesa to 23.2.1
