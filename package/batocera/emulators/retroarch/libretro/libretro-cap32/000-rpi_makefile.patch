@@ -15,8 +15,8 @@ index 1ce3e86..1e6b294 100644
  	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
  
  	ifneq (,$(findstring rpi1,$(platform)))
--		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16B
-+		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16B -mword-relocations
+-		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16BPP
++		CFLAGS := -DFRONTEND_SUPPORTS_RGB565 -DLOWRES -DINLINE="inline" -DM16BPP -mword-relocations
  #		Raspberry Pi 1 - Model B (original)
  		ifneq (,$(findstring rpi1bo,$(platform)))
  			CFLAGS += -funsafe-math-optimizations -fsingle-precision-constant -fexpensive-optimizations

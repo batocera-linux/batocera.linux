@@ -3,8 +3,8 @@
 # libretro-cap32
 #
 ################################################################################
-# Version: Commits on Dec 29, 2022
-LIBRETRO_CAP32_VERSION = 22d0475be7f6249669358d02b6cba4bc98abe936
+# Version: Commits on Jul 12, 2023
+LIBRETRO_CAP32_VERSION = 4a071f2c004273abf0f9fa0640b36f6664d8381a
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
 LIBRETRO_CAP32_LICENSE = GPLv2
 
@@ -27,14 +27,16 @@ LIBRETRO_CAP32_PLATFORM = armv neon
 endif
 
 define LIBRETRO_CAP32_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_CAP32_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile platform="$(LIBRETRO_CAP32_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_CAP32_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_CAP32_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/cap32_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/cap32_libretro.so
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-cap32/amstradcpc.keys $(TARGET_DIR)/usr/share/evmapy/
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-cap32/amstradcpc.keys \
+	    $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(generic-package))
