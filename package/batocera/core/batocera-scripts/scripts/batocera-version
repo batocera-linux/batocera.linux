@@ -14,7 +14,7 @@ test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTO
 FIND_CUSTOMESFEATURES=
 test -e "/userdata/system/configs/emulationstation/es_features.cfg" && FIND_CUSTOMESFEATURES=1
 
-FIND_CUSTOMSERVICES=$(batocera-services list user | grep '\*$' | head -1)
+FIND_CUSTOMSERVICES=$(find -L /userdata/system/services -type f 2>/dev/null)
 
 EXTRA=
 test -n "${FIND_EXT}"      	   && EXTRA=${EXTRA}e
