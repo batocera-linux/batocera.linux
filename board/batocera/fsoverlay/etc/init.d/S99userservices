@@ -6,6 +6,9 @@ if test -e "/userdata/system/custom.sh"; then
     bash /userdata/system/custom.sh $1 &
 fi
 
+# Needed set for proper bash reg-expression
+LC_ALL=C
+
 enabled_services="$(/usr/bin/batocera-settings-get system.services)"
 
 if test -n "${enabled_services}"
@@ -17,28 +20,38 @@ then
 fi
 
 # user services
-find /userdata/system/services -type f |
+find -L /userdata/system/services -type f |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    BASE_SERVICE=${SERVICE##*/}
+    if [[ ${BASE_SERVICE} =~ ^[_[:alpha:]][[:alpha:][:digit:]_]*$ ]];then
+        SRVVAR=__SERVICE__${BASE_SERVICE}
+        if test "${!SRVVAR}" = 1; then
+    	    bash "${SERVICE}" "${1}" &
+            echo "User Service: ${BASE_SERVICE} -> service is enabled [ok]"
+        else
+            echo "User Service: ${BASE_SERVICE} -> service is disabled [ok]"            
+        fi
+    else
+        string_new=${BASE_SERVICE//[^A-Za-z0-9_]/}
+        string_new=$(echo "$string_new" | sed 's/^[[:digit:]]*//')
+        echo "User Service: $BASE_SERVICE -> suggest rename sevice file to: '$string_new' [ko]"
+    fi
     done
 
 # system user services
-find /usr/share/batocera/services -type f |
+find -L /usr/share/batocera/services -type f |
     while read SERVICE
     do
-	BASE_SERVICE=${SERVICE##*/}
-	SRVVAR=__SERVICE__${BASE_SERVICE%.*}
-	if test "${!SRVVAR}" = 1
-	then
-	    bash "${SERVICE}" "${1}" &
-	fi
+    BASE_SERVICE=${SERVICE##*/}
+    SRVVAR=__SERVICE__${BASE_SERVICE}
+    if test "${!SRVVAR}" = 1; then
+        bash "${SERVICE}" "${1}" &
+        echo "System Service: ${BASE_SERVICE} -> service is enabled [ok]"
+    else
+        echo "System Service: ${BASE_SERVICE} -> service is disabled [ok]"
+    fi
     done
 
-# wait so that shutdown can happen
+# wait for spawned scripts to finish on stop condition, after this shutdown can happen
 test "${1}" = "stop" && wait
