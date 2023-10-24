@@ -161,6 +161,16 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 		    echo "Vulkan Driver Version: none"
 	    fi
 	fi
+
+	# Boot information
+	if [ -d /sys/firmware/efi ]; then
+		echo "UEFI Boot: Yes"
+		if [ -x /usr/bin/mokutil ]; then
+			echo "Secure Boot: $(mokutil --sb-state)"
+		fi
+	else
+		echo "UEFI Boot: No"
+	fi
 fi
 
 # userdata type
