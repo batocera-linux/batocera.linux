@@ -26,7 +26,7 @@ make_uboot () {
 }
 
 # Download U-Boot mainline
-uboot="u-boot-2023.01"
+uboot="u-boot-2023.10"
 wget "https://ftp.denx.de/pub/u-boot/${uboot}.tar.bz2"
 tar xf "${uboot}.tar.bz2" || exit 1
 pushd "${uboot}" || exit 1
