@@ -25,17 +25,8 @@ then
       echo "options amdgpu cik_support=1" >> /var/run/amd/modprobe/amdgpu.conf
       echo "options radeon si_support=0" > /var/run/amd/modprobe/radeon.conf
       echo "options radeon cik_support=0" >> /var/run/amd/modprobe/radeon.conf
-      # Remove radeon module & reload amdgpu module
-      #modprobe -r --remove-holders radeon
-      #modprobe -r --remove-holders amdgpu
+      # load amdgpu module
       modprobe amdgpu
-      # Now check if there are multiple GPUs in the system
-      gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
-      if [ $gpu_count -ne 2 ]; then
-        export DRI_PRIME=1
-        # Logging
-        echo "AMD Multi-GPU configuration applied. DRI_PRIME set to $DRI_PRIME." >> "$log"
-      fi
     else
       # Logging
       echo "No matching PCI ID found in islands.list." >> "$log"
