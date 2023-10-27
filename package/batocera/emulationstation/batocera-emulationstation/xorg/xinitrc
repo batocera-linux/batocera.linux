@@ -15,7 +15,7 @@ xset s off
 # ulimit -c unlimited
 
 # Check if there are two GPUs in the system
-gpu_count=$(lspci -nn | grep -E '^([[:alnum:]]{2}):([[:alnum:]]{2})\.([[:alnum:]]{1}) (VGA|3D)' | wc -l)
+gpu_count=$(lspci -nn | grep -E '(VGA|3D)' | wc -l)
 nvidia_conditions_met=false
 
 if [ "$gpu_count" -eq 2 ]; then
