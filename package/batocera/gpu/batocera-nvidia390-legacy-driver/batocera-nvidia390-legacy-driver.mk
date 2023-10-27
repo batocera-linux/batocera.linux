@@ -38,7 +38,6 @@ BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_GLES = \
 	libGLESv1_CM_nvidia.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	libGLESv2_nvidia.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 
-#batocera libnvidia-egl-wayland soname bump
 BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
@@ -55,7 +54,6 @@ BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_GLES) \
 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_MISC)
 
-# batocera 32bit libraries
 BATOCERA_NVIDIA390_LEGACY_DRIVER_32 = \
 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_GL) \
 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS_EGL) \
@@ -75,49 +73,10 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_GL_DEV
 	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/gl.pc $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
 	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/egl.pc $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
 endef
-
-# Those libraries are 'private' libraries requiring an agreement with
-# NVidia to develop code for those libs. There seems to be no restriction
-# on using those libraries (e.g. if the user has such an agreement, or
-# wants to run a third-party program developped under such an agreement).
-ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA390_LEGACY_DRIVER_PRIVATE_LIBS),y)
-BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS += \
-	libnvidia-ifr.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvidia-fbc.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
-endif
-
-# We refer to the destination path; the origin file has no directory component
-# batocera libnvidia-wfb removed in 418.43
-BATOCERA_NVIDIA390_LEGACY_DRIVER_X_MODS = \
-	/nvidia_drv.so \
-	libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 endif # X drivers
-
-ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA390_LEGACY_DRIVER_CUDA),y)
-BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS += \
-	libcuda.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvidia-compiler.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvcuvid.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvidia-fatbinaryloader.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvidia-ptxjitcompiler.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	libnvidia-encode.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
-ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA390_LEGACY_DRIVER_CUDA_PROGS),y)
-BATOCERA_NVIDIA390_LEGACY_DRIVER_PROGS = nvidia-cuda-mps-control nvidia-cuda-mps-server
-endif
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA390_LEGACY_DRIVER_OPENCL),y)
-BATOCERA_NVIDIA390_LEGACY_DRIVER_LIBS += \
-	libOpenCL.so.1.0.0 \
-	libnvidia-opencl.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
-BATOCERA_NVIDIA390_LEGACY_DRIVER_DEPENDENCIES += mesa3d-headers
-BATOCERA_NVIDIA390_LEGACY_DRIVER_PROVIDES += libopencl
-endif
 
 # Build and install the kernel modules if needed
 ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA390_LEGACY_DRIVER_MODULE),y)
-
 BATOCERA_NVIDIA390_LEGACY_DRIVER_MODULES = nvidia nvidia-modeset nvidia-drm
 ifeq ($(BR2_x86_64),y)
 BATOCERA_NVIDIA390_LEGACY_DRIVER_MODULES += nvidia-uvm
@@ -170,30 +129,17 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_32
 	)
 endef
 
-# batocera nvidia libs are runtime linked via libglvnd
-# For staging, install libraries and development files
-# define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_STAGING_CMDS
-# 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
-# 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_GL_DEV)
-# endef
-
 # For target, install libraries and X.org modules
 define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
 	$(call BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_32,$(TARGET_DIR))
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
 			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so
-	$(INSTALL) -D -m 0644 $(@D)/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
-	        $(TARGET_DIR)/usr/lib/xorg/modules/drivers/libnvidia-wfb.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION)
-	$(foreach p,$(BATOCERA_NVIDIA390_LEGACY_DRIVER_PROGS), \
-		$(INSTALL) -D -m 0755 $(@D)/$(p) \
-			$(TARGET_DIR)/usr/bin/$(p)
-	)
 	$(BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_KERNEL_MODULE)
-
-# batocera install files needed by libglvnd
+	
+	# batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia390_legacy.json
 
@@ -201,7 +147,6 @@ define BATOCERA_NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
 		$(TARGET_DIR)/usr/share/nvidia/X11/10-nvidia390-legacy-drm-outputclass.conf
-
 endef
 
 # move to avoid the production driver
