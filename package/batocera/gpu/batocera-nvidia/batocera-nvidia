@@ -505,9 +505,6 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
         ln -sf /usr/share/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION \
             /var/run/nvidia/xorg/libglx.so
         ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/xorg/modules/extensions/libglx.so
-        ln -sf /usr/share/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/xorg/libglx.so.1
-        ln -sf /var/run/nvidia/xorg/libglx.so.1 /usr/lib/xorg/modules/extensions/libglx.so.1
 	    
         # link GL config files
 	    mkdir -p /var/run/nvidia/configs
