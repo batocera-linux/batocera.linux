@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Sets EFI shim fallback loader to not reboot
+#
+
+case "$1" in
+    start)
+        [ -d "/sys/firmware/efi" ] && [ -x /usr/bin/mokutil ] && /usr/bin/mokutil --set-fallback-noreboot true
+    ;;
+    stop)
+    ;;
+    restart|reload)
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+    ;;
+esac
+
+exit $?
