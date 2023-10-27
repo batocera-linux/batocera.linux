@@ -60,7 +60,7 @@
 - Libretro-Craft to May 28, 2023 build
 - Libretro-Desmume to Oct 6, 2023 build
 ### System
-- Linux kernel to 6.5.8
+- Linux kernel to 6.5.9
 - Mesa to 23.2.1
 - Proton to 8.0-4b
 - FAudio to 23.10
