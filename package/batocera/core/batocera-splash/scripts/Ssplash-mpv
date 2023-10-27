@@ -126,9 +126,29 @@ do_videostart ()
     fi
     drm_connector=$(echo "$drm_connector" | awk '{print $1}')
     echo "Selected DRM connector: $drm_connector" >> $log
+
+    # get the drm path
+    card_path=""
+    for card in /sys/class/drm/card*; do
+        card_id=$(basename "$card")
+        # check if the card has a connected output
+        if [ -e "$card/status" ] && [ "$(cat "$card/status")" == "connected" ]; then
+            if [ -z "$display_type" ] || grep -q "$display_type" <<< "$(echo "$card_id")"; then
+                # Extract the card number from the card_id
+                card_number=$(echo "$card_id" | sed -n 's/card\([0-9]\+\).*/\1/p')
+                card_path="/dev/dri/card$card_number"
+                echo "Connected card path: $card_path" >> $log
+                break
+            fi
+        fi
+    done
+    # add to log if no cards detected
+    if [ -z "$card_path" ]; then
+        echo "No connected output for any cards!" >> $log
+    fi
     
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --log-file=/userdata/system/logs/mpv.log --drm-connector=$drm_connector $mpv_audio $mpv_video --drm-mode=$drm_mode "$video"
+    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --log-file=/userdata/system/logs/mpv.log --drm-connector=$drm_connector $mpv_audio $mpv_video --drm-mode=$drm_mode --drm-device=$card_path "$video"
 }
 
 case "$1" in
