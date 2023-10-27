@@ -1769,13 +1769,13 @@ Subject: [PATCH] ARM: dts: rockchip: Add IEP node for RK3288
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 13 ++++++++++++-
+ arch/arm/boot/dts/rockchip/rk3288.dtsi | 13 ++++++++++++-
  1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288.dtsi b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 index 59fba3ac6aae..06545f423de2 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288.dtsi
 @@ -984,14 +984,25 @@ crypto: crypto@ff8a0000 {
  		reset-names = "crypto-rst";
  	};

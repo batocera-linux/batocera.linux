@@ -1,0 +1,41 @@
+From: Chris Morgan <macromorgan@xxxxxxxxxxx>
+
+Correct the "Master Playback Volume" from a PlaybackMixerElem to a
+PlaybackVolume. A user reported that without this change the hardware
+volume would not change correctly. I've confirmed that when using
+Pipewire the Pipewire volume and Master Playback Volume would change
+independently, in some circumstances resulting in very low volume
+that would be difficult to troubleshoot. By changing the Master
+Playback Volume to PlaybackVolume this problem would no longer occur.
+
+Fixes: b0497ca4b508 ("ucm2: Rockchip: rk817: Add ALSA UCM support")
+Reported-by: Dang Huynh <danct12@xxxxxxxxxxx>
+Signed-off-by: Chris Morgan <macromorgan@xxxxxxxxxxx>
+---
+ ucm2/Rockchip/rk817-sound/HiFi.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ucm2/Rockchip/rk817-sound/HiFi.conf b/ucm2/Rockchip/rk817-sound/HiFi.conf
+index 8d90567..a714759 100644
+--- a/ucm2/Rockchip/rk817-sound/HiFi.conf
++++ b/ucm2/Rockchip/rk817-sound/HiFi.conf
+@@ -26,7 +26,7 @@ SectionDevice."Speaker" {
+ 	]
+ 
+ 	Value {
+-		PlaybackMixerElem "Master Playback Volume"
++		PlaybackVolume "Master Playback Volume"
+ 		PlaybackPriority 100
+ 		PlaybackPCM "hw:${CardId}"
+ 	}
+@@ -55,7 +55,7 @@ SectionDevice."Headphones" {
+ 	]
+ 
+ 	Value {
+-		PlaybackMixerElem "Master Playback Volume"
++		PlaybackVolume "Master Playback Volume"
+ 		PlaybackPriority 200
+ 		PlaybackPCM "hw:${CardId}"
+ 		JackControl "Headphones Jack"
+-- 
+2.34.1

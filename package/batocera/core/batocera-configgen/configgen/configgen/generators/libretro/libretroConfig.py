@@ -110,7 +110,11 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     retroarchConfig['menu_show_load_content_animation'] = 'false' # hide popup when starting a game
 
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
-
+    
+    retroarchConfig['audio_driver'] = '"pulse"'
+    if (system.isOptSet("audio_driver")):
+        retroarchConfig['audio_driver'] = system.config['audio_driver']
+        
     retroarchConfig['audio_latency'] = '64'                     # best balance with audio perf
     if (system.isOptSet("audio_latency")):
         retroarchConfig['audio_latency'] = system.config['audio_latency']
@@ -499,7 +503,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         elif systemConfig['ratio'] == "custom":
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
         else:
-            retroarchConfig['video_aspect_ratio_auto'] = 'true'
+            retroarchConfig['video_aspect_ratio_auto'] = 'false'
             retroarchConfig['aspect_ratio_index'] = '22'
 
     # Rewind option

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+########################################
+# Toushscreen quirks for X86 handhelds #
+########################################
+
+case "$1" in
+    start)
+        info_output=$(batocera-info)
+        if test -z "${DISPLAY}"; then
+            export DISPLAY=:0.0
+        fi
+        # ayn loki zero and probably other ayn loki devices
+        if [[ $info_output == *"Model: Loki_Zero"* || $info_output == *"Model: Loki_MiniPro"* ]]; then
+            # pause so set-prop applies after ES starts otherwise it fails
+            sleep 4s
+            # Set the Coordinate Transformation Matrix to rotate by 90 degrees counterclockwise
+            xinput set-prop "Standard HID USB HID Touch" "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+        fi
+        ;;
+    stop)
+        ;;
+    restart)
+		stop
+		start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

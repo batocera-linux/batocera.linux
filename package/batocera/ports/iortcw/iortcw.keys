@@ -1,0 +1,33 @@
+{
+    "actions_player1": [
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ]
+        },
+        {
+            "trigger": ["hotkey"],
+            "type": "key",
+            "target": [ "KEY_ESC" ],
+            "description": "Skip cutscene"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": "KEY_F5",
+            "description": "Quick save"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "Quick load"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_F11",
+            "description": "Screenshot"
+        }
+    ]
+}

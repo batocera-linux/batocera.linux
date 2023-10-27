@@ -109,10 +109,10 @@ class EsSystemConf:
             return True
         for requirement in requirements:
             if isinstance(requirement, list):
-                subreqValid = True
+                subreq = False
                 for reqitem in requirement:
-                    if reqitem not in config:
-                        subreq = False
+                    if reqitem in config:
+                        subreq = True
                 if subreq:
                     return True
             else:

@@ -11,14 +11,18 @@ test -e "/userdata/system/custom.sh" && FIND_CUSTOMSH=1
 FIND_CUSTOMESSYSTEMS=
 test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTOMESSYSTEMS=1
 
+FIND_CUSTOMESFEATURES=
+test -e "/userdata/system/configs/emulationstation/es_features.cfg" && FIND_CUSTOMESFEATURES=1
+
 FIND_CUSTOMSERVICES=$(batocera-services list user | grep '\*$' | head -1)
 
 EXTRA=
-test -n "${FIND_EXT}"      	  && EXTRA=${EXTRA}e
-test -n "${FIND_OVERLAY}"  	  && EXTRA=${EXTRA}o
-test -n "${FIND_CUSTOMSH}" 	  && EXTRA=${EXTRA}c
-test -n "${FIND_CUSTOMESSYSTEMS}" && EXTRA=${EXTRA}s
-test -n "${FIND_CUSTOMSERVICES}"  && EXTRA=${EXTRA}u
+test -n "${FIND_EXT}"      	   && EXTRA=${EXTRA}e
+test -n "${FIND_OVERLAY}"  	   && EXTRA=${EXTRA}o
+test -n "${FIND_CUSTOMSH}" 	   && EXTRA=${EXTRA}c
+test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
+test -n "${FIND_CUSTOMESFEATURES}" && EXTRA=${EXTRA}f
+test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
 
 if test "${1}" = "--extra"
 then

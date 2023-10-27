@@ -43,9 +43,10 @@ def generateRetroarchCustom():
     retroarchSettings.save('input_exit_emulator',               '"escape"')
 
     # Video
-    retroarchSettings.save('video_aspect_ratio_auto',           '"true"')
+    retroarchSettings.save('video_aspect_ratio_auto',           '"false"')
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
+    retroarchSettings.save('aspect_ratio_index',                '"22"')
     
     # Audio
     retroarchSettings.save('audio_volume',                       '"2.0"')
@@ -77,6 +78,10 @@ def generateRetroarchCustom():
 
     # Disable builtin image viewer (done in ES, and prevents from loading pico-8 .png carts)
     retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
+    
+    # Set fps counter interval (in frames)
+    retroarchSettings.save('fps_update_interval',               '"30"')
+    
 
     retroarchSettings.write()
 

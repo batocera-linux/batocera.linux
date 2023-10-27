@@ -87,7 +87,7 @@ mountPartSubdir() {
     CMD_SUBDIR=$3
     CMD_TDIR=$4
     mkdir -p "/var/batocera_subdir_${CMD_KEYPART}" || return 1
-    mount "UUID=${CMD_PART}" "/var/batocera_subdir_${CMD_KEYPART}" || return 1
+    mount -t nontfs "UUID=${CMD_PART}" "/var/batocera_subdir_${CMD_KEYPART}" || return 1
     mkdir -p "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" || return 1
     mount --bind "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" "${CMD_TDIR}" || return 1
     return 0
@@ -126,7 +126,7 @@ mountDevicesOrNetwork() {
         while read -r CTYPE CMD
         do
             XWAIT=4 # N seconds between each try
-			XTRY=$((MAXTRY / XWAIT)) # X tries and give up
+            XTRY=$((MAXTRY / XWAIT)) # X tries and give up
             
             while [ "${XTRY}" -gt 0 ]
             do
@@ -215,7 +215,7 @@ mountDevicesOrNetwork() {
 			"part")
 			    if test "${CMD_SUBDIR}" = "/"
 			    then
-				CMD_EXEC="mount UUID=${CMD_PART} ${CMD_TDIR}"
+				CMD_EXEC="mount -t nontfs UUID=${CMD_PART} ${CMD_TDIR}"
 			    else
 				CMD_EXEC="mountPartSubdir ${CMD_KEYPART} ${CMD_PART} ${CMD_SUBDIR} ${CMD_TDIR}"
 			    fi
@@ -263,7 +263,7 @@ case "${MODE}" in
         do
             NTRY=$((NTRY+1))
             sleep 1
-           LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
+            LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
         done
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
         TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)".*$'+'\1'+)

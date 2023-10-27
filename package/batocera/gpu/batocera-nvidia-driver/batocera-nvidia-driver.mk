@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_DRIVER_VERSION = 535.104.05
+BATOCERA_NVIDIA_DRIVER_VERSION = 545.23.06
 BATOCERA_NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_DRIVER_VERSION)
 BATOCERA_NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_DRIVER_VERSION).run
@@ -34,6 +34,9 @@ BATOCERA_NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd \
 BATOCERA_NVIDIA_DRIVER_LIBS_GL = \
 	libGLX_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
+# batocera don't take the libEGL.so.1.1.0 library
+# or the libEGL.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+# this is provided by libglvnd
 BATOCERA_NVIDIA_DRIVER_LIBS_EGL = \
 	libEGL_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
@@ -43,13 +46,20 @@ BATOCERA_NVIDIA_DRIVER_LIBS_GLES = \
 
 #batocera libnvidia-egl-wayland soname bump
 BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
+    libnvidia-allocator.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-api.so.1 \
+	libnvidia-cfg.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-egl-wayland.so.1.1.11 \
+	libnvidia-egl-gbm.so.1.1.0 \
+	libnvidia-egl-wayland.so.1.1.12 \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-gpucomp.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-rtcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-wayland-client.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_DRIVER_LIBS_VDPAU = \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
@@ -65,12 +75,14 @@ BATOCERA_NVIDIA_DRIVER_32 = \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_GL) \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_EGL) \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_GLES) \
+	libnvidia-allocator.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-gpucomp.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 # Install the gl.pc file
 define BATOCERA_NVIDIA_DRIVER_INSTALL_GL_DEV
@@ -245,9 +257,13 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
 		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_production_layers.json
 
-# batocera install files needed by libglvnd
+# batocera install files needed by libglvnd etc
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia_production.json
+	$(INSTALL) -D -m 0644 $(@D)/10_nvidia_wayland.json \
+		$(TARGET_DIR)/usr/share/egl/egl_external_platform.d/10_nvidia_wayland.json
+	$(INSTALL) -D -m 0644 $(@D)/15_nvidia_gbm.json \
+	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/15_nvidia_gbm.json
 
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11

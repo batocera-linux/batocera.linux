@@ -12,6 +12,7 @@ do_help() {
 }
 
 is_valid_service_name() {
+    local LC_ALL=C
     [[ "${1}" =~ ^[_[:alpha:]][_[:alpha:][:digit:]]*$ ]]
 }
 

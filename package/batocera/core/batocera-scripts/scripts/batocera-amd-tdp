@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Early script to set the TDP
+# We should call / set the TDP per emulator based on user selection
+
+TDP_MIN=5
+TDP_MAX=45
+
+TDP=$1
+
+# Check we have a ryzenadj supported CPU
+ryzenadj_output=$(ryzenadj -i)
+if [[ $ryzenadj_output =~ "unsupported model" ]]; then
+  echo "Unsupported CPU for RyzenAdj"
+  exit 1
+fi
+
+# Handle various AMD processor types
+# Maybe change this to detected RyzendAdj model family?
+info_output=$(batocera-info)
+if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+    # Set the TDP range to 2-20w
+    # We need vendor guidance to get accurate values
+    TDP_MIN=2
+    TDP_MAX=20
+fi
+
+# Check if TDP is null or not provided. If so, set to 10w
+if [ -z "$TDP" ]; then
+    TDP=10
+fi
+
+# Align to the TDP_MIN if it's below it
+if (( TDP < TDP_MIN )); then
+    TDP=$TDP_MIN
+fi
+# Cap TDP at TDP_MAX if it exceeds it
+if (( TDP > TDP_MAX )); then
+    TDP=$TDP_MAX
+fi
+
+if (( TDP >= TDP_MIN && TDP <= TDP_MAX )); then
+    # Calculate WATTS based on TDP
+    WATTS=$((TDP * 1000))
+fi
+
+ryzenadj --stapm-limit=${WATTS} --fast-limit=${WATTS} --slow-limit=${WATTS} --tctl-temp=90
+batocera-settings-set amd.tdp ${TDP}

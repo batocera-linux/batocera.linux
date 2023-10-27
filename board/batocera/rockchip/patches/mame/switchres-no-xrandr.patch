@@ -1,0 +1,50 @@
+--- a/scripts/src/3rdparty.lua	2022-08-08 11:13:57.770937867 +0200
++++ b/scripts/src/3rdparty.lua	2022-08-09 10:04:29.103342700 +0200
+@@ -2458,14 +2458,11 @@
+ 		MAME_DIR .. "3rdparty/switchres/display_linux.h",
+ 		MAME_DIR .. "3rdparty/switchres/display_sdl2.cpp",
+ 		MAME_DIR .. "3rdparty/switchres/display_sdl2.h",
+-		MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.cpp",
+-		MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.h",
+ 		MAME_DIR .. "3rdparty/switchres/custom_video_drmkms.cpp",
+ 		MAME_DIR .. "3rdparty/switchres/custom_video_drmkms.h",
+ 	}
+ 
+ 	defines {
+-		"SR_WITH_XRANDR",
+ 		"SR_WITH_KMSDRM",
+ 		"SR_WITH_SDL2",
+ 	}
+@@ -2475,10 +2472,6 @@
+ 		backtick("pkg-config --cflags sdl2"),
+ 	}
+ 
+-	links {
+-		"Xrandr",
+-	}
+-
+ 	local str = backtick("pkg-config --libs libdrm")
+ 	addlibfromstring(str)
+ 	addoptionsfromstring(str)
+--- a/3rdparty/switchres/display_sdl2.cpp	2023-10-04 15:44:48.733463162 +0200
++++ b/3rdparty/switchres/display_sdl2.cpp	2023-10-04 15:50:01.748637071 +0200
+@@ -296,7 +296,7 @@
+ 		video_modes.push_back(mode);
+ 		backup_modes.push_back(mode);
+ 
+-		log_verbose("Switchres/SDL2: [%3ld] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
++		log_verbose("Switchres/SDL2: [%3lu] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
+ 		log_mode(&mode);
+ 	};
+ 
+--- a/3rdparty/switchres/display_linux.cpp	2023-10-04 15:50:09.632831307 +0200
++++ b/3rdparty/switchres/display_linux.cpp	2023-10-04 15:50:16.324995860 +0200
+@@ -163,7 +163,7 @@
+ 		video_modes.push_back(mode);
+ 		backup_modes.push_back(mode);
+ 
+-		log_verbose("Switchres: [%3ld] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
++		log_verbose("Switchres: [%3lu] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
+ 		log_mode(&mode);
+ 	};
+ 

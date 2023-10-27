@@ -12,7 +12,7 @@
 +   TARGET := $(TARGET_NAME)_libretro.$(EXT)
 +   fpic := -fPIC
 +   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
-+   LIBS += -lpthread -lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali
++   LIBS += -lpthread
 +   HAVE_OPENGLES3 = 1
 +   HAVE_OPENGL = 0
 +   HAVE_THREADS = 1

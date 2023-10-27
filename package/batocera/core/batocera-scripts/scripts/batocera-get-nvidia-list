@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Bash script to get the latest Nvidia driver lists
+# which may add new boards in between versions.
+
+log="/userdata/system/logs/nvidia.log"
+
+GITHUB_URL="https://raw.githubusercontent.com/batocera-linux/nvidia-lists/main/"
+DEST_DIR="/userdata/system/.nvidia"
+
+# Ensure the destination directory exists
+mkdir -p "$DEST_DIR"
+
+# Function to check internet connectivity
+check_internet() {
+    ping -c 1 8.8.8.8 &> /dev/null
+    return $?
+}
+
+# Try to check for an internet connection up to 6 times, with a 5-second delay
+tries=6
+while [ $tries -gt 0 ]; do
+    if check_internet; then
+        break
+    else
+        sleep 5s
+        tries=$((tries - 1))
+    fi
+done
+
+# Check if the download was successful
+if [ $tries -gt 0 ]; then
+    # Download production.list
+    curl -sSf "${GITHUB_URL}production.list" -o "$DEST_DIR/production.list"
+    if [ $? -eq 0 ]; then
+        echo "Download of production.list successful. File saved to $DEST_DIR/production.list" >> "$log"
+    else
+        echo "Download of production.list failed." >> "$log"
+    fi
+
+    # Download legacy.list
+    curl -sSf "${GITHUB_URL}legacy.list" -o "$DEST_DIR/legacy.list"
+    if [ $? -eq 0 ]; then
+        echo "Download of legacy.list successful. File saved to $DEST_DIR/legacy.list" >> "$log"
+    else
+        echo "Download of legacy.list failed." >> "$log"
+    fi
+
+    # Download legacy390.list
+    curl -sSf "${GITHUB_URL}legacy390.list" -o "$DEST_DIR/legacy390.list"
+    if [ $? -eq 0 ]; then
+        echo "Download of legacy390.list successful. File saved to $DEST_DIR/legacy390.list" >> "$log"
+    else
+        echo "Download of legacy390.list failed." >> "$log"
+    fi
+
+    # Download legacy340.list
+    curl -sSf "${GITHUB_URL}legacy340.list" -o "$DEST_DIR/legacy340.list"
+    if [ $? -eq 0 ]; then
+        echo "Download of legacy340.list successful. File saved to $DEST_DIR/legacy340.list" >> "$log"
+    else
+        echo "Download of legacy340.list failed." >> "$log"
+    fi
+else
+    echo "Maximum retries reached. Could not establish an internet connection for the Nvidia driver lists" >> "$log"
+fi

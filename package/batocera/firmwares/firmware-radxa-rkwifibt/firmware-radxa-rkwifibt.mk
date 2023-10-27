@@ -27,6 +27,12 @@ define FIRMWARE_RADXA_RKWIFIBT_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/realtek/rtk_hciattach/rtk_hciattach $(TARGET_DIR)/usr/bin/rtk_hciattach
 	$(INSTALL) -m 0755 -D $(@D)/bt_load_rtk_firmware $(TARGET_DIR)/usr/bin/bt_load_rtk_firmware
 	$(INSTALL) -m 0755 -D $(FIRMWARE_RADXA_RKWIFIBT_PKGDIR)/S29rtk_bt $(TARGET_DIR)/etc/init.d/S29rtk_bt
+	# install the AP6275P wifi firmware
+	mkdir -p $(TARGET_DIR)/lib/firmware/ap6275p
+	$(INSTALL) -m 0644 -D $(@D)/firmware/broadcom/AP6275P/wifi/* $(TARGET_DIR)/lib/firmware/ap6275p
+	# install the AP6275P BT firmware
+	mkdir -p $(TARGET_DIR)/lib/firmware/brcm
+	$(INSTALL) -m 0644 -D $(@D)/firmware/broadcom/AP6275P/bt/BCM4362A2.hcd $(TARGET_DIR)/lib/firmware/brcm
 endef
 
 $(eval $(generic-package))

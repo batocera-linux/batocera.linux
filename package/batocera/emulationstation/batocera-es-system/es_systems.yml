@@ -579,12 +579,13 @@ sg1000:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 multivision:
-  name:       Othello Multivision
+  name: Othello Multivision
   manufacturer: Tsukuda Original
   release: 1983
   hardware: console
   extensions: [bin, sg, zip, 7z]
-  theme:      multivision
+  platform: sg-1000
+  theme: multivision
   emulators:
     libretro:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
@@ -1071,6 +1072,8 @@ atari2600:
     libretro:
       stella:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA]     }
       stella2014: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA2014] }
+    stella:
+      stella:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_STELLA]     }
 
 atari5200:
   name:       Atari 5200
@@ -1418,7 +1421,7 @@ atarist:
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos]
+  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos, vhd, gem, ide]
   emulators:
     libretro:
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
@@ -1906,15 +1909,15 @@ saturn:
       yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
 
 jaguar:
-  name:       Jaguar
+  name: Jaguar
   manufacturer: Atari
   release: 1993
   hardware: console
   extensions: [cue, j64, jag, cof, abs, cdi, rom, zip, 7z]
-  theme:      atarijaguar
+  theme: atarijaguar
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
@@ -4914,3 +4917,81 @@ spectravideo:
   emulators:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+
+theforceengine:
+  name: The Force Engine
+  manufacturer: Ports
+  release: 1995
+  hardware: port
+  extensions: [tfe]
+  platform: pc
+  group: ports
+  emulators:
+    theforceengine:
+      theforceengine: { requireAnyOf: [BR2_PACKAGE_THEFORCEENGINE] }
+  comment_en: |
+    The Force Engine (TFE) uses the games files from older LucasArts games like `Dark Forces` & soon `Outlaws` in Batocera.
+    To use TFE in Batocera, you need to do the following:
+
+    1. Install the game you wish to use with The Force Engine in Windows (Steam or GOG receommended)
+    2. In this example, go to your C:\GOG folder and copy the `Star Wars - Dark Forces` folder to your roms/theforceengine folder.
+    3. Create an initial file with a tfe extension, like so: `Star Wars - Dark Forces.tfe`.
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
+
+    Mods:
+    
+    Mods have to be installed into the /userdata/system/configs/theforceengine/Mods folder.
+    The mod files should be in zip format only.
+    To launch directly into your mod, create a file in the roms/theforceengine folder with the .tfe extension.
+    Again choose the name which makes sense, i.e. the mod game / level name.
+    i.e. `Assasssination at Nar Shaddaa.tfe`
+
+    Then edit the file with the name of the mod zip file only.
+    i.e. aons_modern.zip
+
+    Update the games list and Batocera can now launch the mod directly.
+
+    A good source of missions to try are available here: https://df-21.net/downloads/levels/
+    
+    Notes:
+    
+    It is important to use the exact directory name above.
+    A keyboard and mouse / touchscreen is required to create the initial user profile & game start.
+
+    For more info: https://wiki.batocera.org/systems:theforceengine
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:theforceengine
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:theforceengine
+
+iortcw:
+  name: Return To Castle Wolfenstein
+  manufacturer: Ports
+  release: 2001
+  hardware: port
+  extensions: [rtcw]
+  platform: pc
+  group: ports
+  emulators:
+    iortcw:
+      iortcw: { requireAnyOf: [ BR2_PACKAGE_IORTCW ] }
+  comment_en: |
+    IORTCW uses the games files from your 2001 version of the game `Return to Castle Wolfenstein`.
+    To use IORTCW in Batocera, you need to do the following:
+
+    1. Install Return to Castle Wolfenstein in Windows or Linux (Steam or GOG receommended)
+    2. Copy the .pk3 files only from your installation locations `Main` folder to /userdata/roms/iortcw in it's own `main` folder.
+    3. Create an initial file with a rtcw extension, like so: `Return to Castle Wolfenstein.rtcw`.
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.    
+
+    Notes:
+
+    It is important to use the exact directory name above.
+    i.e. /userdata/roms/iortcw/main is where your .pk3 should be located.
+    A keyboard and mouse / touchscreen is required for game start.
+
+    For more info: https://wiki.batocera.org/systems:iortcw
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:iortcw
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:iortcw

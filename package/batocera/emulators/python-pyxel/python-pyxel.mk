@@ -4,8 +4,7 @@
 #
 ################################################################################
 
-# Last commit: Apr 28, 2023
-PYTHON_PYXEL_VERSION = v1.9.15
+PYTHON_PYXEL_VERSION = v1.9.18
 PYTHON_PYXEL_SITE =  $(call github,kitao,pyxel,$(PYTHON_PYXEL_VERSION))
 PYTHON_PYXEL_SETUP_TYPE = setuptools
 PYTHON_PYXEL_LICENSE = MIT

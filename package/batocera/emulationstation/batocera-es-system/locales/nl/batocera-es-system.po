@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: emulationstation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-15 23:48+0100\n"
-"PO-Revision-Date: 2023-09-21 10:46+0200\n"
-"Last-Translator: THa MuSHeR\n"
+"PO-Revision-Date: 2023-10-21 21:57+0000\n"
+"Last-Translator: THa_MuSHeR\n"
 "Language-Team: Dutch (Netherlands)\n"
-"Language: nl_NL\n"
+"Language: nl-NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: nl_NL\n"
-"X-Generator: Poedit 3.3.2\n"
-"X-Loco-Parser: loco_parse_po\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Parser: loco_parse_po"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -544,7 +544,7 @@ msgctxt "game_options"
 msgid "Dot"
 msgstr "Dot"
 
-#. TRANSLATION: libretro/beetle-saturn, libretro/mesen-s, libretro/mesen, libretro/flycast, libretro/flycast, ...
+#. TRANSLATION: libretro/beetle-saturn, libretro/mesen-s, libretro/mesen, libretro/dolphin, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Uitgeschakeld"
@@ -598,7 +598,7 @@ msgstr "Uitbreiding. Verwijder de vier sprites per lijn limiet."
 #. TRANSLATION: libretro/bluemsx, libretro/mesen, libretro/fceumm, libretro/genesisplusgx, libretro/mednafen_supergrafx, ...
 msgctxt "game_options"
 msgid "REDUCE SPRITE FLICKERING"
-msgstr "VERMINDER SPRITE FLIKKEREN"
+msgstr "VERMINDER SPRITE FLIKKERING"
 
 #. TRANSLATION: libretro/bsnes, libretro/snes9x, libretro/snes9x_next
 msgctxt "game_options"
@@ -609,7 +609,7 @@ msgstr ""
 #. TRANSLATION: libretro/bsnes
 msgctxt "game_options"
 msgid "VIDEO FILTERS"
-msgstr "VIDEO FILTERS"
+msgstr "VIDEOFILTERS"
 
 #. TRANSLATION: libretro/bsnes
 msgctxt "game_options"
@@ -878,7 +878,7 @@ msgstr "Dendy is een populaire Russische kloon met unieke kenmerken."
 #. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation, flycast/uzem
 msgctxt "game_options"
 msgid "CONSOLE REGION"
-msgstr "CONSOLE REGION"
+msgstr "CONSOLE REGIO"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -894,7 +894,7 @@ msgstr ""
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
 msgctxt "game_options"
 msgid "DISPLAY ROTATION"
-msgstr "SCHERM ROTATIE"
+msgstr "SCHERMROTATIE"
 
 #. TRANSLATION: libretro/mesen, daphne, flycast, melonds, moonlight
 msgctxt "game_options"
@@ -1088,7 +1088,7 @@ msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA)"
 msgstr "ANTI-ALIASING (MSAA)"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra, drastic
+#. TRANSLATION: libretro/desmume, libretro/melonds, drastic
 msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Schik de dubbel scherm indeling."
@@ -1098,35 +1098,35 @@ msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "SCHERM LAY-OUT"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top/bottom"
 msgstr "boven/onder"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom/top"
 msgstr "onderkant/bovenkant"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "left/right"
 msgstr "links/rechts"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "right/left"
 msgstr "rechts/links"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "top only"
 msgstr "alleen boven"
 
-#. TRANSLATION: libretro/desmume, libretro/melonds, citra
+#. TRANSLATION: libretro/desmume, libretro/melonds
 msgctxt "game_options"
 msgid "bottom only"
-msgstr "alleen onderkant"
+msgstr "alleen onder"
 
 #. TRANSLATION: libretro/desmume
 msgctxt "game_options"
@@ -1178,7 +1178,7 @@ msgstr "Schakel toegang tot de systeem instellingen uit, zoals tijd en taal."
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "SKIP DS SYSTEM MENU"
-msgstr "SLA DS SYSTEEM MENU OVER"
+msgstr "SLA DS SYSTEEMMENU OVER"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1363,6 +1363,21 @@ msgctxt "game_options"
 msgid "ANISOTROPIC FILTERING"
 msgstr "ANISOTROPISCH FILTEREN"
 
+#. TRANSLATION: libretro/dolphin
+msgctxt "game_options"
+msgid "Enables or disable on screen messages."
+msgstr "Schakelt schermberichten in of uit."
+
+#. TRANSLATION: libretro/dolphin, pcsx2
+msgctxt "game_options"
+msgid "OSD MESSAGES"
+msgstr "OSD BERICHTEN"
+
+#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, cemu, cemu, ...
+msgctxt "game_options"
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
 #. TRANSLATION: libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
 msgid ""
@@ -1412,7 +1427,7 @@ msgctxt "game_options"
 msgid "Real Wiimote"
 msgstr "Echte Wiimote"
 
-#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "GameCube Controller"
 msgstr "GameCube Controller"
@@ -1455,7 +1470,7 @@ msgstr "Pas post-processing effecten toe."
 #. TRANSLATION: libretro/dosbox, openbor, cgenius
 msgctxt "game_options"
 msgid "VIDEO FILTER"
-msgstr "VIDEO FILTER"
+msgstr "VIDEOFILTER"
 
 #. TRANSLATION: libretro/dosbox, libretro/dosbox
 msgctxt "game_options"
@@ -1996,7 +2011,7 @@ msgctxt "game_options"
 msgid "ENABLE GRAVIS ULTRASOUND"
 msgstr "GRAVIS ULTRASOUND INSCHAKELEN"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, libretro/mame, libretro/mamevirtual, libretro/xrick, ...
+#. TRANSLATION: libretro/dosbox_pure, libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Uit (Standaard)"
@@ -3200,15 +3215,17 @@ msgctxt "game_options"
 msgid "No Indicator"
 msgstr "Geen Indicator"
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
-msgid "Set system-wide controls via MAME menu"
-msgstr "System-wide controls instellen via Mame menu"
+msgid "Use a custom MAME config, do not overwrite config on launch."
+msgstr ""
+"Gebruik een aangepaste MAME-configuratie, overschrijf de configuratie niet "
+"bij het opstarten."
 
-#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual, mame
+#. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
-msgid "CUSTOM MAME CONFIG"
-msgstr "AANGEPASTE MAME CONFIG"
+msgid "CUSTOM CONFIG"
+msgstr "AANGEPASTE CONFIG"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -3270,7 +3287,7 @@ msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "HIGH SCORE PLUGIN"
 
-#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, mame/pcsx2, ...
+#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, pcsx2, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Ingeschakeld (Standaard)"
@@ -3286,11 +3303,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "COIN SOUND PLUGIN"
 msgstr "MUNT GELUID PLUGIN"
-
-#. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
-msgctxt "game_options"
-msgid "Enabled"
-msgstr "Ingeschakeld"
 
 #. TRANSLATION: libretro/mame, libretro/mame, cemu, cemu, cemu, ...
 msgctxt "game_options"
@@ -3654,7 +3666,7 @@ msgctxt "game_options"
 msgid "Select which joystick to emulate."
 msgstr "Selecteer welke joystick u wilt emuleren."
 
-#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2
+#. TRANSLATION: libretro/mame, cgenius, mame/pcsx2, iortcw
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Geen (Standaard)"
@@ -3793,11 +3805,6 @@ msgstr "BBC Master Cartridge (Slot 1)"
 msgctxt "game_options"
 msgid "BBC Master Cartridge (Slot 2)"
 msgstr "BBC Master Cartridge (Slot 2)"
-
-#. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2, ...
-msgctxt "game_options"
-msgid "CUSTOM CONFIG"
-msgstr "AANGEPASTE CONFIG"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4407,7 +4414,7 @@ msgstr "VERTICALE ROTATIE (TATE)"
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
 msgid "100%(native)"
-msgstr "100%(native)"
+msgstr "100% (native)"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -4752,7 +4759,7 @@ msgstr ""
 "Handig voor N64-stijl controllers. Beperkte sneltoetsen voor controllers "
 "zonder speciale sneltoets."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "CONTROLLER 1"
@@ -4782,17 +4789,17 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "Handig voor N64-stijl controllers."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, mupen64plus, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "CONTROLLER 2"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 3"
 msgstr "CONTROLLER 3"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
 msgctxt "game_options"
 msgid "CONTROLLER 4"
 msgstr "CONTROLLER 4"
@@ -4801,11 +4808,6 @@ msgstr "CONTROLLER 4"
 msgctxt "game_options"
 msgid "Emulate a pak in the controller expansion port."
 msgstr "Emuleer een pak in de controller expansie poort."
-
-#. TRANSLATION: libretro/mupen64plus-next
-msgctxt "game_options"
-msgid "CONTOLLER 1"
-msgstr "CONTOLLER 1"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4917,7 +4919,7 @@ msgstr "PER-SPEL SAVES"
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
 msgid "Manually activate the adapter for supported games."
-msgstr "Activeer handmatif de adapter voor ondersteunde spellen."
+msgstr "Activeer handmatig de adapter voor ondersteunde spellen."
 
 #. TRANSLATION: libretro/nestopia
 msgctxt "game_options"
@@ -5017,7 +5019,7 @@ msgstr "GDC"
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Older games skipped drawing every second line, this masks that."
-msgstr "Ouder spellen sloegen een secondelijn opbouw over, dit maskeert dat."
+msgstr "Oudere spellen sloegen een secondelijn opbouw over, dit maskeert dat."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
@@ -5032,7 +5034,7 @@ msgstr "Volledige 244 lijnen"
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Some games rely on this (Apros)."
-msgstr "Sommige spellen zijn afhankelijk van dit (Apros)."
+msgstr "Sommige spellen zijn hier afhankelijk van (Apros)."
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
@@ -5092,7 +5094,7 @@ msgstr "Keypad 3knops"
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Manual keyboard"
-msgstr "Handmatig keyboard"
+msgstr "Handmatig toetsenbord"
 
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
@@ -5177,7 +5179,7 @@ msgstr "Maak het hash geluid effect wat zachter in sommige games."
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
 msgid "AUDIO FILTER"
-msgstr "AUDIO FILTER"
+msgstr "AUDIOFILTER"
 
 #. TRANSLATION: libretro/openlara
 msgctxt "game_options"
@@ -5297,7 +5299,7 @@ msgstr "ACTIEVE INVOER APPARATEN FIX"
 #. TRANSLATION: libretro/opera, libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "SPECIFIC GAME FIXES"
-msgstr "FIXEN VOOR SPECIFIEKE SPELLEN"
+msgstr "FIXES VOOR SPECIFIEKE SPELLEN"
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
@@ -5383,11 +5385,6 @@ msgstr "Automatisch"
 msgctxt "game_options"
 msgid "N64 3-point"
 msgstr "N64 3-punt"
-
-#. TRANSLATION: libretro/parallel_n64
-msgctxt "game_options"
-msgid "CONTOLLER 2"
-msgstr "CONTROLLER 2"
 
 #. TRANSLATION: libretro/pce, libretro/pce_fast
 msgctxt "game_options"
@@ -6213,7 +6210,7 @@ msgstr "2.0 (480p)"
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
 msgid "Improve speed, at a minor cost of accuracy."
-msgstr "Verhoog snelheid, ten koste van een beetje accuratie."
+msgstr "Verhoog snelheid, ten koste van een beetje nauwkeurigheid."
 
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
@@ -6432,7 +6429,7 @@ msgstr "SYNC SAVE BESTANDEN"
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
 msgid "FRAME RATE LIMIT"
-msgstr "FRAME RATE LIMIET"
+msgstr "FRAMERATE LIMIET"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
@@ -6537,7 +6534,7 @@ msgstr "Gebruik je fysieke anaglyphe 3D bril!"
 #. TRANSLATION: libretro/vb
 msgctxt "game_options"
 msgid "ANAGLYPH PRESET (3D)"
-msgstr "ANAGLYPH PRESET (3D)"
+msgstr "ANAGLYPHE PRESET (3D)"
 
 #. TRANSLATION: libretro/vb
 msgctxt "game_options"
@@ -6697,7 +6694,7 @@ msgstr "C64 Japanse NTSC"
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "Change the output resolution ratio."
-msgstr "Verander de output resolutie ratio."
+msgstr "Verander de uitvoer resolutie ratio."
 
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -6962,7 +6959,7 @@ msgstr "Niets kan Rick doden, kan mogelijk het spel breken."
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "INVULNERABILITY MODE"
-msgstr "ONKWETSBAARHEID MODUS"
+msgstr "ONKWETSBAARHEIDSMODUS"
 
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
@@ -6972,9 +6969,9 @@ msgstr "Markeer alle entiteiten op de gamekaart."
 #. TRANSLATION: libretro/xrick
 msgctxt "game_options"
 msgid "EXPOSE MODE"
-msgstr "BLOOTSTELLINGS MODUS"
+msgstr "BLOOTSTELLINGSMODUS"
 
-#. TRANSLATION: libretro/yabasanshiro
+#. TRANSLATION: libretro/yabasanshiro, theforceengine
 msgctxt "game_options"
 msgid "720p"
 msgstr "720p"
@@ -7026,6 +7023,45 @@ msgstr "GLCore"
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid ""
+"Changing driver can improve audio performance and reduce distortion. "
+"Alsathread is recommended for low-end systems."
+msgstr ""
+"Het veranderen van driver kan de audioprestaties verbeteren en vervorming "
+"verminderen. Alsathread wordt aanbevolen voor low-end systemen."
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "AUDIO DRIVER"
+msgstr "GELUIDSKAART DRIVER"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSA"
+msgstr "ALSA"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "ALSAThread"
+msgstr "ALSAThread"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "TinyALSA"
+msgstr "TinyALSA"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "SDL2"
+msgstr "SDL2"
+
+#. TRANSLATION: libretro
+msgctxt "game_options"
+msgid "Pulse (Default)"
+msgstr "Puls (Standaard)"
 
 #. TRANSLATION: libretro
 msgctxt "game_options"
@@ -7396,10 +7432,10 @@ msgstr "NOTIFICATIES AANZETTEN"
 msgctxt "game_options"
 msgid ""
 "Enable gamepad view for games that have interaction across two screens. Use "
-"L1+R1 to switch screens."
+"Hotkey+R2 to switch screens."
 msgstr ""
-"Schakel de gamepadweergave in voor games die interactie hebben op twee "
-"schermen. Gebruik L1+R1 om van scherm te wisselen."
+"Schakel de gamepadweergave in voor spellen die interactie hebben tussen twee "
+"schermen. Gebruik Hotkey+R2 om van scherm te wisselen."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7408,13 +7444,57 @@ msgstr "GAMEPAD WEERGAVE INSCHAKELEN"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid top ratio 4"
-msgstr "hybride top ratio 4"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
+"Regel de dubbele schermindeling. Afzonderlijke vensters kunnen worden "
+"gewijzigd met Hotkey+R2."
 
 #. TRANSLATION: citra
 msgctxt "game_options"
-msgid "hybrid bottom ratio 4"
-msgstr "hybride bodem ratio 4"
+msgid "Top Only"
+msgstr "Alleen boven"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr "Alleen onderin"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Top"
+msgstr "Grote bovenkant"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr "Grote bodem"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr "Links/Rechts"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr "Rechts/Links"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr "Aparte Windows"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr "Hybride scherm bovenaan"
+
+#. TRANSLATION: citra
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr "Hybride schermbodem"
 
 #. TRANSLATION: citra, citra, citra, citra, citra, ...
 msgctxt "game_options"
@@ -7460,8 +7540,8 @@ msgstr "DISK SHADER CACHE"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation stutter."
+" May cause graphical glitches."
 msgstr ""
 "Compileer shaders met behulp van achtergrondthreads om haperen van de shader-"
 "compilatie te voorkomen. Kan grafische problemen veroorzaken."
@@ -7598,7 +7678,7 @@ msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
 msgstr "AANGEPASTE CONTROLLER"
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, duckstation, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
 msgctxt "game_options"
 msgid "DISPLAY"
 msgstr "WEERGAVE"
@@ -7622,7 +7702,7 @@ msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "Wijs uw controller toe aan een geëmuleerde Wiimote."
 
-#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin, dolphin, ...
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, ...
 msgctxt "game_options"
 msgid "CONTROLLERS"
 msgstr "CONTROLLERS"
@@ -7666,6 +7746,26 @@ msgstr "Wiimote Zijwaarts + Tilt"
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wiimote Zijwaarts + Nunchuk"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
+msgstr "Emuleer de Wiimote pointer met een DS4 gyroscoop."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "DUALSHOCK MOTION CONTROL"
+msgstr "DUALSHOCK MOTION CONTROL"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a mouse."
+msgstr "Emuleer de Wiimote pointer met een muis."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "MOUSE AS WIIMOTE POINTER"
+msgstr "MUIS ALS WIIMORE POINTER"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -7732,7 +7832,7 @@ msgctxt "game_options"
 msgid "USE PAD PROFILES"
 msgstr "GEBRUIK CONTROLLER PROFIELEN"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "Change what's plugged into the virtual GameCube ports."
 msgstr "Wijzig wat er op de virtuele GameCube-poorten is aangesloten."
@@ -7782,6 +7882,29 @@ msgctxt "game_options"
 msgid "GAMECUBE PORT 4 TYPE"
 msgstr "GAMECUBE PORT 4 TYPE"
 
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"Use alternative input mappings. Only applies to Standard Controller type."
+msgstr ""
+"Gebruik alternatieve invoertoewijzingen. Geldt alleen voor het type "
+"Standaardcontroller."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "ALT INPUT MAPPING"
+msgstr "ALTERNATIEVE INVOER MAPPING"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CW)"
+msgstr "Gezichtsknoppen (CW)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CCW)"
+msgstr "Gezichtsknoppen (CCW)"
+
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "Usually not much faster than single core mode."
@@ -7802,7 +7925,7 @@ msgctxt "game_options"
 msgid "GPU SYNC"
 msgstr "GPU SYNC"
 
-#. TRANSLATION: dolphin, dolphin_triforce, rpcs3
+#. TRANSLATION: dolphin, dolphin_triforce, rpcs3, iortcw
 msgctxt "game_options"
 msgid "ANTI-ALIASING"
 msgstr "ANTI-ALIASING"
@@ -7834,8 +7957,8 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
-"Als u dit inschakelt, is een correcte emulatie van texture wrapping "
-"mogelijk. Dit kan mogelijk slechtere prestaties opleveren."
+"Als u dit inschakelt, is een correcte emulatie van texture wrapping mogelijk."
+" Dit kan mogelijk slechtere prestaties opleveren."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7874,23 +7997,13 @@ msgstr "FAST DISK TRANSFER RATE"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
-msgstr "Emuleer de Wiimote pointer met een DS4 gyroscoop."
+msgid "Show on screen display messages (memory card saves..)."
+msgstr "Toon berichten op het scherm (geheugenkaart opgeslagen..)."
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, duckstation, melonds
 msgctxt "game_options"
-msgid "DUALSHOCK MOTION CONTROL"
-msgstr "DUALSHOCK MOTION CONTROL"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a mouse."
-msgstr "Emuleer de Wiimote pointer met een muis."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "MOUSE AS WIIMOTE POINTER"
-msgstr "MUIS ALS WIIMORE POINTER"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr "TOON BEELDSCHERMBERICHTEN"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7906,6 +8019,62 @@ msgstr ""
 msgctxt "game_options"
 msgid "VBI SKIP"
 msgstr "VBI SKIP"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Set joystick deadzone."
+msgstr "Stel deadzone voor joystick in."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+msgctxt "game_options"
+msgid "DEADZONE"
+msgstr "DEADZONE"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+msgctxt "game_options"
+msgid "5% (Default)"
+msgstr "5% (Standaard)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"Set virtual joysticks gate size. Smaller increases sensitivity. Larger "
+"decreases it."
+msgstr ""
+"Stel formaat voor virtuele joysticks in. Kleiner verhoogt de gevoeligheid. "
+"Groter vermindert het."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "JOYSTICK GATE SIZE"
+msgstr "JOYSTICK POORT FORMAAT"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Smaller"
+msgstr "Sleiner"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Normal (Default)"
+msgstr "Normaal (Standaard)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Larger"
+msgstr "Groter"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Enables Dolby Pro Logic II for surround sound. May impact performance."
+msgstr ""
+"Maakt Dolby Pro Logic II mogelijk voor surround-geluid. Kan de prestaties "
+"beïnvloeden."
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "DOLBY PRO LOGIC II"
+msgstr "DOLBY PRO LOGIC II"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -8224,7 +8393,7 @@ msgstr "NeGcon (Rumble)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
-msgid "Reduces wobbly polygongs & warping textures."
+msgid "Reduces wobbly polygons & warping textures."
 msgstr "Vermindert wiebelige polygonen en kromtrekkende texturen."
 
 #. TRANSLATION: duckstation
@@ -8242,11 +8411,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "ALLOW BOOTING WITHOUT SBI FILE"
 msgstr "LAAT OPSTARTEN ZONDER SBI-BESTAND TOE"
-
-#. TRANSLATION: duckstation, melonds
-msgctxt "game_options"
-msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
-msgstr "TOON BEELDSCHERMBERICHTEN"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8689,7 +8853,7 @@ msgstr "Hoe de vensterruimte over de schermen wordt verdeeld."
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "SCREEN SIZING"
-msgstr "SCHERM AANPASSING"
+msgstr "SCHERMAANPASSING"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -8932,7 +9096,7 @@ msgstr ""
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "AUDIO BUFFER (SAMPLES)"
-msgstr "AUDIO BUFFER (SAMPLES)"
+msgstr "AUDIOBUFFER (SAMPLES)"
 
 #. TRANSLATION: mupen64plus, cgenius
 msgctxt "game_options"
@@ -9004,8 +9168,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en "
-"DK64), kan vertraging veroorzaken."
+"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en DK64),"
+" kan vertraging veroorzaken."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -9042,16 +9206,6 @@ msgctxt "game_options"
 msgid "100% (Default)"
 msgstr "100% (Standaard)"
 
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "DEADZONE"
-msgstr "DEADZONE"
-
-#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
-msgctxt "game_options"
-msgid "5% (Default)"
-msgstr "5% (Standaard)"
-
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -9068,6 +9222,13 @@ msgstr "SCHERM RATIO"
 msgctxt "game_options"
 msgid "Simple 2x"
 msgstr "Simpel 2x"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Display on screen information like savestate, config warning etc..."
+msgstr ""
+"Informatieweergave op het scherm zoals savestate, configuratiewaarschuwing "
+"enz..."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -9752,8 +9913,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Kan prestatieverbetering opleveren op CPU's met een laag aantal cores/"
-"threads, ten koste van mogelijk kapotte timing."
+"Kan prestatieverbetering opleveren op CPU's met een laag aantal "
+"cores/threads, ten koste van mogelijk kapotte timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10387,12 +10548,12 @@ msgctxt "game_options"
 msgid "Fit 4:3 Aspect Ratio"
 msgstr "Pas naar beeldverhouding van 4:3 aan"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, iortcw
 msgctxt "game_options"
 msgid "Choose your preferred renderer."
 msgstr "Kies de gewenste renderer."
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, iortcw
 msgctxt "game_options"
 msgid "RENDERER"
 msgstr "RENDERAAR"
@@ -10862,8 +11023,8 @@ msgstr "Interton VC 4000 cartridges"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun "
-"connected), and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
+" and similar controls"
 msgstr ""
 "Schakel muisinvoer in voor trackballs, spinners, lightguns (als er geen gun "
 "is aangesloten) en soortgelijke bedieningselementen"
@@ -10956,6 +11117,16 @@ msgstr ""
 msgctxt "game_options"
 msgid "ARTWORK CROP"
 msgstr "ARTWORK CROP"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "Set system-wide controls via MAME menu"
+msgstr "System-wide controls instellen via Mame menu"
+
+#. TRANSLATION: mame
+msgctxt "game_options"
+msgid "CUSTOM MAME CONFIG"
+msgstr "AANGEPASTE MAME CONFIG"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -11421,12 +11592,12 @@ msgctxt "game_options"
 msgid "Screen Resolution (Default)"
 msgstr "Scherm Resolutie (Standaard)"
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "Enable widescreen support."
 msgstr "Schakel breedbeeldondersteuning in."
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
 msgstr "BREEDBEELD INSCHAKELEN"
@@ -12258,6 +12429,16 @@ msgctxt "game_options"
 msgid "Show (Default)"
 msgstr "Toon (Standaard)"
 
+#. TRANSLATION: raze
+msgctxt "game_options"
+msgid "OpenGL (x86 only)"
+msgstr "OpenGL (alleen x86)"
+
+#. TRANSLATION: raze
+msgctxt "game_options"
+msgid "OpenGLES (Default)"
+msgstr "OpenGLES (Standaard)"
+
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid ""
@@ -12326,6 +12507,263 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "V-sync"
 
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "200p"
+msgstr "200p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "400p"
+msgstr "400p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "480p"
+msgstr "400p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "600p"
+msgstr "600p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "768p"
+msgstr "768p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "800p"
+msgstr "768p"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "960p"
+msgstr "960p"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "Set the desired maximum refresh rate when Vsync is off."
+msgstr ""
+"Stel de gewenste maximale verversingssnelheid in wanneer Vsync is "
+"uitgeschakeld."
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "REFRESH RATE"
+msgstr "VERVERSINGSSNELHEID"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "30 fps"
+msgstr "30 fps"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "50 fps"
+msgstr "50 fps"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "60 fps (Default)"
+msgstr "60 fps (Standaard)"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "75 fps"
+msgstr "75 fps"
+
+#. TRANSLATION: theforceengine, iortcw
+msgctxt "game_options"
+msgid "120 fps"
+msgstr "120 fps"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "144 fps"
+msgstr "144 fps"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "240 fps"
+msgstr "240 fps"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Choose which graphics renderer to use."
+msgstr "Kies welke grafische renderer u wilt gebruiken."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "GRAPHICS RENDERER"
+msgstr "GRAFISCHE RENDERER"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Classic Software"
+msgstr "Klassieke Software"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "GPU / OpenGL (Default)"
+msgstr "GPU / OpenGL (Standaard)"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "ENABLE TRUE COLOUR"
+msgstr "WARE KLEUR INSCHAKELEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "ENABLE BILINEAR FILTER"
+msgstr "BILINEAIR FILTER INSCHAKELEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "ENABLE MIPMAPPING"
+msgstr "MIPMAPPING INSCHAKELEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "ENABLE CROSSHAIR"
+msgstr "CROSSHAIR INSCHAKELEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Choose to use Bloom post processing."
+msgstr "Kies ervoor om Bloom-nabewerking te gebruiken."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "ENABLE BLOOM"
+msgstr "BLOOM INSCHAKELEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Enable / Disable sound in menus."
+msgstr "Geluid in menu's in-/uitschakelen."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "MENU SOUNDS"
+msgstr "MENU GELUIDEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Enable 16-channel iMuse Digital Audio."
+msgstr "Schakel 16-kanaals iMuse digitale audio in."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "DIGITAL AUDIO"
+msgstr "DIGITALE AUDIO"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Enable / Disable fight music."
+msgstr "Vechtmuziek in-/uitschakelen."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "FIGHT MUSIC"
+msgstr "VECHTMUZIEK"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Enable / Disable automatic aiming."
+msgstr "Automatisch richten in-/uitschakelen."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "AUTO AIM"
+msgstr "AUTOMATISCH RICHTEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Enable / Disable showing secret found messages."
+msgstr "In-/uitschakelen van het weergeven van geheime gevonden berichten."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "SHOW SECRET MESSAGES"
+msgstr "TOON VERBORGEN BERICHTEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "AUTOMATICALLY RUN"
+msgstr "AUTOMATISCH RENNEN"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Bobba Fett Face Player Fix"
+msgstr "Bobba Fett Face Speler Fix"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "BOBBA FETT FIX"
+msgstr "BOBBA FETT FIX"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "SMOOTH VUES"
+msgstr "ZACHTE VUES"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Choose to enable or disable cutscenes."
+msgstr "Kies ervoor om cutscenes in of uit te schakelen."
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "SKIP CUTSCENES"
+msgstr "SLA CUTSCENES OVER"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Show All"
+msgstr "Toon alles"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Skip Initial"
+msgstr "Initieel overslaan"
+
+#. TRANSLATION: theforceengine
+msgctxt "game_options"
+msgid "Skip All"
+msgstr "SLA ALLES OVER"
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Standard OpenGL (Default)"
+msgstr "Standaard OpenGL (Standaard)"
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Enhanced OpenGL"
+msgstr "Verbeterde OpenGL"
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "2x (Default)"
+msgstr "2x (Standaard)"
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Skip the initial intro video."
+msgstr "Sla de eerste introductievideo over."
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "SKIP INTRO VIDEO"
+msgstr "INTROVIDEO OVERSLAAN"
+
+#. TRANSLATION: iortcw
+msgctxt "game_options"
+msgid "Play (Default)"
+msgstr "Spelen (standaard)"
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -12340,6 +12778,26 @@ msgstr "snellaad"
 msgctxt "keys_files"
 msgid "screenshot"
 msgstr "screenshot"
+
+#. TRANSLATION: iortcw.keys, theforceengine.keys
+msgctxt "keys_files"
+msgid "Skip cutscene"
+msgstr "Sla cutscene over"
+
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick save"
+msgstr "Snel opslaan"
+
+#. TRANSLATION: iortcw.keys, corsixth.keys
+msgctxt "keys_files"
+msgid "Quick load"
+msgstr "Snel laden"
+
+#. TRANSLATION: iortcw.keys, psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, ...
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "Screenshot"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12385,16 +12843,6 @@ msgstr "Roteert het huidige object"
 msgctxt "keys_files"
 msgid "Select"
 msgstr "Selecteer"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick save"
-msgstr "Snel opslaan"
-
-#. TRANSLATION: corsixth.keys
-msgctxt "keys_files"
-msgid "Quick load"
-msgstr "Snel laden"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -12491,10 +12939,20 @@ msgctxt "keys_files"
 msgid "Manage Staff"
 msgstr "Beheer personeel"
 
-#. TRANSLATION: switch.ryujinx.keys, vpinball.keys, hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, ...
+#. TRANSLATION: theforceengine.keys, switch.ryujinx.keys, vpinball.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
 msgid "Exit the emulator"
 msgstr "Verlaat de emulator"
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Quick Load"
+msgstr "Snel Laden"
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Quick Save"
+msgstr "Snel Opslaan"
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
@@ -12525,11 +12983,6 @@ msgstr "Open het DuckStation snelmenu"
 msgctxt "keys_files"
 msgid "Restart Game"
 msgstr "Herstart Spel"
-
-#. TRANSLATION: psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, psp.ppsspp.keys
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr "Screenshot"
 
 #. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
 msgctxt "keys_files"
@@ -12775,6 +13228,11 @@ msgstr "Schakel Scherm Lay-out in"
 msgctxt "keys_files"
 msgid "Toggle Speed Limit"
 msgstr "Schakel Snelheidslimiet in"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Swap screens"
+msgstr "Verwissel schermen"
 
 #. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"

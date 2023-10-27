@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Function to check if led module is loaded
+is_module_loaded() {
+    lsmod | grep -q "^$1 "
+}
+
+# Functions to set the LED mode parameters
+# ayn-platform
+set_ayn_led_mode() {
+    # turn off rainbow effect if enabled
+    echo 1 | tee /sys/class/leds/multicolor:chassis/device/led_mode
+    led_colour="$(/usr/bin/batocera-settings-get ayn.led.colour)"
+    led_brightness="$(/usr/bin/batocera-settings-get ayn.led.brightness)"
+    # Set the colour
+    if [ "$led_colour" != "" ]; then
+        if [ "$led_colour" = "red" ]; then
+            echo 255 0 0 | tee /sys/class/leds/multicolor:chassis/multi_intensity
+        elif [ "$led_colour" = "blue" ]; then
+            echo 0 255 0 | tee /sys/class/leds/multicolor:chassis/multi_intensity
+        elif [ "$led_colour" = "green" ]; then
+            echo 0 0 255 | tee /sys/class/leds/multicolor:chassis/multi_intensity
+        else
+            echo $led_colour | tee /sys/class/leds/multicolor:chassis/multi_intensity
+        fi
+    else
+        # Set hot pink colour as default
+        echo 255 165 0 | tee /sys/class/leds/multicolor:chassis/multi_intensity
+    fi
+    
+    # Set the brightness
+    if [ "$led_brightness" != "" ]; then
+        if [ "$led_brightness" = "low" ]; then
+            echo 10 | tee /sys/class/leds/multicolor:chassis/brightness
+        elif [ "$led_brightness" = "medium" ]; then
+            echo 100 | tee /sys/class/leds/multicolor:chassis/brightness
+        elif [ "$led_brightness" = "high" ]; then
+            echo 255 | tee /sys/class/leds/multicolor:chassis/brightness
+        elif [ "$led_brightness" = "off" ]; then
+            echo 0 | tee /sys/class/leds/multicolor:chassis/brightness
+        fi
+    else
+        # Set max brightness as default
+        echo 255 | tee /sys/class/leds/multicolor:chassis/brightness
+    fi
+}
+
+case "$1" in
+    start)
+        # ayn-platform is used for ayn handhelds
+        if is_module_loaded ayn_platform; then
+            set_ayn_led_mode
+        fi
+        ;;
+    stop)
+        ;;
+    restart)
+        # Add any restart logic if needed later
+		stop
+		start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

@@ -1,17 +1,38 @@
 #!/bin/sh
 
 # batocera-nvidia applies either the installed production or legacy driver(s)
-# driver can be detected 'auto' or also set using batoceta-boot.conf
+# driver can be detected 'auto' or also set using batocera-boot.conf
 
 # try to create the log dir
 mkdir -p "/userdata/system/logs"
 log="/userdata/system/logs/nvidia.log"
 
 MODE=$1
-LISTDIR=/usr/share/nvidia
+
+# check we have a user downloaded file
+if [ -e /userdata/system/.nvidia/production.list ]; then
+    PRODLISTDIR="/userdata/system/.nvidia"
+else
+    PRODLISTDIR="/usr/share/nvidia"
+fi
+if [ -e /userdata/system/.nvidia/legacy.list ]; then
+    LEGACYLISTDIR="/userdata/system/.nvidia"
+else
+    LEGACYLISTDIR="/usr/share/nvidia"
+fi
+if [ -e /userdata/system/.nvidia/legacy390.list ]; then
+    LEGACY390LISTDIR="/userdata/system/.nvidia"
+else
+    LEGACY390LISTDIR="/usr/share/nvidia"
+fi
+if [ -e /userdata/system/.nvidia/legacy340.list ]; then
+    LEGACY340LISTDIR="/userdata/system/.nvidia"
+else
+    LEGACY340LISTDIR="/usr/share/nvidia"
+fi
 
 if test "${MODE}" = "auto"; then
-    echo "Detect if we have a Nvidia GPU"
+    echo "Detect if we have a Nvidia GPU" >> $log
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
     if [ "$NVIDIA_DEV" ]; then
         echo "Detected a NVIDIA GPU" >> "$log"
@@ -19,40 +40,40 @@ if test "${MODE}" = "auto"; then
             CARDNAME=$(lspci -s "$d" | cut -d "[" -f2 | cut -d "]" -f1)
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }' | tr '[:lower:]' '[:upper:]')
             echo "Checking card: $CARDNAME with ID: $PCIDEVID" >> "$log"
-            if grep -q -i "$CARDNAME" "$LISTDIR/production.list" 2>/dev/null; then
+            if grep -q -i "$CARDNAME" "$PRODLISTDIR/production.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in production list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/production.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$PRODLISTDIR/production.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in production list too, yay!" >> "$log"
                     MODE=production
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in production list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACYLISTDIR/legacy.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACYLISTDIR/legacy.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy list too, yay!" >> "$log"
                     MODE=legacy
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in legacy list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy390.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACY390LISTDIR/legacy390.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy390 list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy390.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACY390LISTDIR/legacy390.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy390 list too, yay!" >> "$log"
                     MODE=legacy390
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in legacy390 list" >> "$log"
                 fi
-            elif grep -q -i "$CARDNAME" "$LISTDIR/legacy340.list" 2>/dev/null; then
+            elif grep -q -i "$CARDNAME" "$LEGACY340LISTDIR/legacy340.list" 2>/dev/null; then
                 echo "Detected card name: $CARDNAME in legacy340 list" >> "$log"
                 # now check pci vendor id
-                if grep -q -i "$PCIDEVID" "$LISTDIR/legacy340.list" 2>/dev/null; then
+                if grep -q -i "$PCIDEVID" "$LEGACY340LISTDIR/legacy340.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy340 list too, yay!" >> "$log"
                     echo "Using Mesa Nouveau driver, currently the legacy 340 driver doesn't work" >> $log
                     MODE=nouveau
@@ -67,7 +88,7 @@ if test "${MODE}" = "auto"; then
             fi
         done
     else
-        echo "No NVIDIA GPU detected" > $log
+        echo "No NVIDIA GPU detected" >> $log
         echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
@@ -82,7 +103,7 @@ BATOCERA_NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
 # legacy driver versions
 BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy.version)
 BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy390.version)
-BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
+#BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
 
 mkdir -p /var/run/nvidia/modprobe || exit 1
 
@@ -113,15 +134,39 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so /usr/lib/libGLESv2_nvidia.so
     ln -sf /usr/lib/libGLESv2_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so.2
 	ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so.2 /usr/lib/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib/libnvidia-allocator.so /usr/lib/libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-allocator.so.1 /usr/lib/libnvidia-allocator.so.1
+    # libnvidia-api.so
+    ln -sf /usr/lib/libnvidia-api.so.1 /var/run/nvidia/lib/libnvidia-api.so
+	ln -sf /var/run/nvidia/lib/libnvidia-api.so /usr/lib/libnvidia-api.so
+    # libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so
+	ln -sf /var/run/nvidia/lib/libnvidia-cfg.so /usr/lib/libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-cfg.so.1 /usr/lib/libnvidia-cfg.so.1    
     # libnvidia-eglcore.so
     ln -sf /usr/lib/libnvidia-eglcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so
+    # libnvidia-egl-gbm.so
+    ln -sf /usr/lib/libnvidia-egl-gbm.so.110 /var/run/nvidia/lib/libnvidia-egl-gbm.so
+	ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so /usr/lib/libnvidia-egl-gbm.so
+    ln -sf /usr/lib/libnvidia-egl-gbm.so.110 /var/run/nvidia/lib/libnvidia-egl-gbm.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so.1 /usr/lib/libnvidia-egl-gbm.so.1    
     # libnvidia-glcore.so
     ln -sf /usr/lib/libnvidia-glcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glcore.so /usr/lib/libnvidia-glcore.so
     # libnvidia-glsi.so
     ln -sf /usr/lib/libnvidia-glsi.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glsi.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glsi.so /usr/lib/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /usr/lib/libnvidia-gpucomp.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib/libnvidia-gpucomp.so /usr/lib/libnvidia-gpucomp.so  
+    # libnvidia-rtcore.so
+    ln -sf /usr/lib/libnvidia-rtcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-rtcore.so
+	ln -sf /var/run/nvidia/lib/libnvidia-rtcore.so /usr/lib/libnvidia-rtcore.so    
     # libnvidia-tls.so
     ln -sf /usr/lib/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
@@ -140,6 +185,9 @@ if [ "$MODE" = "production" ]; then
     # libnvidia-glvkspirv.so
     ln -sf /usr/lib/libnvidia-glvkspirv.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
+    # libnvidia-wayland-client.so
+    ln -sf /usr/lib/libnvidia-wayland-client.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-wayland-client.so
+    ln -sf /var/run/nvidia/lib/libnvidia-wayland-client.so /usr/lib/libnvidia-wayland-client.so
     
     # [symbolic link 32-bit library files]
     mkdir -p /var/run/nvidia/lib32
@@ -163,6 +211,11 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so /lib32/libGLESv2_nvidia.so
     ln -sf /lib32/libGLESv2_nvidia.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so.2
     ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so.2 /lib32/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so /lib32/libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so.1 /lib32/libnvidia-allocator.so.1
     # libnvidia-eglcore.so
     ln -sf /lib32/libnvidia-eglcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-eglcore.so
     ln -sf /var/run/nvidia/lib32/libnvidia-eglcore.so /lib32/libnvidia-eglcore.so
@@ -172,6 +225,9 @@ if [ "$MODE" = "production" ]; then
     # libnvidia-glsi.so
     ln -sf /lib32/libnvidia-glsi.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glsi.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glsi.so /lib32/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /lib32/libnvidia-gpucomp.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-gpucomp.so /lib32/libnvidia-gpucomp.so
     # libnvidia-tls.so
     ln -sf /lib32/libnvidia-tls.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
@@ -506,8 +562,10 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
     fi
 
 elif test "${MODE}" = "nouveau"; then
-    echo "Using OpenSource Mesa Nouveau driver" > $log
+    echo "Using OpenSource Mesa Nouveau driver" >> $log
     test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
     test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
+# get the latest production list
+batocera-get-nvidia-list &
 echo "The end... or is it..." >> $log

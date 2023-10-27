@@ -1,0 +1,8 @@
+config BR2_PACKAGE_CHROMEBOOK_LINUX_AUDIO
+	bool "chromebook-linux-audio"
+	select BR2_PACKAGE_ALLLINUXFIRMWARES
+	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE
+	help
+	  Enable AMD firmware audio support on many Chromebook devices.
+
+	  https://github.com/WeirdTreeThing/chromebook-linux-audio

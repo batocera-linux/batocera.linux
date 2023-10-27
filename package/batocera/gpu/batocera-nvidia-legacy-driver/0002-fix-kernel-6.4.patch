@@ -1,0 +1,35 @@
+From 4981428cda825b415eea60313f71bf386cc9f7e1 Mon Sep 17 00:00:00 2001
+From: Joan Bruguera <joanbrugueram@gmail.com>
+Date: Sat, 25 Feb 2023 10:57:26 +0000
+Subject: [PATCH] Tentative fix for NVIDIA 470.199.02 driver for Linux 6.4-rc1
+
+---
+ nvidia-drm/nvidia-drm-drv.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/kernel/nvidia-drm/nvidia-drm-drv.c
++++ b/kernel/nvidia-drm/nvidia-drm-drv.c
+@@ -20,6 +20,7 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
+
++#include <linux/version.h>
+ #include "nvidia-drm-conftest.h" /* NV_DRM_AVAILABLE and NV_DRM_DRM_GEM_H_PRESENT */
+
+ #include "nvidia-drm-priv.h"
+@@ -873,9 +874,13 @@
+
+     nv_drm_driver.dumb_create      = nv_drm_dumb_create;
+     nv_drm_driver.dumb_map_offset  = nv_drm_dumb_map_offset;
++// Rel. commit "drm: remove dumb_destroy callback" (Christian König, 26 Jan 2023)
++// NB: No resources are leaked, the kernel releases the same resources by default
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
+ #if defined(NV_DRM_DRIVER_HAS_DUMB_DESTROY)
+     nv_drm_driver.dumb_destroy     = nv_drm_dumb_destroy;
+ #endif /* NV_DRM_DRIVER_HAS_DUMB_DESTROY */
++#endif
+ #endif /* NV_DRM_ATOMIC_MODESET_AVAILABLE */
+ }
+
+--
+2.40.1

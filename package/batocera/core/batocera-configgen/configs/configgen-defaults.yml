@@ -120,8 +120,8 @@ cave3rd:
   emulator: demul
   core:     demul
 cdi:
-  emulator: libretro
-  core:     same_cdi
+  emulator: mame
+  core:     mame
 cdogs:
   emulator: cdogs
   core:     cdogs
@@ -273,9 +273,9 @@ ikemen:
 intellivision:
   emulator: libretro
   core:     freeintv
-quake3:
-  emulator: ioquake3
-  core:     ioquake3
+iortcw:
+  emulator: iortcw
+  core:     iortcw
 jaguar:
   emulator: libretro
   core:     virtualjaguar
@@ -487,6 +487,9 @@ pygame:
 pyxel:
   emulator: pyxel
   core:     pyxel
+quake3:
+  emulator: ioquake3
+  core:     ioquake3
 raze:
   emulator: raze
   core:     raze
@@ -569,6 +572,9 @@ switch:
 
 # T-Z
 
+theforceengine:
+  emulator: theforceengine
+  core:     theforceengine
 thextech:
   emulator: thextech
   core:     thextech
@@ -592,8 +598,6 @@ tutor:
 tyrian:
   emulator: tyrian
   core:     tyrian
-  options:
-    bezel: none
 tyrquake:
   emulator: libretro
   core:     tyrquake

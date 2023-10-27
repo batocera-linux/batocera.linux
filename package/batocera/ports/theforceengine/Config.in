@@ -1,0 +1,10 @@
+config BR2_PACKAGE_THEFORCEENGINE
+    bool "theforceengine"
+    select BR2_PACKAGE_LIBGLEW
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_IMAGE
+    help
+      Modern "Jedi Engine" replacement supporting Dark Forces, mods,
+      and in the future Outlaws.
+      
+      https://theforceengine.github.io/

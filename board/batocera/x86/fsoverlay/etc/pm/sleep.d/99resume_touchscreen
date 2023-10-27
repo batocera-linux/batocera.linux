@@ -1,0 +1,7 @@
+#!/bin/bash
+case "$1" in
+    resume|thaw)
+        # Run the touchscreen rotation script when resuming
+        /etc/init.d/S95touchscreen start
+        ;;
+esac

@@ -319,6 +319,18 @@ def getGenerator(emulator):
         from generators.corsixth.corsixthGenerator import CorsixTHGenerator
         return CorsixTHGenerator()
 
+    if emulator == 'stella':
+        from generators.stella.stellaGenerator import StellaGenerator
+        return StellaGenerator()
+    
+    if emulator == "theforceengine":
+        from generators.theforceengine.theforceengineGenerator import TheForceEngineGenerator
+        return TheForceEngineGenerator()
+    
+    if emulator == "iortcw":
+        from generators.iortcw.iortcwGenerator import IORTCWGenerator
+        return IORTCWGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()

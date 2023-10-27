@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Aug 20, 2023
-PCSX2_VERSION = v1.7.4933
+#Version: Commits on Oct 12, 2023
+PCSX2_VERSION = v1.7.5105
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -28,6 +28,8 @@ PCSX2_CONF_OPTS += -DUSE_VTUNE=OFF
 PCSX2_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 PCSX2_CONF_OPTS += -DLTO_PCSX2_CORE=ON
 PCSX2_CONF_OPTS += -DUSE_ACHIEVEMENTS=ON
+# The following flag is misleading and *needed* ON to avoid doing -march=native
+PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
     PCSX2_CONF_OPTS += -DX11_API=ON
@@ -75,6 +77,13 @@ define PCSX2_TEXTURES
         $(TARGET_DIR)/usr/pcsx2/bin/resources/
 endef
 
+# Download and copy PCSX2 patches.zip to BIOS folder
+define PCSX2_PATCHES
+        mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/pcsx2
+        $(HOST_DIR)/bin/curl -L https://github.com/PCSX2/pcsx2_patches/releases/download/latest/patches.zip -o $(TARGET_DIR)/usr/share/batocera/datainit/bios/pcsx2/patches.zip
+endef
+
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_TEXTURES
+PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_PATCHES
 
 $(eval $(cmake-package))

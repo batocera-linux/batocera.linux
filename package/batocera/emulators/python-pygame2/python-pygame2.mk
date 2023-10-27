@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYTHON_PYGAME2_VERSION = 2.2.0
+PYTHON_PYGAME2_VERSION = 2.5.2
 PYTHON_PYGAME2_SITE =  $(call github,pygame,pygame,$(PYTHON_PYGAME2_VERSION))
 PYTHON_PYGAME2_SETUP_TYPE = setuptools
 PYTHON_PYGAME2_LICENSE = LGPL-2.1+

@@ -1,0 +1,679 @@
+From 197b180e25c093a9b439085e23c39e459261b303 Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Sat, 12 Aug 2023 13:13:46 +0200
+Subject: [PATCH 1/3] Initial Qt6 attempt
+
+---
+ Source/ui_qt/CMakeLists.txt                 | 16 +++++-----------
+ Source/ui_qt/DebugSupport/CMakeLists.txt    | 12 ++++++------
+ installer_win32/installer32.nsi             | 12 ++++++------
+ installer_win32/installer64.nsi             | 12 ++++++------
+ tools/ElfView/CMakeLists.txt                | 10 +++++-----
+ tools/PsfPlayer/Source/ui_qt/CMakeLists.txt | 10 +++++-----
+ 6 files changed, 33 insertions(+), 39 deletions(-)
+
+diff --git a/Source/ui_qt/CMakeLists.txt b/Source/ui_qt/CMakeLists.txt
+index acb515014f..b9970529a9 100644
+--- a/Source/ui_qt/CMakeLists.txt
++++ b/Source/ui_qt/CMakeLists.txt
+@@ -245,21 +245,15 @@ set(QT_RESOURCES
+ )
+ 
+ set(QT_COMPONENTS Widgets Core)
+-if(TARGET_PLATFORM_UNIX)
+-	list(APPEND QT_COMPONENTS X11Extras)
+-endif()
+-find_package(Qt5 REQUIRED COMPONENTS ${QT_COMPONENTS})
++find_package(Qt6 REQUIRED COMPONENTS ${QT_COMPONENTS})
+ 
+-list(APPEND PROJECT_LIBS Qt5::Widgets Qt5::Core)
+-if(TARGET_PLATFORM_UNIX)
+-	list(APPEND PROJECT_LIBS Qt5::X11Extras)
+-endif()
++list(APPEND PROJECT_LIBS Qt6::Widgets Qt6::Core)
+ 
+ add_definitions(${QT_DEFINITIONS})
+ 
+-QT5_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
+-QT5_WRAP_UI(QT_UI_HEADERS ${QT_UIS})
+-QT5_WRAP_CPP(QT_MOC_SRCS ${QT_MOC_HEADERS})
++QT6_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
++QT6_WRAP_UI(QT_UI_HEADERS ${QT_UIS})
++QT6_WRAP_CPP(QT_MOC_SRCS ${QT_MOC_HEADERS})
+ 
+ if(TARGET_PLATFORM_MACOS)
+ 	set(QT_SOURCES
+diff --git a/Source/ui_qt/DebugSupport/CMakeLists.txt b/Source/ui_qt/DebugSupport/CMakeLists.txt
+index 767a54f412..672dc37cf6 100644
+--- a/Source/ui_qt/DebugSupport/CMakeLists.txt
++++ b/Source/ui_qt/DebugSupport/CMakeLists.txt
+@@ -5,8 +5,8 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
+ 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ endif()
+ 
+-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+-list(APPEND PLAYDEBUGSUPPORT_LIBS Qt5::Core Qt5::Widgets)
++find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
++list(APPEND PLAYDEBUGSUPPORT_LIBS Qt6::Core Qt6::Widgets)
+ 
+ set(CMAKE_MODULE_PATH
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../../../deps/Dependencies/cmake-modules
+@@ -150,11 +150,11 @@ set(QT_RESOURCES
+ 	../Qt_ui/resources.qrc
+ )
+ 
+-QT5_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
+-QT5_WRAP_UI(QT_DEBUGGER_UI_HEADERS ${QT_DEBUGGER_UI})
+-QT5_WRAP_CPP(QT_DEBUGGER_MOC_SRCS ${QT_DEBUGGER_MOC_HEADERS})
++QT6_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
++QT6_WRAP_UI(QT_DEBUGGER_UI_HEADERS ${QT_DEBUGGER_UI})
++QT6_WRAP_CPP(QT_DEBUGGER_MOC_SRCS ${QT_DEBUGGER_MOC_HEADERS})
+ 
+ add_library(PlayDebugSupport STATIC ${SRC_FILES} ${QT_DEBUGGER_UI_HEADERS} ${QT_DEBUGGER_MOC_SRCS} ${QT_RES_SOURCES})
+-target_link_libraries(PlayDebugSupport PlayCore ${PLAYDEBUGSUPPORT_LIBS} Framework_OpenGl Qt5::Core Qt5::Widgets)
++target_link_libraries(PlayDebugSupport PlayCore ${PLAYDEBUGSUPPORT_LIBS} Framework_OpenGl Qt6::Core Qt6::Widgets)
+ target_compile_definitions(PlayDebugSupport PRIVATE NOMINMAX ${PLAYDEBUGSUPPORT_DEFS})
+ target_include_directories(PlayDebugSupport PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ../../${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+diff --git a/installer_win32/installer32.nsi b/installer_win32/installer32.nsi
+index b5687ba61c..b6cc1cd124 100644
+--- a/installer_win32/installer32.nsi
++++ b/installer_win32/installer32.nsi
+@@ -74,9 +74,9 @@ Section "Play! (required)"
+   
+   ; Put file there
+   File "${BINARY_INPUT_PATH}\Play.exe"
+-  File "${BINARY_INPUT_PATH}\Qt5Core.dll"
+-  File "${BINARY_INPUT_PATH}\Qt5Gui.dll"
+-  File "${BINARY_INPUT_PATH}\Qt5Widgets.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Core.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Gui.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Widgets.dll"
+   File /oname=platforms\qwindows.dll "${BINARY_INPUT_PATH}\platforms\qwindows.dll"
+   File /oname=styles\qwindowsvistastyle.dll "${BINARY_INPUT_PATH}\styles\qwindowsvistastyle.dll"
+   File /oname=imageformats\qjpeg.dll "${BINARY_INPUT_PATH}\imageformats\qjpeg.dll"
+@@ -127,9 +127,9 @@ Section "Uninstall"
+   
+   ; Remove files and uninstaller
+   Delete $INSTDIR\Play.exe
+-  Delete $INSTDIR\Qt5Core.dll
+-  Delete $INSTDIR\Qt5Gui.dll
+-  Delete $INSTDIR\Qt5Widgets.dll
++  Delete $INSTDIR\Qt6Core.dll
++  Delete $INSTDIR\Qt6Gui.dll
++  Delete $INSTDIR\Qt6Widgets.dll
+   Delete $INSTDIR\platforms\qwindows.dll
+   Delete $INSTDIR\styles\qwindowsvistastyle.dll
+   Delete $INSTDIR\imageformats\qjpeg.dll
+diff --git a/installer_win32/installer64.nsi b/installer_win32/installer64.nsi
+index e2539606e9..415a2d28e2 100644
+--- a/installer_win32/installer64.nsi
++++ b/installer_win32/installer64.nsi
+@@ -75,9 +75,9 @@ Section "Play! (required)"
+   
+   ; Put file there
+   File "${BINARY_INPUT_PATH}\Play.exe"
+-  File "${BINARY_INPUT_PATH}\Qt5Core.dll"
+-  File "${BINARY_INPUT_PATH}\Qt5Gui.dll"
+-  File "${BINARY_INPUT_PATH}\Qt5Widgets.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Core.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Gui.dll"
++  File "${BINARY_INPUT_PATH}\Qt6Widgets.dll"
+   File /oname=platforms\qwindows.dll "${BINARY_INPUT_PATH}\platforms\qwindows.dll"
+   File /oname=styles\qwindowsvistastyle.dll "${BINARY_INPUT_PATH}\styles\qwindowsvistastyle.dll"
+   File /oname=imageformats\qjpeg.dll "${BINARY_INPUT_PATH}\imageformats\qjpeg.dll"
+@@ -130,9 +130,9 @@ Section "Uninstall"
+   
+   ; Remove files and uninstaller
+   Delete $INSTDIR\Play.exe
+-  Delete $INSTDIR\Qt5Core.dll
+-  Delete $INSTDIR\Qt5Gui.dll
+-  Delete $INSTDIR\Qt5Widgets.dll
++  Delete $INSTDIR\Qt6Core.dll
++  Delete $INSTDIR\Qt6Gui.dll
++  Delete $INSTDIR\Qt6Widgets.dll
+   Delete $INSTDIR\platforms\qwindows.dll
+   Delete $INSTDIR\styles\qwindowsvistastyle.dll
+   Delete $INSTDIR\imageformats\qjpeg.dll
+diff --git a/tools/ElfView/CMakeLists.txt b/tools/ElfView/CMakeLists.txt
+index cf087e9a46..43324895dd 100644
+--- a/tools/ElfView/CMakeLists.txt
++++ b/tools/ElfView/CMakeLists.txt
+@@ -17,8 +17,8 @@ endif()
+ list(APPEND PROJECT_LIBS PlayCore)
+ 
+ set(QT_COMPONENTS Widgets Core)
+-find_package(Qt5 REQUIRED COMPONENTS ${QT_COMPONENTS})
+-list(APPEND PROJECT_LIBS Qt5::Widgets Qt5::Core)
++find_package(Qt6 REQUIRED COMPONENTS ${QT_COMPONENTS})
++list(APPEND PROJECT_LIBS Qt6::Widgets Qt6::Core)
+ 
+ set(DEBUG_SUPPORT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/ui_qt/DebugSupport)
+ 
+@@ -63,9 +63,9 @@ set(QT_RESOURCES
+ 	qt_ui/resources.qrc
+ )
+ 
+-QT5_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
+-QT5_WRAP_UI(ELFVIEW_UI_HEADERS ${ELFVIEW_UI})
+-QT5_WRAP_CPP(ELFVIEW_MOC_SRCS ${ELFVIEW_MOC_HEADERS})
++QT6_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
++QT6_WRAP_UI(ELFVIEW_UI_HEADERS ${ELFVIEW_UI})
++QT6_WRAP_CPP(ELFVIEW_MOC_SRCS ${ELFVIEW_MOC_HEADERS})
+ 
+ add_executable(ElfView WIN32 ${ELFVIEW_SRC} ${ELFVIEW_MOC_SRCS} ${QT_RES_SOURCES} ${ELFVIEW_UI_HEADERS})
+ target_link_libraries(ElfView PRIVATE ${PROJECT_LIBS})
+diff --git a/tools/PsfPlayer/Source/ui_qt/CMakeLists.txt b/tools/PsfPlayer/Source/ui_qt/CMakeLists.txt
+index 3b0fdee6a8..3123dc4b80 100644
+--- a/tools/PsfPlayer/Source/ui_qt/CMakeLists.txt
++++ b/tools/PsfPlayer/Source/ui_qt/CMakeLists.txt
+@@ -56,13 +56,13 @@ if(TARGET_PLATFORM_MACOS OR TARGET_PLATFORM_UNIX)
+ 	list(APPEND PROJECT_LIBS sh_openal)
+ endif()
+ 
+-find_package(Qt5 REQUIRED COMPONENTS Widgets Core)
+-list(APPEND PROJECT_LIBS Qt5::Widgets Qt5::Core)
++find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
++list(APPEND PROJECT_LIBS Qt6::Widgets Qt6::Core)
+ add_definitions(${QT_DEFINITIONS})
+ 
+-QT5_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
+-QT5_WRAP_UI(QT_UI_HEADERS ${QT_UIS})
+-QT5_WRAP_CPP(QT_MOC_SRCS ${QT_MOC_HEADERS})
++QT6_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
++QT6_WRAP_UI(QT_UI_HEADERS ${QT_UIS})
++QT6_WRAP_CPP(QT_MOC_SRCS ${QT_MOC_HEADERS})
+ 
+ add_executable(PsfPlayer ${QT_SOURCES} ${QT_MOC_SRCS} ${QT_RES_SOURCES} ${QT_UI_HEADERS})
+ target_link_libraries(PsfPlayer ${PROJECT_LIBS})
+
+From edb551eccef37348a573a0b640bb62bbb9312e5e Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Sat, 12 Aug 2023 23:29:13 +0200
+Subject: [PATCH 2/3] WIP Qt6, no Vulkan
+
+---
+ Source/ui_qt/GSH_VulkanQt.cpp                 |  6 +--
+ 8 files changed, 19 insertions(+), 60 deletions(-)
+
+diff --git a/Source/ui_qt/GSH_VulkanQt.cpp b/Source/ui_qt/GSH_VulkanQt.cpp
+index d59270fe77..2b554dac90 100644
+--- a/Source/ui_qt/GSH_VulkanQt.cpp
++++ b/Source/ui_qt/GSH_VulkanQt.cpp
+@@ -8,7 +8,7 @@
+ #endif
+ 
+ #ifdef __linux__
+-#include <QX11Info>
++//#include <QtGui/private/qtx11extras_p.h>
+ #endif
+ 
+ CGSH_VulkanQt::CGSH_VulkanQt(QWindow* renderWindow)
+@@ -40,11 +40,11 @@ void CGSH_VulkanQt::InitializeImpl()
+ #endif
+ 
+ #ifdef __linux__
+-	auto surfaceCreateInfo = Framework::Vulkan::XcbSurfaceCreateInfoKHR();
++	/*auto surfaceCreateInfo = Framework::Vulkan::XcbSurfaceCreateInfoKHR();
+ 	surfaceCreateInfo.window = static_cast<xcb_window_t>(m_renderWindow->winId());
+ 	surfaceCreateInfo.connection = QX11Info::connection();
+ 	auto result = m_instance.vkCreateXcbSurfaceKHR(m_instance, &surfaceCreateInfo, nullptr, &m_context->surface);
+-	CHECKVULKANERROR(result);
++	CHECKVULKANERROR(result);*/
+ #endif
+ 
+ 	CGSH_Vulkan::InitializeImpl();
+
+From cc60a4494be2323af9d3638be81c19dbe1c6359d Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Mon, 14 Aug 2023 20:59:19 +0200
+Subject: [PATCH 3/3] Fix GSH_VulkanQt for Qt6
+
+---
+ Source/ui_qt/CMakeLists.txt   |  7 +++++++
+ Source/ui_qt/GSH_VulkanQt.cpp | 13 +++++++++----
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/Source/ui_qt/CMakeLists.txt b/Source/ui_qt/CMakeLists.txt
+index b9970529a9..7deae019ce 100644
+--- a/Source/ui_qt/CMakeLists.txt
++++ b/Source/ui_qt/CMakeLists.txt
+@@ -53,6 +53,9 @@ if(USE_GSH_VULKAN)
+ 	set(GSH_VULKAN_QT_MOC
+ 		vulkanwindow.h
+ 	)
++	if (TARGET_PLATFORM_UNIX)
++		find_package(X11_XCB REQUIRED)
++	endif()
+ endif()
+ 
+ if(TARGET_PLATFORM_UNIX)
+@@ -249,6 +252,10 @@ find_package(Qt6 REQUIRED COMPONENTS ${QT_COMPONENTS})
+ 
+ list(APPEND PROJECT_LIBS Qt6::Widgets Qt6::Core)
+ 
++if (TARGET_PLATFORM_UNIX)
++list(APPEND PROJECT_LIBS ${X11_XCB_LIBRARIES})
++endif()
++
+ add_definitions(${QT_DEFINITIONS})
+ 
+ QT6_ADD_RESOURCES(QT_RES_SOURCES ${QT_RESOURCES})
+diff --git a/Source/ui_qt/GSH_VulkanQt.cpp b/Source/ui_qt/GSH_VulkanQt.cpp
+index 2b554dac90..55eb9978f3 100644
+--- a/Source/ui_qt/GSH_VulkanQt.cpp
++++ b/Source/ui_qt/GSH_VulkanQt.cpp
+@@ -2,13 +2,16 @@
+ #include "vulkan/StructDefs.h"
+ #include "vulkan/Loader.h"
+ #include <QWindow>
++#include <QGuiApplication>
+ 
+ #ifdef __APPLE__
+ #include <MoltenVK/vk_mvk_moltenvk.h>
+ #endif
+ 
+ #ifdef __linux__
+-//#include <QtGui/private/qtx11extras_p.h>
++#include <X11/Xlib-xcb.h>
++#include <QtCore/qnativeinterface.h>
++using namespace QNativeInterface;
+ #endif
+ 
+ CGSH_VulkanQt::CGSH_VulkanQt(QWindow* renderWindow)
+@@ -40,11 +43,13 @@ void CGSH_VulkanQt::InitializeImpl()
+ #endif
+ 
+ #ifdef __linux__
+-	/*auto surfaceCreateInfo = Framework::Vulkan::XcbSurfaceCreateInfoKHR();
++	auto surfaceCreateInfo = Framework::Vulkan::XcbSurfaceCreateInfoKHR();
+ 	surfaceCreateInfo.window = static_cast<xcb_window_t>(m_renderWindow->winId());
+-	surfaceCreateInfo.connection = QX11Info::connection();
++	auto x11NativeInterfce = qApp->nativeInterface<QNativeInterface::QX11Application>();
++	Display *disp = x11NativeInterfce->display();
++	surfaceCreateInfo.connection = XGetXCBConnection(disp);
+ 	auto result = m_instance.vkCreateXcbSurfaceKHR(m_instance, &surfaceCreateInfo, nullptr, &m_context->surface);
+-	CHECKVULKANERROR(result);*/
++	CHECKVULKANERROR(result);
+ #endif
+ 
+ 	CGSH_Vulkan::InitializeImpl();
+--- a/dev/null	2023-10-02 14:39:13.586400154 +0200
++++ b/deps/Dependencies/cmake-modules/FindX11_XCB.cmake	2023-10-03 11:01:16.750850705 +0200
+@@ -0,0 +1,96 @@
++# SPDX-FileCopyrightText: 2014 Alex Merry <alex.merry@kde.org>
++# SPDX-FileCopyrightText: 2011 Fredrik Höglund <fredrik@kde.org>
++# SPDX-FileCopyrightText: 2008 Helio Chissini de Castro <helio@kde.org>
++# SPDX-FileCopyrightText: 2007 Matthias Kretz <kretz@kde.org>
++#
++# SPDX-License-Identifier: BSD-3-Clause
++
++#[=======================================================================[.rst:
++FindX11_XCB
++-----------
++
++Try to find the X11 XCB compatibility library.
++
++This will define the following variables:
++
++``X11_XCB_FOUND``
++    True if (the requested version of) libX11-xcb is available
++``X11_XCB_VERSION``
++    The version of libX11-xcb (this is not guaranteed to be set even when
++    X11_XCB_FOUND is true)
++``X11_XCB_LIBRARIES``
++    This can be passed to target_link_libraries() instead of the ``EGL::EGL``
++    target
++``X11_XCB_INCLUDE_DIR``
++    This should be passed to target_include_directories() if the target is not
++    used for linking
++``X11_XCB_DEFINITIONS``
++    This should be passed to target_compile_options() if the target is not
++    used for linking
++
++If ``X11_XCB_FOUND`` is TRUE, it will also define the following imported
++target:
++
++``X11::XCB``
++    The X11 XCB compatibility library
++
++In general we recommend using the imported target, as it is easier to use.
++Bear in mind, however, that if the target is in the link interface of an
++exported library, it must be made available by the package config file.
++
++Since pre-1.0.0.
++#]=======================================================================]
++
++include(${CMAKE_CURRENT_LIST_DIR}/ECMFindModuleHelpers.cmake)
++
++ecm_find_package_version_check(X11_XCB)
++
++# use pkg-config to get the directories and then use these values
++# in the FIND_PATH() and FIND_LIBRARY() calls
++find_package(PkgConfig QUIET)
++pkg_check_modules(PKG_X11_XCB QUIET x11-xcb)
++
++set(X11_XCB_DEFINITIONS ${PKG_X11_XCB_CFLAGS_OTHER})
++set(X11_XCB_VERSION ${PKG_X11_XCB_VERSION})
++
++find_path(X11_XCB_INCLUDE_DIR
++    NAMES X11/Xlib-xcb.h
++    HINTS ${PKG_X11_XCB_INCLUDE_DIRS}
++)
++find_library(X11_XCB_LIBRARY
++    NAMES X11-xcb
++    HINTS ${PKG_X11_XCB_LIBRARY_DIRS}
++)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(X11_XCB
++    FOUND_VAR
++        X11_XCB_FOUND
++    REQUIRED_VARS
++        X11_XCB_LIBRARY
++        X11_XCB_INCLUDE_DIR
++    VERSION_VAR
++        X11_XCB_VERSION
++)
++
++if(X11_XCB_FOUND AND NOT TARGET X11::XCB)
++    add_library(X11::XCB UNKNOWN IMPORTED)
++    set_target_properties(X11::XCB PROPERTIES
++        IMPORTED_LOCATION "${X11_XCB_LIBRARY}"
++        INTERFACE_COMPILE_OPTIONS "${X11_XCB_DEFINITIONS}"
++        INTERFACE_INCLUDE_DIRECTORIES "${X11_XCB_INCLUDE_DIR}"
++    )
++endif()
++
++mark_as_advanced(X11_XCB_INCLUDE_DIR X11_XCB_LIBRARY)
++
++# compatibility variables
++set(X11_XCB_LIBRARIES ${X11_XCB_LIBRARY})
++set(X11_XCB_INCLUDE_DIRS ${X11_XCB_INCLUDE_DIR})
++set(X11_XCB_VERSION_STRING ${X11_XCB_VERSION})
++
++include(FeatureSummary)
++set_package_properties(X11_XCB PROPERTIES
++    URL "https://xorg.freedesktop.org/"
++    DESCRIPTION "A compatibility library for code that translates Xlib API calls into XCB calls"
++)
+--- a/dev/null	2023-10-02 14:39:13.586400154 +0200
++++ b/deps/Dependencies/cmake-modules/ECMFindModuleHelpers.cmake	2021-07-01 17:05:25.000000000 +0200
+@@ -0,0 +1,278 @@
++# SPDX-FileCopyrightText: 2014 Alex Merry <alex.merry@kde.org>
++#
++# SPDX-License-Identifier: BSD-3-Clause
++
++#[=======================================================================[.rst:
++ECMFindModuleHelpers
++--------------------
++
++Helper macros for find modules: ecm_find_package_version_check(),
++ecm_find_package_parse_components() and
++ecm_find_package_handle_library_components().
++
++::
++
++  ecm_find_package_version_check(<name>)
++
++Prints warnings if the CMake version or the project's required CMake version
++is older than that required by extra-cmake-modules.
++
++::
++
++  ecm_find_package_parse_components(<name>
++      RESULT_VAR <variable>
++      KNOWN_COMPONENTS <component1> [<component2> [...]]
++      [SKIP_DEPENDENCY_HANDLING])
++
++This macro will populate <variable> with a list of components found in
++<name>_FIND_COMPONENTS, after checking that all those components are in the
++list of KNOWN_COMPONENTS; if there are any unknown components, it will print
++an error or warning (depending on the value of <name>_FIND_REQUIRED) and call
++return().
++
++The order of components in <variable> is guaranteed to match the order they
++are listed in the KNOWN_COMPONENTS argument.
++
++If SKIP_DEPENDENCY_HANDLING is not set, for each component the variable
++<name>_<component>_component_deps will be checked for dependent components.
++If <component> is listed in <name>_FIND_COMPONENTS, then all its (transitive)
++dependencies will also be added to <variable>.
++
++::
++
++  ecm_find_package_handle_library_components(<name>
++      COMPONENTS <component> [<component> [...]]
++      [SKIP_DEPENDENCY_HANDLING])
++      [SKIP_PKG_CONFIG])
++
++Creates an imported library target for each component.  The operation of this
++macro depends on the presence of a number of CMake variables.
++
++The <name>_<component>_lib variable should contain the name of this library,
++and <name>_<component>_header variable should contain the name of a header
++file associated with it (whatever relative path is normally passed to
++'#include'). <name>_<component>_header_subdir variable can be used to specify
++which subdirectory of the include path the headers will be found in.
++ecm_find_package_components() will then search for the library
++and include directory (creating appropriate cache variables) and create an
++imported library target named <name>::<component>.
++
++Additional variables can be used to provide additional information:
++
++If SKIP_PKG_CONFIG, the <name>_<component>_pkg_config variable is set, and
++pkg-config is found, the pkg-config module given by
++<name>_<component>_pkg_config will be searched for and used to help locate the
++library and header file.  It will also be used to set
++<name>_<component>_VERSION.
++
++Note that if version information is found via pkg-config,
++<name>_<component>_FIND_VERSION can be set to require a particular version
++for each component.
++
++If SKIP_DEPENDENCY_HANDLING is not set, the INTERFACE_LINK_LIBRARIES property
++of the imported target for <component> will be set to contain the imported
++targets for the components listed in <name>_<component>_component_deps.
++<component>_FOUND will also be set to false if any of the compoments in
++<name>_<component>_component_deps are not found.  This requires the components
++in <name>_<component>_component_deps to be listed before <component> in the
++COMPONENTS argument.
++
++The following variables will be set:
++
++``<name>_TARGETS``
++  the imported targets
++``<name>_LIBRARIES``
++  the found libraries
++``<name>_INCLUDE_DIRS``
++  the combined required include directories for the components
++``<name>_DEFINITIONS``
++  the "other" CFLAGS provided by pkg-config, if any
++``<name>_VERSION``
++  the value of ``<name>_<component>_VERSION`` for the first component that
++  has this variable set (note that components are searched for in the order
++  they are passed to the macro), although if it is already set, it will not
++  be altered
++
++Note that these variables are never cleared, so if
++ecm_find_package_handle_library_components() is called multiple times with
++different components (typically because of multiple find_package() calls) then
++``<name>_TARGETS``, for example, will contain all the targets found in any
++call (although no duplicates).
++
++Since pre-1.0.0.
++#]=======================================================================]
++
++include(CMakeParseArguments)
++
++macro(ecm_find_package_version_check module_name)
++    if(CMAKE_VERSION VERSION_LESS 3.16.0)
++        message(FATAL_ERROR "CMake 3.16.0 is required by Find${module_name}.cmake")
++    endif()
++    if(CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 3.16.0)
++        message(AUTHOR_WARNING "Your project should require at least CMake 3.16.0 to use Find${module_name}.cmake")
++    endif()
++endmacro()
++
++macro(ecm_find_package_parse_components module_name)
++    set(ecm_fppc_options SKIP_DEPENDENCY_HANDLING)
++    set(ecm_fppc_oneValueArgs RESULT_VAR)
++    set(ecm_fppc_multiValueArgs KNOWN_COMPONENTS DEFAULT_COMPONENTS)
++    cmake_parse_arguments(ECM_FPPC "${ecm_fppc_options}" "${ecm_fppc_oneValueArgs}" "${ecm_fppc_multiValueArgs}" ${ARGN})
++
++    if(ECM_FPPC_UNPARSED_ARGUMENTS)
++        message(FATAL_ERROR "Unexpected arguments to ecm_find_package_parse_components: ${ECM_FPPC_UNPARSED_ARGUMENTS}")
++    endif()
++    if(NOT ECM_FPPC_RESULT_VAR)
++        message(FATAL_ERROR "Missing RESULT_VAR argument to ecm_find_package_parse_components")
++    endif()
++    if(NOT ECM_FPPC_KNOWN_COMPONENTS)
++        message(FATAL_ERROR "Missing KNOWN_COMPONENTS argument to ecm_find_package_parse_components")
++    endif()
++    if(NOT ECM_FPPC_DEFAULT_COMPONENTS)
++        set(ECM_FPPC_DEFAULT_COMPONENTS ${ECM_FPPC_KNOWN_COMPONENTS})
++    endif()
++
++    if(${module_name}_FIND_COMPONENTS)
++        set(ecm_fppc_requestedComps ${${module_name}_FIND_COMPONENTS})
++
++        if(NOT ECM_FPPC_SKIP_DEPENDENCY_HANDLING)
++            # Make sure deps are included
++            foreach(ecm_fppc_comp ${ecm_fppc_requestedComps})
++                foreach(ecm_fppc_dep_comp ${${module_name}_${ecm_fppc_comp}_component_deps})
++                    list(FIND ecm_fppc_requestedComps "${ecm_fppc_dep_comp}" ecm_fppc_index)
++                    if("${ecm_fppc_index}" STREQUAL "-1")
++                        if(NOT ${module_name}_FIND_QUIETLY)
++                            message(STATUS "${module_name}: ${ecm_fppc_comp} requires ${${module_name}_${ecm_fppc_comp}_component_deps}")
++                        endif()
++                        list(APPEND ecm_fppc_requestedComps "${ecm_fppc_dep_comp}")
++                    endif()
++                endforeach()
++            endforeach()
++        else()
++            message(STATUS "Skipping dependency handling for ${module_name}")
++        endif()
++        list(REMOVE_DUPLICATES ecm_fppc_requestedComps)
++
++        # This makes sure components are listed in the same order as
++        # KNOWN_COMPONENTS (potentially important for inter-dependencies)
++        set(${ECM_FPPC_RESULT_VAR})
++        foreach(ecm_fppc_comp ${ECM_FPPC_KNOWN_COMPONENTS})
++            list(FIND ecm_fppc_requestedComps "${ecm_fppc_comp}" ecm_fppc_index)
++            if(NOT "${ecm_fppc_index}" STREQUAL "-1")
++                list(APPEND ${ECM_FPPC_RESULT_VAR} "${ecm_fppc_comp}")
++                list(REMOVE_AT ecm_fppc_requestedComps ${ecm_fppc_index})
++            endif()
++        endforeach()
++        # if there are any left, they are unknown components
++        if(ecm_fppc_requestedComps)
++            set(ecm_fppc_msgType STATUS)
++            if(${module_name}_FIND_REQUIRED)
++                set(ecm_fppc_msgType FATAL_ERROR)
++            endif()
++            if(NOT ${module_name}_FIND_QUIETLY)
++                message(${ecm_fppc_msgType} "${module_name}: requested unknown components ${ecm_fppc_requestedComps}")
++            endif()
++            return()
++        endif()
++    else()
++        set(${ECM_FPPC_RESULT_VAR} ${ECM_FPPC_DEFAULT_COMPONENTS})
++    endif()
++endmacro()
++
++macro(ecm_find_package_handle_library_components module_name)
++    set(ecm_fpwc_options SKIP_PKG_CONFIG SKIP_DEPENDENCY_HANDLING)
++    set(ecm_fpwc_oneValueArgs)
++    set(ecm_fpwc_multiValueArgs COMPONENTS)
++    cmake_parse_arguments(ECM_FPWC "${ecm_fpwc_options}" "${ecm_fpwc_oneValueArgs}" "${ecm_fpwc_multiValueArgs}" ${ARGN})
++
++    if(ECM_FPWC_UNPARSED_ARGUMENTS)
++        message(FATAL_ERROR "Unexpected arguments to ecm_find_package_handle_components: ${ECM_FPWC_UNPARSED_ARGUMENTS}")
++    endif()
++    if(NOT ECM_FPWC_COMPONENTS)
++        message(FATAL_ERROR "Missing COMPONENTS argument to ecm_find_package_handle_components")
++    endif()
++
++    include(FindPackageHandleStandardArgs)
++    find_package(PkgConfig QUIET)
++    foreach(ecm_fpwc_comp ${ECM_FPWC_COMPONENTS})
++        set(ecm_fpwc_dep_vars)
++        set(ecm_fpwc_dep_targets)
++        if(NOT SKIP_DEPENDENCY_HANDLING)
++            foreach(ecm_fpwc_dep ${${module_name}_${ecm_fpwc_comp}_component_deps})
++                list(APPEND ecm_fpwc_dep_vars "${module_name}_${ecm_fpwc_dep}_FOUND")
++                list(APPEND ecm_fpwc_dep_targets "${module_name}::${ecm_fpwc_dep}")
++            endforeach()
++        endif()
++
++        if(NOT ECM_FPWC_SKIP_PKG_CONFIG AND ${module_name}_${ecm_fpwc_comp}_pkg_config)
++            pkg_check_modules(PKG_${module_name}_${ecm_fpwc_comp} QUIET
++                              ${${module_name}_${ecm_fpwc_comp}_pkg_config})
++        endif()
++
++        find_path(${module_name}_${ecm_fpwc_comp}_INCLUDE_DIR
++            NAMES ${${module_name}_${ecm_fpwc_comp}_header}
++            HINTS ${PKG_${module_name}_${ecm_fpwc_comp}_INCLUDE_DIRS}
++            PATH_SUFFIXES ${${module_name}_${ecm_fpwc_comp}_header_subdir}
++        )
++        find_library(${module_name}_${ecm_fpwc_comp}_LIBRARY
++            NAMES ${${module_name}_${ecm_fpwc_comp}_lib}
++            HINTS ${PKG_${module_name}_${ecm_fpwc_comp}_LIBRARY_DIRS}
++        )
++
++        set(${module_name}_${ecm_fpwc_comp}_VERSION "${PKG_${module_name}_${ecm_fpwc_comp}_VERSION}")
++        if(NOT ${module_name}_VERSION)
++            set(${module_name}_VERSION ${${module_name}_${ecm_fpwc_comp}_VERSION})
++        endif()
++
++        set(FPHSA_NAME_MISMATCHED 1)
++        find_package_handle_standard_args(${module_name}_${ecm_fpwc_comp}
++            FOUND_VAR
++                ${module_name}_${ecm_fpwc_comp}_FOUND
++            REQUIRED_VARS
++                ${module_name}_${ecm_fpwc_comp}_LIBRARY
++                ${module_name}_${ecm_fpwc_comp}_INCLUDE_DIR
++                ${ecm_fpwc_dep_vars}
++            VERSION_VAR
++                ${module_name}_${ecm_fpwc_comp}_VERSION
++            )
++        unset(FPHSA_NAME_MISMATCHED)
++
++        mark_as_advanced(
++            ${module_name}_${ecm_fpwc_comp}_LIBRARY
++            ${module_name}_${ecm_fpwc_comp}_INCLUDE_DIR
++        )
++
++        if(${module_name}_${ecm_fpwc_comp}_FOUND)
++            list(APPEND ${module_name}_LIBRARIES
++                        "${${module_name}_${ecm_fpwc_comp}_LIBRARY}")
++            list(APPEND ${module_name}_INCLUDE_DIRS
++                        "${${module_name}_${ecm_fpwc_comp}_INCLUDE_DIR}")
++            set(${module_name}_DEFINITIONS
++                    ${${module_name}_DEFINITIONS}
++                    ${PKG_${module_name}_${ecm_fpwc_comp}_DEFINITIONS})
++            if(NOT TARGET ${module_name}::${ecm_fpwc_comp})
++                add_library(${module_name}::${ecm_fpwc_comp} UNKNOWN IMPORTED)
++                set_target_properties(${module_name}::${ecm_fpwc_comp} PROPERTIES
++                    IMPORTED_LOCATION "${${module_name}_${ecm_fpwc_comp}_LIBRARY}"
++                    INTERFACE_COMPILE_OPTIONS "${PKG_${module_name}_${ecm_fpwc_comp}_DEFINITIONS}"
++                    INTERFACE_INCLUDE_DIRECTORIES "${${module_name}_${ecm_fpwc_comp}_INCLUDE_DIR}"
++                    INTERFACE_LINK_LIBRARIES "${ecm_fpwc_dep_targets}"
++                )
++            endif()
++            list(APPEND ${module_name}_TARGETS
++                        "${module_name}::${ecm_fpwc_comp}")
++        endif()
++    endforeach()
++    if(${module_name}_LIBRARIES)
++        list(REMOVE_DUPLICATES ${module_name}_LIBRARIES)
++    endif()
++    if(${module_name}_INCLUDE_DIRS)
++        list(REMOVE_DUPLICATES ${module_name}_INCLUDE_DIRS)
++    endif()
++    if(${module_name}_DEFINITIONS)
++        list(REMOVE_DUPLICATES ${module_name}_DEFINITIONS)
++    endif()
++    if(${module_name}_TARGETS)
++        list(REMOVE_DUPLICATES ${module_name}_TARGETS)
++    endif()
++endmacro()
