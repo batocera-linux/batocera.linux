@@ -13,12 +13,12 @@
  
  #include "main.h"
  #include "file.h"
-@@ -26,18 +26,30 @@
+@@ -26,17 +26,27 @@ const char floppy_ipf_fileid[] = "Hatari floppy_ipf.c";
  #include "cycles.h"
  
  #ifdef HAVE_CAPSIMAGE
 -#if CAPSIMAGE_VERSION == 5
--#include <caps5/CapsLibAll.h>
+-#include <CapsLibAll.h>
 -#else
 -#include <caps/fdc.h>
 -#define CAPS_LIB_RELEASE	4
@@ -34,7 +34,6 @@
  #define	CAPS_LIB_REL_REV	( CAPS_LIB_RELEASE * 100 + CAPS_LIB_REVISION )
  #endif
  
- 
 +/* To handle RAW stream images with one file per track/side */
 +#define	IPF_MAX_TRACK_RAW_STREAM_IMAGE	84				/* track number can be 0 .. 83 */
 +#define	IPF_MAX_SIDE_RAW_STREAM_IMAGE	2				/* side number can be 0 or 1 */
@@ -45,11 +44,9 @@
 +	Uint8		*TrackData;
 +} IPF_RawStreamImage[ MAX_FLOPPYDRIVES ][ IPF_MAX_TRACK_RAW_STREAM_IMAGE ][ IPF_MAX_SIDE_RAW_STREAM_IMAGE ];
 +
-+
-+
+ 
  typedef struct
  {
- #ifdef HAVE_CAPSIMAGE
 @@ -46,27 +58,33 @@
  
  	struct CapsFdc		Fdc;				/* Fdc state */
