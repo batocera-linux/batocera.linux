@@ -69,6 +69,7 @@
 - Libretro-Fuse to Jun 24, 2023 build
 - Libretro-Gambatte to Sep 29, 2023 build
 - Libretro-Gearsystem to Oct 23, 2023 build
+- Libretro-Genesisplusgx-Wide to Sep 16, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
