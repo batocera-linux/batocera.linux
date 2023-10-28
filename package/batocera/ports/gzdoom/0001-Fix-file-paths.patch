@@ -184,15 +184,6 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
  }
 
  //===========================================================================
-@@ -204,7 +152,7 @@
-
- FString M_GetDocumentsPath()
- {
--	return NicePath("$HOME/" GAME_DIR "/");
-+	return M_GetSavegamesPath();
- }
-
- //===========================================================================
 Index: bin/windows/vpx/src/backtrace.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP

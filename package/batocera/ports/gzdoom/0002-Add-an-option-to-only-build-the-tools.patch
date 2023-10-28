@@ -33,7 +33,7 @@ index c0b8ac9df..17407e954 100644
  
  include( TargetArch )
  
-@@ -354,15 +358,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+@@ -356,15 +356,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
  option(FORCE_INTERNAL_ASMJIT "Use internal asmjit" ON)
  mark_as_advanced( FORCE_INTERNAL_ASMJIT )
  
@@ -46,9 +46,9 @@ index c0b8ac9df..17407e954 100644
 -set( DRPC_LIBRARIES discord-rpc )
 -set( DRPC_LIBRARY discord-rpc )
 -
- if( ZLIB_FOUND AND NOT FORCE_INTERNAL_ZLIB )
- 	message( STATUS "Using system zlib, includes found at ${ZLIB_INCLUDE_DIR}" )
- else()
+ if( HAVE_VM_JIT AND UNIX )
+ 	check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
+ 	if( NOT HAVE_BACKTRACE )
 @@ -423,6 +381,57 @@ endif()
  
  set( LZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/lzma/C" )
@@ -107,7 +107,7 @@ index c0b8ac9df..17407e954 100644
  if( NOT CMAKE_CROSSCOMPILING )
  	if( NOT CROSS_EXPORTS )
  		set( CROSS_EXPORTS "" )
-@@ -430,25 +439,29 @@ if( NOT CMAKE_CROSSCOMPILING )
+@@ -453,26 +453,30 @@ if( NOT CMAKE_CROSSCOMPILING )
  endif()
  
  # Install the entire docs directory in the distributed zip package
@@ -132,6 +132,7 @@ index c0b8ac9df..17407e954 100644
  option( DYN_OPENAL "Dynamically load OpenAL" ON )
  
  add_subdirectory( libraries/lzma )
+ add_subdirectory( libraries/miniz )
  add_subdirectory( tools )
 -add_subdirectory( wadsrc )
 -add_subdirectory( wadsrc_bm )
