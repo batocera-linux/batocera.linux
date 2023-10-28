@@ -3,8 +3,8 @@
 # libretro-kronos
 #
 ################################################################################
-# Version: Commits on Mar 16, 2022
-LIBRETRO_KRONOS_VERSION = 29205c6e034e30aa28697a5936f4e17895894be7
+# Version: Commits on Oct 27, 2023
+LIBRETRO_KRONOS_VERSION = 67b4a576c41da7b98f5abb0f18e0ce7a46e061c1
 LIBRETRO_KRONOS_SITE = $(call github,FCare,kronos,$(LIBRETRO_KRONOS_VERSION))
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
 
@@ -29,7 +29,9 @@ endif
 
 define LIBRETRO_KRONOS_BUILD_CMDS
 	$(MAKE) -C $(@D)/yabause/src/libretro -f Makefile generate-files && \
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/yabause/src/libretro -f Makefile platform="$(LIBRETRO_KRONOS_PLATFORM)" $(LIBRETRO_KRONOS_EXTRA_ARGS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C \
+	    $(@D)/yabause/src/libretro -f Makefile \
+		platform="$(LIBRETRO_KRONOS_PLATFORM)" $(LIBRETRO_KRONOS_EXTRA_ARGS)
 endef
 
 define LIBRETRO_KRONOS_INSTALL_TARGET_CMDS
