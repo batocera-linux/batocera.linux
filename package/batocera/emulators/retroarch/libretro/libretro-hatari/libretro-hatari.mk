@@ -3,8 +3,8 @@
 # libretro-hatari
 #
 ################################################################################
-# Version: Commits on Jan 19, 2022
-LIBRETRO_HATARI_VERSION = 79d128888ca3efdd27d639a35edf72a9bc81a798
+# Version: Commits on Sep 30, 2023
+LIBRETRO_HATARI_VERSION = a4c9eb0bb79e47a2870c12b04566c1f8d25e4bf3
 LIBRETRO_HATARI_SITE = $(call github,libretro,hatari,$(LIBRETRO_HATARI_VERSION))
 LIBRETRO_HATARI_DEPENDENCIES = libcapsimage
 LIBRETRO_HATARI_LICENSE = GPLv2
@@ -31,7 +31,8 @@ LIBRETRO_HATARI_PLATFORM = unix
 endif
 
 define LIBRETRO_HATARI_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_HATARI_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile.libretro platform="$(LIBRETRO_HATARI_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_HATARI_VERSION) | cut -c 1-7)"
 endef
 
