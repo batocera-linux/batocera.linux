@@ -76,6 +76,7 @@
 - Libretro-Hatari to Sep 30, 2023 build
 - Libretro-iMame to Apr 26, 2023 build
 - Libretro-Kronos to Oct 27, 2023 build
+- Libretro-Lutro to May 30, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
