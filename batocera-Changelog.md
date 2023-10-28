@@ -78,6 +78,7 @@
 - Libretro-Kronos to Oct 27, 2023 build
 - Libretro-Lutro to May 30, 2023 build
 - Libretro-Mame2003-plus to Oct 23, 2023 build
+- Libretro-Mesen to May 21, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
