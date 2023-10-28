@@ -3,8 +3,8 @@
 # libretro-handy
 #
 ################################################################################
-# Vaersion: Commits on Feb 23, 2023
-LIBRETRO_HANDY_VERSION = 63db085af671bad2929078c55434623b7d4632a1
+# Vaersion: Commits on Aug 20, 2023
+LIBRETRO_HANDY_VERSION = 0559d3397f689ea453b986311aeac8dbd33afb0b
 LIBRETRO_HANDY_SITE = $(call github,libretro,libretro-handy,$(LIBRETRO_HANDY_VERSION))
 LIBRETRO_HANDY_LICENSE = Zlib
 
@@ -24,7 +24,8 @@ LIBRETRO_HANDY_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_HANDY_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_HANDY_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile platform="$(LIBRETRO_HANDY_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_HANDY_VERSION) | cut -c 1-7)"
 endef
 
