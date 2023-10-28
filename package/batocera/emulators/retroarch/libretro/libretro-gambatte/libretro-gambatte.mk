@@ -3,8 +3,8 @@
 # libretro-gambatte
 #
 ################################################################################
-# Version: Commits on Mar 24, 2023
-LIBRETRO_GAMBATTE_VERSION = c21b9fb85134b1eba304f5d71685a1ee6339cef0
+# Version: Commits on Sep 29, 2023
+LIBRETRO_GAMBATTE_VERSION = 40d0d7ac4e11b5c2d1feac2ce96e4d824c248985	
 LIBRETRO_GAMBATTE_SITE = $(call github,libretro,gambatte-libretro,$(LIBRETRO_GAMBATTE_VERSION))
 LIBRETRO_GAMBATTE_LICENSE = GPLv2
 
@@ -24,7 +24,8 @@ LIBRETRO_GAMBATTE_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_GAMBATTE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile platform="$(LIBRETRO_GAMBATTE_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
+	    -f Makefile platform="$(LIBRETRO_GAMBATTE_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_GAMBATTE_VERSION) | cut -c 1-7)"
 endef
 

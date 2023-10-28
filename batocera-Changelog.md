@@ -67,6 +67,7 @@
 - Libretro-FMSX to Apr 18, 2023 build
 - Libretro-Freeintv to Apr 18, 2023 build
 - Libretro-Fuse to Jun 24, 2023 build
+- Libretro-Gambatte to Sep 29, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
