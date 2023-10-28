@@ -3,8 +3,8 @@
 # libretro-genesisplusgx-wide
 #
 ################################################################################
-# Version: Commits on Feb 17, 2023
-LIBRETRO_GENESISPLUSGX_WIDE_VERSION = 04e9a4d9c88b2dddd4467979847f11054f7e998a
+# Version: Commits on Sep 16, 2023
+LIBRETRO_GENESISPLUSGX_WIDE_VERSION = f73cf1b0769127cee137a559f1c132b24c147923
 LIBRETRO_GENESISPLUSGX_WIDE_SITE = $(call github,libretro,Genesis-Plus-GX-Wide,$(LIBRETRO_GENESISPLUSGX_WIDE_VERSION))
 LIBRETRO_GENESISPLUSGX_WIDE_LICENSE = Non-commercial
 
@@ -19,7 +19,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
 endif
 
 define LIBRETRO_GENESISPLUSGX_WIDE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_GENESISPLUSGX_WIDE_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
+	    -f Makefile.libretro platform="$(LIBRETRO_GENESISPLUSGX_WIDE_PLATFORM)"
 endef
 
 define LIBRETRO_GENESISPLUSGX_WIDE_INSTALL_TARGET_CMDS
