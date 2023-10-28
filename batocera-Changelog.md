@@ -80,6 +80,7 @@
 - Libretro-Mame2003-plus to Oct 23, 2023 build
 - Libretro-Mesen to May 21, 2023 build
 - Libretro-MGBA to Oct 26, 2023 build
+- Libretro-Minivmac to Dec 7, 2022 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
