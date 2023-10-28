@@ -3,8 +3,8 @@
 # libretro-fmsx
 #
 ################################################################################
-# Version: Commits on Jul 26, 2022
-LIBRETRO_FMSX_VERSION = 1360c9ff32b390383567774d01fbe5d6dfcadaa3
+# Version: Commits on Apr 18, 2023
+LIBRETRO_FMSX_VERSION = 1806eed4376fbe2fad82fa19271ea298cfbb7795
 LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,$(LIBRETRO_FMSX_VERSION))
 LIBRETRO_FMSX_LICENSE = GPLv2
 
@@ -35,7 +35,8 @@ LIBRETRO_FMSX_EXTRA_ARGS += ARCH=x86_64
 endif
 
 define LIBRETRO_FMSX_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_FMSX_PLATFORM)" $(LIBRETRO_FMSX_EXTRA_ARGS) \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile platform="$(LIBRETRO_FMSX_PLATFORM)" $(LIBRETRO_FMSX_EXTRA_ARGS) \
         GIT_VERSION="-$(shell echo $(LIBRETRO_FMSX_VERSION) | cut -c 1-7)"
 endef
 
