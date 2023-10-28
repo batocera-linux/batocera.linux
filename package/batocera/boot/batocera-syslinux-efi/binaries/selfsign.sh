@@ -15,3 +15,6 @@ openssl x509 -in batocera-mok.crt -out batocera-mok.cer -outform DER
 cp bootx64.efi /tmp/bootx64.sbat.efi
 objcopy --set-section-alignment '.sbat=512' --add-section .sbat=batocera.csv --adjust-section-vma .sbat+10000000 /tmp/bootx64.sbat.efi
 sbsign --key batocera-mok.key --cert batocera-mok.crt --output bootx64.selfsigned.efi /tmp/bootx64.sbat.efi
+cp fbx64.efi /tmp/fbx64.sbat.efi
+objcopy --set-section-alignment '.sbat=512' --add-section .sbat=batocera.csv --adjust-section-vma .sbat+10000000 /tmp/fbx64.sbat.efi
+sbsign --key batocera-mok.key --cert batocera-mok.crt --output fbx64.selfsigned.efi /tmp/fbx64.sbat.efi
