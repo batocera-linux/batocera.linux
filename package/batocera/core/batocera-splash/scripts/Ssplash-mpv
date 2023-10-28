@@ -129,18 +129,24 @@ do_videostart ()
 
     # get the drm path
     card_path=""
-    for card in /sys/class/drm/card*; do
-        card_id=$(basename "$card")
+    for card_directory in /sys/class/drm/card*; do
+        card_id=$(basename "$card_directory")
         # check if the card has a connected output
-        if [ -e "$card/status" ] && [ "$(cat "$card/status")" == "connected" ]; then
-            if [ -z "$display_type" ] || grep -q "$display_type" <<< "$(echo "$card_id")"; then
-                # Extract the card number from the card_id
-                card_number=$(echo "$card_id" | sed -n 's/card\([0-9]\+\).*/\1/p')
-                card_path="/dev/dri/card$card_number"
-                echo "Connected card path: $card_path" >> $log
-                break
+        for connection_directory in "$card_directory"/*; do
+            connection_id=$(basename "$connection_directory")
+            if [ -e "$connection_directory/status" ] && [ "$(cat "$connection_directory/status")" == "connected" ]; then
+                echo "Connected output = $connection_directory"
+                if [ -z "$display_type" ] || grep -q "$display_type" <<< "$(echo "$card_id")"; then
+                    # extract the card number from the card_id
+                    card_number=$(echo "$card_id" | sed -n 's/card\([0-9]\+\).*/\1/p')
+                    card_path="/dev/dri/card$card_number"
+                    echo "Connected card path: $card_path" >> $log
+                    break
+                fi
             fi
-        fi
+        done
+        # exit the loop if a connected display is found
+        [ -n "$card_path" ] && break
     done
     # add to log if no cards detected
     if [ -z "$card_path" ]; then
