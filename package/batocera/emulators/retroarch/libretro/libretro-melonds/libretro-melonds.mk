@@ -3,8 +3,8 @@
 # libretro-melonds
 #
 ################################################################################
-# Version: Commits on Dec 07, 2022
-LIBRETRO_MELONDS_VERSION = 0e1f06da626cbe67215c3f06f6bdf510dd4e4649
+# Version: Commits on Apr 13, 2023
+LIBRETRO_MELONDS_VERSION = c6488c88cb4c7583dbcd61609e0eef441572fae8
 LIBRETRO_MELONDS_SITE = $(call github,libretro,melonds,$(LIBRETRO_MELONDS_VERSION))
 LIBRETRO_MELONDS_LICENSE = GPLv2
 LIBRETRO_MELONDS_DEPENDENCIES = libpcap
@@ -44,7 +44,8 @@ LIBRETRO_MELONDS_EXTRA_ARGS += ARCH=x86_64
 endif
 
 define LIBRETRO_MELONDS_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) LDFLAGS="-lrt" CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MELONDS_PLATFORM)" $(LIBRETRO_MELONDS_EXTRA_ARGS) \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) LDFLAGS="-lrt" CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile platform="$(LIBRETRO_MELONDS_PLATFORM)" $(LIBRETRO_MELONDS_EXTRA_ARGS) \
         GIT_VERSION="-$(shell echo $(LIBRETRO_MELONDS_VERSION) | cut -c 1-7)"
 endef
 
