@@ -3,8 +3,8 @@
 # libretro-fceumm
 #
 ################################################################################
-# Version: Commits on Mar 11, 2022
-LIBRETRO_FCEUMM_VERSION = 1fa798b220a6df8417dcf7da0ab117533385d9c2
+# Version: Commits on Sep 17, 2023
+LIBRETRO_FCEUMM_VERSION = 7fad08e5522e5396a1196055fc106be9b5d5de77
 LIBRETRO_FCEUMM_SITE = $(call github,libretro,libretro-fceumm,$(LIBRETRO_FCEUMM_VERSION))
 LIBRETRO_FCEUMM_LICENSE = GPLv2
 
@@ -30,7 +30,8 @@ LIBRETRO_FCEUMM_PLATFORM = armv
 endif
 
 define LIBRETRO_FCEUMM_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_FCEUMM_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
+	    -f Makefile.libretro platform="$(LIBRETRO_FCEUMM_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_FCEUMM_VERSION) | cut -c 1-7)"
 endef
 

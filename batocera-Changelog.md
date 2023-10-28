@@ -63,6 +63,7 @@
 - Libretro-DosBox-Pure to Oct 24, 2023 build
 - Libretro-Ecwolf to Jul 18, 2023 build
 - Libretro-Fake08 to Oct 19, 2023 build
+- Libretro-Fceumm to Sep 17, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
