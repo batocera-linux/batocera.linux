@@ -59,6 +59,7 @@
 - Libretro-ChaiLove to Sep 30, 2023 build
 - Libretro-Craft to May 28, 2023 build
 - Libretro-Desmume to Oct 6, 2023 build
+- GZDoom to g4.11.3
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1

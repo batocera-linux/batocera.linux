@@ -1,13 +1,13 @@
 --- a/CMakeLists.txt	2023-09-07 18:07:39.103274677 +0200
 +++ b/CMakeLists.txt	2023-09-07 18:15:22.709886362 +0200
-@@ -216,7 +216,6 @@
+@@ -216,7 +216,6 @@ endmacro()
  option( NO_OPENAL "Disable OpenAL sound support" OFF )
  
  find_package( BZip2 )
 -find_package( VPX )
- find_package( ZLIB )
  find_package( WebP )
  if (NOT WebP_FOUND)
+ 	include(FindPkgConfig)
 @@ -233,7 +232,6 @@
  	add_library(WebP::libwebpmux ALIAS PkgConfig::libwebpmux)
  endif()
