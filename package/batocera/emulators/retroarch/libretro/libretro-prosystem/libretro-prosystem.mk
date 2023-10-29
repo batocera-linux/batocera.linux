@@ -3,8 +3,8 @@
 # libretro-prosystem
 #
 ################################################################################
-# Version: Commits on Feb 20, 2023
-LIBRETRO_PROSYSTEM_VERSION = 763ad22c7de51c8f06d6be0d49c554ce6a94a29b
+# Version: Commits on Aug 18, 2023
+LIBRETRO_PROSYSTEM_VERSION = 4202ac5bdb2ce1a21f84efc0e26d75bb5aa7e248
 LIBRETRO_PROSYSTEM_SITE = $(call github,libretro,prosystem-libretro,$(LIBRETRO_PROSYSTEM_VERSION))
 LIBRETRO_PROSYSTEM_LICENSE = GPLv2
 
@@ -30,7 +30,8 @@ LIBRETRO_PROSYSTEM_PLATFORM = unix
 endif
 
 define LIBRETRO_PROSYSTEM_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PROSYSTEM_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
+	    -f Makefile platform="$(LIBRETRO_PROSYSTEM_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_PROSYSTEM_VERSION) | cut -c 1-7)"
 endef
 
