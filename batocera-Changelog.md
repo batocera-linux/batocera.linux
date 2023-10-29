@@ -39,7 +39,7 @@
 - Ruffle to nightly-2023-10-13
 - Solarus Engine to Oct 2, 2023
 - Vita3k to Oct 13 build
-- Xemu to v0.7.113
+- Xemu to v0.7.116
 - Xenia to v1.0.2808
 - Xenia Canary to d36b1b3 (October 13 build)
 - ECWolf to 1.5pre
