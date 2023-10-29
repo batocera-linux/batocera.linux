@@ -93,6 +93,9 @@ class FlycastGenerator(Generator):
                 Config.set("config", "pvr.rend", "4")
         else:
             Config.set("config", "pvr.rend", "0")
+            if system.isOptSet("flycast_sorting") and system.config["flycast_sorting"] == "3":
+                # per pixel
+                Config.set("config", "pvr.rend", "3")
         # anisotropic filtering
         if system.isOptSet("flycast_anisotropic"):
             Config.set("config", "rend.AnisotropicFiltering", str(system.config["flycast_anisotropic"]))

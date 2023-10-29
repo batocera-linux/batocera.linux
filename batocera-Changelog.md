@@ -9,6 +9,7 @@
 - IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
+- Flycast per pixel sorting option if renderer not explicitly set
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 ### Updated
