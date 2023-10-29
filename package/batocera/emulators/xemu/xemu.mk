@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.7.113
+XEMU_VERSION = v0.7.116
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
