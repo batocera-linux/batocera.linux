@@ -51,7 +51,7 @@ cp "${BINARIES_DIR}/shim-signed/mmx64.efi"      "${BATOCERA_BINARIES_DIR}/boot/E
 # Fallback boot loader with secure boot shim and Machine Owner Key (MOK) Manager
 cp "${BINARIES_DIR}/shim-signed/shimx64.efi"  "${BATOCERA_BINARIES_DIR}/boot/EFI/BOOT/BOOTX64.EFI" || exit 1
 cp "${BINARIES_DIR}/shim-signed/mmx64.efi"    "${BATOCERA_BINARIES_DIR}/boot/EFI/BOOT/"            || exit 1
-cp "${BINARIES_DIR}/shim-signed/fbx64.efi"    "${BATOCERA_BINARIES_DIR}/boot/EFI/BOOT/"            || exit 1
+cp "${BINARIES_DIR}/syslinux/fbx64.efi"       "${BATOCERA_BINARIES_DIR}/boot/EFI/BOOT/"            || exit 1
 
 # Another copy of the MOK cert with a hard-to-miss name at the top level, for ease-of-use
 cp "${BINARIES_DIR}/syslinux/batocera-mok.cer"  "${BATOCERA_BINARIES_DIR}/boot/ENROLL_THIS_KEY_IN_MOKMANAGER_batocera.cer" || exit 1
