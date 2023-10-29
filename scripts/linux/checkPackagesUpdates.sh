@@ -88,7 +88,6 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-prboom
                    libretro-prosystem
                    libretro-puae
-                   libretro-puae2021
                    libretro-px68k
                    libretro-reminiscence
                    libretro-retro8
