@@ -86,6 +86,7 @@
 - Libretro-NEOCD to Feb 22, 2023 build
 - Libretro-Nestopia to May 28, 2023 build
 - Libretro-Opera to Jul 31, 2023 build
+- Libretro-ProSystem to Aug 18, 2023 build
 ### System
 - Linux kernel to 6.5.9
 - Mesa to 23.2.1
