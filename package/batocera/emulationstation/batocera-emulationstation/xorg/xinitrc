@@ -1,9 +1,5 @@
 #!/bin/bash
 
-display_log="/userdata/system/logs/display.log"
-nvidia_log="/userdata/system/logs/nvidia.log"
-amd_log="/userdata/system/logs/amd.log"
-
 # hide mouse cursor
 unclutter --noevents -b
 
@@ -13,48 +9,5 @@ xset s off
 
 # uncomment to allow coredumps for ES
 # ulimit -c unlimited
-
-# Check if there are two GPUs in the system
-gpu_count=$(lspci -nn | grep -E '(VGA|3D)' | wc -l)
-nvidia_conditions_met=false
-
-if [ "$gpu_count" -eq 2 ]; then
-    echo "Two GPUs detected in the system" >> "$display_log"
-    echo "Setting best primary GPU..." >> "$display_log"
-    
-    # Check for NVIDIA GPUs
-    nvidia_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)
-    if [ "$nvidia_prime" = "false" ]; then
-        echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
-    else
-        gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D")
-        if [ -n "$gpu_name" ] || [ "$nvidia_prime" = "true" ]; then
-            echo "Setting Nvida Prime environment variables" >> "$nvidia_log"
-            export __NV_PRIME_RENDER_OFFLOAD=1
-            export __VK_LAYER_NV_optimus=NVIDIA_only
-            export __GLX_VENDOR_LIBRARY_NAME=nvidia
-            echo "Using $gpu_name as primary GPU" >> "$nvidia_log"
-            echo "$gpu_name is the primary GPU" >> "$display_log"
-            nvidia_conditions_met=true
-        fi
-    fi
-    # Check for AMD/ATI GPUs if Nvidia Prime has not already been set
-    if [ "$nvidia_conditions_met" = "false" ]; then
-        radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
-        if [ "$radeon_prime" = "false" ]; then
-            echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
-        else
-            gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
-            if [ -n "$gpu_name" ]  || [ "$radeon_prime" = "true" ]; then
-                echo "Setting AMD Prime environment variable" >> "$amd_log"
-                export DRI_PRIME=1
-                echo "Using $gpu_name as primary GPU" >> "$amd_log"
-                echo "$gpu_name is the primary GPU" >> "$display_log"
-            fi
-        fi
-    fi
-else
-    echo "Only one GPU detected in the system" >> "$display_log"
-fi
 
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
