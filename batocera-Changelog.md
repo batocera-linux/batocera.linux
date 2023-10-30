@@ -92,7 +92,7 @@
 - Libretro-Snes9x to Oct 13, 2023 build
 - Libretro-Stella to Oct 26, 2023 build
 ### System
-- Linux kernel to 6.5.9
+- Linux kernel to 6.6
 - Mesa to 23.2.1
 - Proton to 8.0-4b
 - FAudio to 23.10

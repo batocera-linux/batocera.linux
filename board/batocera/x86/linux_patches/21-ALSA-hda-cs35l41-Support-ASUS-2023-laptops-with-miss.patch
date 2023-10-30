@@ -85,10 +85,10 @@ index 673f23257a09..2bf2365cef50 100644
  struct cs35l41_prop_model {
  	const char *hid;
  	const char *ssid;
-@@ -53,6 +96,17 @@ struct cs35l41_prop_model {
- const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
+@@ -128,6 +128,17 @@ static const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
  	{ "CLSA0100", NULL, lenovo_legion_no_acpi },
  	{ "CLSA0101", NULL, lenovo_legion_no_acpi },
+ 	{ "CSC3551", "103C89C6", hp_vision_acpi_fix },
 +	{ "CSC3551", "10431433", asus_rog_2023_i2c_no_acpi }, // ASUS GS650P
 +	{ "CSC3551", "10431463", asus_rog_2023_i2c_no_acpi }, // ASUS GA402X
 +	{ "CSC3551", "10431473", asus_rog_2023_spi_no_acpi }, // ASUS GU604V
