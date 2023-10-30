@@ -4,8 +4,9 @@
 # driver can be detected 'auto' or also set using batocera-boot.conf
 
 # try to create the log dir
-mkdir -p "/userdata/system/logs"
-log="/userdata/system/logs/nvidia.log"
+mkdir -p "/var/log"
+mkdir -p "/var/tmp"
+log="/var/log/nvidia.log"
 
 MODE=$1
 
@@ -36,8 +37,11 @@ if test "${MODE}" = "auto"; then
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
     if [ "$NVIDIA_DEV" ]; then
         echo "Detected a NVIDIA GPU" >> "$log"
+        echo "" > "/var/tmp/nvidia.detected"
         for d in $NVIDIA_DEV ; do
             CARDNAME=$(lspci -s "$d" | cut -d "[" -f2 | cut -d "]" -f1)
+            # filter card name further as necessary
+            CARDNAME=$(echo "$CARDNAME" | sed 's/.*NVIDIA/NVIDIA/')
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print $4 }' | tr '[:lower:]' '[:upper:]')
             echo "Checking card: $CARDNAME with ID: $PCIDEVID" >> "$log"
             if grep -q -i "$CARDNAME" "$PRODLISTDIR/production.list" 2>/dev/null; then
@@ -272,7 +276,7 @@ if [ "$MODE" = "production" ]; then
     ln -sf /usr/share/vulkan/nvidia/nvidia_production_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
     
-    # finally link kernel modules & run them
+    # finally link kernel modules
     mkdir -p /var/run/nvidia/modules
     ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
     ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
@@ -282,7 +286,14 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
     ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
     ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
-    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+    # enable kernel modules
+    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
+        if modprobe $m >> "$log" 2>&1; then
+            echo "Module $m loaded successfully" >> "$log"
+        else
+            echo "Failed to load module $m" >> "$log"
+        fi
+    done
 
 elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
     echo "Using a NVIDIA Legacy driver" >> $log
@@ -563,6 +574,3 @@ elif test "${MODE}" = "nouveau"; then
     test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
     test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
-# get the latest production list
-batocera-get-nvidia-list &
-echo "The end... or is it..." >> $log
