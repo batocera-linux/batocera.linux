@@ -51,10 +51,6 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 	done
 endef
 
-ifeq ($(BR2_x86_64),y)
-    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_INTEL_BT
-endif
-
 # symlink BT firmware for RK3588 kernel
 define ALLLINUXFIRMWARES_LINK_RTL_BT
     ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin \
