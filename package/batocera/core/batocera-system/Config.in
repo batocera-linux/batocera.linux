@@ -6,7 +6,7 @@ if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D
     default y
 endif
 
-if BR2_PACKAGE_BATOCERA_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+if BR2_PACKAGE_BATOCERA_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_BCM2711 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2712
     config BR2_PACKAGE_BATOCERA_TARGET_RPI_GLES2
     bool "rpi_gles2"
     default y
@@ -77,7 +77,7 @@ endif
 
 # add platforms that support GLES3 here
 # the GLES3 backend maps to OpenGL 3.3 on desktop, OpenGL ES 3.0 on mobile and WebGL 2.0 on the web.
-if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_RISCV \
+if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || BR2_PACKAGE_BATOCERA_TARGET_RISCV \
     || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_H616 \
     || BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3 \
     || BR2_PACKAGE_BATOCERA_TARGET_ODIN
@@ -123,7 +123,7 @@ config BR2_PACKAGE_BATOCERA_VULKAN
     select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_HASWELL     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM    if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM    if BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_BCM2712
     select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_PANFROST    if BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
     select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_FREEDRENO   if BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
 
@@ -292,6 +292,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # vulkan
     select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
                                                 BR2_PACKAGE_BATOCERA_TARGET_RISCV
 
     # wireless drivers
@@ -428,6 +429,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "broadcom/bcm2836"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
     default "broadcom/bcm2837"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     default "broadcom/bcm2711"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+    default "broadcom/bcm2712"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
     default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3326
     default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"                                 if BR2_PACKAGE_BATOCERA_TARGET_RK3328
     default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3288
@@ -472,6 +474,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 
 config BR2_PACKAGE_BATOCERA_TARGET_BCM2711
     bool "bcm2711"
+
+config BR2_PACKAGE_BATOCERA_TARGET_BCM2712
+    bool "bcm2712"
 
 # Rockchip
 # ---------------------------------------
