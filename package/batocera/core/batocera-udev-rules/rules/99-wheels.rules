@@ -6,3 +6,6 @@ SUBSYSTEM=="input", ATTRS{name}=="G25 Racing Wheel",                    	    MOD
 SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Force Feedback Wheel (USB)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless PS3",          MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+
+ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", RUN+="usb_modeswitch '%b/%k'"
+SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
