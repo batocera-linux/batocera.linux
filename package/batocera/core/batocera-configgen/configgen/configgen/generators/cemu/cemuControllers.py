@@ -2,25 +2,30 @@
 
 import batoceraFiles
 import os
-from os import path
-import codecs
-from Emulator import Emulator
-import configparser
-import json
 import xml.etree.cElementTree as ET
-import xml.dom.minidom
+from os import path
 
-cemuConfig  = batoceraFiles.CONF + '/cemu'
+profilesDir = path.join(batoceraFiles.CONF, 'cemu', 'controllerProfiles')
 
 # Create the controller configuration file
 # First controller will ALWAYS be a Gamepad
 # Additional controllers will either be a Pro Controller or Wiimote
 
 def generateControllerConfig(system, playersControllers):
-    # -= Wii U controller types =-
 
-    # Wii U GamePad Controller (excludes show screen)
-    wiiUGamePadButtons = {
+    # -= Wii U controller types =-
+    GAMEPAD = "Wii U GamePad"
+    PRO     = "Wii U Pro Controller"
+    CLASSIC = "Wii U Classic Controller"
+    WIIMOTE = "Wiimote"
+
+    API_SDL = "SDLController"
+
+    DEFAULT_DEADZONE       = '0.25'
+    DEFAULT_RANGE          = '1'
+
+    buttonMappings = {
+        GAMEPAD: { # excludes show screen
             "1":  "1",
             "2":  "0",
             "3":  "3",
@@ -46,9 +51,8 @@ def generateControllerConfig(system, playersControllers):
             "23": "46",
             "24": "40",
             "25": "7"
-    }
-    # Wii U Pro Controller (no mapping 11)
-    wiiUProButtons = {
+        },
+        PRO: {
             "1":  "1",
             "2":  "0",
             "3":  "3",
@@ -59,6 +63,7 @@ def generateControllerConfig(system, playersControllers):
             "8":  "43",
             "9":  "6",
             "10": "4",
+            # 11 is excluded
             "12": "11",
             "13": "12",
             "14": "13",
@@ -73,9 +78,8 @@ def generateControllerConfig(system, playersControllers):
             "23": "41",
             "24": "46",
             "25": "40"
-    }
-    # Wii U Classic Controller (no mapping 11)
-    wiiUClassicButtons = {
+        },
+        CLASSIC: {
             "1":  "13",
             "2":  "12",
             "3":  "15",
@@ -86,6 +90,7 @@ def generateControllerConfig(system, playersControllers):
             "8":  "43",
             "9":  "4",
             "10": "5",
+            # 11 is excluded
             "12": "0",
             "13": "1",
             "14": "2",
@@ -98,9 +103,8 @@ def generateControllerConfig(system, playersControllers):
             "21": "47",
             "22": "46",
             "23": "40"
-    }
-    # Wiimote, enable MotionPlus & Nunchuck (no home button)
-    wiiMoteButtons = {
+        },
+        WIIMOTE: { # with MotionPlus & Nunchuck, excludes Home button
             "1":  "0",
             "2":  "43",
             "3":  "2",
@@ -113,25 +117,44 @@ def generateControllerConfig(system, playersControllers):
             "10": "12",
             "11": "13",
             "12": "14",
-            "13": "45",            
+            "13": "45",
             "14": "39",
             "15": "44",
             "16": "38"
+        }
     }
 
+    def getOption(option, defaultValue):
+        if (system.isOptSet(option)):
+            return system.config[option]
+        else:
+            return defaultValue
+
+    def addTextElement(parent, name, value):
+        element = ET.SubElement(parent, name)
+        element.text = value
+
+    def addAnalogControl(parent, name):
+        element = ET.SubElement(parent, name)
+        addTextElement(element, "deadzone", DEFAULT_DEADZONE)
+        addTextElement(element, "range", DEFAULT_RANGE)
+
+    def getConfigFileName(controller):
+        return path.join(profilesDir, "controller{}.xml".format(controller))
+
+
     # Make controller directory if it doesn't exist
-    if not path.isdir(cemuConfig + "/controllerProfiles"):
-        os.mkdir(cemuConfig + "/controllerProfiles")
+    if not path.isdir(profilesDir):
+        os.mkdir(profilesDir)
 
     # Purge old controller files
     for counter in range(0,8):
-        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(counter) +".xml")
-        if os.path.isfile(configFileName):
+        configFileName = getConfigFileName(counter)
+        if path.isfile(configFileName):
             os.remove(configFileName)
 
     ## CONTROLLER: Create the config xml files
     nplayer = 0
-    m_encoding = 'UTF-8'
 
     # cemu assign pads by uuid then by index with the same uuid
     # so, if 2 pads have the same uuid, the index is not 0 but 1 for the 2nd one
@@ -149,96 +172,51 @@ def generateControllerConfig(system, playersControllers):
     ###
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        guid_index = guid_n[pad.index]
-
         root = ET.Element("emulated_controller")
-        doc = ET.SubElement(root, "type")
-        # Controller combination type
-        wiimote = 0
-        mappings = wiiUProButtons # default
+
+        # Set type from controller combination
+        type = PRO # default
         if system.isOptSet('cemu_controller_combination') and system.config["cemu_controller_combination"] != '0':
             if system.config["cemu_controller_combination"] == '1':
                 if (nplayer == 0):
-                    doc.text = "Wii U GamePad"
-                    mappings = wiiUGamePadButtons
-                    addIndex = 0
+                    type = GAMEPAD
                 else:
-                    doc.text = "Wiimote"
-                    mappings = wiiMoteButtons
-                    wiimote = 1
+                    type = WIIMOTE
             elif system.config["cemu_controller_combination"] == '2':
-                doc.text = "Wii U Pro Controller"
-                mappings = wiiUProButtons
-                addIndex = 1
+                type = PRO
             else:
-                doc.text = "Wiimote"
-                mappings = wiiMoteButtons
-                wiimote = 1
+                type = WIIMOTE
             if system.config["cemu_controller_combination"] == '4':
-                doc.text = "Wii U Classic Controller"
-                mappings = wiiUClassicButtons
-                addIndex = 1
+                type = CLASSIC
         else:
             if (nplayer == 0):
-                doc.text = "Wii U GamePad"
-                mappings = wiiUGamePadButtons
-                addIndex = 0
+                type = GAMEPAD
             else:
-                doc.text = "Wii U Pro Controller"
-                mappings = wiiUProButtons
-                addIndex = 1
+                type = PRO
+        addTextElement(root, "type", type)
 
-        doc = ET.SubElement(root, "controller")
-        ctrl = ET.SubElement(doc, "api")
-        ctrl.text = "SDLController" # use SDL
-        ctrl = ET.SubElement(doc, "uuid")
-        ctrl.text = "{}_{}".format(guid_index, pad.guid) # SDL guid
-        ctrl = ET.SubElement(doc, "display_name")
-        ctrl.text = pad.realName # controller name
-        # Rumble
-        if system.isOptSet("cemu_rumble"):
-            ctrl = ET.SubElement(doc, "rumble")
-            ctrl.text = system.config["cemu_rumble"] # % chosen
-        else:
-            ctrl = ET.SubElement(doc, "rumble")
-            ctrl.text = "0" # none
-        # axis
-        ctrl = ET.SubElement(doc, "axis")
-        axis = ET.SubElement(ctrl, "deadzone")
-        axis.text = "0.25"
-        axis = ET.SubElement(ctrl, "range")
-        axis.text = "1"
-        # rotation
-        ctrl = ET.SubElement(doc, "rotation")
-        rotation = ET.SubElement(ctrl, "deadzone")
-        rotation.text = "0.25"
-        rotation = ET.SubElement(ctrl, "range")
-        rotation.text = "1"
-        # trigger
-        ctrl = ET.SubElement(doc, "trigger")
-        trigger = ET.SubElement(ctrl, "deadzone")
-        trigger.text = "0.25"
-        trigger = ET.SubElement(ctrl, "range")
-        trigger.text = "1"
-        # apply the appropriate mappings
-        ctrl = ET.SubElement(doc, "mappings")
-        for mapping in mappings:
-            ctrlmapping = ET.SubElement(ctrl, "entry")
-            mp = ET.SubElement(ctrlmapping, "mapping")
-            mp.text = mapping
-            btn = ET.SubElement(ctrlmapping, "button")
-            btn.text = mappings[mapping]
+        # Create controller configuration
+        controllerNode = ET.SubElement(root, 'controller')
+        addTextElement(controllerNode, 'api', API_SDL)
+        addTextElement(controllerNode, 'uuid', "{}_{}".format(guid_n[pad.index], pad.guid)) # controller guid
+        addTextElement(controllerNode, 'display_name', pad.realName) # controller name
+        addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
+        addAnalogControl(controllerNode, 'axis')
+        addAnalogControl(controllerNode, 'rotation')
+        addAnalogControl(controllerNode, 'trigger')
 
-        # now format the xml file so it's all pirdy...
-        dom = xml.dom.minidom.parseString(ET.tostring(root))
-        xml_string = dom.toprettyxml()
-        part1, part2 = xml_string.split('?>')
+        # Apply the appropriate button mappings
+        mappingsNode = ET.SubElement(controllerNode, "mappings")
+        for key, value in buttonMappings[type].items():
+            entryNode = ET.SubElement(mappingsNode, "entry")
+            addTextElement(entryNode, "mapping", key)
+            addTextElement(entryNode, "button", value)
 
-        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(nplayer) + ".xml")
+        # Save to file
+        with open(getConfigFileName(nplayer), 'wb') as handle:
+            tree = ET.ElementTree(root)
+            ET.indent(tree, space="  ", level=0)
+            tree.write(handle, encoding='UTF-8', xml_declaration=True)
+            handle.close()
 
-        # Save Cemu controller profiles
-        with open(configFileName, 'w') as xfile:
-            xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
-            xfile.close()
-        
         nplayer+=1
