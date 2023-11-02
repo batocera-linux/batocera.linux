@@ -21,5 +21,5 @@ class ShGenerator(Generator):
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         })
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

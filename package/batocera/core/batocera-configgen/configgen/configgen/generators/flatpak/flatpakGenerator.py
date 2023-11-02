@@ -20,5 +20,5 @@ class FlatpakGenerator(Generator):
         commandArray = ["su", "-", "batocera", "-c",  "DISPLAY=:0.0 flatpak run -v " + romId]
         return Command.Command(array=commandArray)
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

@@ -235,7 +235,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         if args.state_filename is not None:
             system.config["state_filename"] = args.state_filename
 
-        if generator.getMouseMode(system.config):
+        if generator.getMouseMode(system.config, rom):
             mouseChanged = True
             videoMode.changeMouse(True)
 

@@ -20,5 +20,5 @@ class SteamGenerator(Generator):
             commandArray = ["batocera-steam", gameId]
         return Command.Command(array=commandArray)
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

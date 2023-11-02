@@ -125,5 +125,5 @@ class CGeniusGenerator(Generator):
         )
 
     # Show mouse on screen for the Config Screen
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

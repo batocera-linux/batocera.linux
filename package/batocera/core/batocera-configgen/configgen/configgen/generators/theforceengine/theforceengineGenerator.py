@@ -219,7 +219,7 @@ class TheForceEngineGenerator(Generator):
         )
 
     # Show mouse for menu actions
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True
 
     def getInGameRatio(self, config, gameResolution, rom):

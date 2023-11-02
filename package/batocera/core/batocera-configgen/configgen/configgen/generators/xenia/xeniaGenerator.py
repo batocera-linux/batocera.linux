@@ -210,5 +210,5 @@ class XeniaGenerator(Generator):
 
     # Show mouse on screen when needed
     # xenia auto-hides
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

@@ -55,7 +55,7 @@ class SonicRetroGenerator(Generator):
             "Select":   "43"
         }
         
-         # ini file
+        # ini file
         sonicConfig = configparser.RawConfigParser(strict=False)
         sonicConfig.optionxform=str             # Add Case Sensitive comportement
         if os.path.exists(iniFile):
@@ -162,3 +162,23 @@ class SonicRetroGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
+
+    def getMouseMode(self, config, rom):
+        # Determine the emulator to use
+        if (rom.lower()).endswith("son"):
+            emu = "sonic2013"
+        else:
+            emu = "soniccd"
+
+        mouseRoms = [
+            "1bd5ad366df1765c98d20b53c092a528", # iOS version of SonicCD
+        ]
+
+        enableMouse = False
+        if (emu == "soniccd"):
+            import hashlib
+            enableMouse = hashlib.md5(open(f"{rom}/Data.rsdk", "rb").read()).hexdigest() in mouseRoms
+        else:
+            enableMouse = False
+
+        return enableMouse

@@ -247,7 +247,7 @@ class CemuGenerator(Generator):
         xml.write(dom_string)
     
     # Show mouse for touchscreen actions    
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         if "cemu_touchpad" in config and config["cemu_touchpad"] == "1":
             return True
         else:
