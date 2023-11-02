@@ -51,6 +51,18 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 	done
 endef
 
+# symlink BT firmware - workaround until AX101 BT firmware is added
+define ALLLINUXFIRMWARES_LINK_INTEL_BT
+    ln -sf /lib/firmware/intel/ibt-1040-4150.ddc \
+        $(TARGET_DIR)/lib/firmware/intel/ibt-0040-1050.ddc
+    ln -sf /lib/firmware/intel/ibt-1040-4150.sfi \
+        $(TARGET_DIR)/lib/firmware/intel/ibt-0040-1050.sfi
+endef
+
+ifeq ($(BR2_x86_64),y)
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_INTEL_BT
+endif
+
 # symlink BT firmware for RK3588 kernel
 define ALLLINUXFIRMWARES_LINK_RTL_BT
     ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin \
