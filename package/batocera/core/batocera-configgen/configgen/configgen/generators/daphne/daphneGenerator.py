@@ -53,7 +53,6 @@ class DaphneGenerator(Generator):
         
         # create symbolic link for singe
         if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
-            os.mkdir(batoceraFiles.daphneDatadir + "/singe")
             if not os.path.exists(batoceraFiles.daphneHomedir + "/roms"):
                 os.mkdir(batoceraFiles.daphneHomedir + "/roms")
             os.symlink(batoceraFiles.daphneHomedir + "/roms", batoceraFiles.daphneDatadir + "/singe")
