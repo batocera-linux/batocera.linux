@@ -120,7 +120,7 @@ class PlayGenerator(Generator):
             with open(playConfigFile, "wb") as file:
                 tree.write(file)
         
-        commandArray = ["/usr/bin/Play"]
+        commandArray = ["/usr/bin/Play", "--fullscreen"]
         
         if rom != "config":
             # if zip, it's a namco arcade game

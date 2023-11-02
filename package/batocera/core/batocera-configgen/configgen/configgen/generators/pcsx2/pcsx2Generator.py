@@ -262,6 +262,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
         "scph10000.bin"
     ]
 
+    bios_found = False
     for bio in bios_filenames:
         if os.path.exists(os.path.join(bios_directory, bio)):
             bios_file = bio
