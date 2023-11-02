@@ -35,6 +35,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("General")
         if not dolphinSettings.has_section("Core"):
             dolphinSettings.add_section("Core")
+        if not dolphinSettings.has_section("DSP"):
+            dolphinSettings.add_section("DSP")
         if not dolphinSettings.has_section("Interface"):
             dolphinSettings.add_section("Interface")
         if not dolphinSettings.has_section("Analytics"):
