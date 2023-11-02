@@ -87,6 +87,8 @@ endif
 # rpi4 vulkan support
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
     PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
 else ifeq ($(BR2_arm)$(BR2_aarch64),y)
     PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
 endif
