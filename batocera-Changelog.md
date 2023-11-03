@@ -7,6 +7,7 @@
 - DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
 - The Force Engine: Play Dark Forces with enhanced graphics.
 - IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
+- Fallout Community Edition: Play the original Fallout game.
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set

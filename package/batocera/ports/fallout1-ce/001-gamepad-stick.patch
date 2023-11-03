@@ -1,0 +1,334 @@
+From 8f39da7cabf44fccf0556c2ab54544f3cc84e49c Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Sun, 29 Oct 2023 23:50:50 +0000
+Subject: [PATCH] Implement basic gamepad stick handling
+
+This implements mouse movement with the right gamepad stick.
+
+This is far from a complete gamepad implementation but can hopefully be
+a good starting point.
+---
+ CMakeLists.txt           |   2 +
+ src/plib/gnw/dxinput.cc  |   3 +-
+ src/plib/gnw/gamepad.cc  | 210 +++++++++++++++++++++++++++++++++++++++
+ src/plib/gnw/gamepad.hpp |  22 ++++
+ src/plib/gnw/input.cc    |  19 ++++
+ 5 files changed, 255 insertions(+), 1 deletion(-)
+ create mode 100644 src/plib/gnw/gamepad.cc
+ create mode 100644 src/plib/gnw/gamepad.hpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 45fb995..7d19a24 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -217,6 +217,8 @@ target_sources(${EXECUTABLE_NAME} PUBLIC
+     "src/plib/gnw/debug.h"
+     "src/plib/gnw/dxinput.cc"
+     "src/plib/gnw/dxinput.h"
++    "src/plib/gnw/gamepad.cc"
++    "src/plib/gnw/gamepad.hpp"
+     "src/plib/gnw/grbuf.cc"
+     "src/plib/gnw/grbuf.h"
+     "src/plib/gnw/input.cc"
+diff --git a/src/plib/gnw/dxinput.cc b/src/plib/gnw/dxinput.cc
+index c7d8976..950de29 100644
+--- a/src/plib/gnw/dxinput.cc
++++ b/src/plib/gnw/dxinput.cc
+@@ -13,7 +13,8 @@ static int gMouseWheelDeltaY = 0;
+ // 0x4E0400
+ bool dxinput_init()
+ {
+-    if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
++    SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
++    if (SDL_InitSubSystem(SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0) {
+         return false;
+     }
+ 
+diff --git a/src/plib/gnw/gamepad.cc b/src/plib/gnw/gamepad.cc
+new file mode 100644
+index 0000000..d1e1f0d
+--- /dev/null
++++ b/src/plib/gnw/gamepad.cc
+@@ -0,0 +1,210 @@
++#include <algorithm>
++#include <cmath>
++
++#include <SDL.h>
++
++#include "plib/gnw/debug.h"
++#include "plib/gnw/gamepad.hpp"
++#include "plib/gnw/mouse.h"
++#include "plib/gnw/svga.h"
++
++namespace fallout {
++
++namespace {
++
++    // [-32767.0..+32767.0] -> [-1.0..1.0]
++    void ScaleJoystickAxes(float* x, float* y, float deadzone)
++    {
++        if (deadzone == 0) {
++            return;
++        }
++        if (deadzone >= 1.0) {
++            *x = 0;
++            *y = 0;
++            return;
++        }
++
++        const float maximum = 32767.0;
++        float analogX = *x;
++        float analogY = *y;
++        float deadZone = deadzone * maximum;
++
++        float magnitude = std::sqrt(analogX * analogX + analogY * analogY);
++        if (magnitude >= deadZone) {
++            float scalingFactor = 1.F / magnitude * (magnitude - deadZone) / (maximum - deadZone);
++            analogX = (analogX * scalingFactor);
++            analogY = (analogY * scalingFactor);
++
++            float clampingFactor = 1.F;
++            float absAnalogX = std::fabs(analogX);
++            float absAnalogY = std::fabs(analogY);
++            if (absAnalogX > 1.0 || absAnalogY > 1.0) {
++                if (absAnalogX > absAnalogY) {
++                    clampingFactor = 1.F / absAnalogX;
++                } else {
++                    clampingFactor = 1.F / absAnalogY;
++                }
++            }
++            *x = (clampingFactor * analogX);
++            *y = (clampingFactor * analogY);
++        } else {
++            *x = 0;
++            *y = 0;
++        }
++    }
++
++    float leftStickXUnscaled, leftStickYUnscaled, rightStickXUnscaled, rightStickYUnscaled;
++
++    void ScaleLeftJoystick()
++    {
++        const float leftDeadzone = 0.07F;
++        leftStickX = leftStickXUnscaled;
++        leftStickY = leftStickYUnscaled;
++        ScaleJoystickAxes(&leftStickX, &leftStickY, leftDeadzone);
++    }
++
++    void ScaleRightJoystick()
++    {
++        const float rightDeadzone = 0.07F;
++        rightStickX = rightStickXUnscaled;
++        rightStickY = rightStickYUnscaled;
++        ScaleJoystickAxes(&rightStickX, &rightStickY, rightDeadzone);
++    }
++
++    struct RightStickAccumulator {
++
++        RightStickAccumulator()
++        {
++            lastTc = SDL_GetTicks();
++            hiresDX = 0;
++            hiresDY = 0;
++        }
++
++        void Pool(int* x, int* y, int slowdown)
++        {
++            const Uint32 tc = SDL_GetTicks();
++            const int dtc = tc - lastTc;
++            hiresDX += rightStickX * dtc;
++            hiresDY += rightStickY * dtc;
++            const int dx = static_cast<int>(hiresDX / slowdown);
++            const int dy = static_cast<int>(hiresDY / slowdown);
++            *x += dx;
++            *y -= dy;
++            lastTc = tc;
++            // keep track of remainder for sub-pixel motion
++            hiresDX -= dx * slowdown;
++            hiresDY -= dy * slowdown;
++        }
++
++        void Clear()
++        {
++            lastTc = SDL_GetTicks();
++        }
++
++        uint32_t lastTc;
++        float hiresDX;
++        float hiresDY;
++    };
++
++} // namespace
++
++float leftStickX, leftStickY, rightStickX, rightStickY;
++
++void HandleControllerAxisMotion(const SDL_Event& event)
++{
++    switch (event.caxis.axis) {
++    case SDL_CONTROLLER_AXIS_LEFTX:
++        leftStickXUnscaled = static_cast<float>(event.caxis.value);
++        ScaleLeftJoystick();
++        break;
++    case SDL_CONTROLLER_AXIS_LEFTY:
++        leftStickYUnscaled = static_cast<float>(-event.caxis.value);
++        ScaleLeftJoystick();
++        break;
++    case SDL_CONTROLLER_AXIS_RIGHTX:
++        rightStickXUnscaled = static_cast<float>(event.caxis.value);
++        ScaleRightJoystick();
++        break;
++    case SDL_CONTROLLER_AXIS_RIGHTY:
++        rightStickYUnscaled = static_cast<float>(-event.caxis.value);
++        ScaleRightJoystick();
++        break;
++    }
++}
++
++void ProcessLeftStick()
++{
++}
++
++void ProcessRightStick()
++{
++    static RightStickAccumulator acc;
++    // deadzone is handled in ScaleJoystickAxes() already
++    if (rightStickX == 0 && rightStickY == 0) {
++        acc.Clear();
++        return;
++    }
++
++    int x, y;
++    SDL_GetRelativeMouseState(&x, &y);
++    int newX = x;
++    int newY = y;
++    acc.Pool(&newX, &newY, 2);
++
++    // clipping to viewport is handled in mouse_simulate_input
++    if (newX != x || newY != y) {
++        mouse_simulate_input(newX - x, newY - y, 0);
++    }
++}
++
++void HandleJoystickDeviceAdded(const SDL_Event& event)
++{
++    const int32_t deviceIndex = event.jdevice.which;
++    if (SDL_NumJoysticks() <= deviceIndex)
++        return;
++    debug_printf("Adding joystick %d: %s\n", deviceIndex,
++        SDL_JoystickNameForIndex(deviceIndex));
++    SDL_Joystick* const joystick = SDL_JoystickOpen(deviceIndex);
++    if (joystick == nullptr) {
++        debug_printf("%s", SDL_GetError());
++        SDL_ClearError();
++        return;
++    }
++    SDL_JoystickGUID guid = SDL_JoystickGetGUID(joystick);
++    char guidBuf[33];
++    SDL_JoystickGetGUIDString(guid, guidBuf, sizeof(guidBuf));
++    debug_printf("Added joystick %d {%s}\n", deviceIndex, guidBuf);
++}
++
++void HandleJoystickDeviceRemoved(const SDL_Event& event)
++{
++    const int32_t deviceIndex = event.jdevice.which;
++    debug_printf("Removed joystick %d\n", deviceIndex);
++}
++
++void HandleControllerDeviceAdded(const SDL_Event& event)
++{
++    const int32_t joystickIndex = event.cdevice.which;
++    debug_printf("Opening game controller for joystick %d\n", joystickIndex);
++    SDL_GameController* const controller = SDL_GameControllerOpen(joystickIndex);
++    if (controller == nullptr) {
++        debug_printf("%s", SDL_GetError());
++        SDL_ClearError();
++        return;
++    }
++    SDL_Joystick* const sdlJoystick = SDL_GameControllerGetJoystick(controller);
++    const SDL_JoystickGUID guid = SDL_JoystickGetGUID(sdlJoystick);
++    char* mapping = SDL_GameControllerMappingForGUID(guid);
++    if (mapping != nullptr) {
++        debug_printf("Opened game controller with mapping:\n%s\n", mapping);
++        SDL_free(mapping);
++    }
++}
++
++void HandleControllerDeviceRemoved(const SDL_Event& event)
++{
++    const int32_t joystickIndex = event.cdevice.which;
++    debug_printf("Removed game controller for joystick %d\n", joystickIndex);
++}
++
++} // namespace fallout
+diff --git a/src/plib/gnw/gamepad.hpp b/src/plib/gnw/gamepad.hpp
+new file mode 100644
+index 0000000..4cff49d
+--- /dev/null
++++ b/src/plib/gnw/gamepad.hpp
+@@ -0,0 +1,22 @@
++#ifndef FALLOUT_PLIB_GNW_GAMEPAD_H_
++#define FALLOUT_PLIB_GNW_GAMEPAD_H_
++
++#include <SDL.h>
++
++#include "plib/gnw/rect.h"
++
++namespace fallout {
++
++extern float leftStickX, leftStickY, rightStickX, rightStickY;
++
++void HandleJoystickDeviceAdded(const SDL_Event& event);
++void HandleJoystickDeviceRemoved(const SDL_Event& event);
++void HandleControllerDeviceAdded(const SDL_Event& event);
++void HandleControllerDeviceRemoved(const SDL_Event& event);
++void HandleControllerAxisMotion(const SDL_Event& event);
++void ProcessLeftStick();
++void ProcessRightStick();
++
++} // namespace fallout
++
++#endif /* FALLOUT_PLIB_GNW_GAMEPAD_H_ */
+diff --git a/src/plib/gnw/input.cc b/src/plib/gnw/input.cc
+index e4c243d..9a4b9a3 100644
+--- a/src/plib/gnw/input.cc
++++ b/src/plib/gnw/input.cc
+@@ -8,6 +8,7 @@
+ #include "plib/color/color.h"
+ #include "plib/gnw/button.h"
+ #include "plib/gnw/dxinput.h"
++#include "plib/gnw/gamepad.hpp"
+ #include "plib/gnw/gnw.h"
+ #include "plib/gnw/grbuf.h"
+ #include "plib/gnw/intrface.h"
+@@ -1085,6 +1086,9 @@ void GNW95_process_message()
+     // is disabled, because if we ignore it, we'll never be able to reactivate
+     // it again.
+ 
++    ProcessLeftStick();
++    ProcessRightStick();
++
+     KeyboardData keyboardData;
+     SDL_Event e;
+     while (SDL_PollEvent(&e)) {
+@@ -1112,6 +1116,21 @@ void GNW95_process_message()
+                 GNW95_process_key(&keyboardData);
+             }
+             break;
++        case SDL_JOYDEVICEADDED:
++            HandleJoystickDeviceAdded(e);
++            break;
++        case SDL_JOYDEVICEREMOVED:
++            HandleJoystickDeviceRemoved(e);
++            break;
++        case SDL_CONTROLLERDEVICEADDED:
++            HandleControllerDeviceAdded(e);
++            break;
++        case SDL_CONTROLLERDEVICEREMOVED:
++            HandleControllerDeviceRemoved(e);
++            break;
++        case SDL_CONTROLLERAXISMOTION:
++            HandleControllerAxisMotion(e);
++            break;
+         case SDL_WINDOWEVENT:
+             switch (e.window.event) {
+             case SDL_WINDOWEVENT_EXPOSED:

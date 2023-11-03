@@ -1,0 +1,20 @@
+diff --git a/src/game/gconfig.cc b/src/game/gconfig.cc
+index 98226b54d4..cc819315ee 100644
+--- a/src/game/gconfig.cc
++++ b/src/game/gconfig.cc
+@@ -120,14 +120,7 @@ bool gconfig_init(bool isMapper, int argc, char** argv)
+     }
+ 
+     // Make `fallout.cfg` file path.
+-    sep = strrchr(argv[0], '\\');
+-    if (sep != NULL) {
+-        *sep = '\0';
+-        snprintf(gconfig_file_name, sizeof(gconfig_file_name), "%s\\%s", argv[0], GAME_CONFIG_FILE_NAME);
+-        *sep = '\\';
+-    } else {
+-        strcpy(gconfig_file_name, GAME_CONFIG_FILE_NAME);
+-    }
++    strcpy(gconfig_file_name, "/userdata/system/configs/fallout1/fallout.cfg");
+ 
+     // Read contents of `fallout.cfg` into config. The values from the file
+     // will override the defaults above.

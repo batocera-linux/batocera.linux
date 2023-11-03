@@ -960,6 +960,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Return to Castle Wolfenstein
     select BR2_PACKAGE_IORTCW               if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || (BR2_aarch64 && BR2_PACKAGE_BATOCERA_GLES3)
 
+    # Fallout 1 open source engine
+    select BR2_PACKAGE_FALLOUT1_CE          # ALL
+
     help
         Ports
 
@@ -1275,9 +1278,6 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
     # HoMM3 open source engine
     select BR2_PACKAGE_VCMI                 # ALL
-
-    # Fallout 1 open source engine
-    select BR2_PACKAGE_FALLOUT1_CE          # ALL
 
     # Fallout 2 open source engine
     select BR2_PACKAGE_FALLOUT2_CE          # ALL

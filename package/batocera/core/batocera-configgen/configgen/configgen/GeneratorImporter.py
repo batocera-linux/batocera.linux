@@ -331,6 +331,10 @@ def getGenerator(emulator):
         from generators.iortcw.iortcwGenerator import IORTCWGenerator
         return IORTCWGenerator()
 
+    if emulator == "fallout1-ce":
+        from generators.fallout1.fallout1Generator import Fallout1Generator
+        return Fallout1Generator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()
