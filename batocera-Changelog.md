@@ -14,7 +14,7 @@
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 ### Updated
 - Retroarch to 1.16.0.3
-- GroovyMAME 0.259 - Switchres 2.002w
+- GroovyMAME 0.260 - Switchres 2.002w
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
