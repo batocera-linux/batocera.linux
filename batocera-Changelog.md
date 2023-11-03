@@ -91,6 +91,7 @@
 - Libretro-Scummvm to Oct 22, 2023 build
 - Libretro-Snes9x to Oct 13, 2023 build
 - Libretro-Stella to Oct 26, 2023 build
+- Libretro-MAME to 0.260
 ### System
 - Linux kernel to 6.6
 - Mesa to 23.2.1
