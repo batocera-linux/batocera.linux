@@ -335,6 +335,10 @@ def getGenerator(emulator):
         from generators.fallout1.fallout1Generator import Fallout1Generator
         return Fallout1Generator()
 
+    if emulator == "fallout2-ce":
+        from generators.fallout2.fallout2Generator import Fallout2Generator
+        return Fallout2Generator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()

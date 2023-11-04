@@ -8,6 +8,7 @@
 - The Force Engine: Play Dark Forces with enhanced graphics.
 - IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
 - Fallout Community Edition: Play the original Fallout game.
+- Fallout 2 Community Edition: Play the original Fallout 2 game.
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
