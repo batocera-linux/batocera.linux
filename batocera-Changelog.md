@@ -96,10 +96,10 @@
 - Libretro-MAME to 0.260
 ### System
 - Linux kernel to 6.6
-- Mesa to 23.2.1
+- Mesa to 23.3
 - Proton to 8.0-4b
 - FAudio to 23.10
-- Nvidia production driver to 535.113.01
+- Nvidia production driver to 545.29.02
 - SDL2 to 2.28.4
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
