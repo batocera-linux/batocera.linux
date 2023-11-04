@@ -339,6 +339,10 @@ def getGenerator(emulator):
         from generators.fallout2.fallout2Generator import Fallout2Generator
         return Fallout2Generator()
 
+    if emulator == "dxx-rebirth":
+        from generators.dxx_rebirth.dxx_rebirthGenerator import DXX_RebirthGenerator
+        return DXX_RebirthGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()

@@ -9,6 +9,7 @@
 - IORTCW: Play Return to Castle Wolfenstein with enhanced graphics.
 - Fallout Community Edition: Play the original Fallout game.
 - Fallout 2 Community Edition: Play the original Fallout 2 game.
+- DXX-Rebirth: Play Descent 1 & 2 with enhanced graphics.
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
@@ -22,7 +23,7 @@
 - DevilutionX to 1.5.1
 - PPSSPP (standalone) and lr-ppsspp to v1.16.6
 - Libretro-MAME to 0.259 (Oct 4, 2023)
-- Libretro-picodrive to Aug 11, 2023
+- Libretro-Picodrive to Aug 11, 2023
 - Libretro-Genesis-Plus-GX to Sep 11, 2023
 - Libretro-PCSX-ReARMed to Oct 9, 2023
 - Fheroes2 to 1.0.9
@@ -31,7 +32,7 @@
 - Citra to nightly-2009
 - Dolphin to 5.0-20212
 - Flycast to v2.2
-- Libretro-flycast to v2.2
+- Libretro-Flycast to v2.2
 - MelonDS to Oct 12, 2023
 - PCSX2 to v1.7.5105
 - Play! to Oct 13, 2023 build
