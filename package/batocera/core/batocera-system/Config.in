@@ -963,6 +963,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # Fallout 1 open source engine
     select BR2_PACKAGE_FALLOUT1_CE          # ALL
 
+    # Fallout 2 open source engine
+    select BR2_PACKAGE_FALLOUT2_CE          # ALL
+
     help
         Ports
 
@@ -1278,9 +1281,6 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
     # HoMM3 open source engine
     select BR2_PACKAGE_VCMI                 # ALL
-
-    # Fallout 2 open source engine
-    select BR2_PACKAGE_FALLOUT2_CE          # ALL
 
     # Descent 1 & 2 open source engine
     select BR2_PACKAGE_DXX_REBIRTH          if BR2_x86_64 

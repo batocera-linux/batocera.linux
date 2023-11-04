@@ -11598,3 +11598,44 @@ fallout1-ce:
         "German":            "german"
         "Italian":           "italian"
         "Spanish":           "spanish"
+
+fallout2-ce:
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  cfeatures:
+    fout2_game_difficulty:
+      prompt: GAME DIFFICULATY
+      description: Choose the games difficulty.
+      choices:
+        "Easy":             0
+        "Normal (Default)": 1
+        "Hard":             2
+    fout2_combat_difficulty:
+      prompt: COMBAT DIFFICULATY
+      description: Choose the combat difficulty.
+      choices:
+        "Wimpy":            0
+        "Normal (Default)": 1
+        "Rough":            2
+    fout2_violence_level:
+      prompt: VIOLENCE LEVEL
+      description: Choose the preferred violence level.
+      choices:
+        "None":             0
+        "Minimal":          1
+        "Normal (Default)": 2  
+        "Maximum Blood":    3
+    fout2_subtitles:
+      prompt: SUBTITLES
+      choices:
+        "Off": 0
+        "On":  1
+    fout2_language:
+      prompt: LANGUAGE
+      description: Change the game's language.
+      choices:
+        "English (Default)": "english"
+        "French":            "french"
+        "German":            "german"
+        "Italian":           "italian"
+        "Spanish":           "spanish"
