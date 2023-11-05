@@ -1572,34 +1572,6 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
 
-config BR2_PACKAGE_BATOCERA_DESKTOP
-    bool "batocera desktop environement"
-    select BR2_PACKAGE_FISH
-    select BR2_PACKAGE_LIBGEE
-    select BR2_PACKAGE_VTE
-    select BR2_PACKAGE_AWK
-    select BR2_PACKAGE_JSON_GLIB_DEV
-    select BR2_PACKAGE_LIBXML12
-    select BR2_PACKAGE_MEDIAINFO
-    select BR2_PACKAGE_P7ZIP
-    select BR2_PACKAGE_TAR
-    select BR2_PACKAGE_PIGZ
-    select BR2_PACKAGE_GZIP
-    select BR2_PACKAGE_PBZIP2
-    select BR2_PACKAGE_BZIP2
-    select BR2_PACKAGE_QEMU-KVM
-    select BR2_PACKAGE_QEMU-UTILS
-    select BR2_PACKAGE_GVFS
-    select BR2_PACKAGE_WGET
-    select BR2_PACKAGE_PV
-    select BR2_PACKAGE_TRASH_CLI
-    select BR2_PACKAGE_LIBIMAGE_EXIFTOOL_PERL
-    select BR2_PACKAGE_GHOSTSCRIPT
-    select BR2_PACKAGE_CPULIMIT
-    select BR2_PACKAGE_XZ
-    select BR2_PACKAGE_RSYNC
-    select BR2_PACKAGE_FFMPEG
-
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
     bool "batocera.linux Firmwares packages selection"
 
@@ -1693,6 +1665,22 @@ config BR2_PACKAGE_BATOCERA_XWAYLAND
     select BR2_PACKAGE_LIBGTK3                      # gtk3 library
     select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
     select BR2_PACKAGE_PCMANFM                      # file manager
+    select BR2_PACKAGE_POLOFM                       # new file manager 
+    select BR2_PACKAGE_FISH                         # shell
+    select BR2_PACKAGE_LIBGEE
+    select BR2_PACKAGE_VTE
+    select BR2_PACKAGE_AWK
+    select BR2_PACKAGE_JSON_GLIB_DEV
+    select BR2_PACKAGE_MEDIAINFO
+    select BR2_PACKAGE_QEMU-KVM
+    select BR2_PACKAGE_QEMU-UTILS
+    select BR2_PACKAGE_TRASH_CLI
+    select BR2_PACKAGE_LIBIMAGE_EXIFTOOL_PERL
+    select BR2_PACKAGE_GHOSTSCRIPT
+    select BR2_PACKAGE_CPULIMIT
+    select BR2_PACKAGE_XZ
+    select BR2_PACKAGE_RSYNC
+    select BR2_PACKAGE_FFMPEG
     select BR2_PACKAGE_GVFS                         # file systems (trash, smb, ... in pcmanfm)
     select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     # theme for file manager
     select BR2_PACKAGE_XTERM                        # terminal
@@ -1734,6 +1722,10 @@ config BR2_PACKAGE_BATOCERA_XORG
     select BR2_PACKAGE_LIBGTK3                      # gtk3 library
     select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
     select BR2_PACKAGE_PCMANFM                      # file manager
+    select BR2_PACKAGE_POLOFM                       # new file manager 
+    select BR2_PACKAGE_FISH                         # shell
+    select BR2_PACKAGE_LIBGEE                       # library
+    select BR2_PACKAGE_TRASH_CLI                    # trash can
     select BR2_PACKAGE_GVFS                         if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
     select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
     select BR2_PACKAGE_XTERM                        # terminal
