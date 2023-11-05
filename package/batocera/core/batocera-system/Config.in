@@ -149,6 +149,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY                # multimedia/power buttons
     select BR2_PACKAGE_BATOCERA_UDEV_RULES                  # extra udev rules for specifics joysticks/devices
     select BR2_PACKAGE_BATOCERA_USERDATAINIT                # userdata init files
+    select BR2_PACKAGE_BATOCERA_CRT                         if BR2_PACKAGE_TARGET_X86_64
     select BR2_PACKAGE_XOSD                                 if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
     select BR2_PACKAGE_BATOCERA_BATTERY_CHECKER             if BR2_PACKAGE_XOSD
     select BR2_PACKAGE_CIFS_UTILS                           # required for boot mounts
@@ -1571,6 +1572,34 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
 
+config BR2_PACKAGE_BATOCERA_DESKTOP
+    bool "batocera-desktop"
+    select BR2_PACKAGE_FISH
+    select BR2_PACKAGE_LIBGEE
+    select BR2_PACKAGE_VTE
+    select BR2_PACKAGE_AWK
+    select BR2_PACKAGE_JSON_GLIB_DEV
+    select BR2_PACKAGE_LIBXML12
+    select BR2_PACKAGE_MEDIAINFO
+    select BR2_PACKAGE_P7ZIP
+    select BR2_PACKAGE_TAR
+    select BR2_PACKAGE_PIGZ
+    select BR2_PACKAGE_GZIP
+    select BR2_PACKAGE_PBZIP2
+    select BR2_PACKAGE_BZIP2
+    select BR2_PACKAGE_QEMU-KVM
+    select BR2_PACKAGE_QEMU-UTILS
+    select BR2_PACKAGE_GVFS
+    select BR2_PACKAGE_WGET
+    select BR2_PACKAGE_PV
+    select BR2_PACKAGE_TRASH_CLI
+    select BR2_PACKAGE_LIBIMAGE_EXIFTOOL_PERL
+    select BR2_PACKAGE_GHOSTSCRIPT
+    select BR2_PACKAGE_CPULIMIT
+    select BR2_PACKAGE_XZ
+    select BR2_PACKAGE_RSYNC
+    select BR2_PACKAGE_FFMPEG
+	
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
     bool "batocera.linux Firmwares packages selection"
 
