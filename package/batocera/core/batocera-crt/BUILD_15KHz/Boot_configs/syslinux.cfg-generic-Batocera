@@ -1,0 +1,23 @@
+UI menu.c32
+
+TIMEOUT 50
+TOTALTIMEOUT 300
+
+SAY Booting Batocera.linux...
+
+MENU CLEAR
+MENU TITLE Batocera.linux
+MENU SHIFTKEY
+
+LABEL batocera
+	MENU LABEL Batocera.linux (^normal)
+	MENU DEFAULT
+	LINUX /boot/linux
+	APPEND label=BATOCERA console=tty3 quiet loglevel=0 vt.global_cursor_default=0 mitigations=off [amdgpu_drivers] [usb_polling] drm.edid_firmware=[card_output]:edid/[monitor] video=[card_display]:[boot_resolution]
+	INITRD /boot/initrd.gz
+
+LABEL verbose
+	MENU lABEL Batocera.linux (^verbose)
+	LINUX /boot/linux
+	APPEND label=BATOCERA vt.global_cursor_default=0
+	INITRD /boot/initrd.gz

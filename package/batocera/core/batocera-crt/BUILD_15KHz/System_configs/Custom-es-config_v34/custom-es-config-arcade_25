@@ -1,0 +1,20 @@
+#!/bin/bash
+##-Default Resolution-##
+xrandr -display :0.0 --newmode "1024x768" 31.987200 1024 1050 1178 1280 768 773 783 833 interlace -hsync -vsync
+xrandr -display :0.0 --addmode  [card_display] "1024x768"
+[1024x768]xrandr -display :0.0 --output  [card_display] --mode "1024x768"
+
+
+#####-Modelines-########
+xrandr -display :0.0 --newmode "496x384" 15.450240 496 508 570 619 384 387 392 416 -hsync -vsync
+xrandr -display :0.0 --newmode "512x384" 15.974400 512 525 589 640 384 387 392 416 -hsync -vsync
+xrandr -display :0.0 --newmode "960x768" 29.988000 960 984 1104 1200 768 773 783 833 interlace -hsync -vsync
+xrandr -display :0.0 --newmode "1280x768" 39.984000 1280 1312 1472 1600 768 773 783 833 interlace -hsync -vsync
+xrandr -display :0.0 --newmode "1368x768" 42.732900 1368 1402 1573 1710 768 773 783 833 interlace -hsync -vsync
+########################
+xrandr -display :0.0 --addmode  [card_display] "496x384"
+xrandr -display :0.0 --addmode  [card_display] "512x384"
+xrandr -display :0.0 --addmode  [card_display] "960x768"
+xrandr -display :0.0 --addmode  [card_display] "1280x768"
+xrandr -display :0.0 --addmode  [card_display] "1368x768"
+########################

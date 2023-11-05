@@ -1,0 +1,4 @@
+#!/bin/bash
+xrandr -display :0.0  --output [card_display] --gamma 1:1:1 --brightness 2.0
+guncon2_calibrate.sh
+xrandr -display :0.0  --output [card_display] --gamma 1:1:1 --brightness 1.0

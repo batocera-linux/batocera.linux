@@ -1,0 +1,54 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_ESC" ]
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_PAGEUP"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_PAGEDOWN"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_LEFTCTRL"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_LEFTCTRL"
+        }
+    ]
+}

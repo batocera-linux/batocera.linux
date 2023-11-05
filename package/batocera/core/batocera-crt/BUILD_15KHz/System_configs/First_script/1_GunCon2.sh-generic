@@ -1,0 +1,73 @@
+#!/bin/bash
+#	GunCon2 Micro Calibration Script
+# 	Remove "#" before if  evdev-joystick to apply your own settings
+
+case $1 in
+    gameStart)
+		
+        ## Nintendo NES ##
+
+		#if [[ "$4" == "mesen" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		#if [[ "$4" == "nestopia" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+        	#if [[ "$4" == "fceumm" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi	
+	
+		## Super Nintendo ##
+
+		#if [[ "$4" == "snes9x" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+
+		## DreamCast ##
+
+        	#if [[ "$2" == "dreamcast" ]]&&[[ "$3" == "libretro" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi	
+
+		## Atomiswave ##
+
+        	#if [[ "$2" == "atomiswave" ]]&&[[ "$3" == "libretro" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Naomi ##
+
+        	#if [[ "$2" == "naomi" ]]&&[[ "$3" == "libretro" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+        
+		## Sega Master System ##
+		#if [[ "$4" == "genesisplusgx" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Sega Saturn ##
+		#if [[ "$4" == "beetle-saturn" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Sony PlayStation ##
+		#if [[ "$4" == "pcsx_rearmed" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Sony PlayStation 3 ##
+		#if [[ "$5" == "/userdata/roms/ps3/Time Crisis 4.ps3" ]]; then  xrandr -display :0.0 --output [card_display] --gamma 1:1:1 --brightness "1.5"; evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0;fi
+
+		## Atari 2600 ##
+		#if [[ "$4" == "stella" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		
+		## Commodore 64 ##
+		#if [[ "$2" == "vice_x64" ]]||[[ "$2" == "vice_x64sc" ]]); then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Sega Model 2 ##
+		#if [[ "$3" == "model2emu" ]]; thenevdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Sega Model 3 ##
+		#if [[ "$3" == "supermodel" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi		
+		
+		## Mame - Example for one game ##
+		#if [[ "$5" == "/userdata/roms/mame/ptblank.zip" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi	
+		
+		## 3DO ##
+		#if [[ "$2" == "3do" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Flatpak example Steam Link ##
+		#if [[ "$5" == "/userdata/roms/flatpak/Steam Link.flatpak" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+		
+		## Flatpak example Parsec ##
+		#if [[ "$5" == "/userdata/roms/flatpak/Parsec.flatpak" ]]; then evdev-joystick --e /dev/input/by-id/usb-0b9a_016a-event-mouse -m 122 -M 730 -a 3 -f 0; fi
+
+    ;;
+    gameStop)
+     
+		 xrandr -display :0.0 --output [card_display] --gamma 1:1:1 --brightness "1.0"
+		
+	;;
+esac

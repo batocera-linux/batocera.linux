@@ -1,0 +1,149 @@
+#!/bin/bash
+
+BOOTCONF="/boot/batocera-boot.conf"
+REBOOT_FLAG=/var/run/emulationstation-standalone
+
+if test "$1" = "--stop-rebooting"
+then
+    rm -f "${REBOOT_FLAG}"
+    exit 0
+fi
+
+# flag to reboot at each stop
+# es is stopped : in case of crash, in case of some options are changed (language, video mode)
+touch "${REBOOT_FLAG}" || exit 1
+
+# environment
+export HOME=/userdata/system
+
+GAMELAUNCH=1
+while test -e "${REBOOT_FLAG}"
+do
+    ### lang settings
+    settings_lang="$(batocera-settings-get system.language)"
+    [ -z "${settings_lang}" ] && settings_lang=en_US
+    export LC_ALL="${settings_lang}.UTF-8"
+    export LANG=${LC_ALL}
+    ###################
+
+    ### video output ###
+    # because of xinerama breaking es, enable only one screen at a time
+    settings_output="$(batocera-settings-get global.videooutput)"
+    batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
+    ###################
+
+    ### rotation ###
+    display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+    EXTRA_OPTS=
+    if which xrandr # if xrandr available, use it (x86_64, rpi4, odin, ...)
+    then
+        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
+        TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
+
+    case "${display_rotate}" in
+	    "1")
+		xrandr --output "${OUTPUT}" --rotate right
+		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+		;;
+	    "2")
+		xrandr --output "${OUTPUT}" --rotate inverted
+		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
+		;;
+	    "3")
+		xrandr --output "${OUTPUT}" --rotate left
+		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+		;;
+	    *)
+		# in case of reboot of es
+		xrandr --output "${OUTPUT}" --rotate normal
+		[ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
+	esac
+    else
+	if test -n "${display_rotate}"; then
+	    EXTRA_OPTS="--screenrotate ${display_rotate}"
+	fi
+    fi
+
+    ### resolution ###
+    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
+    if test -z "${bootresolution}"
+    then
+	batocera-resolution minTomaxResolution-secure
+    else
+	batocera-resolution setMode "${bootresolution}"
+    fi
+    ###################
+
+    ### dpi override for nvidia gpus ###
+    settings_output="$(batocera-settings-get global.dpi)"
+    [ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
+    ###################
+
+    ### keyboard (specific to xorg) ###
+    # not always true (en_US for us), but it's really better than always english
+    map_name=$(echo $settings_lang | cut -c 1-2)
+    which setxkbmap && setxkbmap "${map_name}"
+    ###################
+
+    # try to force 60hz (specific to xorg)
+    #FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
+    #test -z "${FRAMERATE}" && FRAMERATE=60
+    #which xrandr && xrandr -r "${FRAMERATE}"
+    ###################
+
+    forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
+    if test -n "${forcedresolution}"
+    then
+	batocera-resolution forceMode "${forcedresolution}"
+    fi
+
+    # Multitouch for touch screens
+    if [ ! -z "${TOUCHSCREEN}" ]; then
+	    killall -9 touchegg
+	    touchegg --daemon &
+	    touchegg --client&
+    fi
+
+    CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
+
+    #####################
+    ## CUSTOMISATIONS ###
+    # to customize your display, you can create the file /userdata/system/custom-es-config
+    # including this kind of commands
+    # rotate the screen
+    # xrandr -o left
+    # xrandr -o right
+    # xrandr -o inverted
+
+    # change the resolution
+    # xrandr -s 640x480
+
+    # change the resolution and the Hz
+    # xrandr -s 640x480 -r 60
+    #####################
+
+    test -x /userdata/system/custom-es-config && /userdata/system/custom-es-config
+
+    #####################
+
+    # launch automatically a game only the first time
+    if test ${GAMELAUNCH} = 1
+       then
+	   GAMELAUNCHOPT=
+    else
+	GAMELAUNCHOPT="--no-startup-game"
+    fi
+
+    cd /userdata # es need a PWD
+     emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required --windowed ${CUSTOMESOPTIONS}
+
+    # es flag when rebooting (https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-core/src/platform.cpp#L194)
+    if test -e "/tmp/restart.please" -o -e "/tmp/shutdown.please"
+    then
+	rm -f "${REBOOT_FLAG}"
+    fi
+
+    GAMELAUNCH=0
+done
+exit 0

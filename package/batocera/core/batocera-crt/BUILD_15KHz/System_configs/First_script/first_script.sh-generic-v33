@@ -1,0 +1,56 @@
+#!/bin/bash
+#This is an example file how Events on START or STOP can be uses
+#
+
+#Set logfile location and filename
+logfile=/tmp/scriptlog.txt
+
+case $1 in
+	gameStart)
+
+        	echo $2 > /dev/shm/sysname.txt
+		echo $3 > /dev/shm/emulator.txt
+        	echo $4 > /dev/shm/core.txt
+		echo $5 > /dev/shm/args.txt
+
+		if [[ "$3" == "libretro" ]]; then
+
+			if [[ "$2" == "fbneo" ]]; then
+
+	       			xrandr -display :0.0 -o [display_fbneo_rotation]
+
+			else
+
+				xrandr -display :0.0 -o [display_libretro_rotation]
+
+			fi
+
+		elif [[ "$3" == "mame" ]]; then
+
+			xrandr -display :0.0 -o [display_mame_rotation]
+
+		elif [[ "$3" == "fpinball" ]]; then
+
+			xrandr -display :0.0 -o [display_ES_rotation]
+
+		else
+
+			xrandr -display :0.0 -o [display_standalone_rotation]
+
+			if ([[ "$4" == "dolphin" ]]||[[ "$4" == "xemu" ]]||[[ "$2" == "windows" ]]||[[ "$4" == "xemu" ]]|| \
+		   	    [[ "$2" == "wiiu" ]]||[[ "$2" == "psx" ]]||[[ "$2" == "psp" ]]||[[ "$2" == "ps2" ]]|| \
+			    [[ "$2" == "ps3" ]]||[[ "$2" == "wiiu" ]]||[[ "$2" == "switch" ]]); then
+
+	       			xrandr -display :0.0 --output [card_display] --set TearFree ON
+
+			fi
+
+		fi
+    	;;
+    	gameStop)
+
+		xrandr -display :0.0 -o [display_ES_rotation]
+		xrandr -display :0.0 --output [card_display] --set TearFree OFF
+		xrandr -display :0.0 --output [card_display] --mode "[es_resolution]"
+	;;
+esac

@@ -1,0 +1,31 @@
+#!/bin/sh
+BOOTCONF="/boot/batocera-boot.conf"
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+case "$1" in
+	start)
+	    enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
+	    if [ "$enabled" != "0" ]; then
+		startx &
+	    fi
+	    ;;
+
+	stop)
+
+		killall xinit 2>/dev/null
+		sleep 5
+		;;
+
+	restart|reload)
+		"$0" stop
+		"$0" start
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac
+
+exit $?

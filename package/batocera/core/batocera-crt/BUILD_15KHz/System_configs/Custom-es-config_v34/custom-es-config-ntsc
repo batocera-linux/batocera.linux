@@ -1,0 +1,83 @@
+#!/bin/bash
+##-Default Resolution-##
+xrandr -display :0.0 --newmode "640x480" 12.146841 640 658 715 772 480 487 493 525 interlace  -hsync -vsync
+xrandr -display :0.0 --addmode  [card_display] "640x480"
+[640x480]xrandr -display :0.0 --output  [card_display] --mode "640x480"
+    
+xrandr -display :0.0 --newmode "720x480" 13.657329 720 740 804 868 480 487 493 525 interlace  -hsync -vsync
+xrandr -display :0.0 --addmode [card_display] "720x480"
+[720x480]xrandr -display :0.0 --output  [card_display] --mode "720x480"
+
+xrandr -display :0.0 --newmode "1280x480" 24.293682 1280 1316 1430 1544 480 487 493 525 interlace  -hsync -vsync
+xrandr -display :0.0 --addmode [card_display] "1280x480"
+[1280x480]xrandr -display :0.0 --output  [card_display] --mode "1280x480"
+
+#xrandr -display :0.0 --newmode "1280x576" Switchres: could not find a video mode that meets your specs
+#xrandr -display :0.0 --addmode [card_display] "1280x576"
+#[1280x576]xrandr -display :0.0 --output  [card_display] --mode "1280x576"
+
+xrandr -display :0.0 --newmode "1280x240" 24.247408 1280 1316 1430 1544 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --addmode [card_display] "1280x240"
+[1280x240]xrandr -display :0.0 --output  [card_display] --mode "1280x240"
+
+#####-Modelines-########
+xrandr -display :0.0 --newmode "240x240" 4.538536 240 247 268 289 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "256x192" 4.852622 256 263 286 309 192 220 223 262   -hsync -vsync
+xrandr -display :0.0 --newmode "256x200" 4.852622 256 263 286 309 200 224 227 262   -hsync -vsync
+xrandr -display :0.0 --newmode "256x224" 4.852622 256 263 286 309 224 236 239 262   -hsync -vsync
+xrandr -display :0.0 --newmode "256x240" 4.852622 256 263 286 309 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "288x224" 5.465089 288 296 322 348 224 236 239 262   -hsync -vsync
+xrandr -display :0.0 --newmode "304x224" 5.763470 304 313 340 367 224 236 239 262   -hsync -vsync
+xrandr -display :0.0 --newmode "320x200" 6.046147 320 329 357 385 200 224 227 262   -hsync -vsync
+xrandr -display :0.0 --newmode "320x224" 6.046147 320 329 357 385 224 236 239 262   -hsync -vsync
+xrandr -display :0.0 --newmode "320x240" 6.046147 320 329 357 385 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "352x240" 6.658614 352 362 393 424 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "360x200" 6.815657 360 370 402 434 200 224 227 262   -hsync -vsync
+xrandr -display :0.0 --newmode "360x240" 6.815657 360 370 402 434 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "384x216" 7.271081 384 395 429 463 216 232 235 262   -hsync -vsync
+xrandr -display :0.0 --newmode "384x240" 7.271081 384 395 429 463 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "384x480" 7.284957 384 395 429 463 480 487 493 525 interlace  -hsync -vsync
+xrandr -display :0.0 --newmode "400x200" 7.585167 400 411 447 483 200 224 227 262   -hsync -vsync
+xrandr -display :0.0 --newmode "400x224" 7.585167 400 411 447 483 224 236 239 262   -hsync -vsync
+xrandr -display :0.0 --newmode "400x240" 7.585167 400 411 447 483 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "416x240" 7.883548 416 428 465 502 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "426x240" 8.071999 426 438 476 514 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "427x240" 8.087704 427 439 477 515 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "428x240" 8.103408 428 440 478 516 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "432x240" 8.166225 432 444 482 520 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "460x200" 8.715875 460 473 514 555 200 224 227 262   -hsync -vsync
+xrandr -display :0.0 --newmode "480x240" 9.108482 480 494 537 580 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "512x480" 9.739500 512 527 573 619 480 487 493 525 interlace  -hsync -vsync
+xrandr -display :0.0 --newmode "640x240" 12.123704 640 658 715 772 240 244 247 262   -hsync -vsync
+xrandr -display :0.0 --newmode "854x480" 16.206277 854 878 954 1030 480 487 493 525 interlace  -hsync -vsync
+########################
+xrandr -display :0.0 --addmode  [card_display] "240x240"
+xrandr -display :0.0 --addmode  [card_display] "256x192"
+xrandr -display :0.0 --addmode  [card_display] "256x200"
+xrandr -display :0.0 --addmode  [card_display] "256x224"
+xrandr -display :0.0 --addmode  [card_display] "256x240"
+xrandr -display :0.0 --addmode  [card_display] "288x224"
+xrandr -display :0.0 --addmode  [card_display] "304x224"
+xrandr -display :0.0 --addmode  [card_display] "320x200"
+xrandr -display :0.0 --addmode  [card_display] "320x224"
+xrandr -display :0.0 --addmode  [card_display] "320x240"
+xrandr -display :0.0 --addmode  [card_display] "352x240"
+xrandr -display :0.0 --addmode  [card_display] "360x200"
+xrandr -display :0.0 --addmode  [card_display] "360x240"
+xrandr -display :0.0 --addmode  [card_display] "384x216"
+xrandr -display :0.0 --addmode  [card_display] "384x240"
+xrandr -display :0.0 --addmode  [card_display] "384x480"
+xrandr -display :0.0 --addmode  [card_display] "400x200"
+xrandr -display :0.0 --addmode  [card_display] "400x224"
+xrandr -display :0.0 --addmode  [card_display] "400x240"
+xrandr -display :0.0 --addmode  [card_display] "416x240"
+xrandr -display :0.0 --addmode  [card_display] "426x240"
+xrandr -display :0.0 --addmode  [card_display] "427x240"
+xrandr -display :0.0 --addmode  [card_display] "428x240"
+xrandr -display :0.0 --addmode  [card_display] "432x240"
+xrandr -display :0.0 --addmode  [card_display] "460x200"
+xrandr -display :0.0 --addmode  [card_display] "480x240"
+xrandr -display :0.0 --addmode  [card_display] "512x480"
+xrandr -display :0.0 --addmode  [card_display] "640x240"
+xrandr -display :0.0 --addmode  [card_display] "854x480"
+########################

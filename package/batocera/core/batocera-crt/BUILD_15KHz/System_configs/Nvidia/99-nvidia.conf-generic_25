@@ -1,0 +1,76 @@
+# Config for 15Khz Monitor
+Section "Monitor"
+        Identifier      "Disabled"
+        Option  "ignore"        "true"
+#############################################
+EndSection
+
+Section	"Monitor"
+    Identifier	"CRT"
+    VendorName	"Batocera"
+
+    Option		"Enable" "true"
+    Option		"DPMS" "False"
+    Option		"DefaultModes" "False"
+		
+	Modeline "384x480"  15.120000  384 392 448 480  480 490 494 525  -HSync -VSync
+#        Modeline "640x480" 26.18 640 672 736 836 480 481 483 526 -hsync -vsync
+        Modeline "640x480" 25.452000 640 664 760 808 480 491 493 525   -hsync -vsync
+        Modeline "720x480" 29.25 720 752 824 928 480 486 489 525 -hsync -vsync
+        Modeline "800x600" 30 800 814 884 960 600 601 606 625 +hsync +vsync
+        Modeline "1024x576"  40.320000  1024 1048 1200 1280  576 588 592 630  -HSync -VSync
+        Modeline "1280x576"  50.400000  1280 1312 1504 1600  576 588 592 630  -HSync -VSync
+
+        Modeline "854x480" 33.957000 854 886 1014 1078 480 491 493 525   -hsync -vsync
+ 	Modeline "864x486" 34.335000 864 896 1025 1090 486 497 499 531   -hsync -vsync
+
+EndSection
+
+Section "Device"
+  Identifier	"GRPX"
+    Option "RenderAccel"   "1"  
+    Option "ModeValidation" "NoVertRefreshCheck, NoHorizSyncCheck, NoMaxSizeCheck, NoMaxPClkCheck , NoVesaModes,NoXServerModes,NoEDIDModes, NoPredefinedModes , AllowDpInterlaced,AllowNonEdidModes,NoDisplayPortBandwidthCheck ,NoEdidDFPMaxSizeCheck,NoDualLinkDVICheck"
+    Option "UseEDID" "False"
+    Option "NoEDIDModes" "true"
+    Option "monitor-DVI-0" "CRT"
+    Option "monitor-DVI-1" "CRT"
+    Option "monitor-VGA-0" "CRT"
+    Option "monitor-VGA-1" "CRT"
+    Option "monitor-HDMI-0" "CRT"
+    Option "monitor-HDMI-1" "CRT"
+    Option "monitor-HDMI-2" "CRT" 
+    Option "monitor-DP-0" "CRT"
+    Option "monitor-DP-1" "CRT"
+    Option "monitor-DP-2" "CRT"
+    Option "monitor-DIN" "Disabled"
+    Option "monitor-DIN-0" "Disabled"
+    Option "monitor-DIN-1" "Disabled"
+    #Option "monitor-DP-0" "Disabled"
+    #Option "monitor-DP-1" "Disabled"
+    #Option "monitor-DP-2" "Disabled"
+    #Option "monitor-HDMI-0" "Disabled"
+    #Option "monitor-HDMI-1" "Disabled"
+    #Option "monitor-HDMI-2" "Disabled" 
+
+EndSection
+
+
+Section "Screen"
+    Identifier     "Screen0"
+    Device         "GRPX"
+    Monitor        "CRT"
+    Option         "AllowIndirectGLXProtocol" "off"
+    Option         "TripleBuffer" "on"
+   
+EndSection
+
+
+Section "ServerFlags"
+    Option "blank time" "0"
+    Option "standby time" "0"
+    Option "suspend time" "0"
+    Option "off time" "0"
+    Option "dpms" "false"
+    Option "Xinerama" "0"
+    Option "AllowEmptyInitialConfiguration" "true"
+EndSection

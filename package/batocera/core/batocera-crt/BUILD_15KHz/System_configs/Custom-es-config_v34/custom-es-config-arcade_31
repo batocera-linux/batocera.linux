@@ -1,0 +1,17 @@
+#!/bin/bash
+##-Default Resolution-##
+# 640x480p 60Hz 31.500000KHz
+xrandr -display :0.0 --newmode "640x480" 25.452000 640 664 760 808 480 491 493 525   -hsync -vsync
+xrandr -display :0.0 --addmode [card_display] "640x480"
+xrandr -display :0.0 --output [card_display] --mode "640x480"
+
+
+#####-Modelines-########
+# 854x480p 60Hz 31.500000KHz
+xrandr -display :0.0 --newmode "854x480" 33.957000 854 886 1014 1078 480 491 493 525   -hsync -vsync
+# 864x486p 60Hz 31.500000KHz
+xrandr -display :0.0 --newmode "864x486" 34.335000 864 896 1025 1090 486 497 499 531   -hsync -vsync
+########################
+xrandr -display :0.0 --addmode [card_display] "854x480"
+xrandr -display :0.0 --addmode [card_display] "864x486"
+########################

@@ -1,0 +1,108 @@
+# Config for 15Khz Monitor
+Section "Monitor"
+        Identifier      "Disabled"
+        Option  "ignore"        "true"
+#############################################
+EndSection
+
+Section	"Monitor"
+    Identifier	"CRT"
+    VendorName	"Batocera"
+
+    Option		"Enable" "true"
+    Option		"DPMS" "False"
+    Option		"DefaultModes" "False"
+		
+		Modeline "640x480" 13.038390 640 666 727 831 480 483 489 523 interlace  -hsync -vsync
+		Modeline "768x576" 15.627975 768 799 872 997 576 583 589 627 interlace  -hsync -vsync
+		Modeline "240x240" 4.885920 240 250 273 312 240 242 245 261   -hsync -vsync
+		Modeline "256x192" 5.183460 256 266 290 331 192 218 221 261   -hsync -vsync
+		Modeline "256x200" 5.183460 256 266 290 331 200 222 225 261   -hsync -vsync
+		Modeline "256x224" 5.183460 256 266 290 331 224 234 237 261   -hsync -vsync
+		Modeline "256x240" 5.183460 256 266 290 331 240 242 245 261   -hsync -vsync
+		Modeline "288x224" 5.872500 288 300 328 375 224 234 237 261   -hsync -vsync
+		Modeline "304x224" 6.170040 304 316 345 394 224 234 237 261   -hsync -vsync
+		Modeline "320x200" 6.514560 320 333 364 416 200 222 225 261   -hsync -vsync
+		Modeline "320x224" 6.514560 320 333 364 416 224 234 237 261   -hsync -vsync
+		Modeline "320x240" 6.514560 320 333 364 416 240 242 245 261   -hsync -vsync
+		Modeline "320x256" 6.804000 320 334 366 420 256 258 261 277   -hsync -vsync
+		Modeline "352x240" 7.156620 352 366 400 457 240 242 245 261   -hsync -vsync
+		Modeline "360x200" 7.328880 360 375 409 468 200 222 225 261   -hsync -vsync
+		Modeline "360x240" 7.328880 360 375 409 468 240 242 245 261   -hsync -vsync
+		Modeline "380x284" 8.083800 380 396 434 499 284 286 289 305   -hsync -vsync
+		Modeline "384x216" 7.830000 384 400 437 500 216 230 233 261   -hsync -vsync
+		Modeline "384x240" 7.830000 384 400 437 500 240 242 245 261   -hsync -vsync
+		Modeline "384x480" 7.845000 384 400 437 500 480 483 489 523 interlace  -hsync -vsync
+		Modeline "400x200" 8.127540 400 416 454 519 200 222 225 261   -hsync -vsync
+		Modeline "400x224" 8.127540 400 416 454 519 224 234 237 261   -hsync -vsync
+		Modeline "400x240" 8.127540 400 416 454 519 240 242 245 261   -hsync -vsync
+		Modeline "416x240" 8.472060 416 433 473 541 240 242 245 261   -hsync -vsync
+		Modeline "426x240" 8.659980 426 443 484 553 240 242 245 261   -hsync -vsync
+		Modeline "427x240" 8.675640 427 444 485 554 240 242 245 261   -hsync -vsync
+		Modeline "428x240" 8.706960 428 445 486 556 240 242 245 261   -hsync -vsync
+		Modeline "432x240" 8.785260 432 450 491 561 240 242 245 261   -hsync -vsync
+		Modeline "432x244" 8.917920 432 450 492 563 244 245 248 264   -hsync -vsync
+		Modeline "456x256" 9.671400 456 475 520 597 256 258 261 277   -hsync -vsync
+		Modeline "460x200" 9.364680 460 479 523 598 200 222 225 261   -hsync -vsync
+		Modeline "464x272" 9.865800 464 484 530 609 272 274 277 293   -hsync -vsync
+		Modeline "480x240" 9.771840 480 500 546 624 240 242 245 261   -hsync -vsync
+		Modeline "480x270" 10.206000 480 500 548 630 270 272 275 291   -hsync -vsync
+		Modeline "480x272" 10.206000 480 500 548 630 272 274 277 293   -hsync -vsync
+		Modeline "512x288" 10.407250 512 533 582 665 288 292 295 313   -hsync -vsync
+		Modeline "512x480" 10.433850 512 533 582 665 480 483 489 523 interlace  -hsync -vsync
+		Modeline "528x288" 11.226600 528 550 603 693 288 290 293 309   -hsync -vsync
+		Modeline "640x240" 13.013460 640 666 727 831 240 242 245 261   -hsync -vsync
+		Modeline "854x480" 17.415900 854 889 971 1110 480 483 489 523 interlace  -hsync -vsync
+		Modeline "864x486" 17.802060 864 900 984 1126 486 488 494 527 interlace  -hsync -vsync
+		
+
+EndSection
+
+Section "Device"
+  Identifier	"GRPX"
+    Option "RenderAccel"   "1"  
+    Option "ModeValidation" "NoVertRefreshCheck, NoHorizSyncCheck, NoMaxSizeCheck, NoMaxPClkCheck , NoVesaModes,NoXServerModes,NoEDIDModes, NoPredefinedModes ,NoExtendedGpuCapabilitiesCheck , AllowDpInterlaced,AllowNonEdidModes,NoDisplayPortBandwidthCheck ,NoEdidDFPMaxSizeCheck,NoDualLinkDVICheck"
+    Option "UseEDID" "False"
+    Option "NoEDIDModes" "true"
+    Option "monitor-DVI-0" "CRT"
+    Option "monitor-DVI-1" "CRT"
+    Option "monitor-VGA-0" "CRT"
+    Option "monitor-VGA-1" "CRT"
+    Option "monitor-HDMI-0" "CRT"
+    Option "monitor-HDMI-1" "CRT"
+    Option "monitor-HDMI-2" "CRT" 
+    Option "monitor-DP-0" "CRT"
+    Option "monitor-DP-1" "CRT"
+    Option "monitor-DP-2" "CRT"
+    Option "monitor-DIN" "Disabled"
+    Option "monitor-DIN-0" "Disabled"
+    Option "monitor-DIN-1" "Disabled"
+    #Option "monitor-DP-0" "Disabled"
+    #Option "monitor-DP-1" "Disabled"
+    #Option "monitor-DP-2" "Disabled"
+    #Option "monitor-HDMI-0" "Disabled"
+    #Option "monitor-HDMI-1" "Disabled"
+    #Option "monitor-HDMI-2" "Disabled" 
+
+EndSection
+
+
+Section "Screen"
+    Identifier     "Screen0"
+    Device         "GRPX"
+    Monitor        "CRT"
+    Option         "AllowIndirectGLXProtocol" "off"
+    Option         "TripleBuffer" "on"
+   
+EndSection
+
+
+Section "ServerFlags"
+    Option "blank time" "0"
+    Option "standby time" "0"
+    Option "suspend time" "0"
+    Option "off time" "0"
+    Option "dpms" "false"
+    Option "Xinerama" "0"
+    Option "AllowEmptyInitialConfiguration" "true"
+EndSection

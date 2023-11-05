@@ -1,0 +1,43 @@
+## Lines prefixed by double hashes (##) are comments.
+## Lines prefixed by a single hash (#) are commented settings; remove the single hash to activate the setting.
+
+## The device used to store the share data a.k.a. userdata.
+## INTERNAL --> Use the same drive Batocera has been flashed to. See https://wiki.batocera.org/add_games_bios on how to add files to the internal storage.
+## ANYEXTERNAL --> Use the first external storage detected. See https://wiki.batocera.org/store_games_on_a_second_usb_sata_drive
+## Putting the name here of the drive instead will use that specific external storage. Use the menu in Batocera to see the available options.
+## DEVICES --> Use external storage for individual folders. See https://wiki.batocera.org/store_games_on_a_second_usb_sata_drive#manual_configuration_with_batocera-bootconf_advanced
+## DEV --> Manually define the GUID of the storage device requested. See https://wiki.batocera.org/store_games_on_a_second_usb_sata_drive#dev_mode
+## NETWORK --> Use the network share, requires configuration first. See https://wiki.batocera.org/store_games_on_a_nas
+sharedevice=[SHARE_DEVICE]
+
+## Add a wait time (in case the share device takes a while to come "online") in seconds.
+#sharewait=15
+
+## Automatically resize the userdata partition if unallocated space is present on the drive. Disables itself once completed successfully.
+#autoresize=true
+
+## Manually override Nvidia driver selected. Leave this setting commented to have Batocera automatically select the correct driver.
+## See https://wiki.batocera.org/supported_pc_hardware
+## true -> Use the current production driver.
+## legacy -> Use the "legacy" 470 driver (could be subject to change, though unlikely).
+## legacy390 -> Use the older 390 driver.
+[Nvidia_drivers]nvidia-driver=true
+
+## Enable the Nvidia prime switcher. Helps with modern laptops (post-2018) with hybrid graphics that default to using integrated graphics.
+#nvidia-prime=true
+
+## Enable Radeon prime switcher. Helps with modern laptops with amd hybrid graphics that default to using integrated graphics
+#radeon-prime=true
+
+## Force the i965 driver for Intel GPUs. For example this can be used to override the Iris driver.
+#intel-i965-driver=true
+
+## Disable the splash screen.
+#splash.screen.enabled=0
+
+## Maximum or specific machine resolution (get the full list for your display with "batocera-resolution listModes")
+## See https://wiki.batocera.org/display_issues#force_any_specific_supported_resolution_in_es_instead_of_the_default_maximum_one
+#es.resolution=max-1920x1080
+
+### Below are copied values from batocera.conf to make them available in an early boot stage. ###
+### Change them in batocera.conf or the menu, not here. ###
