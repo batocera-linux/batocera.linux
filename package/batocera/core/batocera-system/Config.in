@@ -1573,7 +1573,7 @@ config BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D
     select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
 
 config BR2_PACKAGE_BATOCERA_DESKTOP
-    bool "batocera-desktop"
+    bool "batocera desktop environement"
     select BR2_PACKAGE_FISH
     select BR2_PACKAGE_LIBGEE
     select BR2_PACKAGE_VTE
@@ -1599,7 +1599,7 @@ config BR2_PACKAGE_BATOCERA_DESKTOP
     select BR2_PACKAGE_XZ
     select BR2_PACKAGE_RSYNC
     select BR2_PACKAGE_FFMPEG
-	
+
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
     bool "batocera.linux Firmwares packages selection"
 
