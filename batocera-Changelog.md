@@ -15,6 +15,7 @@
 - Flycast per pixel sorting option if renderer not explicitly set
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
+- PS2 BIOS files should be put in /userdata/bios/ps2
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.260 - Switchres 2.002w

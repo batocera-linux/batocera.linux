@@ -26,6 +26,8 @@ class Pcsx2Generator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
+        pcsx2BiosDir = batoceraFiles.BIOS + "/ps2"
+        pcsx2Patches = pcsx2BiosDir + "/patches.zip"
 
         # Remove older config files if present
         inisDir = os.path.join(pcsx2ConfigDir, "inis")
@@ -37,7 +39,7 @@ class Pcsx2Generator(Generator):
         
         # Config files
         configureReg(pcsx2ConfigDir)
-        configureINI(pcsx2ConfigDir, batoceraFiles.BIOS, system, rom, playersControllers, guns, wheels)
+        configureINI(pcsx2ConfigDir, pcsx2BiosDir, system, rom, playersControllers, guns, wheels)
         configureAudio(pcsx2ConfigDir)
 
         # write our own game_controller_db.txt file before launching the game
@@ -59,7 +61,14 @@ class Pcsx2Generator(Generator):
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
         if not (system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0):
             envcmd["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
-
+        
+        # ensure we have the patches.zip file to avoid message.
+        if not os.path.exists(pcsx2BiosDir):
+            os.makedirs(pcsx2BiosDir)
+        if not os.path.exists(pcsx2Patches):
+            source_file = "/usr/share/batocera/datainit/bios/ps2/patches.zip"
+            shutil.copy(source_file, pcsx2Patches)
+        
         return Command.Command(
             array=commandArray,
             env=envcmd
@@ -148,7 +157,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
         pcsx2INIConfig.add_section("Folders")
     
     # set the folders we want
-    pcsx2INIConfig.set("Folders", "Bios", "../../../bios")
+    pcsx2INIConfig.set("Folders", "Bios", "../../../bios/ps2")
     pcsx2INIConfig.set("Folders", "Snapshots", "../../../screenshots")
     pcsx2INIConfig.set("Folders", "SaveStates", "../../../saves/ps2/pcsx2/sstates")
     pcsx2INIConfig.set("Folders", "MemoryCards", "../../../saves/ps2/pcsx2")
