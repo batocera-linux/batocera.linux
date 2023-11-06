@@ -40,16 +40,16 @@ Signed-off-by: Caesar Wang <wxt@rock-chips.com>
 Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
 Signed-off-by: Randy Li <ayaka@soulik.info>
 ---
- drivers/soc/rockchip/pm_domains.c | 23 +++++++++++++++++++++++
+ drivers/pmdomain/rockchip/pm-domains.c | 23 +++++++++++++++++++++++
  include/linux/rockchip_pmu.h      | 15 +++++++++++++++
  include/soc/rockchip/pm_domains.h |  6 ++++++
  3 files changed, 44 insertions(+)
  create mode 100644 include/linux/rockchip_pmu.h
 
-diff --git a/drivers/soc/rockchip/pm_domains.c b/drivers/soc/rockchip/pm_domains.c
+diff --git a/drivers/pmdomain/rockchip/pm-domains.c b/drivers/pmdomain/rockchip/pm-domains.c
 index 89795abac951..ffb5d62c9d52 100644
---- a/drivers/soc/rockchip/pm_domains.c
-+++ b/drivers/soc/rockchip/pm_domains.c
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
 @@ -309,6 +309,29 @@ static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
  	return 0;
  }
