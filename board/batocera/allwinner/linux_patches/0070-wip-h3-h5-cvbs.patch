@@ -1,38 +1,23 @@
-diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-index 7b42ab8b5..330a79390 100644
---- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-@@ -180,6 +180,10 @@ flash@0 {
- 	};
- };
- 
-+&tve {
-+        status = "okay";
-+};
-+
- &uart0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart0_pa_pins>;
-diff --git a/arch/arm/boot/dts/sun8i-h3-orangepi-pc.dts b/arch/arm/boot/dts/sun8i-h3-orangepi-pc.dts
-index 624e248e3..01c3a7f76 100644
---- a/arch/arm/boot/dts/sun8i-h3-orangepi-pc.dts
-+++ b/arch/arm/boot/dts/sun8i-h3-orangepi-pc.dts
-@@ -214,6 +214,10 @@ &sound_hdmi {
- 	status = "okay";
- };
- 
-+&tve {
-+	status = "okay";
-+};
-+
- &uart0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart0_pa_pins>;
-diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index 1b02a4c3f..5b1158c7a 100644
---- a/arch/arm/boot/dts/sun8i-h3.dtsi
-+++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-@@ -294,6 +294,20 @@ ths: thermal-sensor@1c25000 {
+From d7b2340cd84ba5ce3494e8acbf52191e1d85bbe8 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Wed, 20 Jan 2021 22:15:36 +0100
+Subject: [PATCH 22/23] wip h3/h5 cvbs
+
+---
+ arch/arm/boot/dts/allwinner/sun8i-h3.dtsi    | 22 +++++
+ arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi | 95 +++++++++++++++++++-
+ arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi | 22 +++++
+ drivers/clk/sunxi-ng/ccu-sun8i-h3.c          | 14 ++-
+ drivers/gpu/drm/sun4i/sun4i_tv.c             | 35 +++++++-
+ drivers/gpu/drm/sun4i/sun8i_mixer.c          | 38 ++++++++
+ drivers/gpu/drm/sun4i/sun8i_mixer.h          |  5 +-
+ 7 files changed, 223 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi b/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
+index eac2349a2380..411640fca509 100644
+--- a/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
+@@ -239,6 +239,20 @@ ths: thermal-sensor@1c25000 {
  			nvmem-cell-names = "calibration";
  			#thermal-sensor-cells = <0>;
  		};
@@ -53,7 +38,7 @@ index 1b02a4c3f..5b1158c7a 100644
  	};
  
  	thermal-zones {
-@@ -383,6 +397,10 @@ &mbus {
+@@ -286,6 +300,10 @@ &mbus {
  	compatible = "allwinner,sun8i-h3-mbus";
  };
  
@@ -64,7 +49,7 @@ index 1b02a4c3f..5b1158c7a 100644
  &mmc0 {
  	compatible = "allwinner,sun7i-a20-mmc";
  	clocks = <&ccu CLK_BUS_MMC0>,
-@@ -430,3 +448,7 @@ &rtc {
+@@ -333,3 +351,7 @@ &rtc {
  &sid {
  	compatible = "allwinner,sun8i-h3-sid";
  };
@@ -72,10 +57,10 @@ index 1b02a4c3f..5b1158c7a 100644
 +&tcon1_out_tve {
 +	remote-endpoint = <&tve_in_tcon1>;
 +};
-diff --git a/arch/arm/boot/dts/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-index 7946699f4..cb6eb5d71 100644
---- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-+++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
+diff --git a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
+index ade1cd50e445..dc2ae4270347 100644
+--- a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
++++ b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
 @@ -102,7 +102,7 @@ osc32k: osc32k_clk {
  
  	de: display-engine {
@@ -85,7 +70,7 @@ index 7946699f4..cb6eb5d71 100644
  		status = "disabled";
  	};
  
-@@ -160,11 +160,50 @@ ports {
+@@ -139,11 +139,50 @@ ports {
  				#size-cells = <0>;
  
  				mixer0_out: port@1 {
@@ -137,7 +122,7 @@ index 7946699f4..cb6eb5d71 100644
  				};
  			};
  		};
-@@ -193,11 +232,19 @@ ports {
+@@ -172,11 +211,19 @@ ports {
  				#size-cells = <0>;
  
  				tcon0_in: port@0 {
@@ -158,7 +143,7 @@ index 7946699f4..cb6eb5d71 100644
  				};
  
  				tcon0_out: port@1 {
-@@ -213,6 +260,48 @@ tcon0_out_hdmi: endpoint@1 {
+@@ -192,6 +239,48 @@ tcon0_out_hdmi: endpoint@1 {
  			};
  		};
  
@@ -208,10 +193,10 @@ index 7946699f4..cb6eb5d71 100644
  			/* compatible and clocks are in per SoC .dtsi file */
  			reg = <0x01c0f000 0x1000>;
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-index f6d970d9b..3df8abe0d 100644
+index d3caf27b6a55..31e67b91e4fa 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-@@ -203,6 +203,20 @@ ths: thermal-sensor@1c25000 {
+@@ -184,6 +184,20 @@ ths: thermal-sensor@1c25000 {
  			nvmem-cell-names = "calibration";
  			#thermal-sensor-cells = <1>;
  		};
@@ -232,7 +217,7 @@ index f6d970d9b..3df8abe0d 100644
  	};
  
  	thermal-zones {
-@@ -298,6 +312,10 @@ &mbus {
+@@ -237,6 +251,10 @@ &mbus {
  	compatible = "allwinner,sun50i-h5-mbus";
  };
  
@@ -243,7 +228,7 @@ index f6d970d9b..3df8abe0d 100644
  &mmc0 {
  	compatible = "allwinner,sun50i-h5-mmc",
  		     "allwinner,sun50i-a64-mmc";
-@@ -333,3 +351,7 @@ &rtc {
+@@ -272,3 +290,7 @@ &rtc {
  &sid {
  	compatible = "allwinner,sun50i-h5-sid";
  };
@@ -252,10 +237,10 @@ index f6d970d9b..3df8abe0d 100644
 +	remote-endpoint = <&tve_in_tcon1>;
 +};
 diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-h3.c b/drivers/clk/sunxi-ng/ccu-sun8i-h3.c
-index 4ec8d3ffa..5f689fe10 100644
+index 74274c17efb3..c4f4ba836408 100644
 --- a/drivers/clk/sunxi-ng/ccu-sun8i-h3.c
 +++ b/drivers/clk/sunxi-ng/ccu-sun8i-h3.c
-@@ -464,8 +464,18 @@ static SUNXI_CCU_M_WITH_MUX_GATE(tcon_clk, "tcon", tcon_parents,
+@@ -463,8 +463,18 @@ static SUNXI_CCU_M_WITH_MUX_GATE(tcon_clk, "tcon", tcon_parents,
  				 CLK_SET_RATE_PARENT);
  
  static const char * const tve_parents[] = { "pll-de", "pll-periph1" };
@@ -276,21 +261,8 @@ index 4ec8d3ffa..5f689fe10 100644
  
  static const char * const deinterlace_parents[] = { "pll-periph0", "pll-periph1" };
  static SUNXI_CCU_M_WITH_MUX_GATE(deinterlace_clk, "deinterlace", deinterlace_parents,
-diff --git a/drivers/gpu/drm/sun4i/Makefile b/drivers/gpu/drm/sun4i/Makefile
-index 492bfd28a..721eddd6a 100644
---- a/drivers/gpu/drm/sun4i/Makefile
-+++ b/drivers/gpu/drm/sun4i/Makefile
-@@ -19,7 +19,7 @@ sun8i-drm-hdmi-y		+= sun8i_hdmi_phy_clk.o
- 
- sun8i-mixer-y			+= sun8i_mixer.o sun8i_ui_layer.o \
- 				   sun8i_vi_layer.o sun8i_ui_scaler.o \
--				   sun8i_vi_scaler.o sun8i_csc.o
-+				   sun8i_vi_scaler.o sun8i_csc.o sun4i_tv.o
- 
- sun4i-tcon-y			+= sun4i_crtc.o
- sun4i-tcon-y			+= sun4i_dotclock.o
 diff --git a/drivers/gpu/drm/sun4i/sun4i_tv.c b/drivers/gpu/drm/sun4i/sun4i_tv.c
-index c65f0a89b..e19f26df4 100644
+index ec65d9d59de7..d2235d5a7416 100644
 --- a/drivers/gpu/drm/sun4i/sun4i_tv.c
 +++ b/drivers/gpu/drm/sun4i/sun4i_tv.c
 @@ -10,6 +10,7 @@
@@ -301,7 +273,7 @@ index c65f0a89b..e19f26df4 100644
  #include <linux/platform_device.h>
  #include <linux/regmap.h>
  #include <linux/reset.h>
-@@ -168,6 +169,11 @@ struct tv_mode {
+@@ -159,6 +160,11 @@ struct tv_mode {
  	const struct resync_parameters	*resync_params;
  };
  
@@ -313,7 +285,7 @@ index c65f0a89b..e19f26df4 100644
  struct sun4i_tv {
  	struct drm_connector	connector;
  	struct drm_encoder	encoder;
-@@ -504,7 +510,7 @@ static const struct regmap_config sun4i_tv_regmap_config = {
+@@ -419,7 +425,7 @@ static const struct regmap_config sun4i_tv_regmap_config = {
  	.reg_bits	= 32,
  	.val_bits	= 32,
  	.reg_stride	= 4,
@@ -322,7 +294,7 @@ index c65f0a89b..e19f26df4 100644
  	.name		= "tv-encoder",
  };
  
-@@ -514,13 +520,19 @@ static int sun4i_tv_bind(struct device *dev, struct device *master,
+@@ -429,13 +435,19 @@ static int sun4i_tv_bind(struct device *dev, struct device *master,
  	struct platform_device *pdev = to_platform_device(dev);
  	struct drm_device *drm = data;
  	struct sun4i_drv *drv = drm->dev_private;
@@ -342,7 +314,7 @@ index c65f0a89b..e19f26df4 100644
  	tv->drv = drv;
  	dev_set_drvdata(dev, tv);
  
-@@ -557,6 +569,11 @@ static int sun4i_tv_bind(struct device *dev, struct device *master,
+@@ -472,6 +484,11 @@ static int sun4i_tv_bind(struct device *dev, struct device *master,
  	}
  	clk_prepare_enable(tv->clk);
  
@@ -354,8 +326,8 @@ index c65f0a89b..e19f26df4 100644
  	drm_encoder_helper_add(&tv->encoder,
  			       &sun4i_tv_helper_funcs);
  	ret = drm_simple_encoder_init(drm, &tv->encoder,
-@@ -626,8 +643,22 @@ static int sun4i_tv_remove(struct platform_device *pdev)
- 	return 0;
+@@ -551,8 +568,22 @@ static void sun4i_tv_remove(struct platform_device *pdev)
+ 	component_del(&pdev->dev, &sun4i_tv_ops);
  }
  
 +static const struct sun4i_tv_quirks a10_quirks = {
@@ -379,12 +351,12 @@ index c65f0a89b..e19f26df4 100644
  };
  MODULE_DEVICE_TABLE(of, sun4i_tv_of_table);
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-index 9c17bb410..675d8a075 100644
+index 8e32d0b24ac9..854f5ab76463 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-@@ -35,6 +35,12 @@ struct de2_fmt_info {
- 
- static bool hw_preconfigured;
+@@ -36,6 +36,12 @@ struct de2_fmt_info {
+ 	u32	de2_fmt;
+ };
  
 +static const u32 sun8i_rgb2yuv_coef[12] = {
 +	0x00000107, 0x00000204, 0x00000064, 0x00004200,
@@ -395,8 +367,8 @@ index 9c17bb410..675d8a075 100644
  static const struct de2_fmt_info de2_formats[] = {
  	{
  		.drm_fmt = DRM_FORMAT_ARGB8888,
-@@ -435,10 +441,29 @@ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
- 			 interlaced ? "on" : "off");
+@@ -369,11 +375,30 @@ static u32 *sun8i_mixer_get_supported_fmts(struct sunxi_engine *engine, u32 *num
+ 	return formats;
  }
  
 +static void sun8i_mixer_apply_color_correction(struct sunxi_engine *engine)
@@ -417,34 +389,32 @@ index 9c17bb410..675d8a075 100644
 +}
 +
  static const struct sunxi_engine_ops sun8i_engine_ops = {
--	.commit		= sun8i_mixer_commit,
--	.layers_init	= sun8i_layers_init,
--	.mode_set	= sun8i_mixer_mode_set,
-+	.commit				= sun8i_mixer_commit,
-+	.layers_init			= sun8i_layers_init,
-+	.mode_set			= sun8i_mixer_mode_set,
+ 	.commit			= sun8i_mixer_commit,
+ 	.layers_init		= sun8i_layers_init,
+ 	.mode_set		= sun8i_mixer_mode_set,
+ 	.get_supported_fmts	= sun8i_mixer_get_supported_fmts,
 +	.apply_color_correction		= sun8i_mixer_apply_color_correction,
 +	.disable_color_correction	= sun8i_mixer_disable_color_correction,
  };
  
  static const struct regmap_config sun8i_mixer_regmap_config = {
-@@ -612,6 +612,15 @@
+@@ -631,6 +656,15 @@ static const struct sun8i_mixer_cfg sun8i_h3_mixer0_cfg = {
  	.vi_num		= 1,
  };
  
 +static const struct sun8i_mixer_cfg sun8i_h3_mixer1_cfg = {
-+ 	.ccsc		= CCSC_MIXER1_LAYOUT,
-+ 	.mod_rate	= 432000000,
++	.ccsc		= 1,
++	.mod_rate	= 432000000,
 +	.scaler_mask	= 0x3,
 +	.scanline_yuv	= 2048,
 +	.ui_num		= 1,
-+ 	.vi_num		= 1,
-+ };
++	.vi_num		= 1,
++};
 +
  static const struct sun8i_mixer_cfg sun8i_r40_mixer0_cfg = {
  	.ccsc		= CCSC_MIXER0_LAYOUT,
  	.mod_rate	= 297000000,
-@@ -804,6 +812,10 @@ static const struct of_device_id sun8i_mixer_of_table[] = {
+@@ -718,6 +752,10 @@ static const struct of_device_id sun8i_mixer_of_table[] = {
  		.compatible = "allwinner,sun8i-h3-de2-mixer-0",
  		.data = &sun8i_h3_mixer0_cfg,
  	},
@@ -456,10 +426,10 @@ index 9c17bb410..675d8a075 100644
  		.compatible = "allwinner,sun8i-r40-de2-mixer-0",
  		.data = &sun8i_r40_mixer0_cfg,
 diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index 68e2741b0..7bc8efca6 100644
+index 13401643c7bf..5951adb66e69 100644
 --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
 +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-@@ -119,6 +119,10 @@
+@@ -118,6 +118,10 @@
  /* format 20 is packed YVU444 10-bit */
  /* format 21 is packed YUV444 10-bit */
  
@@ -470,7 +440,7 @@ index 68e2741b0..7bc8efca6 100644
  /*
   * Sub-engines listed bellow are unused for now. The EN registers are here only
   * to be used to disable these sub-engines.
-@@ -129,7 +133,6 @@
+@@ -128,7 +132,6 @@
  #define SUN8I_MIXER_PEAK_EN			0xa6000
  #define SUN8I_MIXER_ASE_EN			0xa8000
  #define SUN8I_MIXER_FCC_EN			0xaa000
@@ -478,3 +448,6 @@ index 68e2741b0..7bc8efca6 100644
  
  #define SUN50I_MIXER_FCE_EN			0x70000
  #define SUN50I_MIXER_PEAK_EN			0x70800
+-- 
+2.42.0
+

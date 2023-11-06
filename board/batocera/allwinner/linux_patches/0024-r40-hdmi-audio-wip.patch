@@ -5,11 +5,11 @@ Subject: [PATCH 17/17] r40 hdmi audio wip
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 ---
- arch/arm/boot/dts/sun8i-r40.dtsi | 19 +++++++++++++++++++
+ arch/arm/boot/dts/allwinner/sun8i-r40.dtsi | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+--- a/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
 @@ -111,6 +111,24 @@
  		status = "disabled";
  	};

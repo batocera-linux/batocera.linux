@@ -4,14 +4,14 @@ Date: Sat, 25 Sep 2021 16:21:41 +0200
 Subject: [PATCH] HACK: Disable MBUS due to fw_devlink=on
 
 ---
- arch/arm/boot/dts/sun8i-r40.dtsi              | 1 +
- arch/arm/boot/dts/sun8i-h3.dtsi               | 1 +
+ arch/arm/boot/dts/allwinner/sun8i-r40.dtsi              | 1 +
+ arch/arm/boot/dts/allwinner/sun8i-h3.dtsi               | 1 +
  2 files changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+diff --git a/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi b/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
 index 291f4784e86c..173edaff4c9b 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+--- a/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
 @@ -949,6 +949,7 @@ mbus: dram-controller@1c62000 {
  			#size-cells = <1>;
  			dma-ranges = <0x00000000 0x40000000 0x80000000>;
@@ -20,10 +20,10 @@ index 291f4784e86c..173edaff4c9b 100644
  		};
  
  		tcon_top: tcon-top@1c70000 {
-diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
+diff --git a/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi b/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
 index eac2349a2380..3c08f5ee2780 100644
---- a/arch/arm/boot/dts/sun8i-h3.dtsi
-+++ b/arch/arm/boot/dts/sun8i-h3.dtsi
+--- a/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
 @@ -297,6 +297,7 @@ &display_clocks {
  
  &mbus {

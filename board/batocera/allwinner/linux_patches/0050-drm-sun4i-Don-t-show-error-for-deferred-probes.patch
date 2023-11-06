@@ -1,0 +1,30 @@
+From 5cd81f7bbbd50529e8534986e3ea40276c4a26cc Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 23 Sep 2023 13:31:23 +0200
+Subject: [PATCH 04/23] drm/sun4i: Don't show error for deferred probes.
+
+Drivers probing in display pipeline can be deferred for many reasons.
+Don't print error for such cases.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun4i_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+index 6a8dfc022d3c..b4816a1b0be3 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -88,7 +88,8 @@ static int sun4i_drv_bind(struct device *dev)
+ 
+ 	ret = component_bind_all(drm->dev, drm);
+ 	if (ret) {
+-		dev_err(drm->dev, "Couldn't bind all pipelines components\n");
++		dev_err_probe(drm->dev, ret,
++			      "Couldn't bind all pipelines components\n");
+ 		goto cleanup_mode_config;
+ 	}
+ 
+-- 
+2.42.0
+

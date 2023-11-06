@@ -5,13 +5,13 @@ Subject: [PATCH] ARM: dts: sunxi: h3/h5: Add SCPI protocol
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- arch/arm/boot/dts/sun8i-h3.dtsi              | 13 +++++++++++++
- arch/arm/boot/dts/sunxi-h3-h5.dtsi           |  7 +++++++
+ arch/arm/boot/dts/allwinner/sun8i-h3.dtsi              | 13 +++++++++++++
+ arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi           |  7 +++++++
  arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi | 13 +++++++++++++
  3 files changed, 33 insertions(+)
 
---- a/arch/arm/boot/dts/sun8i-h3.dtsi
-+++ b/arch/arm/boot/dts/sun8i-h3.dtsi
+--- a/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-h3.dtsi
 @@ -170,6 +170,19 @@
  			#size-cells = <1>;
  			ranges;
@@ -32,8 +32,8 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  			sram_c: sram@1d00000 {
  				compatible = "mmio-sram";
  				reg = <0x01d00000 0x80000>;
---- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-+++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
+--- a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
++++ b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
 @@ -105,6 +105,13 @@
  		status = "disabled";
  	};

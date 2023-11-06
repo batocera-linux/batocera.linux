@@ -1,21 +1,8 @@
-Index: linux-6.1/drivers/gpu/drm/Makefile
+Index: linux-6.5/drivers/gpu/drm/drm_modes.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/Makefile
-+++ linux-6.1/drivers/gpu/drm/Makefile
-@@ -19,7 +19,7 @@ drm-y       :=	drm_aperture.o drm_auth.o
- 		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
- 		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
- 		drm_client_modeset.o drm_atomic_uapi.o \
--		drm_managed.o drm_vblank_work.o
-+		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
- drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
- 			    drm_hashtab.o drm_irq.o drm_legacy_misc.o drm_lock.o \
- 			    drm_memory.o drm_scatter.o drm_vm.o
-Index: linux-6.1/drivers/gpu/drm/drm_modes.c
-===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_modes.c
-+++ linux-6.1/drivers/gpu/drm/drm_modes.c
-@@ -47,6 +47,7 @@
+--- linux-6.5.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.5/drivers/gpu/drm/drm_modes.c
+@@ -48,6 +48,7 @@
  #include <drm/drm_print.h>
  
  #include "drm_crtc_internal.h"
@@ -23,7 +10,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  
  /**
   * drm_mode_debug_printmodeline - print a mode to dmesg
-@@ -1551,7 +1552,7 @@ static int drm_mode_parse_cmdline_res_mo
+@@ -2028,7 +2029,7 @@ static int drm_mode_parse_cmdline_res_mo
  					   struct drm_cmdline_mode *mode)
  {
  	const char *str_start = str;
@@ -32,7 +19,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  	int xres = 0, yres = 0;
  	int remaining, i;
  	char *end_ptr;
-@@ -1581,6 +1582,12 @@ static int drm_mode_parse_cmdline_res_mo
+@@ -2058,6 +2059,12 @@ static int drm_mode_parse_cmdline_res_mo
  		case 'R':
  			rb = true;
  			break;
@@ -45,7 +32,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  		default:
  			/*
  			 * Try to pass that to our extras parsing
-@@ -1605,6 +1612,7 @@ static int drm_mode_parse_cmdline_res_mo
+@@ -2082,6 +2089,7 @@ static int drm_mode_parse_cmdline_res_mo
  	mode->yres = yres;
  	mode->cvt = cvt;
  	mode->rb = rb;
@@ -53,24 +40,24 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  
  	return 0;
  }
-@@ -1937,7 +1945,11 @@ drm_mode_create_from_cmdline_mode(struct
- 	if (cmd->xres == 0 || cmd->yres == 0)
- 		return NULL;
+@@ -2545,7 +2553,11 @@ drm_mode_create_from_cmdline_mode(struct
  
--	if (cmd->cvt)
-+	if (cmd->low_dotclock)
-+	mode = drm_mode_low_dotclock_res(dev,
-+				    cmd->xres, cmd->yres,
-+				    cmd->interlace);
-+	else if (cmd->cvt)
+ 	if (strlen(cmd->name))
+ 		mode = drm_named_mode(dev, cmd);
+-	else if (cmd->cvt)
++	else if (cmd->low_dotclock)
++        mode = drm_mode_low_dotclock_res(dev,
++                                    cmd->xres, cmd->yres,
++                                    cmd->interlace);
++        else if (cmd->cvt)
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
+Index: linux-6.5/drivers/gpu/drm/drm_modes_low_dotclock.c
 ===================================================================
 --- /dev/null
-+++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
-@@ -0,0 +1,136 @@
++++ linux-6.5/drivers/gpu/drm/drm_modes_low_dotclock.c
+@@ -0,0 +1,155 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -95,76 +82,95 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 +#include <drm/drm_modes.h>
 +#include <drm/drm_print.h>
 +
++const static struct drm_display_mode drm_low_dotclock_modes[] = {
++/* 15 kHz modes */
++	/* 320x240 60.00 - generic_15 */
++		/* Switchres: Modeline "320x240_60 15.660000KHz 60.000000Hz" 6.514560 320 333 364 416 240 241 244 261 -hsync -vsync */
++		{ DRM_MODE("320x240", DRM_MODE_TYPE_DRIVER,
++			6514, 320, 333, 364, 416, 0, 240, 241, 244, 261, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
++	/* 384x288 50.00 - generic_15 */
++		/* Switchres: Modeline "384x288_50 15.650000KHz 50.000000Hz" 7.809350 384 400 437 499 288 291 294 313 -hsync -vsync */
++		{ DRM_MODE("384x288", DRM_MODE_TYPE_DRIVER,
++			7809, 384, 400, 437, 499, 0, 288, 291, 294, 313, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
++	/* 640x240 60.00 - generic_15 */
++		/* Switchres: Modeline "640x240_60 15.660000KHz 60.000000Hz" 13.013460 640 666 727 831 240 241 244 261 -hsync -vsync */
++		{ DRM_MODE("640x240", DRM_MODE_TYPE_DRIVER,
++			13013, 640, 666, 727, 831, 0, 240, 241, 244, 261, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
++	/* 640x480 60.00 - generic_15 */
++		/* Switchres: Modeline "640x480_60i 15.690000KHz 60.000000Hz" 13.038390 640 666 727 831 480 483 489 523 interlace -hsync -vsync */
++		{ DRM_MODE("640x480i", DRM_MODE_TYPE_DRIVER,
++			13038, 640, 666, 727, 831, 0, 480, 483, 489, 523, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++       /* 648x480 60.00 - generic_15 */
++               /* Switchres: Modeline "648x480_60i 15.690000KHz 60.000000Hz" 13.210980 648 674 736 842 480 483 489 523 interlace -hsync -vsync */
++               { DRM_MODE("648x480i", DRM_MODE_TYPE_DRIVER,
++                       13210, 648, 674, 736, 842, 0, 480, 483, 489, 523, 0,
++                       DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++               DRM_MODE_FLAG_INTERLACE) },
++	/* 720x480 59.95 - generic_15 */
++		/* Switchres: Modeline "720x480_59i 15.676925KHz 59.950001Hz" 14.657925 720 749 818 935 480 483 489 523 interlace -hsync -vsync */
++		{ DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER,
++			14657, 720, 749, 818, 935, 0, 480, 483, 489, 523, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++	/* 768x576 50.00 - generic_15 */
++		/* Switchres: Modeline "768x576_50i 15.675000KHz 50.000000Hz" 15.627975 768 799 872 997 576 583 589 627 interlace -hsync -vsync */
++		{ DRM_MODE("768x576i", DRM_MODE_TYPE_DRIVER,
++			15627, 768, 799, 872, 997, 0, 576, 583, 589, 627, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++	/* 800x576 50.00 - generic_15 */
++		/* Switchres: Modeline "800x576_50i 15.675000KHz 50.000000Hz" 16.302000 800 833 910 1040 576 583 589 627 interlace -hsync -vsync */
++		{ DRM_MODE("800x576i", DRM_MODE_TYPE_DRIVER,
++			16302, 800, 833, 910, 1040, 0, 576, 583, 589, 627, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++	/* 1280x480 60.00 - generic_15 */
++		/* Switchres: Modeline "1280x480_60i 15.690000KHz 60.000000Hz" 26.108160 1280 1332 1455 1664 480 483 489 523 interlace -hsync -vsync */
++		{ DRM_MODE("1280x480i", DRM_MODE_TYPE_DRIVER,
++			26108, 1280, 1332, 1455, 1664, 0, 480, 483, 489, 523, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
 +
-+/**
-+ * Low dotclock static modelines
-+ * 2 duplicate modes that vary with H freq : 320x240 and 1024x768
-+ */
-+static struct drm_display_mode drm_low_dotclock_modes[] = {
-+	/* 320x240@60.00 15.660 kHz */
-+	{ DRM_MODE("320x240", DRM_MODE_TYPE_DRIVER, 6640, 320, 336,
-+			368, 424, 0, 240, 242, 245, 261, 0,
++/* 25 kHz modes */
++	/* 512x384 58.59 - arcade_25ex */
++		/* Switchres: Modeline "512x384_58 24.959340KHz 58.590000Hz" 15.973977 512 525 589 640 384 391 396 426 -hsync -vsync */
++		{ DRM_MODE("512x384", DRM_MODE_TYPE_DRIVER,
++			15973, 512, 525, 589, 640, 0, 384, 391, 396, 426, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 384x288@60.00 15 kHz */
-+	{ DRM_MODE("384x288", DRM_MODE_TYPE_DRIVER, 7887, 384, 400,
-+			440, 504, 0, 288, 292, 295, 313, 0,
++	/* 800x600 60.00 - arcade_25ex */
++		/* Switchres: Modeline "800x600_60i 24.930000KHz 60.000000Hz" 24.930000 800 820 920 1000 600 687 697 831 interlace -hsync -vsync */
++		{ DRM_MODE("800x600i", DRM_MODE_TYPE_DRIVER,
++			24930, 800, 820, 920, 1000, 0, 600, 687, 697, 831, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++	/* 1024x768 50.00 - arcade_25ex */
++		/* Switchres: Modeline "1024x768_50i 24.975000KHz 50.000000Hz" 31.968000 1024 1050 1178 1280 768 855 865 999 interlace -hsync -vsync */
++		{ DRM_MODE("1024x768i", DRM_MODE_TYPE_DRIVER,
++			31968, 1024, 1050, 1178, 1280, 0, 768, 855, 865, 999, 0,
++			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC |
++		DRM_MODE_FLAG_INTERLACE) },
++	/* 1024x240 60.00 - arcade_25ex */
++		/* Switchres: Modeline "1024x240_60 24.900000KHz 60.000000Hz" 31.822200 1024 1049 1176 1278 240 313 318 415 -hsync -vsync */
++		{ DRM_MODE("1024x240", DRM_MODE_TYPE_DRIVER,
++			31822, 1024, 1049, 1176, 1278, 0, 240, 313, 318, 415, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x240@60.00 15 kHz */
-+	{ DRM_MODE("640x240", DRM_MODE_TYPE_DRIVER, 13220, 640, 672,
-+			736, 832, 0, 240, 243, 246, 265, 0,
++	/* 1280x240 60.00 - arcade_25ex */
++		/* Switchres: Modeline "1280x240_60 24.900000KHz 60.000000Hz" 39.790200 1280 1312 1471 1598 240 313 318 415 -hsync -vsync */
++		{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER,
++			39790, 1280, 1312, 1471, 1598, 0, 240, 313, 318, 415, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x480@60.00 15.750 kHz */
-+	{ DRM_MODE("640x480i", DRM_MODE_TYPE_DRIVER, 13104, 640, 664,
-+			728, 832, 0, 480, 484, 490, 525, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+                       DRM_MODE_FLAG_INTERLACE) },
-+	/* 648x480@60.00 13.129 kHz */
-+	{ DRM_MODE("648x480i", DRM_MODE_TYPE_DRIVER, 13129, 648, 672,
-+			736, 840, 0, 480, 482, 488, 521, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+                       DRM_MODE_FLAG_INTERLACE) },
-+	/* 720x480@59.95 15.7369 kHz */
-+	{ DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER, 14856, 720, 752,
-+			824, 944, 0, 480, 484, 490, 525, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 768x576 15.6250 kHz */
-+	{ DRM_MODE("768x576i", DRM_MODE_TYPE_DRIVER, 15625, 768, 800,
-+			872, 1000, 0, 576, 582, 588, 625, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 800x576@50.00 15.725 kHz */
-+	{ DRM_MODE("800x576i", DRM_MODE_TYPE_DRIVER, 16354, 800, 832,
-+			912, 1040, 0, 576, 584, 590, 629, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1280x480@60.00 15.690 kHz - 25MHz dotclock for i915+nouveau*/
-+	{ DRM_MODE("1280x480i", DRM_MODE_TYPE_DRIVER, 25983, 1280, 1328,
-+			1448, 1656, 0, 480, 483, 489, 523, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 512x384@58.59 24.960 kHz */
-+	{ DRM_MODE("512x384", DRM_MODE_TYPE_DRIVER, 16972, 512, 560,
-+			608, 680, 0, 384, 395, 399, 426, 0,
++
++/* 31 kHz modes */
++	/* 640x480 60.00 - arcade_31 */
++		/* Switchres: Modeline "640x480_60 31.500000KHz 60.000000Hz" 25.452000 640 664 760 808 480 491 493 525 -hsync -vsync */
++		{ DRM_MODE("640x480", DRM_MODE_TYPE_DRIVER,
++			25452, 640, 664, 760, 808, 0, 480, 491, 493, 525, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 800x600@60.00 24.990 kHz */
-+	{ DRM_MODE("800x600i", DRM_MODE_TYPE_DRIVER, 26989, 800, 880,
-+			960, 1080, 0, 600, 697, 705, 833, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1024x768@50.00 24.975 kHz */
-+	{ DRM_MODE("1024x768i", DRM_MODE_TYPE_DRIVER, 34165, 1024, 1120,
-+			1216, 1368, 0, 768, 864, 872, 999, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC | 
-+			DRM_MODE_FLAG_INTERLACE) },
-+	/* 1280x240@60.00 24.900 kHz */
-+	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 39790, 1280, 1312,
-+			1471, 1598, 0, 240, 314, 319, 415, 0,
-+			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
-+	/* 640x480@60.00 31 kHz */
-+	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
-+	 752, 800, 0, 480, 489, 492, 525, 0,
-+	 DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) }
 +};
 +
 +/**
@@ -179,7 +185,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 + * No need to specify 15 or 25kHz, not the vertical refresh rate as it's only 60Hz for now.
 + * This is a very basic function. Duplicate modes (320x240 and 1024x768) are not
 + * handled, the first result will be returned.
-+ * 
++ *
 + * Returns:
 + * A low dotclock drm modeline
 + */
@@ -207,10 +213,10 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.c
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
+Index: linux-6.5/drivers/gpu/drm/drm_modes_low_dotclock.h
 ===================================================================
 --- /dev/null
-+++ linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
++++ linux-6.5/drivers/gpu/drm/drm_modes_low_dotclock.h
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -235,11 +241,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes_low_dotclock.h
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.5/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
-@@ -391,21 +391,26 @@ static int __drm_helper_update_and_valid
+--- linux-6.5.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.5/drivers/gpu/drm/drm_probe_helper.c
+@@ -448,21 +448,26 @@ static int __drm_helper_update_and_valid
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -266,7 +272,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  		ret = drm_mode_validate_pipeline(mode, connector, ctx,
  						 &mode->status);
  		if (ret) {
-@@ -419,9 +424,11 @@ static int __drm_helper_update_and_valid
+@@ -476,9 +481,11 @@ static int __drm_helper_update_and_valid
  				return -EDEADLK;
  		}
  
@@ -278,7 +284,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	}
  
  	return 0;
-@@ -491,6 +498,7 @@ int drm_helper_probe_single_connector_mo
+@@ -548,6 +555,7 @@ int drm_helper_probe_single_connector_mo
  {
  	struct drm_device *dev = connector->dev;
  	struct drm_display_mode *mode;
@@ -286,7 +292,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	int count = 0, ret;
  	enum drm_connector_status old_status;
  	struct drm_modeset_acquire_ctx ctx;
-@@ -575,10 +583,13 @@ retry:
+@@ -630,10 +638,13 @@ retry:
  		goto exit;
  	}
  
@@ -296,33 +302,45 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  
  	if (count == 0 && (connector->status == connector_status_connected ||
 -			   connector->status == connector_status_unknown)) {
-+			   connector->status == connector_status_unknown) && 
++			   connector->status == connector_status_unknown) &&
 +			   ! cmdline_mode->low_dotclock) {
  		count = drm_add_modes_noedid(connector, 1024, 768);
  
  		/*
-Index: linux-6.1/include/drm/drm_connector.h
+Index: linux-6.5/include/drm/drm_connector.h
 ===================================================================
---- linux-6.1.orig/include/drm/drm_connector.h
-+++ linux-6.1/include/drm/drm_connector.h
-@@ -1304,6 +1304,13 @@ struct drm_cmdline_mode {
- 	 * @tv_margins: TV margins to apply to the mode.
- 	 */
- 	struct drm_connector_tv_margins tv_margins;
-+
-+	/**
+--- linux-6.5.orig/include/drm/drm_connector.h
++++ linux-6.5/include/drm/drm_connector.h
+@@ -1424,6 +1424,13 @@ struct drm_cmdline_mode {
+ 	bool interlace;
+ 
+ 	/**
 +	 * @low_dotclock:
 +	 *
 +	 * Flag is enabled if a valid low dotclock resolution is defined.
 +	 */
 +	bool low_dotclock;
- };
- 
- /**
-Index: linux-6.1/drivers/gpu/drm/drm_vblank.c
++
++	/**
+ 	 * @cvt:
+ 	 *
+ 	 * The timings will be calculated using the VESA Coordinated
+Index: linux-6.5/drivers/gpu/drm/Makefile
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_vblank.c
-+++ linux-6.1/drivers/gpu/drm/drm_vblank.c
+--- linux-6.5.orig/drivers/gpu/drm/Makefile
++++ linux-6.5/drivers/gpu/drm/Makefile
+@@ -30,6 +30,7 @@ drm-y := \
+ 	drm_ioctl.o \
+ 	drm_lease.o \
+ 	drm_managed.o \
++	drm_modes_low_dotclock.o \
+ 	drm_mm.o \
+ 	drm_mode_config.o \
+ 	drm_mode_object.o \
+Index: linux-6.5/drivers/gpu/drm/drm_vblank.c
+===================================================================
+--- linux-6.5.orig/drivers/gpu/drm/drm_vblank.c
++++ linux-6.5/drivers/gpu/drm/drm_vblank.c
 @@ -285,6 +285,7 @@ static void drm_update_vblank_count(stru
  	int count = DRM_TIMESTAMP_MAXRETRIES;
  	int framedur_ns = vblank->framedur_ns;
@@ -350,19 +368,19 @@ Index: linux-6.1/drivers/gpu/drm/drm_vblank.c
  		/*
  		 * Figure out how many vblanks we've missed based
  		 * on the difference in the timestamps and the
-Index: linux-6.1/drivers/gpu/drm/drm_connector.c
+Index: linux-6.6/drivers/gpu/drm/drm_connector.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_connector.c
-+++ linux-6.1/drivers/gpu/drm/drm_connector.c
-@@ -272,6 +272,7 @@ static int __drm_connector_init(struct d
+--- linux-6.6.orig/drivers/gpu/drm/drm_connector.c
++++ linux-6.6/drivers/gpu/drm/drm_connector.c
+@@ -275,6 +275,7 @@ static int __drm_connector_init(struct d
  
  	INIT_LIST_HEAD(&connector->global_connector_list_entry);
  	INIT_LIST_HEAD(&connector->probed_modes);
 +	INIT_LIST_HEAD(&connector->user_modes);
  	INIT_LIST_HEAD(&connector->modes);
  	mutex_init(&connector->mutex);
- 	connector->edid_blob_ptr = NULL;
-@@ -555,6 +556,11 @@ void drm_connector_cleanup(struct drm_co
+ 	mutex_init(&connector->edid_override_mutex);
+@@ -559,6 +560,11 @@ void drm_connector_cleanup(struct drm_co
  	list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
  		drm_mode_remove(connector, mode);
  
@@ -374,11 +392,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_connector.c
  	list_for_each_entry_safe(mode, t, &connector->modes, head)
  		drm_mode_remove(connector, mode);
  
-Index: linux-6.1/drivers/gpu/drm/drm_ioctl.c
+Index: linux-6.6/drivers/gpu/drm/drm_ioctl.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_ioctl.c
-+++ linux-6.1/drivers/gpu/drm/drm_ioctl.c
-@@ -666,8 +666,8 @@ static const struct drm_ioctl_desc drm_i
+--- linux-6.6.orig/drivers/gpu/drm/drm_ioctl.c
++++ linux-6.6/drivers/gpu/drm/drm_ioctl.c
+@@ -665,8 +665,8 @@ static const struct drm_ioctl_desc drm_i
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETGAMMA, drm_mode_gamma_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETENCODER, drm_mode_getencoder, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETCONNECTOR, drm_mode_getconnector, 0),
@@ -389,10 +407,10 @@ Index: linux-6.1/drivers/gpu/drm/drm_ioctl.c
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPERTY, drm_mode_getproperty_ioctl, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETPROPERTY, drm_connector_property_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPBLOB, drm_mode_getblob_ioctl, 0),
-Index: linux-6.1/drivers/gpu/drm/drm_mode_object.c
+Index: linux-6.6/drivers/gpu/drm/drm_mode_object.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_mode_object.c
-+++ linux-6.1/drivers/gpu/drm/drm_mode_object.c
+--- linux-6.6.orig/drivers/gpu/drm/drm_mode_object.c
++++ linux-6.6/drivers/gpu/drm/drm_mode_object.c
 @@ -143,6 +143,7 @@ struct drm_mode_object *__drm_mode_objec
  	obj = idr_find(&dev->mode_config.object_idr, id);
  	if (obj && type != DRM_MODE_OBJECT_ANY && obj->type != type)
@@ -401,11 +419,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_mode_object.c
  	if (obj && obj->id != id)
  		obj = NULL;
  
-Index: linux-6.1/drivers/gpu/drm/drm_modes.c
+Index: linux-6.6/drivers/gpu/drm/drm_modes.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_modes.c
-+++ linux-6.1/drivers/gpu/drm/drm_modes.c
-@@ -40,6 +40,7 @@
+--- linux-6.6.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.6/drivers/gpu/drm/drm_modes.c
+@@ -41,6 +41,7 @@
  #include <video/of_videomode.h>
  #include <video/videomode.h>
  
@@ -413,8 +431,8 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  #include <drm/drm_crtc.h>
  #include <drm/drm_device.h>
  #include <drm/drm_edid.h>
-@@ -118,6 +119,168 @@ void drm_mode_probed_add(struct drm_conn
- EXPORT_SYMBOL(drm_mode_probed_add);
+@@ -595,6 +596,168 @@ err_free_mode:
+ EXPORT_SYMBOL(drm_analog_tv_mode);
  
  /**
 + * drm_mode_attachmode - add a mode to the user mode list
@@ -582,7 +600,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
   * drm_cvt_mode -create a modeline based on the CVT algorithm
   * @dev: drm device
   * @hdisplay: hdisplay size
-@@ -1408,7 +1571,7 @@ EXPORT_SYMBOL(drm_mode_sort);
+@@ -1885,7 +2048,7 @@ EXPORT_SYMBOL(drm_mode_sort);
   */
  void drm_connector_list_update(struct drm_connector *connector)
  {
@@ -591,7 +609,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  
  	WARN_ON(!mutex_is_locked(&connector->dev->mode_config.mutex));
  
-@@ -1454,6 +1617,40 @@ void drm_connector_list_update(struct dr
+@@ -1931,6 +2094,40 @@ void drm_connector_list_update(struct dr
  			list_move_tail(&pmode->head, &connector->modes);
  		}
  	}
@@ -632,11 +650,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_modes.c
  }
  EXPORT_SYMBOL(drm_connector_list_update);
  
-Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.6/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.1.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.1/drivers/gpu/drm/drm_probe_helper.c
-@@ -317,6 +317,23 @@ retry:
+--- linux-6.6.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.6/drivers/gpu/drm/drm_probe_helper.c
+@@ -374,6 +374,23 @@ retry:
  	return ret;
  }
  
@@ -660,7 +678,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  /**
   * drm_helper_probe_detect - probe connector status
   * @connector: connector to probe
-@@ -510,6 +527,8 @@ int drm_helper_probe_single_connector_mo
+@@ -567,6 +584,8 @@ int drm_helper_probe_single_connector_mo
  
  	drm_modeset_acquire_init(&ctx, 0);
  
@@ -669,7 +687,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	DRM_DEBUG_KMS("[CONNECTOR:%d:%s]\n", connector->base.id,
  			connector->name);
  
-@@ -527,6 +546,10 @@ retry:
+@@ -584,6 +603,10 @@ retry:
  
  	old_status = connector->status;
  
@@ -680,7 +698,7 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  	if (connector->force) {
  		if (connector->force == DRM_FORCE_ON ||
  		    connector->force == DRM_FORCE_ON_DIGITAL)
-@@ -641,7 +664,13 @@ exit:
+@@ -696,7 +719,13 @@ exit:
  
  	drm_mode_sort(&connector->modes);
  
@@ -695,11 +713,11 @@ Index: linux-6.1/drivers/gpu/drm/drm_probe_helper.c
  			connector->name);
  	list_for_each_entry(mode, &connector->modes, head) {
  		drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
-Index: linux-6.1/include/drm/drm_connector.h
+Index: linux-6.6/include/drm/drm_connector.h
 ===================================================================
---- linux-6.1.orig/include/drm/drm_connector.h
-+++ linux-6.1/include/drm/drm_connector.h
-@@ -1441,6 +1441,14 @@ struct drm_connector {
+--- linux-6.6.orig/include/drm/drm_connector.h
++++ linux-6.6/include/drm/drm_connector.h
+@@ -1618,6 +1618,14 @@ struct drm_connector {
  	struct list_head probed_modes;
  
  	/**
@@ -714,10 +732,10 @@ Index: linux-6.1/include/drm/drm_connector.h
  	 * @display_info: Display information is filled from EDID information
  	 * when a display is detected. For non hot-pluggable displays such as
  	 * flat panels in embedded systems, the driver should initialize the
-Index: linux-6.1/include/drm/drm_modes.h
+Index: linux-6.6/include/drm/drm_modes.h
 ===================================================================
---- linux-6.1.orig/include/drm/drm_modes.h
-+++ linux-6.1/include/drm/drm_modes.h
+--- linux-6.6.orig/include/drm/drm_modes.h
++++ linux-6.6/include/drm/drm_modes.h
 @@ -460,6 +460,10 @@ int drm_mode_convert_umode(struct drm_de
  			   struct drm_display_mode *out,
  			   const struct drm_mode_modeinfo *in);

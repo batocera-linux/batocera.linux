@@ -5,11 +5,11 @@ Subject: [PATCH 44/44] HACK: h3/h5: Add HDMI sound card
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 ---
- arch/arm/boot/dts/sunxi-h3-h5.dtsi | 20 +++++++++++++++++++-
+ arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi | 20 +++++++++++++++++++-
  1 file changed, 19 insertions(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-+++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
+--- a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
++++ b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
 @@ -77,6 +77,24 @@
  		};
  	};

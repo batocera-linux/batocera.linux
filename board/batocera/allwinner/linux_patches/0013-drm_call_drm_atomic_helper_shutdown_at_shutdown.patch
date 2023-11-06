@@ -1,0 +1,61 @@
+Subject: [PATCH] drm: Call drm_atomic_helper_shutdown() at shutdown time for misc drivers
+From: Douglas Anderson <dianders@chromium.org>
+Date: Fri, 01 Sep 2023 16:39:53 -0700
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Based on grepping through the source code these drivers appear to be
+missing a call to drm_atomic_helper_shutdown() at system shutdown
+time. Among other things, this means that if a panel is in use that it
+won't be cleanly powered off at system shutdown time.
+
+The fact that we should call drm_atomic_helper_shutdown() in the case
+of OS shutdown/restart comes straight out of the kernel doc "driver
+instance overview" in drm_drv.c.
+
+All of the drivers in this patch were fairly straightforward to fix
+since they already had a call to drm_atomic_helper_shutdown() at
+remove/unbind time but were just lacking one at system shutdown. The
+only hitch is that some of these drivers use the component model to
+register/unregister their DRM devices. The shutdown callback is part
+of the original device. The typical solution here, based on how other
+DRM drivers do this, is to keep track of whether the device is bound
+based on drvdata. In most cases the drvdata is the drm_device, so we
+can just make sure it is NULL when the device is not bound. In some
+drivers, this required minor code changes. To make things simpler,
+drm_atomic_helper_shutdown() has been modified to consider a NULL
+drm_device as a noop in the patch ("drm/atomic-helper:
+drm_atomic_helper_shutdown(NULL) should be a noop").
+
+Suggested-by: Maxime Ripard <mripard@kernel.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Acked-by: Maxime Ripard <mripard@kernel.org>
+Link: https://lore.kernel.org/r/20230901163944.RFT.2.I9115e5d094a43e687978b0699cc1fe9f2a3452ea@changeid
+---
+<snip>
+diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+index 6a8dfc022d3c..35d7a7ffd208 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -413,6 +413,11 @@ static void sun4i_drv_remove(struct platform_device *pdev)
+ 	component_master_del(&pdev->dev, &sun4i_drv_master_ops);
+ }
+ 
++static void sun4i_drv_shutdown(struct platform_device *pdev)
++{
++	drm_atomic_helper_shutdown(platform_get_drvdata(pdev));
++}
++
+ static const struct of_device_id sun4i_drv_of_table[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-display-engine" },
+ 	{ .compatible = "allwinner,sun5i-a10s-display-engine" },
+@@ -437,6 +442,7 @@ MODULE_DEVICE_TABLE(of, sun4i_drv_of_table);
+ static struct platform_driver sun4i_drv_platform_driver = {
+ 	.probe		= sun4i_drv_probe,
+ 	.remove_new	= sun4i_drv_remove,
++	.shutdown	= sun4i_drv_shutdown,
+ 	.driver		= {
+ 		.name		= "sun4i-drm",
+ 		.of_match_table	= sun4i_drv_of_table,
+<snip>

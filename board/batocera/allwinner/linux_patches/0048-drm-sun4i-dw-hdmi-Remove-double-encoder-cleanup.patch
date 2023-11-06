@@ -1,0 +1,80 @@
+From 9047008f1c8cebcc33cb068d9961fcfb8ff0eea7 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 11 Dec 2021 18:17:49 +0100
+Subject: [PATCH 02/23] drm/sun4i: dw-hdmi: Remove double encoder cleanup
+
+It turns out that comment is wrong - dw hdmi driver never does any
+encoder cleanup. In fact, cleanup is done automatically, in destroy
+callback of encoder. Even more, encoder memory will be freed when hdmi
+device is destroyed. However, encoder will be cleaned up after that, in
+drm_mode_config_cleanup(), which is called later. This will cause use
+after free bug.
+
+Remove redundant encoder cleanup, switch memory allocation to live as
+long as drm object and while at it, check return code of encoder
+initialization.
+
+Fixes: b7c7436a5ff0 ("drm/sun4i: Implement A83T HDMI driver")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+index 0b647b030b15..8f8d3bdba5ce 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+@@ -8,6 +8,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ 
++#include <drm/drm_managed.h>
+ #include <drm/drm_modeset_helper_vtables.h>
+ #include <drm/drm_of.h>
+ #include <drm/drm_simple_kms_helper.h>
+@@ -107,7 +108,7 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 	if (!pdev->dev.of_node)
+ 		return -ENODEV;
+ 
+-	hdmi = devm_kzalloc(&pdev->dev, sizeof(*hdmi), GFP_KERNEL);
++	hdmi = drmm_kzalloc(drm, sizeof(*hdmi), GFP_KERNEL);
+ 	if (!hdmi)
+ 		return -ENOMEM;
+ 
+@@ -180,7 +181,9 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 		goto err_disable_clk_tmds;
+ 
+ 	drm_encoder_helper_add(encoder, &sun8i_dw_hdmi_encoder_helper_funcs);
+-	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
++	ret = drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
++	if (ret)
++		goto err_deinit_phy;
+ 
+ 	plat_data->mode_valid = hdmi->quirks->mode_valid;
+ 	plat_data->use_drm_infoframe = hdmi->quirks->use_drm_infoframe;
+@@ -189,20 +192,14 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 	platform_set_drvdata(pdev, hdmi);
+ 
+ 	hdmi->hdmi = dw_hdmi_bind(pdev, encoder, plat_data);
+-
+-	/*
+-	 * If dw_hdmi_bind() fails we'll never call dw_hdmi_unbind(),
+-	 * which would have called the encoder cleanup.  Do it manually.
+-	 */
+ 	if (IS_ERR(hdmi->hdmi)) {
+ 		ret = PTR_ERR(hdmi->hdmi);
+-		goto cleanup_encoder;
++		goto err_deinit_phy;
+ 	}
+ 
+ 	return 0;
+ 
+-cleanup_encoder:
+-	drm_encoder_cleanup(encoder);
++err_deinit_phy:
+ 	sun8i_hdmi_phy_deinit(hdmi->phy);
+ err_disable_clk_tmds:
+ 	clk_disable_unprepare(hdmi->clk_tmds);
+-- 
+2.42.0
+

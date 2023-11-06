@@ -5,12 +5,12 @@ Subject: [PATCH 16/17] dts: enable analog codec
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 ---
- .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  9 ++++
- arch/arm/boot/dts/sun8i-r40.dtsi              | 42 +++++++++++++++++++
+ .../boot/dts/allwinner/sun8i-r40-bananapi-m2-ultra.dts  |  9 ++++
+ arch/arm/boot/dts/allwinner/sun8i-r40.dtsi              | 42 +++++++++++++++++++
  2 files changed, 51 insertions(+)
 
---- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-+++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+--- a/arch/arm/boot/dts/allwinner/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/allwinner/sun8i-r40-bananapi-m2-ultra.dts
 @@ -113,6 +113,15 @@
  	status = "okay";
  };
@@ -27,8 +27,8 @@ Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
  &de {
  	status = "okay";
  };
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+--- a/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
++++ b/arch/arm/boot/dts/allwinner/sun8i-r40.dtsi
 @@ -736,6 +736,25 @@
  			status = "disabled";
  		};

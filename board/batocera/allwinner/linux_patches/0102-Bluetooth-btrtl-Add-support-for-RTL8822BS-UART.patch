@@ -9,31 +9,9 @@ generation of chip.
 
 Signed-off-by: Rudi Heitbaum <rudi@heitbaum.com>
 ---
- drivers/bluetooth/btrtl.c  | 10 +++++++++-
  drivers/bluetooth/hci_h5.c |  6 ++++++
  2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-index fb52313a1d45..011857e303b6 100644
---- a/drivers/bluetooth/btrtl.c
-+++ b/drivers/bluetooth/btrtl.c
-@@ -174,7 +174,15 @@ static const struct id_table ic_id_table[] = {
- 	  .fw_name  = "rtl_bt/rtl8822cu_fw.bin",
- 	  .cfg_name = "rtl_bt/rtl8822cu_config" },
- 
--	/* 8822B */
-+	/* 8822BS with UART interface */
-+	{ IC_INFO(RTL_ROM_LMP_8822B, 0xb, 0x7, HCI_UART),
-+	  .config_needed = true,
-+	  .has_rom_version = true,
-+	  .has_msft_ext = true,
-+	  .fw_name  = "rtl_bt/rtl8822bs_fw.bin",
-+	  .cfg_name = "rtl_bt/rtl8822bs_config" },
-+
-+	/* 8822BU with USB interface */
- 	{ IC_INFO(RTL_ROM_LMP_8822B, 0xb, 0x7, HCI_USB),
- 	  .config_needed = true,
- 	  .has_rom_version = true,
 diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
 index c5a0409ef84f..a8bc2097bc2c 100644
 --- a/drivers/bluetooth/hci_h5.c
