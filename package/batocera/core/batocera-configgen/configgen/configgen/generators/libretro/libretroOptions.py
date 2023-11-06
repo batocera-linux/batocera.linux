@@ -2358,6 +2358,13 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
+        # Fast Boot
+        if system.isOptSet('pcsx2_fast_boot'):
+            coreSettings.save('pcsx2_fast_boot', '"' + system.config['show_bios_bootlogo'] + '"')
+        else:
+            coreSettings.save('pcsx2_fast_boot', '"disabled"')
+
+    if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options
         coreSettings.save('pcsx_rearmed_show_gpu_peops_settings', '"enabled"')
         # Display Multitap/Gamepad Options
