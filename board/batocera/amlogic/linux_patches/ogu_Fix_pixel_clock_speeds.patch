@@ -1,0 +1,25 @@
+From c6e43307f338825abcecd99ea4e56edb012a750f Mon Sep 17 00:00:00 2001
+From: Brooksytech <macebrooks@gmail.com>
+Date: Fri, 8 Sep 2023 07:49:53 -0700
+Subject: [PATCH] Fix pixel clock speeds
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index df4d66327974..473ef76a4b4e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -829,9 +829,9 @@
+                                  <0>,
+                                  <&clkc CLKID_VCLK2_DIV1>,
+                                  <&clkc CLKID_GP0_PLL>;
+-        assigned-clock-rates =   <330000000>,
++        assigned-clock-rates =   <344976000>,
+                                  <0>,
+-                                 <330000000>,
++                                 <344976000>,
+                                  <0>,
+                                  <0>;
+ 
