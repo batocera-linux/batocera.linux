@@ -98,5 +98,5 @@ class Vita3kGenerator(Generator):
             })
     
     # Show mouse for touchscreen actions
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

@@ -11,7 +11,7 @@ class Generator(object):
     def getResolutionMode(self, config):
         return config['videomode']
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return False
 
     def executionDirectory(self, config, rom):
