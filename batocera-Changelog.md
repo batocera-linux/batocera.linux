@@ -10,6 +10,7 @@
 - Fallout Community Edition: Play the original Fallout game.
 - Fallout 2 Community Edition: Play the original Fallout 2 game.
 - DXX-Rebirth: Play Descent 1 & 2 with enhanced graphics.
+- Added RetroAchievements for Uzebox
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
