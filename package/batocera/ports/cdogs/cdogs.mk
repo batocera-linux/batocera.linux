@@ -24,15 +24,16 @@ endef
 
 define CDOGS_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/buildroot-build/src/cdogs-sdl $(TARGET_DIR)/usr/bin/cdogs
-    mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/data $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/doc $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/dogfights $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/graphics $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/missions $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/music $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -pav $(@D)/sounds $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cdogs/gamecontrollerdb.txt $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs/data
+    #Moved to content downloader, retained here for reference
+    # mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/data $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/doc $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/dogfights $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/graphics $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/missions $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/music $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -pav $(@D)/sounds $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
+    # cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cdogs/gamecontrollerdb.txt $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs/data
 
     # evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
