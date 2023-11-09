@@ -126,8 +126,6 @@ do
             touchegg --client&
         fi
 
-        CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
-
         #####################
         ## CUSTOMISATIONS ###
         # to customize your display, you can create the file /userdata/system/custom-es-config
@@ -147,6 +145,7 @@ do
         test -e /userdata/system/custom-es-config && bash /userdata/system/custom-es-config &
         ###################
     fi
+    CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
 
     # launch automatically a game only the first time
     if test ${GAMELAUNCH} = 1
