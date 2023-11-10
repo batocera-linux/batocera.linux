@@ -1,0 +1,17 @@
+config BR2_PACKAGE_ETLEGACY
+	bool "etlegacy"
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_LIBGLEW
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LIBTHEORA
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_LUA
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_SDL2
+	help
+	  ET: Legacy is an open source project based on the code of Wolfenstein: Enemy Territory
+	  which was released in 2010 under the terms of the GPLv3 license.
+
+	  www.etlegacy.com
