@@ -2357,10 +2357,10 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
 
-    if (system.config['core'] == 'pcsx_rearmed'):
+    if (system.config['core'] == 'pcsx2'):
         # Fast Boot
-        if system.isOptSet('pcsx2_fast_boot'):
-            coreSettings.save('pcsx2_fast_boot', '"' + system.config['show_bios_bootlogo'] + '"')
+        if system.isOptSet('lr_pcsx2_fast_boot'):
+            coreSettings.save('pcsx2_fast_boot', '"' + system.config['lr_pcsx2_fast_boot'] + '"')
         else:
             coreSettings.save('pcsx2_fast_boot', '"disabled"')
 
