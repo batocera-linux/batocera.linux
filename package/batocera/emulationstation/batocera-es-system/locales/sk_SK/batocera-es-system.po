@@ -1358,7 +1358,7 @@ msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD správy"
 
-#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, cemu, cemu, ...
+#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, libretro/pcsx2, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Povolené"
@@ -5366,6 +5366,16 @@ msgstr "PCE joypad"
 msgctxt "game_options"
 msgid "PCE Mouse"
 msgstr "PCE myš"
+
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "Skip the bios boot logo, may cause default language issues."
+msgstr ""
+
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "BIOS FAST BOOT"
+msgstr ""
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
@@ -10499,17 +10509,17 @@ msgctxt "game_options"
 msgid "Chinese (Mandarin)"
 msgstr "Čínština (mandarínska)"
 
-#. TRANSLATION: scummvm, xenia, xenia-canary
+#. TRANSLATION: scummvm, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Swedish"
 msgstr "Švédčina"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Hebrew"
 msgstr "Hebrejčina"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Czech"
 msgstr "Čeština"
@@ -10569,12 +10579,12 @@ msgctxt "game_options"
 msgid "Chinese (Traditional) [Big5]"
 msgstr "Čínština (tradičná) [Big5]"
 
-#. TRANSLATION: easyrpg
+#. TRANSLATION: easyrpg, etlegacy
 msgctxt "game_options"
 msgid "Greek"
 msgstr "Gréčtina"
 
-#. TRANSLATION: easyrpg, xenia, xenia-canary
+#. TRANSLATION: easyrpg, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Turkish"
 msgstr "Turečtina"
@@ -12243,12 +12253,12 @@ msgctxt "game_options"
 msgid "Disable UI prompts"
 msgstr "Zakázať UI výzvy"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Polish"
 msgstr "Poľština"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Norwegian"
 msgstr "Nórčina"
@@ -12678,8 +12688,8 @@ msgstr "Vyberte obtiažnosť hry."
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "GAME DIFFICULATY"
-msgstr "Obtiažnosť hry"
+msgid "GAME DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12698,8 +12708,8 @@ msgstr "Vyberte obtiažnosť zápasu."
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "COMBAT DIFFICULATY"
-msgstr "Obtiažnosť zápasu"
+msgid "COMBAT DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12756,6 +12766,76 @@ msgctxt "game_options"
 msgid "4x MULTISAMPLING"
 msgstr "4x multisampling"
 
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Afrikaans"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Albanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Bulgarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Catalan"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Danish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Finnish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Hungarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Irish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Punjabi"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Romanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Serbian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovak"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovenian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Ukrainian"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -12771,7 +12851,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "snímka obrazovky"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "Ukončiť hru"
@@ -13385,6 +13465,14 @@ msgstr "Rýchla ponuka"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Rýchlo dopredu"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME DIFFICULATY"
+#~ msgstr "Obtiažnosť hry"
+
+#~ msgctxt "game_options"
+#~ msgid "COMBAT DIFFICULATY"
+#~ msgstr "Obtiažnosť zápasu"
 
 #~ msgctxt "game_options"
 #~ msgid "CONTOLLER 2"
