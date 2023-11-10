@@ -1,0 +1,51 @@
+diff --git a/src/core/InputEvent.cpp b/src/core/InputEvent.cpp
+index ef9c8d4..4a2ba6e 100644
+--- a/src/core/InputEvent.cpp
++++ b/src/core/InputEvent.cpp
+@@ -218,13 +218,26 @@ void InputEvent::initialize(const Arguments& args) {
+   }
+ 
+   //Add joypads to the joy list
+-  for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+-    if (SDL_IsGameController(i)) {
+-      SDL_GameController* gc = SDL_GameControllerOpen(i);
+-      SDL_Joystick* js = SDL_JoystickOpen(i);
++  for (int nplayer = 0; nplayer < SDL_NumJoysticks(); ++nplayer) {
++    int sdlid = nplayer;
++
++    // Check the -joypad-num option.
++    char buf[16];
++    snprintf(buf, 16, "-joypad-num%i", nplayer+1);
++    const std::string joypad_num_arg = args.get_argument_value(buf);
++    if (!joypad_num_arg.empty()) {
++      sdlid = std::stoi(joypad_num_arg);
++    }
++
++    if (SDL_IsGameController(sdlid)) {
++      SDL_GameController* gc = SDL_GameControllerOpen(sdlid);
++      SDL_Joystick* js = SDL_JoystickOpen(sdlid);
+       SDL_JoystickID id = SDL_JoystickInstanceID(js);
+-      jindex2id[i] = id;
++      jindex2id[nplayer] = id;
+       joypads.emplace(id,std::make_shared<Joypad>(gc,js));
++      snprintf(buf, 16, "%i", sdlid);
++      Logger::info(std::string("Joypad adding with sdlid: ") + buf);
++      break; // add only 1 pad. i don't get why, when there are several pads, the first one is not taken. there is no multiplayer game for now.
+     }
+   }
+ 
+@@ -314,9 +327,11 @@ std::unique_ptr<InputEvent> InputEvent::get_event() {
+       case SDL_JOYBUTTONDOWN:
+       {
+         jbuttons_pressed.insert(internal_event.jbutton.button);
+-        if (jbuttons_pressed == quit_combo) {
+-          simulate_window_closing();
+-        }
++	if(jindex2id[0] == internal_event.jbutton.which) { // there is at least one pad to be in joybuttondown ; active only for player 0
++	  if (jbuttons_pressed == quit_combo) {
++	    simulate_window_closing();
++	  }
++	}
+         break;
+       }
+       case SDL_JOYBUTTONUP: {
