@@ -1343,7 +1343,7 @@ msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD メッセージを表示"
 
-#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, cemu, cemu, ...
+#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, libretro/pcsx2, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "使用（有効）"
@@ -5345,6 +5345,16 @@ msgctxt "game_options"
 msgid "PCE Mouse"
 msgstr "マウス"
 
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "Skip the bios boot logo, may cause default language issues."
+msgstr ""
+
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "BIOS FAST BOOT"
+msgstr ""
+
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
@@ -7386,8 +7396,8 @@ msgstr "ゲームパッド画面を有効"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Arrange the dual screen layout. Separate windows can be changed with Hotkey"
-"+R2."
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
 msgstr ""
 "デュアルスクリーンのレイアウトを整えます\n"
 "(ホットキー+R2でウィンドウの切替)"
@@ -10442,17 +10452,17 @@ msgctxt "game_options"
 msgid "Chinese (Mandarin)"
 msgstr "中国語（北京語）"
 
-#. TRANSLATION: scummvm, xenia, xenia-canary
+#. TRANSLATION: scummvm, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Swedish"
 msgstr "スウェーデン語"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Hebrew"
 msgstr "ヘブライ語"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Czech"
 msgstr "チェコ語"
@@ -10512,12 +10522,12 @@ msgctxt "game_options"
 msgid "Chinese (Traditional) [Big5]"
 msgstr "中国語（繁体字）[Big5]"
 
-#. TRANSLATION: easyrpg
+#. TRANSLATION: easyrpg, etlegacy
 msgctxt "game_options"
 msgid "Greek"
 msgstr "ギリシャ語"
 
-#. TRANSLATION: easyrpg, xenia, xenia-canary
+#. TRANSLATION: easyrpg, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Turkish"
 msgstr "トルコ語"
@@ -12179,12 +12189,12 @@ msgctxt "game_options"
 msgid "Disable UI prompts"
 msgstr "UI プロンプト 無効"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Polish"
 msgstr "ポーランド語"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Norwegian"
 msgstr "ノルウェイ語"
@@ -12611,8 +12621,8 @@ msgstr "ゲーム難易度を選択します"
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "GAME DIFFICULATY"
-msgstr "ゲーム難易度"
+msgid "GAME DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12631,8 +12641,8 @@ msgstr "戦闘難易度を選択します"
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "COMBAT DIFFICULATY"
-msgstr "戦闘難易度"
+msgid "COMBAT DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12670,8 +12680,6 @@ msgid "SUBTITLES"
 msgstr "字幕"
 
 #. TRANSLATION: dxx-rebirth
-#| msgctxt "game_options"
-#| msgid "Play (Default)"
 msgctxt "game_options"
 msgid "Classic (Default)"
 msgstr "Classic（標準）"
@@ -12691,6 +12699,76 @@ msgctxt "game_options"
 msgid "4x MULTISAMPLING"
 msgstr "4x マルチサンプリング"
 
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Afrikaans"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Albanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Bulgarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Catalan"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Danish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Finnish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Hungarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Irish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Punjabi"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Romanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Serbian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovak"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovenian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Ukrainian"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -12706,7 +12784,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "スクリーンショット"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "ゲームを終了"
@@ -13320,6 +13398,14 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME DIFFICULATY"
+#~ msgstr "ゲーム難易度"
+
+#~ msgctxt "game_options"
+#~ msgid "COMBAT DIFFICULATY"
+#~ msgstr "戦闘難易度"
 
 #~ msgctxt "game_options"
 #~ msgid "CONTOLLER 1"
