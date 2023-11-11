@@ -12,6 +12,8 @@
 - DXX-Rebirth: Play Descent 1 & 2 with enhanced graphics.
 - Added RetroAchievements for Uzebox
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
+- Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
+  - Not compatible with nuvee GunCon patch, use clean ROM. 
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
