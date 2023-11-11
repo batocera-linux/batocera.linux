@@ -2419,22 +2419,15 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('pcsx_rearmed_gpu_peops_repeated_triangles',  '"enabled"')
         # gun cross
         # Crossbar Colors
-        if system.isOptSet('pcsx_rearmed_crosshair1'):
-            coreSettings.save('pcsx_rearmed_crosshair1', '"' + system.config['pcsx_rearmed_crosshair1'] + '"')
-        else:
+        for player in [ {"id": 1, "color": "red"}, {"id": 2, "color": "blue"} ]:
+          if system.isOptSet('pcsx_rearmed_crosshair'+str(player["id"])):
+            coreSettings.save('pcsx_rearmed_crosshair'+str(player["id"]), '"' + system.config['pcsx_rearmed_crosshair'+str(player["id"])] + '"')
+          else:
             if controllersConfig.gunsNeedCrosses(guns):
-                status = '"Red"'
+                status = '"'+player["color"]+'"'
             else:
                 status = '"disabled"'
-            coreSettings.save('pcsx_rearmed_crosshair1', status)
-        if system.isOptSet('pcsx_rearmed_crosshair2'):
-            coreSettings.save('pcsx_rearmed_crosshair2', '"' + system.config['pcsx_rearmed_crosshair2'] + '"')
-        else:
-            if controllersConfig.gunsNeedCrosses(guns):
-                status = '"Blue"'
-            else:
-                status = '"disabled"'
-            coreSettings.save('pcsx_rearmed_crosshair2', status)
+            coreSettings.save('pcsx_rearmed_crosshair'+str(player["id"]), status)
 
     # Thomson MO5 / TO7
     if (system.config['core'] == 'theodore'):
