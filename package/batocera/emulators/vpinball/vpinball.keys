@@ -63,14 +63,26 @@
     {
       "trigger": ["l2"],
       "type": "key",
-      "target": [ "KEY_LEFTCTRL" ],
-      "description": "Left magnasave"
+      "target": [ "KEY_LEFTSHIFT" ],
+      "description": "Left flipper"
     },
     {
       "trigger": ["r2"],
       "type": "key",
+      "target": [ "KEY_RIGHTSHIFT" ],
+      "description": "Right flipper"
+    },
+   {
+      "trigger": ["l3"],
+      "type": "key",
+      "target": [ "KEY_LEFTCTRL" ],
+      "description": "Left magnasave"
+    },
+    {
+      "trigger": ["r3"],
+      "type": "key",
       "target": [ "KEY_RIGHTCTRL" ],
       "description": "Right magnasave"
-    }
+    }    
     ]
 }
