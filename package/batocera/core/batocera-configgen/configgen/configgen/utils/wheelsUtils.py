@@ -24,6 +24,29 @@ emulatorMapping = {
         "x":  "x",
         "y":  "y"
     },
+    "n64": {
+        "l":     "pageup",
+        "r":     "pagedown",
+        "a":     "b",
+        "b":     "y",
+        "start": "start"
+    },
+    "wii": {
+        "lt": "l2",
+        "rt": "r2",
+        "a":  "a",
+        "b":  "b",
+        "x":  "x",
+        "y":  "y"
+    },
+    "wiiu": {
+        "a":      "a",
+        "b":      "b",
+        "x":      "x",
+        "y":      "y",
+        "start":  "start",
+        "select": "select"
+    },
     "ps2": {
         "cross":    "b",
         "square":   "y",
