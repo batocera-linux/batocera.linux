@@ -105,6 +105,7 @@
 - FAudio to 23.10
 - Nvidia production driver to 545.29.02
 - SDL2 to 2.28.4
+- SOF Firmware to 2023.09.1
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
