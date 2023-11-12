@@ -71,7 +71,22 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
                             else:
                                 eslog.info("wheel: unable to replace {} with {}".format(wantedkey, wheelkey))
         nplayer += 1
-    return playersControllers
+
+    # reorder players to priorize wheel pads
+    playersControllersNew = {}
+    nplayer = 1
+    for playercontroller, pad in sorted(playersControllers.items()):
+        if pad.dev in deviceList and deviceList[pad.dev]["isWheel"]:
+            pad.player = str(nplayer)
+            playersControllersNew[str(nplayer)] = pad
+            nplayer += 1
+    for playercontroller, pad in sorted(playersControllers.items()):
+        if not (pad.dev in deviceList and deviceList[pad.dev]["isWheel"]):
+            pad.player = str(nplayer)
+            playersControllersNew[str(nplayer)] = pad
+            nplayer += 1
+
+    return playersControllersNew
 
 def getWheelsFromDevicesInfos(deviceInfos):
     res = {}
