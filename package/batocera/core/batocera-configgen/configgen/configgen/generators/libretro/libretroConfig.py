@@ -284,6 +284,21 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '1'
 
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            wheelssmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
+            deviceInfos = controllersConfig.getDevicesInformation()
+            nplayer = 1
+            for controller, pad in sorted(controllers.items()):
+                if pad.dev in deviceInfos:
+                    if deviceInfos[pad.dev]["isWheel"]:
+                        retroarchConfig['input_player' + str(nplayer) + '_analog_dpad_mode'] = '1'
+                        if "type" in wheelssmetadata and wheelssmetadata["type"] == "negcon" :
+                            retroarchConfig['input_libretro_device_p' + str(nplayer)] = 773 # Negcon
+                        else:
+                            retroarchConfig['input_libretro_device_p' + str(nplayer)] = 517 # DualShock Controller
+                nplayer += 1
+
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
         if system.isOptSet('controller1_dc'):

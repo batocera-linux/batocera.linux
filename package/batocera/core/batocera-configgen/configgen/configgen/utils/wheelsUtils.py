@@ -47,6 +47,14 @@ emulatorMapping = {
         "start":  "start",
         "select": "select"
     },
+    "psx": {
+        "cross":    "b",
+        "square":   "y",
+        "round":    "a",
+        "triangle": "x",
+        "start":    "start",
+        "select":    "select"
+    },
     "ps2": {
         "cross":    "b",
         "square":   "y",
