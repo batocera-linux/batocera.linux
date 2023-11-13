@@ -1,13 +1,13 @@
-SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Force Feedback",    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Driving Force GT",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster FFB Wheel", 	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster TRS Racing wheel",       	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="G25 Racing Wheel",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Force Feedback Wheel (USB)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless PS3",          MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Force Feedback",    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+SUBSYSTEM=="input", ATTRS{name}=="Driving Force GT",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster FFB Wheel", 	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1",
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster TRS Racing wheel",       	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1",
+SUBSYSTEM=="input", ATTRS{name}=="G25 Racing Wheel",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Force Feedback Wheel (USB)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="220"
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless PS3",          MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster Advance Racer",         MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 
 # G920 Driving Force Racing Wheel for Xbox One
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
-SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
