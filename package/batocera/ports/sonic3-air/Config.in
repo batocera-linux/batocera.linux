@@ -1,0 +1,13 @@
+config BR2_PACKAGE_SONIC3_AIR
+	bool "sonic3-air"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_PULSEAUDIO
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_LIBGLU
+	select BR2_PACKAGE_MESA3D
+	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+	select BR2_PACKAGE_XLIB_LIBXXF86VM
+	help
+	  Sonic 3 A.I.R. (Angel Island Revisited) and the Oxygen Engine.
+
+	  https://github.com/Eukaryot/sonic3air

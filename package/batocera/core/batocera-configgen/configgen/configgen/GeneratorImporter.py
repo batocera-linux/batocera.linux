@@ -347,6 +347,10 @@ def getGenerator(emulator):
         from generators.etlegacy.etlegacyGenerator import ETLegacyGenerator
         return ETLegacyGenerator()
 
+    if emulator == "sonic3-air":
+        from generators.sonic3_air.sonic3_airGenerator import Sonic3AIRGenerator
+        return Sonic3AIRGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()

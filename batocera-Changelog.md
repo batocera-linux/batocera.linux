@@ -14,7 +14,8 @@
 - Added RetroAchievements for Uzebox
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
-  - Not compatible with nuvee GunCon patch, use clean ROM. 
+  - Not compatible with nuvee GunCon patch, use clean ROM.
+- Sonic 3 A.I.R. (Angel Island Revisited) port.
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
