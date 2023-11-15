@@ -5125,3 +5125,26 @@ etlegacy:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:etlegacy
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:etlegacy
+
+sonic3-air:
+  name: Sonic 3 A.I.R.
+  manufacturer: Ports
+  release: 2019
+  hardware: port
+  extensions: [s3air]
+  platform: pc
+  group: ports
+  emulators:
+    sonic3-air:
+      sonic3-air: { requireAnyOf: [ BR2_PACKAGE_SONIC3_AIR ] }
+  comment_en: |
+    In this folder you need the Sonic_Knuckles_wSonic3.bin rom file to play Sonic 3 A.I.R. (Angel Island Revisited).
+    It is important that the rom file matches this name exactly.
+    Additionally, create a blank `Sonic 3 - Angel Island Revisited.s3air` file.
+    This file will allow EMulationStation to launch Sonic 3 A.I.R. and scrape artwork etc.
+
+    For more info: https://wiki.batocera.org/systems:sonic3-air
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic3-air
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:sonic3-air
