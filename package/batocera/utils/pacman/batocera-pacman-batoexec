@@ -6,6 +6,7 @@
 # 20200528 - Initial revision (support for 'gamelist' and 'exec')
 # 20210521 - Support for multi-Batoexecs and better string escaping
 # 20231018 - Support for a <gameList> of multiple <game> nodes
+# 20231114 - Remove bad ' escaping, add the ability to add games when ES down
 #
 import os
 import sys
@@ -14,6 +15,7 @@ import subprocess
 import httplib2
 import xml.etree.ElementTree as ET
 ES_SERVER="http://127.0.0.1:1234"
+ROMPATH="/userdata/roms"
 
 ########
 # Parse the command file BATOEXEC
@@ -50,8 +52,27 @@ def call_es(system, elem, mode):
         cnx=httplib2.Http()
         resp, content = cnx.request(ES_SERVER)
     except Exception as e:
-        print (f"ERROR: Is EmulationStation running? Impossible to connect to {ES_SERVER} ({e})")
-        return (1)
+        print (f"WARNING: Looks like {ES_SERVER} is not responding ({e}) - processing local files")
+        if not os.path.isfile(ROMPATH+'/'+system+'/gamelist.xml'):
+            if not os.path.isdir(ROMPATH+'/'+system):
+                os.mkdir(ROMPATH+'/'+system)
+            out=open(ROMPATH+'/'+system+'/gamelist.xml', 'w')
+            dumpxml=ET.tostring(freshgl, encoding='utf8').decode('utf8')
+            out.write(dumpxml)
+            out.close()
+            return(0)
+        else:
+            # add another XML element in the file
+            xmltree=ET.parse(ROMPATH+'/'+system+'/gamelist.xml')
+            root=xmltree.getroot()
+            oldgl=root.find('.')
+            for g in freshgl.iterfind('game'):
+                oldgl.append(g)
+            out=open(ROMPATH+'/'+system+'/gamelist.xml', 'w')
+            dumpxml=ET.tostring(root, encoding='utf8').decode('utf8')
+            out.write(dumpxml)
+            out.close()
+            return(0)
     try:
         if (mode in 'install'):
             res, rout = cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
@@ -104,7 +125,6 @@ def exec_cmd(base_cmd, data, mode):
             data = re.sub("\.UNINSTALL_END", "", data)
         clist = data.split('\n')
         clist = [sub.replace('"', '\\"') for sub in clist]
-        clist = [sub.replace("'", "\\'") for sub in clist]
         for el in clist:
             if str(el).strip() == '':
                 clist.remove(el)
