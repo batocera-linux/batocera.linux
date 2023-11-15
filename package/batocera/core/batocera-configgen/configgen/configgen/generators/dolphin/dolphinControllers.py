@@ -452,7 +452,7 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
         f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
-            if not generateControllerConfig_any_from_profiles(f, pad):
+            if not generateControllerConfig_any_from_profiles(f, pad, system):
                 generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
         else:
             generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
@@ -543,28 +543,50 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
                 f.write(f"Main Stick/Gate Size = 95.0\n")
                 f.write(f"C-Stick/Gate Size = 88.0\n")
                 
-def generateControllerConfig_any_from_profiles(f, pad):
-    for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
-        try:
-            eslog.debug(f"Looking profile : {profileFile}")
-            profileConfig = configparser.ConfigParser(interpolation=None)
-            # To prevent ConfigParser from converting to lower case
-            profileConfig.optionxform = str
-            profileConfig.read(profileFile)
-            profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug(f"Profile device : {profileDevice}")
+def generateControllerConfig_any_from_profiles(f, pad, system):
+    if system.name == "gamecube":
+        for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
+            try:
+                eslog.debug(f"Looking profile : {profileFile}")
+                profileConfig = configparser.ConfigParser(interpolation=None)
+                # To prevent ConfigParser from converting to lower case
+                profileConfig.optionxform = str
+                profileConfig.read(profileFile)
+                profileDevice = profileConfig.get("Profile","Device")
+                eslog.debug(f"Profile device : {profileDevice}")
 
-            deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
-            if deviceVals is not None:
-                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
-                    eslog.debug("Eligible profile device found")
-                    for key, val in profileConfig.items("Profile"):
-                        if key != "Device":
-                            f.write(f"{key} = {val}\n")
-                    return True
-        except:
-            eslog.error(f"profile {profileFile} : FAILED")
+                deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
+                if deviceVals is not None:
+                    if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
+                        eslog.debug("Eligible profile device found")
+                        for key, val in profileConfig.items("Profile"):
+                            if key != "Device":
+                                f.write(f"{key} = {val}\n")
+                        return True
+            except:
+                eslog.error(f"profile {profileFile} : FAILED")
+    if system.name == "wii":
+        for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/Wiimote/*.ini"):
+            try:
+                eslog.debug(f"Looking profile : {profileFile}")
+                profileConfig = configparser.ConfigParser(interpolation=None)
+                # To prevent ConfigParser from converting to lower case
+                profileConfig.optionxform = str
+                profileConfig.read(profileFile)
+                profileDevice = profileConfig.get("Profile","Device")
+                eslog.debug(f"Profile device : {profileDevice}")
 
+                deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
+                if deviceVals is not None:
+                    if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
+                        eslog.debug("Eligible profile device found")
+                        for key, val in profileConfig.items("Profile"):
+                            if key != "Device":
+                                f.write(f"{key} = {val}\n")
+                        return True
+            except:
+                eslog.error(f"profile {profileFile} : FAILED")      
+    
     return False
 
 def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id, gcz_ids):   
