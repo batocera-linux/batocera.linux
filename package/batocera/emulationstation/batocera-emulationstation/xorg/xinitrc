@@ -1,5 +1,12 @@
 #!/bin/bash
 
+mkdir -p "/var/log"
+mkdir -p "/userdata/system/logs"
+
+display_log="/userdata/system/logs/display.log"
+nvidia_log="/var/log/nvidia.log"
+amd_log="/userdata/system/logs/amd.log"
+
 # hide mouse cursor
 unclutter --noevents -b
 
@@ -9,5 +16,21 @@ xset s off
 
 # uncomment to allow coredumps for ES
 # ulimit -c unlimited
+
+## Prime
+
+# nvidia
+if [ -f "/var/tmp/nvidia.prime" ]; then
+    echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+fi
+
+# amd
+if [ -f "/var/tmp/amd.prime" ]; then
+    echo "Setting AMD Prime environment variable" >> "$amd_log"
+    export DRI_PRIME=1
+fi
 
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
