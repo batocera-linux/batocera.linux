@@ -1,0 +1,13 @@
+diff --git a/Oxygen/sonic3air/source/sonic3air/helper/DiscordIntegration.cpp b/Oxygen/sonic3air/source/sonic3air/helper/DiscordIntegration.cpp
+index 205dc9a3..b98113d0 100644
+--- a/Oxygen/sonic3air/source/sonic3air/helper/DiscordIntegration.cpp
++++ b/Oxygen/sonic3air/source/sonic3air/helper/DiscordIntegration.cpp
+@@ -13,7 +13,7 @@
+ //  - Windows
+ //  - Linux, except if it's ARM architecture (like when building on a RasPi)
+ //  - Mac. Sorry about having 3 checks. Command line build has issues finding the discord dylib since it can't be embedded. And temporarily ignore discord for ARM64 until they add support.
+-#if (defined(PLATFORM_WINDOWS) && !defined(__GNUC__)) || (defined(PLATFORM_LINUX) && !defined(__arm__)) || (defined(PLATFORM_MAC) && !defined(NO_DISCORD))
++#if (defined(PLATFORM_WINDOWS) && !defined(__GNUC__)) || (!defined(PLATFORM_LINUX) && !defined(__arm__)) || (defined(PLATFORM_MAC) && !defined(NO_DISCORD))
+ 	#define SUPPORT_DISCORD
+ #endif
+ 

@@ -5,6 +5,7 @@ import controllersConfig
 import os
 import shutil
 import batoceraFiles
+import json
 
 class Sonic3AIRGenerator(Generator):
 
@@ -16,6 +17,7 @@ class Sonic3AIRGenerator(Generator):
         config_dest_file = s2_config_folder + "/config.json"
         oxygen_dest_file = s2_config_folder + "/oxygenproject.json"
         saves_folder = "/userdata/saves/sonic3-air"
+        settings_file = s2_config_folder + "/settings.json"
 
         ## Configuration
 
@@ -49,6 +51,19 @@ class Sonic3AIRGenerator(Generator):
         with open(config_dest_file, 'w') as file:
             file.write(json_text)
         
+        # settings json - compliant
+        # ensure fullscreen
+        if os.path.exists(settings_file):
+            with open(settings_file, 'r') as file:
+                settings_data = json.load(file)
+                settings_data["Fullscreen"] = 1
+        else:
+            settings_data = {"Fullscreen": 1}
+        
+        with open(settings_file, 'w') as file:
+            json.dump(settings_data, file, indent=4)
+        
+        # now run
         commandArray = ["/usr/bin/sonic3-air/sonic3air_linux"]
         
         return Command.Command(
