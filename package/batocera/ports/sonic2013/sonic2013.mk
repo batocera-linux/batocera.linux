@@ -1,3 +1,9 @@
+################################################################################
+#
+# sonic2013
+#
+################################################################################
+
 SONIC2013_SITE = https://github.com/Rubberduckycooly/Sonic-1-2-2013-Decompilation.git
 SONIC2013_SITE_METHOD = git
 SONIC2013_GIT_SUBMODULES == YES

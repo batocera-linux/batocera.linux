@@ -351,6 +351,10 @@ def getGenerator(emulator):
         from generators.sonic3_air.sonic3_airGenerator import Sonic3AIRGenerator
         return Sonic3AIRGenerator()
 
+    if emulator == "sonic-mania":
+        from generators.sonic_mania.sonic_maniaGenerator import SonicManiaGenerator
+        return SonicManiaGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()
