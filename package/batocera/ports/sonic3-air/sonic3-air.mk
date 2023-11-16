@@ -25,9 +25,6 @@ define SONIC3_AIR_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/sonic3-air
 	# copy binary
 	cp $(@D)/Oxygen/sonic3air/sonic3air_linux $(TARGET_DIR)/usr/bin/sonic3-air
-	# copy library
-	cp $(@D)/Oxygen/sonic3air/source/external/discord_game_sdk/lib/x86_64/libdiscord_game_sdk.so \
-	    $(TARGET_DIR)/usr/lib
 	# copy config files
 	cp $(@D)/Oxygen/sonic3air/config.json $(TARGET_DIR)/usr/bin/sonic3-air
 	cp $(@D)/Oxygen/sonic3air/oxygenproject.json $(TARGET_DIR)/usr/bin/sonic3-air
