@@ -105,7 +105,7 @@
 ### System
 - Linux kernel to 6.6.1
 - Mesa to 23.3
-- Proton to 8.0-4b
+- Proton to 8.0-4c
 - FAudio to 23.10
 - Nvidia production driver to 545.29.02
 - SDL2 to 2.28.4
