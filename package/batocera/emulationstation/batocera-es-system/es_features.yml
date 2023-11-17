@@ -221,6 +221,36 @@ shared:
       choices:
         "On":  1
         "Off": 0
+    wheel_rotation_angle:
+      group: WHEELS
+      prompt: WHEEL ROTATION
+      description: Maximum wheel rotation from left to right (in degrees)
+      choices:
+        "90":   90
+        "135": 135
+        "180": 180
+        "225": 225
+        "270": 270
+    wheel_deadzone:
+      group: WHEELS
+      prompt: WHEEL DEADZONE
+      description: Zone for which the game doesn't react to the wheel (in degrees)
+      choices:
+        "5":   5
+        "15": 15
+        "25": 25
+        "35": 35
+        "45": 45
+        "55": 55
+    wheel_midzone:
+      group: WHEELS
+      prompt: WHEEL MIDZONE
+      description: Reserve a non dead zone at the center of the wheel to go straight ahead (in degrees)
+      choices:
+        "1":   1
+        "2":   2
+        "5":   5
+        "10": 10
     rumble_gain:
       prompt:      RUMBLE LEVEL
       description: For emulators and controllers supporting force feedback.
@@ -1433,7 +1463,7 @@ libretro:
                     "Arkanoid paddle":      514
     flycast:
       features: [cheevos]
-      shared: [autosave, use_guns]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
@@ -3570,7 +3600,7 @@ libretro:
                     "On":     ON
     mupen64plus-next:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
       cfeatures:
             mupen64plus-43screensize:
                 prompt:      4:3 RENDERING RESOLUTION
@@ -4123,7 +4153,7 @@ libretro:
                     "Per Game": per game
     parallel_n64:
       features: [cheevos]
-      shared: [autosave]
+      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
       cfeatures:
             parallel-n64-gfxplugin:
                 prompt: GRAPHICS PLUGIN
@@ -6240,7 +6270,7 @@ cannonball:
                 "On":  1
 
 cemu:
-  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels]
+  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
   cfeatures:
         cemu_gfxbackend:
             prompt:      GRAPHICS API
@@ -7716,7 +7746,7 @@ moonlight:
                 "7.1": "7.1"       
 
 mupen64plus:
-  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels]
+  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
   cfeatures:
         mupen64plus_ratio:
             prompt:      GAME ASPECT RATIO
@@ -8967,7 +8997,7 @@ tsugaru:
 
 mame:
   features: [padtokeyboard]
-  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels]
+  shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
   cfeatures:
         video:
             prompt:      VIDEO MODE
