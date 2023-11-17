@@ -156,11 +156,12 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
     # search wheels in case use_wheels is enabled for this game
     # force use_wheels in case es tells it has a wheel
+    wheelProcesses = None
     if system.isOptSet('use_wheels') == False and args.wheel:
         system.config["use_wheels"] = True
     if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
         deviceInfos = controllers.getDevicesInformation()
-        playersControllers = wheelsUtils.reconfigureControllers(playersControllers, system, rom, deviceInfos)
+        (wheelProcesses, playersControllers) = wheelsUtils.reconfigureControllers(playersControllers, system, rom, deviceInfos)
         wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
     else:
         eslog.info("wheels disabled.")
@@ -299,6 +300,12 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             except Exception:
                 pass # don't fail
 
+        if wheelProcesses is not None and len(wheelProcesses) > 0:
+            try:
+                wheelsUtils.resetControllers(wheelProcesses)
+            except Exception:
+                eslog.error("hum, unable to reset wheel controllers !")
+                pass # don't fail
     # exit
     return exitCode
 
