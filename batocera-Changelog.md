@@ -25,9 +25,14 @@
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
+- Bug preventing scraping of msx-family systems
+- Missing mouse cursor for known iOS soniccd rom originally requiring touchscreen input
+- Bug preventing passing command line options to ES unless on xorg-based system
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
+- Migrated C-Dogs SDL (cdogs) assets to content downloader
+- Migrated Super Mario War (superbroswar) assets to content downloader
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.260 - Switchres 2.002w
@@ -116,6 +121,8 @@
 - Nvidia production driver to 545.29.02
 - SDL2 to 2.28.4
 - SOF Firmware to 2023.09.1
+- Streamlined x86_64 Secure Boot support
+- Added tree(1) utility
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
