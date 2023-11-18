@@ -788,9 +788,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                 ragunconf = gun_mapping[system.config['core']]["default"]
             raguncoreconf = {}
 
+            gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
+
             # overwrite configuration by gungames.xml
             if "gameDependant" in ragunconf:
-                gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
                 for gd in ragunconf["gameDependant"]:
                     if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
