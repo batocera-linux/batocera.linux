@@ -45,6 +45,8 @@ define LIBRETRO_MAME2010_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MAME2010_PLATFORM)" $(LIBRETRO_MAME2010_EXTRA_ARGS) \
         GIT_VERSION="-$(shell echo $(LIBRETRO_MAME2010_VERSION) | cut -c 1-7)"
+        rsync -a --exclude mame2010.xml $(@D)/metadata/ $(@D)/metadata-install/
+        gzip -9c $(@D)/metadata/mame2010.xml > $(@D)/metadata-install/mame2010.xml.gz
 endef
 
 # Bios
@@ -55,7 +57,7 @@ define LIBRETRO_MAME2010_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame0139_libretro.so
 
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010/samples
-	$(INSTALL) -D $(@D)/metadata/* \
+	$(INSTALL) -D $(@D)/metadata-install/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010
 endef
 
