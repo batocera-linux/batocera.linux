@@ -10,7 +10,7 @@ amd_log="/userdata/system/logs/amd.log"
 case "$1" in
   start)
     # Check if there are two GPUs in the system
-    gpu_count=$(lspci -nn | grep -E '(VGA|3D)' | wc -l)
+    gpu_count=$(lspci -nn | grep -E "(VGA|3D|Display controller)" | wc -l)
     nvidia_conditions_met=false
 
     if [ "$gpu_count" -eq 2 ]; then
@@ -22,7 +22,7 @@ case "$1" in
         if [ "$nvidia_prime" = "false" ]; then
             echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
         else
-            gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D")
+            gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller")
             if [ -n "$gpu_name" ] || [ "$nvidia_prime" = "true" ]; then
                 echo "" > "/var/tmp/nvidia.prime"
                 echo "Using $gpu_name as the primary GPU" >> "$nvidia_log"
@@ -36,7 +36,7 @@ case "$1" in
             if [ "$radeon_prime" = "false" ]; then
                 echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
             else
-                gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
+                gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
                 if [ -n "$gpu_name" ]  || [ "$radeon_prime" = "true" ]; then
                     echo "" > "/var/tmp/amd.prime"
                     echo "Using $gpu_name as the primary GPU" >> "$amd_log"
