@@ -403,6 +403,12 @@ libretro:
                             "384x272": 384x272
                             "384x288": 384x288
                             "400x300": 400x300
+                    atari800_internalbasic:
+                        prompt:      INTERNAL BASIC INTERPRETER
+                        description: Enable the BASIC interpreter. Some games need this.
+                        choices:
+                            "Off":     disabled
+                            "On":      enabled
             atari5200:
                 cfeatures:
                     atari800_opt2:
