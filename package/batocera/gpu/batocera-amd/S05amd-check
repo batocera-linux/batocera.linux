@@ -11,7 +11,7 @@ log="/userdata/system/logs/amd.log"
 if grep -qE "^[ ]*amdgpu[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
 then
   echo "Detecting AMD or Radeon GPU." > "$log"
-  gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D")
+  gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
   if [[ -n $gpu_name ]]; then
     echo "Detected - $gpu_name." > "$log"
     vid_pid=$(echo "$gpu_name" | awk -F'[][]' '{print $(NF-1)}')
