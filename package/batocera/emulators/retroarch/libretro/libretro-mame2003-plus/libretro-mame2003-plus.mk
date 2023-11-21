@@ -42,6 +42,8 @@ define LIBRETRO_MAME2003_PLUS_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
 	    -f Makefile platform="$(LIBRETRO_MAME2003_PLUS_PLATFORM)" \
         GIT_VERSION=" $(shell echo $(LIBRETRO_MAME2003_PLUS_VERSION) | cut -c 1-7)"
+        rsync -a --exclude mame2003-plus.xml $(@D)/metadata/ $(@D)/metadata-install/
+        gzip -9c $(@D)/metadata/mame2003-plus.xml > $(@D)/metadata-install/mame2003-plus.xml.gz
 endef
 
 define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
@@ -52,7 +54,7 @@ define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
     # Need to think of another way to use these files.
     # They take up a lot of space on tmpfs.
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus/samples
-	cp -r $(@D)/metadata/* \
+	cp -r $(@D)/metadata-install/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus
 endef
 
