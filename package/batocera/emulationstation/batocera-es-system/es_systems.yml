@@ -4840,7 +4840,7 @@ vpinball:
     vpinball:
       vpinball:  { requireAnyOf: [BR2_PACKAGE_VPINBALL] }
   comment_en: |
-    Visual Pinabll X - Standalone
+    Visual Pinball X - Standalone
     -----------------------------
     
     The current version of Visual Pinball supports version 10 (.vpx extension) tables.
@@ -4850,12 +4850,13 @@ vpinball:
     -------
     
     To use PinMAME roms, you need to add roms and / or nvram files into their respective folders at:
-    /userdata/system/configs/vpinball/pinmame
+    /userdata/system/configs/vpinball/pinmame. Note: If a PinMAME folder exists in the same directory as your vpx
+    file, it will be used instead.
 
     All Paths
     ---------
     
-    Your .vpx & and any associated .directb2s or .vbs files should be in the: /userdata/roms/vpinball folder.
+    Your .vpx & and any associated .directb2s, .vbs, or .ini files should be in the: /userdata/roms/vpinball folder.
     Any associated .UltraDMD folders should also be in the vpinball roms folders.
     Note: .directb2s files should match the .vpx file name.
 
@@ -4864,9 +4865,9 @@ vpinball:
     /userdata/system/configs/vpinball/user:             VPinball user directory
     /userdata/system/configs/vpinball/pinmame:          VPinball generated PinMAME settings, ex. sound, cheat, dmd_red
     /userdata/system/configs/vpinball/pinmame/roms:     PinMAME ROMs directory
-    /userdata/system/configs/vpinball/pinmame/nvramL    PinMAME NVRAM directory
+    /userdata/system/configs/vpinball/pinmame/nvram:    PinMAME NVRAM directory
     /userdata/system/configs/vpinball/pinmame/altcolor: Serum colorizations directory <rom_name>/<rom.cRZ>
-    /userdata/system/configs/vpinball/pinmame/vpinball: VPinball PinMAME settings directory
+    /userdata/system/configs/vpinball/pinmame/ini:      VPinball PinMAME settings directory
 
     Music
     -----
@@ -4874,7 +4875,7 @@ vpinball:
     or in the same folder as your vpx file in it's own 'music' folder.
     The music folder, should be lowercase - i.e. /userdata/roms/vpinball/Kiss/music
   comment_fr: |
-    Visual Pinabll X - Standalone
+    Visual Pinball X - Standalone
     -----------------------------
 
     La version actuelle de Visual Pinball prend en charge les tables de la version 10 (extension .vpx).
@@ -4884,14 +4885,15 @@ vpinball:
     --------
 
     Pour utiliser les roms PinMAME, vous devez ajouter des roms et/ou des fichiers nvram dans leurs dossiers respectifs à :
-    /userdata/system/configs/vpinball/pinmame
+    /userdata/system/configs/vpinball/pinmame. Notez que si un dossier PinMAME existe dans le même répertoire que votre
+    fichier vpx, il sera utilisé à la place.
 
     Tous les Chemins
     ----------------
     
-    Vos fichiers .vpx & et tous les fichiers .directb2s associés doivent se trouver dans le dossier : /userdata/roms/vpinball.
-    Tous les dossiers .UltraDMD associés doivent également se trouver dans les dossiers vpinball roms.
-    Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
+    Vos fichiers .vpx & et tous les fichiers associés, comme .directb2s, .vbs, ou .ini, doivent se trouver dans le dossier :
+    /userdata/roms/vpinball. Tous les dossiers .UltraDMD associés doivent également se trouver dans les dossiers vpinball
+    roms. Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
 
     /userdata/system/configs/vpinball:                  Configuration de VPinball et fichiers de log
     /userdata/system/configs/vpinball/user:             Répertoire utilisateur VPinball
@@ -4899,7 +4901,7 @@ vpinball:
     /userdata/system/configs/vpinball/pinmame/roms:     Répertoire des ROMs PinMAME
     /userdata/system/configs/vpinball/pinmame/nvram:    Répertoire NVRAM PinMAME
     /userdata/system/configs/vpinball/pinmame/altcolor: Répertoire des colorisations Serum <nom_rom>/<rom.cRZ>
-    /userdata/system/configs/vpinball/pinmame/vpinball: Répertoire des paramètres VPinball pour PinMAME
+    /userdata/system/configs/vpinball/pinmame/ini:      Répertoire des paramètres VPinball pour PinMAME
 
     Musique
     -------
