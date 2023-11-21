@@ -44,15 +44,39 @@ def setControllersConfig(iniConfig, controllers, system):
         if iniConfig.has_section(section):
             cleanPlayer(nplayer, iniConfig)
          
-def getPeakandDeadzoneValues(start_value, config_value, system, default_multiplier):
-    number = int(start_value.split(',')[0])
+def getJoystickPeak(start_value, config_value, system):
+    default_value = int(start_value.split(',')[0])
     if config_value in system.config:
-        percentage = float(system.config[config_value]) / 100
-        result = int(round(number * percentage))
+        multiplier = float(system.config[config_value])
     else:
-        result = int(round(number * default_multiplier))
-    return f"{result},{result}"
-         
+        multiplier = 1
+
+    # This is needed because higher peak value lowers sensitivity and vice versa
+    if multiplier != 1.0:
+        adjusted_value = default_value * multiplier
+        difference = abs(adjusted_value - default_value)
+    
+        # Figure out if we need to add or subtract the starting peak value
+        if adjusted_value < default_value:
+            peak = int(round(default_value + difference))
+        else:
+            peak = int(round(default_value - difference))
+    else:
+        peak = default_value
+
+    return f"{peak},{peak}"
+    
+def getJoystickDeadzone(default_peak, config_value, system):
+    default_value = int(default_peak.split(',')[0])
+    if config_value in system.config:
+        deadzone_multiplier = float(system.config[config_value])
+    else:
+        deadzone_multiplier = 0.01
+    
+    deadzone = int(round(default_value * deadzone_multiplier))
+        
+    return f"{deadzone},{deadzone}"
+    
 def defineControllerKeys(nplayer, controller, system):
         if f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad":
             mupenmapping = getMupenMapping(True)
@@ -64,8 +88,8 @@ def defineControllerKeys(nplayer, controller, system):
         config = dict()
 
         # determine joystick deadzone and peak       
-        config['AnalogPeak'] = getPeakandDeadzoneValues(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system, 1)
-        config['AnalogDeadzone'] = getPeakandDeadzoneValues(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system, 0.05)
+        config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system,)
+        config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system,)
         
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
