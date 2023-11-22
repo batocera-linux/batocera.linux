@@ -3,9 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Oct 5, 2023
+# Version: Commits on Nov 21, 2023
 # uses standalone tree for now
-VPINBALL_VERSION = 1b98109e9605cf0f3698cbdab923757f767e478a
+VPINBALL_VERSION = 8c19cb9c5b697276c672c8c3a0c74a465397a56e
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -57,7 +57,7 @@ define VPINBALL_INSTALL_TARGET_CMDS
         $(TARGET_DIR)/usr/bin/vpinball
     # copy folders
     cp -R $(@D)/buildroot-build/flexdmd $(TARGET_DIR)/usr/bin/vpinball/
-    cp -R $(@D)/buildroot-build/res $(TARGET_DIR)/usr/bin/vpinball/
+    cp -R $(@D)/buildroot-build/assets $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/scripts $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/shader $(TARGET_DIR)/usr/bin/vpinball/
 endef
