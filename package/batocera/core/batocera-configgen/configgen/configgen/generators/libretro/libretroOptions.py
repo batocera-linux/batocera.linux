@@ -67,6 +67,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('atari800_resolution', '"' + system.config['atari800_resolution'] + '"')
             else:
                 coreSettings.save('atari800_resolution', '""') # Default : 336x240
+            # Internal BASIC interpreter
+            if system.isOptSet('atari800_internalbasic'):
+                coreSettings.save('atari800_internalbasic', '"' + system.config['atari800_internalbasic'] + '"')
+            else:
+                coreSettings.save('atari800_internalbasic', '"disabled"')
 
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
