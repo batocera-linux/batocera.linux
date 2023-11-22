@@ -1,0 +1,77 @@
+#!/usr/bin/python
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2022 Nicolas Adenis-Lamarre & Batocera team
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+#
+# This script creates a virtual spinner for a controller that has spinning capacities.
+# Currently supported: Atari Classic Controller (rudder -> spinner)
+#
+import sys
+import evdev
+from evdev import ecodes
+import select
+import argparse
+
+try:
+    parser = argparse.ArgumentParser(prog='batocera-spinner-calibrator', description='creates a spinner from a device')
+    parser.add_argument('-d', '--device',   required=True)
+    args = parser.parse_args()
+    
+    input = evdev.InputDevice(args.device)
+    
+    # create a virtual device identical to the input one
+    evkeys = []
+    for code in input.capabilities()[ecodes.EV_KEY]:
+        evkeys.append(code)
+    evabs = []
+    for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
+        if code != ecodes.ABS_RUDDER:
+            evabs.append((code, inf))
+    evabs.extend([(ecodes.ABS_X, evdev.AbsInfo(value=0, min=-10, max=10, fuzz=0, flat=0, resolution=0)), 
+                  (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=-10, max=10, fuzz=0, flat=0, resolution=0))])
+    target = evdev.UInput(name="virtual spinner", events={ ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys})
+    print(target.device.path)
+    sys.stdout.close() # to not block processes that tries to read the stdout
+    
+    # duplicate events
+    poll = select.poll()
+    poll.register(input.fd, select.POLLIN)
+    prevValue = None
+    DEADZONE = 2
+    COEFF = 3
+    while True:
+        if poll.poll(1000):
+            for event in input.read():
+                if event.type == ecodes.EV_ABS and event.code == ecodes.ABS_RUDDER:
+                    if prevValue is not None:
+                        val = event.value - prevValue
+                        if val > 1051:
+                            val = DEADZONE
+                        if val < -1051:
+                            val = -DEADZONE
+                        if val > -DEADZONE and val < DEADZONE:
+                            val = 0 
+                        target.write(ecodes.EV_ABS, ecodes.ABS_X, COEFF*val)
+                    prevValue = event.value
+                else:
+                    target.write(event.type, event.code, event.value)
+
+except KeyboardInterrupt:
+    poll.unregister(input.fd)
+    target.close()    
+except Exception as e:
+    import traceback
+    with open('/var/run/batocera-spinner-calibrator.crash', 'w') as fd:
+        fd.write(traceback.format_exc())
+    raise e
