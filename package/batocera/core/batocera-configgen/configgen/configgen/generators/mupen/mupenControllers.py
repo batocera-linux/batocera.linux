@@ -88,8 +88,8 @@ def defineControllerKeys(nplayer, controller, system):
         config = dict()
 
         # determine joystick deadzone and peak       
-        config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system,)
-        config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system,)
+        config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
+        config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
         
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
