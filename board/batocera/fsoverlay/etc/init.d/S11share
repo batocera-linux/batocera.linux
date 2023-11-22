@@ -49,6 +49,10 @@ getMaxTryConfig() {
 MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
+mountRAMDisk() {
+    mount -t tmpfs -o size=256M tmpfs /userdata
+}
+
 mountDeviceOrFallback() {
     DEVICE=$1
     TDEVICE=$2
@@ -76,7 +80,7 @@ mountDeviceOrFallback() {
     then
         if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
         then
-            mount -t tmpfs -o size=256M tmpfs /userdata
+            mountRAMDisk
         fi
     fi
 }
@@ -283,7 +287,7 @@ case "${MODE}" in
         mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
     ;;
     "RAM")
-        mount -t tmpfs -o size=256M tmpfs /userdata
+        mountRAMDisk
     ;;
     "NETWORK"|"DEVICES")
         # first, INTERNAL mount, then, network mount over the NETWORK mounts
@@ -292,7 +296,7 @@ case "${MODE}" in
         if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
         then
             # fallback
-            mount -t tmpfs -o size=256M tmpfs /userdata
+            mountRAMDisk
         fi
 
         # Network mounts
@@ -304,7 +308,7 @@ case "${MODE}" in
         then
             # fallback
             # the internal partition is no more required in fact
-           mount -t tmpfs -o size=256M tmpfs /userdata
+           mountRAMDisk
         fi
     ;;
 esac
