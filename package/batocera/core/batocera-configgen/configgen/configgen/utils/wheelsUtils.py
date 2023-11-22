@@ -69,7 +69,15 @@ emulatorMapping = {
         "square":   "y",
         "round":    "a",
         "triangle": "x"
-    }
+    },
+    "xbox": {
+        "lt": "l2",
+        "rt": "r2",
+        "a":  "b",
+        "b":  "a",
+        "x":  "y",
+        "y":  "x"
+    },
 }
 
 def reconfigureControllers(playersControllers, system, rom, deviceList):
