@@ -11,7 +11,7 @@
 - Fallout Community Edition: Play the original Fallout game.
 - Fallout 2 Community Edition: Play the original Fallout 2 game.
 - DXX-Rebirth: Play Descent 1 & 2 with enhanced graphics.
-- Added RetroAchievements for Uzebox
+- Added RetroAchievements for Uzebox and NeoGeo CD
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
  - Not compatible with nuvee GunCon patch, use clean ROM.
