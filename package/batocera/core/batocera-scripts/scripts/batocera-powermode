@@ -94,7 +94,7 @@ fi
 
 # select powermode
 if ! [ -z "${POWER_MODE}" ]; then
-	handle_powermode "${POWER_MODE}" "$EVENT"
+	handle_powermode "${POWER_MODE}"
 fi
 
 
