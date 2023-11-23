@@ -4,6 +4,7 @@
 - Initial support for the Anbernic RG353V
 - Initial support for the Raspberry Pi 5
 ### Added
+- New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - Additional ES controller settings for Dolphin.
 - DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
 - The Force Engine: Play Dark Forces with enhanced graphics.

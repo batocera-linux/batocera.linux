@@ -5,11 +5,11 @@ shared:
   cfeatures:
     powermode:
       prompt: POWER MODE
-      description: Adjust the cpu power profile.
+      description: Adjust the cpu power profile while in-game.
       choices:
         "High Performance": highperformance
         "Balanced": balanced
-        "Power Saver": powersave
+        "Power Saver": powersaver
     videomode:
       prompt: VIDEO MODE
       description: Set the display's resolution. Does not affect the rendering resolution.
