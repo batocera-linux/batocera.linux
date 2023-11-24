@@ -166,7 +166,7 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	if [ -d /sys/firmware/efi ]; then
 		echo "UEFI Boot: Yes"
 		if [ -x /usr/bin/mokutil ]; then
-			echo "Secure Boot: $(mokutil --sb-state 2>&1)"
+			echo "Secure Boot: $(mokutil --sb-state 2>&1 | sed 's/^SecureBoot validation is//' | paste -sd ';')"
 		fi
 	else
 		echo "UEFI Boot: No"

@@ -18,3 +18,6 @@ sbsign --key batocera-mok.key --cert batocera-mok.crt --output bootx64.selfsigne
 cp fbx64.efi /tmp/fbx64.sbat.efi
 objcopy --set-section-alignment '.sbat=512' --add-section .sbat=batocera.csv --adjust-section-vma .sbat+10000000 /tmp/fbx64.sbat.efi
 sbsign --key batocera-mok.key --cert batocera-mok.crt --output fbx64.selfsigned.efi /tmp/fbx64.sbat.efi
+cp grubia32.efi /tmp/grubia32.sbat.efi
+objcopy --set-section-alignment '.sbat=512' --add-section .sbat=batocera.csv --adjust-section-vma .sbat+10000000 /tmp/grubia32.sbat.efi
+sbsign --key batocera-mok.key --cert batocera-mok.crt --output grubia32.selfsigned.efi /tmp/grubia32.sbat.efi
