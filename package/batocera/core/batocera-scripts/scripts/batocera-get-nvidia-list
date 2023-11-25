@@ -12,27 +12,39 @@ DEST_DIR="/userdata/system/.nvidia"
 # Ensure the destination directory exists
 mkdir -p "$DEST_DIR"
 
-# Function to check internet connectivity
+# Function to check internet connectivity using multiple methods
 check_internet() {
-    ping -c 1 8.8.8.8 &> /dev/null
-    return $?
+    net="off"
+    net1="off"
+    net2="off"
+    net3="off"
+
+    # Check using curl
+    case "$(curl -s --max-time 2 -I http://github.com | sed 's/^[^ ]*  *\([0-9]\).*/\1/; 1q')" in
+      [23]) net1="on";;
+      5) net1="off";;
+      *) net1="off";;
+    esac 
+
+    # Check using ping
+    ping -q -w 1 -c 1 github.com > /dev/null && net2="on" || net2="off"
+
+    # Check using wget
+    wget -q --spider http://github.com && if [ $? -eq 0 ]; then net3="on"; else net3="off"; fi
+
+    # Determine overall network status
+    if [[ "$net1" = "on" ]] || [[ "$net2" = "on" ]] || [[ "$net3" = "on" ]]; then
+        net="on"
+    fi 
 }
 
-# Try to check for an internet connection up to 6 times, with a 5-second delay
-tries=6
-while [ $tries -gt 0 ]; do
-    if check_internet; then
-        break
-    else
-        sleep 5s
-        tries=$((tries - 1))
-    fi
-done
+# Check for an internet connection
+check_internet
 
-# Check if the download was successful
-if [ $tries -gt 0 ]; then
+# Check if the download should be attempted
+if [ "$net" = "on" ]; then
     # Download production.list
-    curl -sSf "${GITHUB_URL}production.list" -o "$DEST_DIR/production.list"
+    wget -q --tries=5 --no-check-certificate --no-cache --no-cookies -O "$DEST_DIR/production.list" "${GITHUB_URL}production.list"
     if [ $? -eq 0 ]; then
         echo "Download of production.list successful. File saved to $DEST_DIR/production.list" >> "$log"
     else
@@ -40,7 +52,7 @@ if [ $tries -gt 0 ]; then
     fi
 
     # Download legacy.list
-    curl -sSf "${GITHUB_URL}legacy.list" -o "$DEST_DIR/legacy.list"
+    wget -q --tries=5 --no-check-certificate --no-cache --no-cookies -O "$DEST_DIR/legacy.list" "${GITHUB_URL}legacy.list"
     if [ $? -eq 0 ]; then
         echo "Download of legacy.list successful. File saved to $DEST_DIR/legacy.list" >> "$log"
     else
@@ -48,7 +60,7 @@ if [ $tries -gt 0 ]; then
     fi
 
     # Download legacy390.list
-    curl -sSf "${GITHUB_URL}legacy390.list" -o "$DEST_DIR/legacy390.list"
+    wget -q --tries=5 --no-check-certificate --no-cache --no-cookies -O "$DEST_DIR/legacy390.list" "${GITHUB_URL}legacy390.list"
     if [ $? -eq 0 ]; then
         echo "Download of legacy390.list successful. File saved to $DEST_DIR/legacy390.list" >> "$log"
     else
@@ -56,12 +68,12 @@ if [ $tries -gt 0 ]; then
     fi
 
     # Download legacy340.list
-    curl -sSf "${GITHUB_URL}legacy340.list" -o "$DEST_DIR/legacy340.list"
+    wget -q --tries=5 --no-check-certificate --no-cache --no-cookies -O "$DEST_DIR/legacy340.list" "${GITHUB_URL}legacy340.list"
     if [ $? -eq 0 ]; then
         echo "Download of legacy340.list successful. File saved to $DEST_DIR/legacy340.list" >> "$log"
     else
         echo "Download of legacy340.list failed." >> "$log"
     fi
 else
-    echo "Maximum retries reached. Could not establish an internet connection for the Nvidia driver lists" >> "$log"
+    echo "No internet connection detected, could not download Nvidia driver lists" >> "$log"
 fi
