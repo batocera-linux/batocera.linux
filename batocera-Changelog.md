@@ -127,6 +127,8 @@
 - SOF Firmware to 2023.09.1
 - Streamlined x86_64 Secure Boot support
 - Added tree(1) utility
+### Build host
+- xa to 2.4.0
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
