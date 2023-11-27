@@ -3,65 +3,43 @@
 # Bash script to get the latest Nvidia driver lists
 # which may add new boards in between versions.
 
-mkdir -p "/userdata/system/logs"
-log="/userdata/system/logs/nvidia.log"
-
 GITHUB_URL="https://raw.githubusercontent.com/batocera-linux/nvidia-lists/main/"
 DEST_DIR="/userdata/system/.nvidia"
+LOG_DIR="/userdata/system/logs"
+LOG_FILE="$LOG_DIR/nvidia.log"
 
-# Ensure the destination directory exists
+# Create directories if they do not exist
 mkdir -p "$DEST_DIR"
+mkdir -p "$LOG_DIR"
 
-# Function to check internet connectivity
+# Function to check internet connectivity using multiple methods
 check_internet() {
-    ping -c 1 8.8.8.8 &> /dev/null
-    return $?
+    if ping -q -w 1 -c 1 github.com > /dev/null || 
+       curl -s --max-time 2 -I http://github.com | grep -q "HTTP/[12].[01] [23].." ||
+       wget -q --spider http://github.com; then
+        return 0
+    else
+        return 1
+    fi
 }
 
-# Try to check for an internet connection up to 6 times, with a 5-second delay
-tries=6
-while [ $tries -gt 0 ]; do
-    if check_internet; then
-        break
-    else
-        sleep 5s
-        tries=$((tries - 1))
-    fi
-done
+# Function to download a file
+download_file() {
+    local filename=$1
+    wget -q --tries=5 --timeout=1 --no-check-certificate --no-cache --no-cookies -O "$DEST_DIR/$filename" "${GITHUB_URL}$filename" &&
+    echo "Download of $filename successful. File saved to $DEST_DIR/$filename" >> "$LOG_FILE"
+}
 
-# Check if the download was successful
-if [ $tries -gt 0 ]; then
-    # Download production.list
-    curl -sSf "${GITHUB_URL}production.list" -o "$DEST_DIR/production.list"
-    if [ $? -eq 0 ]; then
-        echo "Download of production.list successful. File saved to $DEST_DIR/production.list" >> "$log"
-    else
-        echo "Download of production.list failed." >> "$log"
-    fi
-
-    # Download legacy.list
-    curl -sSf "${GITHUB_URL}legacy.list" -o "$DEST_DIR/legacy.list"
-    if [ $? -eq 0 ]; then
-        echo "Download of legacy.list successful. File saved to $DEST_DIR/legacy.list" >> "$log"
-    else
-        echo "Download of legacy.list failed." >> "$log"
-    fi
-
-    # Download legacy390.list
-    curl -sSf "${GITHUB_URL}legacy390.list" -o "$DEST_DIR/legacy390.list"
-    if [ $? -eq 0 ]; then
-        echo "Download of legacy390.list successful. File saved to $DEST_DIR/legacy390.list" >> "$log"
-    else
-        echo "Download of legacy390.list failed." >> "$log"
-    fi
-
-    # Download legacy340.list
-    curl -sSf "${GITHUB_URL}legacy340.list" -o "$DEST_DIR/legacy340.list"
-    if [ $? -eq 0 ]; then
-        echo "Download of legacy340.list successful. File saved to $DEST_DIR/legacy340.list" >> "$log"
-    else
-        echo "Download of legacy340.list failed." >> "$log"
-    fi
+# Check for an internet connection
+if check_internet; then
+    echo "Internet connection detected, downloading Nvidia driver lists..." >> "$LOG_FILE"
+    
+    # Download lists in parallel
+    download_file "production.list" &
+    download_file "legacy390.list" &
+    download_file "legacy340.list" &
+    download_file "legacy.list" &
+    wait
 else
-    echo "Maximum retries reached. Could not establish an internet connection for the Nvidia driver lists" >> "$log"
+    echo "No internet connection detected, could not download Nvidia driver lists." >> "$LOG_FILE"
 fi
