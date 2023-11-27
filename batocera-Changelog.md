@@ -4,6 +4,7 @@
 - Initial support for the Anbernic RG353V
 - Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
+- Initial support for the Steam Deck OLED
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - Additional ES controller settings for Dolphin.
@@ -120,7 +121,7 @@
 - Libretro-Stella to Oct 26, 2023 build
 - Libretro-MAME to 0.260
 ### System
-- Linux kernel to 6.6.2
+- Linux kernel to 6.6.5
 - Mesa to 23.3
 - Proton to 8.0-4c
 - FAudio to 23.10
