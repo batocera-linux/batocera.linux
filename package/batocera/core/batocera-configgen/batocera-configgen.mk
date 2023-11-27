@@ -98,8 +98,13 @@ define BATOCERA_CONFIGGEN_BINS
 	    ln -sf /usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/configgen/emulatorlauncher.py emulatorlauncher)
 endef
 
+define BATOCERA_CONFIGGEN_ES_HOOKS
+	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/powermode_launch_hooks.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/powermode_launch_hooks.sh
+endef
+
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS = BATOCERA_CONFIGGEN_CONFIGS
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_BINS
+BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_ES_HOOKS
 
 BATOCERA_CONFIGGEN_SETUP_TYPE = distutils
 
