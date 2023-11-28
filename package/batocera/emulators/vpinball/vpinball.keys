@@ -48,41 +48,47 @@
       "target": [ "KEY_ENTER" ],
       "description": "Pull plunger"
 		},
-    {
+		{
+      "trigger": ["y"],
+      "type": "key",
+      "target": [ "KEY_2" ],
+      "description": "Buy extraball for a credit"
+		},
+		{
       "trigger": ["pageup"],
       "type": "key",
       "target": [ "KEY_LEFTSHIFT" ],
       "description": "Left flipper"
-    },
-    {
+		},
+		{
       "trigger": ["pagedown"],
       "type": "key",
       "target": [ "KEY_RIGHTSHIFT" ],
       "description": "Right flipper"
-    },
-    {
+		},
+		{
       "trigger": ["l2"],
       "type": "key",
       "target": [ "KEY_LEFTSHIFT" ],
       "description": "Left flipper"
-    },
-    {
+		},
+		{
       "trigger": ["r2"],
       "type": "key",
       "target": [ "KEY_RIGHTSHIFT" ],
       "description": "Right flipper"
-    },
-   {
+		},
+		{
       "trigger": ["l3"],
       "type": "key",
       "target": [ "KEY_LEFTCTRL" ],
       "description": "Left magnasave"
-    },
-    {
+		},
+		{
       "trigger": ["r3"],
       "type": "key",
       "target": [ "KEY_RIGHTCTRL" ],
       "description": "Right magnasave"
-    }    
+		}
     ]
 }
