@@ -8,6 +8,7 @@ SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",          
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless PS3",          MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
 SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster Advance Racer",         MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
 SUBSYSTEM=="input", ATTRS{name}=="Logitech G29 Driving Force Racing Wheel",         MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+SUBSYSTEM=="input", ATTRS{name}=="Logitech  Logitech MOMO Racing ",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
 
 # G920 Driving Force Racing Wheel for Xbox One
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
