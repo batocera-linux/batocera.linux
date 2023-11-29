@@ -118,7 +118,7 @@
 - Libretro-Stella to Oct 26, 2023 build
 - Libretro-MAME to 0.260
 ### System
-- Linux kernel to 6.6.1
+- Linux kernel to 6.6.2
 - Mesa to 23.3
 - Proton to 8.0-4c
 - FAudio to 23.10
