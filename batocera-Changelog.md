@@ -122,7 +122,7 @@
 - Mesa to 23.3
 - Proton to 8.0-4c
 - FAudio to 23.10
-- Nvidia production driver to 545.29.02
+- Nvidia production driver to 545.29.06
 - SDL2 to 2.28.4
 - SOF Firmware to 2023.09.2
 - Bluez to 5.70
