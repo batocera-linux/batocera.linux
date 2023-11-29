@@ -15,6 +15,31 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "Adjust the cpu power profile while in-game."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "POWER MODE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "High Performance"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Balanced"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Power Saver"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
 msgstr "Nastavení rozlišení displeje. Nemá vliv na rozlišení vykreslování."
 
@@ -372,7 +397,7 @@ msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
 msgstr "Pokud jsou kola připojena, použijte místo podložek kolečka."
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "WHEELS"
 msgstr "KOLA"
@@ -381,6 +406,38 @@ msgstr "KOLA"
 msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "POUŽITÍ KOL"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Maximum wheel rotation from left to right (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL ROTATION"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Zone for which the game doesn't react to the wheel (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL DEADZONE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Reserve a non dead zone at the center of the wheel to go straight ahead (in "
+"degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL MIDZONE"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -512,6 +569,16 @@ msgstr "Použijte alternativní rozlišení. Některé hry to potřebují."
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
 msgstr "INTERNÍ ROZLIŠENÍ"
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "Enable the BASIC interpreter. Some games need this."
+msgstr ""
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "INTERNAL BASIC INTERPRETER"
+msgstr ""
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -1360,7 +1427,7 @@ msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD ZPRÁVY"
 
-#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, cemu, cemu, ...
+#. TRANSLATION: libretro/dolphin, libretro/mame, libretro/mame, libretro/pcsx2, cemu, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Povoleno"
@@ -1877,7 +1944,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr "Zapnout se zprávou o detekci hry"
 
-#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr "Nastavení mrtvé zóny analogových páček joysticku."
@@ -4835,7 +4902,7 @@ msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
 msgstr "PARALLEL-RDP UPSCALER"
 
-#. TRANSLATION: libretro/mupen64plus-next
+#. TRANSLATION: libretro/mupen64plus-next, mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "1x (Default)"
 msgstr "1x (Výchozí)"
@@ -5375,6 +5442,16 @@ msgstr "Joypad PCE"
 msgctxt "game_options"
 msgid "PCE Mouse"
 msgstr "Myš PCE"
+
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "Skip the bios boot logo, may cause default language issues."
+msgstr ""
+
+#. TRANSLATION: libretro/pcsx2
+msgctxt "game_options"
+msgid "BIOS FAST BOOT"
+msgstr ""
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
@@ -7999,7 +8076,7 @@ msgctxt "game_options"
 msgid "DEADZONE"
 msgstr "Mrtvá zóna"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "5% (Default)"
 msgstr "5 % (výchozí)"
@@ -9154,8 +9231,10 @@ msgstr "Povolit"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "Set the sensitivity of the joystick analog sticks."
-msgstr "Nastavení citlivosti analogových páček joysticku."
+msgid ""
+"Apply a multiplier to the joystick's input to lower or increase "
+"responsiveness."
+msgstr ""
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
@@ -9164,8 +9243,65 @@ msgstr "CITLIVOST"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "100% (Default)"
-msgstr "100 % (Výchozí)"
+msgid "0.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.6x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.7x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.8x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.9x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.1x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.2x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.3x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.4x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid ""
+"The area around the joystick's neutral position where input is ignored. Can "
+"help reduce unintended inputs."
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1% (Default)"
+msgstr ""
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -10512,17 +10648,17 @@ msgctxt "game_options"
 msgid "Chinese (Mandarin)"
 msgstr "Čínština (Mandarínština)"
 
-#. TRANSLATION: scummvm, xenia, xenia-canary
+#. TRANSLATION: scummvm, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Swedish"
 msgstr "Švédský"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Hebrew"
 msgstr "Hebrejština"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: scummvm, etlegacy
 msgctxt "game_options"
 msgid "Czech"
 msgstr "Čeština"
@@ -10582,12 +10718,12 @@ msgctxt "game_options"
 msgid "Chinese (Traditional) [Big5]"
 msgstr "Čínština (Tradiční) [Big5]"
 
-#. TRANSLATION: easyrpg
+#. TRANSLATION: easyrpg, etlegacy
 msgctxt "game_options"
 msgid "Greek"
 msgstr "Řečtina"
 
-#. TRANSLATION: easyrpg, xenia, xenia-canary
+#. TRANSLATION: easyrpg, xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Turkish"
 msgstr "Turečtina"
@@ -12264,12 +12400,12 @@ msgctxt "game_options"
 msgid "Disable UI prompts"
 msgstr "Zakázat výzvy UI"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Polish"
 msgstr "Polský"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
 msgid "Norwegian"
 msgstr "Norský"
@@ -12696,8 +12832,8 @@ msgstr "Zvolte obtížnost hry."
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "GAME DIFFICULATY"
-msgstr "OBTÍŽNOST HRY"
+msgid "GAME DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12716,8 +12852,8 @@ msgstr "Zvolte si obtížnost boje."
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
-msgid "COMBAT DIFFICULATY"
-msgstr "OBTÍŽNOST BOJE"
+msgid "COMBAT DIFFICULTY"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -12774,6 +12910,76 @@ msgctxt "game_options"
 msgid "4x MULTISAMPLING"
 msgstr "4x MULTISAMPLING"
 
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Afrikaans"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Albanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Bulgarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Catalan"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Danish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Finnish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Hungarian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Irish"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Punjabi"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Romanian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Serbian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovak"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Slovenian"
+msgstr ""
+
+#. TRANSLATION: etlegacy
+msgctxt "game_options"
+msgid "Ukrainian"
+msgstr ""
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -12789,7 +12995,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "snímek obrazovky"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys, sonic3-air.keys
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "Ukončení hry"
@@ -13093,6 +13299,16 @@ msgstr "Levá ploutev"
 msgctxt "keys_files"
 msgid "Right flipper"
 msgstr "Pravá ploutev"
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Left magnasave"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Right magnasave"
+msgstr ""
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
@@ -13403,6 +13619,22 @@ msgstr "Rychlé menu"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Rychle vpřed"
+
+#~ msgctxt "game_options"
+#~ msgid "Set the sensitivity of the joystick analog sticks."
+#~ msgstr "Nastavení citlivosti analogových páček joysticku."
+
+#~ msgctxt "game_options"
+#~ msgid "100% (Default)"
+#~ msgstr "100 % (Výchozí)"
+
+#~ msgctxt "game_options"
+#~ msgid "GAME DIFFICULATY"
+#~ msgstr "OBTÍŽNOST HRY"
+
+#~ msgctxt "game_options"
+#~ msgid "COMBAT DIFFICULATY"
+#~ msgstr "OBTÍŽNOST BOJE"
 
 #~ msgctxt "game_options"
 #~ msgid "Reduces wobbly polygongs & warping textures."

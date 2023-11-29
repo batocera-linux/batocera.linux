@@ -20,6 +20,31 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "Adjust the cpu power profile while in-game."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "POWER MODE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "High Performance"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Balanced"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Power Saver"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
 msgstr "设置显示器分辨率.不影响渲染分辨率."
 
@@ -359,7 +384,7 @@ msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
 msgstr "如果已连接方向盘, 请使用方向盘而不是手柄."
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "WHEELS"
 msgstr "方向盘"
@@ -368,6 +393,38 @@ msgstr "方向盘"
 msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "使用方向盘"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Maximum wheel rotation from left to right (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL ROTATION"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Zone for which the game doesn't react to the wheel (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL DEADZONE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Reserve a non dead zone at the center of the wheel to go straight ahead (in "
+"degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL MIDZONE"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -498,6 +555,16 @@ msgstr "使用备用分辨率。有些游戏需要这个。"
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
 msgstr "内部分辨率"
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "Enable the BASIC interpreter. Some games need this."
+msgstr ""
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "INTERNAL BASIC INTERPRETER"
+msgstr ""
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -1848,7 +1915,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr "开启游戏检测消息"
 
-#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr "设置操纵杆模拟棒的死区。"
@@ -4779,7 +4846,7 @@ msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
 msgstr "并行RDP升频器"
 
-#. TRANSLATION: libretro/mupen64plus-next
+#. TRANSLATION: libretro/mupen64plus-next, mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "1x (Default)"
 msgstr "1x (默认)"
@@ -7916,7 +7983,7 @@ msgctxt "game_options"
 msgid "DEADZONE"
 msgstr "死区"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "5% (Default)"
 msgstr "5% (默认)"
@@ -9046,8 +9113,10 @@ msgstr "启用"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "Set the sensitivity of the joystick analog sticks."
-msgstr "设置操纵手柄模拟操纵杆的灵敏度."
+msgid ""
+"Apply a multiplier to the joystick's input to lower or increase "
+"responsiveness."
+msgstr ""
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
@@ -9056,8 +9125,65 @@ msgstr "灵敏度"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "100% (Default)"
-msgstr "100% (默认)"
+msgid "0.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.6x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.7x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.8x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.9x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.1x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.2x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.3x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.4x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid ""
+"The area around the joystick's neutral position where input is ignored. Can "
+"help reduce unintended inputs."
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1% (Default)"
+msgstr ""
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -12661,7 +12787,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "截图"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys, sonic3-air.keys
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "退出游戏"
@@ -12965,6 +13091,16 @@ msgstr "左侧弹板"
 msgctxt "keys_files"
 msgid "Right flipper"
 msgstr "右侧弹板"
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Left magnasave"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Right magnasave"
+msgstr ""
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
@@ -13275,6 +13411,14 @@ msgstr "快速菜单"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "快进"
+
+#~ msgctxt "game_options"
+#~ msgid "Set the sensitivity of the joystick analog sticks."
+#~ msgstr "设置操纵手柄模拟操纵杆的灵敏度."
+
+#~ msgctxt "game_options"
+#~ msgid "100% (Default)"
+#~ msgstr "100% (默认)"
 
 #~ msgctxt "game_options"
 #~ msgid "GAME DIFFICULATY"

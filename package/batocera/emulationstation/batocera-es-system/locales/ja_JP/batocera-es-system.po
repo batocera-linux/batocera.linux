@@ -15,6 +15,31 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid "Adjust the cpu power profile while in-game."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "POWER MODE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "High Performance"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Balanced"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Power Saver"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
 msgstr "ディスプレイの解像度を設定します。レンダリング解像度には影響しません"
 
@@ -363,7 +388,7 @@ msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
 msgstr "ホイールが接続されている場合は、パッドの代わりに使用します"
 
-#. TRANSLATION: shared
+#. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
 msgid "WHEELS"
 msgstr "ホイール(ハンドル)"
@@ -372,6 +397,38 @@ msgstr "ホイール(ハンドル)"
 msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "ホイール(ハンドル)を使用"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Maximum wheel rotation from left to right (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL ROTATION"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "Zone for which the game doesn't react to the wheel (in degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL DEADZONE"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Reserve a non dead zone at the center of the wheel to go straight ahead (in "
+"degrees)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "WHEEL MIDZONE"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -502,6 +559,16 @@ msgstr "一部のゲームの代替解像度を有効にします"
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
 msgstr "内部解像度"
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "Enable the BASIC interpreter. Some games need this."
+msgstr ""
+
+#. TRANSLATION: libretro/atari800
+msgctxt "game_options"
+msgid "INTERNAL BASIC INTERPRETER"
+msgstr ""
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
@@ -1861,7 +1928,7 @@ msgctxt "game_options"
 msgid "On with game detection message"
 msgstr "ゲーム検出表示時に使用"
 
-#. TRANSLATION: libretro/dosbox_pure, mupen64plus, mupen64plus, mupen64plus, mupen64plus
+#. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
 msgstr "アナログスティックのデッドゾーン(遊び幅)を設定します"
@@ -4805,7 +4872,7 @@ msgctxt "game_options"
 msgid "PARALLEL-RDP UPSCALER"
 msgstr "PARALLEL-RDP アップスケーラー"
 
-#. TRANSLATION: libretro/mupen64plus-next
+#. TRANSLATION: libretro/mupen64plus-next, mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "1x (Default)"
 msgstr "1x (標準)"
@@ -7396,8 +7463,8 @@ msgstr "ゲームパッド画面を有効"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Arrange the dual screen layout. Separate windows can be changed with Hotkey"
-"+R2."
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
 msgstr ""
 "デュアルスクリーンのレイアウトを整えます\n"
 "(ホットキー+R2でウィンドウの切替)"
@@ -7965,7 +8032,7 @@ msgctxt "game_options"
 msgid "DEADZONE"
 msgstr "遊び幅"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "5% (Default)"
 msgstr "5%（標準）"
@@ -9107,8 +9174,10 @@ msgstr "有効（使用）"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "Set the sensitivity of the joystick analog sticks."
-msgstr "アナログスティックの感度を設定します"
+msgid ""
+"Apply a multiplier to the joystick's input to lower or increase "
+"responsiveness."
+msgstr ""
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
@@ -9117,8 +9186,65 @@ msgstr "感度"
 
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
-msgid "100% (Default)"
-msgstr "100% (標準)"
+msgid "0.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.6x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.7x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.8x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "0.9x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.1x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.2x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.3x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.4x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1.5x"
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid ""
+"The area around the joystick's neutral position where input is ignored. Can "
+"help reduce unintended inputs."
+msgstr ""
+
+#. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
+msgctxt "game_options"
+msgid "1% (Default)"
+msgstr ""
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -12784,7 +12910,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "スクリーンショット"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys, sonic3-air.keys
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "ゲームを終了"
@@ -13088,6 +13214,16 @@ msgstr "左 フリッパー"
 msgctxt "keys_files"
 msgid "Right flipper"
 msgstr "右 フリッパー"
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Left magnasave"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
+msgid "Right magnasave"
+msgstr ""
 
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
@@ -13398,3 +13534,11 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
+
+#~ msgctxt "game_options"
+#~ msgid "Set the sensitivity of the joystick analog sticks."
+#~ msgstr "アナログスティックの感度を設定します"
+
+#~ msgctxt "game_options"
+#~ msgid "100% (Default)"
+#~ msgstr "100% (標準)"
