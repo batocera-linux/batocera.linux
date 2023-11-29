@@ -159,7 +159,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
     # set the folders we want
     pcsx2INIConfig.set("Folders", "Bios", "../../../bios/ps2")
     pcsx2INIConfig.set("Folders", "Snapshots", "../../../screenshots")
-    pcsx2INIConfig.set("Folders", "SaveStates", "../../../saves/ps2/pcsx2/sstates")
+    pcsx2INIConfig.set("Folders", "Savestates", "../../../saves/ps2/pcsx2/sstates")
     pcsx2INIConfig.set("Folders", "MemoryCards", "../../../saves/ps2/pcsx2")
     pcsx2INIConfig.set("Folders", "Logs", "../../logs")
     pcsx2INIConfig.set("Folders", "Cheats", "../../../cheats/ps2")
