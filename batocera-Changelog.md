@@ -86,7 +86,7 @@
 - Libretro-Craft to May 28, 2023 build
 - Libretro-Desmume to Oct 6, 2023 build
 - GZDoom to g4.11.3
-- Libretro-DosBox-Pure to Oct 24, 2023 build
+- Libretro-DosBox-Pure to Nov 30, 2023 build
 - Libretro-Ecwolf to Jul 18, 2023 build
 - Libretro-Fake08 to Oct 19, 2023 build
 - Libretro-Fceumm to Sep 17, 2023 build
