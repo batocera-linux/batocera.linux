@@ -30,9 +30,9 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # exclude some dirs not required on batocera
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
 
-	# -n is mandatory while some other packages provides firmwares too
+    # -n is mandatory while some other packages provides firmwares too
     # this is not ideal, but i don't know how to tell to buildroot to install this package first (and not worry about all packages installing firmwares)
-    cp -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
+    cp --remove-destination -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
 
     # Some firmware are distributed as a symlink, for drivers to load them using a
     # defined name other than the real one. Since 9cfefbd7fbda ("Remove duplicate
