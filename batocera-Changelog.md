@@ -2,6 +2,7 @@
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 - Initial support for the Anbernic RG353V
+- Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
