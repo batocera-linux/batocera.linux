@@ -34,7 +34,6 @@ set_governor() {
     done
 }
 
-
 # Determine which governors to set based on powermode setting
 handle_powermode() {
 	local POWERMODE_NAME=$1
@@ -87,6 +86,16 @@ if [ -z "${POWER_MODE}" ]; then
     POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
 fi
 
+# If no user set system or global setting try default user setting if exists
+if [ -z "${POWER_MODE}" ]; then
+    POWER_MODE="$(/usr/bin/batocera-settings-get system.cpu.governor)"
+fi
+
+# Finally, use the master setting if no user settings
+if [ -z "${POWER_MODE}" ]; then
+    POWER_MODE="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
+fi
+
 # If no value is found exit
 if [ -z "${POWER_MODE}" ]; then
     exit 0
@@ -96,5 +105,3 @@ fi
 if ! [ -z "${POWER_MODE}" ]; then
 	handle_powermode "${POWER_MODE}"
 fi
-
-
