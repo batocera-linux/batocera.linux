@@ -1,0 +1,17 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+old mode 100755
+new mode 100644
+index 4c7f1eb482..a3a5e94c88
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -109,6 +109,10 @@ ifneq (,$(findstring unix,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI4
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_HIGH
+ 			CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++		else ifneq (,$(findstring rpi5,$(platform)))
++			PLATFORM_DEFINES += -D_RASPBERRYPI5
++			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_HIGH
++			CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
+ 		else
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_HIGH

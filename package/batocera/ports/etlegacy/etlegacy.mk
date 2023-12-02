@@ -46,8 +46,8 @@ ETLEGACY_CONF_OPTS += -DFEATURE_IRC_SERVER=OFF
 # install extras?
 ETLEGACY_CONF_OPTS += -DINSTALL_EXTRA=OFF
 
-# RPi4 needs XWayland support so OpenGL runs under the required X11
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
+# RPi4/5 needs XWayland support so OpenGL runs under the required X11
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
     ETLEGACY_CONF_OPTS += -DARM=ON
 endif
 
