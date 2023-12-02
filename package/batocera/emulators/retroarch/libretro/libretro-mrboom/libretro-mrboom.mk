@@ -3,8 +3,8 @@
 # libretro-mrboom
 #
 ################################################################################
-
-LIBRETRO_MRBOOM_VERSION = 5.3
+# Version: Commits on Nov 16, 2023
+LIBRETRO_MRBOOM_VERSION = 87368124430174a501484bad8dbd4284859c0853
 LIBRETRO_MRBOOM_SITE = https://github.com/Javanaise/mrboom-libretro.git
 LIBRETRO_MRBOOM_SITE_METHOD=git
 LIBRETRO_MRBOOM_GIT_SUBMODULES=YES
@@ -15,7 +15,8 @@ LIBRETRO_MRBOOM_EXTRA_ARGS = HAVE_NEON=1
 endif
 
 define LIBRETRO_MRBOOM_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform=unix $(LIBRETRO_MRBOOM_EXTRA_ARGS) \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform=unix $(LIBRETRO_MRBOOM_EXTRA_ARGS) \
         GIT_VERSION="-$(shell echo $(LIBRETRO_MRBOOM_VERSION) | cut -c 1-7)"
 endef
 
