@@ -1,6 +1,6 @@
 ################################################################################
 #
-# AMIBERRY
+# amiberry
 #
 ################################################################################
 
@@ -16,7 +16,7 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi4-64-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
-	AMIBERRY_BATOCERA_SYSTEM=rpi4-64-sdl2 # to be fixed to rpi5 later
+	AMIBERRY_BATOCERA_SYSTEM=rpi5-64-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
     AMIBERRY_BATOCERA_SYSTEM=rpi3-64-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)

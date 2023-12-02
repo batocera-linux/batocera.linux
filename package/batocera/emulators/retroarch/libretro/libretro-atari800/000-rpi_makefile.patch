@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 9f10e29..c017d80 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -73,10 +73,25 @@ else ifneq (,$(findstring android,$(platform)))
+@@ -73,10 +73,27 @@ else ifneq (,$(findstring android,$(platform)))
  # Raspberry Pi
  else ifneq (,$(findstring rpi,$(platform)))
  	TARGET := $(TARGET_NAME)_libretro.so
@@ -24,6 +24,8 @@ index 9f10e29..c017d80 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         PLATFORM_DEFINES += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         PLATFORM_DEFINES += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
 +
  # OS X
