@@ -26,7 +26,7 @@ else
     DUCKSTATION_CONF_OPTS += -DUSE_WAYLAND=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+ifeq ($(BR2_PACKAGE_XORG7),y)
     DUCKSTATION_CONF_OPTS += -DUSE_X11=ON
 else
     DUCKSTATION_CONF_OPTS += -DUSE_X11=OFF
@@ -38,16 +38,17 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
 
-# QT6 currently doesn't work on ARM systems
-ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),yy)
+# QT6 under wayland is failing
+ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_XORG7),yy)
     DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON
     DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg
 else
-    DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=OFF -DBUILD_NOGUI_FRONTEND=ON
+    DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=OFF
+    DUCKSTATION_CONF_OPTS += -DBUILD_NOGUI_FRONTEND=ON
     DUCKSTATION_DEPENDENCIES += libdrm sdl2 libevdev
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+ifeq ($(BR2_PACKAGE_XORG7),y)
     DUCKSTATION_CONF_OPTS += -DUSE_GLX=ON
 endif
 
@@ -65,8 +66,10 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/lib
     mkdir -p $(TARGET_DIR)/usr/share/duckstation
 
-    $(INSTALL) -D $(@D)/buildroot-build/bin/duckstation* $(TARGET_DIR)/usr/bin/
-    cp -R $(@D)/buildroot-build/bin/resources $(TARGET_DIR)/usr/share/duckstation/
+    $(INSTALL) -D $(@D)/buildroot-build/bin/duckstation* \
+        $(TARGET_DIR)/usr/bin/
+    cp -R $(@D)/buildroot-build/bin/resources \
+        $(TARGET_DIR)/usr/share/duckstation/
     rm -f $(TARGET_DIR)/usr/share/duckstation/resources/gamecontrollerdb.txt
 
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
@@ -80,7 +83,7 @@ define DUCKSTATION_TRANSLATIONS
         $(TARGET_DIR)/usr/share/duckstation/
 endef
 
-ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),yy)
+ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_XORG7),yy)
     DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_TRANSLATIONS
 endif
 
