@@ -58,7 +58,7 @@
 - Libretro-Flycast to v2.2
 - MelonDS to Oct 12, 2023
 - PCSX2 to v1.7.5105
-- Play! to Oct 13, 2023 build
+- Play! to Nov 30, 2023 build
 - Python Pygame2 to 2.5.2
 - Python Pyxel to v1.9.18
 - RPCS3 to Oct 12 build
