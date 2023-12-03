@@ -8242,7 +8242,7 @@ ppsspp:
   shared: [powermode, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
