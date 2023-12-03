@@ -38,7 +38,8 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_QT6),y)
+# QT6 currently doesn't work on ARM systems
+ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),yy)
     DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON
     DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg
 else
@@ -69,15 +70,17 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
     rm -f $(TARGET_DIR)/usr/share/duckstation/resources/gamecontrollerdb.txt
 
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys $(TARGET_DIR)/usr/share/evmapy
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys \
+        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 define DUCKSTATION_TRANSLATIONS
     mkdir -p $(TARGET_DIR)/usr/share/duckstation
-    cp -R $(@D)/buildroot-build/bin/translations  $(TARGET_DIR)/usr/share/duckstation/
+    cp -R $(@D)/buildroot-build/bin/translations \
+        $(TARGET_DIR)/usr/share/duckstation/
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),yy)
     DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_TRANSLATIONS
 endif
 
