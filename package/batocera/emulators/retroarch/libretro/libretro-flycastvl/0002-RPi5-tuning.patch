@@ -1,0 +1,26 @@
+diff --git a/Makefile b/Makefile
+index 8855929a7c..5bba6383f8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -171,8 +171,19 @@ else ifneq (,$(findstring rpi,$(platform)))
+ 	PLATFORM_EXT := unix
+ 	WITH_DYNAREC=arm
+ 	HAVE_GENERIC_JIT = 0
+-	
+-	ifneq (,$(findstring rpi4,$(platform)))
++
++	ifneq (,$(findstring rpi5,$(platform)))
++		FORCE_GLES = 1
++		ifneq (,$(findstring rpi5_64,$(platform)))
++			# 64-bit userspace
++			ARM_FLOAT_ABI_HARD = 0
++			CPUFLAGS += -DTARGET_LINUX_ARMv8 -frename-registers
++			CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 $(CPUFLAGS)
++			CXXFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 $(CPUFLAGS)
++			ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
++			WITH_DYNAREC=arm64
++		endif	
++	else ifneq (,$(findstring rpi4,$(platform)))
+ 		FORCE_GLES = 1
+ 		ifneq (,$(findstring rpi4_64,$(platform)))
+ 			# 64-bit userspace
