@@ -21,6 +21,9 @@ bindsym $alt+f fullscreen
 # Hide decorations for xwayland apps
 for_window [instance="supermodel"] border none, fullscreen
 for_window [instance="dolphin-emu"] border none, fullscreen
+for_window [instance="batocera-config-dolphin"] border none, fullscreen
+for_window [instance="batocera-config-scummvm"] border none, fullscreen
+for_window [instance="xterm"] border none, fullscreen
 
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide
