@@ -18,8 +18,9 @@ bindsym $alt+F4 kill
 # Make the current focus fullscreen
 bindsym $alt+f fullscreen
 
-# Hide decorations for Supermodel
+# Hide decorations for xwayland apps
 for_window [instance="supermodel"] border none, fullscreen
+for_window [instance="dolphin-emu"] border none, fullscreen
 
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide

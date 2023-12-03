@@ -37,8 +37,7 @@ endif
 DOLPHIN_EMU_MAKE_ENV += LDFLAGS="-Wl,--copy-dt-needed-entries"
 DOLPHIN_EMU_CONF_ENV += LDFLAGS="-Wl,--copy-dt-needed-entries"
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
-    DOLPHIN_EMU_DEPENDENCIES += xserver_xorg-server
+ifeq ($(BR2_PACKAGE_XORG7),y)
     DOLPHIN_EMU_CONF_OPTS += -DENABLE_X11=ON
 else
     DOLPHIN_EMU_CONF_OPTS += -DENABLE_X11=OFF
