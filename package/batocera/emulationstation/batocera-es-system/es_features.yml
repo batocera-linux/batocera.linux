@@ -293,7 +293,7 @@ libretro:
   shared: [powermode, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, bcm2711, rk3326]
+      archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan may not work for every core.
       choices:
@@ -6486,7 +6486,7 @@ daphne:
   shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan may not work on all hardware.
             choices:
@@ -6585,7 +6585,7 @@ dolphin:
                 "Force 4:3":         2
                 "Stretch to window": 3
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
             submenu: RENDERING
             prompt:  GRAPHICS API
             description: Choose which graphics API library to use.
@@ -7147,7 +7147,7 @@ duckstation:
                 "Enabled":            "true"
         duckstation_gfxbackend:
             submenu: DISPLAY
-            archs_include: [x86, x86_64, bcm2711, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
@@ -9023,7 +9023,7 @@ mame:
                 "Off (Default)": 0
                 "On":            1
         bgfxbackend:
-            archs_include: [x86, x86_64, bcm2711, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
             prompt:      BGFX GRAPHICS API
             description: Depends on video mode being set to BGFX.
             choices:
