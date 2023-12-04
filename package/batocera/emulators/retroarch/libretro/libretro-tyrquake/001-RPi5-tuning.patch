@@ -1,0 +1,20 @@
+diff --git a/Makefile b/Makefile
+index 54667cb31d..e4c47f776d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -280,6 +280,15 @@ else ifeq ($(platform), rpi4_64)
+         CFLAGS += -march=armv8-a+crc+simd -mtune=cortex-a72
+         CFLAGS += -fomit-frame-pointer
+ 
++# Raspberry Pi 5 with 64bit kernel & libs
++else ifeq ($(platform), rpi5_64)
++        TARGET := $(TARGET_NAME)_libretro.so
++        fpic := -fPIC
++        SHARED := -shared -Wl,--version-script=common/libretro-link.T
++        CFLAGS += -DARM
++        CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
++        CFLAGS += -fomit-frame-pointer
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ # Help at https://modmyclassic.com/comp
