@@ -2,10 +2,25 @@ diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
 index 961154a..94a05c3 100644
 --- a/yabause/src/libretro/Makefile
 +++ b/yabause/src/libretro/Makefile
-@@ -127,6 +127,21 @@ else ifneq (,$(findstring AMLG12B,$(platform)))
+@@ -127,6 +127,36 @@ else ifneq (,$(findstring AMLG12B,$(platform)))
  	DYNAREC_DEVMIYAX = 1
  	FLAGS += -march=armv8-a+crc -mtune=cortex-a73.cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad
 
++# Raspberry Pi 5 (64-bit)
++else ifneq (,$(findstring rpi5,$(platform)))
++	override platform += unix
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
++	FLAGS += -DAARCH64
++	ARCH_IS_LINUX = 1
++	HAVE_SSE = 0
++	FORCE_GLES = 1
++	USE_AARCH64_DRC = 1
++	DYNAREC_DEVMIYAX = 1
++	FLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
++
 +# RK3588 (64-bit)
 +else ifneq (,$(findstring RK3588,$(platform)))
 +	override platform += unix
