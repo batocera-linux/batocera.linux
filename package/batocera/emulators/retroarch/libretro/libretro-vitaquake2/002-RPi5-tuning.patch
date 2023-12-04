@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index 85cbba2930..aa77f7c434 100644
+--- a/Makefile
++++ b/Makefile
+@@ -87,6 +87,16 @@ else ifneq (,$(findstring rockchip,$(platform)))
+        GLES31 := 1
+    endif
+ 
++# Raspberry Pi 5 (64-bit)
++else ifeq ($(platform), rpi5_64)
++    TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++	CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 -ffast-math -DARM
++    CFLAGS += -D_POSIX_C_SOURCE=199309L
++    GLES := 1
++    GLES31 := 1
++
+ # Raspberry Pi 4 (64-bit)
+ else ifeq ($(platform), rpi4_64)
+     TARGET := $(TARGET_NAME)_libretro.so
