@@ -1,0 +1,13 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index f5a879b1e1..4de93124ff 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -89,6 +89,8 @@ ifneq (,$(findstring unix,$(platform)))
+          endif
+       else ifneq (,$(findstring rpi4,$(platform)))
+          CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++      else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
+       endif
+    endif
+ 

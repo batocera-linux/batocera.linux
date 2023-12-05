@@ -1,0 +1,23 @@
+diff --git a/Makefile b/Makefile
+index 035d8d2420..491d0b02b1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -275,6 +275,18 @@ else ifeq ($(platform), rpi4_64)
+    SINGLE_PRECISION_FLOATS = 1
+    MIN_AUDIO_PROCESSING_PER_FRAME = 1
+    HAVE_NEON = 1
++else ifeq ($(platform), rpi5_64)
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,-no-undefined
++   CFLAGS += -DARM -DGNU_SOURCE=1
++   CFLAGS += -march=armv8.2-a+fp16+simd -mcpu=cortex-a76 -mtune=cortex-a76
++   CFLAGS += -fomit-frame-pointer -fstrict-aliasing
++   CFLAGS += -fno-exceptions
++   CXXFLAGS += -fno-rtti
++   SINGLE_PRECISION_FLOATS = 1
++   MIN_AUDIO_PROCESSING_PER_FRAME = 1
++   HAVE_NEON = 1
+ else ifeq ($(platform), xenon)
+    TARGET := $(TARGET_NAME)_libretro_xenon360.a
+    CC = xenon-gcc$(EXE_EXT)
