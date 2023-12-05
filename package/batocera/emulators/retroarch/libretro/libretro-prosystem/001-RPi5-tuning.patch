@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index a2731661ea..07594f8ea6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -375,6 +375,16 @@ else ifeq ($(platform), rpi4)
+ 	FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 	FLAGS += -fomit-frame-pointer -ffast-math
+ 
++# Raspberry Pi 5
++else ifeq ($(platform), rpi5)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	CFLAGS+=-fsigned-char
++	FLAGS += -DARM 
++	FLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
++	FLAGS += -fomit-frame-pointer -ffast-math
++
+ else ifeq ($(platform), emscripten)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+ 	STATIC_LINKING = 1

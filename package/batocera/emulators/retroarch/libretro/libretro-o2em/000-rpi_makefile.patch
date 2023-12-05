@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 6c840aa..1749d80 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -53,6 +53,25 @@ ifeq ($(platform), unix)
+@@ -53,6 +53,27 @@ ifeq ($(platform), unix)
     TARGET := $(TARGET_NAME)_libretro.so
     fpic := -fPIC
     SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
@@ -24,6 +24,8 @@ index 6c840aa..1749d80 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
  else ifeq ($(platform), linux-portable)
     TARGET := $(TARGET_NAME)_libretro.so

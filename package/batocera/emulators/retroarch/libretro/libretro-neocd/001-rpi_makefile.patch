@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 6934856..bc77950 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -62,6 +62,29 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -62,6 +62,31 @@ ifneq (,$(findstring unix,$(platform)))
     LIBS += -lpthread
     HAVE_CDROM := 1
     USE_LTO := 1
@@ -27,6 +27,8 @@ index 6934856..bc77950 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif   
 +
  else ifeq ($(platform), linux-portable)

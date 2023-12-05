@@ -1,0 +1,21 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index e4c4e83c01..249df65b9c 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -320,6 +320,16 @@ else ifeq ($(platform), rpi4_64)
+         CFLAGS += -fomit-frame-pointer -ffast-math
+         HAVE_NEON = 1
+ 
++# Raspberry Pi 5 (64-bit)
++else ifeq ($(platform), rpi5_64)
++        TARGET := $(TARGET_NAME)_libretro.so
++        fpic := -fPIC
++        SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
++        CFLAGS += -DARM
++        CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 -funsafe-math-optimizations
++        CFLAGS += -fomit-frame-pointer -ffast-math
++        HAVE_NEON = 1
++
+ # ODROIDN2
+ else ifneq (,$(findstring CortexA73_G12B,$(platform)))
+ 	TARGET := $(TARGET_NAME)_libretro.so

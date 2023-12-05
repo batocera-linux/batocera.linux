@@ -26,7 +26,7 @@ index 967a0c3..e08f817 100644
  	CFLAGS += -fomit-frame-pointer -ffast-math
  
  	TARGET := $(TARGET_NAME)_libretro.so
-@@ -243,11 +242,20 @@ else ifneq (,$(findstring rpi,$(platform)))
+@@ -243,11 +242,22 @@ else ifneq (,$(findstring rpi,$(platform)))
  	fpic := -fPIC
  	
  	ifneq (,$(findstring rpi1,$(platform)))
@@ -47,6 +47,8 @@ index 967a0c3..e08f817 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +    	CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++    	CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
  	endif
  
  # Vita

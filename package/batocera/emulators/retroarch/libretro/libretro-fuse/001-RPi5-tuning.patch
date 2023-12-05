@@ -1,0 +1,21 @@
+diff --git a/Makefile.libretro b/Makefile.libretro.new
+index a1b534b900..761e9a0bfc 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro.new
+@@ -145,6 +145,16 @@ else ifeq ($(platform), rpi4_64)
+ 	PLATFORM_DEFINES += -DARM
+ 	HAVE_NEON = 1
+ 
++# Raspberry Pi 5 (64 bits)
++else ifeq ($(platform), rpi5_64)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic = -fPIC
++	SHARED := -shared -Wl,-version-script=build/link.T -Wl,-no-undefined
++	PLATFORM_DEFINES += -march=armv8.2-a+fp16+simd -mcpu=cortex-a76 -mtune=cortex-a76
++	PLATFORM_DEFINES += -fomit-frame-pointer -ffast-math
++	PLATFORM_DEFINES += -DARM
++	HAVE_NEON = 1
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ # Help at https://modmyclassic.com/comp
