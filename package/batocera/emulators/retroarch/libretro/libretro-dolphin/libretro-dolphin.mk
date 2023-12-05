@@ -20,15 +20,22 @@ LIBRETRO_DOLPHIN_CONF_OPTS = -DLIBRETRO=ON \
                              -DCMAKE_BUILD_TYPE=Release
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
-LIBRETRO_DOLPHIN_DEPENDENCIES += xserver_xorg-server
-LIBRETRO_DOLPHIN_CONF_OPTS += -DENABLE_X11=ON
+    LIBRETRO_DOLPHIN_DEPENDENCIES += xserver_xorg-server
+    LIBRETRO_DOLPHIN_CONF_OPTS += -DENABLE_X11=ON
 else
-LIBRETRO_DOLPHIN_CONF_OPTS += -DENABLE_X11=OFF
+    LIBRETRO_DOLPHIN_CONF_OPTS += -DENABLE_X11=OFF
 endif
 
 define LIBRETRO_DOLPHIN_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/dolphin_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/dolphin_libretro.so
 endef
+
+define LIBRETRO_DOLPHIN_SYS_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/dolphin-emu/Sys
+	cp -r $(@D)/Data/Sys/* $(TARGET_DIR)/usr/share/batocera/datainit/bios/dolphin-emu/Sys
+endef
+
+LIBRETRO_DOLPHIN_POST_INSTALL_TARGET_HOOKS += LIBRETRO_DOLPHIN_SYS_FOLDER
 
 $(eval $(cmake-package))
