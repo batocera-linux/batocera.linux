@@ -75,7 +75,6 @@ sdlNameToNKCode = {
     "y" : NKCODE_BUTTON_4, # X
     "x" : NKCODE_BUTTON_1, # Y
     "select" : NKCODE_BUTTON_9, # SELECT/BACK
-    "hotkey" : NKCODE_BACK, # GUIDE
     "start" : NKCODE_BUTTON_10, # START
     "pageup" : NKCODE_BUTTON_6, # L
     "pagedown" : NKCODE_BUTTON_5, # R
@@ -107,7 +106,6 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
                    'y' :             {'button': 'Square'},
                    'start' :         {'button': 'Start'},
                    'select' :        {'button': 'Select'},
-                   'hotkey' :        {'button': 'Pause'},
                    'pageup' :        {'button': 'L'},
                    'pagedown' :      {'button': 'R'},
                    'joystick1left' : {'axis': 'An.Left'},
@@ -192,6 +190,7 @@ def generateControllerConfig(controller):
     Config.set(section, "Previous Slot", "1-135")
     Config.set(section, "Next Slot",     "1-136")
     Config.set(section, "Screenshot",    "1-137")
+    Config.set(section, "Pause",         "1-139")
     
     cfgfile = open(configFileName,'w+')
     Config.write(cfgfile)
