@@ -15,7 +15,10 @@ class CitraGenerator(Generator):
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
 
-        commandArray = ['/usr/bin/citra-qt', rom]
+        if os.path.exists('/usr/bin/citra-qt'):
+            commandArray = ['/usr/bin/citra-qt', rom]
+        else:
+            commandArray = ['/usr/bin/citra', rom]
         return Command.Command(array=commandArray, env={ 
             "XDG_CONFIG_HOME":batoceraFiles.CONF,
             "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds",
