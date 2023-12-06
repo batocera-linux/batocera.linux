@@ -144,6 +144,8 @@ class CitraGenerator(Generator):
             citraConfig.set("Renderer", "graphics_api", system.config["citra_graphics_api"])
         else:
             citraConfig.set("Renderer", "graphics_api", "1")
+        # first renderer device
+        citraConfig.set("Renderer", "physical_device", "0")
         # Use VSYNC
         if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
             citraConfig.set("Renderer", "use_vsync_new", "false")
