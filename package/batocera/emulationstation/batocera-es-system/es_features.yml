@@ -6430,6 +6430,7 @@ citra:
                 "9x (3600x2160)":  9
                 "10x (4000x2400)": 10
         citra_graphics_api:
+            archs_include: [x86, x86_64]
             submenu: GRAPHICS
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.

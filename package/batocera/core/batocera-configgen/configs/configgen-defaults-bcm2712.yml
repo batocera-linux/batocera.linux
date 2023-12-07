@@ -15,7 +15,7 @@ model3:
   emulator: supermodel
   core:     supermodel-legacy
   options:
-    videomode: max-720x576
+    videomode: max-1920x1080
     decorations: none
     hud_support: none
 scummvm:
@@ -28,9 +28,14 @@ quake3:
   emulator: ioquake3
   core:     ioquake3
   options:
-    videomode: max-1280x720
+    videomode: max-1920x1080
     decorations: none
     hud_support: none
 ps2:
   emulator: play
   core:     play
+3ds:
+  emulator: citra
+  core:     citra
+  options:
+    citra_graphics_api: 2
