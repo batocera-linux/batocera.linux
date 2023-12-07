@@ -486,8 +486,8 @@ class DuckstationGenerator(Generator):
         settings.set("Hotkeys", "Rewind",                      "Keyboard/F5")
         settings.set("Hotkeys", "OpenPauseMenu",               "Keyboard/F7")
         settings.set("Hotkeys", "ChangeDisc",                  "Keyboard/F8")
-        if config.has_option('Hotkeys', 'OpenQuickMenu'):
-            config.remove_option('Hotkeys', 'OpenQuickMenu')
+        if settings.has_option('Hotkeys', 'OpenQuickMenu'):
+            settings.remove_option('Hotkeys', 'OpenQuickMenu')
         
         ## [CDROM]
         if not settings.has_section("CDROM"):
