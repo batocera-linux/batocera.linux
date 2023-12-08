@@ -5144,7 +5144,7 @@ sonic3-air:
     In this folder you need the Sonic_Knuckles_wSonic3.bin rom file to play Sonic 3 A.I.R. (Angel Island Revisited).
     It is important that the rom file matches this name exactly.
     Additionally, create a blank `Sonic 3 - Angel Island Revisited.s3air` file.
-    This file will allow EMulationStation to launch Sonic 3 A.I.R. and scrape artwork etc.
+    This file will allow EmulationStation to launch Sonic 3 A.I.R. and scrape artwork etc.
 
     For more info: https://wiki.batocera.org/systems:sonic3-air
   comment_fr: |
@@ -5164,6 +5164,30 @@ sonic-mania:
     sonic-mania:
       sonic-mania: { requireAnyOf: [ BR2_PACKAGE_SONIC_MANIA ] }
   comment_en: |
+    Add your copy of Sonic Mania, just the `Data.rsdk` file in here.
+    Then create a blank file called 'Sonic Mania.sman' in this folder also.
+    This file will allow EmulationStation to launch Sonic Mania and scrape artwork etc.
+
+    Once completed, it is **highly recommended** that you grab the Shaders folder in RSDKv5 and turn it into a mod.
+    Otherwise, movies will not display properly and the filters from video settings won't work.
+    
+    To do this, create the following directory structure inside your mods directory:
+    ```
+    GLShaders/
+    | Data/
+    | | ...
+    | mod.ini
+    ```
+    
+    Inside `mods/GLShaders/Data/` copy the `RSDKv5/Shaders` directory, and inside the mod.ini, paste this:
+    ```
+    Name=GLShaders
+    Description=GL3 shaders to enable filters and stuff
+    Author=Ducky
+    Version=1.0.0
+    TargetVersion=5
+    ```
+
     For more info: https://wiki.batocera.org/systems:sonic-mania
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic-mania
