@@ -5131,7 +5131,7 @@ etlegacy:
 
 sonic3-air:
   name: Sonic 3 A.I.R.
-  manufacturer: Ports
+  manufacturer: Sega
   release: 2019
   hardware: port
   extensions: [s3air]
@@ -5151,3 +5151,21 @@ sonic3-air:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic3-air
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:sonic3-air
+
+sonic-mania:
+  name: Sonic Mania
+  manufacturer: Sega
+  release: 2017
+  hardware: port
+  extensions: [sman]
+  platform: pc
+  group: ports
+  emulators:
+    sonic-mania:
+      sonic-mania: { requireAnyOf: [ BR2_PACKAGE_SONIC_MANIA ] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:sonic-mania
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic-mania
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:sonic-mania

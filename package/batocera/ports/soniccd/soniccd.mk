@@ -1,3 +1,9 @@
+################################################################################
+#
+# soniccd
+#
+################################################################################
+
 SONICCD_SITE = https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation.git
 SONICCD_SITE_METHOD = git
 SONICCD_GIT_SUBMODULES = YES
