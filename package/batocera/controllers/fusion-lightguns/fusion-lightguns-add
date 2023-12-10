@@ -40,14 +40,30 @@ checkRunningPIDAndExit1
 CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
-# trigger                  : BTN_LEFT
-# front trigger            : KEY_ESCAPE
-# L side button1 (reload)  : BTN_RIGHT
-# L Side Button 2 (Start)  : KEY_1
-# R side button 1 (A)      : KEY_ENTER
-# R side button (Select)   : KEY_5
-# front button (Calibrate) : KEY_F4
-# way rocker on back       : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, A?
+############
+# Player 1
+############
+# Trigger                  : BTN_LEFT
+# L button 1 (Bomb)        : BTN_MIDDLE
+# L button 2 (Start)       : KEY_1
+# L button 3 (A)           : KEY_ENTER
+# R button 1 (Reload)      : BTN_RIGHT
+# R button 2 (Select)      : KEY_5
+# R button 3 (B)           : KEY_ESC
+# Calibration button       : BTN_EXTRA (mouse 5)
+# D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+############
+# Player 2
+############
+# Trigger                  : BTN_LEFT
+# L button 1 (Bomb)        : BTN_MIDDLE
+# L button 2 (Start)       : KEY_2
+# L button 3 (A)           : KEY_LEFTSHIFT
+# R button 1 (Reload)      : BTN_RIGHT
+# R button 2 (Select)      : KEY_6
+# R button 3 (B)           : KEY_LEFTCTRL
+# Calibration button       : BTN_EXTRA (mouse 5)
+# D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
 if test "${NDEVS}" = 2
 then
@@ -56,12 +72,12 @@ then
 
     if test "${PLAYER}" = "1"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:esc btn:left --map key:1 btn:middle --map key:enter btn:1 --map key:5 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:enter btn:2 --map yield key:esc btn:3 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "2"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:leftshift btn:left --map key:2 btn:middle --map key:leftctrl btn:1 --map key:6 btn:2 --map key:f4 btn:3 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right --map yield key:2 btn:middle --map yield key:6 btn:1 --map yield key:leftshift btn:2 --map yield key:leftctrl btn:3 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
     fi
 
     echo $! > "${PIDFILE}"
