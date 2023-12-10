@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.5
+BATOCERA_AUDIO_VERSION = 6.6
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
@@ -31,12 +31,10 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# default alsa configurations
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/asoundrc-* \
 		$(TARGET_DIR)/usr/share/batocera/alsa/
+	
 	# sample audio files
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
-
-	# extra ucm files
-	mkdir -p $(TARGET_DIR)/usr/share/alsa/ucm2
-	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/ucm2/* $(TARGET_DIR)/usr/share/alsa/ucm2/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav \
+	    $(TARGET_DIR)/usr/share/sounds
 
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Saudio \
@@ -73,11 +71,27 @@ endef
 
 define BATOCERA_AUDIO_X86_INTEL_DSP
 	mkdir -p $(TARGET_DIR)/etc/modprobe.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/intel-dsp.conf $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/intel-dsp.conf \
+	    $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
+endef
+
+# Steam Deck OLED SOF files are not in the sound-open-firmware package yet
+define BATOCERA_AUDIO_STEAM_DECK_OLED
+	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-*.bin \
+	    $(TARGET_DIR)/lib/firmware/amd/sof/
+	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof-tplg
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-nau8821-max.tplg \
+	    $(TARGET_DIR)/lib/firmware/amd/sof-tplg/sof-vangogh-nau8821-max.tplg
+	# extra ucm files
+	mkdir -p $(TARGET_DIR)/usr/share/alsa/ucm2
+	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/ucm2/* \
+	    $(TARGET_DIR)/usr/share/alsa/ucm2/
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS = BATOCERA_AUDIO_X86_INTEL_DSP
+    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_X86_INTEL_DSP
+    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_STEAM_DECK_OLED
 endif
 
 $(eval $(generic-package))

@@ -1,0 +1,227 @@
+diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index 5a35ac413..de2195b72 100644
+--- a/drivers/bluetooth/btqca.c
++++ b/drivers/bluetooth/btqca.c
+@@ -205,6 +205,48 @@ static int qca_send_reset(struct hci_dev *hdev)
+ 	return 0;
+ }
+
++static int qca_read_fw_board_id(struct hci_dev *hdev, u16 *bid)
++{
++	u8 cmd;
++	struct sk_buff *skb;
++	struct edl_event_hdr *edl;
++	int err = 0;
++	int bid_len;
++
++	bt_dev_dbg(hdev, "QCA read board ID");
++
++	cmd = EDL_GET_BID_REQ_CMD;
++	skb = __hci_cmd_sync_ev(hdev, EDL_PATCH_CMD_OPCODE, EDL_PATCH_CMD_LEN,
++				&cmd, 0, HCI_INIT_TIMEOUT);
++	if (IS_ERR(skb)) {
++		err = PTR_ERR(skb);
++		bt_dev_err(hdev, "Reading QCA board ID failed (%d)", err);
++		return err;
++	}
++
++	edl = skb_pull_data(skb, sizeof(*edl));
++	if (!edl) {
++		bt_dev_err(hdev, "QCA read board ID with no header");
++		err = -EILSEQ;
++		goto out;
++	}
++
++	if (edl->cresp != EDL_CMD_REQ_RES_EVT ||
++	    edl->rtype != EDL_GET_BID_REQ_CMD) {
++		bt_dev_err(hdev, "QCA Wrong packet: %d %d", edl->cresp, edl->rtype);
++		err = -EIO;
++		goto out;
++	}
++
++	bid_len = edl->data[0];
++	*bid = (edl->data[1] << 8) + edl->data[2];
++	bt_dev_info(hdev, "%s: bid len = %x, bid = %x", __func__, bid_len, *bid);
++
++out:
++	kfree_skb(skb);
++	return err;
++}
++
+ int qca_send_pre_shutdown_cmd(struct hci_dev *hdev)
+ {
+ 	struct sk_buff *skb;
+@@ -574,6 +616,30 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+ }
+ EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
+
++static void qca_generate_nvm_name(struct hci_dev *hdev, char *fwname,
++		   size_t max_size, struct qca_btsoc_version ver, u16 bid)
++{
++	u8 rom_ver = 0;
++	u32 soc_ver;
++	const char *variant;
++
++	soc_ver = get_soc_ver(ver.soc_id, ver.rom_ver);
++	rom_ver = ((soc_ver & 0x00000f00) >> 0x04) | (soc_ver & 0x0000000f);
++
++	if ((ver.soc_id & 0x0000ff00) == QCA_HSP_GF_SOC_ID)  /* hsp gf chip */
++		variant = "g";
++	else
++		variant = "";
++
++	if (bid == 0x0)
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.bin", rom_ver, variant);
++	else
++		snprintf(fwname, max_size, "qca/hpnv%02x%s.%x",
++				rom_ver, variant, bid);
++
++	bt_dev_info(hdev, "%s: nvm name is %s", __func__, fwname);
++}
++
+ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 		   enum qca_btsoc_type soc_type, struct qca_btsoc_version ver,
+ 		   const char *firmware_name)
+@@ -582,6 +648,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	int err;
+ 	u8 rom_ver = 0;
+ 	u32 soc_ver;
++	u16 boardid = 0;
+
+ 	bt_dev_dbg(hdev, "QCA setup on UART");
+
+@@ -605,6 +672,10 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	/* Download rampatch file */
+ 	config.type = TLV_TYPE_PATCH;
+ 	switch (soc_type) {
++	case QCA_QCA2066:
++		snprintf(config.fwname, sizeof(config.fwname),
++			 "qca/hpbtfw%02x.tlv", rom_ver);
++		break;
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+ 	case QCA_WCN3998:
+@@ -649,6 +720,9 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	/* Give the controller some time to get ready to receive the NVM */
+ 	msleep(10);
+
++	if (soc_type == QCA_QCA2066)
++		qca_read_fw_board_id(hdev, &boardid);
++
+ 	/* Download NVM configuration */
+ 	config.type = TLV_TYPE_NVM;
+ 	if (firmware_name) {
+@@ -656,6 +730,10 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 			 "qca/%s", firmware_name);
+ 	} else {
+ 		switch (soc_type) {
++		case QCA_QCA2066:
++			qca_generate_nvm_name(hdev, config.fwname, sizeof(config.fwname),
++				ver, boardid);
++			break;
+ 		case QCA_WCN3990:
+ 		case QCA_WCN3991:
+ 		case QCA_WCN3998:
+diff --git a/drivers/bluetooth/btqca.h b/drivers/bluetooth/btqca.h
+index 03bff5c00..ffed9ea8a 100644
+--- a/drivers/bluetooth/btqca.h
++++ b/drivers/bluetooth/btqca.h
+@@ -13,6 +13,7 @@
+ #define EDL_PATCH_TLV_REQ_CMD		(0x1E)
+ #define EDL_GET_BUILD_INFO_CMD		(0x20)
+ #define EDL_NVM_ACCESS_SET_REQ_CMD	(0x01)
++#define EDL_GET_BID_REQ_CMD		(0x23)
+ #define EDL_PATCH_CONFIG_CMD		(0x28)
+ #define MAX_SIZE_PER_TLV_SEGMENT	(243)
+ #define QCA_PRE_SHUTDOWN_CMD		(0xFC08)
+@@ -48,6 +49,7 @@
+
+ #define QCA_FW_BUILD_VER_LEN		255
+
++#define QCA_HSP_GF_SOC_ID		0x1200
+
+ enum qca_baudrate {
+ 	QCA_BAUDRATE_115200 	= 0,
+@@ -146,6 +148,7 @@ enum qca_btsoc_type {
+ 	QCA_WCN3990,
+ 	QCA_WCN3998,
+ 	QCA_WCN3991,
++	QCA_QCA2066,
+ 	QCA_QCA6390,
+ 	QCA_WCN6750,
+ 	QCA_WCN6855,
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 4b57e15f9..891c25ffc 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1861,7 +1861,7 @@ static int qca_setup(struct hci_uart *hu)
+ 		break;
+
+ 	default:
+-		soc_name = "ROME/QCA6390";
++		soc_name = "ROME/QCA6390/QCA2066";
+ 	}
+ 	bt_dev_info(hdev, "setting up %s", soc_name);
+
+@@ -1987,6 +1987,11 @@ static const struct hci_uart_proto qca_proto = {
+ 	.dequeue	= qca_dequeue,
+ };
+
++static const struct qca_device_data qca_soc_data_qca2066 = {
++	.soc_type = QCA_QCA2066,
++	.num_vregs = 0,
++};
++
+ static const struct qca_device_data qca_soc_data_wcn3988 __maybe_unused = {
+ 	.soc_type = QCA_WCN3988,
+ 	.vregs = (struct qca_vreg []) {
+@@ -2569,6 +2574,7 @@ static const struct of_device_id qca_bluetooth_of_match[] = {
+ 	{ .compatible = "qcom,wcn6750-bt", .data = &qca_soc_data_wcn6750},
+ 	{ .compatible = "qcom,wcn6855-bt", .data = &qca_soc_data_wcn6855},
+ 	{ .compatible = "qcom,wcn7850-bt", .data = &qca_soc_data_wcn7850},
++	{ .compatible = "qcom,qca2066-bt", .data = &qca_soc_data_qca2066},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, qca_bluetooth_of_match);
+@@ -2580,6 +2586,7 @@ static const struct acpi_device_id qca_bluetooth_acpi_match[] = {
+ 	{ "DLA16390", (kernel_ulong_t)&qca_soc_data_qca6390 },
+ 	{ "DLB16390", (kernel_ulong_t)&qca_soc_data_qca6390 },
+ 	{ "DLB26390", (kernel_ulong_t)&qca_soc_data_qca6390 },
++	{ "QCOM2066", (kernel_ulong_t)&qca_soc_data_qca2066 },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, qca_bluetooth_acpi_match);
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 9e71362c0..ac5c0cafd 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -3800,12 +3800,14 @@ static int hci_set_event_mask_sync(struct hci_dev *hdev)
+ 	if (lmp_bredr_capable(hdev)) {
+ 		events[4] |= 0x01; /* Flow Specification Complete */
+
+-		/* Don't set Disconnect Complete when suspended as that
+-		 * would wakeup the host when disconnecting due to
++		/* Don't set Disconnect Complete and mode change when suspended
++		 * as that would wakeup the host when disconnecting due to
+ 		 * suspend.
+ 		 */
+-		if (hdev->suspended)
++		if (hdev->suspended){
+ 			events[0] &= 0xef;
++			events[2] &= 0xf7;
++		}
+ 	} else {
+ 		/* Use a different default for LE-only devices */
+ 		memset(events, 0, sizeof(events));
+@@ -5931,7 +5933,7 @@ int hci_suspend_sync(struct hci_dev *hdev)
+
+ 	if (hci_conn_count(hdev)) {
+ 		/* Soft disconnect everything (power off) */
+-		err = hci_disconnect_all_sync(hdev, HCI_ERROR_REMOTE_POWER_OFF);
++		err = hci_disconnect_all_sync(hdev, HCI_ERROR_REMOTE_USER_TERM);
+ 		if (err) {
+ 			/* Set state to BT_RUNNING so resume doesn't notify */
+ 			hdev->suspend_state = BT_RUNNING;
+--
+2.43.0
+
