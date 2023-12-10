@@ -72,8 +72,8 @@ doList() {
 	    echo "none NONE (2400Mhz)"
 	    echo "high HIGH (2600Mhz)"
 	    echo "turbo TURBO (2800Mhz)"
-		echo "extreme EXTREME (3000Mhz)"
-		echo "ruinsane INSANE (3100Mhz)"
+		echo "extreme EXTREME (2900Mhz)"
+		echo "ruinsane INSANE (3000Mhz)"
 	    ;;
     "rpizero2")
 	    echo "none NONE (1000Mhz)"
@@ -333,10 +333,10 @@ setValue() {
 		    setValue_rpi5PutVars 50000 2800 900
 		    ;;
 		"extreme")
-		    setValue_rpi5PutVars 50000 3000 1000
+		    setValue_rpi5PutVars 50000 2900 950
             ;;
 		"ruinsane")
-		    setValue_rpi5PutVars 50000 3100 1000
+		    setValue_rpi5PutVars 50000 3000 1000
 	    esac
 	    ;;
     "rpizero2")
