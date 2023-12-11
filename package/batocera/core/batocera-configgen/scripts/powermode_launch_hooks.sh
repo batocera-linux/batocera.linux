@@ -70,8 +70,10 @@ fi
 
 # Handle gameStop event
 if [ "$EVENT" = "gameStop" ]; then
-    SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get system.cpu.governor)"
-    set_governor "$SYSTEM_GOVERNOR"
+    SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
+    if check_governor "$SYSTEM_GOVERNOR"; then
+		set_governor "$SYSTEM_GOVERNOR"
+	fi	
 	exit 0
 fi
 
@@ -86,19 +88,13 @@ if [ -z "${POWER_MODE}" ]; then
     POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
 fi
 
-# If no user set system or global setting try default user setting if exists
+# If no value is found ensure governor is system default before exiting
 if [ -z "${POWER_MODE}" ]; then
-    POWER_MODE="$(/usr/bin/batocera-settings-get system.cpu.governor)"
-fi
-
-# Finally, use the master setting if no user settings
-if [ -z "${POWER_MODE}" ]; then
-    POWER_MODE="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
-fi
-
-# If no value is found exit
-if [ -z "${POWER_MODE}" ]; then
-    exit 0
+    SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
+    if check_governor "$SYSTEM_GOVERNOR"; then
+		set_governor "$SYSTEM_GOVERNOR"
+	fi	
+	exit 0
 fi
 
 # select powermode
