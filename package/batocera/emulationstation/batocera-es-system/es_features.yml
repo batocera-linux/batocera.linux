@@ -6611,10 +6611,10 @@ dolphin:
             prompt: UBERSHADERS
             description: May not work well on all hardware. Hybrid is preferred, where supported.
             choices:
-                "No Ubershaders":        no_ubershader
-                "Exclusive Ubershaders": exclusive_ubershader
-                "Hybrid Ubershaders":    hybrid_ubershader
-                "Skip Drawing":          skip_draw
+                "No Ubershaders":        0
+                "Exclusive Ubershaders": 1
+                "Hybrid Ubershaders":    2
+                "Skip Drawing":          3
         wait_for_shaders:
             submenu: RENDERING
             prompt: PRE-CACHE SHADERS
@@ -6630,7 +6630,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         use_pad_profiles:
-            submenu: CONTROLLERS
+            group: ADVANCED OPTIONS
             prompt: USE PAD PROFILES
             description: Search for custom configured joystick profiles.
             choices:
@@ -6808,12 +6808,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        rumble:
-            submenu: CONTROLLERS
-            prompt: RUMBLE
-            choices:
-                "Off": 0
-                "On":  1
         vbi_hack:
             group: ADVANCED OPTIONS
             prompt: VBI SKIP
@@ -6910,7 +6904,6 @@ dolphin:
                 "On":  1        
   systems:
     gamecube:
-        shared: [use_wheels]
         cfeatures:
             widescreen_hack:
                 submenu: DISPLAY
@@ -6920,13 +6913,14 @@ dolphin:
                     "Off": 0
                     "On":  1
             dolphin_SkipIPL:
+                group: ADVANCED OPTIONS
                 prompt: ENABLE BOOT ANIMATION
                 description: Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in appropriate user directory).
                 choices:
                     "Off": 0
                     "On":  1
     wii:
-        shared: [use_guns, use_wheels]
+        shared: [use_guns]
         cfeatures:
             tv_mode:
                 submenu: DISPLAY
@@ -6971,6 +6965,12 @@ dolphin:
             dolphin-lightgun-hide-crosshair:
                 submenu: CONTROLLERS
                 prompt: SHOW LIGHT GUN CROSSHAIRS
+                choices:
+                    "Off": 0
+                    "On":  1
+            rumble:
+                prompt: RUMBLE
+                description: Enable controller rumble capabilities if supported by the controller.
                 choices:
                     "Off": 0
                     "On":  1

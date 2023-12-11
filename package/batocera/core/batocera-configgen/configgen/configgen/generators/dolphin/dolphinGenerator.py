@@ -64,7 +64,7 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
 
         # PanicHandlers displaymessages
-        dolphinSettings.set("Interface", "UsePanicHandlers",        "False")
+        dolphinSettings.set("Interface", "UsePanicHandlers", "False")
         
         # Display message in game (Memory card save and many more...)
         if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg") == False:
@@ -228,12 +228,7 @@ class DolphinGenerator(Generator):
 
         # Ubershaders (synchronous_ubershader by default)
         if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
-            if system.config["ubershaders"] == "exclusive_ubershader":
-                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "1")
-            elif system.config["ubershaders"] == "hybrid_ubershader":
-                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "2")
-            elif system.config["ubershaders"] == "skip_draw":
-                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "3")
+            dolphinGFXSettings.set("Settings", "ShaderCompilationMode", system.config["ubershaders"])
         else:
             dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "0")
 
