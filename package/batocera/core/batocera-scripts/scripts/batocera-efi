@@ -1,0 +1,150 @@
+#!/bin/bash
+
+do_help() {
+    echo "$0 check" >&2
+    echo "$0 getBootCurrent" >&2
+    echo "$0 getBootNext" >&2
+    echo "$0 setBootNext XXXX" >&2
+    echo "$0 deleteBootNext" >&2
+    echo "$0 getBootOrder" >&2
+    echo "$0 listBoot" >&2
+    echo "$0 listBootAll" >&2
+    echo "$0 activateBoot XXXX" >&2
+    echo "$0 inactivateBoot XXXX" >&2
+    echo "$0 prioritizeBoot XXXX" >&2
+}
+
+do_getBootCurrent() {
+    # Get the UEFI boot slot number for the current boot
+    efibootmgr | sed -n 's/^BootCurrent:\s*\(.*\)/\1/p'
+}
+
+do_getBootNext() {
+    # Get the UEFI boot slot number for the next boot
+    efibootmgr | sed -n 's/^BootNext:\s*\(.*\)/\1/p'
+}
+
+do_setBootNext() {
+    # Set the UEFI boot order override for the next boot
+    if [ "$1" = "NONE" ]
+    then
+        do_deleteBootNext
+    else
+        efibootmgr -n "$1"
+    fi
+}
+
+do_deleteBootNext() {
+    # Delete any override for the next boot
+    efibootmgr -N
+}
+
+do_getBootOrder() {
+    # Get an ordered list of the hexadecimal boot entry numbers, one per line 
+    efibootmgr | sed -n 's/^BootOrder:\s*\(.*\)/\1/p' | sed 's/,/\n/g'
+}
+
+fetchBOOTENTRIES() {
+    # Set global variable BOOTENTRIES to an unordered list of all BootXXXX UEFI variables
+    # Value has four TAB-delimited columns
+    # 1. Boot slot number, four hexadecimal digits from the BootXXXX variable name
+    # 2. "*" if entry is marked active, " " (space) if inactive.  Many UEFI firmwares seems to ignore this and only care about BootOrder
+    # 3. Boot label
+    # 4. UEFI boot path
+    # Yes, this variable really must be exported - it is used in subshells
+    if [ -z "$BOOTENTRIES" ]; then
+        export BOOTENTRIES="$(efibootmgr | sed -n 's/^Boot\([0-9A-F][0-9A-F][0-9A-F][0-9A-F]\)\(.\)\s\(.*\)\t/\1\t\2\t\3\t/p')"
+    fi
+}
+
+do_listBoot() {
+    # List the boot entries in order of appearance in BootOrder
+    fetchBOOTENTRIES
+    do_getBootOrder |
+        while read ORDER
+        do
+            echo "$BOOTENTRIES" | grep "^$ORDER"
+        done
+}
+
+do_listBootAll() {
+    # List all boot entries, with those in BootOrder in their order of appearance therein, followed by the remainder in sorted order
+    fetchBOOTENTRIES
+    listBoot=$(do_listBoot)
+    echo "$listBoot"
+    grep -v -F -f <(echo "$listBoot")  <(echo "$BOOTENTRIES")
+}
+
+do_activateBoot() {
+    # Activate a boot entry
+    efibootmgr -a -b "$1"
+}
+
+do_inactivateBoot() {
+    # Inactivate a boot entry
+    efibootmgr -A -b "$1"
+}
+
+do_prioritizeBoot() {
+    # Move (or add) a boot entry to the front of BootOrder
+    export PRIORITIZE="$1"
+    removeBootOrder="$(do_getBootOrder | grep -v -F "$PRIORITIZE")"
+    newline=$'\n'
+    newBootOrder="$(echo "${PRIORITIZE}${newline}${removeBootOrder}" | paste -sd ",")"
+    efibootmgr -o "$newBootOrder"
+}
+
+if [ ! -d /sys/firmware/efi ]; then
+    echo "$0: ERROR: UEFI firmware not active." >&2
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    do_help
+    exit 1
+fi
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "check")
+        exit 0
+        ;;
+    "getBootCurrent")
+        do_getBootCurrent
+        ;;
+    "getBootNext")
+        do_getBootNext
+        ;;
+    "setBootNext")
+        do_setBootNext "$1"
+        ;;
+    "deleteBootNext")
+        do_deleteBootNext
+        ;;
+    "getBootOrder")
+        do_getBootOrder
+        ;;
+    "listBoot")
+        do_listBoot
+        ;;
+    "listBootAll")
+        do_listBootAll
+        ;;
+    "activateBoot")
+        do_activateBoot "$1"
+        ;;
+    "inactivateBoot")
+        do_inactivateBoot "$1"
+        ;;
+    "prioritizeBoot")
+        do_prioritizeBoot "$1"
+        ;;
+    *)
+        do_help
+        >&2 echo "error: invalid command ${ACTION}"
+        exit 1
+        ;;
+esac
+exit $?
