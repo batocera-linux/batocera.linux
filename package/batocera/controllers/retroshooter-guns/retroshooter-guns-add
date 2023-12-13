@@ -1,0 +1,110 @@
+#!/bin/bash
+
+PLAYER=$1
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}" input usb)
+BASEFILE="/var/run/virtual-retroshooter-guns-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+############
+# Player 1
+############
+# Trigger                  : BTN_LEFT
+# Right side (Reload)      : BTN_RIGHT
+# Stick button (Recoil)    : BTN_MIDDLE
+# L side button 1 (P1)     : KEY_1
+# L side button 2 (B)      : KEY_5
+# Stick                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+############
+# Player 2
+############
+# Trigger                  : BTN_LEFT
+# Right side (Reload)      : BTN_RIGHT
+# Stick button (Recoil)    : BTN_MIDDLE
+# L side button 1 (P2)     : KEY_2
+# L side button 2 (B)      : KEY_6
+# Stick                    : KEY_U, KEY_V, KEY_W, KEY_X
+############
+# Player 3
+############
+# Trigger                  : BTN_LEFT
+# Right side (Reload)      : BTN_RIGHT
+# Stick button (Recoil)    : BTN_MIDDLE
+# L side button 1 (P1)     : KEY_3
+# L side button 2 (B)      : KEY_7
+# Stick                    : KEY_R, KEY_F, KEY_D, KEY_G
+############
+# Player 4
+############
+# Trigger                  : BTN_LEFT
+# Right side (Reload)      : BTN_RIGHT
+# Stick button (Recoil)    : BTN_MIDDLE
+# L side button 1 (P2)     : KEY_4
+# L side button 2 (B)      : KEY_8
+# Stick                    : KEY_I, KEY_K, KEY_J, KEY_L
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+
+    if test "${PLAYER}" = "1"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="Retro Shooter Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "2"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:2 btn:middle --map yield key:6 btn:1 --map yield key:u btn:5 --map yield key:v btn:6 --map yield key:w btn:7 --map yield key:x btn:8 --output name="Retro Shooter Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "3"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:3 btn:middle --map yield key:7 btn:1 --map yield key:r btn:5 --map yield key:f btn:6 --map yield key:d btn:7 --map yield key:g btn:8 --output name="Retro Shooter Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "4"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:8 btn:1 --map yield key:w btn:5 --map yield key:x btn:6 --map yield key:u btn:7 --map yield key:v btn:8 --output name="Retro Shooter Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0

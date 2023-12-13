@@ -1,0 +1,6 @@
+config BR2_PACKAGE_RETROSHOOTER_GUNS
+	bool "retroshooter-guns"
+	select BR2_PACKAGE_EVSIEVE
+
+	help
+	  retroshooter guns support
