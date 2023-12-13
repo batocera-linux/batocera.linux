@@ -125,7 +125,7 @@
 - Sonic 2013 to Dec 2, 2023 build
 ### System
 - Linux kernel to 6.6.5
-- Mesa to 23.3
+- Mesa to 23.3.1
 - Proton to 8.0-4c
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
