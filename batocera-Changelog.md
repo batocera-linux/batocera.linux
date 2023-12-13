@@ -136,6 +136,7 @@
 - Added tree(1) utility
 - VKD3D-Proton to 2.11
 - Host-XA to 2.4.0
+- Pipewire to 1.0.0
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
