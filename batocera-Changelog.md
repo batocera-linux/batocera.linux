@@ -40,6 +40,7 @@
 - PS2 BIOS files should be put in /userdata/bios/ps2
 - Migrated C-Dogs SDL (cdogs) assets to content downloader
 - Migrated Super Mario War (superbroswar) assets to content downloader
+- default pad order now in emulationstation is hardware dependant (so the same at each boot)
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.260 - Switchres 2.002w
