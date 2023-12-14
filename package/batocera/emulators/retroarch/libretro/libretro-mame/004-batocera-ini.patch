@@ -1,0 +1,14 @@
+diff --git a/src/frontend/mame/mameopts.cpp b/src/frontend/mame/mameopts.cpp
+index cd754fcb..c483157f 100644
+--- a/src/frontend/mame/mameopts.cpp
++++ b/src/frontend/mame/mameopts.cpp
+@@ -41,6 +41,9 @@ void mame_options::parse_standard_inis(emu_options &options, std::ostream &error
+ 	parse_one_ini(options, emulator_info::get_configname(), OPTION_PRIORITY_MAME_INI);
+ 	parse_one_ini(options, emulator_info::get_configname(), OPTION_PRIORITY_MAME_INI, &error_stream);
+ 
++	// parse Batocera-specific configuration
++	parse_one_ini(options, "batocera", OPTION_PRIORITY_MAXIMUM, &error_stream);
++
+ 	// debug mode: parse "debug.ini" as well
+ 	if (options.debug())
+ 		parse_one_ini(options, "debug", OPTION_PRIORITY_DEBUG_INI, &error_stream);

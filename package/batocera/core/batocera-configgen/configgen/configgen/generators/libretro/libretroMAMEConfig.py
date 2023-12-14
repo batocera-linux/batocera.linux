@@ -304,20 +304,19 @@ def generateMAMEConfigs(playersControllers, system, rom):
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
             # lr-mame does NOT support multiple ini paths
-            # Using computer.ini since autorun only applies to computers, and this would be unlikely to be used otherwise
             autoRunCmd = ""
             autoRunDelay = 0
             if not os.path.exists('/userdata/saves/mame/mame/ini/'):
                      os.makedirs('/userdata/saves/mame/mame/ini/')
-            if os.path.exists('/userdata/saves/mame/mame/ini/computer.ini'):
-                os.remove('/userdata/saves/mame/mame/ini/computer.ini')
+            if os.path.exists('/userdata/saves/mame/mame/ini/batocera.ini'):
+                os.remove('/userdata/saves/mame/mame/ini/batocera.ini')
             # bbc has different boots for floppy & cassette, no special boot for carts
             if system.name == "bbc":
                 if system.isOptSet("altromtype") or softList != "":
                     if (system.isOptSet("altromtype") and system.config["altromtype"] == "cass") or softList[-4:] == "cass":
                         autoRunCmd = '*tape\\nchain""\\n'
                         autoRunDelay = 2
-                    elif (system.isOptSet("altromtype") and left(system.config["altromtype"], 4) == "flop") or softList[-4:] == "flop":
+                    elif (system.isOptSet("altromtype") and system.config["altromtype"].startswith("flop")) or "flop" in softList:
                         autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
                         autoRunDelay = 3
                 else:
@@ -345,7 +344,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
             if autoRunCmd != "":
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
-                iniFile = open('/userdata/saves/mame/mame/ini/computer.ini', "w")
+                iniFile = open('/userdata/saves/mame/mame/ini/batocera.ini', "w")
                 iniFile.write('autoboot_command          ' + autoRunCmd + "\n")
                 iniFile.write('autoboot_delay            ' + str(autoRunDelay))
                 iniFile.close()
