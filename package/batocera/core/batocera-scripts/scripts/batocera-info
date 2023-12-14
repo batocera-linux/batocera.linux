@@ -88,6 +88,7 @@ then
 fi
 echo "System: ${V_SYSTEM}"
 echo "Architecture: $(uname -m)"
+echo "Board: ${V_BOARD}"
 
 if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"
 then
