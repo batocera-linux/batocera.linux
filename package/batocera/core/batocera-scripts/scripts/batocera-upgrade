@@ -109,8 +109,8 @@ if [ $TERMINAL -eq 0 ]; then
     do_upgmsg "Calculating md5 checksum ..."
 else
     # download inside SSH or terminal
-    wget -U "batocera-upgrade" -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
-	echo "Check proper file download, checking md5sum - please wait"
+    curl -A "batocera-upgrade" -fL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+    echo "Check proper file download, checking md5sum - please wait"
 fi
 
 # try to download an md5 checksum
