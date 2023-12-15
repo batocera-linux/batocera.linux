@@ -84,6 +84,10 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
     eslog.info("wheels reconfiguration");
     wheelsmetadata = None
 
+    eslog.info("before wheel reconfiguration :")
+    for playercontroller, pad in sorted(playersControllers.items()):
+        eslog.info("  " + playercontroller + ". index:" + str(pad.index) + " dev:" + pad.dev + " name:" + pad.realName)
+
     # reconfigure wheel buttons
     # no need to sort, but i like keeping the same loop (sorted by players)
     nplayer = 1
@@ -142,10 +146,14 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
             if wanted_ra < ra or wanted_deadzone > 0:
                 (newdev, p) = reconfigureAngleRotation(pad.dev, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
                 if newdev is not None:
+                    eslog.info("replacing device {} by device {} for player {}", pad.dev, newdev, playercontroller)
+                    deviceList[newdev] = dict(deviceList[pad.dev])
+                    deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
                     pad.dev = newdev # needs to recompute sdl ids
                     recomputeSdlIds = True
                     newPads.append(newdev)
                     procs.append(p)
+
     # recompute sdl ids
     if recomputeSdlIds:
         # build the new joystick list
@@ -168,6 +176,7 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
         for playercontroller, pad in sorted(playersControllers.items()):
             if pad.dev in joysticksByDev:
                 playersControllers[playercontroller].index = joysticksByDev[pad.dev]
+                deviceList[pad.dev]["joystick_index"] = joysticksByDev[pad.dev]
 
     # reorder players to priorize wheel pads
     playersControllersNew = {}
@@ -183,7 +192,11 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
             playersControllersNew[str(nplayer)] = pad
             nplayer += 1
 
-    return (procs, playersControllersNew)
+    eslog.info("after wheel reconfiguration :")
+    for playercontroller, pad in sorted(playersControllersNew.items()):
+        eslog.info("  " + playercontroller + ". index:" + str(pad.index) + " dev:" + pad.dev + " name:" + pad.realName)
+
+    return (procs, playersControllersNew, deviceList)
 
 def getWheelsFromDevicesInfos(deviceInfos):
     res = {}
