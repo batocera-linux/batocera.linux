@@ -240,7 +240,7 @@ msgstr "NO"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SYSTEM CONTROLLERS"
-msgstr "MANDOS DEL SISTEMA"
+msgstr "BOTONES DEL SISTEMA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -274,7 +274,7 @@ msgid ""
 "libretro cores."
 msgstr ""
 "Durante el juego, presiona la tecla HOTKEY + R1 para traducir el texto en "
-"pantalla. Solo en núcleos libretro"
+"pantalla. Solo en núcleos libretro."
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -318,7 +318,7 @@ msgid ""
 "Enables run-ahead. Doubles CPU requirements. High numbers can result in "
 "visible jitter."
 msgstr ""
-"Habilitar frames anticipados. Duplica los requisitos de CPU. Los números "
+"Habilitar anticipación de frames. Duplica los requisitos de CPU. Los valores "
 "elevados pueden provocar temblores visibles."
 
 #. TRANSLATION: shared, shared, shared, shared, shared
@@ -329,18 +329,19 @@ msgstr "REDUCCIÓN DE LATENCIA"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD FRAMES"
-msgstr "FRAMES ANTICIPADOS"
+msgstr "ANTICIPACIÓN DE FRAMES (RUN-AHEAD)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Can prevent audio skips on button presses when using run-ahead."
 msgstr ""
-"Puede evitar saltos de audio al presionar botones cuando se usa run-ahead."
+"Puede evitar saltos de audio al presionar botones cuando se usa la "
+"anticipación de frames."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
-msgstr "USAR SEGUNDA INSTANCIA PARA RUN-AHEAD"
+msgstr "USAR SEGUNDA INSTANCIA PARA LA ANTICIPACIÓN DE FRAMES"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -457,7 +458,7 @@ msgstr "NIVEL DE VIBRACIÓN"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set game audio level gain in dB."
-msgstr "Estableece la ganancia del nivel de audio del juego en dB."
+msgstr "Establece la ganancia del nivel de audio del juego en dB."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1364,12 +1365,12 @@ msgctxt "game_options"
 msgid "Dutch"
 msgstr "Holandés"
 
-#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx, sonic-mania
 msgctxt "game_options"
 msgid "Simplified Chinese"
 msgstr "Chino Simplificado"
 
-#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx
+#. TRANSLATION: libretro/dolphin, play, yuzu, ryujinx, sonic-mania
 msgctxt "game_options"
 msgid "Traditional Chinese"
 msgstr "Chino Tradicional"
@@ -2228,7 +2229,7 @@ msgstr ""
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, libretro/fceumm, libretro/nestopia, libretro/o2em, ...
 msgctxt "game_options"
 msgid "CROP OVERSCAN"
-msgstr "CROP OVERSCAN"
+msgstr "RECORTAR OVERSCAN"
 
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
@@ -3842,7 +3843,7 @@ msgstr "Discos Olivetti Prodest PC 128S (BBC Master Compact)"
 #. TRANSLATION: libretro/mame
 msgctxt "game_options"
 msgid "BBC Micro/Master Cassette"
-msgstr "Casete BBC Micro/Master "
+msgstr "Casete BBC Micro/Master"
 
 #. TRANSLATION: libretro/mame
 msgctxt "game_options"
@@ -5222,7 +5223,7 @@ msgstr "INTERCAMBIAR MANDOS"
 #. TRANSLATION: libretro/o2em, libretro/picodrive
 msgctxt "game_options"
 msgid "Zooms in to hide black borders."
-msgstr "Acerca el zoom para ocultar los bordes negros."
+msgstr "Acercar para ocultar los bordes negros."
 
 #. TRANSLATION: libretro/o2em
 msgctxt "game_options"
@@ -6568,7 +6569,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160fps"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin, dolphin_triforce, supermodel
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, supermodel
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "VIBRACIÓN"
@@ -7859,6 +7860,11 @@ msgctxt "game_options"
 msgid "MOUSE AS WIIMOTE POINTER"
 msgstr "RATÓN COMO PUNTERO WIIMOTE"
 
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Enable controller rumble capabilities if supported by the controller."
+msgstr "Activar las capacidades de vibración del mando si el mando lo soporta."
+
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "The final output image, unrelated to the Wii's emulated NAND setting."
@@ -8359,7 +8365,7 @@ msgstr "xBR (Muy lento, Sin combinar bordes)"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "24-bit, disables dithering."
-msgstr "24-bit, desactiva el dithering"
+msgstr "24-bit, desactiva el dithering."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -10092,7 +10098,7 @@ msgstr "TAMAÑO DE BLOQUE SPU"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Safe (Default)"
-msgstr "Seguro (Defecto) "
+msgstr "Seguro (Defecto)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10409,7 +10415,7 @@ msgid ""
 "use if you get no audio."
 msgstr ""
 "Utiliza muestras de audio de 16 bits para controladores de audio que no "
-"admitan 32 bits. Solo úselo si no obtiene audio"
+"admitan 32 bits. Solo úselo si no obtiene audio."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10439,7 +10445,7 @@ msgstr ""
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "AUDIO BUFFER DURATION"
-msgstr "DURACIÓN BÚFER DE AUDIO "
+msgstr "DURACIÓN DEL BÚFER DE AUDIO"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10526,7 +10532,7 @@ msgid ""
 "Buffer fill level (in percentage) below which time stretching will start."
 msgstr ""
 "Nivel de llenado del búfer (en porcentaje) por debajo del cual comenzará la "
-"ampliación del tiempo"
+"ampliación del tiempo."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10558,7 +10564,7 @@ msgid ""
 msgstr ""
 "El valor predeterminado utiliza SDL2, de lo contrario habilita las "
 "capacidades específicas del controlador. Sony DS no funciona con "
-"controladores clonados"
+"controladores clonados."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11066,12 +11072,12 @@ msgstr "CALIDAD DE VÍDEO"
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "linear"
-msgstr "Lineal"
+msgstr "lineal"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "best"
-msgstr "Mejor"
+msgstr "mejor"
 
 #. TRANSLATION: cgenius
 msgctxt "game_options"
@@ -11298,7 +11304,7 @@ msgid ""
 "Make game history, setup instructions, and special moves viewable in the menu"
 msgstr ""
 "Hace que el historial de juego, las instrucciones de configuración y los "
-"movimientos especiales sean visibles en el menú."
+"movimientos especiales sean visibles en el menú"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -12495,12 +12501,12 @@ msgstr "INDICACIONES DE LA INTERFAZ DE USUARIO"
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Enabled UI prompts (Default)"
-msgstr "activadas (Defecto)"
+msgstr "Activadas (Defecto)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "Disable UI prompts"
-msgstr "desactivadas"
+msgstr "Desactivadas"
 
 #. TRANSLATION: xenia, xenia-canary, etlegacy
 msgctxt "game_options"
@@ -12553,7 +12559,7 @@ msgstr "USAR CONFIGURACIÓN DE JOYSTICK GZDOOM"
 #. TRANSLATION: corsixth
 msgctxt "game_options"
 msgid "Use new graphics created from CorsixTH project"
-msgstr "Utiliza nuevos gráficos creados a partir del projecto CorsixTH."
+msgstr "Utiliza nuevos gráficos creados a partir del proyecto CorsixTH"
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -12866,7 +12872,7 @@ msgctxt "game_options"
 msgid "Bobba Fett Face Player Fix"
 msgstr ""
 "Correción Bobba Fett Face Player. Intenta que mire más a menudo al jugador "
-"cuando ataca."
+"cuando ataca"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -13088,6 +13094,16 @@ msgctxt "game_options"
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
+#. TRANSLATION: sonic-mania
+msgctxt "game_options"
+msgid "Enable triple buffering."
+msgstr "Activar triple almacenamiento en búfer."
+
+#. TRANSLATION: sonic-mania
+msgctxt "game_options"
+msgid "TRIPLE BUFFERING"
+msgstr "TRIPLE ALMACENAMIENTO EN BÚFER"
+
 #. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
 msgctxt "keys_files"
 msgid "quicksave"
@@ -13103,7 +13119,7 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "captura de pantalla"
 
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, fallout2-ce.keys, etlegacy.keys, sonic3-air.keys
+#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, sonic-mania.keys, fallout2-ce.keys, etlegacy.keys, ...
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "Salir del juego"
@@ -13400,6 +13416,11 @@ msgstr "Tirar del émbolo"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
+msgid "Lockbar Fire Button"
+msgstr ""
+
+#. TRANSLATION: vpinball.keys
+msgctxt "keys_files"
 msgid "Buy extraball for a credit"
 msgstr "Compra una bola extra por un crédito"
 
@@ -13597,6 +13618,11 @@ msgstr "Ocultar bisel"
 msgctxt "keys_files"
 msgid "Exit Dosbox-X"
 msgstr "Salir de Dosbox-X"
+
+#. TRANSLATION: psp.ppsspp.keys
+msgctxt "keys_files"
+msgid "Pause / Menu"
+msgstr "Pausa / Menú"
 
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
