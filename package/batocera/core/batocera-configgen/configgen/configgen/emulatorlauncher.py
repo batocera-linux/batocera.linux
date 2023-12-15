@@ -161,7 +161,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         system.config["use_wheels"] = True
     if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
         deviceInfos = controllers.getDevicesInformation()
-        (wheelProcesses, playersControllers) = wheelsUtils.reconfigureControllers(playersControllers, system, rom, deviceInfos)
+        (wheelProcesses, playersControllers, deviceInfos) = wheelsUtils.reconfigureControllers(playersControllers, system, rom, deviceInfos)
         wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
     else:
         eslog.info("wheels disabled.")

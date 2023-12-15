@@ -405,6 +405,12 @@ def getGameWheelsMetaData(system, rom):
                     return res
     return res
 
+def dev2int(dev):
+    matches = re.match(r"^/dev/input/event([0-9]*)$", dev)
+    if matches is None:
+        return None
+    return int(matches.group(1))
+
 def getDevicesInformation():
   groups    = {}
   devices   = {}
@@ -413,9 +419,8 @@ def getDevicesInformation():
   mouses    = []
   joysticks = []
   for ev in events:
-    matches = re.match(r"^/dev/input/event([0-9]*)$", str(ev.device_node))
-    if matches != None:
-      eventId = int(matches.group(1))
+    eventId = dev2int(str(ev.device_node))
+    if eventId != None:
       isJoystick = ("ID_INPUT_JOYSTICK" in ev.properties and ev.properties["ID_INPUT_JOYSTICK"] == "1")
       isWheel    = ("ID_INPUT_WHEEL"    in ev.properties and ev.properties["ID_INPUT_WHEEL"] == "1")
       isMouse    = ("ID_INPUT_MOUSE"    in ev.properties and ev.properties["ID_INPUT_MOUSE"] == "1") or ("ID_INPUT_TOUCHPAD" in ev.properties and ev.properties["ID_INPUT_TOUCHPAD"] == "1")
