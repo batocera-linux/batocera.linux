@@ -8571,10 +8571,10 @@ rpcs3:
         rpcs3_async_texture:
             submenu: RENDER
             prompt: ASYNCHRONOUS TEXTURE STREAMING
-            description: Stream texture to GPU in parrallel. Can improve performance on more powerful GPU's.
+            description: Stream texture to GPU in parrallel. Can improve performance on more powerful GPU's that have spare headroom.
             choices:
-                "Off (Default)": False
-                "On":            True
+                "Off (Default)":    False
+                "On (Vulkan Only)": True
         rpcs3_audio_format:
             submenu: AUDIO
             prompt: AUDIO FORMAT
