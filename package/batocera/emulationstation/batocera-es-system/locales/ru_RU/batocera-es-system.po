@@ -10319,15 +10319,18 @@ msgstr "МНОГОПОТОЧНЫЙ RSX"
 msgctxt "game_options"
 msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
-"GPU's."
+"GPU's that have spare headroom."
 msgstr ""
-"Поток текстур на GPU параллельно. Может повысить производительность на более "
-"мощных GPU."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "ASYNCHRONOUS TEXTURE STREAMING"
 msgstr "АСИНХРОННЫЙ СТИРМИНГ ТЕКСТУР"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "On (Vulkan Only)"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -13025,50 +13028,45 @@ msgctxt "game_options"
 msgid "TRIPLE BUFFERING"
 msgstr ""
 
-#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
+#. TRANSLATION: theforceengine.keys, switch.ryujinx.keys, vpinball.keys, naomi.demul.keys, cave3rd.demul.keys, ...
 msgctxt "keys_files"
-msgid "quicksave"
-msgstr "быстрое сохранение"
+msgid "Exit the emulator"
+msgstr "Выйти из эмулятора"
 
-#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
+#. TRANSLATION: theforceengine.keys
 msgctxt "keys_files"
-msgid "quickload"
-msgstr "быстрая загрузка"
-
-#. TRANSLATION: eduke32.keys, gzdoom.keys, raze.keys
-msgctxt "keys_files"
-msgid "screenshot"
-msgstr "скриншот"
-
-#. TRANSLATION: dxx-rebirth.keys, fallout1-ce.keys, sonic-mania.keys, fallout2-ce.keys, etlegacy.keys, ...
-msgctxt "keys_files"
-msgid "Exit game"
+msgid "Quick Load"
 msgstr ""
 
-#. TRANSLATION: iortcw.keys, theforceengine.keys
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Quick Save"
+msgstr ""
+
+#. TRANSLATION: theforceengine.keys, iortcw.keys
 msgctxt "keys_files"
 msgid "Skip cutscene"
 msgstr ""
 
-#. TRANSLATION: iortcw.keys, fallout1-ce.keys, corsixth.keys, fallout2-ce.keys
+#. TRANSLATION: sonic-mania.keys, fallout1-ce.keys, dxx-rebirth.keys, fallout2-ce.keys, sonic3-air.keys, ...
 msgctxt "keys_files"
-msgid "Quick save"
-msgstr "Быстрое сохранение"
-
-#. TRANSLATION: iortcw.keys, fallout1-ce.keys, corsixth.keys, fallout2-ce.keys
-msgctxt "keys_files"
-msgid "Quick load"
-msgstr "Быстрая загрузка"
-
-#. TRANSLATION: iortcw.keys, psx.duckstation.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, ...
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr "Скриншот"
+msgid "Exit game"
+msgstr ""
 
 #. TRANSLATION: fallout1-ce.keys, fallout2-ce.keys
 msgctxt "keys_files"
 msgid "Bring up menu"
 msgstr ""
+
+#. TRANSLATION: fallout1-ce.keys, corsixth.keys, fallout2-ce.keys, iortcw.keys
+msgctxt "keys_files"
+msgid "Quick save"
+msgstr "Быстрое сохранение"
+
+#. TRANSLATION: fallout1-ce.keys, corsixth.keys, fallout2-ce.keys, iortcw.keys
+msgctxt "keys_files"
+msgid "Quick load"
+msgstr "Быстрая загрузка"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -13210,37 +13208,57 @@ msgctxt "keys_files"
 msgid "Manage Staff"
 msgstr "Управление персоналом"
 
-#. TRANSLATION: theforceengine.keys, switch.ryujinx.keys, vpinball.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
 msgctxt "keys_files"
-msgid "Exit the emulator"
+msgid "quicksave"
+msgstr "быстрое сохранение"
+
+#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
+msgctxt "keys_files"
+msgid "quickload"
+msgstr "быстрая загрузка"
+
+#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
+msgctxt "keys_files"
+msgid "screenshot"
+msgstr "скриншот"
+
+#. TRANSLATION: iortcw.keys, triforce.dolphin_triforce.keys, psx.duckstation.keys, 3ds.citra.keys, psp.ppsspp.keys, ...
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "Скриншот"
+
+#. TRANSLATION: steam.keys, triforce.dolphin_triforce.keys, xbox360.xenia.keys, 3ds.citra.keys, amiga1200.fsuae.keys, ...
+msgctxt "keys_files"
+msgid "Exit emulator"
 msgstr "Выйти из эмулятора"
 
-#. TRANSLATION: theforceengine.keys
+#. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
-msgid "Quick Load"
-msgstr ""
+msgid "Open Dolphin-triforce's menu"
+msgstr "Открыть меню Dolphin-triforce"
 
-#. TRANSLATION: theforceengine.keys
+#. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
-msgid "Quick Save"
-msgstr ""
+msgid "Load State Slot 1"
+msgstr "Загрука из Слота 1"
 
-#. TRANSLATION: moonlight.moonlight.keys
+#. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
-msgid "Exit emulator using SDL"
-msgstr "Выйти из эмулятора с помощью SDL"
+msgid "Save State Slot 1"
+msgstr "Сохранение в Слот 1"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr "Выйти из DuckStation"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys, psp.ppsspp.keys
 msgctxt "keys_files"
 msgid "Load State"
 msgstr "Загрузка"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys, psp.ppsspp.keys
 msgctxt "keys_files"
 msgid "Save State"
 msgstr "Сохранение"
@@ -13280,25 +13298,60 @@ msgctxt "keys_files"
 msgid "Fast Forward"
 msgstr "Быстрая перемотка"
 
-#. TRANSLATION: xbox360.xenia.keys, triforce.dolphin_triforce.keys, scummvm.keys, 3ds.citra.keys, atomiswave.flycast.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Exit emulator"
-msgstr "Выйти из эмулятора"
+msgid "Move Stylet Pointer"
+msgstr "Переместить указатель стилета"
 
-#. TRANSLATION: triforce.dolphin_triforce.keys
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Open Dolphin-triforce's menu"
-msgstr "Открыть меню Dolphin-triforce"
+msgid "Restart Emulation"
+msgstr "Перезапустить эмуляцию"
 
-#. TRANSLATION: triforce.dolphin_triforce.keys
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Load State Slot 1"
-msgstr "Загрука из Слота 1"
+msgid "Continue/Pause emulation"
+msgstr "Продолжить/приостановить эмуляцию"
 
-#. TRANSLATION: triforce.dolphin_triforce.keys
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Save State Slot 1"
-msgstr "Сохранение в Слот 1"
+msgid "Swap Screen"
+msgstr "Поменять экран"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Toggle Screen Layout"
+msgstr "Переключить расположение экранов"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Toggle Speed Limit"
+msgstr "Переключить ограничение скорости"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Swap screens"
+msgstr "Смена экранов"
+
+#. TRANSLATION: 3ds.citra.keys
+msgctxt "keys_files"
+msgid "Mouse Click"
+msgstr "Клик мышью"
+
+#. TRANSLATION: amiga1200.fsuae.keys, amiga500.fsuae.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys
+msgctxt "keys_files"
+msgid "Virtual Keyboard"
+msgstr "Виртуальная клавиатура"
+
+#. TRANSLATION: amiga1200.fsuae.keys, amiga500.fsuae.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys
+msgctxt "keys_files"
+msgid "Settings GUI"
+msgstr "Настройки GUI"
+
+#. TRANSLATION: wiiu.keys
+msgctxt "keys_files"
+msgid "Display the controller screen"
+msgstr "Показать экран контроллера"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -13365,200 +13418,125 @@ msgctxt "keys_files"
 msgid "Right magnasave"
 msgstr ""
 
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Start"
+msgstr "Старт"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Coin"
+msgstr "Монета"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 2"
+msgstr "Нажать 2"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 1"
+msgstr "Нажать 1"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 4"
+msgstr "Нажать 4"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 3"
+msgstr "Нажать 3"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 5"
+msgstr "Нажать 5"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 6"
+msgstr "Нажать 6"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 7"
+msgstr "Нажать 7"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 8"
+msgstr "Нажать 8"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Left"
+msgstr "Цифровой влево"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Right"
+msgstr "Цифровой вправо"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Up"
+msgstr "Цифровой вверх"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Down"
+msgstr "Цифровой вниз"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Left"
+msgstr "Аналог 1 влево"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Right"
+msgstr "Аналог 1 вправо"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Up"
+msgstr "Аналог 1 вверх"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Down"
+msgstr "Аналог 1 вниз"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Left"
+msgstr "Аналог 2 влево"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Right"
+msgstr "Аналог 2 вправо"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Up"
+msgstr "Аналог 2 вверх"
+
+#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Down"
+msgstr "Аналог 2 вниз"
+
 #. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
 msgctxt "keys_files"
 msgid "Set to full screen"
 msgstr "Установить на весь экран"
 
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
-msgid "Start"
-msgstr "Старт"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "Монета"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 2"
-msgstr "Нажать 2"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 1"
-msgstr "Нажать 1"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 4"
-msgstr "Нажать 4"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 3"
-msgstr "Нажать 3"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 5"
-msgstr "Нажать 5"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 6"
-msgstr "Нажать 6"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 7"
-msgstr "Нажать 7"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Push 8"
-msgstr "Нажать 8"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Left"
-msgstr "Цифровой влево"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Right"
-msgstr "Цифровой вправо"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Up"
-msgstr "Цифровой вверх"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Down"
-msgstr "Цифровой вниз"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Left"
-msgstr "Аналог 1 влево"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Right"
-msgstr "Аналог 1 вправо"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Up"
-msgstr "Аналог 1 вверх"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Down"
-msgstr "Аналог 1 вниз"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Left"
-msgstr "Аналог 2 влево"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Right"
-msgstr "Аналог 2 вправо"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Up"
-msgstr "Аналог 2 вверх"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys, naomi.demul.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Down"
-msgstr "Аналог 2 вниз"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Menu"
-msgstr "Меню"
-
-#. TRANSLATION: scummvm.keys
-msgctxt "keys_files"
-msgid "Graphics filtering on/off"
-msgstr "Фильтрация графики вкл/выкл"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Move Stylet Pointer"
-msgstr "Переместить указатель стилета"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Restart Emulation"
-msgstr "Перезапустить эмуляцию"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Continue/Pause emulation"
-msgstr "Продолжить/приостановить эмуляцию"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Swap Screen"
-msgstr "Поменять экран"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Toggle Screen Layout"
-msgstr "Переключить расположение экранов"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Toggle Speed Limit"
-msgstr "Переключить ограничение скорости"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Swap screens"
-msgstr "Смена экранов"
-
-#. TRANSLATION: 3ds.citra.keys
-msgctxt "keys_files"
-msgid "Mouse Click"
-msgstr "Клик мышью"
-
-#. TRANSLATION: atomiswave.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, dreamcast.flycast.keys, dreamcast.redream.keys
-msgctxt "keys_files"
-msgid "Hide the bezel"
-msgstr "Скрыть рамку"
-
-#. TRANSLATION: dos.dosbox-x.keys
-msgctxt "keys_files"
-msgid "Exit Dosbox-X"
-msgstr "Выйти из Dosbox-X"
-
-#. TRANSLATION: psp.ppsspp.keys
-msgctxt "keys_files"
-msgid "Pause / Menu"
-msgstr ""
-
-#. TRANSLATION: wiiu.keys
-msgctxt "keys_files"
-msgid "Display the controller screen"
-msgstr "Показать экран контроллера"
-
-#. TRANSLATION: amigacd32.fsuae.keys, amigacdtv.fsuae.keys, amiga1200.fsuae.keys, amiga500.fsuae.keys
-msgctxt "keys_files"
-msgid "Virtual Keyboard"
-msgstr "Виртуальная клавиатура"
-
-#. TRANSLATION: amigacd32.fsuae.keys, amigacdtv.fsuae.keys, amiga1200.fsuae.keys, amiga500.fsuae.keys
-msgctxt "keys_files"
-msgid "Settings GUI"
-msgstr "Настройки GUI"
+msgid "Exit emulator using SDL"
+msgstr "Выйти из эмулятора с помощью SDL"
 
 #. TRANSLATION: nds.drastic.keys
 msgctxt "keys_files"
@@ -13679,6 +13657,39 @@ msgstr "Быстрое меню"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "Перемотка"
+
+#. TRANSLATION: psp.ppsspp.keys
+msgctxt "keys_files"
+msgid "Pause / Menu"
+msgstr ""
+
+#. TRANSLATION: dreamcast.redream.keys, naomi.flycast.keys, dreamcast.flycast.keys, naomi2.flycast.keys, atomiswave.flycast.keys
+msgctxt "keys_files"
+msgid "Hide the bezel"
+msgstr "Скрыть рамку"
+
+#. TRANSLATION: dos.dosbox-x.keys
+msgctxt "keys_files"
+msgid "Exit Dosbox-X"
+msgstr "Выйти из Dosbox-X"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Menu"
+msgstr "Меню"
+
+#. TRANSLATION: scummvm.keys
+msgctxt "keys_files"
+msgid "Graphics filtering on/off"
+msgstr "Фильтрация графики вкл/выкл"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Stream texture to GPU in parrallel. Can improve performance on more "
+#~ "powerful GPU's."
+#~ msgstr ""
+#~ "Поток текстур на GPU параллельно. Может повысить производительность на "
+#~ "более мощных GPU."
 
 #~ msgctxt "game_options"
 #~ msgid "Set the sensitivity of the joystick analog sticks."
