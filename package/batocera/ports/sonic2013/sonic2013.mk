@@ -12,6 +12,11 @@ SONIC2013_LICENSE = Custom
 
 SONIC2013_DEPENDENCIES = sdl2 libogg libvorbis
 
+# legacy version for systems that don't support libglew
+ifneq ($(BR2_PACKAGE_LIBGLEW),y)
+	SONIC2013_VERSION = f9718af
+endif
+
 define SONIC2013_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef
