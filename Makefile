@@ -190,7 +190,13 @@ dl-dir:
 %-webserver: output-dir-%
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
 	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
-	@python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+ifeq ($(strip $(BOARD)),)
+	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$*/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$*"))
+	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+else
+	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)"))
+	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/
+endif
 
 %-rsync: output-dir-%
 	$(eval TMP := $(call UC, $*)_IP)
