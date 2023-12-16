@@ -14,7 +14,9 @@ SONIC2013_DEPENDENCIES = sdl2 libogg libvorbis
 
 # legacy version for systems that don't support libglew
 ifneq ($(BR2_PACKAGE_LIBGLEW),y)
-	SONIC2013_VERSION = f9718af
+    SONIC2013_VERSION = f9718af
+else
+    SONIC2013_DEPENDENCIES += libglew
 endif
 
 define SONIC2013_BUILD_CMDS
