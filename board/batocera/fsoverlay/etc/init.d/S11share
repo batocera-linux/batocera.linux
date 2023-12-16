@@ -102,7 +102,7 @@ mountDevicesOrNetwork() {
     # sharedevice=NETWORK
     #
     # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<DIR>@<host>:<remote directory>:<mount options>
-    # Where <DIR> can be one of SHARE|ROMS|SAVES|BIOS|MUSIC|DECORATIONS|SCREENSHOTS|THEMES|CHEATS|SOUNDS|LIBRARY|SPLASH
+    # Where <DIR> can be one of SHARE|ROMS|SAVES|BIOS|MUSIC|DECORATIONS|SCREENSHOTS|THEMES|CHEATS|SOUNDS|LIBRARY|SPLASH|CONFIGS
     #
     # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/batocera
     # or
@@ -200,6 +200,9 @@ mountDevicesOrNetwork() {
                         ;;
                         "SPLASH")
                             CMD_TDIR="/userdata/splash"
+                        ;;
+                        "CONFIGS")
+                            CMD_TDIR="/userdata/system/configs"
                         ;;
                     esac
 
