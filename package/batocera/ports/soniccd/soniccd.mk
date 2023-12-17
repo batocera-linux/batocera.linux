@@ -30,7 +30,7 @@ endef
 
 define SONICCD_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/soniccd
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/soniccd/sonicretro.keys \
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/soniccd/sonicretro.soniccd.keys \
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
