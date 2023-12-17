@@ -133,14 +133,27 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
         if pad.dev in deviceList and deviceList[pad.dev]["isWheel"] and "wheel_rotation_angle" in deviceList[pad.dev]:
             ra = int(deviceList[pad.dev]["wheel_rotation_angle"])
             wanted_ra = ra
+            wanted_deadzone = 0
+            wanted_midzone  = 0
+
+            # initialize values with games metadata
+            if wheelsmetadata is None:
+                wheelsmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
+            if "wheel_rotation_angle" in wheelsmetadata:
+                wanted_ra = int(wheelsmetadata["wheel_rotation_angle"])
+            if "wheel_deadzone" in wheelsmetadata:
+                wanted_deadzone = int(wheelsmetadata["wheel_deadzone"])
+            if "wheel_midzone" in wheelsmetadata:
+                wanted_midzone = int(wheelsmetadata["wheel_midzone"])
+
+            # override with user configs
             if "wheel_rotation_angle" in system.config:
                 wanted_ra = int(system.config["wheel_rotation_angle"])
-            wanted_deadzone = 0
             if "wheel_deadzone" in system.config:
                 wanted_deadzone = int(system.config["wheel_deadzone"])
-            wanted_midzone  = 0
             if "wheel_midzone" in system.config:
                 wanted_midzone = int(system.config["wheel_midzone"])
+
             eslog.info("wheel rotation angle is " + str(ra) + " ; wanted wheel rotation angle is " + str(wanted_ra) + " ; wanted deadzone is " + str(wanted_deadzone) + " ; wanted midzone is " + str(wanted_midzone))
             # no need new device in some cases
             if wanted_ra < ra or wanted_deadzone > 0:
