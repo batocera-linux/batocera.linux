@@ -124,7 +124,7 @@
 - Sonic CD to Dec 2, 2023 build
 - Sonic 2013 to Dec 2, 2023 build
 ### System
-- Linux kernel to 6.6.5
+- Linux kernel to 6.7
 - Mesa to 23.3.1
 - Proton to 8.0-4c
 - FAudio to 23.10
