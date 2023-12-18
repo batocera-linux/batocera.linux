@@ -130,7 +130,7 @@
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
 - Nvidia legacy driver to 470.223.02
-- SDL2 to 2.28.4
+- SDL2 to 2.28.5
 - SOF Firmware to 2023.09.2
 - Bluez to 5.70
 - Streamlined x86_64 Secure Boot support
