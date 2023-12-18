@@ -140,6 +140,7 @@
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
 - XWayaland to 23.2.3
+- QT 6.6.1
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
