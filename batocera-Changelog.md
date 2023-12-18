@@ -35,6 +35,11 @@
 - Bug preventing scraping of msx-family systems
 - Missing mouse cursor for known iOS soniccd rom originally requiring touchscreen input
 - Bug preventing passing command line options to ES unless on xorg-based system
+- Install-to-disk progress dialog stopping around 31% of download
+- Install-to-disk redownloading image even when a copy is already downloaded
+- Scraping wrong system (c64) for cplus4 and pet
+- Missing automount of partitions on NVMe drives in /media
+- Initialization data was too large for /userdata on RAMdisk
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
@@ -141,6 +146,8 @@
 - Xorg Server to 21.1.10
 - XWayaland to 23.2.3
 - QT 6.6.1
+- Support x86_64 build on systems with x64 cpu but only ia32 UEFI
+- Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
