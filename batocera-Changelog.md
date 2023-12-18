@@ -139,6 +139,7 @@
 - Host-XA to 2.4.0
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
+- XWayaland to 23.2.3
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
