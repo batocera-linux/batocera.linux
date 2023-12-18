@@ -54,7 +54,7 @@
 - Libretro-PCSX-ReARMed to Oct 9, 2023
 - Fheroes2 to 1.0.9
 - BigPEmu to 1.092
-- Cemu to 2.0-55
+- Cemu to 2.0-61
 - Citra to nightly-2050
 - Dolphin to 5.0-20619
 - Flycast to v2.2
