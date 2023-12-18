@@ -85,13 +85,29 @@ mountDeviceOrFallback() {
     fi
 }
 
+mountPartByTag() {
+    TAG=$1
+    DIR=$2
+
+    FSTYPE="$(blkid -l -t "${TAG}" -s TYPE -o value)" || return 1
+
+    case "${FSTYPE}" in
+        "ntfs")
+            # Force use of the FUSE ntfs-3g driver
+            FSTYPE=ntfs-3g
+            ;;
+    esac
+
+    mount -t "${FSTYPE}" "${TAG}" "${DIR}"
+}
+
 mountPartSubdir() {
     CMD_KEYPART=$1
     CMD_PART=$2
     CMD_SUBDIR=$3
     CMD_TDIR=$4
     mkdir -p "/var/batocera_subdir_${CMD_KEYPART}" || return 1
-    mount -t nontfs "UUID=${CMD_PART}" "/var/batocera_subdir_${CMD_KEYPART}" || return 1
+    mountPartByTag "UUID=${CMD_PART}" "/var/batocera_subdir_${CMD_KEYPART}" || return 1
     mkdir -p "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" || return 1
     mount --bind "/var/batocera_subdir_${CMD_KEYPART}/${CMD_SUBDIR}" "${CMD_TDIR}" || return 1
     return 0
@@ -219,7 +235,7 @@ mountDevicesOrNetwork() {
 			"part")
 			    if test "${CMD_SUBDIR}" = "/"
 			    then
-				CMD_EXEC="mount -t nontfs UUID=${CMD_PART} ${CMD_TDIR}"
+				CMD_EXEC="mountPartByTag UUID=${CMD_PART} ${CMD_TDIR}"
 			    else
 				CMD_EXEC="mountPartSubdir ${CMD_KEYPART} ${CMD_PART} ${CMD_SUBDIR} ${CMD_TDIR}"
 			    fi
