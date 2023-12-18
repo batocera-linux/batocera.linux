@@ -43,12 +43,12 @@
 - default pad order now in emulationstation is hardware dependant (so the same at each boot)
 ### Updated
 - Retroarch to 1.16.0.3
-- GroovyMAME 0.260 - Switchres 2.002w
+- GroovyMAME 0.261 - Switchres 2.002x
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
 - PPSSPP (standalone) and lr-ppsspp to v1.16.6
-- Libretro-MAME to 0.259 (Oct 4, 2023)
+- Libretro-MAME to 0.261
 - Libretro-Picodrive to Aug 11, 2023
 - Libretro-Genesis-Plus-GX to Sep 11, 2023
 - Libretro-PCSX-ReARMed to Oct 9, 2023
