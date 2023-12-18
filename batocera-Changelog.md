@@ -57,8 +57,8 @@
 - Cemu to 2.0-61
 - Citra to nightly-2054
 - Dolphin to 5.0-20778
-- Flycast to v2.2
-- Libretro-Flycast to v2.2
+- Flycast to 17th Dec build
+- Libretro-Flycast to 17th Dec build
 - MelonDS to Oct 12, 2023
 - PCSX2 to v1.7.5105
 - Play! to Nov 30, 2023 build
