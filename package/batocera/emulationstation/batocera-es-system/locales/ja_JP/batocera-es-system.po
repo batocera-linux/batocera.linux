@@ -12925,45 +12925,55 @@ msgctxt "game_options"
 msgid "TRIPLE BUFFERING"
 msgstr ""
 
-#. TRANSLATION: theforceengine.keys, switch.ryujinx.keys, vpinball.keys, naomi.demul.keys, cave3rd.demul.keys, ...
+#. TRANSLATION: steam.keys, xbox360.xenia.keys, triforce.dolphin_triforce.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys, ...
 msgctxt "keys_files"
-msgid "Exit the emulator"
+msgid "Exit emulator"
 msgstr "エミュレータを終了"
 
-#. TRANSLATION: theforceengine.keys
+#. TRANSLATION: raze.keys, gzdoom.keys, eduke32.keys
 msgctxt "keys_files"
-msgid "Quick Load"
-msgstr "クイック ロード"
+msgid "quicksave"
+msgstr "クイックセーブ"
 
-#. TRANSLATION: theforceengine.keys
+#. TRANSLATION: raze.keys, gzdoom.keys, eduke32.keys
 msgctxt "keys_files"
-msgid "Quick Save"
-msgstr "クイック セーブ"
+msgid "quickload"
+msgstr "クイックロード"
 
-#. TRANSLATION: theforceengine.keys, iortcw.keys
+#. TRANSLATION: raze.keys, gzdoom.keys, eduke32.keys
 msgctxt "keys_files"
-msgid "Skip cutscene"
-msgstr "カットシーンをスキップ"
+msgid "screenshot"
+msgstr "スクリーンショット"
 
-#. TRANSLATION: sonic-mania.keys, fallout1-ce.keys, dxx-rebirth.keys, fallout2-ce.keys, sonic3-air.keys, ...
+#. TRANSLATION: dxx-rebirth.keys, fallout2-ce.keys, fallout1-ce.keys, etlegacy.keys, sonic-mania.keys, ...
 msgctxt "keys_files"
 msgid "Exit game"
 msgstr "ゲームを終了"
 
-#. TRANSLATION: fallout1-ce.keys, fallout2-ce.keys
+#. TRANSLATION: fallout2-ce.keys, fallout1-ce.keys
 msgctxt "keys_files"
 msgid "Bring up menu"
 msgstr "メニューを呼び出す"
 
-#. TRANSLATION: fallout1-ce.keys, corsixth.keys, fallout2-ce.keys, iortcw.keys
+#. TRANSLATION: fallout2-ce.keys, fallout1-ce.keys, iortcw.keys, corsixth.keys
 msgctxt "keys_files"
 msgid "Quick save"
 msgstr "クイックセーブ"
 
-#. TRANSLATION: fallout1-ce.keys, corsixth.keys, fallout2-ce.keys, iortcw.keys
+#. TRANSLATION: fallout2-ce.keys, fallout1-ce.keys, iortcw.keys, corsixth.keys
 msgctxt "keys_files"
 msgid "Quick load"
 msgstr "クイックロード"
+
+#. TRANSLATION: iortcw.keys, theforceengine.keys
+msgctxt "keys_files"
+msgid "Skip cutscene"
+msgstr "カットシーンをスキップ"
+
+#. TRANSLATION: iortcw.keys, triforce.dolphin_triforce.keys, psx.duckstation.keys, 3ds.citra.keys, psp.ppsspp.keys, ...
+msgctxt "keys_files"
+msgid "Screenshot"
+msgstr "スクリーンショット"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -13105,30 +13115,25 @@ msgctxt "keys_files"
 msgid "Manage Staff"
 msgstr "スタッフ管理"
 
-#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
+#. TRANSLATION: theforceengine.keys, dreamcast.redream.keys, cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, ...
 msgctxt "keys_files"
-msgid "quicksave"
-msgstr "クイックセーブ"
-
-#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
-msgctxt "keys_files"
-msgid "quickload"
-msgstr "クイックロード"
-
-#. TRANSLATION: gzdoom.keys, eduke32.keys, raze.keys
-msgctxt "keys_files"
-msgid "screenshot"
-msgstr "スクリーンショット"
-
-#. TRANSLATION: iortcw.keys, triforce.dolphin_triforce.keys, psx.duckstation.keys, 3ds.citra.keys, psp.ppsspp.keys, ...
-msgctxt "keys_files"
-msgid "Screenshot"
-msgstr "スクリーンショット"
-
-#. TRANSLATION: steam.keys, triforce.dolphin_triforce.keys, xbox360.xenia.keys, 3ds.citra.keys, amiga1200.fsuae.keys, ...
-msgctxt "keys_files"
-msgid "Exit emulator"
+msgid "Exit the emulator"
 msgstr "エミュレータを終了"
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Quick Load"
+msgstr "クイック ロード"
+
+#. TRANSLATION: theforceengine.keys
+msgctxt "keys_files"
+msgid "Quick Save"
+msgstr "クイック セーブ"
+
+#. TRANSLATION: dreamcast.redream.keys, dreamcast.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, atomiswave.flycast.keys
+msgctxt "keys_files"
+msgid "Hide the bezel"
+msgstr "ベゼルを隠す"
 
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
@@ -13150,12 +13155,12 @@ msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr "Duckstation を終了"
 
-#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Load State"
 msgstr "ステートロード"
 
-#. TRANSLATION: psx.duckstation.keys, nds.drastic.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Save State"
 msgstr "ステートセーブ"
@@ -13195,60 +13200,130 @@ msgctxt "keys_files"
 msgid "Fast Forward"
 msgstr "早送り"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Move Stylet Pointer"
-msgstr "スタイレットポインタの移動"
+msgid "Start"
+msgstr "スタート"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Restart Emulation"
-msgstr "エミュレーション再開"
+msgid "Coin"
+msgstr "コイン"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Continue/Pause emulation"
-msgstr "エミュレーションの続行/一時停止"
+msgid "Push 2"
+msgstr "２"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Swap Screen"
-msgstr "画面の入替"
+msgid "Push 1"
+msgstr "１押す"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Toggle Screen Layout"
-msgstr "画面レイアウトの切り替え"
+msgid "Push 4"
+msgstr "４"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Toggle Speed Limit"
-msgstr "速度制限の切り替え"
+msgid "Push 3"
+msgstr "３"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Swap screens"
-msgstr "画面を入れ替える"
+msgid "Push 5"
+msgstr "５"
 
-#. TRANSLATION: 3ds.citra.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
 msgctxt "keys_files"
-msgid "Mouse Click"
-msgstr "マウス クリック"
+msgid "Push 6"
+msgstr "６"
 
-#. TRANSLATION: amiga1200.fsuae.keys, amiga500.fsuae.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 7"
+msgstr "７"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Push 8"
+msgstr "８押す"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Left"
+msgstr "デジタル　左"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Right"
+msgstr "デジタル　右"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Up"
+msgstr "デジタル　上"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Digital Down"
+msgstr "デジタル 下"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Left"
+msgstr "アナログ１ 左"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Right"
+msgstr "アナログ１ 右"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Up"
+msgstr "アナログ１ 上"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 1 Down"
+msgstr "アナログ１ 下"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Left"
+msgstr "アナログ 2 左"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Right"
+msgstr "アナログ 2 右"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Up"
+msgstr "アナログ 2 上"
+
+#. TRANSLATION: cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, hikaru.demul.keys, gaelco.demul.keys, ...
+msgctxt "keys_files"
+msgid "Analog 2 Down"
+msgstr "アナログ 2 下"
+
+#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
+msgctxt "keys_files"
+msgid "Set to full screen"
+msgstr "フルスクリーンに設定"
+
+#. TRANSLATION: amigacdtv.fsuae.keys, amigacd32.fsuae.keys, amiga500.fsuae.keys, amiga1200.fsuae.keys
 msgctxt "keys_files"
 msgid "Virtual Keyboard"
 msgstr "仮想キーボード"
 
-#. TRANSLATION: amiga1200.fsuae.keys, amiga500.fsuae.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys
+#. TRANSLATION: amigacdtv.fsuae.keys, amigacd32.fsuae.keys, amiga500.fsuae.keys, amiga1200.fsuae.keys
 msgctxt "keys_files"
 msgid "Settings GUI"
 msgstr "GUI設定"
-
-#. TRANSLATION: wiiu.keys
-msgctxt "keys_files"
-msgid "Display the controller screen"
-msgstr "コントローラー画面を表示"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -13315,120 +13390,60 @@ msgctxt "keys_files"
 msgid "Right magnasave"
 msgstr "magnasave ボタン 右"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Start"
-msgstr "スタート"
+msgid "Move Stylet Pointer"
+msgstr "スタイレットポインタの移動"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Coin"
-msgstr "コイン"
+msgid "Restart Emulation"
+msgstr "エミュレーション再開"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 2"
-msgstr "２"
+msgid "Continue/Pause emulation"
+msgstr "エミュレーションの続行/一時停止"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 1"
-msgstr "１押す"
+msgid "Swap Screen"
+msgstr "画面の入替"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 4"
-msgstr "４"
+msgid "Toggle Screen Layout"
+msgstr "画面レイアウトの切り替え"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 3"
-msgstr "３"
+msgid "Toggle Speed Limit"
+msgstr "速度制限の切り替え"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 5"
-msgstr "５"
+msgid "Swap screens"
+msgstr "画面を入れ替える"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: 3ds.citra.keys
 msgctxt "keys_files"
-msgid "Push 6"
-msgstr "６"
+msgid "Mouse Click"
+msgstr "マウス クリック"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: dos.dosbox-x.keys
 msgctxt "keys_files"
-msgid "Push 7"
-msgstr "７"
+msgid "Exit Dosbox-X"
+msgstr "Dosbox-X を終了"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
-msgid "Push 8"
-msgstr "８押す"
+msgid "Display the controller screen"
+msgstr "コントローラー画面を表示"
 
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
+#. TRANSLATION: psp.ppsspp.keys
 msgctxt "keys_files"
-msgid "Digital Left"
-msgstr "デジタル　左"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Right"
-msgstr "デジタル　右"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Up"
-msgstr "デジタル　上"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Digital Down"
-msgstr "デジタル 下"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Left"
-msgstr "アナログ１ 左"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Right"
-msgstr "アナログ１ 右"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Up"
-msgstr "アナログ１ 上"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 1 Down"
-msgstr "アナログ１ 下"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Left"
-msgstr "アナログ 2 左"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Right"
-msgstr "アナログ 2 右"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Up"
-msgstr "アナログ 2 上"
-
-#. TRANSLATION: naomi.demul.keys, cave3rd.demul.keys, naomi2.demul.keys, hikaru.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Analog 2 Down"
-msgstr "アナログ 2 下"
-
-#. TRANSLATION: hikaru.demul.keys, gaelco.demul.keys
-msgctxt "keys_files"
-msgid "Set to full screen"
-msgstr "フルスクリーンに設定"
+msgid "Pause / Menu"
+msgstr ""
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
@@ -13554,21 +13569,6 @@ msgstr "クイックメニュー"
 msgctxt "keys_files"
 msgid "FastForward"
 msgstr "早送り"
-
-#. TRANSLATION: psp.ppsspp.keys
-msgctxt "keys_files"
-msgid "Pause / Menu"
-msgstr ""
-
-#. TRANSLATION: dreamcast.redream.keys, naomi.flycast.keys, dreamcast.flycast.keys, naomi2.flycast.keys, atomiswave.flycast.keys
-msgctxt "keys_files"
-msgid "Hide the bezel"
-msgstr "ベゼルを隠す"
-
-#. TRANSLATION: dos.dosbox-x.keys
-msgctxt "keys_files"
-msgid "Exit Dosbox-X"
-msgstr "Dosbox-X を終了"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
