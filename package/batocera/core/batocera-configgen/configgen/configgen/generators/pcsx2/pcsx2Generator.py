@@ -479,19 +479,35 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
     if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
         if len(wheels) >= 1:
             wheelMapping = {
-                "up":       "Pad_DPadUp",
-                "down":     "Pad_DPadDown",
-                "left":     "Pad_DPadLeft",
-                "right":    "Pad_DPadRight",
-                "start":    "Pad_Start",
-                "select":   "Pad_Select",
-                "a":        "Pad_Circle",
-                "b":        "Pad_Cross",
-                "x":        "Pad_Triangle",
-                "y":        "Pad_Square",
-                "pageup":   "Pad_L1",
-                "pagedown": "Pad_R1"
+                "DrivingForcePro": {
+                    "up":       "Pad_DPadUp",
+                    "down":     "Pad_DPadDown",
+                    "left":     "Pad_DPadLeft",
+                    "right":    "Pad_DPadRight",
+                    "start":    "Pad_Start",
+                    "select":   "Pad_Select",
+                    "a":        "Pad_Circle",
+                    "b":        "Pad_Cross",
+                    "x":        "Pad_Triangle",
+                    "y":        "Pad_Square",
+                    "pageup":   "Pad_L1",
+                    "pagedown": "Pad_R1"
+                },
+                "GTForce": {
+                    "a":        "Pad_Y",
+                    "b":        "Pad_B",
+                    "x":        "Pad_X",
+                    "y":        "Pad_A",
+                    "pageup":   "Pad_MenuDown",
+                    "pagedown": "Pad_MenuUp"
+                }
             }
+
+            wheelTypeMapping = {
+                "DrivingForcePro": "1",
+                "GTForce":         "3"
+            }
+            wheelsmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
 
             usbx = 1
             for controller, pad in sorted(controllers.items()):
@@ -499,12 +515,24 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                     if not pcsx2INIConfig.has_section("USB{}".format(usbx)):
                         pcsx2INIConfig.add_section("USB{}".format(usbx))
                     pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")
-                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", "1")
+
+                    # wheel type:
+                    # 1: DrivingForcePro
+                    # 3: GTForce
+                    wheel_type = "DrivingForcePro"
+                    if "wheel_type" in wheelsmetadata:
+                        wheel_type = wheelsmetadata["wheel_type"]
+                    if "pcsx2_wheel_type" in system.config:
+                        wheel_type = system.config["pcsx2_wheel_type"]
+                    if wheel_type not in wheelTypeMapping:
+                        wheel_type = "DrivingForcePro"
+                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", wheelTypeMapping[wheel_type])
+
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
 
                     for i in pad.inputs:
-                        if i in wheelMapping:
-                            pcsx2INIConfig.set("USB{}".format(usbx), wheelMapping[i], "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs[i])))
+                        if i in wheelMapping[wheel_type]:
+                            pcsx2INIConfig.set("USB{}".format(usbx), wheelMapping[wheel_type][i], "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs[i])))
                     # wheel
                     if "joystick1left" in pad.inputs:
                         pcsx2INIConfig.set("USB{}".format(usbx), "Pad_SteeringLeft",  "SDL-{}/{}".format(pad.index, input2wheel(pad.inputs["joystick1left"])))
