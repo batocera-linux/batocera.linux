@@ -30,7 +30,13 @@ fi
 # amd
 if [ -f "/var/tmp/amd.prime" ]; then
     echo "Setting AMD Prime environment variable" >> "$amd_log"
-    export DRI_PRIME=1
+    amd_prime_value=$(<"/var/tmp/amd.prime")
+    if [ -z "$amd_prime_value" ]; then
+        export DRI_PRIME=1
+    else
+        export DRI_PRIME="$amd_prime_value"
+        echo "AMD Prime environment variable set to $amd_prime_value" >> "$amd_log"
+    fi
 fi
 
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
