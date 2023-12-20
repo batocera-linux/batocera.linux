@@ -137,7 +137,7 @@
 - Nvidia legacy driver to 470.223.02
 - SDL2 to 2.28.5
 - Sound Open Firmware to 2023.12
-- Bluez to 5.70
+- Bluez to 5.71
 - Streamlined x86_64 Secure Boot support
 - Added tree(1) utility
 - VKD3D-Proton to 2.11
