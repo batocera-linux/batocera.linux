@@ -8239,6 +8239,13 @@ pcsx2:
             choices:
                 "Off": "false"
                 "On":  "true"
+        pcsx2_wheel_type:
+            group: WHEELS
+            prompt: WHEEL MODEL
+            description: Playstation 2 wheel type
+            choices:
+              "Driving Force Pro":  DrivingForcePro
+              "GT Force": GTForce
 
 ppsspp:
   shared: [powermode, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
