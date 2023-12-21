@@ -17,14 +17,25 @@ xset s off
 # uncomment to allow coredumps for ES
 # ulimit -c unlimited
 
-## Prime
-
+## [ Prime settings ]
 # nvidia
 if [ -f "/var/tmp/nvidia.prime" ]; then
-    echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
-    export __NV_PRIME_RENDER_OFFLOAD=1
-    export __VK_LAYER_NV_optimus=NVIDIA_only
-    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    provider_count=$(xrandr --listproviders | grep 'Providers:' | awk '{print $4}')
+    echo "Number of display providers = $provider_count" >> "$nvidia_log"
+    # ensure we have 2 or more providers
+    if [ "$provider_count" -ge 2 ]; then
+        echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
+        # find the Nvidia provider number
+        provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2}' | tr -d ':')
+        if [ -z "$provider_number" ]; then
+            export __NV_PRIME_RENDER_OFFLOAD=1
+        else
+            export __NV_PRIME_RENDER_OFFLOAD=$provider_number
+            echo "Nvidia Prime provider = $provider_number" >> "$nvidia_log"
+        fi
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    fi
 fi
 
 # amd
