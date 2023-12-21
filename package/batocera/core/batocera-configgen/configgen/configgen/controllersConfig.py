@@ -432,8 +432,8 @@ def getDevicesInformation():
           joysticks.append(eventId)
         if isMouse:
           mouses.append(eventId)
+        devices[eventId] = { "node": ev.device_node, "group": group, "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
         if "ID_PATH" in ev.properties:
-          devices[eventId] = { "node": ev.device_node, "group": ev.properties["ID_PATH"], "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
           if isWheel and "WHEEL_ROTATION_ANGLE" in ev.properties:
               devices[eventId]["wheel_rotation_angle"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
           if group not in groups:
@@ -444,8 +444,10 @@ def getDevicesInformation():
   res = {}
   for device in devices:
     d = devices[device]
-    dgroup = groups[d["group"]].copy()
-    dgroup.remove(d["node"])
+    dgroup = None
+    if d["group"] is not None:
+        dgroup = groups[d["group"]].copy()
+        dgroup.remove(d["node"])
     nmouse    = None
     njoystick = None
     if d["isJoystick"]:
