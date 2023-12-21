@@ -1,4 +1,4 @@
-# 202x/xx/xx - batocera.linux 39 - 
+# 2024/02/xx - batocera.linux 39 - Painted Lady
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 - Initial support for the Anbernic RG353V
@@ -41,6 +41,7 @@
 - Missing automount of partitions on NVMe drives in /media
 - Initialization data was too large for /userdata on RAMdisk
 - Nvidia Prime defaulting to provider 1 when it could be another provider.
+- AMD Prime defaulting to provider 1 when it could be another provider.
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
