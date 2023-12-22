@@ -1984,7 +1984,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"disabled"'
             coreSettings.save('genesis_plus_gx_gun_cursor', status)
-
+        # Megadrive FM (YM2612)
+        if system.isOptSet('gpgx_fm'):
+            coreSettings.save('genesis_plus_gx_ym2612', '"' + system.config['gpgx_fm'] + '"')
+        else:
+            coreSettings.save('genesis_plus_gx_ym2612', '"mame (ym2612)"')       
+        
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
         if system.isOptSet('ym2413') and system.config['ym2413'] != "automatic":
