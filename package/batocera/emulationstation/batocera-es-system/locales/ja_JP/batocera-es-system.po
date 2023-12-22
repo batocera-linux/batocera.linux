@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2023/11/18)\n"
+"Project-Id-Version: batocera-es v39beta(2023/12/22)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-11-30 09:28+0900\n"
+"PO-Revision-Date: 2023-12-22 17:26+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -158,7 +158,7 @@ msgstr "ベゼル(ゲーム画面外装飾表示)"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "DECORATION SET"
-msgstr "ベゼルを選択"
+msgstr "ベゼル設定"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -885,7 +885,7 @@ msgstr "非常に高い"
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
 msgid "Prefer \"Before NMI\", change to After NMI only if needed by the game."
-msgstr "「BeforeNMI」を優先し、ゲームで必要な場合にのみ[AfterNMI]に変更します"
+msgstr "[BeforeNMI]を優先し、ゲームで必要な場合にのみ[AfterNMI]に変更します"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
 msgctxt "game_options"
@@ -1245,8 +1245,8 @@ msgid ""
 "Select language will be used if 'Use Firmware Settings' is disabled or if "
 "firmware file was not found."
 msgstr ""
-"[ファームウェア設定を使用] が無効になっている場合、またはファームウェア ファ"
-"イルが見つからない場合は、選択した言語が使用されます"
+"[ファームウェア設定を使用] が無効の場合、またはファームウェア ファイルが見つ"
+"からない場合は、使用する言語を選択します"
 
 #. TRANSLATION: libretro/melonds, libretro/dolphin, cemu, flycast/uzem, scummvm, ...
 msgctxt "game_options"
@@ -1916,7 +1916,7 @@ msgstr "巻き戻し使用"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Apply a joy2key profile for the current game."
-msgstr "現在のゲームに「パッドキー設定」を適用します"
+msgstr "現在のゲームに[パッドキー設定]を適用します"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -2623,7 +2623,7 @@ msgstr "Scorpion 256K"
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Sinclair 1 controller set to AUTO."
-msgstr "Sinclair 1 コントローラーの場合は「自動」にします"
+msgstr "Sinclair 1 コントローラーは[自動]にします"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -2673,7 +2673,7 @@ msgstr "Fuller ジョイスティック"
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Sinclair 2 controller set to AUTO."
-msgstr "Sinclair 2 コントローラーの場合は「自動」にします"
+msgstr "Sinclair 2 コントローラーは[自動]にします"
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -6440,8 +6440,7 @@ msgctxt "game_options"
 msgid ""
 "Sync GB2Player/GBC2Player saves with saves in \"saves/gb\" or \"saves/gbc\"."
 msgstr ""
-"GB2Player / GBC2Playerのセーブデータを、「gb」または「gbc」のデータと同期しま"
-"す"
+"GB2Player / GBC2Playerのセーブデータを、[gb]または[gbc]のデータと同期します"
 
 #. TRANSLATION: libretro/tgbdual
 msgctxt "game_options"
@@ -7538,7 +7537,7 @@ msgstr ""
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid "Off will help some games, others will run too fast."
-msgstr "「使用しない」は一部のゲームに役立ちますが、他のゲームは速すぎます"
+msgstr "[使用しない]は一部のゲームに役立ちますが、他のゲームは速すぎます"
 
 #. TRANSLATION: citra
 msgctxt "game_options"
@@ -7777,7 +7776,7 @@ msgstr "マウスをWiiリモコンにする"
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "Enable controller rumble capabilities if supported by the controller."
-msgstr ""
+msgstr "サポートされている場合、コントローラーの振動機能を有効にします"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -8279,7 +8278,7 @@ msgstr "トゥルー カラー (レンダリング)"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Makes the dither pattern much less obvious at higher resolutions."
-msgstr "解像度が高くなると、「ディザ パターン」が目立たなくなります"
+msgstr "解像度が高くなると、「ディザ パターン」あまりが目立たなくなります"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8330,7 +8329,7 @@ msgstr "インターレースを無効"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Hack. Increases most PAL games' speed by 17%."
-msgstr "ハック。ほとんどのPALゲームの速度が17％向上します"
+msgstr "ハック：ほとんどのPALゲームの速度が17％向上します"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -8752,7 +8751,7 @@ msgstr "4M"
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "Choose your Atari hard drive type for the .hd extension file."
-msgstr ".hd 拡張子ファイルの Atari ハード ドライブの種類を選択します"
+msgstr "拡張子.hd ファイルの Atari ハード ドライブの種類を選択します"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -9700,22 +9699,22 @@ msgstr "タイムクライシス フォグ(霧)ハック"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Playstation 2 wheel type"
-msgstr ""
+msgstr "PS2 ホイール(ハンドル)タイプ"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "WHEEL MODEL"
-msgstr ""
+msgstr "ホイール(ハンドル)モデル"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Driving Force Pro"
-msgstr ""
+msgstr "Driving Force Pro"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "GT Force"
-msgstr ""
+msgstr "GT Force"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -10179,7 +10178,8 @@ msgstr "シェーダ コンパイラ スレッドの数"
 msgctxt "game_options"
 msgid ""
 "May fix missing graphics and broken lighting at the cost of performance."
-msgstr "を犠牲にして、グラフィックや照明の不具合などを修正できる場合があります"
+msgstr ""
+"動作を犠牲にして、グラフィックや照明の不具合などを修正できる場合があります"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10192,7 +10192,7 @@ msgid ""
 "Straict API specification. Can resolve rare cases of missing graphics and "
 "flickering."
 msgstr ""
-"厳密な API 仕様。グラフィックの欠落やちらつきのまれなケースを解決できます"
+"厳密な API 仕様。まれに発生するグラフィックの欠落やちらつきを解決します"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10250,6 +10250,8 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's that have spare headroom."
 msgstr ""
+"テクスチャを GPU に並行してストリーミングします。性能が高い、より強力な GPU "
+"ではパフォーマンスを向上させることができます"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10259,7 +10261,7 @@ msgstr "非同期テクスチャ ストリーミング"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "On (Vulkan Only)"
-msgstr ""
+msgstr "オン (Vulkan のみ)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11504,7 +11506,7 @@ msgstr "DSP オーディオを使用"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Increase to 128 MiB for debug or homebrew applications."
-msgstr "デバッグまたは自作アプリケーションの場合は 128 MiB に増やします"
+msgstr "デバッグまたは自作アプリケーションの場合は 128 MB に増やします"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -12299,12 +12301,14 @@ msgstr "HDイメージ"
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "VKD3D (D3D12 to Vulkan)"
-msgstr ""
+msgstr "VKD3D (D3D12 - Vulkan)"
 
 #. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "Vulkan"
 msgctxt "game_options"
 msgid "Native Vulkan"
-msgstr ""
+msgstr "Vulkan"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -12463,8 +12467,8 @@ msgid ""
 "Speed hack, enable to disable surface syncing between CPU and GPU. Surface "
 "syncing is needed by a few games."
 msgstr ""
-"(スピードハック)CPU と GPU 間のサーフェスの同期を無効にします。いくつかのゲー"
-"ムでは サーフェスの同期が必要です"
+"スピードハック：CPU と GPU 間のサーフェスの同期を無効にします\n"
+"いくつかのゲームでは サーフェスの同期が必要です"
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
@@ -12938,12 +12942,12 @@ msgstr "ウクライナ語"
 #. TRANSLATION: sonic-mania
 msgctxt "game_options"
 msgid "Enable triple buffering."
-msgstr ""
+msgstr "トリプルバッファを有効"
 
 #. TRANSLATION: sonic-mania
 msgctxt "game_options"
 msgid "TRIPLE BUFFERING"
-msgstr ""
+msgstr "トリプルバッファ"
 
 #. TRANSLATION: steam.keys, xbox360.xenia.keys, triforce.dolphin_triforce.keys, amigacdtv.fsuae.keys, amigacd32.fsuae.keys, ...
 msgctxt "keys_files"
@@ -13383,12 +13387,12 @@ msgstr "レバーを引く"
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Lockbar Fire Button"
-msgstr ""
+msgstr "ロック機構ファイア ボタン"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Buy extraball for a credit"
-msgstr ""
+msgstr "クレジットでエクストラボールを購入"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -13463,7 +13467,7 @@ msgstr "コントローラー画面を表示"
 #. TRANSLATION: psp.ppsspp.keys
 msgctxt "keys_files"
 msgid "Pause / Menu"
-msgstr ""
+msgstr "一時停止/メニュー"
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
@@ -13599,14 +13603,6 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Stream texture to GPU in parrallel. Can improve performance on more "
-#~ "powerful GPU's."
-#~ msgstr ""
-#~ "テクスチャを並列で GPU にストリーミングします。より強力な GPU でを向上させ"
-#~ "ることができます"
 
 #~ msgctxt "game_options"
 #~ msgid "Set the sensitivity of the joystick analog sticks."
