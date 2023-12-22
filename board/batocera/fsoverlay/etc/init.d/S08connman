@@ -53,6 +53,12 @@ batocera_wifi_configure() {
     settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key)"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
 
+    if [ -n "${settings_key}" ]; then
+        optionalPassphrase="Passphrase=${settings_key}"
+    else
+        optionalPassphrase=
+    fi
+
     if [ -n "$settings_ssid" -a "$settingsWlan" = "1" ];then
         mkdir -p "/var/lib/connman"
         cat > "${settings_file}" <<-_EOF_
@@ -62,7 +68,7 @@ batocera_wifi_configure() {
 		Type=wifi
 		Name=${settings_ssid}
 		Hidden=${settings_hide}
-		Passphrase=${settings_key}
+		${optionalPassphrase}
 		Autoconnect=true
 	_EOF_
     else
