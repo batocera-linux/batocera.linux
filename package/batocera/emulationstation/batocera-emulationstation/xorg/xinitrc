@@ -22,8 +22,8 @@ xset s off
 if [ -f "/var/tmp/nvidia.prime" ]; then
     provider_count=$(xrandr --listproviders | grep 'Providers:' | awk '{print $4}')
     echo "Number of display providers = $provider_count" >> "$nvidia_log"
-    # ensure we have 2 or more providers
-    if [ "$provider_count" -ge 2 ]; then
+    # ensure we have 1 or more providers
+    if [ "$provider_count" -ge 1 ]; then
         echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
         # find the Nvidia provider number
         provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2}' | tr -d ':')
