@@ -1891,7 +1891,17 @@ libretro:
                             "Mouse":                         2
                             "Menacer Light Gun":             516
                             "Konami Justifiers":             772
-            megacd:
+                    gpgx_fm:
+                        group:       ADVANCED OPTIONS
+                        prompt:      FM SYNTHESIZER
+                        description: Sound generator. MAME is faster and Nuked is cycle accurate. Original model used YM2612 while later revisions used YM3438.
+                        choices:
+                            "MAME (YM2612)":            mame (ym2612)
+                            "MAME (ASIC YM3438)":       mame (asic ym3438)
+                            "MAME (Enhanced YM3438)":   mame (enhanced ym3438)
+                            "Nuked (YM2612)":           nuked (ym2612)
+                            "Nuked (YM3438)":           nuked (ym3438)        
+            segacd:
                 cfeatures:
                     gpgx_cd_add_on:
                         prompt:      CD ADD-ON
@@ -1914,6 +1924,16 @@ libretro:
                             "20":     20
                             "10":     10
                             "0":      0
+                    gpgx_fm:
+                        group:       ADVANCED OPTIONS
+                        prompt:      FM SYNTHESIZER
+                        description: Sound generator. MAME is faster and Nuked is cycle accurate. Original model used YM2612 while later revisions used YM3438.
+                        choices:
+                            "MAME (YM2612)":            mame (ym2612)
+                            "MAME (ASIC YM3438)":       mame (asic ym3438)
+                            "MAME (Enhanced YM3438)":   mame (enhanced ym3438)
+                            "Nuked (YM2612)":           nuked (ym2612)
+                            "Nuked (YM3438)":           nuked (ym3438)    
             msu-md:
                 cfeatures:
                     gpgx_cd_add_on:
