@@ -130,6 +130,7 @@
 - Libretro-MAME to 0.260
 - Sonic CD to Dec 2, 2023 build
 - Sonic 2013 to Dec 2, 2023 build
+- Duckstation to Dec 21, 2023 build
 ### System
 - Linux kernel to 6.7
 - Mesa to 23.3.1
