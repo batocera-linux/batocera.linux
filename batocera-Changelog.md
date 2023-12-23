@@ -63,7 +63,7 @@
 - BigPEmu to 1.092
 - Cemu to 2.0-61
 - Citra to nightly-2054
-- Dolphin to 5.0-20778
+- Dolphin to 5.0-20840
 - Flycast to 17th Dec build
 - Libretro-Flycast to 17th Dec build
 - MelonDS to Oct 12, 2023
