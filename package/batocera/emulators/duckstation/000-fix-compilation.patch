@@ -1,0 +1,30 @@
+diff --git a/src/core/cpu_recompiler_code_generator.cpp b/src/core/cpu_recompiler_code_generator.cpp
+index ee117eaa00..4edc382ff9 100644
+--- a/src/core/cpu_recompiler_code_generator.cpp
++++ b/src/core/cpu_recompiler_code_generator.cpp
+@@ -1325,9 +1325,11 @@ bool CodeGenerator::Compile_Bitwise(Instruction instruction, const CodeCache::In
+               ((lhs.HasConstantValue(0) && instruction.r.rt != Reg::zero && dest != instruction.r.rs) ||
+                (rhs.HasConstantValue(0) && instruction.r.rs != Reg::zero && dest != instruction.r.rt)))
+           {
++            auto rt = static_cast<Reg>(instruction.r.rt.GetValue());
++            auto rs = static_cast<Reg>(instruction.r.rs.GetValue());
+             EmitFunctionCall(nullptr, &PGXP::CPU_MOVE_Packed,
+                              Value::FromConstantU32(
+-                               PGXP::PackMoveArgs(dest, lhs.HasConstantValue(0) ? instruction.r.rt : instruction.r.rs)),
++                               PGXP::PackMoveArgs(dest, lhs.HasConstantValue(0) ? rt : rs)),
+                              lhs.HasConstantValue(0) ? rhs : lhs);
+           }
+         }
+@@ -1359,9 +1359,11 @@ bool CodeGenerator::Compile_Bitwise(Instruction instruction, const CodeCache::In
+               ((lhs.HasConstantValue(0) && instruction.r.rt != Reg::zero && dest != instruction.r.rs) ||
+                (rhs.HasConstantValue(0) && instruction.r.rs != Reg::zero && dest != instruction.r.rt)))
+           {
++            auto rt = static_cast<Reg>(instruction.r.rt.GetValue());
++            auto rs = static_cast<Reg>(instruction.r.rs.GetValue());
+             EmitFunctionCall(nullptr, &PGXP::CPU_MOVE_Packed,
+                              Value::FromConstantU32(
+-                               PGXP::PackMoveArgs(dest, lhs.HasConstantValue(0) ? instruction.r.rt : instruction.r.rs)),
++                               PGXP::PackMoveArgs(dest, lhs.HasConstantValue(0) ? rt : rs)),
+                              lhs.HasConstantValue(0) ? rhs : lhs);
+           }
+         }
