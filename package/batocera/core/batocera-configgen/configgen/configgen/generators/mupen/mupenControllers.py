@@ -15,6 +15,20 @@ mupenHatToAxis        = {'1': 'Up',   '2': 'Right', '4': 'Down', '8': 'Left'}
 mupenHatToReverseAxis = {'1': 'Down', '2': 'Left',  '4': 'Up',   '8': 'Right'}
 mupenDoubleAxis = {0:'X Axis', 1:'Y Axis'}
 
+valid_n64_controller_guids = [
+    # official nintendo switch n64 controller
+    "050000007e0500001920000001800000",
+    # 8bitdo n64 modkit
+    "05000000c82d00006928000000010000",
+    "030000007e0500001920000011810000",
+]
+        
+valid_n64_controller_names = [
+    "N64 Controller",
+    "Nintendo Co., Ltd. N64 Controller",
+    "8BitDo N64 Modkit",
+]
+
 def getMupenMapping(use_n64_inputs):
     # load system values and override by user values in case some user values are missing
     map = dict()
@@ -78,7 +92,8 @@ def getJoystickDeadzone(default_peak, config_value, system):
     return f"{deadzone},{deadzone}"
     
 def defineControllerKeys(nplayer, controller, system):
-        if f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad":
+        # check for auto-config inputs by guid and name, or es settings
+        if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
         else:    
             mupenmapping = getMupenMapping(False)
