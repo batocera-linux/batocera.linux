@@ -169,6 +169,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_CONNMAN                              # network manager
     select BR2_PACKAGE_CONNMAN_WIFI                         # network manager
     select BR2_PACKAGE_CONNMAN_CLIENT                       # network manager
+    select BR2_PACKAGE_CONNMAN_LOOPBACK                     # network manager
     select BR2_PACKAGE_BATOCERA_WPA                         # wireless tools
     select BR2_PACKAGE_WIRELESS_REGDB                       # wireless regulatory DB
     select BR2_PACKAGE_IW                                   # wireless country config for regulatoryDB

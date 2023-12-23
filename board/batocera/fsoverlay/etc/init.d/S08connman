@@ -14,6 +14,33 @@ fi
 # WLAN enabled?
 settingsWlan="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.enabled)"
 
+# Set initial hostname, to be sent in connman DHCP Request
+#
+# Note that if the DHCP server sends back a hostname, connman will set
+# that as the system hostname.
+#
+# Later in the boot process, /etc/init.d/S26system will then reset the
+# hostname to the value specified in the system.hostname setting
+# ("BATOCERA" by default), but will do so *only* if the
+# system.hostname setting is absent or blank.
+#
+# This leaves the user in control of the hostname to be set, and also
+# lets the user allow for dynamic hostname configuration from DHCP, by
+# setting the system.hostname setting to a blank empty string.
+batocera_hostname() {
+    echo "$(date -u): starting initial hostname configuraton" > /tmp/hostname.log
+    settings_hostname="$(/usr/bin/batocera-settings-get -f "$BATOCONF" system.hostname)"
+    if [ -n "$settings_hostname" ]; then
+        echo "Setting initial hostname from system.hostname: ${settings_hostname}" >> /tmp/hostname.log
+        hostname="$settings_hostname"
+    else
+        echo "Setting default initial hostname BATOCERA" >> /tmp/hostname.log
+        hostname="BATOCERA"
+    fi
+
+    hostname "${hostname}"
+}
+
 # configure wifi files, always
 batocera_wifi_configure() {
     X=$1
@@ -65,6 +92,7 @@ wifi_enable() {
 
 case "$1" in
 	start)
+	        batocera_hostname
 	        wifi_configure_all
 	        printf "Starting connman: "
 		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n -r

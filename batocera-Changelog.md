@@ -151,6 +151,8 @@
 - QT 6.6.1
 - Support x86_64 build on systems with x64 cpu but only ia32 UEFI
 - Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
+- Send hostname to DHCP server, and allow for dynamically configured
+  hostname from DHCP
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
