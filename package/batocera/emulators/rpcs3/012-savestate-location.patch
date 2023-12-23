@@ -1,11 +1,11 @@
 diff --git a/rpcs3/Emu/savestate_utils.cpp b/rpcs3/Emu/savestate_utils.cpp
-index 1c1d00d5bb..bed78bd7b2 100644
+index 6bc53fc7f1..538a4eb9d6 100644
 --- a/rpcs3/Emu/savestate_utils.cpp
 +++ b/rpcs3/Emu/savestate_utils.cpp
-@@ -175,7 +175,7 @@ bool boot_last_savestate()
+@@ -216,7 +216,7 @@ bool boot_last_savestate(bool testing)
+ {
+ 	if (!g_cfg.savestate.suspend_emu && !Emu.GetTitleID().empty() && (Emu.IsRunning() || Emu.GetStatus() == system_state::paused))
  	{
- 		extern bool is_savestate_compatible(const fs::file& file);
- 
 -		const std::string save_dir = fs::get_cache_dir() + "/savestates/";
 +		const std::string save_dir = "/userdata/saves/ps3/";
  
