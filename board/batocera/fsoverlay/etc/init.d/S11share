@@ -294,7 +294,7 @@ case "${MODE}" in
     ;;
     "ANYEXTERNAL")
         PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
-        LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
+        LDEVICE=$(blkid | grep -F TYPE= | grep -F UUID= | grep -vE "^${PARTPREFIX}" | sort | head -1)
         while [ -z "${LDEVICE}" ] && [ "${NTRY}" -lt "${MAXTRY}" ] # wait the device that can take some seconds after udev started
         do
             NTRY=$((NTRY+1))
