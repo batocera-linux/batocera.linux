@@ -1,0 +1,2 @@
+# Enable Thunderbolt / USB 4 external devices. i.e. GPU
+ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
