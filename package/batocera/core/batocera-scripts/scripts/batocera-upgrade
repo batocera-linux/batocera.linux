@@ -51,6 +51,7 @@ echo "Starting the upgrade..."
 updateurl="https://updates.batocera.org"
 
 board=$(cat /boot/boot/batocera.board)
+oldboard="$board"
 test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
 
 updatetype="$(/usr/bin/batocera-settings-get updates.type)"
@@ -186,6 +187,13 @@ sync
 
 # exit from ES-badge without additional messages
 [ $TERMINAL -eq 0 ] && exit 0
+
+# verify update is for same board, provide a warning if not
+newboard=$(cat /boot/boot/batocera.board)
+if [ "$oldboard" != "$newboard" ]
+then
+    echo; echo "WARNING: Current board is ${oldboard}, applied update is for ${newboard}"
+fi
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0
