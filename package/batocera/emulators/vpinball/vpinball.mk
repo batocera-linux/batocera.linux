@@ -3,13 +3,13 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Nov 23, 2023
+# Version: Commits on Dec 26, 2023
 # uses standalone tree for now
-VPINBALL_VERSION = 57947cc67d4a99572a161003f26907503e2e32e9
+VPINBALL_VERSION = b884fb42d7d9183aba6f3d8c51e8866d83083218
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
-VPINBALL_DEPENDENCIES = libfreeimage libpinmame libserum libzedmd sdl2 sdl2_image sdl2_ttf 
+VPINBALL_DEPENDENCIES = libfreeimage libpinmame libserum libzedmd libaltsound sdl2 sdl2_image sdl2_ttf
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # handle supported target platforms
