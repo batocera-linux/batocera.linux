@@ -7,7 +7,7 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 --- a/source/common/platform/posix/unix/i_specialpaths.cpp	(revision 486da6922dac5380b4e83cc4c680ad90afb91ca9)
 +++ b/source/common/platform/posix/unix/i_specialpaths.cpp	(date 1657595110880)
 @@ -45,59 +45,7 @@
-
+ 
  FString GetUserFile (const char *file)
  {
 -	FString path;
@@ -15,15 +15,15 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 -
 -	path = NicePath("$HOME/" GAME_DIR "/");
 -
--	if (stat (path, &info) == -1)
+-	if (stat (path.GetChars(), &info) == -1)
 -	{
 -		struct stat extrainfo;
 -
 -		// Sanity check for $HOME/.config
 -		FString configPath = NicePath("$HOME/.config/");
--		if (stat (configPath, &extrainfo) == -1)
+-		if (stat (configPath.GetChars(), &extrainfo) == -1)
 -		{
--			if (mkdir (configPath, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-			if (mkdir (configPath.GetChars(), S_IRUSR | S_IWUSR | S_IXUSR) == -1)
 -			{
 -				I_FatalError ("Failed to create $HOME/.config directory:\n%s", strerror(errno));
 -			}
@@ -37,9 +37,9 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 -		// Transfer the old zdoom directory to the new location
 -		bool moved = false;
 -		FString oldpath = NicePath("$HOME/." GAMENAMELOWERCASE "/");
--		if (stat (oldpath, &extrainfo) != -1)
+-		if (stat (oldpath.GetChars(), &extrainfo) != -1)
 -		{
--			if (rename(oldpath, path) == -1)
+-			if (rename(oldpath.GetChars(), path.GetChars()) == -1)
 -			{
 -				I_Error ("Failed to move old " GAMENAMELOWERCASE " directory (%s) to new location (%s).",
 -					oldpath.GetChars(), path.GetChars());
@@ -48,7 +48,7 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 -				moved = true;
 -		}
 -
--		if (!moved && mkdir (path, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-		if (!moved && mkdir (path.GetChars(), S_IRUSR | S_IWUSR | S_IXUSR) == -1)
 -		{
 -			I_FatalError ("Failed to create %s directory:\n%s",
 -				path.GetChars(), strerror (errno));
@@ -65,14 +65,14 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 -	return path;
 +    return FString("/userdata/saves/raze/") + file;
  }
-
+ 
  //===========================================================================
 @@ -112,7 +60,7 @@
  {
  	// Don't use GAME_DIR and such so that ZDoom and its child ports can
  	// share the node cache.
 -	FString path = NicePath("$HOME/.config/" GAMENAMELOWERCASE);
-+	FString path = NicePath("/userdata/saves/raze");
++	FString path = NicePath("/userdata/system/configs/raze");
  	if (create)
  	{
  		CreatePath(path);
@@ -81,7 +81,7 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
  	// Don't use GAME_DIR and such so that ZDoom and its child ports can
  	// share the node cache.
 -	FString path = NicePath("$HOME/.config/zdoom/cache");
-+	FString path = NicePath("/userdata/saves/raze/cache");
++	FString path = NicePath("/userdata/system/cache/raze");
  	if (create)
  	{
  		CreatePath(path);
@@ -116,7 +116,7 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
 
  FString M_GetSavegamesPath()
  {
--	return NicePath("$HOME/" GAME_DIR "/");
+-	return NicePath("$HOME/" GAME_DIR "/savegames/");
 +	return FString("/userdata/saves/raze/");
  }
 

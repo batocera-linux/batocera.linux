@@ -106,8 +106,8 @@
         },
         {
             "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -9 raze"
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ]
         },
         {
             "trigger": ["hotkey", "y"],
