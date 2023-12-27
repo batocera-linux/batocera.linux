@@ -10,6 +10,14 @@ case "$1" in
         # Restores old settings saved in userdata
         batocera-bluetooth restore
         enabled="$(/usr/bin/batocera-settings-get controllers.bluetooth.enabled)"
+        ps3_enabled="$(/usr/bin/batocera-settings-get controllers.ps3.enabled)"
+        if [ "$enabled" = "1" ] && [ "$ps3_enabled" = "1" ]
+        then 
+            /usr/bin/batocera-settings-set -f /etc/bluetooth/input.conf ClassicBondedOnly false
+        else
+            /usr/bin/batocera-settings-set -f /etc/bluetooth/input.conf ClassicBondedOnly true
+        fi
+
         [ "$enabled" = "1" ] || exit 0
         # soft unblock bluetooth
         rfkill unblock bluetooth
@@ -61,6 +69,11 @@ case "$1" in
             BLUETOOTHD_ARGS="--noplugin=sixaxis"
         else
             BLUETOOTHD_ARGS="--noplugin=sixaxispair"
+        fi
+
+        if [ "$ps3_enabled" != "1" ]
+        then 
+            BLUETOOTHD_ARGS="--noplugin=sixaxis,sixaxispair"
         fi
 
         debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
