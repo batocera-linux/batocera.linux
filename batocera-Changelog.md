@@ -47,7 +47,11 @@
 - PS2 BIOS files should be put in /userdata/bios/ps2
 - Migrated C-Dogs SDL (cdogs) assets to content downloader
 - Migrated Super Mario War (superbroswar) assets to content downloader
-- default pad order now in emulationstation is hardware dependant (so the same at each boot)
+- Default pad order now in emulationstation is hardware dependant (so the same at each boot)
+- Support x86_64 build on systems with x64 cpu but only ia32 UEFI
+- Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
+- Send hostname to DHCP server, and allow for dynamically configured hostname from DHCP
+- Streamlined x86_64 Secure Boot support
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.261 - Switchres 2.002x
@@ -133,7 +137,7 @@
 - Duckstation to Dec 21, 2023 build
 ### System
 - Linux kernel to 6.7
-- Mesa to 23.3.1
+- Mesa to 23.3.2
 - Proton to 8.0-4c
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
@@ -141,18 +145,13 @@
 - SDL2 to 2.28.5
 - Sound Open Firmware to 2023.12
 - Bluez to 5.71
-- Streamlined x86_64 Secure Boot support
-- Added tree(1) utility
+- Added tree utility
 - VKD3D-Proton to 2.11
 - Host-XA to 2.4.0
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
 - XWayaland to 23.2.3
 - QT 6.6.1
-- Support x86_64 build on systems with x64 cpu but only ia32 UEFI
-- Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
-- Send hostname to DHCP server, and allow for dynamically configured
-  hostname from DHCP
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
