@@ -3,8 +3,8 @@
 # duckstation
 #
 ################################################################################
-# Version: Commits on Dec 21, 2023
-DUCKSTATION_VERSION = 9ec3266f029de4e6e6d7c3bce406b77db9f4f096
+# Version: Commits on Dec 27, 2023
+DUCKSTATION_VERSION = 6d07d709468c25eb92e88bab867080bad1655403
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
@@ -37,7 +37,7 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
 
-# QT6 under wayland is failing
+# QT6 under wayland is failing currently
 ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_XORG7),yy)
     DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON
     DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg
