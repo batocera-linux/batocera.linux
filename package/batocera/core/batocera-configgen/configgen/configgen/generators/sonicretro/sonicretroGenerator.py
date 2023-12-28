@@ -6,6 +6,7 @@ import controllersConfig
 import os
 import configparser
 import shutil
+import hashlib
 
 class SonicRetroGenerator(Generator):
 
@@ -101,6 +102,20 @@ class SonicRetroGenerator(Generator):
             else:
                 sonicConfig.set("Game", "OriginalControls", "-1")
             sonicConfig.set("Game", "DisableTouchControls", "true")
+
+        originsGameConfig = [
+            # Sonic 1
+            "5250b0e2effa4d48894106c7d5d1ad32",
+            "5771433883e568715e7ac994bb22f5ed",
+            # Sonic 2
+            "f958285af4a09d2023b4e4f453691c4f",
+            "9fe2dae0a8a2c7d8ef0bed639b3c749f",
+            # Sonic CD
+            "e723aab26026e4e6d4522c4356ef5a98",
+        ]
+        if os.path.isfile(f"{rom}/Data/Game/GameConfig.bin") and self.__getMD5(f"{rom}/Data/Game/GameConfig.bin") in originsGameConfig:
+            sonicConfig.set("Game", "GameType", "1")
+
         if system.isOptSet('language'):
             sonicConfig.set("Game", "Language", system.config["language"])
         else:
@@ -175,10 +190,23 @@ class SonicRetroGenerator(Generator):
         ]
 
         enableMouse = False
-        if (emu == "soniccd"):
-            import hashlib
-            enableMouse = hashlib.md5(open(f"{rom}/Data.rsdk", "rb").read()).hexdigest() in mouseRoms
+        if (emu == "soniccd" and os.path.isfile(f"{rom}/Data.rsdk")):
+            enableMouse = self.__getMD5(f"{rom}/Data.rsdk") in mouseRoms
         else:
             enableMouse = False
 
         return enableMouse
+
+    def __getMD5(self, filename):
+        rp = os.path.realpath(filename)
+
+        try:
+            self.__getMD5.__func__.md5
+        except AttributeError:
+            self.__getMD5.__func__.md5 = dict()
+
+        try:
+            return self.__getMD5.__func__.md5[rp]
+        except KeyError:
+            self.__getMD5.__func__.md5[rp] = hashlib.md5(open(rp, "rb").read()).hexdigest()
+            return self.__getMD5.__func__.md5[rp]
