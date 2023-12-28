@@ -156,6 +156,9 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
     if not pcsx2INIConfig.has_section("Folders"):
         pcsx2INIConfig.add_section("Folders")
     
+    # remove inconsistent SaveStates casing if it exists
+    pcsx2INIConfig.remove_option("Folders", "SaveStates")
+
     # set the folders we want
     pcsx2INIConfig.set("Folders", "Bios", "../../../bios/ps2")
     pcsx2INIConfig.set("Folders", "Snapshots", "../../../screenshots")
