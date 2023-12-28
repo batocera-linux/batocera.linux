@@ -166,7 +166,11 @@ def getGenerator(emulator):
     if emulator == 'duckstation':
         from generators.duckstation.duckstationGenerator import DuckstationGenerator
         return DuckstationGenerator()
-
+    
+    if emulator == 'duckstation-legacy':
+        from generators.duckstation_legacy.duckstationLegacyGenerator import DuckstationLegacyGenerator
+        return DuckstationLegacyGenerator()
+    
     if emulator == 'drastic':
         from generators.drastic.drasticGenerator import DrasticGenerator
         return DrasticGenerator()
