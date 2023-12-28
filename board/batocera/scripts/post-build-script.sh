@@ -29,6 +29,10 @@ rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 # we have custom urandom scripts
 rm -f "${TARGET_DIR}/etc/init.d/S20urandom" || exit 1
 
+# use /userdata/system/iptables.conf for S35iptables
+rm -f "${TARGET_DIR}/etc/iptables.conf" || exit 1
+ln -sf "/userdata/system/iptables.conf" "${TARGET_DIR}/etc/iptables.conf" || exit 1
+
 # acpid requires /var/run, so, requires S03populate
 if test -e "${TARGET_DIR}/etc/init.d/S02acpid"
 then
