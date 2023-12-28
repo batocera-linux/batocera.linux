@@ -144,7 +144,7 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
  	// Don't use GAME_DIR and such so that ZDoom and its child ports can
  	// share the node cache.
 -	FString path = NicePath("$HOME/.config/zdoom/cache");
-+	FString path = NicePath("/userdata/systrm/cache/gzdoom");
++	FString path = NicePath("/userdata/system/cache/gzdoom");
  	if (create)
  	{
  		CreatePath(path);
