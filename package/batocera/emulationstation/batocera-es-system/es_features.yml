@@ -4660,8 +4660,10 @@ libretro:
             video_standard:
                 prompt:      VIDEO FORMAT STANDARD
                 choices:
+                    "PAL 288x576px 50Hz (auto)":  PAL auto
                     "PAL 288x576px 50Hz":  PAL
                     "NTSC 240x480px 60Hz": NTSC
+                    "NTSC 240x480px 60Hz (auto)": NTSC auto
             video_resolution:
                 prompt:      VIDEO RESOLUTION
                 description: Manually define which resolution to use.&#x0a;Auto defaults to High and switches to Super-High when needed.
