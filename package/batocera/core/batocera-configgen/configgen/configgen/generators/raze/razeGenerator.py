@@ -105,18 +105,17 @@ class RazeGenerator(Generator):
 
                 # Modify options in the [GlobalSettings] section
                 if global_settings_found:
-                    # OpenGL / GLES workaround
-                    # always set gl_es to true for arm or false for x86 if GLES
+                    # always set gl_es to true for arm
                     if line.strip().startswith("gl_es="):
                         if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
-                            line = "gl_es=false\n"
+                            if system.isOptSet("raze_api") and system.config["raze_api"] == "0":
+                                if architecture in ["x86_64", "amd64", "i686", "i386"]:
+                                    line = "gl_es=false\n"
+                                else:
+                                    eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                                    line = "gl_es=true\n"
                         else:
-                            if architecture in ["x86_64", "amd64", "i686", "i386"]:
-                                eslog.debug(f"*** Architecture is: {architecture} therefore es is false ***")
-                                line = "gl_es=false\n"
-                            else:
-                                eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
-                                line = "gl_es=true\n"
+                            line = "gl_es=true\n"
                         modified_global_settings = True
                     elif line.strip().startswith("vid_preferbackend="):
                         if system.isOptSet("raze_api"):
@@ -133,14 +132,12 @@ class RazeGenerator(Generator):
                 eslog.debug("Global Settings NOT found")
                 config_file.write("[GlobalSettings]\n")
                 if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
-                    config_file.write("gl_es=false\n")
-                else:
-                    if architecture in ["x86_64", "amd64", "i686", "i386"]:
-                        eslog.debug(f"*** Architecture is: {architecture} therefore es is false ***")
-                        config_file.write("gl_es=false\n")
-                    else:
-                        eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
-                        config_file.write("gl_es=true\n")
+                    if system.isOptSet("raze_api") and system.config["raze_api"] == "0":
+                        if architecture in ["x86_64", "amd64", "i686", "i386"]:
+                            line = "gl_es=false\n"
+                        else:
+                            eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                            line = "gl_es=true\n"
                 if system.isOptSet("raze_api"):
                     config_file.write(f"vid_preferbackend={system.config['raze_api']}\n")
                 else:
@@ -162,7 +159,7 @@ class RazeGenerator(Generator):
         
         launch_args += [
             "-exec", self.script_file,
-            # Disable controllers because support is poor; use evmapy instead
+            # Disable controllers because support is poor; we use evmapy instead
             "-nojoy",
             "-width", str(gameResolution["width"]),
             "-height", str(gameResolution["height"]),
