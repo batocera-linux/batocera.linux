@@ -19,10 +19,38 @@ eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
+    wheelTypeMapping = {
+        "DrivingForce":    "0",
+        "DrivingForcePro": "1",
+        "GTForce":         "3"
+    }
+
     def getInGameRatio(self, config, gameResolution, rom):
         if getGfxRatioFromConfig(config, gameResolution) == "16:9" or (getGfxRatioFromConfig(config, gameResolution) == "Stretch" and gameResolution["width"] / float(gameResolution["height"]) > ((16.0 / 9.0) - 0.1)):
             return 16/9
         return 4/3
+
+    def needWheelsMetadata(system, wheels):
+        return system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0
+
+    def useEmulatorWheels(wheelsmetadata, wheel_type):
+        # if wheelsmetadata it is because needWheelsMetadata returned false
+        if wheelsmetadata is None:
+            return False
+        # the virtual type is the virtual wheel that use a physical wheel to manipulate the pad
+        return wheel_type != "Virtual"
+
+    def getWheelType(wheelsmetadata, config):
+        wheel_type = "Virtual"
+        if wheelsmetadata is None:
+            return wheel_type
+        if "wheel_type" in wheelsmetadata:
+            wheel_type = wheelsmetadata["wheel_type"]
+        if "pcsx2_wheel_type" in config:
+            wheel_type = config["pcsx2_wheel_type"]
+        if wheel_type not in Pcsx2Generator.wheelTypeMapping:
+            wheel_type = "Virtual"
+        return wheel_type
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
@@ -36,10 +64,15 @@ class Pcsx2Generator(Generator):
             file_path = os.path.join(inisDir, filename)
             if os.path.exists(file_path):
                 os.remove(file_path)
-        
+
+        # wheel metadata
+        wheelsmetadata = None
+        if Pcsx2Generator.needWheelsMetadata(system, wheels):
+            wheelsmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
+
         # Config files
         configureReg(pcsx2ConfigDir)
-        configureINI(pcsx2ConfigDir, pcsx2BiosDir, system, rom, playersControllers, guns, wheels)
+        configureINI(pcsx2ConfigDir, pcsx2BiosDir, system, rom, playersControllers, guns, wheels, wheelsmetadata)
         configureAudio(pcsx2ConfigDir)
 
         # write our own game_controller_db.txt file before launching the game
@@ -59,7 +92,7 @@ class Pcsx2Generator(Generator):
                   }
 
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
-        if not (system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0):
+        if not Pcsx2Generator.useEmulatorWheels(wheelsmetadata, Pcsx2Generator.getWheelType(wheelsmetadata, system.config)):
             envcmd["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
         
         # ensure we have the patches.zip file to avoid message.
@@ -118,7 +151,7 @@ def configureAudio(config_directory):
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory, bios_directory, system, rom, controllers, guns, wheels):
+def configureINI(config_directory, bios_directory, system, rom, controllers, guns, wheels, wheelsmetadata):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2.ini")
 
     if not os.path.exists(config_directory + "/inis"):
@@ -479,10 +512,26 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                 os.remove(target_file_path)
 
     # wheels
-    if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+    wtype = Pcsx2Generator.getWheelType(wheelsmetadata, system.config)
+    eslog.info("PS2 wheel type is {}".format(wtype));
+    if Pcsx2Generator.useEmulatorWheels(wheelsmetadata, wtype):
         if len(wheels) >= 1:
             wheelMapping = {
                 "DrivingForcePro": {
+                    "up":       "Pad_DPadUp",
+                    "down":     "Pad_DPadDown",
+                    "left":     "Pad_DPadLeft",
+                    "right":    "Pad_DPadRight",
+                    "start":    "Pad_Start",
+                    "select":   "Pad_Select",
+                    "a":        "Pad_Circle",
+                    "b":        "Pad_Cross",
+                    "x":        "Pad_Triangle",
+                    "y":        "Pad_Square",
+                    "pageup":   "Pad_L1",
+                    "pagedown": "Pad_R1"
+                },
+                "DrivingForce": {
                     "up":       "Pad_DPadUp",
                     "down":     "Pad_DPadDown",
                     "left":     "Pad_DPadLeft",
@@ -506,11 +555,6 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                 }
             }
 
-            wheelTypeMapping = {
-                "DrivingForcePro": "1",
-                "GTForce":         "3"
-            }
-            wheelsmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
 
             usbx = 1
             for controller, pad in sorted(controllers.items()):
@@ -519,18 +563,8 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                         pcsx2INIConfig.add_section("USB{}".format(usbx))
                     pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")
 
-                    # wheel type:
-                    # 1: DrivingForcePro
-                    # 3: GTForce
-                    wheel_type = "DrivingForcePro"
-                    if "wheel_type" in wheelsmetadata:
-                        wheel_type = wheelsmetadata["wheel_type"]
-                    if "pcsx2_wheel_type" in system.config:
-                        wheel_type = system.config["pcsx2_wheel_type"]
-                    if wheel_type not in wheelTypeMapping:
-                        wheel_type = "DrivingForcePro"
-                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", wheelTypeMapping[wheel_type])
-
+                    wheel_type = Pcsx2Generator.getWheelType(wheelsmetadata, system.config)
+                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", Pcsx2Generator.wheelTypeMapping[wheel_type])
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
 
                     for i in pad.inputs:

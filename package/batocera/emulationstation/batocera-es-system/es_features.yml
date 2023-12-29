@@ -8327,8 +8327,10 @@ pcsx2:
             prompt: WHEEL MODEL
             description: Playstation 2 wheel type
             choices:
+              "Driving Force":      DrivingForce
               "Driving Force Pro":  DrivingForcePro
-              "GT Force": GTForce
+              "GT Force":           GTForce
+              "Virtual":            Virtual
 
 ppsspp:
   shared: [powermode, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
