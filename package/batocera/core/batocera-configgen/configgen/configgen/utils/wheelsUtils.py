@@ -162,6 +162,7 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
                     eslog.info("replacing device {} by device {} for player {}", pad.dev, newdev, playercontroller)
                     deviceList[newdev] = dict(deviceList[pad.dev])
                     deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
+                    pad.physdev = pad.dev # save the physical device for ffb
                     pad.dev = newdev # needs to recompute sdl ids
                     recomputeSdlIds = True
                     newPads.append(newdev)
@@ -190,6 +191,10 @@ def reconfigureControllers(playersControllers, system, rom, deviceList):
             if pad.dev in joysticksByDev:
                 playersControllers[playercontroller].index = joysticksByDev[pad.dev]
                 deviceList[pad.dev]["joystick_index"] = joysticksByDev[pad.dev]
+        # fill physid
+        for playercontroller, pad in sorted(playersControllers.items()):
+            if hasattr(pad, 'physdev') and pad.physdev in deviceList and "joystick_index" in deviceList[pad.physdev]:
+                pad.physid = deviceList[pad.physdev]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads
     playersControllersNew = {}
