@@ -555,7 +555,6 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                 }
             }
 
-
             usbx = 1
             for controller, pad in sorted(controllers.items()):
                 if pad.dev in wheels:
@@ -565,7 +564,11 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
 
                     wheel_type = Pcsx2Generator.getWheelType(wheelsmetadata, system.config)
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", Pcsx2Generator.wheelTypeMapping[wheel_type])
-                    pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
+
+                    if hasattr(pad, 'physdev'): # ffb on the real wheel
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.physid))
+                    else:
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
 
                     for i in pad.inputs:
                         if i in wheelMapping[wheel_type]:
