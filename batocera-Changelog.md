@@ -128,13 +128,14 @@
 - Libretro-Opera to Jul 31, 2023 build
 - Libretro-ProSystem to Aug 18, 2023 build
 - Libretro-PUAE to Oct 15, 2023 build
-- Libretro-Scummvm to Oct 22, 2023 build
+- Libretro-Scummvm to Nov 27, 2023 build
 - Libretro-Snes9x to Oct 13, 2023 build
 - Libretro-Stella to Oct 26, 2023 build
 - Libretro-MAME to 0.260
 - Sonic CD to Dec 2, 2023 build
 - Sonic 2013 to Dec 2, 2023 build
 - Duckstation to Dec 21, 2023 build
+- ScummVM to 2.8
 ### System
 - Linux kernel to 6.7
 - Mesa to 23.3.2
