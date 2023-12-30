@@ -378,6 +378,7 @@ def getGameGunsMetaData(system, rom):
         if nodesystem.get("name") == system:
             for nodegame in nodesystem:
                 if nodegame.text in game:
+                    eslog.info("{} matches with {} in database".format(game, nodegame.text))
                     for attribute in nodegame.attrib:
                         res[attribute] = nodegame.get(attribute)
                         eslog.info("found gun metadata {}={}".format(attribute, res[attribute]))
@@ -399,6 +400,7 @@ def getGameWheelsMetaData(system, rom):
                     eslog.info("found wheel system metadata {}={}".format(attribute, res[attribute]))
             for nodegame in nodesystem:
                 if nodegame.text in game:
+                    eslog.info("{} matches with {} in database".format(game, nodegame.text))
                     for attribute in nodegame.attrib:
                         res[attribute] = nodegame.get(attribute)
                         eslog.info("found wheel metadata {}={}".format(attribute, res[attribute]))
