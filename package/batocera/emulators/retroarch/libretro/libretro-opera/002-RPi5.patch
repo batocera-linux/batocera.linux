@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile.new
+index 6bc0394bdb..569b884b28 100644
+--- a/Makefile
++++ b/Makefile.new
+@@ -76,6 +76,9 @@ ifneq (,$(findstring unix,$(platform)))
+ 	# Pi4
+         else ifneq (,$(findstring rpi4,$(platform)))
+             CFLAGS = -mcpu=cortex-a72
++	# Pi5
++        else ifneq (,$(findstring rpi5,$(platform)))
++            CFLAGS = -mcpu=cortex-a76
+         endif
+ 	
+     # ODROIDN2
