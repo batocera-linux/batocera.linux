@@ -78,7 +78,7 @@
 - RPCS3 to 0.0.29-15838
 - Ruffle to nightly-2023-10-13
 - Solarus Engine to Oct 2, 2023
-- Vita3k to Oct 13 build
+- Vita3k to Dec 26 build
 - Xemu to v0.7.118
 - Xenia to v1.0.2808
 - Xenia Canary to a34944e (October 28 build)

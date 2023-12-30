@@ -3,8 +3,8 @@
 # vita3k
 #
 ################################################################################
-# Version: Commits on Oct 13, 2023
-VITA3K_VERSION = 564417b3b6a31296a2a09912c249a0145376e3c8
+# Version: Commits on Dec 26, 2023
+VITA3K_VERSION = bef1567a61a0ac4467ad88e4e13c41fec54a07cb
 VITA3K_SITE = https://github.com/vita3k/vita3k
 VITA3K_SITE_METHOD=git
 VITA3K_GIT_SUBMODULES=YES
@@ -30,7 +30,8 @@ endef
 
 define VITA3K_INSTALL_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/vita3k/psvita.vita3k.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/vita3k/psvita.vita3k.keys \
+        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 VITA3K_PRE_CONFIGURE_HOOKS = VITA3K_GET_SUBMODULE

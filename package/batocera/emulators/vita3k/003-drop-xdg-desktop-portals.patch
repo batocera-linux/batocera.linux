@@ -82,9 +82,9 @@ index ef7de553..811ee661 100644
 @@ -51,5 +51,5 @@ add_library(
  
  target_include_directories(gui PUBLIC include ${CMAKE_SOURCE_DIR}/vita3k)
- target_link_libraries(gui PUBLIC app compat config dialog emuenv https ime imgui glutil lang regmgr np)
--target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil host::dialog)
-+target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil nativefiledialog)
+ target_link_libraries(gui PUBLIC app compat config dialog emuenv ime imgui glutil lang regmgr np)
+-target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil host::dialog concurrentqueue)
++target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil nativefiledialog concurrentqueue)
  target_link_libraries(gui PUBLIC tracy)
 diff --git a/vita3k/gui/src/archive_install_dialog.cpp b/vita3k/gui/src/archive_install_dialog.cpp
 index 67832991..5d724637 100644
@@ -188,9 +188,9 @@ index 1b7208e6..f29150f7 100644
  
      static std::mutex install_mutex;
      static bool draw_file_dialog = true;
-@@ -62,23 +62,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-     std::lock_guard<std::mutex> lock(install_mutex);
- 
+@@ -69,23 +69,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+     ImGui::SetNextWindowPos(ImVec2(emuenv.viewport_pos.x + (display_size.x / 2.f) - (WINDOW_SIZE.x / 2), emuenv.viewport_pos.y + (display_size.y / 2.f) - (WINDOW_SIZE.y / 2.f)), ImGuiCond_Always);
+     ImGui::SetNextWindowSize(WINDOW_SIZE);
      if (draw_file_dialog) {
 -        result = host::dialog::filesystem::open_file(pup_path, { { "PlayStation Vita Firmware Package", { "PUP" } } });
 +        result = NFD_OpenDialog("PUP", nullptr, &pup_path);
@@ -200,8 +200,8 @@ index 1b7208e6..f29150f7 100644
 -        if (result == host::dialog::filesystem::Result::SUCCESS) {
 +        if (result == NFD_OKAY) {
              std::thread installation([&emuenv]() {
--                install_pup(emuenv.pref_path, pup_path.string(), progress_callback);
-+                install_pup(emuenv.pref_path, pup_path, progress_callback);
+-                install_pup(emuenv.pref_path.wstring(), pup_path.string(), progress_callback);
++                install_pup(emuenv.pref_path.wstring(), pup_path, progress_callback);
                  std::lock_guard<std::mutex> lock(install_mutex);
                  finished_installing = true;
                  get_firmware_version(emuenv);
@@ -244,10 +244,10 @@ index 0bbe3548..e327c6cb 100644
  namespace gui {
  
  enum InitialSetup {
-@@ -121,12 +122,12 @@ void draw_initial_setup(GuiState &gui, EmuEnvState &emuenv) {
+@@ -166,14 +166,12 @@ void draw_initial_setup(GuiState &gui, EmuEnvState &emuenv) {
          ImGui::TextWrapped("%s", emuenv.cfg.pref_path.c_str());
          ImGui::SetCursorPos(!is_default_path ? ImVec2((WINDOW_SIZE.x / 2.f) - BIG_BUTTON_SIZE.x - (20.f * SCALE.x), BIG_BUTTON_POS.y) : BIG_BUTTON_POS);
-         if (ImGui::Button("Change Emulator Path", BIG_BUTTON_SIZE)) {
+         if (ImGui::Button(lang["change_emu_path"].c_str(), BIG_BUTTON_SIZE)) {
 -            std::filesystem::path emulator_path = "";
 -            host::dialog::filesystem::Result result = host::dialog::filesystem::pick_folder(emulator_path);
 +            nfdchar_t *emulator_path = nullptr;
@@ -256,6 +256,8 @@ index 0bbe3548..e327c6cb 100644
 -            if ((result == host::dialog::filesystem::Result::SUCCESS) && (emulator_path.wstring() != emuenv.pref_path)) {
 -                emuenv.pref_path = emulator_path.wstring() + L'/';
 -                emuenv.cfg.pref_path = emulator_path.string();
+-            } else if (result == host::dialog::filesystem::Result::ERROR) {
+-                LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
 +            if ((result == NFD_OKAY) && (string_utils::utf_to_wide(emulator_path) != emuenv.pref_path)) {
 +                emuenv.pref_path = string_utils::utf_to_wide(emulator_path) + L'/';
 +                emuenv.cfg.pref_path = emulator_path;
@@ -506,7 +508,7 @@ index 37c05f1c..73dc08c3 100644
  #include <pugixml.hpp>
  #include <sstream>
  
-@@ -105,12 +105,12 @@ static void reset_emulator(GuiState &gui, EmuEnvState &emuenv) {
+@@ -111,21 +111,17 @@ static void reset_emulator(GuiState &gui, EmuEnvState &emuenv) {
  }
  
  static void change_emulator_path(GuiState &gui, EmuEnvState &emuenv) {
@@ -515,7 +517,7 @@ index 37c05f1c..73dc08c3 100644
 +    nfdchar_t *emulator_path = nullptr;
 +    nfdresult_t result = NFD_PickFolder(nullptr, &emulator_path);
  
--    if (result == host::dialog::filesystem::Result::SUCCESS && emulator_path.wstring() != emuenv.pref_path) {
+-    if (result == host::dialog::filesystem::Result::SUCCESS && emulator_path.wstring() != emuenv.pref_path.wstring()) {
 +    if (result == NFD_OKAY && string_utils::utf_to_wide(emulator_path) != emuenv.pref_path) {
          // Refresh the working paths
 -        emuenv.pref_path = emulator_path.wstring() + L'/';
@@ -523,6 +525,15 @@ index 37c05f1c..73dc08c3 100644
  
          // TODO: Move app old to new path
          reset_emulator(gui, emuenv);
+         LOG_INFO("Successfully moved Vita3K path to: {}", emuenv.pref_path.string());
+     }
+-
+-    if (result == host::dialog::filesystem::Result::ERROR) {
+-        LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
+-    }
+ }
+ 
+ static CPUBackend config_cpu_backend;
 diff --git a/vita3k/gui/src/trophy_collection.cpp b/vita3k/gui/src/trophy_collection.cpp
 index 85854dc3..97193c7d 100644
 --- a/vita3k/gui/src/trophy_collection.cpp
@@ -554,9 +565,9 @@ index e1d23bfb..f0b8a935 100644
  #include <pugixml.hpp>
  #include <stb_image.h>
  
-@@ -373,11 +373,11 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
-         const auto CHANGE_AVATAR_BTN_SIZE = ImGui::CalcTextSize(lang["change_avatar"].c_str()).x + (ImGui::GetStyle().FramePadding.x * 2.f);
-         ImGui::SetCursorPos(ImVec2(AVATAR_POS.x + (AVATAR_SIZE.x / 2.f) - (CHANGE_AVATAR_BTN_SIZE / 2.f), AVATAR_POS.y + AVATAR_SIZE.y));
+@@ -679,14 +679,12 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
+         const ImVec2 CHANGE_AVATAR_BTN_SIZE(LARGE_AVATAR_SIZE.x, 36.f * SCALE.y);
+         ImGui::SetCursorPos(ImVec2(AVATAR_POS.x + (LARGE_AVATAR_SIZE.x / 2.f) - (CHANGE_AVATAR_BTN_SIZE.x / 2.f), AVATAR_POS.y + LARGE_AVATAR_SIZE.y + (5.f * SCALE.y)));
          if (ImGui::Button(lang["choose_avatar"].c_str(), CHANGE_AVATAR_BTN_SIZE)) {
 -            std::filesystem::path avatar_path = "";
 -            host::dialog::filesystem::Result result = host::dialog::filesystem::open_file(avatar_path, { { "Image file", { "bmp", "gif", "jpg", "png", "tif" } } });
@@ -567,6 +578,9 @@ index e1d23bfb..f0b8a935 100644
 -                temp.avatar = avatar_path.string();
 +            if ((result == NFD_OKAY) && init_avatar(gui, emuenv, "temp", avatar_path))
 +                temp.avatar = avatar_path;
+ 
+-            if (result == host::dialog::filesystem::Result::ERROR)
+-                LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
          }
          ImGui::SetWindowFontScale(0.8f);
          const auto INPUT_NAME_SIZE = 330.f * SCALE.x;
