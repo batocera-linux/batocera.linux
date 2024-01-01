@@ -226,22 +226,30 @@ shared:
       prompt: WHEEL ROTATION
       description: Maximum wheel rotation from left to right (in degrees)
       choices:
-        "90":   90
-        "135": 135
+        "150": 150
         "180": 180
-        "225": 225
+        "200": 200
+        "240": 240
         "270": 270
+        "360": 360
+        "720": 720
+        "900": 900
+        "1080": 1080
     wheel_deadzone:
       group: WHEELS
       prompt: WHEEL DEADZONE
       description: Zone for which the game doesn't react to the wheel (in degrees)
       choices:
         "5":   5
+        "10": 10
         "15": 15
+        "20": 20
         "25": 25
+        "30": 30
         "35": 35
+        "40": 40
         "45": 45
-        "55": 55
+        "50": 50
     wheel_midzone:
       group: WHEELS
       prompt: WHEEL MIDZONE
@@ -249,7 +257,13 @@ shared:
       choices:
         "1":   1
         "2":   2
+        "3":   3
+        "4":   4
         "5":   5
+        "6":   6
+        "7":   7
+        "8":   8
+        "9":   9
         "10": 10
     rumble_gain:
       prompt:      RUMBLE LEVEL
