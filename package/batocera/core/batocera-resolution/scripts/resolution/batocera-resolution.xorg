@@ -22,6 +22,7 @@ f_usage() {
 }
 
 f_minTomaxResolution() {
+    CURRENT_ROTATION=$(xrandr --currentRotation)
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
@@ -75,6 +76,9 @@ f_minTomaxResolution() {
     if [ "$CURRENTWIDTH" -eq "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -eq "$MAXHEIGHT" ]; then
         if [ -z "$MAXRATE" ] || [ "$CURRENTRATE" = "$MAXRATE" ]; then
             echo "We have a match, nothing to do..." >> $log
+            if [ "${CURRENT_ROTATION}" != "0" ]; then
+                batocera-resolution setRotation "${CURRENT_ROTATION}"
+            fi
             exit 0
         fi
     fi
@@ -91,6 +95,9 @@ f_minTomaxResolution() {
                 OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
                 echo "New resolution applied = Output: ${OUTPUT} Resolution: ${PARTRES} Rate: ${MAXRATE}" >> "$log"
                 xrandr --output "$OUTPUT" --mode "$PARTRES" --rate "$MAXRATE"
+                if [ "${CURRENT_ROTATION}" != "0" ]; then
+                    batocera-resolution setRotation "${CURRENT_ROTATION}"
+                fi
                 exit 0
             fi
         done
@@ -105,6 +112,9 @@ f_minTomaxResolution() {
                 OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
                 echo "Using old method = Output: ${OUTPUT} Mode: ${SUGGRESOLUTION}" >> $log
                 xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
+                if [ "${CURRENT_ROTATION}" != "0" ]; then
+                    batocera-resolution setRotation "${CURRENT_ROTATION}"
+                fi
                 exit 0
             fi
         done
@@ -141,6 +151,7 @@ case "${ACTION}" in
             echo "f_minTomaxResolution: $SPMODE" >> $log
             f_minTomaxResolution "${SPMODE}"
         else # normal mode
+            CURRENT_ROTATION=$(xrandr --currentRotation)
             OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
             if [ -z "$OUTPUT" ]; then
                 echo "No connected output detected" >> $log
@@ -152,9 +163,15 @@ case "${ACTION}" in
                 PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
                 echo "setMode: Output: ${OUTPUT} Resolution: ${PARTRES} Rate: ${PARTHZ}" >> $log
                 xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
+                if [ "${CURRENT_ROTATION}" != "0" ]; then
+                    batocera-resolution setRotation "${CURRENT_ROTATION}"
+                fi
             else
                 echo "setMode: Output: ${OUTPUT} Mode: ${MODE}" >> $log
                 xrandr --output "${OUTPUT}" --mode "${MODE}"
+                if [ "${CURRENT_ROTATION}" != "0" ]; then
+                    batocera-resolution setRotation "${CURRENT_ROTATION}"
+                fi
             fi
             # check if there was an error setting the mode
             if [ $? -ne 0 ]; then
@@ -246,23 +263,37 @@ case "${ACTION}" in
     ;;
 
     "setRotation")
+        TRIES=5
+        COUNT=0
         ROTATE=$1
         OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
-        TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
+        while [ $COUNT -lt $TRIES ]; do
+            TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
+            TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
+            if [ -n "$TOUCHSCREEN" ] && [ -n "$TOUCHID" ]; then
+                echo "Touch screen panel: $TOUCHSCREEN" >> $log
+                echo "With touch screen panel ID of: $TOUCHID" >> $log
+                break
+            fi
+            COUNT=$((COUNT+1))
+            sleep 1
+        done
 
         case "${ROTATE}" in
             "1")
                 xrandr --output "${OUTPUT}" --rotate right
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+                echo "Screen rotated right" >> $log
             ;;
             "2")
                 xrandr --output "${OUTPUT}" --rotate inverted
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
+                echo "Screen rotated inverted" >> $log
             ;;
             "3")
                 xrandr --output "${OUTPUT}" --rotate left
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+                echo "Screen rotated left" >> $log
             ;;
             *)
                 # in case of reboot of es
