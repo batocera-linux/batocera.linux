@@ -121,6 +121,11 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
             retroarchbtns["pageup"] = "l2"
             retroarchbtns["l2"] = "l"
 
+    # Fix for reversed inputs in Yabasanshiro core which is unmaintained by retroarch
+    if (system.config['core'] == 'yabasanshiro'):
+        retroarchbtns["pageup"] = "r"
+        retroarchbtns["pagedown"] = "l"
+
     config = dict()
     # config['input_device'] = '"%s"' % controller.realName
     for btnkey in retroarchbtns:
