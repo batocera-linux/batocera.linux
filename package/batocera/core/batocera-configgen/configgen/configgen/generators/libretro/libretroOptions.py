@@ -2091,11 +2091,47 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('yabasanshiro_system_language', '"english"')
     
     if (system.config['core'] == 'kronos'):
+        # Set best OpenGL renderer
+        coreSettings.save('kronos_videocoretype', '"opengl_cs"')
+        # Video Resolution
+        if system.isOptSet('kronos_resolution'):
+            coreSettings.save('kronos_resolution_mode', '"' + system.config['kronos_resolution'] + '"')
+        else:
+            coreSettings.save('kronos_resolution_mode', '"original"')
+        # Mesh mode
+        if system.isOptSet('kronos_meshmode'):
+            coreSettings.save('kronos_meshmode', '"' + system.config['kronos_meshmode'] + '"')
+        else:
+            coreSettings.save('kronos_meshmode', '"disabled"')
+        # Banding mode
+        if system.isOptSet('kronos_bandingmode'):
+            coreSettings.save('kronos_bandingmode', '"' + system.config['kronos_bandingmode'] + '"')
+        else:
+            coreSettings.save('kronos_bandingmode', '"disabled"')        
         # Share saves with Beetle
         if system.isOptSet('kronos_use_beetle_saves') and system.config['kronos_use_beetle_saves'] == 'disabled':
             coreSettings.save('kronos_use_beetle_saves', '"disabled"')
         else:
             coreSettings.save('kronos_use_beetle_saves', '"enabled"')
+        # Multitap
+        if system.isOptSet('kronos_multitap') and system.config['kronos_multitap'] != 'disabled':
+            if system.config['kronos_multitap'] == 'port1':
+                coreSettings.save('kronos_multitap_port1', '"enabled"')
+                coreSettings.save('kronos_multitap_port2', '"disabled"')
+            elif system.config['kronos_multitap'] == 'port2':
+                coreSettings.save('kronos_multitap_port1', '"disabled"')
+                coreSettings.save('kronos_multitap_port2', '"enabled"')
+            elif system.config['kronos_multitap'] == 'port12':
+                coreSettings.save('kronos_multitap_port1', '"enabled"')
+                coreSettings.save('kronos_multitap_port2', '"enabled"')
+        else:
+            coreSettings.save('kronos_multitap_port1', '"disabled"')
+            coreSettings.save('kronos_multitap_port2', '"disabled"')
+        # BIOS langauge
+        if system.isOptSet('kronos_language_id'):
+            coreSettings.save('kronos_language_id', '"' + system.config['kronos_language_id'] + '"')
+        else:
+            coreSettings.save('kronos_language_id', '"English"')  
 
     # gun cross
     if (system.config['core'] == 'beetle-saturn'):
