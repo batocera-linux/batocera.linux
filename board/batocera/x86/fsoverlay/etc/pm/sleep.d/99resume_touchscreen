@@ -2,6 +2,17 @@
 case "$1" in
     resume|thaw)
         # Run the touchscreen rotation script when resuming
-        /etc/init.d/S95touchscreen start
+        if test -z "${DISPLAY}"; then
+            export DISPLAY=:0.0
+        fi
+        CURRENT_ROTATION=$(xrandr --currentRotation)
+        if [ "${CURRENT_ROTATION}" != "0" ]; then
+            bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
+            if test -z "${bootresolution}"; then
+                batocera-resolution minTomaxResolution-secure
+            else
+                batocera-resolution setMode "${bootresolution}"
+            fi
+        fi
         ;;
 esac
