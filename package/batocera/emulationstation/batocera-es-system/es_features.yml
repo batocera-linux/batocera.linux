@@ -8136,14 +8136,14 @@ mupen64plus:
 openbor:
   shared: [powermode, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        ratio:
-            prompt:      SCREEN RATIO
+        openbor_ratio:
+            prompt: SCREEN RATIO
             description: Stretch games to full-screen, but may distort the aspect ratio
             choices:
                 "Normal":         0
                 "Stretch":        1
-        filter:
-            prompt:      VIDEO FILTER
+        openbor_filter:
+            prompt: VIDEO FILTER
             description: Apply a post-processing effect.
             choices:
                 "Simple 2x":      0
@@ -8158,6 +8158,27 @@ openbor:
                 "ScanLines TV":   9
                 "TV 2x":          10
                 "Dot Matrix":     11
+  cores:
+    'openbor7530':
+      cfeatures:
+        openbor_vsync:
+          prompt: VSYNC
+          description: Fix screen tearing.
+          choices:
+            "Disabled": 0
+            "Enabled":  1
+        openbor_limit:
+          prompt: LIMIT FPS
+          description: Limit FPS to reduce high CPU usage.
+          choices:
+            "Disabled": 0
+            "Enabled":  1        
+        openbor_rumble:
+          prompt: RUMBLE
+          description: Only some games feature rumble. Not compatible with all controllers.
+          choices:
+            "Disabled": 0
+            "Enabled":  1 
 
 pcsx2:
   cores:

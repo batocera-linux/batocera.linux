@@ -1,0 +1,57 @@
+diff --git a/engine/sdl/sdlport.c b/engine/sdl/sdlport.c
+index 304b89a9..0d0092b5 100644
+--- a/engine/sdl/sdlport.c
++++ b/engine/sdl/sdlport.c
+@@ -27,10 +27,10 @@ char packfile[MAX_FILENAME_LEN] = {"bor.pak"};
+ #include <unistd.h>
+ char rootDir[MAX_BUFFER_LEN] = {""};
+ #endif
+-char paksDir[MAX_FILENAME_LEN] = {"Paks"};
+-char savesDir[MAX_FILENAME_LEN] = {"Saves"};
+-char logsDir[MAX_FILENAME_LEN] = {"Logs"};
+-char screenShotsDir[MAX_FILENAME_LEN] = {"ScreenShots"};
++char paksDir[MAX_FILENAME_LEN] = {"/userdata/roms/openbor"};
++char savesDir[MAX_FILENAME_LEN] = {"/userdata/saves/openbor"};
++char logsDir[MAX_FILENAME_LEN] = {"/userdata/system/logs/openbor"};
++char screenShotsDir[MAX_FILENAME_LEN] = {"/userdata/screenshots/openbor"};
+ 
+ // sleeps for the given number of microseconds
+ #if _POSIX_C_SOURCE >= 199309L
+diff --git a/engine/source/utils.c b/engine/source/utils.c
+index bf90c12d..8b5b93ec 100644
+--- a/engine/source/utils.c
++++ b/engine/source/utils.c
+@@ -95,12 +95,12 @@ typedef void DIR;
+ #define COPY_ROOT_PATH(buf, name) strncpy(buf, rootDir, strlen(rootDir)); strncat(buf, name, strlen(name)); strncat(buf, "/", 1);
+ #define COPY_PAKS_PATH(buf, name) strncpy(buf, paksDir, strlen(paksDir)); strncat(buf, "/", 1); strncat(buf, name, strlen(name));
+ #else
+-#define CHECK_LOGFILE(type)  type ? fileExists("./Logs/OpenBorLog.txt") : fileExists("./Logs/ScriptLog.txt")
+-#define OPEN_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "wt") : fopen("./Logs/ScriptLog.txt", "wt")
+-#define APPEND_LOGFILE(type) type ? fopen("./Logs/OpenBorLog.txt", "at") : fopen("./Logs/ScriptLog.txt", "at")
+-#define READ_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "rt") : fopen("./Logs/ScriptLog.txt", "rt")
+-#define COPY_ROOT_PATH(buf, name) strcpy(buf, "./"); strcat(buf, name); strcat(buf, "/");
+-#define COPY_PAKS_PATH(buf, name) strcpy(buf, "./Paks/"); strcat(buf, name);
++#define CHECK_LOGFILE(type)  type ? fileExists("/userdata/system/logs/openbor/OpenBorLog.txt") : fileExists("/userdata/system/logs/openbor/ScriptLog.txt")
++#define OPEN_LOGFILE(type)   type ? fopen("/userdata/system/logs/openbor/OpenBorLog.txt", "wt") : fopen("/userdata/system/logs/openbor/ScriptLog.txt", "wt")
++#define APPEND_LOGFILE(type) type ? fopen("/userdata/system/logs/openbor/OpenBorLog.txt", "at") : fopen("/userdata/system/logs/openbor/ScriptLog.txt", "at")
++#define READ_LOGFILE(type)   type ? fopen("/userdata/system/logs/openbor/OpenBorLog.txt", "rt") : fopen("/userdata/system/logs/openbor/ScriptLog.txt", "rt")
++#define COPY_ROOT_PATH(buf, name) strcpy(buf, "/userdata/system/configs/openbor"); strcat(buf, name); strcat(buf, "/");
++#define COPY_PAKS_PATH(buf, name) strcpy(buf, "/userdata/roms/openbor/"); strcat(buf, name);
+ #endif
+ 
+ void debugBuf(unsigned char *buf, size_t size, int columns)
+@@ -154,6 +154,14 @@ u32 debug_time = 0;
+ 
+ void getBasePath(char *newName, char *name, int type)
+ {
++#if LINUX
++	if (type == 0 && strcmp(name, "Saves") == 0)
++	{
++		strcpy(newName, "/userdata/saves/openbor/");
++		return;
++	}
++#endif
++
+ #ifndef DC
+     char buf[MAX_BUFFER_LEN] = {""};
+     switch(type)

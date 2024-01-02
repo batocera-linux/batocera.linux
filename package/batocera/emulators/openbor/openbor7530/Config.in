@@ -1,0 +1,12 @@
+config BR2_PACKAGE_OPENBOR7530
+    bool "openbor7530"
+    select BR2_PACKAGE_LIBVPX
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_GFX
+    select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_LIBOGG
+    select BR2_PACKAGE_LIBVORBIS
+    help
+      OpenBOR 4 is the ultimate 2D side scrolling engine for beat em' ups, shooters, and more!
+
+      https://www.chronocrash.com/
