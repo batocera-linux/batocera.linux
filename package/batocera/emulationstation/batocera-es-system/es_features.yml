@@ -434,7 +434,7 @@ libretro:
                             "On":      enabled
     beetle-saturn:
       features: [netplay, cheevos]
-      shared: [autosave, use_guns]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
       cfeatures:
           beetle-saturn_crosshair:
                 group: LIGHT GUN
