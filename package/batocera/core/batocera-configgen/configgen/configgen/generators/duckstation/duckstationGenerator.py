@@ -291,7 +291,7 @@ class DuckstationGenerator(Generator):
             settings.add_section("Cheevos")
         # RetroAchievements
         if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
-            headers   = {"Content-type": "text/plain"}
+            headers   = {"Content-type": "text/plain", "User-Agent": "Batocera.linux"}
             login_url = "https://retroachievements.org/"
             username  = system.config.get('retroachievements.username', "")
             password  = system.config.get('retroachievements.password', "")
