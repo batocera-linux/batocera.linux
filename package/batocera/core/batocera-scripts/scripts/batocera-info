@@ -87,8 +87,11 @@ then
     echo "Model: ${V_BOARD_MODEL}"
 fi
 echo "System: ${V_SYSTEM}"
-echo "Architecture: $(uname -m)"
-echo "Board: ${V_BOARD}"
+V_ARCH=$(uname -m)
+echo "Architecture: ${V_ARCH}"
+if [ "$V_BOARD" != "$V_ARCH" ]; then
+    echo "Board: ${V_BOARD}"
+fi
 
 if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"
 then
@@ -139,6 +142,15 @@ MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
 MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
 echo "Available Memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
+# Current Resolution
+if test -z "${DISPLAY}"; then
+    export DISPLAY=:0.0
+fi
+DISPLAYRES=$(batocera-resolution currentResolution)
+DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
+echo "Display resolution: ${DISPLAYRES}"
+echo "Display refresh rate: ${DISPLAYRATE}Hz"
+
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
 	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"
@@ -162,16 +174,6 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 		    echo "Vulkan Driver Version: none"
 	    fi
 	fi
-
-	# Boot information
-	if [ -d /sys/firmware/efi ]; then
-		echo "UEFI Boot: Yes"
-		if [ -x /usr/bin/mokutil ]; then
-			echo "Secure Boot: $(mokutil --sb-state 2>&1 | sed 's/^SecureBoot validation is//' | paste -sd ';')"
-		fi
-	else
-		echo "UEFI Boot: No"
-	fi
 fi
 
 # userdata type
@@ -182,6 +184,18 @@ echo "Data Partition Available Space: $(df -h ${INTERNALDEVICE} | awk '/\/userda
 
 PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
 test -n "${PREFSRC}" && echo "Network IP Address: ${PREFSRC}"
+
+# Boot information
+if [[ "${FULL_DISPLAY}" != 0 ]]; then
+	if [ -d /sys/firmware/efi ]; then
+		echo "UEFI Boot: Yes"
+		if [ -x /usr/bin/mokutil ]; then
+			echo "Secure Boot: $(mokutil --sb-state 2>&1 | sed 's/^SecureBoot validation is//' | paste -sd ';')"
+		fi
+	else
+		echo "UEFI Boot: No"
+	fi
+fi
 
 # battery
 if test -n "${BATT}"
