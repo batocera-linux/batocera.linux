@@ -1,0 +1,86 @@
+diff --git a/engine/Makefile b/engine/Makefile
+index 69d2974ebf..251f89d138 100644
+--- a/engine/Makefile
++++ b/engine/Makefile
+@@ -83,17 +83,17 @@ BUILDING        = 1
+ YASM 	        = yasm
+ CC  	        = $(LNXDEV)/$(PREFIX)gcc
+ OBJTYPE         = elf
+-INCLUDES        = $(SDKPATH)/include
++INCLUDES        = $(STAGING_DIR)/include
+ ifeq ($(findstring 64, $(GCC_TARGET)), 64)
+ TARGET_ARCH     = amd64
+ BUILD_AMD64     = 1
+ ARCHFLAGS       = -m64
+-LIBRARIES       = $(SDKPATH)/lib/$(GCC_TARGET)
++LIBRARIES       = $(STAGING_DIR)/lib/$(GCC_TARGET)
+ CFLAGS          += -DAMD64
+ else
+ TARGET_ARCH     = x86
+ ARCHFLAGS       = -m32
+-LIBRARIES       = $(SDKPATH)/lib32
++LIBRARIES       = $(STAGING_DIR)/lib32
+ BUILD_MMX       = 1
+ endif
+ ifeq ($(BUILD_LINUX), 0)
+@@ -116,12 +116,12 @@ BUILD_WEBM      = 1
+ BUILDING        = 1
+ YASM 	          = nasm
+ OBJTYPE         = elf
+-INCLUDES        = $(SDKPATH)/usr/include \
+-                  $(SDKPATH)/usr/include/SDL2
++INCLUDES        = $(STAGING_DIR)/usr/include \
++                  $(STAGING_DIR)/usr/include/SDL2
+ TARGET_ARCH     = amd64
+ BUILD_AMD64     = 1
+ ARCHFLAGS       = -m64
+-LIBRARIES       = $(SDKPATH)/usr/lib
++LIBRARIES       = $(STAGING_DIR)/usr/lib
+ CFLAGS          += -DAMD64
+ # Workaround for GCC 9
+ CFLAGS          +=  -Wno-error=stringop-overflow
+@@ -139,10 +138,10 @@ BUILD_SDL_IO    = 1
+ BUILD_VORBIS    = 1
+ BUILD_WEBM      = 1
+ BUILDING        = 1
+-INCLUDES        = $(SDKPATH)/usr/include \
+-                  $(SDKPATH)/usr/include/SDL2
++INCLUDES        = $(STAGING_DIR)/usr/include \
++                  $(STAGING_DIR)/usr/include/SDL2
+ OBJTYPE         = elf
+-LIBRARIES       = $(SDKPATH)/usr/lib
++LIBRARIES       = $(STAGING_DIR)/usr/lib
+ # Workaround for GCC 9
+ CFLAGS          += -Wno-error=format-overflow -Wno-error=implicit-function-declaration -Wno-error=unused-variable -Wno-error=unused-label -Wno-error=stringop-overflow
+ endif
+@@ -238,9 +237,9 @@ ifndef NO_STRIP
+ ifdef BUILD_WIN
+ STRIP 	        = $(WINDEV)/$(PREFIX)strip$(EXTENSION) $(TARGET) -o $(TARGET_FINAL)
+ endif
+-ifdef BUILD_LINUX
+-STRIP 	        = $(LNXDEV)/$(PREFIX)strip $(TARGET) -o $(TARGET_FINAL)
+-endif
++#ifdef BUILD_LINUX
++#STRIP 	        = $(LNXDEV)/$(PREFIX)strip $(TARGET) -o $(TARGET_FINAL)
++#endif
+ ifdef BUILD_DARWIN
+ STRIP           = $(PREFIX)strip $(TARGET) -o $(TARGET_FINAL)
+ endif
+@@ -498,7 +497,7 @@ OBJS            = $(MAIN)
+ #----------------------------------------------------------------------------------------------------
+ 
+ CFLAGS 	       += $(addprefix -I", $(addsuffix ", $(INCS))) $(ARCHFLAGS) -D$(TARGET_PLATFORM)
+-CFLAGS 	       += -g -Wall -Werror -Wno-format-truncation -Wno-stringop-truncation -fsigned-char -std=gnu99
++CFLAGS 	       += -g -Wall -Wno-format-truncation -Wno-stringop-truncation -fsigned-char -std=gnu99
+ 
+ 
+ ifndef BUILD_DARWIN
+@@ -620,7 +619,7 @@ endif
+ 
+ 
+ ifdef BUILD_SDL
+-ifeq ($(findstring DGE, $(SDKPATH)), DGE)
++ifeq ($(findstring DGE, $(STAGING_DIR)), DGE)
+ LIBS           += -lSDL -lSDL_gfx -lts # Kratus (01-2023) Added a FPS limit option in the video settings
+ else
+ COMMA		=,

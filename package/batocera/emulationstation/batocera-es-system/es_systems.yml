@@ -2108,7 +2108,7 @@ x1:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
 openbor:
-  name:       OpenBOR
+  name: OpenBOR
   manufacturer: Ports
   release:
   hardware: port
@@ -2118,7 +2118,10 @@ openbor:
       openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
       openbor6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR6412] }
       openbor7142: { requireAnyOf: [BR2_PACKAGE_OPENBOR7142] }
+      openbor7530: { requireAnyOf: [BR2_PACKAGE_OPENBOR7530] }
   comment_en: |
+    Note: For some games to work, pak files cannot be renamed and need to be in a folder called Paks.
+
     For more info: https://wiki.batocera.org/systems:openbor
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:openbor
