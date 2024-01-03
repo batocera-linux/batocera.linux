@@ -260,6 +260,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.18)
     select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
     select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
+    select BR2_PACKAGE_WIIMOTE_3RDPARTY                     # some non official wiimotes
     select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
     select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
     select BR2_PACKAGE_BATOCERA_WHEEL_CALIBRATOR

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+start() {
+	touch /var/run/wiimote-3rdparty
+	while test -e /var/run/wiimote-3rdparty
+	do
+	    wiimote3rdPartyConnect 10 2> /var/log/wiimote-3rdparty.log # not too much timeout to stop after just some seconds only
+	    sleep 1
+	done
+	return 0
+}
+
+stop() {
+    rm -f /var/run/wiimote-3rdparty
+}
+
+case "$1" in
+        start)
+                start &
+                ;;
+        stop)
+                stop
+                ;;
+        *)
+                echo "Usage: $0 {start|stop}"
+                exit 1
+esac
