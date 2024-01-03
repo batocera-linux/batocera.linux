@@ -264,6 +264,56 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
             f.write("Source = 1\n")
 
+            dolphinMappingNames = {
+                "a":     "Buttons/A",
+                "b":     "Buttons/B",
+                "home":  "Buttons/Home",
+                "-":     "Buttons/-",
+                "1":     "Buttons/1",
+                "2":     "Buttons/2",
+                "+":     "Buttons/+",
+                "up":    "D-Pad/Up",
+                "down":  "D-Pad/Down",
+                "left":  "D-Pad/Left",
+                "right": "D-Pad/Right",
+                "tilt":  "Tilt/Backward",
+                "shake": "Shake/Z",
+                "c":     "Nunchuk/Buttons/C",
+                "z":     "Nunchuk/Buttons/Z"
+            }
+
+            gunMapping = {
+                "a":     "action",
+                "b":     "trigger",
+                "home":  "sub3",
+                "-":     "select",
+                "1":     "sub1",
+                "2":     "sub2",
+                "+":     "start",
+                "up":    "up",
+                "down":  "down",
+                "left":  "left",
+                "right": "right",
+                "tilt":  "",
+                "shake": "",
+                "c":     "",
+                "z":     ""
+            }
+
+            gunButtons = {
+                "trigger": { "code": "BTN_RIGHT",  "button": "right"  },
+                "action":  { "code": "BTN_LEFT",   "button": "left"   },
+                "start":   { "code": "BTN_MIDDLE", "button": "middle" },
+                "select":  { "code": "BTN_1",      "button": "1"      },
+                "sub1":    { "code": "BTN_2",      "button": "2"      },
+                "sub2":    { "code": "BTN_3",      "button": "3"      },
+                "sub3":    { "code": "BTN_4",      "button": "4"      },
+                "up":      { "code": "BTN_5",      "button": "5"      },
+                "down":    { "code": "BTN_6",      "button": "6"      },
+                "left":    { "code": "BTN_7",      "button": "7"      },
+                "right":   { "code": "BTN_8",      "button": "8"      }
+            }
+
             gundevname = guns[nplayer-1]["name"]
 
             # Handle x pads having the same name
@@ -279,49 +329,35 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
 
             buttons = guns[nplayer-1]["buttons"]
             eslog.debug(f"Gun : {buttons}")
-            # buttons are orgnanized here as the reverse of the wii2gun mapping rules
-            # so that the wiimote has the correct mapping
-            # then, depending on missing buttons, we add the + which is important
 
-            # fire
-            if "right" in buttons:
-                f.write("Buttons/A = `BTN_RIGHT`\n")
-            if "left" in buttons:
-                f.write("Buttons/B = `BTN_LEFT`\n")
+            # custom remapping
+            for btn in gunMapping:
+                if btn in gunsmetadata:
+                    if gunsmetadata[btn] in gunButtons:
+                        eslog.info("custom gun mapping for {} => {}".format(btn, gunsmetadata[btn]))
+                        # erase current same values
+                        for x in gunMapping:
+                            if gunMapping[x] == gunsmetadata[btn]:
+                                gunMapping[x] = ""
+                        #
+                        gunMapping[btn] = gunsmetadata[btn]
+                    else:
+                        eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(gunMapping[btn], gunsmetadata[gunMapping[btn]]))
 
-            # extra buttons
-            mappings = {
-                "Home": { "code": "BTN_4", "button": "4" },
-                "-":    { "code": "BTN_1", "button": "1" },
-                "1":    { "code": "BTN_2", "button": "2" },
-                "2":    { "code": "BTN_3", "button": "3" },
-                "+":    { "code": "BTN_MIDDLE", "button": "middle" },
-            }
+            # write buttons
+            for btn in dolphinMappingNames:
+                val = ""
+                if btn in gunMapping and gunMapping[btn] != "":
+                    if gunMapping[btn] in gunButtons:
+                        if gunButtons[gunMapping[btn]]["button"] in buttons:
+                            val = gunButtons[gunMapping[btn]]["code"]
+                        else:
+                            eslog.debug("gun has not the button {}".format(gunButtons[gunMapping[btn]]["button"]))
+                    else:
+                        eslog.debug("cannot map the button {}".format(gunMapping[btn]))
+                f.write(dolphinMappingNames[btn]+" = `"+val+"`\n")
 
-            # for a button for + because it is an important button
-            if mappings["+"]["button"] not in buttons:
-                for key in mappings:
-                    if mappings[key]["button"] in buttons:
-                        mappings["+"]["code"]   = mappings[key]["code"]
-                        mappings["+"]["button"] = mappings[key]["button"]
-                        mappings[key]["code"] = None
-                        mappings[key]["button"] = None
-                        break
-
-            for mapping in mappings:
-                if mappings[mapping]["button"] in buttons:
-                    f.write("Buttons/" + mapping + " = `" + mappings[mapping]["code"] + "`\n")
-
-            # directions
-            if "5" in buttons:
-                f.write("D-Pad/Up = `BTN_5`\n")
-            if "6" in buttons:
-                f.write("D-Pad/Down = `BTN_6`\n")
-            if "7" in buttons:
-                f.write("D-Pad/Left = `BTN_7`\n")
-            if "8" in buttons:
-                f.write("D-Pad/Right = `BTN_8`\n")
-
+            # map ir
             if "ir_up" not in gunsmetadata:
                 f.write("IR/Up = `Axis 1-`\n")
             if "ir_down" not in gunsmetadata:
