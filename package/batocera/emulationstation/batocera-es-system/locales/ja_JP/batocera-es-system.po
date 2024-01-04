@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2023/12/23)\n"
+"Project-Id-Version: batocera-es v39beta(2024/01/02)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-12-26 05:35+0900\n"
+"PO-Revision-Date: 2024-01-02 17:45+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -3345,32 +3345,32 @@ msgstr "720p"
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "4k"
-msgstr ""
+msgstr "4k"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "8k"
-msgstr ""
+msgstr "8k"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "Replace meshed transparency by real transparency."
-msgstr ""
+msgstr "メッシュの透明度を実際の透明度に置き換えます"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "IMPROVED MESH"
-msgstr ""
+msgstr "メッシュの改良"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "Apply gouraud shading instead of flat shading."
-msgstr ""
+msgstr "フラット シェーディングの代わりにグーロー シェーディングを適用します"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "IMPROVED BANDING"
-msgstr ""
+msgstr "濃淡の縞(バンディング)の改良"
 
 #. TRANSLATION: libretro/kronos, libretro/yabasanshiro
 msgctxt "game_options"
@@ -3400,12 +3400,12 @@ msgstr "ポート1+2"
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "Choose system BIOS language."
-msgstr ""
+msgstr "システムBIOS 言語を選択します"
 
 #. TRANSLATION: libretro/kronos
 msgctxt "game_options"
 msgid "BIOS Language"
-msgstr ""
+msgstr "BIOS 言語"
 
 #. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
@@ -5964,14 +5964,18 @@ msgid "CPU SPEED"
 msgstr "CPU 速度"
 
 #. TRANSLATION: libretro/puae
+#| msgctxt "game_options"
+#| msgid "PAL 288x576px 50Hz"
 msgctxt "game_options"
 msgid "PAL 288x576px 50Hz (auto)"
-msgstr ""
+msgstr "PAL 288x576px 50Hz (auto)"
 
 #. TRANSLATION: libretro/puae
+#| msgctxt "game_options"
+#| msgid "NTSC 240x480px 60Hz"
 msgctxt "game_options"
 msgid "NTSC 240x480px 60Hz (auto)"
-msgstr ""
+msgstr "NTSC 240x480px 60Hz (auto)"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -6643,7 +6647,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160fps"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, openbor/openbor7530, ...
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, supermodel
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "振動機能"
@@ -7476,7 +7480,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera で最初の音声デバイスに設定 (標準)"
 
-#. TRANSLATION: cemu, openbor/openbor7530, sonic2013, play, yuzu, ...
+#. TRANSLATION: cemu, sonic2013, play, yuzu, demul, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -9383,21 +9387,6 @@ msgctxt "game_options"
 msgid "1% (Default)"
 msgstr "1% (Default)"
 
-#. TRANSLATION: openbor/openbor7530
-msgctxt "game_options"
-msgid "Limit FPS to reduce high CPU usage."
-msgstr ""
-
-#. TRANSLATION: openbor/openbor7530
-msgctxt "game_options"
-msgid "LIMIT FPS"
-msgstr ""
-
-#. TRANSLATION: openbor/openbor7530, supermodel
-msgctxt "game_options"
-msgid "Only some games feature rumble. Not compatible with all controllers."
-msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
-
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -9853,9 +9842,11 @@ msgid "WHEEL MODEL"
 msgstr "ホイール(ハンドル)モデル"
 
 #. TRANSLATION: pcsx2
+#| msgctxt "game_options"
+#| msgid "Driving Force Pro"
 msgctxt "game_options"
 msgid "Driving Force"
-msgstr ""
+msgstr "Driving Force"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -9870,7 +9861,7 @@ msgstr "GT Force"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Virtual"
-msgstr ""
+msgstr "仮想"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -11012,6 +11003,11 @@ msgstr "P2 のみ"
 msgctxt "game_options"
 msgid "P1 & P2"
 msgstr "P1 と P2"
+
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "Only some games feature rumble. Not compatible with all controllers."
+msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
