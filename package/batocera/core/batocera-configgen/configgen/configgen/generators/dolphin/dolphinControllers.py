@@ -301,8 +301,8 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             }
 
             gunButtons = {
-                "trigger": { "code": "BTN_RIGHT",  "button": "right"  },
-                "action":  { "code": "BTN_LEFT",   "button": "left"   },
+                "trigger": { "code": "BTN_LEFT",   "button": "left"   },
+                "action":  { "code": "BTN_RIGHT",  "button": "right"  },
                 "start":   { "code": "BTN_MIDDLE", "button": "middle" },
                 "select":  { "code": "BTN_1",      "button": "1"      },
                 "sub1":    { "code": "BTN_2",      "button": "2"      },
@@ -331,18 +331,22 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             eslog.debug(f"Gun : {buttons}")
 
             # custom remapping
-            for btn in gunMapping:
+            # erase values
+            for btn in gunButtons:
                 if btn in gunsmetadata:
-                    if gunsmetadata[btn] in gunButtons:
-                        eslog.info("custom gun mapping for {} => {}".format(btn, gunsmetadata[btn]))
-                        # erase current same values
+                    if gunsmetadata[btn] in gunMapping:
                         for x in gunMapping:
-                            if gunMapping[x] == gunsmetadata[btn]:
+                            if gunMapping[x] == btn:
+                                eslog.info("erasing {}".format(x))
                                 gunMapping[x] = ""
-                        #
-                        gunMapping[btn] = gunsmetadata[btn]
                     else:
-                        eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(gunMapping[btn], gunsmetadata[gunMapping[btn]]))
+                            eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(btn, gunsmetadata[btn]))
+            # setting values
+            for btn in gunButtons:
+                if btn in gunsmetadata:
+                    if gunsmetadata[btn] in gunMapping:
+                        gunMapping[gunsmetadata[btn]] = btn
+                        eslog.info("setting {} to {}".format(gunsmetadata[btn], btn))
 
             # write buttons
             for btn in dolphinMappingNames:
