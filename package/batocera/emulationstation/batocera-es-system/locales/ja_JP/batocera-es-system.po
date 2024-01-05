@@ -40,6 +40,49 @@ msgstr "パワーセーバー"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
+msgid ""
+"Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU "
+"based on it's default max value. Caution, setting wattage too high could "
+"damage your device."
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "RYZEN THERMAL DESIGN POWER"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "105% (Use caution"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "110% (Use caution)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "115% (Use caution)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "120% (Are you crazy?)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "125% (Yes, you're crazy)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "130% (Nope, you're just insane!)"
+msgstr ""
+
+#. TRANSLATION: shared
+msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
 msgstr "ディスプレイ解像度を設定(レンダリング解像度には影響しません)"
 
@@ -5964,15 +6007,11 @@ msgid "CPU SPEED"
 msgstr "CPU 速度"
 
 #. TRANSLATION: libretro/puae
-#| msgctxt "game_options"
-#| msgid "PAL 288x576px 50Hz"
 msgctxt "game_options"
 msgid "PAL 288x576px 50Hz (auto)"
 msgstr "PAL 288x576px 50Hz (auto)"
 
 #. TRANSLATION: libretro/puae
-#| msgctxt "game_options"
-#| msgid "NTSC 240x480px 60Hz"
 msgctxt "game_options"
 msgid "NTSC 240x480px 60Hz (auto)"
 msgstr "NTSC 240x480px 60Hz (auto)"
@@ -6647,7 +6686,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160fps"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, supermodel
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, openbor/openbor7530, ...
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "振動機能"
@@ -7480,7 +7519,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera で最初の音声デバイスに設定 (標準)"
 
-#. TRANSLATION: cemu, sonic2013, play, yuzu, demul, ...
+#. TRANSLATION: cemu, openbor/openbor7530, sonic2013, play, yuzu, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -9387,6 +9426,21 @@ msgctxt "game_options"
 msgid "1% (Default)"
 msgstr "1% (Default)"
 
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "Limit FPS to reduce high CPU usage."
+msgstr ""
+
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "LIMIT FPS"
+msgstr ""
+
+#. TRANSLATION: openbor/openbor7530, supermodel
+msgctxt "game_options"
+msgid "Only some games feature rumble. Not compatible with all controllers."
+msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
+
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -9842,8 +9896,6 @@ msgid "WHEEL MODEL"
 msgstr "ホイール(ハンドル)モデル"
 
 #. TRANSLATION: pcsx2
-#| msgctxt "game_options"
-#| msgid "Driving Force Pro"
 msgctxt "game_options"
 msgid "Driving Force"
 msgstr "Driving Force"
@@ -11003,11 +11055,6 @@ msgstr "P2 のみ"
 msgctxt "game_options"
 msgid "P1 & P2"
 msgstr "P1 と P2"
-
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "Only some games feature rumble. Not compatible with all controllers."
-msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -12447,16 +12494,6 @@ msgstr "HDイメージ"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
-msgid "VKD3D (D3D12 to Vulkan)"
-msgstr "VKD3D (D3D12 - Vulkan)"
-
-#. TRANSLATION: xenia, xenia-canary
-msgctxt "game_options"
-msgid "Native Vulkan"
-msgstr "Vulkan"
-
-#. TRANSLATION: xenia, xenia-canary
-msgctxt "game_options"
 msgid ""
 "This option enables the ability to play Xbox Live Arcacde games. May cause "
 "compatibility issues with non-XBLA games."
@@ -13743,6 +13780,14 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
+
+#~ msgctxt "game_options"
+#~ msgid "VKD3D (D3D12 to Vulkan)"
+#~ msgstr "VKD3D (D3D12 - Vulkan)"
+
+#~ msgctxt "game_options"
+#~ msgid "Native Vulkan"
+#~ msgstr "Vulkan"
 
 #~ msgctxt "game_options"
 #~ msgid "Set the sensitivity of the joystick analog sticks."
