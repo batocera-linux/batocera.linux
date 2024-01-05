@@ -7,6 +7,7 @@
 - Initial support for the Steam Deck OLED
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
+- New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.
 - Additional ES controller settings for Dolphin.
 - DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
 - The Force Engine: Play Dark Forces with enhanced graphics.

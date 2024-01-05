@@ -128,6 +128,13 @@ then
     echo "CPU Features: ${cpu_features[@]}"
 fi
 
+# TDP
+CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+if ! [ -z "$CPU_TDP" ]; then
+    MAX_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
+    echo "Ryzen Mobile TDP: ${MAX_TDP}W"
+fi
+
 # temperature
 # Unit: millidegree Celsius
 TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
