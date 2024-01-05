@@ -318,6 +318,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         else:
             retroarchConfig['input_libretro_device_p4'] = '1'
 
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            retroarchConfig['input_libretro_device_p1'] = '2049' # Race Controller
+
     ## Sega Megadrive controller
     if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':
         if system.isOptSet('controller1_md'):
@@ -391,6 +395,11 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_saturn']
         else:
             retroarchConfig['input_libretro_device_p2'] = '1' # Saturn pad
+
+    # wheel
+    if system.config['core'] == 'beetle-saturn' and system.name == 'saturn':
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            retroarchConfig['input_libretro_device_p1'] = '517' # Arcade Racer
 
     ## NEC PCEngine controller
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
