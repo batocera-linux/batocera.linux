@@ -97,7 +97,7 @@
 - Libretro-Beetle-WSwan to May 27, 2023 build
 - Libretro-Bluemsx to Apr 18, 2023 build
 - Libretro-Bsnes to Oct 20, 2023 build
-- Libretro-Cap32 to Jul 12, 2023 build
+- Libretro-Cap32 4.5.4
 - Libretro-ChaiLove to Sep 30, 2023 build
 - Libretro-Craft to May 28, 2023 build
 - Libretro-Desmume to Oct 6, 2023 build
