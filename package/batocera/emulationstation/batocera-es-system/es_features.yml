@@ -11311,12 +11311,6 @@ xenia:
   features: []
   shared: [powermode, tdp, videomode]
   cfeatures:
-        xenia_api:
-            prompt: GRAPHICS API
-            description: Choose which graphics API library to use.
-            choices:
-                "VKD3D (D3D12 to Vulkan)": D3D12
-                "Native Vulkan":           Vulkan
         xeniaLicense:
             prompt: XBOX LIVE ARCADE
             description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
@@ -11381,12 +11375,6 @@ xenia-canary:
                 "1680x1050":          14
                 "1920x540":           15
                 "1920x1080":          16
-        xenia_api:
-            prompt: GRAPHICS API
-            description: Choose which graphics API library to use.
-            choices:
-                "VKD3D (D3D12 to Vulkan)": D3D12
-                "Native Vulkan":           Vulkan
         xeniaHeadless:
             prompt: UI PROMPTS
             description: Choose to display UI prompts or accept defaults.
