@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# workaround for wifi not working after standby / sleep
+# add other models accordingly
+
+wifi_toggle() {
+    batocera-wifi disable
+    batocera-wifi enable
+}
+
+case "$1" in
+    resume|thaw)
+        info_output=$(batocera-info)
+        # ayn loki zero
+        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+            wifi_toggle
+        fi
+        ;;
+esac
