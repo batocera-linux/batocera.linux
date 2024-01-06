@@ -19,7 +19,7 @@ eslog = get_logger(__name__)
 class Model2EmuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
-        wineprefix = batoceraFiles.SAVES + "/model2"
+        wineprefix = "/userdata/system/wine-bottles/model2"
         emupath = wineprefix + "/model2emu"
         rompath = "/userdata/roms/model2/"
 
@@ -34,9 +34,9 @@ class Model2EmuGenerator(Generator):
         # install windows libraries required
         if not os.path.exists(wineprefix + "/d3dx9.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dx9"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
+            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -48,9 +48,9 @@ class Model2EmuGenerator(Generator):
         
         if not os.path.exists(wineprefix + "/d3dcompiler_42.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dcompiler_42"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
+            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -62,9 +62,9 @@ class Model2EmuGenerator(Generator):
         
         if not os.path.exists(wineprefix + "/d3dx9_42.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dx9_42"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
+            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -76,9 +76,9 @@ class Model2EmuGenerator(Generator):
         
         if not os.path.exists(wineprefix + "/xact.done"):
             cmd = ["/usr/wine/winetricks", "-q", "xact"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
+            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -90,9 +90,9 @@ class Model2EmuGenerator(Generator):
         
         if not os.path.exists(wineprefix + "/xact_x64.done"):
             cmd = ["/usr/wine/winetricks", "-q", "xact_x64"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/proton/lib/wine", "WINEPREFIX": wineprefix }
+            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/proton/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -108,7 +108,7 @@ class Model2EmuGenerator(Generator):
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
 
-        commandArray = ["/usr/wine/proton/bin/wine", emupath + "/emulator_multicpu.exe"]
+        commandArray = ["/usr/wine/ge-custom/bin/wine", emupath + "/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         if rom != 'config':
             romname = rom.replace(rompath, "")
@@ -239,7 +239,7 @@ class Model2EmuGenerator(Generator):
         # set the environment variables
         environment = {
             "WINEPREFIX": wineprefix,
-            "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
+            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
             "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
