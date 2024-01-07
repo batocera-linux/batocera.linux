@@ -14,36 +14,45 @@ import controllersConfig
 eslog = get_logger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system, playersControllers, rom, guns):
+def generateControllerConfig(system, playersControllers, wheels, rom, guns):
 
     #generateHotkeys(playersControllers)
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns, system, rom)
-            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             # Generate if hardcoded
-            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         elif (".cc." in rom or ".pro." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom) or system.isOptSet("sideWiimote"):
             # Generate if auto and name extensions are present
-            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(system, playersControllers, rom)           # You can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(system, playersControllers, rom)               # Pass ROM name to allow for per ROM configuration
+        used_wheels = {}
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+            wheelssmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
+            if "wheel_type" in wheelssmetadata:
+                if wheelssmetadata["wheel_type"] == "Steering Wheel":
+                    used_wheels = wheels
+            elif "dolphin_wheel_type" in system.config:
+                if system.config["dolphin_wheel_type"] == "Steering Wheel":
+                    used_wheels = wheels
+        generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
 # https://docs.libretro.com/library/dolphin/
 
-def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
+def generateControllerConfig_emulatedwiimotes(system, playersControllers, wheels, rom):
     wiiMapping = {
         'x':             'Buttons/2',
         'b':             'Buttons/A',
@@ -177,9 +186,9 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
     eslog.debug(f"Extra Options: {extraOptions}")
     eslog.debug(f"Wii Mappings: {wiiMapping}")
 
-    generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
+    generateControllerConfig_any(system, playersControllers, wheels, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(system, playersControllers,rom):
+def generateControllerConfig_gamecube(system, playersControllers, wheels, rom):
     gamecubeMapping = {
         'b':             'Buttons/B',
         'a':             'Buttons/A',
@@ -228,7 +237,7 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
                 gamecubeMapping.update(res)
                 line = cconfig.readline()
 
-    generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
@@ -471,7 +480,7 @@ def get_AltMapping(system, nplayer, anyMapping):
     
     return mapping
 
-def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
+def generateControllerConfig_any(system, playersControllers, wheels, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
@@ -495,11 +504,43 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
             if not generateControllerConfig_any_from_profiles(f, pad, system):
                 generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
         else:
-            generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
+            if pad.dev in wheels:
+                generateControllerConfig_wheel(f, pad, nplayer)
+            else:
+                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
 
         nplayer += 1
     f.write
     f.close()
+
+def generateControllerConfig_wheel(f, pad, nplayer):
+    wheelMapping = {
+        "select":         "Buttons/Z",
+        "start":          "Buttons/Start",
+        "up":             "D-Pad/Up",
+        "down":           "D-Pad/Down",
+        "left":           "D-Pad/Left",
+        "right":          "D-Pad/Right",
+        "pageup":         "Triggers/L-Analog",
+        "pagedown":       "Triggers/R-Analog",
+        "r2":             "Main Stick/Up",
+        "l2":             "Main Stick/Down",
+        "joystick1left":  "Main Stick/Left",
+        "joystick1right": "Main Stick/Right",
+    }
+
+    eslog.debug("configuring wheel for pad {}".format(pad.realName))
+    
+    f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
+    f.write(f"Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
+
+    for x in pad.inputs:
+        input = pad.inputs[x]
+        if input.name in wheelMapping:
+            write_key(f, wheelMapping[input.name], input.type, input.id, input.value, pad.nbaxes, False, None, None)
+            if input.name == "joystick1left" and "joystick1right" in wheelMapping:
+                write_key(f, wheelMapping["joystick1right"], input.type, input.id, input.value, pad.nbaxes, True, None, None)
+
 
 def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer):
     for opt in extraOptions:
