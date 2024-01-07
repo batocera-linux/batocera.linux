@@ -68,11 +68,11 @@ def connected_to_internet():
     eslog.error(f"Not connected to the internet")
     return False
 
-def writeLibretroConfig(generator, retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+def writeLibretroConfig(generator, retroconfig, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(generator, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -88,7 +88,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         coreSettings = UnixSettings(retroarchCore, separator=' ')
 
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns)
+    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns, wheels)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
