@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 import controllersConfig
 
-def generateCoreSettings(coreSettings, system, rom, guns):
+def generateCoreSettings(coreSettings, system, rom, guns, wheels):
 
     # Amstrad CPC / GX4000
     if (system.config['core'] == 'cap32'):
@@ -1973,6 +1973,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('reicast_screen_rotation', '"horizontal"')
 
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+            coreSettings.save('reicast_analog_stick_deadzone', '"0%"')
+        else:
+            coreSettings.save('reicast_analog_stick_deadzone', '"15%"') # default value
+
     # Sega SG1000 / Master System / Game Gear / Megadrive / Mega CD
     if (system.config['core'] == 'genesisplusgx'):
         # Allows each game to have its own one brm file for save without lack of space
@@ -2155,8 +2161,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('kronos_language_id', '"English"')  
 
-    # gun cross
+    # gun cross / wheel
     if (system.config['core'] == 'beetle-saturn'):
+        # gun
         if system.isOptSet('beetle-saturn_crosshair'):
             coreSettings.save('beetle_saturn_virtuagun_crosshair', '"' + system.config['beetle-saturn_crosshair'] + '"')
         else:
@@ -2165,6 +2172,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"Off"'
             coreSettings.save('beetle_saturn_virtuagun_crosshair', status)
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+            coreSettings.save('beetle_saturn_analog_stick_deadzone', '"0%"')
+        else:
+            coreSettings.save('beetle_saturn_analog_stick_deadzone', '"15%"') # default value
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
