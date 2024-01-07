@@ -272,6 +272,7 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
         if len(guns) >= nplayer:
             f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
             f.write("Source = 1\n")
+            f.write("Extension = Nunchuk\n")
 
             dolphinMappingNames = {
                 "a":             "Buttons/A",
