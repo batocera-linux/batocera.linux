@@ -3895,7 +3895,42 @@ libretro:
                 choices:
                     "Off":         none
                     "Memory Pak":  memory
-                    "Rumble Pak":  rumble          
+                    "Rumble Pak":  rumble
+            mupen64plus-deadzone:
+                prompt:      JOYSTICK DEADZONE
+                description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
+                choices:
+                    "0%":               0
+                    "5%":               5
+                    "15% (Default)":    15
+                    "20%":              20 
+                    "25%":              25
+                    "30%":              30
+            mupen64plus-sensitivity:
+                prompt:      JOYSTICK SENSITIVITY
+                description: Use to make joystick movement more or less sensitive. Effects all controllers.
+                choices:
+                    "50%":              50
+                    "55%":              55
+                    "60%":              60
+                    "65%":              65 
+                    "70%":              70
+                    "75%":              75
+                    "80%":              80
+                    "85%":              85
+                    "90%":              90
+                    "95%":              95 
+                    "100% (Default)":   100
+                    "105%":             105
+                    "110%":             110
+                    "115%":             115
+                    "120%":             120
+                    "125%":             125
+                    "130%":             130
+                    "135%":             135
+                    "140%":             140
+                    "145%":             145
+                    "150%":             150  
             mupen64plus-Framerate:
                 group: ADVANCED OPTIONS
                 prompt: FRAME RATE
@@ -4393,6 +4428,41 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+            parallel-n64-deadzone:
+                prompt:      JOYSTICK DEADZONE
+                description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
+                choices:
+                    "0%":               0
+                    "5%":               5
+                    "15% (Default)":    15
+                    "20%":              20 
+                    "25%":              25
+                    "30%":              30
+            parallel-n64-sensitivity:
+                prompt:      JOYSTICK SENSITIVITY
+                description: Use to make joystick movement more or less sensitive. Effects all controllers.
+                choices:
+                    "50%":              50
+                    "55%":              55
+                    "60%":              60
+                    "65%":              65 
+                    "70%":              70
+                    "75%":              75
+                    "80%":              80
+                    "85%":              85
+                    "90%":              90
+                    "95%":              95 
+                    "100% (Default)":   100
+                    "105%":             105
+                    "110%":             110
+                    "115%":             115
+                    "120%":             120
+                    "125%":             125
+                    "130%":             130
+                    "135%":             135
+                    "140%":             140
+                    "145%":             145
+                    "150%":             150          
     pce:
       features: [netplay, cheevos]
       shared: [rewind, autosave]

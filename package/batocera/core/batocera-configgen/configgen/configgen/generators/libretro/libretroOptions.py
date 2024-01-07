@@ -1133,7 +1133,18 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"' + system.config['mupen64plus-parallel-rdp-upscaling'] + '"')
         else:
             coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"1x"')
-
+        # Joystick deadzone
+        if system.isOptSet('mupen64plus-deadzone'):
+            coreSettings.save('mupen64plus-astick-deadzone', '"' + system.config['mupen64plus-deadzone'] + '"')
+        else:
+            coreSettings.save('mupen64plus-astick-deadzone', '"15"')
+            
+        # Joystick sensitivity
+        if system.isOptSet('mupen64plus-sensitivity'):
+            coreSettings.save('mupen64plus-astick-sensitivity', '"' + system.config['mupen64plus-sensitivity'] + '"')
+        else:
+            coreSettings.save('mupen64plus-astick-sensitivity', '"100"')
+        
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
         coreSettings.save('parallel-n64-boot-device',   '"Default"')
@@ -1188,7 +1199,18 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
         else:
             coreSettings.save('parallel-n64-pak4', '"none"')
-
+        # Joystick deadzone
+        if system.isOptSet('parallel-n64-deadzone'):
+            coreSettings.save('parallel-n64-astick-deadzone', '"' + system.config['parallel-n64-deadzone'] + '"')
+        else:
+            coreSettings.save('parallel-n64-astick-deadzone', '"15"')
+            
+        # Joystick sensitivity
+        if system.isOptSet('parallel-n64-sensitivity'):
+            coreSettings.save('parallel-n64-astick-sensitivity', '"' + system.config['parallel-n64-sensitivity'] + '"')
+        else:
+            coreSettings.save('parallel-n64-astick-sensitivity', '"100"')
+        
         # Nintendo 64-DD
         if (system.name == 'n64dd'):
             # 64DD Hardware
