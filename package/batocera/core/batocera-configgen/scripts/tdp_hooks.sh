@@ -34,6 +34,10 @@ handle_tdp() {
 # Check for events
 EVENT=$1
 SYSTEM_NAME=$2
+ROM_PATH=$5
+
+# Get the rom name from ROM_PATH
+ROM_NAME=$(basename "$ROM_PATH")
 
 # exit accordingly if the event is neither gameStart nor gameStop
 if [ "$EVENT" != "gameStart" ] && [ "$EVENT" != "gameStop" ]; then
@@ -56,7 +60,11 @@ fi
 # run through determing the desired TDP setting
 # check for user set system specific setting
 if [ -n "${SYSTEM_NAME}" ]; then
-    TDP_SETTING="$(/usr/bin/batocera-settings-get ${SYSTEM_NAME}.tdp)"
+    # check for rom specific config
+    TDP_SETTING=$(/usr/bin/batocera-settings-get "${SYSTEM_NAME}[\"${ROM_NAME}\"].tdp")
+    if [ -z "${TDP_SETTING}" ]; then
+        TDP_SETTING="$(/usr/bin/batocera-settings-get ${SYSTEM_NAME}.tdp)"
+    fi
 fi
 # If no user set system specific setting check for user set global setting
 if [ -z "${TDP_SETTING}" ]; then
