@@ -349,19 +349,21 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             # erase values
             for btn in gunButtons:
                 if btn in gunsmetadata:
-                    if gunsmetadata[btn] in gunMapping:
-                        for x in gunMapping:
-                            if gunMapping[x] == btn:
-                                eslog.info("erasing {}".format(x))
-                                gunMapping[x] = ""
-                    else:
-                            eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(btn, gunsmetadata[btn]))
+                    for mval in gunsmetadata[btn].split(","):
+                        if mval in gunMapping:
+                            for x in gunMapping:
+                                if gunMapping[x] == btn:
+                                    eslog.info("erasing {}".format(x))
+                                    gunMapping[x] = ""
+                        else:
+                            eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(btn, mval))
             # setting values
             for btn in gunButtons:
                 if btn in gunsmetadata:
-                    if gunsmetadata[btn] in gunMapping:
-                        gunMapping[gunsmetadata[btn]] = btn
-                        eslog.info("setting {} to {}".format(gunsmetadata[btn], btn))
+                    for mval in gunsmetadata[btn].split(","):
+                        if mval in gunMapping:
+                            gunMapping[mval] = btn
+                            eslog.info("setting {} to {}".format(mval, btn))
 
             # write buttons
             for btn in dolphinMappingNames:
