@@ -10,7 +10,7 @@ tar xf u-boot-2023.10.tar.bz2
 cd u-boot-2023.10
 
 # Apply patches
-PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/ogu/patches/uboot/*.patch"
+PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/patches/uboot/*.patch"
 for patch in $PATCHES
 do
 echo "Applying patch: $patch"

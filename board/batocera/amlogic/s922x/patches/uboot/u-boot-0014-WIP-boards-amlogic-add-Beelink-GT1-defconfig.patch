@@ -1,7 +1,7 @@
 From 7416bc16b956d7b9b2761ac5511c6b51ac8b4ca1 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Thu, 7 Jul 2022 10:27:01 +0000
-Subject: [PATCH 14/15] WIP: boards: amlogic: add Beelink GT1 defconfig
+Subject: [PATCH 14/22] WIP: boards: amlogic: add Beelink GT1 defconfig
 
 Add a board config for Beelink GT1 devices
 
@@ -19,7 +19,7 @@ index 0000000000..77ffc9aa49
 @@ -0,0 +1,71 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_MESON=y
-+CONFIG_SYS_TEXT_BASE=0x01000000
++CONFIG_TEXT_BASE=0x01000000
 +CONFIG_NR_DRAM_BANKS=1
 +CONFIG_ENV_SIZE=0x2000
 +CONFIG_DM_GPIO=y
@@ -81,7 +81,7 @@ index 0000000000..77ffc9aa49
 +CONFIG_USB_GADGET_PRODUCT_NUM=0xfada
 +CONFIG_USB_GADGET_DWC2_OTG=y
 +CONFIG_USB_GADGET_DOWNLOAD=y
-+CONFIG_DM_VIDEO=y
++CONFIG_VIDEO=y
 +# CONFIG_VIDEO_BPP8 is not set
 +# CONFIG_VIDEO_BPP16 is not set
 +CONFIG_SYS_WHITE_ON_BLACK=y
@@ -89,5 +89,5 @@ index 0000000000..77ffc9aa49
 +CONFIG_VIDEO_DT_SIMPLEFB=y
 +CONFIG_OF_LIBFDT_OVERLAY=y
 -- 
-2.17.1
+2.34.1
 

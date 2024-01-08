@@ -34,7 +34,7 @@ pushd "${uboot}" || exit 1
     git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip || exit 1
 
     # Apply patch sets
-    for patch in ${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/{,odroidn2l/}patches/uboot/*.patch; do
+    for patch in ${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/patches/uboot/*.patch; do
         echo "Applying patch: $patch"
         patch -p1 < "$patch" || exit 1
     done
