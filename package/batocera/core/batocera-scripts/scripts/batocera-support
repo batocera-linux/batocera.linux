@@ -1,8 +1,8 @@
 #!/bin/sh
 
-
 GTMP="/tmp"
 DHOME="/userdata/system"
+V_ARCH=$(uname -m)
 
 # to be callable by any external tool
 if test $# -eq 1
@@ -24,7 +24,6 @@ d_cp() {
     test -d "$1" && cp -pr "$1" "$2"
 }
 
-
 if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/system" "${TMPDIR}/joysticks" "${TMPDIR}/lirc" "${TMPDIR}/kodi" "${TMPDIR}/coredumps"
 then
     if ! cd "${TMPDIR}"
@@ -37,11 +36,14 @@ else
     exit 1
 fi
 
-# in case xorg is in use
-export DISPLAY=:0.0
-
 # SYSTEM
 DSYSTEM="${TMPDIR}/system"
+
+# in case xorg is in use
+if test -z "${DISPLAY}"; then
+    export DISPLAY=:0.0
+fi
+
 dmesg 	         	> "${DSYSTEM}/dmesg.txt"
 lsmod 	         	> "${DSYSTEM}/lsmod.txt"
 ps    	         	> "${DSYSTEM}/ps.txt"
@@ -65,7 +67,10 @@ connmanctl services     > "${DSYSTEM}/connman-services.txt"
 batocera-systems        > "${DSYSTEM}/bios.txt"
 batocera-version        > "${DSYSTEM}/batocera.version"
 batocera-info           > "${DSYSTEM}/batocera.info"
-xrandr --listproviders  > "${DSYSTEM}/xrandr-providers.txt"
+# get xrandr provider if x86 system only
+if [ "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64" ]; then
+    xrandr --listproviders  > "${DSYSTEM}/xrandr-providers.txt"
+fi
 f_cp /boot/boot/batocera.board                                "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
 grep -vE '^[ #]*global.retroachievements.password[ ]*=|^[ #]*global.retroachievements.token[ ]*=' /userdata/system/batocera.conf > "${DSYSTEM}/batocera.conf"
