@@ -251,8 +251,8 @@ if [ "$command" = "storage" ]; then
 	INTERNAL_DEVICE=$(batocera-part share_internal)
 	PARTPREFIX=$(batocera-part prefix "${INTERNAL_DEVICE}")
 	lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
-	    grep 'TYPE="part"' |
-	    grep -v "FSTYPE=\"swap\"" |
+	    grep -E "TYPE=\"(part|lvm)\"" |
+	    grep -vE "FSTYPE=\"(swap|LVM2_member)\"" |
 	    sed -e s+'^NAME="'+'NAME="/dev/'+ -e s+'LABEL=""'+'LABEL="NO_NAME"'+ |
 	    grep -vE "^NAME=\"${PARTPREFIX}" |
 	    sed -e s+'^NAME="[^"]*" FSTYPE="[^"]*" LABEL="\([^"]*\)" UUID="\([^"]*\)" SIZE="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1 - \3'+

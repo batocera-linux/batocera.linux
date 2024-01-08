@@ -279,6 +279,15 @@ else
     MODE=${RMODE}
 fi
 
+VGSCAN=/usr/sbin/vgscan
+VGCHANGE=/usr/sbin/vgchange
+
+if [ -x ${VGSCAN} -a -x ${VGCHANGE} ]
+then
+    ${VGSCAN}
+    ${VGCHANGE} -ay
+fi
+
 case "${MODE}" in
     "DEV")
         LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
