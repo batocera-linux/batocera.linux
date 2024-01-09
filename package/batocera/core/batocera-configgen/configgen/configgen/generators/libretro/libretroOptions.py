@@ -1045,7 +1045,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             f.write("video_driver = \"glcore\"\n")
             f.close()
 
-    # Nintendo 64
+    # Nintendo 64   
     if (system.config['core'] == 'mupen64plus-next'):
         # Threaded Rendering
         coreSettings.save('mupen64plus-ThreadedRenderer', '"True"')
@@ -1088,24 +1088,60 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
+        
+        # Check if any controller packs are set to auto rumble
+        auto_rumble_pak = None
+        for pak in range(1, 5):
+            pak_value = f'mupen64plus-pak{pak}'
+            if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
+                auto_rumble_pak = pak_value
+                break
+                
+        if auto_rumble_pak:
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)  
+        
         # Controller Pak 1
         if system.isOptSet('mupen64plus-pak1'):
-            coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')
+            if system.config['mupen64plus-pak1'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak1', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak1', '"memory"')     
+            else:
+                coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')                
         else:
             coreSettings.save('mupen64plus-pak1', '"memory"')
         # Controller Pak 2
         if system.isOptSet('mupen64plus-pak2'):
-            coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')
+            if system.config['mupen64plus-pak2'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak2', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak2', '"none"')     
+            else:
+                coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')                
         else:
             coreSettings.save('mupen64plus-pak2', '"none"')
         # Controller Pak 3
         if system.isOptSet('mupen64plus-pak3'):
-            coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')
+            if system.config['mupen64plus-pak3'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak3', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak3', '"none"')     
+            else:
+                coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')                
         else:
             coreSettings.save('mupen64plus-pak3', '"none"')
         # Controller Pak 4
         if system.isOptSet('mupen64plus-pak4'):
-            coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')
+            if system.config['mupen64plus-pak4'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak4', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak4', '"none"')     
+            else:
+                coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')                
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
         # RDP Plugin
@@ -1179,24 +1215,60 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('parallel-n64-framerate', '"' + system.config['parallel-n64-framerate'] + '"')
         else:
             coreSettings.save('parallel-n64-framerate', '"automatic"')
+        
+        # Check if any controller packs are set to auto rumble
+        auto_rumble_pak = None
+        for pak in range(1, 5):
+            pak_value = f'parallel-n64-pak{pak}'
+            if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
+                auto_rumble_pak = pak_value
+                break
+                
+        if auto_rumble_pak:
+            metadata = controllersConfig.getGamesMetaData(system.name, rom) 
+        
         # Controller Pak 1
         if system.isOptSet('parallel-n64-pak1'):
-            coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')
+            if system.config['parallel-n64-pak1'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak1', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak1', '"memory"')     
+            else:
+                coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')                
         else:
             coreSettings.save('parallel-n64-pak1', '"memory"')
         # Controller Pak 2
         if system.isOptSet('parallel-n64-pak2'):
-            coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')
+            if system.config['parallel-n64-pak2'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak2', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak2', '"none"')     
+            else:
+                coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')                
         else:
             coreSettings.save('parallel-n64-pak2', '"none"')
         # Controller Pak 3
         if system.isOptSet('parallel-n64-pak3'):
-            coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')
+            if system.config['parallel-n64-pak3'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak3', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak3', '"none"')     
+            else:
+                coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')                
         else:
             coreSettings.save('parallel-n64-pak3', '"none"')
         # Controller Pak 4
         if system.isOptSet('parallel-n64-pak4'):
-            coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
+            if system.config['parallel-n64-pak4'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak4', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak4', '"none"')     
+            else:
+                coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')                
         else:
             coreSettings.save('parallel-n64-pak4', '"none"')
         # Joystick deadzone
