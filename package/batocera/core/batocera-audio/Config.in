@@ -13,5 +13,6 @@ config BR2_PACKAGE_BATOCERA_AUDIO
 	select BR2_PACKAGE_SBC
 	select BR2_PACKAGE_PIPEWIRE
 	select BR2_PACKAGE_PULSEAUDIO
+	select BR2_PACKAGE_WIREPLUMBER
 	help
 	  Audio support and scripts for batocera.linux
