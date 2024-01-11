@@ -24,7 +24,7 @@ shared:
         "80%":                80
         "90%":                90
         "100%":               100
-        "105% (Use caution":  105
+        "105% (Use caution)":  105
         "110% (Use caution)": 110
         "115% (Use caution)": 115
         "120% (Are you crazy?)": 120
@@ -343,7 +343,7 @@ libretro:
         "ALSAThread":      alsathread
         "TinyALSA":        tinyalsa
         "SDL2":            sdl2
-        "Pulse (Default)": pulse    
+        "Pulse (Default)": pulse
     audio_latency:
       group: ADVANCED OPTIONS
       prompt:      AUDIO LATENCY
@@ -1847,34 +1847,34 @@ libretro:
                     "Off":                disabled
                     "On":                 enabled
             gx_controller1_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 1 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             gx_controller2_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 2 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             gx_controller3_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 3 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             gx_controller4_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 4 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
-                    "Megadrive":          megadrive            
-            
+                    "Megadrive":          megadrive
+
       systems:
             megadrive:
                 shared: [use_guns]
@@ -1934,7 +1934,7 @@ libretro:
                             "MAME (ASIC YM3438)":       mame (asic ym3438)
                             "MAME (Enhanced YM3438)":   mame (enhanced ym3438)
                             "Nuked (YM2612)":           nuked (ym2612)
-                            "Nuked (YM3438)":           nuked (ym3438)        
+                            "Nuked (YM3438)":           nuked (ym3438)
             segacd:
                 cfeatures:
                     gpgx_cd_add_on:
@@ -1967,7 +1967,7 @@ libretro:
                             "MAME (ASIC YM3438)":       mame (asic ym3438)
                             "MAME (Enhanced YM3438)":   mame (enhanced ym3438)
                             "Nuked (YM2612)":           nuked (ym2612)
-                            "Nuked (YM3438)":           nuked (ym3438)    
+                            "Nuked (YM3438)":           nuked (ym3438)
             msu-md:
                 cfeatures:
                     gpgx_cd_add_on:
@@ -2165,13 +2165,13 @@ libretro:
             prompt: IMPROVED MESH
             description: Replace meshed transparency by real transparency.
             choices:
-                "Disabled": disabled 
+                "Disabled": disabled
                 "Enabled":  enabled
         kronos_bandingmode:
             prompt: IMPROVED BANDING
             description: Apply gouraud shading instead of flat shading.
             choices:
-                "Disabled": disabled 
+                "Disabled": disabled
                 "Enabled":  enabled
         kronos_multitap:
             prompt: MULTITAP
@@ -2185,7 +2185,7 @@ libretro:
             prompt: BIOS Language
             description: Choose system BIOS language.
             choices:
-                "English":  English 
+                "English":  English
                 "German":   German
                 "French":   French
                 "Spanish":  Spanish
@@ -3836,7 +3836,7 @@ libretro:
                     "Cached Interpreter":               cached_interpreter
                     "Pure Interpreter (Most Accurate)": pure_interpreter
             mupen64plus-controller1:
-                submenu:     CONTROLLER 1    
+                submenu:     CONTROLLER 1
                 prompt:      CONTROLLER TYPE
                 description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
                 choices:
@@ -3844,7 +3844,7 @@ libretro:
                     "N64": n64
                     "N64 (Limited Hotkeys)": n64limited
             mupen64plus-controller2:
-                submenu:     CONTROLLER 2 
+                submenu:     CONTROLLER 2
                 prompt:      CONTROLLER TYPE
                 description: Useful for N64 style controllers.
                 choices:
@@ -3858,12 +3858,12 @@ libretro:
                     "RetroPad (Default)": retropad
                     "N64": n64
             mupen64plus-controller4:
-                submenu:     CONTROLLER 4 
+                submenu:     CONTROLLER 4
                 prompt:      CONTROLLER TYPE
                 description: Useful for N64 style controllers.
                 choices:
                     "RetroPad (Default)": retropad
-                    "N64": n64                   
+                    "N64": n64
             mupen64plus-pak1:
                 submenu:     CONTROLLER 1
                 prompt:      CONTROLLER PAK
@@ -3873,7 +3873,7 @@ libretro:
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
             mupen64plus-pak2:
-                submenu:     CONTROLLER 2 
+                submenu:     CONTROLLER 2
                 prompt:      CONTROLLER PAK
                 description: Emulate a pak in the controller expansion port.
                 choices:
@@ -3881,7 +3881,7 @@ libretro:
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
             mupen64plus-pak3:
-                submenu:     CONTROLLER 3 
+                submenu:     CONTROLLER 3
                 prompt:      CONTROLLER PAK
                 description: Emulate a pak in the controller expansion port.
                 choices:
@@ -3889,7 +3889,7 @@ libretro:
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
             mupen64plus-pak4:
-                submenu:     CONTROLLER 4 
+                submenu:     CONTROLLER 4
                 prompt:      CONTROLLER PAK
                 description: Emulate a pak in the controller expansion port.
                 choices:
@@ -3903,7 +3903,7 @@ libretro:
                     "0%":               0
                     "5%":               5
                     "15% (Default)":    15
-                    "20%":              20 
+                    "20%":              20
                     "25%":              25
                     "30%":              30
             mupen64plus-sensitivity:
@@ -3913,13 +3913,13 @@ libretro:
                     "50%":              50
                     "55%":              55
                     "60%":              60
-                    "65%":              65 
+                    "65%":              65
                     "70%":              70
                     "75%":              75
                     "80%":              80
                     "85%":              85
                     "90%":              90
-                    "95%":              95 
+                    "95%":              95
                     "100% (Default)":   100
                     "105%":             105
                     "110%":             110
@@ -3930,7 +3930,7 @@ libretro:
                     "135%":             135
                     "140%":             140
                     "145%":             145
-                    "150%":             150  
+                    "150%":             150
             mupen64plus-Framerate:
                 group: ADVANCED OPTIONS
                 prompt: FRAME RATE
@@ -4330,7 +4330,7 @@ libretro:
                     "Gln64":     gln64
                     "Rice":      rice
                     "Angrylion": angrylion
-                    "Parallel":  parallel            
+                    "Parallel":  parallel
             parallel-n64-screensize:
                 prompt:      RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -4395,7 +4395,7 @@ libretro:
                 description: Useful for N64 style controllers.
                 choices:
                     "RetroPad (Default)": retropad
-                    "N64": n64               
+                    "N64": n64
             parallel-n64-pak1:
                 submenu:     CONTROLLER 1
                 prompt:      CONTROLLER PAK
@@ -4435,7 +4435,7 @@ libretro:
                     "0%":               0
                     "5%":               5
                     "15% (Default)":    15
-                    "20%":              20 
+                    "20%":              20
                     "25%":              25
                     "30%":              30
             parallel-n64-sensitivity:
@@ -4445,13 +4445,13 @@ libretro:
                     "50%":              50
                     "55%":              55
                     "60%":              60
-                    "65%":              65 
+                    "65%":              65
                     "70%":              70
                     "75%":              75
                     "80%":              80
                     "85%":              85
                     "90%":              90
-                    "95%":              95 
+                    "95%":              95
                     "100% (Default)":   100
                     "105%":             105
                     "110%":             110
@@ -4462,7 +4462,7 @@ libretro:
                     "135%":             135
                     "140%":             140
                     "145%":             145
-                    "150%":             150          
+                    "150%":             150
     pce:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
@@ -4591,41 +4591,41 @@ libretro:
                     "Off":             disabled
                     "On":              enabled
             pd_controller1_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 1 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             pd_controller2_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 2 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             pd_controller3_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 3 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
                     "Megadrive":          megadrive
             pd_controller4_mapping:
-                submenu:     CONTROLLERS   
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 4 INPUT MAPPING
                 description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
                 choices:
                     "Retropad (Default)": retropad
-                    "Megadrive":          megadrive              
+                    "Megadrive":          megadrive
             picodrive_controller1:
-                submenu:     CONTROLLERS  
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 1 TYPE
                 choices:
                     "Joypad 3 Button": 3 button pad
                     "Joypad 6 Button": 6 button pad
             picodrive_controller2:
-                submenu:     CONTROLLERS  
+                submenu:     CONTROLLERS
                 prompt:      CONTROLLER 2 TYPE
                 choices:
                     "Joypad 3 Button": 3 button pad
@@ -4717,7 +4717,7 @@ libretro:
                     "3360x1904":         3360x1904
                     "3840x2176":         3840x2176
                     "4320x2448":         4320x2448
-                    "4800x2720":         4800x2720      
+                    "4800x2720":         4800x2720
     prboom:
       shared: [rewind, autosave]
       cfeatures:
@@ -5454,7 +5454,7 @@ libretro:
                     "RGB":        "rgb"
                     "S-Video":    "s-video"
                     "Composite":  "composite"
-                
+
     snes9x_next:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
@@ -5522,7 +5522,7 @@ libretro:
                     "RGB":        "rgb"
                     "S-Video":    "s-video"
                     "Composite":  "composite"
-    
+
     stella:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
@@ -6664,7 +6664,7 @@ citra:
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
-                "Software":         0 
+                "Software":         0
                 "OpenGL (Default)": 1
                 "Vulkan":           2
         citra_use_vsync_new:
@@ -6694,7 +6694,7 @@ citra:
             description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
             choices:
                 "Off": 0
-                "On":  1            
+                "On":  1
         citra_custom_textures:
             submenu: GRAPHICS
             prompt: LOAD CUSTOM TEXTURES
@@ -6914,7 +6914,7 @@ dolphin:
             choices:
                 "None":                       0
                 "Standard Controller":        6a
-                "GameCube Controller":        6b 
+                "GameCube Controller":        6b
                 "GameCube Adapter for Wii U": 12
                 "Steering Wheel":             8
                 "Dance Mat":                  9
@@ -6948,7 +6948,7 @@ dolphin:
             description: Use alternative input mappings. Only applies to Standard Controller type.
             choices:
                 "Face Buttons (CW)":         buttons_cw
-                "Face Buttons (CCW)":        buttons_ccw        
+                "Face Buttons (CCW)":        buttons_ccw
         anisotropic_filtering:
             submenu: RENDERING
             prompt: ANISOTROPIC FILTERING
@@ -7050,7 +7050,7 @@ dolphin:
             description: Set joystick deadzone.
             choices:
                 "0%":            0.0
-                "5% (Default)":  5.0        
+                "5% (Default)":  5.0
                 "10%":           10.0
                 "15%":           15.0
                 "20%":           20.0
@@ -7062,7 +7062,7 @@ dolphin:
             description: Set joystick deadzone.
             choices:
                 "0%":            0.0
-                "5% (Default)":  5.0        
+                "5% (Default)":  5.0
                 "10%":           10.0
                 "15%":           15.0
                 "20%":           20.0
@@ -7074,7 +7074,7 @@ dolphin:
             description: Set joystick deadzone.
             choices:
                 "0%":            0.0
-                "5% (Default)":  5.0        
+                "5% (Default)":  5.0
                 "10%":           10.0
                 "15%":           15.0
                 "20%":           20.0
@@ -7086,7 +7086,7 @@ dolphin:
             description: Set joystick deadzone.
             choices:
                 "0%":            0.0
-                "5% (Default)":  5.0        
+                "5% (Default)":  5.0
                 "10%":           10.0
                 "15%":           15.0
                 "20%":           20.0
@@ -7098,7 +7098,7 @@ dolphin:
             description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
             choices:
                 "Smaller":          smaller
-                "Normal (Default)": normal        
+                "Normal (Default)": normal
                 "Larger":           larger
         jsgate_size_2:
             submenu: CONTROLLER 2
@@ -7106,23 +7106,23 @@ dolphin:
             description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
             choices:
                 "Smaller":          smaller
-                "Normal (Default)": normal        
-                "Larger":           larger 
+                "Normal (Default)": normal
+                "Larger":           larger
         jsgate_size_3:
             submenu: CONTROLLER 3
             prompt: JOYSTICK GATE SIZE
             description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
             choices:
                 "Smaller":          smaller
-                "Normal (Default)": normal        
-                "Larger":           larger 
+                "Normal (Default)": normal
+                "Larger":           larger
         jsgate_size_4:
             submenu: CONTROLLER 4
             prompt: JOYSTICK GATE SIZE
             description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
             choices:
                 "Smaller":          smaller
-                "Normal (Default)": normal        
+                "Normal (Default)": normal
                 "Larger":           larger
         dplii:
             group: ADVANCED OPTIONS
@@ -7130,7 +7130,7 @@ dolphin:
             description: Enables Dolby Pro Logic II for surround sound. May impact performance.
             choices:
                 "Off": 0
-                "On":  1        
+                "On":  1
   systems:
     gamecube:
         cfeatures:
@@ -7383,7 +7383,7 @@ duckstation:
             choices:
                 "Vulkan":   Vulkan
                 "OpenGL":   OpenGL
-                "Software": Software                
+                "Software": Software
         duckstation_vsync:
             submenu: DISPLAY
             prompt: VSYNC
@@ -7558,7 +7558,7 @@ duckstation:
                 "DualShock / Xbox Type":  AnalogController
                 "Namco GunCon (Rumble)":  NamcoGunCon
                 "PlayStation Mouse":      PlayStationMouse
-                "NeGcon (Rumble)":        NeGcon  
+                "NeGcon (Rumble)":        NeGcon
         duckstation_pgxp:
             group: ADVANCED OPTIONS
             prompt: ENABLE PGXP CORRECTIONS
@@ -7979,7 +7979,7 @@ moonlight:
             description: Enables surround sound if your audio card supports it (Consumes more bandwidth).
             choices:
                 "5.1": "5.1"
-                "7.1": "7.1"       
+                "7.1": "7.1"
 
 mupen64plus:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
@@ -8084,7 +8084,7 @@ mupen64plus:
                 "Enable":       1
         mupen64-controller1:
             submenu: CONTROLLER 1
-            prompt: CONTROLLER TYPE             
+            prompt: CONTROLLER TYPE
             description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
             choices:
                 "RetroPad (Default)": retropad
@@ -8222,7 +8222,7 @@ mupen64plus:
                 "10%": 0.1
                 "15%": 0.15
                 "20%": 0.2
-                "25%": 0.25    
+                "25%": 0.25
 openbor:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
@@ -8262,13 +8262,13 @@ openbor:
           description: Limit FPS to reduce high CPU usage.
           choices:
             "Disabled": 0
-            "Enabled":  1        
+            "Enabled":  1
         openbor_rumble:
           prompt: RUMBLE
           description: Only some games feature rumble. Not compatible with all controllers.
           choices:
             "Disabled": 0
-            "Enabled":  1 
+            "Enabled":  1
 
 pcsx2:
   cores:
@@ -11024,7 +11024,7 @@ play:
           description: Only applicable when using OpenGL.
           choices:
               "Disabled": "false"
-              "Enabled":  "true"     
+              "Enabled":  "true"
       play_language:
           prompt: LANGUAGE
           description: Change the game's language.
@@ -11475,7 +11475,7 @@ xenia-canary:
             description: Enable or disable Xenia patches. These patches can fix graphics problems in some games.
             choices:
                 "Disabled (Default)": false
-                "Enabled": true            
+                "Enabled": true
 
 eka2l1:
   features: []
@@ -11594,7 +11594,7 @@ vita3k:
       description: Speed hack, enable to disable surface syncing between CPU and GPU. Surface syncing is needed by a few games.
       choices:
         "Disabled":          "false"
-        "Enabled (Default)": "true"    
+        "Enabled (Default)": "true"
     vita3k_linear:
       prompt: LINEAR FILTERING
       description: The image will be softer which could help with aliasing.
@@ -11666,6 +11666,110 @@ thextech:
 vpinball:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    vpinball_balltrail:
+      group: DISPLAY
+      prompt: BALL TRAIL
+      description: Makes the ball easier to follow.
+      choices:
+        "0 (Default)": "0"
+        "0.5": "0.5"
+        "0.6": "0.6"
+        "0.7": "0.7"
+        "0.8": "0.8"
+        "0.9": "0.9"
+        "1.0": "1.0"
+    vpinball_nudgestrength:
+      group: DISPLAY
+      prompt: VISUAL NUDGE STRENGTH
+      description: Affects just the visual effect of nudging.
+      choices:
+        "0 (No Visual Effect)": "0"
+        "0.01": "0.01"
+        "0.02": "0.02"
+        "0.03": "0.03"
+        "0.04": "0.04"
+    vpinball_maxframerate:
+      group: DISPLAY
+      prompt: MAX FRAMERATE
+      description: Maximum Framerate.
+      choices:
+        "0 (Defaults Unlimited)": "0"
+        "60": "60"
+        "120": "120"
+        "144": "144"
+    vpinball_vsync:
+      group: DISPLAY
+      prompt: VSYNC
+      description: Sync the frame rate with the refresh rate of your monitor. None for lower input latency but video tearing. Vertical Sync to avoid video tearing, but with higher input latency. Adaptive Sync (Default) synchronizes on video sync, except for late frames (below target FPS) which are displayed immediately, also has higher input latency.
+      choices:
+        "None": "0"
+        "Vertical Sync": "1"
+        "Adaptive Sync (Default)": "2"
+    vpinball_presets:
+      group: DISPLAY
+      prompt: PRESETS
+      description: Big Impact on Performances (Press F11 in game to display FPS).
+      choices:
+        "Default Settings": "defaults"
+        "Low-end Computer": "lowend"
+        "High-end Computer": "highend"
+    vpinball_resolution:
+      group: DISPLAY
+      prompt: INTERNAL RESOLUTION
+      description: Rendering resolution.
+      choices:
+        "720p":  720
+        "768p":  768
+        "800p":  800
+        "960p":  960
+        "1050p": 1050
+        "1080p": 1080
+        "1200p": 1200
+        "1392p": 1392
+        "1440p": 1440
+        "1536p": 1536
+        "2160p": 2160
+    vpinball_ratio:
+      group: DISPLAY
+      prompt: DISPLAY RATIO
+      choices:
+        "16:9 (Default)":  169
+        "4:3":  43
+    vpinball_musicvolume:
+      group: AUDIO
+      prompt: MUSIC VOLUME
+      description: You need to also check if the table rom has its own settings.
+      choices:
+        "0%" : "0"
+        "5%" : "5"
+        "10%" :  "10"
+        "20%" : "20"
+        "30%" : "30"
+        "40%" : "40"
+        "50%" : "50"
+        "60%" : "60"
+        "70%" : "70"
+        "80%" : "80"
+        "90%" : "90"
+        "100%" : "100"
+    vpinball_soundvolume:
+      group: AUDIO
+      prompt: SOUND VOLUME
+      description: Mechanical sounds of the table.
+      choices:
+        "0%" : "0"
+        "5%" : "5"
+        "10%" :  "10"
+        "20%" : "20"
+        "30%" : "30"
+        "40%" : "40"
+        "50%" : "50"
+        "60%" : "60"
+        "70%" : "70"
+        "80%" : "80"
+        "90%" : "90"
+        "100%" : "100"
 
 theforceengine:
   features: [padtokeyboard]
@@ -11766,7 +11870,7 @@ theforceengine:
       description: Enable 16-channel iMuse Digital Audio.
       choices:
         "Disabled (Default)": 0
-        "Enabled":            1    
+        "Enabled":            1
     force_fight_music:
       prompt: FIGHT MUSIC
       description: Enable / Disable fight music.
@@ -11800,7 +11904,7 @@ theforceengine:
       prompt: SMOOTH VUES
       choices:
         "Disabled (Default)": 0
-        "Enabled":            1    
+        "Enabled":            1
     force_skip_cutscenes:
       group: ADVANCED OPTIONS
       prompt: SKIP CUTSCENES
@@ -11820,7 +11924,7 @@ iortcw:
       description: Choose your preferred renderer.
       choices:
         "Standard OpenGL (Default)": "opengl1"
-        "Enhanced OpenGL":           "rend2"    
+        "Enhanced OpenGL":           "rend2"
     iortcw_vsync:
       submenu: GRAPHICS
       prompt: VSYNC
@@ -11897,7 +12001,7 @@ fallout1-ce:
       choices:
         "None":             0
         "Minimal":          1
-        "Normal (Default)": 2  
+        "Normal (Default)": 2
         "Maximum Blood":    3
     fout1_subtitles:
       prompt: SUBTITLES
@@ -11938,7 +12042,7 @@ fallout2-ce:
       choices:
         "None":             0
         "Minimal":          1
-        "Normal (Default)": 2  
+        "Normal (Default)": 2
         "Maximum Blood":    3
     fout2_subtitles:
       prompt: SUBTITLES
@@ -11971,7 +12075,7 @@ dxx-rebirth:
       choices:
         "Classic (Default)": 0
         "Blocky Filtered":   1
-        "Smooth":            2     
+        "Smooth":            2
     rebirth_anisotropy:
       prompt: ANISOTROPIC FILTERING
       description: Improves clarity of distant textures.
