@@ -5,6 +5,7 @@
 - Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
 - Initial support for the Steam Deck OLED
+- Support for Thunderbolt 3 / USB4 eGPU chasis
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.
