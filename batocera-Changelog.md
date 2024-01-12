@@ -139,6 +139,7 @@
 - Sonic 2013 to Dec 2, 2023 build
 - Duckstation to Dec 21, 2023 build
 - ScummVM to 2.8
+- Redream to 1.5.0-1093
 ### System
 - Linux kernel to 6.7
 - Mesa to 23.3.2
@@ -255,7 +256,7 @@
 - xemu to v0.7.110
 - devilutionX to 1.5.0
 - ScummVM (standalone and libretro core) to July 18th build
-- redream to 1.5.0-1093
+- redream to 1.5.0-1080
 - kodi to 20.2
 - EDuke32 to July, 3th 2023
 - OpenMSX to v19.1
