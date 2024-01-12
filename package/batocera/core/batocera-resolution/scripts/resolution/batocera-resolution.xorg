@@ -22,7 +22,7 @@ f_usage() {
 }
 
 f_minTomaxResolution() {
-    CURRENT_ROTATION=$(xrandr --currentRotation)
+    CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
@@ -141,7 +141,7 @@ case "${ACTION}" in
         echo "setMode: ${MODE}" >> $log
         if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
         then
-            CURRENT_ROTATION=$(xrandr --currentRotation)
+            CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
             if test "${CURRENT_ROTATION}" = 1 -o "${CURRENT_ROTATION}" = 3
             then
                 SPMODE=$(echo "${MODE}" | sed -e s+"^max-([0-9]*)x([0-9]*)$"+"\2x\1"+)
@@ -151,7 +151,7 @@ case "${ACTION}" in
             echo "f_minTomaxResolution: $SPMODE" >> $log
             f_minTomaxResolution "${SPMODE}"
         else # normal mode
-            CURRENT_ROTATION=$(xrandr --currentRotation)
+            CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
             OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
             if [ -z "$OUTPUT" ]; then
                 echo "No connected output detected" >> $log
