@@ -1,20 +1,20 @@
 ################################################################################
 #
-# libzedmd
+# libdmdutil
 #
 ################################################################################
 # Version: Commits on Jan 13, 2024
-LIBZEDMD_VERSION = 31db44899b603cd1535e068b5e0842a7ee5ba0bb
-LIBZEDMD_SITE = $(call github,PPUC,libzedmd,$(LIBZEDMD_VERSION))
-LIBZEDMD_LICENSE = GPLv3
-LIBZEDMD_LICENSE_FILES = LICENSE
-LIBZEDMD_DEPENDENCIES = libserialport
-LIBZEDMD_SUPPORTS_IN_SOURCE_BUILD = NO
+LIBDMDUTIL_VERSION = 8b1dca4900885aaa38b07f7d2e5a0f6370ba5658
+LIBDMDUTIL_SITE = $(call github,vpinball,libdmdutil,$(LIBDMDUTIL_VERSION))
+LIBDMDUTIL_LICENSE = BSD-3-Clause
+LIBDMDUTIL_LICENSE_FILES = LICENSE
+LIBDMDUTIL_DEPENDENCIES = libserialport libzedmd libserum
+LIBDMDUTIL_SUPPORTS_IN_SOURCE_BUILD = NO
 
-LIBZEDMD_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-LIBZEDMD_CONF_OPTS += -DBUILD_STATIC=OFF
-LIBZEDMD_CONF_OPTS += -DPLATFORM=linux
-LIBZEDMD_CONF_OPTS += -DARCH=$(BUILD_ARCH)
+LIBDMDUTIL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+LIBDMDUTIL_CONF_OPTS += -DBUILD_STATIC=OFF
+LIBDMDUTIL_CONF_OPTS += -DPLATFORM=linux
+LIBDMDUTIL_CONF_OPTS += -DARCH=$(BUILD_ARCH)
 
 # handle supported target platforms
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
@@ -29,7 +29,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     BUILD_ARCH = x64
 endif
 
-define LIBZEDMD_CMAKE_HACKS
+define LIBDMDUTIL_CMAKE_HACKS
    ## derived from platforms/${PLATFORM}/${BUILD_ARCH}/external.sh and CMakeLists.txt ##
    $(SED) 's:third-party/include$$:$(STAGING_DIR)/usr/include/\n   third-party/include:g' $(@D)/CMakeLists.txt
    $(SED) 's:$${CMAKE_SOURCE_DIR}/third-party/runtime-libs/$${PLATFORM}/$${ARCH}/:$(STAGING_DIR)/usr/lib/:g' $(@D)/CMakeLists.txt
@@ -37,8 +37,8 @@ define LIBZEDMD_CMAKE_HACKS
 endef
 
 # Install to staging to build Visual Pinball Standalone
-LIBZEDMD_INSTALL_STAGING = YES
+LIBDMDUTIL_INSTALL_STAGING = YES
 
-LIBZEDMD_PRE_CONFIGURE_HOOKS += LIBZEDMD_CMAKE_HACKS
+LIBDMDUTIL_PRE_CONFIGURE_HOOKS += LIBDMDUTIL_CMAKE_HACKS
 
 $(eval $(cmake-package))
