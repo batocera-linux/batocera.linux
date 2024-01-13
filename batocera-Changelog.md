@@ -57,7 +57,7 @@
 - Streamlined x86_64 Secure Boot support
 ### Updated
 - Retroarch to 1.16.0.3
-- GroovyMAME 0.261 - Switchres 2.002x
+- GroovyMAME 0.261 - Switchres 2.002z
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
