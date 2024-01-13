@@ -151,7 +151,7 @@
 - Sound Open Firmware to 2023.12
 - Bluez to 5.71
 - Added tree utility
-- VKD3D-Proton to 2.11
+- VKD3D-Proton to 2.11.1
 - Host-XA to 2.4.0
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
