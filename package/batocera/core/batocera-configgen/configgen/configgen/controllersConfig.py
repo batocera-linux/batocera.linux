@@ -407,6 +407,27 @@ def getGameWheelsMetaData(system, rom):
                     return res
     return res
 
+def getGamesMetaData(system, rom):
+    # load the database
+    tree = ET.parse(batoceraFiles.esGamesMetadata)
+    root = tree.getroot()
+    game = gunNameFromPath(rom)
+    res = {}
+    eslog.info("looking for game metadata ({}, {})".format(system, game))
+
+    for nodesystem in root.findall(".//system"):
+        if nodesystem.get("name") == system:
+            for nodegame in nodesystem.findall(".//game"):
+                if nodegame.get("name") in game:
+                    for child in nodegame:
+                        for attribute in child.attrib:
+                            key = "{}_{}".format(child.tag, attribute)
+                            res[key] = child.get(attribute)
+                            eslog.info("found game metadata {}={}".format(key, res[key]))
+                    return res
+
+    return res
+
 def dev2int(dev):
     matches = re.match(r"^/dev/input/event([0-9]*)$", dev)
     if matches is None:
