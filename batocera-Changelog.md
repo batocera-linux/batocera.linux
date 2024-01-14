@@ -84,7 +84,7 @@
 - Vita3k to Dec 26 build
 - Xemu to v0.7.118
 - Xenia to v1.0.2808
-- Xenia Canary to a34944e (October 28 build)
+- Xenia Canary to 49d4460 (Jan 11 build)
 - ECWolf to 1.5pre
 - EDuke32 to Oct 07, 2023 build
 - Libretro-A5200 to Aug 18th build
