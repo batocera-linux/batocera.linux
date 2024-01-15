@@ -144,6 +144,7 @@
 - Linux kernel to 6.7
 - Mesa to 23.3.3
 - Proton to 8.0-4c
+- Wine Tricks to 20240105
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
 - Nvidia legacy driver to 470.223.02
