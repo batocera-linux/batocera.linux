@@ -19,19 +19,23 @@
 - Added RetroAchievements for Uzebox and NeoGeo CD
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
- - Not compatible with nuvee GunCon patch, use clean ROM.
+  - Not compatible with nuvee GunCon patch, use clean ROM.
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
- - Not compatible with nuvee GunCon patch, use clean ROM.
-- wheel support:
- - new supported wheels
- - n64, gamecube, wii, playstation better support
- - automatically set wheels on first players pads when playing wheel games
- - add support for wheel deadzones / min and max rotation by game / system
-- spinner support:
- - Atari Classic joystick: the rudder is seen as a spinner
+  - Not compatible with nuvee GunCon patch, use clean ROM.
+- New supported steering wheels:
+  - Logitech : Driving Force, G29, G920, Momo
+  - Thrustmaster : T300RS
+- More steering wheel support :
+  - Out of the box steering wheel optimization for Atomiswave, Dreamcast, N64, Naomi, Naomi 2, GameCube, PS2, Saturn
+  - Initial support for Wii, PSX, MAME, Xbox
+  - Automatically set wheels on first players pads when playing wheel games
+  - Add settings for wheel deadzones, maximum rotation angle, midzone per game and system
+- Spinner support:
+  - Atari Classic joystick: the rudder is seen as a spinner
 - Ayn Loki Zero: support for on-board LEDs (and light effect on retroachievements unlocked)
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
+- Initial support for Retro Shooter Lightgun
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
@@ -45,6 +49,7 @@
 - Initialization data was too large for /userdata on RAMdisk
 - Nvidia Prime defaulting to provider 1 when it could be another provider.
 - AMD Prime defaulting to provider 1 when it could be another provider.
+- Sinden Lightgun border not showing on 4K resolution in model2 gun games
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
@@ -55,6 +60,7 @@
 - Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
 - Send hostname to DHCP server, and allow for dynamically configured hostname from DHCP
 - Streamlined x86_64 Secure Boot support
+- Wii gun games now 100% playable with light guns (based on 5 buttons mapping)
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.261 - Switchres 2.002z
