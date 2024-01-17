@@ -29,8 +29,11 @@ class VPinballGenerator(Generator):
         vpinballSettings.optionxform = str
         if os.path.exists(vpinballConfigFile):
             vpinballSettings.read(vpinballConfigFile)
-        #Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...
-        vpinballSettings.set("Standalone", "PinMAMEPath", "./")
+        #Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...We keep a switch to allow users with the old unique pinmame to be able to continue using vpinball (switchon)
+        if system.isOptSet("vpinball_folders"):
+            vpinballSettings.set("Standalone", "PinMAMEPath", "")
+        else:
+            vpinballSettings.set("Standalone", "PinMAMEPath", "./")
         #Ball trail
         if system.isOptSet("vpinball_balltrail"):
             vpinballSettings.set("Player", "BallTrail", "1")
