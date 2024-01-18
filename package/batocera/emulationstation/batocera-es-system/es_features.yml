@@ -463,6 +463,12 @@ libretro:
                     "Cross": "Cross"
                     "Dot": "Dot"
                     "Disabled": "Off"
+          beetle-saturn-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
           controller1_saturn:
                 prompt:      CONTROLLER 1 TYPE
                 description: Not all games support 3D pad.
@@ -1613,6 +1619,12 @@ libretro:
                 choices:
                     "Off": disabled
                     "On":  enabled
+            flycast-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             reicast_widescreen_cheats:
                 prompt:      WIDESCREEN CHEAT (PRIORITY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -2173,6 +2185,12 @@ libretro:
             choices:
                 "Disabled": disabled 
                 "Enabled":  enabled
+        kronos-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
         kronos_multitap:
             prompt: MULTITAP
             description: Allows up to 7 or 12 controllers in supported games.
@@ -3760,6 +3778,12 @@ libretro:
                     "2560x1440": 2560x1440
                     "3840x2160": 3840x2160
                     "7680x4320": 7680x4320
+            mupen64plus-next-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             mupen64plus-aspect:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -4349,6 +4373,12 @@ libretro:
                     "7x (2240x1680)":   2240x1680
                     "9x (2880x2160)":   2880x2160
                     "18x (5760x4320)":  5760x4320
+            parallel_n64-widescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             parallel-n64-aspectratiohint:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -4638,6 +4668,15 @@ libretro:
                 choices:
                     "Joypad 3 Button": 3 button pad
                     "Joypad 6 Button": 6 button pad
+      systems:
+            sega32x:
+                cfeatures:
+                    picodrive-autowidescreen:
+                        prompt:      AUTO WIDESCREEN
+                        description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                        choices:
+                            "Off":       "False"
+                            "On":        "True"
     pocketsnes:
       features: [netplay]
       shared: [rewind, autosave]
@@ -6412,6 +6451,12 @@ libretro:
                     "720p":          720p
                     "1080p":         1080p
                     "4K":            4k
+            yabasanshiro-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             multitap_yabasanshiro:
                 prompt:      MULTITAP
                 description: Allows up to 7 or 12 controllers in supported games.

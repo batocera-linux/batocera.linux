@@ -100,6 +100,7 @@ def createLibretroConfig(generator, system, controllers, guns, wheels, rom, beze
     retroarchConfig = dict()
     systemConfig = system.config
     renderConfig = system.renderconfig
+    systemCore = system.config['core']
 
     # Basic configuration
     retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
@@ -572,17 +573,22 @@ def createLibretroConfig(generator, system, controllers, guns, wheels, rom, beze
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
-    # Ratio option
+     # Ratio option
     retroarchConfig['aspect_ratio_index'] = ''              # reset in case config was changed (or for overlays)
     if defined('ratio', systemConfig):
+        index = '22'    # default value (core)
         if systemConfig['ratio'] in ratioIndexes:
-            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(systemConfig['ratio'])
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        elif systemConfig['ratio'] == "custom":
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        else:
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-            retroarchConfig['aspect_ratio_index'] = '22'
+            index = ratioIndexes.index(systemConfig['ratio'])
+        # Check if game natively supports widescreen from metadata (not widescreen hack) (for easy scalability ensure all values for respective systems start with core name and end with "-autowidescreen")
+        elif system.isOptSet(f"{systemCore}-autowidescreen") and system.config[f"{systemCore}-autowidescreen"] == "True": 
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+            if metadata.get("video_widescreen") == "true":
+                index = str(ratioIndexes.index("16/9"))
+                # Easy way to disable bezels if setting to 16/9
+                bezel = None      
+        
+        retroarchConfig['video_aspect_ratio_auto'] = 'false'
+        retroarchConfig['aspect_ratio_index'] = index          
 
     # Rewind option
     retroarchConfig['rewind_enable'] = 'false'
