@@ -21,7 +21,6 @@
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
   - Not compatible with nuvee GunCon patch, use clean ROM.
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
-  - Not compatible with nuvee GunCon patch, use clean ROM.
 - New supported steering wheels:
   - Logitech : Driving Force, G29, G920, Momo
   - Thrustmaster : T300RS
