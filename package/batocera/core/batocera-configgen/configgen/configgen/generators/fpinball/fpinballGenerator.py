@@ -16,7 +16,7 @@ eslog = get_logger(__name__)
 class FpinballGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
-        wineprefix = batoceraFiles.SAVES + "/fpinball"
+        wineprefix = "/userdata/system/wine-bottles/fpinball"
         emupath = wineprefix + "/fpinball"
 
         if not os.path.exists(wineprefix):
@@ -26,11 +26,11 @@ class FpinballGenerator(Generator):
             cmd = ["/usr/wine/winetricks", "-q", "wsh57"]
             env = {
                 "W_CACHE": "/userdata/bios",
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
+                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
                 "WINEPREFIX": wineprefix
             }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -56,14 +56,14 @@ class FpinballGenerator(Generator):
 
         if rom == 'config':
             commandArray = [
-                "/usr/wine/lutris/bin/wine",
+                "/usr/wine/ge-custom/bin/wine",
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
                 emupath +"/BAM/FPLoader.exe" ]
         else:
             commandArray = [
-                "/usr/wine/lutris/bin/wine",
+                "/usr/wine/ge-custom/bin/wine",
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
@@ -164,9 +164,9 @@ class FpinballGenerator(Generator):
                         f.write("\r\n")
 
         cmd = ["wine", "regedit", "/userdata/system/configs/fpinball/batocera.confg.reg"]
-        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
+        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
         env.update(os.environ)
-        env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
+        env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
         eslog.debug(f"command: {str(cmd)}")
         proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate()
@@ -178,7 +178,7 @@ class FpinballGenerator(Generator):
             array=commandArray,
             env={
                 "WINEPREFIX": wineprefix,
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
+                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
                 "LIBGL_DRIVERS_PATH": "/lib32/dri",
                 # hum pw 0.2 and 0.3 are hardcoded, not nice
                 "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",

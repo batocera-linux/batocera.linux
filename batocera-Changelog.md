@@ -1,11 +1,17 @@
 # 2024/02/xx - batocera.linux 39 - Painted Lady
+### Special Notes
+- Emulators using Wine now use the Glorious Eggroll custom runner for latest capabilities and compatibility.
+  Your previously saved games are still maintained in `/userdata/saves/` in their associated bottle for the afftected emulators Xenia, BigPemu, FPinball & Model2Emu.
+  Future WINE bottles are now provisioned here: `/userdata/system/wine-bottles` under their respective system name. Xbox360 emulators (Xenia & Xenai-Canary) have now moved to support VKD3D (D3D12 to Vulkan) for exanded compatibility by default with the previous native Vulkan available as an option.
+  New saves will be in `/userdata/saves/xbox360` where you can transfer your previous saves to continue gaming where you left off. You can then free up space by removing your previous WINE bottles from `userdata/saves` respectively after starting each emulator and forming the new WINE bottle accordingly.
+  If you have used squashfs for your Windows games you can choose to unsquash & recreate the bottle with the new runner.
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 - Initial support for the Anbernic RG353V
 - Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
 - Initial support for the Steam Deck OLED
-- Support for Thunderbolt 3 / USB4 eGPU chasis
+- Support for Thunderbolt 3 / USB4 eGPU chassis
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.

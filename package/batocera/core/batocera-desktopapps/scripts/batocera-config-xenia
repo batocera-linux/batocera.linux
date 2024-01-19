@@ -5,6 +5,6 @@ then
 	export DISPLAY=:0.0
 fi
 
-emulatorlauncher -system xbox360 -rom config
+emulatorlauncher -system xbox360 -emulator xenia -core xenia -rom config
 
 exit 0

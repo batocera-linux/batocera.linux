@@ -50,7 +50,7 @@ findDeps() {
 }
 
 findLibDir() {
-    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/lutris/lib"  "${G_TARGETDIR}/usr/wine/proton/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
+    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/ge-custom/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
     done
@@ -129,8 +129,7 @@ cp -pv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -pv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 
 for BIN in \
-"${G_TARGETDIR}/usr/wine/lutris/bin/wine" \
-"${G_TARGETDIR}/usr/wine/proton/bin/wine" \
+"${G_TARGETDIR}/usr/wine/ge-custom/bin/wine" \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
@@ -203,17 +202,15 @@ cp -prv "${G_TARGETDIR}/usr/lib/pipewire-0.3" "${TMPOUT}/lib32/" || exit 1
 echo 
 echo "wine installation..."
 echo 
-mkdir -p "${TMPOUT}/usr/wine/lutris"                         || exit 1
-mkdir -p "${TMPOUT}/usr/wine/proton"                         || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/lutris" "${TMPOUT}/usr/wine/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton" "${TMPOUT}/usr/wine/" || exit 1
+mkdir -p "${TMPOUT}/usr/wine/ge-custom" || exit 1
+cp -pr "${G_TARGETDIR}/usr/wine/ge-custom" "${TMPOUT}/usr/wine/" || exit 1
 # helper bins
 echo 
 echo " wine helper binaries"
 echo 
-mkdir -p "${TMPOUT}/usr/bin32"				|| exit 1
+mkdir -p "${TMPOUT}/usr/bin32" || exit 1
 #cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
-cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin32/" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/gst"* "${TMPOUT}/usr/bin32/" || exit 1
 
 # dri
 echo 
