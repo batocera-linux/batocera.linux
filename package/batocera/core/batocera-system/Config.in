@@ -405,7 +405,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # leds
     select BR2_PACKAGE_AYN_PLATFORM     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    
+
     help
         Install the batocera.linux system files
 
@@ -929,13 +929,13 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     select BR2_PACKAGE_ABUSE                    if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     select BR2_PACKAGE_LIBRETRO_VITAQUAKE2	    if BR2_PACKAGE_BATOCERA_GLES3
-    
+
     # Super Mario War
     select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     # EDuke32 requires OpenGL or GLES 3.0
     select BR2_PACKAGE_EDUKE32                  if BR2_PACKAGE_BATOCERA_GLES3
-    
+
     # GZDoom and Raze require both 64-bit arch (x86,arm,riscv,....) AND OpenGL or GLES 3.0
     select BR2_PACKAGE_GZDOOM                   if BR2_ARCH_IS_64 && BR2_PACKAGE_BATOCERA_GLES3
     select BR2_PACKAGE_RAZE                     if BR2_ARCH_IS_64 && BR2_PACKAGE_BATOCERA_GLES3
@@ -1091,7 +1091,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_BATOCERA_SEGADC
 
     # PSX
-    select BR2_PACKAGE_DUCKSTATION                  if  BR2_PACKAGE_BATOCERA_GLES3 # newer versions of duckstation are stricter on OpenGL 3.1
+    select BR2_PACKAGE_DUCKSTATION                  if  BR2_PACKAGE_BATOCERA_GLES3 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # newer versions of duckstation are stricter on OpenGL 3.1
 
     select BR2_PACKAGE_DUCKSTATION_LEGACY           if  !BR2_PACKAGE_BATOCERA_GLES3 && \
                                                         !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
@@ -1568,7 +1568,7 @@ config BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_MESA3D_OPENGL_GLX                  if BR2_PACKAGE_XORG7 # OpenGL GLX support
     select BR2_PACKAGE_MESA3D_DEMOS                       if BR2_PACKAGE_XORG7 # glxinfo etc
     select BR2_PACKAGE_LIBGLVND                           if BR2_PACKAGE_XORG7 # opengl
-    
+
 
 config BR2_PACKAGE_BATOCERA_LIMA_MESA3D
     bool "batocera.linux driver mesa LIMA"
@@ -1781,7 +1781,7 @@ config BR2_PACKAGE_BATOCERA_GPU_X86
     select BR2_PACKAGE_MESA3D_VIDEO_CODEC_H264ENC        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_MESA3D_VIDEO_CODEC_H265DEC        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_MESA3D_VIDEO_CODEC_H265ENC        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    
+
     # utils
     select BR2_PACKAGE_LIBVA_INTEL_DRIVER                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_LIBVA_UTILS                       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
