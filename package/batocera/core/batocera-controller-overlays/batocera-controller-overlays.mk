@@ -3,8 +3,8 @@
 # Batocera controller overlays
 #
 ################################################################################
-# Last commit: Jan 6, 2024
-BATOCERA_CONTROLLER_OVERLAYS_VERSION = 77beba6e9db5575fe22cd27750d85d965bb58f27
+# Last commit: Jan 19, 2024
+BATOCERA_CONTROLLER_OVERLAYS_VERSION = 5bec6fe854fbcafb224c5b5ece0818383158f95d
 BATOCERA_CONTROLLER_OVERLAYS_SITE = \
     $(call github,batocera-linux,batocera-controller-overlays,$(BATOCERA_CONTROLLER_OVERLAYS_VERSION))
 
