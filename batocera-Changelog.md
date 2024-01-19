@@ -167,6 +167,7 @@
 - Added zramswap service
 - Enable swap on rpi through rpi3 to improve suppport for low-memory
   variants e.g. Zero 2W
+- Enable performance governor by default on Raspberry_Pi_Zero_2_W_Rev_1_0
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
