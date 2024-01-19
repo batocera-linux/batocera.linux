@@ -463,6 +463,12 @@ libretro:
                     "Cross": "Cross"
                     "Dot": "Dot"
                     "Disabled": "Off"
+          beetle-saturn-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
           controller1_saturn:
                 prompt:      CONTROLLER 1 TYPE
                 description: Not all games support 3D pad.
@@ -1613,6 +1619,12 @@ libretro:
                 choices:
                     "Off": disabled
                     "On":  enabled
+            flycast-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             reicast_widescreen_cheats:
                 prompt:      WIDESCREEN CHEAT (PRIORITY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -2173,6 +2185,12 @@ libretro:
             choices:
                 "Disabled": disabled
                 "Enabled":  enabled
+        kronos-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
         kronos_multitap:
             prompt: MULTITAP
             description: Allows up to 7 or 12 controllers in supported games.
@@ -2250,7 +2268,7 @@ libretro:
                     "On":            1
                     "Off (Default)": 0
     mame:
-      features: [netplay]
+      features: [netplay, padtokeyboard]
       shared: [autosave]
       cfeatures:
             mame_cpu_overclock:
@@ -3760,6 +3778,12 @@ libretro:
                     "2560x1440": 2560x1440
                     "3840x2160": 3840x2160
                     "7680x4320": 7680x4320
+            mupen64plus-next-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             mupen64plus-aspect:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -3872,6 +3896,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             mupen64plus-pak2:
                 submenu:     CONTROLLER 2
                 prompt:      CONTROLLER PAK
@@ -3880,6 +3905,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             mupen64plus-pak3:
                 submenu:     CONTROLLER 3
                 prompt:      CONTROLLER PAK
@@ -3888,6 +3914,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             mupen64plus-pak4:
                 submenu:     CONTROLLER 4
                 prompt:      CONTROLLER PAK
@@ -3896,6 +3923,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             mupen64plus-deadzone:
                 prompt:      JOYSTICK DEADZONE
                 description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
@@ -4345,6 +4373,12 @@ libretro:
                     "7x (2240x1680)":   2240x1680
                     "9x (2880x2160)":   2880x2160
                     "18x (5760x4320)":  5760x4320
+            parallel_n64-widescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             parallel-n64-aspectratiohint:
                 prompt:      WIDESCREEN HACK (GLITCHY)
                 description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -4404,6 +4438,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             parallel-n64-pak2:
                 submenu:     CONTROLLER 2
                 prompt:      CONTROLLER PAK
@@ -4412,6 +4447,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             parallel-n64-pak3:
                 submenu:     CONTROLLER 3
                 prompt:      CONTROLLER PAK
@@ -4420,6 +4456,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             parallel-n64-pak4:
                 submenu:     CONTROLLER 4
                 prompt:      CONTROLLER PAK
@@ -4428,6 +4465,7 @@ libretro:
                     "Off":         none
                     "Memory Pak":  memory
                     "Rumble Pak":  rumble
+                    "Rumble Pak (Automatic)":  auto_rumble
             parallel-n64-deadzone:
                 prompt:      JOYSTICK DEADZONE
                 description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
@@ -4630,6 +4668,15 @@ libretro:
                 choices:
                     "Joypad 3 Button": 3 button pad
                     "Joypad 6 Button": 6 button pad
+      systems:
+            sega32x:
+                cfeatures:
+                    picodrive-autowidescreen:
+                        prompt:      AUTO WIDESCREEN
+                        description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                        choices:
+                            "Off":       "False"
+                            "On":        "True"
     pocketsnes:
       features: [netplay]
       shared: [rewind, autosave]
@@ -6404,6 +6451,12 @@ libretro:
                     "720p":          720p
                     "1080p":         1080p
                     "4K":            4k
+            yabasanshiro-autowidescreen:
+                prompt:      AUTO WIDESCREEN
+                description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+                choices:
+                    "Off":       "False"
+                    "On":        "True"
             multitap_yabasanshiro:
                 prompt:      MULTITAP
                 description: Allows up to 7 or 12 controllers in supported games.
@@ -10761,6 +10814,26 @@ xemu:
             choices:
                 "64MiB (Default)": 64
                 "128MiB":          128
+        xemu_networktype:
+            group: NETWORK
+            submenu: NETWORK
+            prompt: NETWORK TYPE
+            description: Nat to access internet from xemu machine. Udp for System Link. Default (Auto) disables network access.
+            choices:
+                "NAT": "nat"
+                "UDP Tunnel": "udp"
+        xemu_udpremote:
+            group: NETWORK
+            submenu: NETWORK
+            prompt: UDP REMOTE ADDRESS
+            description: Destination address and port to forward packets to. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
+            preset: input
+        xemu_udpbind:
+            group: NETWORK
+            submenu: NETWORK
+            prompt: UDP BIND ADDRESS
+            description: Local address and port to receive packets on. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
+            preset: input
 
 lexaloffle:
   features: [padtokeyboard]

@@ -1,7 +1,7 @@
-From 95ed57b0ca24cde1d7547878101c62f552cb1160 Mon Sep 17 00:00:00 2001
+From f7a0409730c486cc4151be60537ca71c25e2bf69 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Fri, 13 Nov 2020 02:09:36 +0000
-Subject: [PATCH 01/22] LOCAL: configs: meson64: prevent stdout/stderr on
+Subject: [PATCH 1/5] LOCAL: configs: meson64: prevent stdout/stderr on
  videoconsole
 
 Several devices have CONFIG_VIDEO enabled which causes stdout/stderr
@@ -14,10 +14,10 @@ Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/meson64.h b/include/configs/meson64.h
-index 40803ee9da..05b1fcb9fd 100644
+index efab9a624d..0976774e5c 100644
 --- a/include/configs/meson64.h
 +++ b/include/configs/meson64.h
-@@ -18,7 +18,7 @@
+@@ -28,7 +28,7 @@
  
  /* For splashscreen */
  #ifdef CONFIG_VIDEO

@@ -678,7 +678,7 @@ scummvm:
   release: 1987
   hardware: computer
   extensions: [scummvm, squashfs]
-  platform:   pc
+  platform:   scummvm
   emulators:
     scummvm:
       scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
@@ -2593,7 +2593,7 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc, squashfs]
+  extensions: [pc]
   emulators:
     mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
@@ -2749,7 +2749,7 @@ ecwolf:
 
 sonicretro:
   name:       Sonic Retro Engine
-  manufacturer: Rubberduckycooly
+  manufacturer: Sega
   release: 2021
   hardware: port
   extensions: [son, scd]

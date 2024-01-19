@@ -1,0 +1,39 @@
+#!/bin/bash
+
+start() {
+    /sbin/modprobe zram
+    [ -e /dev/zram0 ] || exit 1
+    totalmem=$(free -b | grep "^Mem:" | tr -s ' ' | cut -d ' ' -f2)
+    swapmem=$(( totalmem  / 2 ))
+    echo $swapmem > /sys/block/zram0/disksize
+    /sbin/mkswap /dev/zram0 || exit 1
+    /sbin/swapon -p 1000 /dev/zram0 || exit 1
+}
+
+stop() {
+    [ -e /dev/zram0 ] || exit 1
+    /sbin/swapoff /dev/zram0 || exit 1
+    /sbin/modprobe -r zram || exit 1
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        ;;
+esac
+
+exit $?

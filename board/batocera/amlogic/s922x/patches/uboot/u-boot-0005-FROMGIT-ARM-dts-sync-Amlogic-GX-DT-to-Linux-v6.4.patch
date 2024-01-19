@@ -1,0 +1,785 @@
+From 5f0a6294ad795b9644c2811469cca7c375bede6e Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Wed, 13 Dec 2023 10:30:13 +0100
+Subject: [PATCH 5/5] FROMGIT: ARM: dts: sync Amlogic GX DT to Linux v6.4
+
+Sync Amlogic GXBB, GXL & GXM DTs from Linux v6.4, and also
+switch to GXL MDIO MUX driver to adapt to DT change,
+
+Most of the changes are only cosmetic or doesn't concern U-Boot,
+the most important change for U-Boot is the GXL mdio mux compatible
+switch to amlogic,gxl-mdio-mux.
+
+Link: https://lore.kernel.org/r/20231213-u-boot-gxl-mdio-mux-v2-2-c56bb02a75ea@linaro.org
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm/dts/meson-gx-libretech-pc.dtsi       |  4 +-
+ arch/arm/dts/meson-gx.dtsi                    | 21 ++++--
+ arch/arm/dts/meson-gxbb-nanopi-k2.dts         | 13 +++-
+ arch/arm/dts/meson-gxbb-odroidc2.dts          | 26 +++----
+ arch/arm/dts/meson-gxbb.dtsi                  | 18 ++++-
+ arch/arm/dts/meson-gxl-s805x-libretech-ac.dts |  2 +-
+ .../meson-gxl-s905w-jethome-jethub-j80.dts    | 12 +++-
+ arch/arm/dts/meson-gxl-s905x-khadas-vim.dts   | 16 +----
+ .../dts/meson-gxl-s905x-libretech-cc-v2.dts   |  3 +-
+ arch/arm/dts/meson-gxl-s905x-p212.dts         | 68 +++++++++++++++++++
+ arch/arm/dts/meson-gxl-s905x-p212.dtsi        | 21 +++---
+ arch/arm/dts/meson-gxl.dtsi                   | 43 ++++++++----
+ arch/arm/dts/meson-gxm-khadas-vim2.dts        | 15 ++--
+ arch/arm/dts/meson-gxm-wetek-core2.dts        |  2 -
+ configs/beelink-gt1-ultimate_defconfig        |  2 +-
+ configs/jethub_j80_defconfig                  |  2 +-
+ configs/khadas-vim2_defconfig                 |  2 +-
+ configs/khadas-vim_defconfig                  |  2 +-
+ configs/libretech-ac_defconfig                |  2 +-
+ configs/libretech-cc_defconfig                |  2 +-
+ configs/libretech-cc_v2_defconfig             |  2 +-
+ configs/libretech-s905d-pc_defconfig          |  2 +-
+ configs/libretech-s912-pc_defconfig           |  2 +-
+ configs/p212_defconfig                        |  2 +-
+ configs/wetek-core2_defconfig                 |  2 +-
+ 25 files changed, 196 insertions(+), 90 deletions(-)
+
+diff --git a/arch/arm/dts/meson-gx-libretech-pc.dtsi b/arch/arm/dts/meson-gx-libretech-pc.dtsi
+index 2d7032f41e..4e84ab87cc 100644
+--- a/arch/arm/dts/meson-gx-libretech-pc.dtsi
++++ b/arch/arm/dts/meson-gx-libretech-pc.dtsi
+@@ -17,7 +17,7 @@
+ 		io-channel-names = "buttons";
+ 		keyup-threshold-microvolt = <1800000>;
+ 
+-		update-button {
++		button-update {
+ 			label = "update";
+ 			linux,code = <KEY_VENDOR>;
+ 			press-threshold-microvolt = <1300000>;
+@@ -416,7 +416,7 @@
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ 
+-	gd25lq128: spi-flash@0 {
++	gd25lq128: flash@0 {
+ 		compatible = "jedec,spi-nor";
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+diff --git a/arch/arm/dts/meson-gx.dtsi b/arch/arm/dts/meson-gx.dtsi
+index 6b457b2c30..11f89bfecb 100644
+--- a/arch/arm/dts/meson-gx.dtsi
++++ b/arch/arm/dts/meson-gx.dtsi
+@@ -49,6 +49,12 @@
+ 			no-map;
+ 		};
+ 
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
+@@ -126,6 +132,7 @@
+ 
+ 		l2: l2-cache0 {
+ 			compatible = "cache";
++			cache-level = <2>;
+ 		};
+ 	};
+ 
+@@ -226,7 +233,7 @@
+ 			reg = <0x14 0x10>;
+ 		};
+ 
+-		eth_mac: eth_mac@34 {
++		eth_mac: eth-mac@34 {
+ 			reg = <0x34 0x10>;
+ 		};
+ 
+@@ -243,7 +250,7 @@
+ 		scpi_clocks: clocks {
+ 			compatible = "arm,scpi-clocks";
+ 
+-			scpi_dvfs: scpi_clocks@0 {
++			scpi_dvfs: clocks-0 {
+ 				compatible = "arm,scpi-dvfs-clocks";
+ 				#clock-cells = <1>;
+ 				clock-indices = <0>;
+@@ -444,7 +451,7 @@
+ 
+ 			sysctrl_AO: sys-ctrl@0 {
+ 				compatible = "amlogic,meson-gx-ao-sysctrl", "simple-mfd", "syscon";
+-				reg =  <0x0 0x0 0x0 0x100>;
++				reg = <0x0 0x0 0x0 0x100>;
+ 
+ 				clkc_AO: clock-controller {
+ 					compatible = "amlogic,meson-gx-aoclkc";
+@@ -525,7 +532,7 @@
+ 			#size-cells = <2>;
+ 			ranges = <0x0 0x0 0x0 0xc8834000 0x0 0x2000>;
+ 
+-			hwrng: rng {
++			hwrng: rng@0 {
+ 				compatible = "amlogic,meson-rng";
+ 				reg = <0x0 0x0 0x0 0x4>;
+ 			};
+@@ -596,21 +603,21 @@
+ 			sd_emmc_a: mmc@70000 {
+ 				compatible = "amlogic,meson-gx-mmc", "amlogic,meson-gxbb-mmc";
+ 				reg = <0x0 0x70000 0x0 0x800>;
+-				interrupts = <GIC_SPI 216 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
+ 				status = "disabled";
+ 			};
+ 
+ 			sd_emmc_b: mmc@72000 {
+ 				compatible = "amlogic,meson-gx-mmc", "amlogic,meson-gxbb-mmc";
+ 				reg = <0x0 0x72000 0x0 0x800>;
+-				interrupts = <GIC_SPI 217 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <GIC_SPI 217 IRQ_TYPE_LEVEL_HIGH>;
+ 				status = "disabled";
+ 			};
+ 
+ 			sd_emmc_c: mmc@74000 {
+ 				compatible = "amlogic,meson-gx-mmc", "amlogic,meson-gxbb-mmc";
+ 				reg = <0x0 0x74000 0x0 0x800>;
+-				interrupts = <GIC_SPI 218 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH>;
+ 				status = "disabled";
+ 			};
+ 		};
+diff --git a/arch/arm/dts/meson-gxbb-nanopi-k2.dts b/arch/arm/dts/meson-gxbb-nanopi-k2.dts
+index 7273eed529..7d94160f58 100644
+--- a/arch/arm/dts/meson-gxbb-nanopi-k2.dts
++++ b/arch/arm/dts/meson-gxbb-nanopi-k2.dts
+@@ -385,9 +385,20 @@
+ 
+ /* Bluetooth on AP6212 */
+ &uart_A {
+-	status = "disabled";
++	status = "okay";
+ 	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
+ 	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		clocks = <&wifi_32k>;
++		clock-names = "lpo";
++		vbat-supply = <&vddio_ao3v3>;
++		vddio-supply = <&vddio_ao18>;
++		host-wakeup-gpios = <&gpio GPIOX_21 GPIO_ACTIVE_HIGH>;
++		shutdown-gpios = <&gpio GPIOX_20 GPIO_ACTIVE_HIGH>;
++	};
+ };
+ 
+ /* 40-pin CON1 */
+diff --git a/arch/arm/dts/meson-gxbb-odroidc2.dts b/arch/arm/dts/meson-gxbb-odroidc2.dts
+index 201596247f..01356437a0 100644
+--- a/arch/arm/dts/meson-gxbb-odroidc2.dts
++++ b/arch/arm/dts/meson-gxbb-odroidc2.dts
+@@ -250,21 +250,6 @@
+ 	};
+ };
+ 
+-&gpio_ao {
+-	/*
+-	 * WARNING: The USB Hub on the Odroid-C2 needs a reset signal
+-	 * to be turned high in order to be detected by the USB Controller
+-	 * This signal should be handled by a USB specific power sequence
+-	 * in order to reset the Hub when USB bus is powered down.
+-	 */
+-	hog-0 {
+-		gpio-hog;
+-		gpios = <GPIOAO_4 GPIO_ACTIVE_HIGH>;
+-		output-high;
+-		line-name = "usb-hub-reset";
+-	};
+-};
+-
+ &hdmi_tx {
+ 	status = "okay";
+ 	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
+@@ -414,5 +399,16 @@
+ };
+ 
+ &usb1 {
++	dr_mode = "host";
++	#address-cells = <1>;
++	#size-cells = <0>;
+ 	status = "okay";
++
++	hub@1 {
++		/* Genesys Logic GL852G USB 2.0 hub */
++		compatible = "usb5e3,610";
++		reg = <1>;
++		vdd-supply = <&p5v0>;
++		reset-gpio = <&gpio_ao GPIOAO_4 GPIO_ACTIVE_LOW>;
++	};
+ };
+diff --git a/arch/arm/dts/meson-gxbb.dtsi b/arch/arm/dts/meson-gxbb.dtsi
+index 7c029f552a..12ef6e81c8 100644
+--- a/arch/arm/dts/meson-gxbb.dtsi
++++ b/arch/arm/dts/meson-gxbb.dtsi
+@@ -300,8 +300,8 @@
+ };
+ 
+ &gpio_intc {
+-	compatible = "amlogic,meson-gpio-intc",
+-		     "amlogic,meson-gxbb-gpio-intc";
++	compatible = "amlogic,meson-gxbb-gpio-intc",
++		     "amlogic,meson-gpio-intc";
+ 	status = "okay";
+ };
+ 
+@@ -427,6 +427,20 @@
+ 			};
+ 		};
+ 
++		spi_idle_high_pins: spi-idle-high-pins {
++			mux {
++				groups = "spi_sclk";
++				bias-pull-up;
++			};
++		};
++
++		spi_idle_low_pins: spi-idle-low-pins {
++			mux {
++				groups = "spi_sclk";
++				bias-pull-down;
++			};
++		};
++
+ 		spi_ss0_pins: spi-ss0 {
+ 			mux {
+ 				groups = "spi_ss0";
+diff --git a/arch/arm/dts/meson-gxl-s805x-libretech-ac.dts b/arch/arm/dts/meson-gxl-s805x-libretech-ac.dts
+index 2d769203f6..213a0705eb 100644
+--- a/arch/arm/dts/meson-gxl-s805x-libretech-ac.dts
++++ b/arch/arm/dts/meson-gxl-s805x-libretech-ac.dts
+@@ -298,7 +298,7 @@
+ 	pinctrl-0 = <&nor_pins>;
+ 	pinctrl-names = "default";
+ 
+-	w25q32: spi-flash@0 {
++	w25q32: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+diff --git a/arch/arm/dts/meson-gxl-s905w-jethome-jethub-j80.dts b/arch/arm/dts/meson-gxl-s905w-jethome-jethub-j80.dts
+index 6eafb90869..a18d6d241a 100644
+--- a/arch/arm/dts/meson-gxl-s905w-jethome-jethub-j80.dts
++++ b/arch/arm/dts/meson-gxl-s905w-jethome-jethub-j80.dts
+@@ -86,11 +86,11 @@
+ };
+ 
+ &efuse {
+-	bt_mac: bt_mac@6 {
++	bt_mac: bt-mac@6 {
+ 		reg = <0x6 0x6>;
+ 	};
+ 
+-	wifi_mac: wifi_mac@C {
++	wifi_mac: wifi-mac@c {
+ 		reg = <0xc 0x6>;
+ 	};
+ };
+@@ -213,6 +213,12 @@
+ 	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
+ 	pinctrl-names = "default";
+ 	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "realtek,rtl8822cs-bt";
++		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		host-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
++       };
+ };
+ 
+ &uart_C {
+@@ -233,7 +239,7 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c_b_pins>;
+ 
+-	pcf8563: pcf8563@51 {
++	pcf8563: rtc@51 {
+ 		compatible = "nxp,pcf8563";
+ 		reg = <0x51>;
+ 		status = "okay";
+diff --git a/arch/arm/dts/meson-gxl-s905x-khadas-vim.dts b/arch/arm/dts/meson-gxl-s905x-khadas-vim.dts
+index 60feac0179..02f81839d4 100644
+--- a/arch/arm/dts/meson-gxl-s905x-khadas-vim.dts
++++ b/arch/arm/dts/meson-gxl-s905x-khadas-vim.dts
+@@ -140,7 +140,6 @@
+ 		compatible = "haoyu,hym8563";
+ 		reg = <0x51>;
+ 		#clock-cells = <0>;
+-		clock-frequency = <32768>;
+ 		clock-output-names = "xin32k";
+ 	};
+ };
+@@ -218,20 +217,7 @@
+ };
+ 
+ &sd_emmc_a {
+-	brcmf: wifi@1 {
+-		reg = <1>;
+-		compatible = "brcm,bcm4329-fmac";
+-	};
+-};
+-
+-&uart_A {
+-	bluetooth {
+-		compatible = "brcm,bcm43438-bt";
+-		shutdown-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
+-		max-speed = <2000000>;
+-		clocks = <&wifi32k>;
+-		clock-names = "lpo";
+-	};
++	max-frequency = <100000000>;
+ };
+ 
+ /* This is brought out on the Linux_RX (18) and Linux_TX (19) pins: */
+diff --git a/arch/arm/dts/meson-gxl-s905x-libretech-cc-v2.dts b/arch/arm/dts/meson-gxl-s905x-libretech-cc-v2.dts
+index 93d8f8aff7..6c4e68e0e6 100644
+--- a/arch/arm/dts/meson-gxl-s905x-libretech-cc-v2.dts
++++ b/arch/arm/dts/meson-gxl-s905x-libretech-cc-v2.dts
+@@ -284,7 +284,7 @@
+ 	pinctrl-0 = <&nor_pins>;
+ 	pinctrl-names = "default";
+ 
+-	nor_4u1: spi-flash@0 {
++	nor_4u1: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+@@ -305,7 +305,6 @@
+ };
+ 
+ &usb2_phy0 {
+-	pinctrl-names = "default";
+ 	phy-supply = <&vcc5v>;
+ };
+ 
+diff --git a/arch/arm/dts/meson-gxl-s905x-p212.dts b/arch/arm/dts/meson-gxl-s905x-p212.dts
+index 2602940c20..9b4ea6a493 100644
+--- a/arch/arm/dts/meson-gxl-s905x-p212.dts
++++ b/arch/arm/dts/meson-gxl-s905x-p212.dts
+@@ -7,11 +7,19 @@
+ /dts-v1/;
+ 
+ #include "meson-gxl-s905x-p212.dtsi"
++#include <dt-bindings/sound/meson-aiu.h>
+ 
+ / {
+ 	compatible = "amlogic,p212", "amlogic,s905x", "amlogic,meson-gxl";
+ 	model = "Amlogic Meson GXL (S905X) P212 Development Board";
+ 
++	dio2133: analog-amplifier {
++		compatible = "simple-audio-amplifier";
++		sound-name-prefix = "AU2";
++		VCC-supply = <&hdmi_5v>;
++		enable-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	cvbs-connector {
+ 		compatible = "composite-video-connector";
+ 
+@@ -32,6 +40,66 @@
+ 			};
+ 		};
+ 	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "S905X-P212";
++		audio-aux-devs = <&dio2133>;
++		audio-widgets = "Line", "Lineout";
++		audio-routing = "AU2 INL", "ACODEC LOLN",
++				"AU2 INR", "ACODEC LORN",
++				"Lineout", "AU2 OUTL",
++				"Lineout", "AU2 OUTR";
++		assigned-clocks = <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>,
++				  <&clkc CLKID_MPLL2>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_ACODEC CTRL_I2S>;
++			};
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&acodec>;
++			};
++		};
++	};
++};
++
++&acodec {
++	AVDD-supply = <&vddio_ao18>;
++	status = "okay";
++};
++
++&aiu {
++	status = "okay";
+ };
+ 
+ &cec_AO {
+diff --git a/arch/arm/dts/meson-gxl-s905x-p212.dtsi b/arch/arm/dts/meson-gxl-s905x-p212.dtsi
+index 05cb2f5e5c..a150cc0e18 100644
+--- a/arch/arm/dts/meson-gxl-s905x-p212.dtsi
++++ b/arch/arm/dts/meson-gxl-s905x-p212.dtsi
+@@ -97,6 +97,14 @@
+ 	pinctrl-names = "default";
+ };
+ 
++&pwm_ef {
++	status = "okay";
++	pinctrl-0 = <&pwm_e_pins>;
++	pinctrl-names = "default";
++	clocks = <&clkc CLKID_FCLK_DIV4>;
++	clock-names = "clkin0";
++};
++
+ &saradc {
+ 	status = "okay";
+ 	vref-supply = <&vddio_ao18>;
+@@ -125,6 +133,11 @@
+ 
+ 	vmmc-supply = <&vddao_3v3>;
+ 	vqmmc-supply = <&vddio_boot>;
++
++	brcmf: wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++	};
+ };
+ 
+ /* SD card */
+@@ -165,14 +178,6 @@
+ 	vqmmc-supply = <&vddio_boot>;
+ };
+ 
+-&pwm_ef {
+-	status = "okay";
+-	pinctrl-0 = <&pwm_e_pins>;
+-	pinctrl-names = "default";
+-	clocks = <&clkc CLKID_FCLK_DIV4>;
+-	clock-names = "clkin0";
+-};
+-
+ /* This is connected to the Bluetooth module: */
+ &uart_A {
+ 	status = "okay";
+diff --git a/arch/arm/dts/meson-gxl.dtsi b/arch/arm/dts/meson-gxl.dtsi
+index c3ac531c4f..17bcfa4702 100644
+--- a/arch/arm/dts/meson-gxl.dtsi
++++ b/arch/arm/dts/meson-gxl.dtsi
+@@ -312,8 +312,8 @@
+ };
+ 
+ &gpio_intc {
+-	compatible = "amlogic,meson-gpio-intc",
+-		     "amlogic,meson-gxl-gpio-intc";
++	compatible = "amlogic,meson-gxl-gpio-intc",
++		     "amlogic,meson-gpio-intc";
+ 	status = "okay";
+ };
+ 
+@@ -429,6 +429,20 @@
+ 			};
+ 		};
+ 
++		spi_idle_high_pins: spi-idle-high-pins {
++			mux {
++				groups = "spi_sclk";
++				bias-pull-up;
++			};
++		};
++
++		spi_idle_low_pins: spi-idle-low-pins {
++			mux {
++				groups = "spi_sclk";
++				bias-pull-down;
++			};
++		};
++
+ 		spi_ss0_pins: spi-ss0 {
+ 			mux {
+ 				groups = "spi_ss0";
+@@ -759,16 +773,23 @@
+ 		};
+ 	};
+ 
+-	eth-phy-mux {
+-		compatible = "mdio-mux-mmioreg", "mdio-mux";
++	eth_phy_mux: mdio@558 {
++		reg = <0x0 0x558 0x0 0xc>;
++		compatible = "amlogic,gxl-mdio-mux";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		reg = <0x0 0x55c 0x0 0x4>;
+-		mux-mask = <0xffffffff>;
++		clocks = <&clkc CLKID_FCLK_DIV4>;
++		clock-names = "ref";
+ 		mdio-parent-bus = <&mdio0>;
+ 
+-		internal_mdio: mdio@e40908ff {
+-			reg = <0xe40908ff>;
++		external_mdio: mdio@0 {
++			reg = <0x0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		internal_mdio: mdio@1 {
++			reg = <0x1>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
+@@ -779,12 +800,6 @@
+ 				max-speed = <100>;
+ 			};
+ 		};
+-
+-		external_mdio: mdio@2009087f {
+-			reg = <0x2009087f>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-		};
+ 	};
+ };
+ 
+diff --git a/arch/arm/dts/meson-gxm-khadas-vim2.dts b/arch/arm/dts/meson-gxm-khadas-vim2.dts
+index 18a4b7a6c5..74897a1548 100644
+--- a/arch/arm/dts/meson-gxm-khadas-vim2.dts
++++ b/arch/arm/dts/meson-gxm-khadas-vim2.dts
+@@ -52,10 +52,11 @@
+ 		gpios = <&gpio GPIODV_14 GPIO_ACTIVE_HIGH
+ 			 &gpio GPIODV_15 GPIO_ACTIVE_HIGH>;
+ 		/* Dummy RPM values since fan is optional */
+-		gpio-fan,speed-map = <0 0
+-				      1 1
+-				      2 2
+-				      3 3>;
++		gpio-fan,speed-map =
++				<0 0>,
++				<1 1>,
++				<2 2>,
++				<3 3>;
+ 		#cooling-cells = <2>;
+ 	};
+ 
+@@ -270,7 +271,6 @@
+ 		compatible = "haoyu,hym8563";
+ 		reg = <0x51>;
+ 		#clock-cells = <0>;
+-		clock-frequency = <32768>;
+ 		clock-output-names = "xin32k";
+ 	};
+ };
+@@ -307,7 +307,8 @@
+ 	#size-cells = <0>;
+ 
+ 	bus-width = <4>;
+-	max-frequency = <60000000>;
++	cap-sd-highspeed;
++	max-frequency = <100000000>;
+ 
+ 	non-removable;
+ 	disable-wp;
+@@ -373,7 +374,7 @@
+ 	pinctrl-0 = <&nor_pins>;
+ 	pinctrl-names = "default";
+ 
+-	w25q32: spi-flash@0 {
++	w25q32: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "winbond,w25q16", "jedec,spi-nor";
+diff --git a/arch/arm/dts/meson-gxm-wetek-core2.dts b/arch/arm/dts/meson-gxm-wetek-core2.dts
+index 1e7f77f9b5..f8c40340b9 100644
+--- a/arch/arm/dts/meson-gxm-wetek-core2.dts
++++ b/arch/arm/dts/meson-gxm-wetek-core2.dts
+@@ -45,8 +45,6 @@
+ 
+ 	gpio-keys-polled {
+ 		compatible = "gpio-keys-polled";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+ 		poll-interval = <100>;
+ 
+ 		button-power {
+diff --git a/configs/beelink-gt1-ultimate_defconfig b/configs/beelink-gt1-ultimate_defconfig
+index 1313dde92f..00fdad8544 100644
+--- a/configs/beelink-gt1-ultimate_defconfig
++++ b/configs/beelink-gt1-ultimate_defconfig
+@@ -46,7 +46,7 @@ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/jethub_j80_defconfig b/configs/jethub_j80_defconfig
+index b370e5d1d4..15e410de82 100644
+--- a/configs/jethub_j80_defconfig
++++ b/configs/jethub_j80_defconfig
+@@ -54,7 +54,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/khadas-vim2_defconfig b/configs/khadas-vim2_defconfig
+index 28e9052245..59ef33723e 100644
+--- a/configs/khadas-vim2_defconfig
++++ b/configs/khadas-vim2_defconfig
+@@ -51,7 +51,7 @@ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/khadas-vim_defconfig b/configs/khadas-vim_defconfig
+index d27ab6f590..5ed7c1a408 100644
+--- a/configs/khadas-vim_defconfig
++++ b/configs/khadas-vim_defconfig
+@@ -45,7 +45,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/libretech-ac_defconfig b/configs/libretech-ac_defconfig
+index bc17b423a2..f0ab19580c 100644
+--- a/configs/libretech-ac_defconfig
++++ b/configs/libretech-ac_defconfig
+@@ -57,7 +57,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/libretech-cc_defconfig b/configs/libretech-cc_defconfig
+index baa9b1b3db..bb1a37a0cd 100644
+--- a/configs/libretech-cc_defconfig
++++ b/configs/libretech-cc_defconfig
+@@ -44,7 +44,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/libretech-cc_v2_defconfig b/configs/libretech-cc_v2_defconfig
+index b1c267a791..8949e240c9 100644
+--- a/configs/libretech-cc_v2_defconfig
++++ b/configs/libretech-cc_v2_defconfig
+@@ -52,7 +52,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_PHY=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+diff --git a/configs/libretech-s905d-pc_defconfig b/configs/libretech-s905d-pc_defconfig
+index cd138d696e..a5dc3115fc 100644
+--- a/configs/libretech-s905d-pc_defconfig
++++ b/configs/libretech-s905d-pc_defconfig
+@@ -53,7 +53,7 @@ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/libretech-s912-pc_defconfig b/configs/libretech-s912-pc_defconfig
+index dabb4ca4ec..68f462eeff 100644
+--- a/configs/libretech-s912-pc_defconfig
++++ b/configs/libretech-s912-pc_defconfig
+@@ -52,7 +52,7 @@ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/p212_defconfig b/configs/p212_defconfig
+index b90391d9b5..6b73607d64 100644
+--- a/configs/p212_defconfig
++++ b/configs/p212_defconfig
+@@ -40,7 +40,7 @@ CONFIG_PHY_MESON_GXL=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+diff --git a/configs/wetek-core2_defconfig b/configs/wetek-core2_defconfig
+index 9bf3de9e7a..01ffb8bbd7 100644
+--- a/configs/wetek-core2_defconfig
++++ b/configs/wetek-core2_defconfig
+@@ -46,7 +46,7 @@ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_MDIO=y
+ CONFIG_DM_MDIO_MUX=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+-CONFIG_MDIO_MUX_MMIOREG=y
++CONFIG_MDIO_MUX_MESON_GXL=y
+ CONFIG_MESON_GXL_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_GXL=y
+-- 
+2.34.1
+

@@ -286,7 +286,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PIXELCADE		if !BR2_riscv
 
     # swap
-    select BR2_PACKAGE_SWAPIT if BR2_PACKAGE_BATOCERA_TARGET_RK3128 || BR2_PACKAGE_BATOCERA_TARGET_RK3326
+    select BR2_PACKAGE_SWAPIT                  if BR2_PACKAGE_BATOCERA_TARGET_RK3128  || \
+                                                  BR2_PACKAGE_BATOCERA_TARGET_RK3326  || \
+                                                  BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || \
+                                                  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
+                                                  BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+    select BR2_PACKAGE_ZRAMSWAP                # swap on zram, optional user-enabled service
 
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE

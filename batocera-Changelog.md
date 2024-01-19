@@ -5,6 +5,7 @@
 - Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
 - Initial support for the Steam Deck OLED
+- Support for Thunderbolt 3 / USB4 eGPU chasis
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.
@@ -18,19 +19,22 @@
 - Added RetroAchievements for Uzebox and NeoGeo CD
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
- - Not compatible with nuvee GunCon patch, use clean ROM.
+  - Not compatible with nuvee GunCon patch, use clean ROM.
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
- - Not compatible with nuvee GunCon patch, use clean ROM.
-- wheel support:
- - new supported wheels
- - n64, gamecube, wii, playstation better support
- - automatically set wheels on first players pads when playing wheel games
- - add support for wheel deadzones / min and max rotation by game / system
-- spinner support:
- - Atari Classic joystick: the rudder is seen as a spinner
+- New supported steering wheels:
+  - Logitech : Driving Force, G29, G920, Momo
+  - Thrustmaster : T300RS
+- More steering wheel support :
+  - Out of the box steering wheel optimization for Atomiswave, Dreamcast, N64, Naomi, Naomi 2, GameCube, PS2, Saturn
+  - Initial support for Wii, PSX, MAME, Xbox
+  - Automatically set wheels on first players pads when playing wheel games
+  - Add settings for wheel deadzones, maximum rotation angle, midzone per game and system
+- Spinner support:
+  - Atari Classic joystick: the rudder is seen as a spinner
 - Ayn Loki Zero: support for on-board LEDs (and light effect on retroachievements unlocked)
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
+- Initial support for Retro Shooter Lightgun
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
@@ -44,6 +48,7 @@
 - Initialization data was too large for /userdata on RAMdisk
 - Nvidia Prime defaulting to provider 1 when it could be another provider.
 - AMD Prime defaulting to provider 1 when it could be another provider.
+- Sinden Lightgun border not showing on 4K resolution in model2 gun games
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
@@ -54,9 +59,10 @@
 - Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
 - Send hostname to DHCP server, and allow for dynamically configured hostname from DHCP
 - Streamlined x86_64 Secure Boot support
+- Wii gun games now 100% playable with light guns (based on 5 buttons mapping)
 ### Updated
 - Retroarch to 1.16.0.3
-- GroovyMAME 0.261 - Switchres 2.002x
+- GroovyMAME 0.261 - Switchres 2.002z
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
@@ -66,8 +72,8 @@
 - Libretro-Genesis-Plus-GX to Sep 11, 2023
 - Libretro-PCSX-ReARMed to Oct 9, 2023
 - Fheroes2 to 1.0.9
-- BigPEmu to 1.092
-- Cemu to 2.0-61
+- BigPEmu to 1.094
+- Cemu to 2.0-62
 - Citra to nightly-2054
 - Dolphin to 5.0-20840
 - Flycast to 17th Dec build
@@ -83,7 +89,7 @@
 - Vita3k to Dec 26 build
 - Xemu to v0.7.118
 - Xenia to v1.0.2808
-- Xenia Canary to a34944e (October 28 build)
+- Xenia Canary to 49d4460 (Jan 11 build)
 - ECWolf to 1.5pre
 - EDuke32 to Oct 07, 2023 build
 - Libretro-A5200 to Aug 18th build
@@ -138,10 +144,12 @@
 - Sonic 2013 to Dec 2, 2023 build
 - Duckstation to Dec 21, 2023 build
 - ScummVM to 2.8
+- Redream to 1.5.0-1093
 ### System
 - Linux kernel to 6.7
-- Mesa to 23.3.2
+- Mesa to 23.3.3
 - Proton to 8.0-4c
+- Wine Tricks to 20240105
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
 - Nvidia legacy driver to 470.223.02
@@ -149,12 +157,17 @@
 - Sound Open Firmware to 2023.12
 - Bluez to 5.71
 - Added tree utility
-- VKD3D-Proton to 2.11
+- VKD3D-Proton to 2.11.1
 - Host-XA to 2.4.0
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
 - XWayaland to 23.2.3
 - QT 6.6.1
+- Vulkan stack to support 1.3.275
+- Added zramswap service
+- Enable swap on rpi through rpi3 to improve suppport for low-memory
+  variants e.g. Zero 2W
+- Enable performance governor by default on Raspberry_Pi_Zero_2_W_Rev_1_0
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
@@ -254,7 +267,7 @@
 - xemu to v0.7.110
 - devilutionX to 1.5.0
 - ScummVM (standalone and libretro core) to July 18th build
-- redream to 1.5.0-1090
+- redream to 1.5.0-1080
 - kodi to 20.2
 - EDuke32 to July, 3th 2023
 - OpenMSX to v19.1
