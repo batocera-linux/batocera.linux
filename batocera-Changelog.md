@@ -41,6 +41,9 @@
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
 - Initial support for Retro Shooter Lightgun
+- Added zramswap service
+- Enable swap on rpi through rpi3 to improve suppport for low-memory
+  variants e.g. Zero 2W
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
@@ -66,6 +69,7 @@
 - Send hostname to DHCP server, and allow for dynamically configured hostname from DHCP
 - Streamlined x86_64 Secure Boot support
 - Wii gun games now 100% playable with light guns (based on 5 buttons mapping)
+- Enable performance governor by default on Raspberry_Pi_Zero_2_W_Rev_1_0
 ### Updated
 - Retroarch to 1.16.0.3
 - GroovyMAME 0.261 - Switchres 2.002z
@@ -154,7 +158,7 @@
 ### System
 - Linux kernel to 6.7
 - Mesa to 23.3.3
-- Proton to 8.0-4c
+- Proton & Lutris replaced by the Glorious Eggroll customer WINE runner
 - Wine Tricks to 20240105
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
@@ -170,10 +174,6 @@
 - XWayaland to 23.2.3
 - QT 6.6.1
 - Vulkan stack to support 1.3.275
-- Added zramswap service
-- Enable swap on rpi through rpi3 to improve suppport for low-memory
-  variants e.g. Zero 2W
-- Enable performance governor by default on Raspberry_Pi_Zero_2_W_Rev_1_0
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
