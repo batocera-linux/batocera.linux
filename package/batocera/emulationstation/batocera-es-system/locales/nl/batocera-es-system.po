@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: THa_MuSHeR\n"
 "Language-Team: Dutch (Netherlands)\n"
 "Language: nl-NL\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: nl_NL\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -663,6 +663,18 @@ msgstr "Dot"
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Uitgeschakeld"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid ""
+"Automatically sets aspect ratio to 16/9 for games that natively support it. "
+"2D elements like HUD/UI may be stretched."
+msgstr ""
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "AUTO WIDESCREEN"
+msgstr ""
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -5098,6 +5110,11 @@ msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "Rumble Pak"
 
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak (Automatic)"
+msgstr ""
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid ""
@@ -7842,8 +7859,8 @@ msgstr "DISK SHADER CACHE"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation stutter."
-" May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 "Compileer shaders met behulp van achtergrondthreads om haperen van de shader-"
 "compilatie te voorkomen. Kan grafische problemen veroorzaken."
@@ -8261,8 +8278,8 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
-"Als u dit inschakelt, is een correcte emulatie van texture wrapping mogelijk."
-" Dit kan mogelijk slechtere prestaties opleveren."
+"Als u dit inschakelt, is een correcte emulatie van texture wrapping "
+"mogelijk. Dit kan mogelijk slechtere prestaties opleveren."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9472,8 +9489,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en DK64),"
-" kan vertraging veroorzaken."
+"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en "
+"DK64), kan vertraging veroorzaken."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -10326,8 +10343,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Kan prestatieverbetering opleveren op CPU's met een laag aantal "
-"cores/threads, ten koste van mogelijk kapotte timing."
+"Kan prestatieverbetering opleveren op CPU's met een laag aantal cores/"
+"threads, ten koste van mogelijk kapotte timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11435,8 +11452,8 @@ msgstr "Interton VC 4000 cartridges"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 "Schakel muisinvoer in voor trackballs, spinners, lightguns (als er geen gun "
 "is aangesloten) en soortgelijke bedieningselementen"
@@ -11916,6 +11933,57 @@ msgstr "64MiB (Standaard)"
 msgctxt "game_options"
 msgid "128MiB"
 msgstr "128MiB"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
+msgstr ""
+
+#. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
+msgctxt "game_options"
+msgid "NETWORK"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NETWORK TYPE"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NAT"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP Tunnel"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Destination address and port to forward packets to. Leave this empty if you "
+"want to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP REMOTE ADDRESS"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Local address and port to receive packets on. Leave this empty if you want "
+"to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP BIND ADDRESS"
+msgstr ""
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -12696,6 +12764,23 @@ msgstr "Floppy Disk Image"
 msgctxt "game_options"
 msgid "Hard Disk Image"
 msgstr "Harde Schijf Image"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Choose which graphics API library to use. D3D12 may yield better results "
+"with faster GPUs."
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "D3D12 (Default)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Native Vulkan"
+msgstr ""
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
