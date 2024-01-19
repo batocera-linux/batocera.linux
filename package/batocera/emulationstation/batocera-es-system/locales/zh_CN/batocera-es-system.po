@@ -641,6 +641,18 @@ msgctxt "game_options"
 msgid "Disabled"
 msgstr "禁用"
 
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid ""
+"Automatically sets aspect ratio to 16/9 for games that natively support it. "
+"2D elements like HUD/UI may be stretched."
+msgstr ""
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "AUTO WIDESCREEN"
+msgstr ""
+
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Not all games support 3D pad."
@@ -5016,6 +5028,11 @@ msgstr "记忆卡"
 msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "震动卡"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak (Automatic)"
+msgstr ""
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -11644,6 +11661,57 @@ msgctxt "game_options"
 msgid "128MiB"
 msgstr "128MiB"
 
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
+msgstr ""
+
+#. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
+msgctxt "game_options"
+msgid "NETWORK"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NETWORK TYPE"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NAT"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP Tunnel"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Destination address and port to forward packets to. Leave this empty if you "
+"want to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP REMOTE ADDRESS"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Local address and port to receive packets on. Leave this empty if you want "
+"to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP BIND ADDRESS"
+msgstr ""
+
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
 msgid "Portugese"
@@ -12410,6 +12478,23 @@ msgstr "软盘映像"
 msgctxt "game_options"
 msgid "Hard Disk Image"
 msgstr "硬盘映像"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Choose which graphics API library to use. D3D12 may yield better results "
+"with faster GPUs."
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "D3D12 (Default)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Native Vulkan"
+msgstr "原生Vulkan"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13695,10 +13780,6 @@ msgstr "打开/关闭图形过滤"
 #~ msgctxt "game_options"
 #~ msgid "VKD3D (D3D12 to Vulkan)"
 #~ msgstr "VKD3D (D3D12 至 Vulkan)"
-
-#~ msgctxt "game_options"
-#~ msgid "Native Vulkan"
-#~ msgstr "原生Vulkan"
 
 #~ msgctxt "game_options"
 #~ msgid ""

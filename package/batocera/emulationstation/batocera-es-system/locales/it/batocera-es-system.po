@@ -658,6 +658,18 @@ msgctxt "game_options"
 msgid "Disabled"
 msgstr "Disabilitato"
 
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid ""
+"Automatically sets aspect ratio to 16/9 for games that natively support it. "
+"2D elements like HUD/UI may be stretched."
+msgstr ""
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "AUTO WIDESCREEN"
+msgstr ""
+
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
 msgid "Not all games support 3D pad."
@@ -5084,12 +5096,18 @@ msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "Rumble Pak"
 
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak (Automatic)"
+msgstr ""
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid ""
 "Use to eliminate joystick drift/unwanted input. Effects all controllers."
 msgstr ""
-"Elimina il drift e input involontari del joystick. Vale per tutti i controllers."
+"Elimina il drift e input involontari del joystick. Vale per tutti i "
+"controllers."
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -5107,8 +5125,8 @@ msgid ""
 "Use to make joystick movement more or less sensitive. Effects all "
 "controllers."
 msgstr ""
-"Usalo per rendere meno sensibili i movimenti del joystick. Vale per "
-"tutti i controllers/"
+"Usalo per rendere meno sensibili i movimenti del joystick. Vale per tutti i "
+"controllers/"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -11876,6 +11894,57 @@ msgctxt "game_options"
 msgid "128MiB"
 msgstr "128MiB"
 
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
+msgstr ""
+
+#. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
+msgctxt "game_options"
+msgid "NETWORK"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NETWORK TYPE"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NAT"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP Tunnel"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Destination address and port to forward packets to. Leave this empty if you "
+"want to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP REMOTE ADDRESS"
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Local address and port to receive packets on. Leave this empty if you want "
+"to enter it manually in the xemu.toml configuration file."
+msgstr ""
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP BIND ADDRESS"
+msgstr ""
+
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
 msgid "Portugese"
@@ -12652,6 +12721,23 @@ msgstr "Immagine Floppy Disk"
 msgctxt "game_options"
 msgid "Hard Disk Image"
 msgstr "Immagine Hard Disk"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Choose which graphics API library to use. D3D12 may yield better results "
+"with faster GPUs."
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "D3D12 (Default)"
+msgstr ""
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Native Vulkan"
+msgstr "Vulkan Nativo"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13947,10 +14033,6 @@ msgstr "Filtri grafici on/off"
 #~ msgctxt "game_options"
 #~ msgid "VKD3D (D3D12 to Vulkan)"
 #~ msgstr "VKD3D (da D3D12 a Vulkan)"
-
-#~ msgctxt "game_options"
-#~ msgid "Native Vulkan"
-#~ msgstr "Vulkan Nativo"
 
 #~ msgctxt "game_options"
 #~ msgid ""
