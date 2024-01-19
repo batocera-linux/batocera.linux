@@ -287,6 +287,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # swap
     select BR2_PACKAGE_SWAPIT if BR2_PACKAGE_BATOCERA_TARGET_RK3128 || BR2_PACKAGE_BATOCERA_TARGET_RK3326
+    select BR2_PACKAGE_ZRAMSWAP                # swap on zram, optional user-enabled service
 
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE
