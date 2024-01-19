@@ -165,6 +165,8 @@
 - QT 6.6.1
 - Vulkan stack to support 1.3.275
 - Added zramswap service
+- Enable swap on rpi through rpi3 to improve suppport for low-memory
+  variants e.g. Zero 2W
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware
