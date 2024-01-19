@@ -93,7 +93,7 @@
 - Play! to Nov 30, 2023 build
 - Python Pygame2 to 2.5.2
 - Python Pyxel to v1.9.18
-- RPCS3 to 0.0.29-15838
+- RPCS3 to 0.0.30
 - Ruffle to nightly-2023-10-13
 - Solarus Engine to Oct 2, 2023
 - Vita3k to Dec 26 build
