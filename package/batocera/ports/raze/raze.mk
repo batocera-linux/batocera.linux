@@ -14,7 +14,12 @@ RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
 HOST_RAZE_DEPENDENCIES = zlib bzip2
 HOST_RAZE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 HOST_RAZE_CONF_OPTS += -DSKIP_INSTALL_ALL=ON
+
+# The TOOLS_ONLY=ON option is not implemented in Raze yet.
+# This does in fact build the entire engine, not just the build tools.
+# We disable Vulkan to avoid having to depend on `host-xlib_libX11`.
 HOST_RAZE_CONF_OPTS += -DTOOLS_ONLY=ON
+HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
 HOST_RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define HOST_RAZE_INSTALL_CMDS
