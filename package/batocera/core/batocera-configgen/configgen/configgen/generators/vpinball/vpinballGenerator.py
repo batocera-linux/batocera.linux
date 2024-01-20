@@ -165,7 +165,7 @@ class VPinballGenerator(Generator):
             vpinballSettings.set("Standalone", "B2SBackglassHeight","")           
 
         #B2S Hide B2SDMD (switchon)
-        if system.isOptSet("vpinball_b2swindows"):
+        if system.isOptSet("vpinball_b2shidedmd"):
             vpinballSettings.set("Standalone", "B2SHideB2SDMD","0")
         else:
             vpinballSettings.set("Standalone", "B2SHideB2SDMD","1")
