@@ -318,8 +318,13 @@ class XeniaGenerator(Generator):
         
         # ensure nvidia driver used for vulkan
         if os.path.exists("/var/tmp/nvidia.prime"):
-            environment.update({'__VK_LAYER_NV_optimus': 'NVIDIA_only'})
-                
+            environment.update(
+                {
+                    'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
+                    'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
+                }
+            )
+        
         return Command.Command(array=commandArray, env=environment)
     
     # Show mouse on screen when needed
