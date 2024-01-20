@@ -11751,6 +11751,225 @@ thextech:
 vpinball:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    vpinball_balltrail:
+      group: DISPLAY
+      prompt: BALL TRAIL
+      description: Makes the ball easier to follow.
+      choices:
+        "0 (Default)": "0"
+        "0.5": "0.5"
+        "0.6": "0.6"
+        "0.7": "0.7"
+        "0.8": "0.8"
+        "0.9": "0.9"
+        "1.0": "1.0"
+    vpinball_nudgestrength:
+      group: DISPLAY
+      prompt: VISUAL NUDGE STRENGTH
+      description: Affects just the visual effect of nudging.
+      choices:
+        "0 (No Visual Effect)": "0"
+        "0.01": "0.01"
+        "0.02": "0.02"
+        "0.03": "0.03"
+        "0.04": "0.04"
+    vpinball_maxframerate:
+      group: DISPLAY
+      prompt: MAXIMUM FRAMERATE
+      description: Framerate limiter to reduce power draw.
+      choices:
+        "0 (Defaults Unlimited)": "0"
+        "50": "50"
+        "60": "60"
+        "120": "120"
+        "144": "144"
+    vpinball_vsync:
+      group: DISPLAY
+      prompt: VSYNC
+      description: Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, except for late frames (below target FPS) which are displayed immediately.
+      choices:
+        "None": "0"
+        "Vertical Sync": "1"
+        "Adaptive Sync (Default)": "2"
+    vpinball_presets:
+      group: DISPLAY
+      prompt: PERFORMANCE PRESETS
+      description: Big Impact on Performances (Press F11 in game to display FPS). Manual (Defaults) requires editing the VPinballX.ini file to fine tune performance.
+      choices:
+        "Default Performance Settings": "defaults"
+        "Low-end Computer": "lowend"
+        "High-end Computer": "highend"
+        "Manual (Default)": "manual"
+    vpinball_altcolor:
+      group: DISPLAY
+      prompt: ALTCOLOR
+      description: Alternative Colourized DMD (needs additional file).
+      preset: switchon
+    vpinball_pinmamewindow:
+      group: DISPLAY
+      submenu: PINMAME DMD
+      prompt: PINMAME DMD
+      description: Extra DMD (Dot Matrix Display) window to display the score for tables with a rom. All following values are in percentage of the screen width or height.
+      preset: switch
+    vpinball_pinmamewindowx:
+      group: DISPLAY
+      submenu: PINMAME DMD
+      prompt: PINMAME DMD X
+      description: horizontal position (in percentage of the screen width).
+      preset: input
+    vpinball_pinmamewindowy:
+      group: DISPLAY
+      submenu: PINMAME DMD
+      prompt: PINMAME DMD Y
+      description: vertical position (in percentage of the screen height).
+      preset: input
+    vpinball_pinmamewindowwidth:
+      group: DISPLAY
+      submenu: PINMAME DMD
+      prompt: PINMAME DMD WIDTH
+      description: horizontal width (in percentage of the screen width).
+      preset: input
+    vpinball_pinmamewindowheight:
+      group: DISPLAY
+      submenu: PINMAME DMD
+      prompt: PINMAME DMD HEIGHT
+      description: vertical height (in percentage of the screen height).
+      preset: input
+    vpinball_flexdmdwindow:
+      group: DISPLAY
+      submenu: FLEX DMD
+      prompt: FLEX DMD
+      description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom. All following values are in percentage of the screen width or height.
+      preset: switch
+    vpinball_flexdmdwindowx:
+      group: DISPLAY
+      submenu: FLEX DMD
+      prompt: FLEX DMD X
+      description: horizontal position (in percentage of the screen width).
+      preset: input
+    vpinball_flexdmdwindowy:
+      group: DISPLAY
+      submenu: FLEX DMD
+      prompt: FLEX DMD Y
+      description: vertical position (in percentage of the screen height).
+      preset: input
+    vpinball_flexdmdwindowwidth:
+      group: DISPLAY
+      submenu: FLEX DMD
+      prompt: FLEX DMD WIDTH
+      description: horizontal width (in percentage of the screen width).
+      preset: input
+    vpinball_flexdmdwindowheight:
+      group: DISPLAY
+      submenu: FLEX DMD
+      prompt: FLEX DMD HEIGHT
+      description: vertical height (in percentage of the screen height).
+      preset: input
+    vpinball_b2swindows:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS (B2S)
+      description: Upright glass panel displaying some illuminated artwork. All following values are in percentage of the screen width or height.
+      preset: switchon
+    vpinball_b2sbackglassx:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS X
+      description: horizontal position (in percentage of the screen width).
+      preset: input
+    vpinball_b2sbackglassy:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS Y
+      description: vertical position (in percentage of the screen height).
+      preset: input
+    vpinball_b2sbackglasswidth:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS WIDTH
+      description: horizontal width (in percentage of the screen width).
+      preset: input
+    vpinball_b2sbackglassheight:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS HEIGHT
+      description: vertical height (in percentage of the screen height).
+      preset: input
+    vpinball_b2shidedmd:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: BACKGLASS DMD HIDE
+      description: Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass. All following values are in percentage of the screen width or height.
+      preset: switchon
+    vpinball_b2sdmdx:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: B2S DMD X
+      description: horizontal position (in percentage of the screen width).
+      preset: input
+    vpinball_b2sdmdy:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: B2S DMD Y
+      description: vertical position (in percentage of the screen height).
+      preset: input
+    vpinball_b2sdmdwidth:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: B2S DMD WIDTH
+      description: horizontal width (in percentage of the screen width).
+      preset: input
+    vpinball_b2sdmdheight:
+      group: DISPLAY
+      submenu: BACKGLASS (B2S)
+      prompt: B2S DMD HEIGHT
+      description: vertical height (in percentage of the screen height).
+      preset: input
+    vpinball_musicvolume:
+      group: AUDIO
+      prompt: MUSIC VOLUME
+      description: You need to also check if the table rom has its own settings.
+      choices:
+        "0%" : "0"
+        "5%" : "5"
+        "10%" :  "10"
+        "20%" : "20"
+        "30%" : "30"
+        "40%" : "40"
+        "50%" : "50"
+        "60%" : "60"
+        "70%" : "70"
+        "80%" : "80"
+        "90%" : "90"
+        "100%" : "100"
+    vpinball_soundvolume:
+      group: AUDIO
+      prompt: SOUND VOLUME
+      description: Mechanical sounds of the table.
+      choices:
+        "0%" : "0"
+        "5%" : "5"
+        "10%" :  "10"
+        "20%" : "20"
+        "30%" : "30"
+        "40%" : "40"
+        "50%" : "50"
+        "60%" : "60"
+        "70%" : "70"
+        "80%" : "80"
+        "90%" : "90"
+        "100%" : "100"
+    vpinball_altsound:
+      group: AUDIO
+      prompt: ALTSOUND
+      description: Alternative sounds for the table (needs additional files).
+      preset: switchon
+    vpinball_folders:
+      group: FOLDERS ORGANISATION
+      prompt: PER TABLE FOLDER
+      description: Per Table Folder requires all files to be in the table folder. If disabled, all the extra-files required to run a table must be located in a single common pinmame folder. Consult the Wiki for details.
+      preset: switchon
 
 theforceengine:
   features: [padtokeyboard]
