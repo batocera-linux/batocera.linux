@@ -44,7 +44,7 @@ for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
 poll = select.poll()
 poll.register(input.fd, select.POLLIN)
 
-evkeys = []
+evkeys = [ecodes.KEY_CONFIG]
 for (code) in input.capabilities()[ecodes.EV_KEY]:
     evkeys.append(code)
 
