@@ -15,3 +15,7 @@ SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Force",             
 # G920 Driving Force Racing Wheel for Xbox One
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
 SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+
+# HORI RACING WHEEL APEX RWA
+SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="0f0d", ATTR{idProduct}=="00a4", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+
