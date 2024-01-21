@@ -41,6 +41,7 @@
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
 - Initial support for Retro Shooter Lightgun
+  - Press and hold rear left button for 3s to start calibration
 - Added zramswap service
 - Enable swap on rpi through rpi3 to improve suppport for low-memory
   variants e.g. Zero 2W
