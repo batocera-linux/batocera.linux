@@ -92,25 +92,30 @@ try:
                         if event.type == ecodes.EV_KEY and event.code == ecodes.BTN_LEFT and event.value == 1:
                             if calibration_step == 1:
                                 hidin.write(binascii.unhexlify('AAB1'))
+                                hidin.flush()
                                 frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.5), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.5) ]
                                 topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.1), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
                                 moveTargetTo(frompos, topos)
                                 calibration_step = 2
                             elif calibration_step == 2:
                                 hidin.write(binascii.unhexlify('AAB2'))
+                                hidin.flush()
                                 frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.1), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
                                 topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.9) ]
                                 moveTargetTo(frompos, topos)
                                 calibration_step = 3
                             elif calibration_step == 3:
                                 hidin.write(binascii.unhexlify('AAB3'))
+                                hidin.flush()
                                 frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.9) ]
                                 topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
                                 moveTargetTo(frompos, topos)
                                 calibration_step = 4
                             elif calibration_step == 4:
                                 hidin.write(binascii.unhexlify('AAB4'))
+                                hidin.flush()
                                 hidin.write(binascii.unhexlify('AAB5'))
+                                hidin.flush()
                                 calibration_mode= False
                                 target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
                                 target.syn()
@@ -127,6 +132,7 @@ try:
                             topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.5), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.5) ]
                             moveTargetTo(frompos, topos)
                             hidin.write(binascii.unhexlify('AA66'))
+                            hidin.flush()
 
                     # could be enabled by the timeChecker
                     if calibration_mode is False:
