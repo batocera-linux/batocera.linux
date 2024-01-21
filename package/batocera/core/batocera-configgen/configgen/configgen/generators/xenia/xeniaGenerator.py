@@ -317,7 +317,12 @@ class XeniaGenerator(Generator):
             }
         
         # ensure nvidia driver used for vulkan
-        if os.path.exists("/var/tmp/nvidia.prime"):
+        if os.path.exists('/var/tmp/nvidia.prime'):
+            variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
+            for variable_name in variables_to_remove:
+                if variable_name in os.environ:
+                    del os.environ[variable_name]
+            
             environment.update(
                 {
                     'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',

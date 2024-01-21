@@ -174,16 +174,32 @@ class FpinballGenerator(Generator):
         eslog.debug(out.decode())
         eslog.error(err.decode())
 
+        environment={
+            "WINEPREFIX": wineprefix,
+            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
+            "LIBGL_DRIVERS_PATH": "/lib32/dri",
+            # hum pw 0.2 and 0.3 are hardcoded, not nice
+            "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
+            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+        }
+
+        # ensure nvidia driver used for vulkan
+        if os.path.exists('/var/tmp/nvidia.prime'):
+            variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
+            for variable_name in variables_to_remove:
+                if variable_name in os.environ:
+                    del os.environ[variable_name]
+            
+            environment.update(
+                {
+                    'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
+                    'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
+                }
+            )
+        
         return Command.Command(
             array=commandArray,
-            env={
-                "WINEPREFIX": wineprefix,
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
-                "LIBGL_DRIVERS_PATH": "/lib32/dri",
-                # hum pw 0.2 and 0.3 are hardcoded, not nice
-                "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-                "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
-            }
+            env=environment
         )
 
     def getGfxRatioFromConfig(config, gameResolution):
