@@ -17,7 +17,7 @@ WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo ge-custom)
 
 # Wine Folder
 wine_folder() {
-if test -e "/userdata/system/wine/proton" || test -e "/userdata/system/wine/lutris || test -e "/userdata/system/wine/wine9"; then
+if test -e "/userdata/system/wine/ge-custom"; then
     echo "/userdata/system/wine"
     else
     echo "/usr/wine"
