@@ -5,6 +5,7 @@ import configparser
 import Command
 from generators.Generator import Generator
 import batoceraFiles
+import shutil
 
 vpinballConfigPath = batoceraFiles.CONF + "/vpinball"
 vpinballConfigFile = vpinballConfigPath + "/VPinballX.ini"
@@ -13,9 +14,11 @@ class VPinballGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
 
-        # create vpinball config directory
+        # create vpinball config directory and config file
         if not os.path.exists(vpinballConfigPath):
             os.makedirs(vpinballConfigPath)
+        if not os.path.exists(vpinballConfigFile):
+            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
 
         #VideogetCurrentResolution to convert from percentage to pixel value
         #necessary because people can plug their 1080p laptop on a 4k TV
@@ -27,8 +30,13 @@ class VPinballGenerator(Generator):
         vpinballSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         vpinballSettings.optionxform = str
-        if os.path.exists(vpinballConfigFile):
-            vpinballSettings.read(vpinballConfigFile)
+        vpinballSettings.read(vpinballConfigFile)
+        # Sections
+        if not vpinballSettings.has_section("Standalone"):
+            vpinballSettings.add_section("Standalone")
+        if not vpinballSettings.has_section("Player"):
+            vpinballSettings.add_section("Player")
+            
         #Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...We keep a switch to allow users with the old unique pinmame to be able to continue using vpinball (switchon)
         if system.isOptSet("vpinball_folders"):
             vpinballSettings.set("Standalone", "PinMAMEPath", "")
@@ -157,7 +165,7 @@ class VPinballGenerator(Generator):
             vpinballSettings.set("Standalone", "B2SBackglassHeight","")           
 
         #B2S Hide B2SDMD (switchon)
-        if system.isOptSet("vpinball_b2swindows"):
+        if system.isOptSet("vpinball_b2shidedmd"):
             vpinballSettings.set("Standalone", "B2SHideB2SDMD","0")
         else:
             vpinballSettings.set("Standalone", "B2SHideB2SDMD","1")
@@ -192,7 +200,7 @@ class VPinballGenerator(Generator):
             vpinballSettings.set("Standalone", "AltSound", system.config["vpinball_altsound"])
         else:
             vpinballSettings.set("Standalone", "AltSound","1")
-                
+
 
         # Save VPinballX.ini
         with open(vpinballConfigFile, 'w') as configfile:
@@ -204,7 +212,6 @@ class VPinballGenerator(Generator):
             "-PrefPath", vpinballConfigPath,
             "-Play", rom
         ]
-
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
