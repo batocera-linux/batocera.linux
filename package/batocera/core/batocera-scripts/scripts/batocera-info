@@ -154,9 +154,13 @@ if test -z "${DISPLAY}"; then
     export DISPLAY=:0.0
 fi
 DISPLAYRES=$(batocera-resolution currentResolution)
-DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
-echo "Display resolution: ${DISPLAYRES}"
-echo "Display refresh rate: ${DISPLAYRATE}Hz"
+if [ ! -z "$WAYLAND_DISPLAY" ]; then
+    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
+else
+    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
+fi
+echo "Display Resolution: ${DISPLAYRES}"
+echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
 
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
