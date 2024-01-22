@@ -349,7 +349,7 @@ def getGuns():
         eslog.info("no gun found")
     return guns
 
-def gunNameFromPath(path):
+def shortNameFromPath(path):
     redname = os.path.splitext(os.path.basename(path))[0].lower()
     inpar   = False
     inblock = False
@@ -371,7 +371,7 @@ def getGameGunsMetaData(system, rom):
     # load the database
     tree = ET.parse(batoceraFiles.esGunsMetadata)
     root = tree.getroot()
-    game = gunNameFromPath(rom)
+    game = shortNameFromPath(rom)
     res = {}
     eslog.info("looking for gun metadata ({}, {})".format(system, game))
     for nodesystem in root.findall(".//system"):
@@ -389,7 +389,7 @@ def getGameWheelsMetaData(system, rom):
     # load the database
     tree = ET.parse(batoceraFiles.esWheelsMetadata)
     root = tree.getroot()
-    game = gunNameFromPath(rom)
+    game = shortNameFromPath(rom)
     res = {}
     eslog.info("looking for wheel metadata ({}, {})".format(system, game))
     for nodesystem in root.findall(".//system"):
@@ -411,21 +411,33 @@ def getGamesMetaData(system, rom):
     # load the database
     tree = ET.parse(batoceraFiles.esGamesMetadata)
     root = tree.getroot()
-    game = gunNameFromPath(rom)
+    game = shortNameFromPath(rom)
     res = {}
     eslog.info("looking for game metadata ({}, {})".format(system, game))
 
-    for nodesystem in root.findall(".//system"):
-        if nodesystem.get("name") == system:
-            for nodegame in nodesystem.findall(".//game"):
-                if nodegame.get("name") in game:
-                    for child in nodegame:
-                        for attribute in child.attrib:
-                            key = "{}_{}".format(child.tag, attribute)
-                            res[key] = child.get(attribute)
-                            eslog.info("found game metadata {}={}".format(key, res[key]))
-                    return res
+    targetSystem = system
+    # hardcoded list of system for arcade
+    # this list can be found in es_system.yml
+    # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
+    if system in ['naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'daphne', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
+        targetSystem = 'arcade'
 
+    for nodesystem in root.findall(".//system"):
+        for sysname in nodesystem.get("name").split(','):
+          if sysname == targetSystem:
+              for attribute in nodesystem.attrib:
+                  if attribute != "name":
+                      key = "{}".format(attribute)
+                      res[key] = nodesystem.get(attribute)
+                      eslog.info("found game metadata {}={} (at system level)".format(key, res[key]))
+              for nodegame in nodesystem.findall(".//game"):
+                  if nodegame.get("name") in game:
+                      for child in nodegame:
+                          for attribute in child.attrib:
+                              key = "{}_{}".format(child.tag, attribute)
+                              res[key] = child.get(attribute)
+                              eslog.info("found game metadata {}={}".format(key, res[key]))
+                      return res
     return res
 
 def dev2int(dev):
@@ -458,7 +470,7 @@ def getDevicesInformation():
         devices[eventId] = { "node": ev.device_node, "group": group, "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
         if "ID_PATH" in ev.properties:
           if isWheel and "WHEEL_ROTATION_ANGLE" in ev.properties:
-              devices[eventId]["wheel_rotation_angle"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
+              devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
           if group not in groups:
             groups[group] = []
           groups[group].append(ev.device_node)
@@ -479,8 +491,8 @@ def getDevicesInformation():
     if d["isMouse"]:
       nmouse = mouses.index(device)
     res[d["node"]] = { "eventId": device, "isJoystick": d["isJoystick"], "isWheel": d["isWheel"], "isMouse": d["isMouse"], "associatedDevices": dgroup, "joystick_index": njoystick, "mouse_index": nmouse }
-    if "wheel_rotation_angle" in d:
-        res[d["node"]]["wheel_rotation_angle"] = d["wheel_rotation_angle"]
+    if "wheel_rotation" in d:
+        res[d["node"]]["wheel_rotation"] = d["wheel_rotation"]
   return res
 
 def getAssociatedMouse(devicesInformation, dev):
