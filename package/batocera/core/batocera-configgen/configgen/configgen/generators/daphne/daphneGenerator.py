@@ -14,7 +14,7 @@ eslog = get_logger(__name__)
 class DaphneGenerator(Generator):
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # copy input.ini file templates
         daphneConfigSource = "/usr/share/daphne/hypinput_gamepad.ini"
 

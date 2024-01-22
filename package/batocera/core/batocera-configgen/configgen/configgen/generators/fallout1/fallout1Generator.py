@@ -18,7 +18,7 @@ fout1SourceFile = '/usr/bin/fallout1-ce'
 
 class Fallout1Generator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         
         # Check if the directories exist, if not create them
         if not os.path.exists(fout1ConfigDir):

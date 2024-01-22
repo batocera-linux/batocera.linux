@@ -9,7 +9,7 @@ from . import mupenControllers
 
 class MupenGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Read the configuration file
         iniConfig = configparser.ConfigParser(interpolation=None)

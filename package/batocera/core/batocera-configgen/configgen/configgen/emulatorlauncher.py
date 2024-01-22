@@ -263,7 +263,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            cmd = generator.generate(system, rom, playersControllers, guns, wheels, gameResolution)
+            cmd = generator.generate(system, rom, playersControllers, metadata, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))

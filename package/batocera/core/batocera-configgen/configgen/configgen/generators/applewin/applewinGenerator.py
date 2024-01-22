@@ -12,7 +12,7 @@ CONFIGDIR  = batoceraFiles.CONF + '/applewin'
 CONFIGFILE = CONFIGDIR + '/config.txt'
 
 class AppleWinGenerator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(CONFIGDIR):
             os.makedirs(CONFIGDIR)
 

@@ -52,7 +52,7 @@ class Pcsx2Generator(Generator):
             wheel_type = "Virtual"
         return wheel_type
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
         pcsx2BiosDir = batoceraFiles.BIOS + "/ps2"
         pcsx2Patches = pcsx2BiosDir + "/patches.zip"

@@ -12,7 +12,7 @@ from shutil import copyfile
 
 class SupermodelGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         commandArray = ["supermodel", "-fullscreen", "-channels=2"]
         
         # legacy3d

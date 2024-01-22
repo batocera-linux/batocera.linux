@@ -9,7 +9,7 @@ import batoceraFiles
 
 class TsugaruGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
 	# Start emulator fullscreen
         commandArray = ["/usr/bin/Tsugaru_CUI", "/userdata/bios/fmtowns"]

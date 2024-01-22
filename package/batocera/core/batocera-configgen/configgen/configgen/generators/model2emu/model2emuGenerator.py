@@ -18,7 +18,7 @@ eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         wineprefix = "/userdata/system/wine-bottles/model2"
         emupath = wineprefix + "/model2emu"
         rompath = "/userdata/roms/model2/"

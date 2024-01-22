@@ -9,7 +9,7 @@ from os import environ
 
 class YuzuGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         if not os.path.exists(batoceraFiles.CONF+"/yuzu"):
             os.makedirs(batoceraFiles.CONF+"/yuzu")

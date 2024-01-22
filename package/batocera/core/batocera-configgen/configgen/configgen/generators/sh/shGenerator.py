@@ -7,7 +7,7 @@ import glob
 
 class ShGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # in case of squashfs, the root directory is passed
         shInDir = glob.glob(rom + "/run.sh")
