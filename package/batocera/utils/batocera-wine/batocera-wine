@@ -320,34 +320,30 @@ dxvk_install() {
     DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
     DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
 
-    if test "${DXVK_HUD}" = 1
-    then
+    if test "${DXVK_HUD}" = 1; then
 	    export DXVK_HUD=1
     fi
 
-    if test "${DXVK}" = 1
-    then
-	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	if test -e "/userdata/system/wine/dxvk"
-	then
-	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	else
-	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	fi
+    if test "${DXVK}" = 1; then
+        mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        if test -e "/userdata/system/wine/dxvk"; then
+            echo "Creating links using /userdata, Linux File System required !!!"
+            ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/userdata/system/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        else
+            echo "Creating links using /usr/wine/dxvk/, Linux File System required !!!"
+            ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        fi
     else
-	    echo "Creating links on /userdata, Linux File System required !!!"
+	    echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
 	    ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "${DIR}/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
-    if test "${DXVK}" = 1
-    then
+    if test "${DXVK}" = 1; then
         export DXVK_ASYNC=1
-        export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk/dxvk.conf"
+        export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk.conf"
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n"
         export DXVK_STATE_CACHE_PATH="/userdata/system/cache"
     else
@@ -355,8 +351,7 @@ dxvk_install() {
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=b"
     fi
 
-    if test "${NVAPI}" = 1
-    then
+    if test "${NVAPI}" = 1; then
         export DXVK_ENABLE_NVAPI=1
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};nvapi,nvapi64=n"
     else
