@@ -17,8 +17,8 @@ class VPinballGenerator(Generator):
         # create vpinball config directory and config file
         if not os.path.exists(vpinballConfigPath):
             os.makedirs(vpinballConfigPath)
-        if not os.path.exists(vpinballConfigFile):
-            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
+        
+        shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
 
         #VideogetCurrentResolution to convert from percentage to pixel value
         #necessary because people can plug their 1080p laptop on a 4k TV
