@@ -48,20 +48,9 @@ def getMupenMapping(use_n64_inputs):
 def setControllersConfig(iniConfig, controllers, system):
     nplayer = 1
 
-    # get device informations to check if pads are wheels
-    deviceInfos = {}
-    if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-        deviceInfos = controllersConfig.getDevicesInformation()
-        print(deviceInfos)
-
     for playercontroller, pad in sorted(controllers.items()):
-        isWheel = False
-        if pad.dev in deviceInfos and deviceInfos[pad.dev]["isWheel"]:
-            print(2)
-            isWheel = True
-        print(3)
         # Dynamic controller bindings
-        config = defineControllerKeys(nplayer, pad, system, isWheel)
+        config = defineControllerKeys(nplayer, pad, system)
         fillIniPlayer(nplayer, iniConfig, pad, config)
         nplayer += 1
 
@@ -104,7 +93,7 @@ def getJoystickDeadzone(default_peak, config_value, system):
         
     return f"{deadzone},{deadzone}"
     
-def defineControllerKeys(nplayer, controller, system, isWheel):
+def defineControllerKeys(nplayer, controller, system):
         # check for auto-config inputs by guid and name, or es settings
         if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
@@ -119,10 +108,7 @@ def defineControllerKeys(nplayer, controller, system, isWheel):
         config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
 
         # Analog Deadzone
-        if isWheel:
-            config['AnalogDeadzone'] = f"0,0"
-        else:
-            config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
+        config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
         
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
