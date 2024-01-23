@@ -22,7 +22,7 @@ class ViceGenerator(Generator):
             os.makedirs(os.path.dirname(batoceraFiles.viceConfig))
 
         # configuration file
-        viceConfig.setViceConfig(batoceraFiles.viceConfig, system, guns, rom)
+        viceConfig.setViceConfig(batoceraFiles.viceConfig, system, metadata, guns, rom)
 
         # controller configuration
         viceControllers.generateControllerConfig(system, batoceraFiles.viceConfig, playersControllers)

@@ -367,46 +367,6 @@ def shortNameFromPath(path):
             inblock = True
     return ret
 
-def getGameGunsMetaData(system, rom):
-    # load the database
-    tree = ET.parse(batoceraFiles.esGunsMetadata)
-    root = tree.getroot()
-    game = shortNameFromPath(rom)
-    res = {}
-    eslog.info("looking for gun metadata ({}, {})".format(system, game))
-    for nodesystem in root.findall(".//system"):
-        if nodesystem.get("name") == system:
-            for nodegame in nodesystem:
-                if nodegame.text in game:
-                    eslog.info("{} matches with {} in database".format(game, nodegame.text))
-                    for attribute in nodegame.attrib:
-                        res[attribute] = nodegame.get(attribute)
-                        eslog.info("found gun metadata {}={}".format(attribute, res[attribute]))
-                    return res
-    return res
-
-def getGameWheelsMetaData(system, rom):
-    # load the database
-    tree = ET.parse(batoceraFiles.esWheelsMetadata)
-    root = tree.getroot()
-    game = shortNameFromPath(rom)
-    res = {}
-    eslog.info("looking for wheel metadata ({}, {})".format(system, game))
-    for nodesystem in root.findall(".//system"):
-        if nodesystem.get("name") == system:
-            for attribute in nodesystem.attrib:
-                if attribute != "name":
-                    res[attribute] = nodesystem.get(attribute)
-                    eslog.info("found wheel system metadata {}={}".format(attribute, res[attribute]))
-            for nodegame in nodesystem:
-                if nodegame.text in game:
-                    eslog.info("{} matches with {} in database".format(game, nodegame.text))
-                    for attribute in nodegame.attrib:
-                        res[attribute] = nodegame.get(attribute)
-                        eslog.info("found wheel metadata {}={}".format(attribute, res[attribute]))
-                    return res
-    return res
-
 def getGamesMetaData(system, rom):
     # load the database
     tree = ET.parse(batoceraFiles.esGamesMetadata)
