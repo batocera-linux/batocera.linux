@@ -1,4 +1,4 @@
-# 2024/02/xx - batocera.linux 39 - Painted Lady
+# 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
 - Emulators using Wine now use the Glorious Eggroll custom runner for latest capabilities and compatibility.
   Your previously saved games are still maintained in `/userdata/saves/` in their associated bottle for the afftected emulators Xenia, BigPemu, FPinball & Model2Emu.
@@ -159,7 +159,7 @@
 - Redream to 1.5.0-1093
 - Raze to 1.9.1
 ### System
-- Linux kernel to 6.7
+- Linux kernel to 6.7.1
 - Mesa to 23.3.3
 - Proton & Lutris replaced by the Glorious Eggroll customer WINE runner
 - Wine Tricks to 20240105
