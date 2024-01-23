@@ -10,7 +10,7 @@ import hashlib
 
 class SonicRetroGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         
         # Determine the emulator to use
         if (rom.lower()).endswith("son"):

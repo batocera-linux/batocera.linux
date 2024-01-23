@@ -9,7 +9,7 @@ import json
 
 class Sonic3AIRGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         config_file = "/usr/bin/sonic3-air/config.json"
         oxygen_file = "/usr/bin/sonic3-air/oxygenproject.json"

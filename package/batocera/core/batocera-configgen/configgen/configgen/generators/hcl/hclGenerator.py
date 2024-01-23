@@ -9,7 +9,7 @@ eslog = get_logger(__name__)
 
 class HclGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         try:
             os.chdir("/userdata/roms/hcl/data/map")
             os.chdir("/userdata/roms/hcl/")

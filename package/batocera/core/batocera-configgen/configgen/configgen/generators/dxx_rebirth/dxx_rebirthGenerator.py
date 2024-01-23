@@ -7,7 +7,7 @@ import batoceraFiles
 
 class DXX_RebirthGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         
         directory = os.path.dirname(rom)
 

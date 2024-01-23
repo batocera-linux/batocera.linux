@@ -68,11 +68,11 @@ def connected_to_internet():
     eslog.error(f"Not connected to the internet")
     return False
 
-def writeLibretroConfig(generator, retroconfig, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+def writeLibretroConfig(generator, retroconfig, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator, system, controllers, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -287,14 +287,13 @@ def createLibretroConfig(generator, system, controllers, guns, wheels, rom, beze
 
         # wheel
         if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-            wheelssmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
             deviceInfos = controllersConfig.getDevicesInformation()
             nplayer = 1
             for controller, pad in sorted(controllers.items()):
                 if pad.dev in deviceInfos:
                     if deviceInfos[pad.dev]["isWheel"]:
                         retroarchConfig['input_player' + str(nplayer) + '_analog_dpad_mode'] = '1'
-                        if "type" in wheelssmetadata and wheelssmetadata["type"] == "negcon" :
+                        if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 773 # Negcon
                         else:
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 517 # DualShock Controller
@@ -860,14 +859,12 @@ def createLibretroConfig(generator, system, controllers, guns, wheels, rom, beze
                 ragunconf = gun_mapping[system.config['core']]["default"]
             raguncoreconf = {}
 
-            gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
-
             # overwrite configuration by gungames.xml
             if "gameDependant" in ragunconf:
                 for gd in ragunconf["gameDependant"]:
-                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
+                    if "gun_"+gd["key"] in gunsmetadata and gunsmetadata["gun_"+gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
-                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
+                    if "gun_"+gd["key"] in gunsmetadata and gunsmetadata["gun_"+gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
                         raguncoreconf[gd["mapcorekey"]] = gd["mapcorevalue"]
 
             for nplayer in range(1, 3+1):
@@ -929,7 +926,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, guns
     # custom mapping by core to match more with avaible gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
-        if "gun" in gunsmetadata and gunsmetadata["gun"] == "justifier":
+        if "gun_type" in gunsmetadata and gunsmetadata["gun_type"] == "justifier":
             retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
             retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
         else:

@@ -7,7 +7,7 @@ import os
 
 class OpenJazzGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         try:
             os.chdir("/userdata/roms/openjazz/")
         except:

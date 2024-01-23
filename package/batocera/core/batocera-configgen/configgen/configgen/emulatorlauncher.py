@@ -140,6 +140,9 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         if "emulator" in system.config:
             eslog.debug("emulator: {}".format(system.config["emulator"]))
 
+    # metadata
+    metadata = controllers.getGamesMetaData(systemName, rom)
+
     # search guns in case use_guns is enabled for this game
     # force use_guns in case es tells it has a gun
     if system.isOptSet('use_guns') == False and args.lightgun:
@@ -260,7 +263,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            cmd = generator.generate(system, rom, playersControllers, guns, wheels, gameResolution)
+            cmd = generator.generate(system, rom, playersControllers, metadata, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))

@@ -12,7 +12,7 @@ vpinballConfigFile = vpinballConfigPath + "/VPinballX.ini"
 
 class VPinballGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # create vpinball config directory and config file
         if not os.path.exists(vpinballConfigPath):

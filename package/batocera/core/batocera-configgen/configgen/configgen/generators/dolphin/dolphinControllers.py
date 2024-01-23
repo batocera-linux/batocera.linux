@@ -14,12 +14,12 @@ import controllersConfig
 eslog = get_logger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system, playersControllers, wheels, rom, guns):
+def generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns):
 
     #generateHotkeys(playersControllers)
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
-            generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", guns, system, rom)
+            generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", metadata, guns, system, rom)
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             # Generate if hardcoded
@@ -39,9 +39,8 @@ def generateControllerConfig(system, playersControllers, wheels, rom, guns):
     elif system.name == "gamecube":
         used_wheels = {}
         if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
-            wheelssmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
-            if "wheel_type" in wheelssmetadata:
-                if wheelssmetadata["wheel_type"] == "Steering Wheel":
+            if "wheel_type" in metadata:
+                if metadata["wheel_type"] == "Steering Wheel":
                     used_wheels = wheels
             elif "dolphin_wheel_type" in system.config:
                 if system.config["dolphin_wheel_type"] == "Steering Wheel":
@@ -256,16 +255,12 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
     f.write
     f.close()
 
-def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
+def generateControllerConfig_guns(filename, anyDefKey, metadata, guns, system, rom):
     configFileName = f"{batoceraFiles.dolphinConfig}/{filename}"
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     # In case of two pads having the same name, dolphin wants a number to handle this
     double_pads = dict()
-
-    gunsmetadata = {}
-    if len(guns) > 0:
-        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
 
     nplayer = 1
     while nplayer <= 4:
@@ -349,8 +344,8 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
             # custom remapping
             # erase values
             for btn in gunButtons:
-                if btn in gunsmetadata:
-                    for mval in gunsmetadata[btn].split(","):
+                if "gun_"+btn in metadata:
+                    for mval in metadata["gun_"+btn].split(","):
                         if mval in gunMapping:
                             for x in gunMapping:
                                 if gunMapping[x] == btn:
@@ -360,8 +355,8 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
                             eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(btn, mval))
             # setting values
             for btn in gunButtons:
-                if btn in gunsmetadata:
-                    for mval in gunsmetadata[btn].split(","):
+                if "gun_"+btn in metadata:
+                    for mval in metadata["gun_"+btn].split(","):
                         if mval in gunMapping:
                             gunMapping[mval] = btn
                             eslog.info("setting {} to {}".format(mval, btn))
@@ -380,13 +375,13 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
                 f.write(dolphinMappingNames[btn]+" = `"+val+"`\n")
 
             # map ir
-            if "ir_up" not in gunsmetadata:
+            if "gun_"+"ir_up" not in metadata:
                 f.write("IR/Up = `Axis 1-`\n")
-            if "ir_down" not in gunsmetadata:
+            if "gun_"+"ir_down" not in metadata:
                 f.write("IR/Down = `Axis 1+`\n")
-            if "ir_left" not in gunsmetadata:
+            if "gun_"+"ir_left" not in metadata:
                 f.write("IR/Left = `Axis 0-`\n")
-            if "ir_right" not in gunsmetadata:
+            if "gun_"+"ir_right" not in metadata:
                 f.write("IR/Right = `Axis 0+`\n")
 
             # specific games configurations
@@ -400,8 +395,8 @@ def generateControllerConfig_guns(filename, anyDefKey, guns, system, rom):
                 "ir_right":        "IR/Right",
             }
             for spe in specifics:
-                if spe in gunsmetadata:
-                    f.write("{} = {}\n".format(specifics[spe], gunsmetadata[spe]))
+                if "gun_"+spe in metadata:
+                    f.write("{} = {}\n".format(specifics[spe], metadata["gun_"+spe]))
         nplayer += 1
     f.write
     f.close()

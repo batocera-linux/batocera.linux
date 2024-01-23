@@ -10,7 +10,7 @@ eslog = get_logger(__name__)
 
 class CdogsGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         romdir = "/userdata/roms/cdogs"
         assetdirs = [

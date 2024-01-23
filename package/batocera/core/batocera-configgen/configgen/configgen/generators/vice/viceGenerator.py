@@ -16,13 +16,13 @@ class ViceGenerator(Generator):
     
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         if not os.path.exists(os.path.dirname(batoceraFiles.viceConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.viceConfig))
 
         # configuration file
-        viceConfig.setViceConfig(batoceraFiles.viceConfig, system, guns, rom)
+        viceConfig.setViceConfig(batoceraFiles.viceConfig, system, metadata, guns, rom)
 
         # controller configuration
         viceControllers.generateControllerConfig(system, batoceraFiles.viceConfig, playersControllers)

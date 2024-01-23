@@ -11,7 +11,7 @@ from . import ioquake3Config
 
 class IOQuake3Generator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         ioquake3Config.writeCfgFiles(system, rom, playersControllers, gameResolution)
 
         # ioquake3 looks for folder either in config or from where it's launched
