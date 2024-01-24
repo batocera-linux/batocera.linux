@@ -393,7 +393,7 @@ def getGamesMetaData(system, rom):
                               key = "{}_{}".format(child.tag, attribute)
                               res[key] = child.get(attribute)
                               eslog.info("found game metadata {}={} (system level)".format(key, res[key]))
-                      return res
+                      break
               for nodegame in nodesystem.findall(".//game"):
                   if nodegame.get("name") != "default" and nodegame.get("name") in game:
                       for child in nodegame:

@@ -862,9 +862,9 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
             # overwrite configuration by gungames.xml
             if "gameDependant" in ragunconf:
                 for gd in ragunconf["gameDependant"]:
-                    if "gun_"+gd["key"] in gunsmetadata and gunsmetadata["gun_"+gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
+                    if "gun_"+gd["key"] in metadata and metadata["gun_"+gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
-                    if "gun_"+gd["key"] in gunsmetadata and gunsmetadata["gun_"+gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
+                    if "gun_"+gd["key"] in metadata and metadata["gun_"+gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
                         raguncoreconf[gd["mapcorekey"]] = gd["mapcorevalue"]
 
             for nplayer in range(1, 3+1):
@@ -876,7 +876,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
                             retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
                         else:
                             retroarchConfig['input_libretro_device_p'+str(nplayer)] = ""
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'], gunsmetadata)
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'], metadata)
 
             # override core settings
             for key in raguncoreconf:
@@ -907,7 +907,7 @@ def clearGunInputsForPlayer(n, retroarchConfig):
         for type in ["btn", "mbtn"]:
             retroarchConfig['input_player{}_{}_{}'.format(n, key, type)] = ''
 
-def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, gunsmetadata):
+def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, metadata):
     # gun mapping
     retroarchConfig['input_player{}_mouse_index'            .format(n)] = gun["id_mouse"]
     retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = 1
@@ -926,7 +926,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, guns
     # custom mapping by core to match more with avaible gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
-        if "gun_type" in gunsmetadata and gunsmetadata["gun_type"] == "justifier":
+        if "gun_type" in metadata and metadata["gun_type"] == "justifier":
             retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
             retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
         else:

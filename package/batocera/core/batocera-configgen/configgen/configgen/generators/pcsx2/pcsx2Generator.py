@@ -64,7 +64,7 @@ class Pcsx2Generator(Generator):
             if os.path.exists(file_path):
                 os.remove(file_path)
 
-        playingWithWheel = isPlayingWithWheel(system, wheels)
+        playingWithWheel = Pcsx2Generator.isPlayingWithWheel(system, wheels)
 
         # Config files
         configureReg(pcsx2ConfigDir)
