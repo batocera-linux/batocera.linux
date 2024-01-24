@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2024/01/20)\n"
+"Project-Id-Version: batocera-es v39beta(2024/01/21)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-20 18:24+0900\n"
+"PO-Revision-Date: 2024-01-21 16:29+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -53,6 +53,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "RYZEN THERMAL DESIGN POWER"
 msgstr "RYZEN 熱設計電力"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "105% (Use caution)"
+msgstr "105% (注意してください)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11432,8 +11437,8 @@ msgstr "SDL 構成"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
-msgid "Converts DirectX 8/9/10/11/12 calls to Vulkan."
-msgstr ""
+msgid "Converts DirectX 9/10/11/12 calls to Vulkan."
+msgstr "DirectX 9/10/11/12の呼び出しをVulkanに変換します"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12849,47 +12854,51 @@ msgstr "VSYNC(垂直同期)"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Provides a ball trail to make the ball easier to follow."
-msgstr ""
+msgstr "ボールを追いやすくするためのボールの軌道を表示します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BALL TRAIL STRENGTH"
-msgstr ""
+msgstr "ボール跡の強さ"
 
 #. TRANSLATION: vpinball
+#| msgctxt "game_options"
+#| msgid "100% (Default)"
 msgctxt "game_options"
 msgid "0% (Default)"
-msgstr ""
+msgstr "0% (標準)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Affects just the visual effect of nudging."
-msgstr ""
+msgstr "ナッジの視覚効果のみに影響します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
-msgstr ""
+msgstr "視覚的なナッジの強さ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "0 (No Visual Effect)"
-msgstr ""
+msgstr "0 (視覚効果なし)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
-msgstr ""
+msgstr "フレームレート リミッターでCPU 使用率を削減します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "MAXIMUM FRAMERATE"
-msgstr ""
+msgstr "最大フレームレート"
 
 #. TRANSLATION: vpinball
+#| msgctxt "game_options"
+#| msgid "50 (Default)"
 msgctxt "game_options"
 msgid "0 (Defaults Unlimited)"
-msgstr ""
+msgstr "0 (標準は無制限)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12897,16 +12906,18 @@ msgid ""
 "Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, "
 "except for late frames (below target FPS) which are displayed immediately."
 msgstr ""
+"画面のティアリングを修正。Adaptive VSync (標準) は、すぐに表示される遅いフ"
+"レーム (ターゲット FPS を下回る) を除き、ビデオ同期で同期します。"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Vertical Sync"
-msgstr ""
+msgstr "垂直同期"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adaptive Sync (Default)"
-msgstr ""
+msgstr "Adaptive Sync (標準)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12914,41 +12925,43 @@ msgid ""
 "Presets which can improve performance without manually editing the VPinballX."
 "ini file to fine tune performance."
 msgstr ""
+"VPinballX.ini ファイルを手動で編集して微調整することなく、動作を向上できるプ"
+"リセットを使用します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PERFORMANCE PRESETS"
-msgstr ""
+msgstr "性能プリセット"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Default Performance Settings"
-msgstr ""
+msgstr "標準パフォーマンス設定"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Low-end Computer"
-msgstr ""
+msgstr "初心者向けコンピュータ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "High-end Computer"
-msgstr ""
+msgstr "ハイエンドコンピュータ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Manual (Default)"
-msgstr ""
+msgstr "手動 (標準)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Alternative Coloured Dot Matrix Display (needs additional file)."
-msgstr ""
+msgstr "代替カラードットマトリックス表示 (追加ファイルが必要)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "ALTCOLOR"
-msgstr ""
+msgstr "アルトカラー"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12956,51 +12969,53 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables with a "
 "pinmame rom."
 msgstr ""
+"pinmame rom を使用し、テーブルスコア表示用の追加 DMD (ドット マトリックス "
+"ディスプレイ) ウィンドウ"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "PINMAME DMD"
-msgstr ""
+msgstr "PINMAME DMD"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Horizontal position (in percentage of the screen width)."
-msgstr ""
+msgstr "水平位置 (画面幅のパーセンテージ)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD X"
-msgstr ""
+msgstr "PINMAME DMD X位置"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Vertical position (in percentage of the screen height)."
-msgstr ""
+msgstr "垂直位置 (画面の高さのパーセンテージ)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD Y"
-msgstr ""
+msgstr "PINMAME DMD Y位置"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Horizontal width (in percentage of the screen width)."
-msgstr ""
+msgstr "水平幅 (画面幅のパーセンテージ)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD WIDTH"
-msgstr ""
+msgstr "PINMAME DMD 幅"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Vertical height (in percentage of the screen height)."
-msgstr ""
+msgstr "垂直方向の高さ (画面の高さのパーセンテージ)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD HEIGHT"
-msgstr ""
+msgstr "PINMAME DMD 高さ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13008,121 +13023,126 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables "
 "without a rom."
 msgstr ""
+"ROM のないテーブルスコア表示用の追加 DMD (ドット マトリックス ディスプレイ) "
+"ウィンドウ"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "FLEX DMD"
-msgstr ""
+msgstr "FLEX DMD"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD X"
-msgstr ""
+msgstr "FLEX DMD X位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD Y"
-msgstr ""
+msgstr "FLEX DMD Y位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD WIDTH"
-msgstr ""
+msgstr "FLEX DMD 幅"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD HEIGHT"
-msgstr ""
+msgstr "FLEX DMD 高さ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Upright glass panel displaying some illuminated artwork."
-msgstr ""
+msgstr "ライトアップされたアートワークを表示する直立したガラス パネル"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "BACKGLASS (B2S)"
-msgstr ""
+msgstr "BACKGLASS (B2S)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS X"
-msgstr ""
+msgstr "BACKGLASS X位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS Y"
-msgstr ""
+msgstr "BACKGLASS Y位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS WIDTH"
-msgstr ""
+msgstr "BACKGLASS 幅"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS HEIGHT"
-msgstr ""
+msgstr "BACKGLASS 高さ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
 msgstr ""
+"バックガラスに組み込みの追加の DMD (ドット マトリックス ディスプレイ) を非表"
+"示にします"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS DMD HIDE"
-msgstr ""
+msgstr "BACKGLASS DMD 非表示"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD X"
-msgstr ""
+msgstr "B2S DMD X位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD Y"
-msgstr ""
+msgstr "B2S DMD Y位置"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD WIDTH"
-msgstr ""
+msgstr "B2S DMD 幅"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD HEIGHT"
-msgstr ""
+msgstr "B2S DMD 高さ"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adjust the music volume. Some tables may have its own settings."
 msgstr ""
+"音楽の音量を調整します。一部のテーブルには独自の設定がある場合があります"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "MUSIC VOLUME"
-msgstr ""
+msgstr "音楽音量"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adjust the mechanical sounds of the table."
-msgstr ""
+msgstr "テーブルの機械音を調整します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SOUND VOLUME"
-msgstr ""
+msgstr "テーブル音量"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Alternative sounds for the table (needs additional files)."
-msgstr ""
+msgstr "テーブルの代替音を使用します(追加ファイルが必要)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "ALTERNATIVE SOUND"
-msgstr ""
+msgstr "代替音"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13130,16 +13150,18 @@ msgid ""
 "Per Table Folder requires all files to be in the associated rom table "
 "folder. If disabled, consult the Wiki for further details."
 msgstr ""
+"[テーブル フォルダーごと] では、すべてのファイルを関連する テーブル romフォル"
+"ダーに置く必要があります。無効の場合、詳細については Wiki を参照してください"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FOLDERS ORGANISATION"
-msgstr ""
+msgstr "フォルダー整理"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PER TABLE FOLDER"
-msgstr ""
+msgstr "テーブルフォルダーごと"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14210,10 +14232,6 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
-
-#~ msgctxt "game_options"
-#~ msgid "Converts DirectX 9/10/11/12 calls to Vulkan."
-#~ msgstr "DirectX 9/10/11/12の呼び出しをVulkanに変換します"
 
 #~ msgctxt "game_options"
 #~ msgid "VKD3D (D3D12 to Vulkan)"

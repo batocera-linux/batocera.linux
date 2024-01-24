@@ -663,12 +663,13 @@ msgctxt "game_options"
 msgid ""
 "Automatically sets aspect ratio to 16/9 for games that natively support it. "
 "2D elements like HUD/UI may be stretched."
-msgstr ""
+msgstr "Imposta automaticamente le propoprzioni a 16/9 for i giocih che lo supportano nativamente."
+"Gli elementi 2D come HUD/UI potrebbero risultare allungati."
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "AUTO WIDESCREEN"
-msgstr ""
+msgstr "AUTO WIDESCREEN"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -5099,7 +5100,7 @@ msgstr "Rumble Pak"
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
-msgstr ""
+msgstr "Rumble Pak (Automatico)"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -11544,8 +11545,8 @@ msgstr "SDL CONFIG"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
-msgid "Converts DirectX 8/9/10/11/12 calls to Vulkan."
-msgstr ""
+msgid "Converts DirectX 9/10/11/12 calls to Vulkan."
+msgstr "Converte le chiamate DirectX 9/10/11/12 in Vulkan."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11900,26 +11901,28 @@ msgid ""
 "Nat to access internet from xemu machine. Udp for System Link. Default "
 "(Auto) disables network access."
 msgstr ""
+" Nat per accedere internet da xemu. Udp per Sysntem Link. Default "
+"(Auto) disabilita l'accesso internet."
 
 #. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
 msgctxt "game_options"
 msgid "NETWORK"
-msgstr ""
+msgstr "RETE"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "NETWORK TYPE"
-msgstr ""
+msgstr "TIPO RETE"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "NAT"
-msgstr ""
+msgstr "NAT"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "UDP Tunnel"
-msgstr ""
+msgstr "Tunnel UDP"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -11927,11 +11930,13 @@ msgid ""
 "Destination address and port to forward packets to. Leave this empty if you "
 "want to enter it manually in the xemu.toml configuration file."
 msgstr ""
+"Indirizzo destinazione e porta per inoltare i pacchetti. Lascialo vuoto se "
+"vuoi inserirlo manualmente nel file di configurazione xemu.toml."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "UDP REMOTE ADDRESS"
-msgstr ""
+msgstr "INDIRIZZO REMOTO UDP"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -11939,11 +11944,13 @@ msgid ""
 "Local address and port to receive packets on. Leave this empty if you want "
 "to enter it manually in the xemu.toml configuration file."
 msgstr ""
+"Indirizzo locale e porta per ricevere i pacchetti. Lascialo vuoto se vuoi "
+"inserirlo manualmente nel file di configurazione xemu.toml."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "UDP BIND ADDRESS"
-msgstr ""
+msgstr "INDIRIZZO BIND UDP"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -12728,11 +12735,13 @@ msgid ""
 "Choose which graphics API library to use. D3D12 may yield better results "
 "with faster GPUs."
 msgstr ""
+"Scegli quali librerie grafiche API utilizzare. D3D12 puo' dare risultati migliori "
+"cone le GPUs piu' veloci."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "D3D12 (Default)"
-msgstr ""
+msgstr "D3D12 (Default)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -12962,47 +12971,47 @@ msgstr "Vsync"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Provides a ball trail to make the ball easier to follow."
-msgstr ""
+msgstr "Fornisce una scia della pallina per seguirla pui' facilmente."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BALL TRAIL STRENGTH"
-msgstr ""
+msgstr "INTENSITA' SCIA PALLINA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "0% (Default)"
-msgstr ""
+msgstr "0% (Default)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Affects just the visual effect of nudging."
-msgstr ""
+msgstr "Influenza solo l'effetto grafico dello scuotimento."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
-msgstr ""
+msgstr "FORZA SCUOTIMENTO VISIVO"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "0 (No Visual Effect)"
-msgstr ""
+msgstr "0 (Nessun Effetto Visibile)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
-msgstr ""
+msgstr "Limitatore di framerate per ridurre l'utilizzo CPU."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "MAXIMUM FRAMERATE"
-msgstr ""
+msgstr "MASSIMO FRAMERATE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "0 (Defaults Unlimited)"
-msgstr ""
+msgstr "0 (Defaults Illumitati)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13010,16 +13019,18 @@ msgid ""
 "Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, "
 "except for late frames (below target FPS) which are displayed immediately."
 msgstr ""
+"Risolve lo strappamento schermo. Sync Adattivo (Default) sincronizza col video sync, "
+"eccetto per i frames in riratro (oltre il FPS desiderato) che sono visualizzati immediatamente."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Vertical Sync"
-msgstr ""
+msgstr "Sync Verticale"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adaptive Sync (Default)"
-msgstr ""
+msgstr "Sync Adattivo (Default)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13027,41 +13038,43 @@ msgid ""
 "Presets which can improve performance without manually editing the VPinballX."
 "ini file to fine tune performance."
 msgstr ""
+"Presets che migliorano le performance senza dover editare a mano VPinballX.ini"
+"per migliorare ulteriormente la performance."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PERFORMANCE PRESETS"
-msgstr ""
+msgstr "PRESETS PERFORMANCE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Default Performance Settings"
-msgstr ""
+msgstr "Impostazioni Performance di Default"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Low-end Computer"
-msgstr ""
+msgstr "Computer Vecchio"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "High-end Computer"
-msgstr ""
+msgstr "Computer Nuovo"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Manual (Default)"
-msgstr ""
+msgstr "Manuale (Default)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Alternative Coloured Dot Matrix Display (needs additional file)."
-msgstr ""
+msgstr "Schermo a Dot Matrix Colorato Alternativo (necessita file aggiuntivo)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "ALTCOLOR"
-msgstr ""
+msgstr "ALTCOLOR"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13069,51 +13082,53 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables with a "
 "pinmame rom."
 msgstr ""
+"Finestra extra DMD (Schermo a Dot Matrix) per visualizzare il punteggio delle "
+"tavole con una rom pinmame."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "PINMAME DMD"
-msgstr ""
+msgstr "DMD PINMAME"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Horizontal position (in percentage of the screen width)."
-msgstr ""
+msgstr "Posizione orizzontale (percentuale della larghezza schermo)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD X"
-msgstr ""
+msgstr "DMD PINMAME X"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Vertical position (in percentage of the screen height)."
-msgstr ""
+msgstr "Posizione verticale (percentuale dell'altezza schermo)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD Y"
-msgstr ""
+msgstr "DMD PINMAME Y"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Horizontal width (in percentage of the screen width)."
-msgstr ""
+msgstr "Larghezza orizzontale (percentuale della larghezza schermo)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD WIDTH"
-msgstr ""
+msgstr "DMD PINMAME LARGHEZZA"
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball
 msgctxt "game_options"
 msgid "Vertical height (in percentage of the screen height)."
-msgstr ""
+msgstr "Altezza verticale (percentuale dell'altezza schermo)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD HEIGHT"
-msgstr ""
+msgstr "DMD PINMAME ALTEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13121,121 +13136,123 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables "
 "without a rom."
 msgstr ""
+"Finestra extra DMD (Schermo Dot Matrix) per visualizzare i punti delle tavole "
+"senza una rom."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "FLEX DMD"
-msgstr ""
+msgstr "DMD FLEX"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD X"
-msgstr ""
+msgstr "DMD FLEX X"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD Y"
-msgstr ""
+msgstr "DMD FLEX Y"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD WIDTH"
-msgstr ""
+msgstr "DMD FLEX LARGHEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD HEIGHT"
-msgstr ""
+msgstr "DMD FLEX ALTEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Upright glass panel displaying some illuminated artwork."
-msgstr ""
+msgstr "Pannello vetro verticale che mostra le illustrazioni."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "BACKGLASS (B2S)"
-msgstr ""
+msgstr "BACKGLASS (B2S)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS X"
-msgstr ""
+msgstr "BACLGLASS X"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS Y"
-msgstr ""
+msgstr "BACKGLASS Y"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS WIDTH"
-msgstr ""
+msgstr "BACKGLASS LARGHEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS HEIGHT"
-msgstr ""
+msgstr "BACKGLASS ALTEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
-msgstr ""
+msgstr "Nasconde gli extra DMD (Schermo Dot Matrix) integrati nel vetro posteriore."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BACKGLASS DMD HIDE"
-msgstr ""
+msgstr "NASCONDI DMD BACKGLASS"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD X"
-msgstr ""
+msgstr "B2S DMD X"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD Y"
-msgstr ""
+msgstr "B2S DMD Y"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD WIDTH"
-msgstr ""
+msgstr "B2S DMD LARGHEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "B2S DMD HEIGHT"
-msgstr ""
+msgstr "DMD B2S ALTEZZA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adjust the music volume. Some tables may have its own settings."
-msgstr ""
+msgstr "Regola il volume musica. Alcune tavole hanno le loro impostazioni."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "MUSIC VOLUME"
-msgstr ""
+msgstr "VOLUME MUSICA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adjust the mechanical sounds of the table."
-msgstr ""
+msgstr "Regola il suono meccanico della tavola."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SOUND VOLUME"
-msgstr ""
+msgstr "VOLUME SUONO"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Alternative sounds for the table (needs additional files)."
-msgstr ""
+msgstr "Suoni alternativi per la tavola (richiedere files aggiuntivi)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "ALTERNATIVE SOUND"
-msgstr ""
+msgstr "SUONO ALTERNATIVO"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13243,16 +13260,18 @@ msgid ""
 "Per Table Folder requires all files to be in the associated rom table "
 "folder. If disabled, consult the Wiki for further details."
 msgstr ""
+"Cartella per ogni tavola necessita tutti i files associati alla rom della tavola."
+"Se disabilitato, riferisciti al Wiki per dettagli aggiuntivi." 
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FOLDERS ORGANISATION"
-msgstr ""
+msgstr "ORGANIZZAZIONE CARTELLE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PER TABLE FOLDER"
-msgstr ""
+msgstr "UNA CARTELLA PER TAVOLA"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14324,10 +14343,6 @@ msgstr "Menu"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "Filtri grafici on/off"
-
-#~ msgctxt "game_options"
-#~ msgid "Converts DirectX 9/10/11/12 calls to Vulkan."
-#~ msgstr "Converte le chiamate DirectX 9/10/11/12 in Vulkan."
 
 #~ msgctxt "game_options"
 #~ msgid "VKD3D (D3D12 to Vulkan)"
