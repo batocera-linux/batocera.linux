@@ -157,7 +157,7 @@ def reconfigureControllers(playersControllers, system, rom, metadata, deviceList
             if wanted_ra < ra or wanted_deadzone > 0:
                 (newdev, p) = reconfigureAngleRotation(pad.dev, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
                 if newdev is not None:
-                    eslog.info("replacing device {} by device {} for player {}", pad.dev, newdev, playercontroller)
+                    eslog.info("replacing device {} by device {} for player {}".format(pad.dev, newdev, playercontroller))
                     deviceList[newdev] = dict(deviceList[pad.dev])
                     deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
                     pad.physdev = pad.dev # save the physical device for ffb
