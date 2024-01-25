@@ -188,7 +188,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BOOST_ATOMIC                         # library that provides atomic data types and operations on these data types
     select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS              # library is used for smart adaptive formatting of tabular data
     select BR2_PACKAGE_UTIL_LINUX_SETTERM                   # Set terminal attributes
-    select BR2_PACKAGE_PULSEAUDIO                           # Add pactl for configure Pipewire
     select BR2_PACKAGE_OPENVPN                              # VPN support
     select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
     select BR2_PACKAGE_UMTOOL                               # command line tool for configuring Ultimarc arcade hardware
@@ -211,7 +210,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BATOCERA_SCRIPTS                     # batocera scripts
     select BR2_PACKAGE_BATOCERA_RESOLUTION                  # batocera resolution
     select BR2_PACKAGE_BATOCERA_SETTINGS                    # batocera-settings-get/set
-    select BR2_PACKAGE_BATOCERA_AUDIO                       # batocera audio
+    select BR2_PACKAGE_BATOCERA_AUDIO                       if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # batocera audio-pipewire
+    select BR2_PACKAGE_BATOCERA_AUDIO_ALSA                  if  BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # batocera audio-alsa
     select BR2_PACKAGE_BATOCERA_BLUETOOTH                   # batocera bluetooth
     select BR2_PACKAGE_BATOCERA_NOTICE                      # boot pdf notice
     select BR2_PACKAGE_BATOCERA_TEST                        # batocera test script
