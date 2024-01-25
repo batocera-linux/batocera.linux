@@ -45,12 +45,14 @@ def getMupenMapping(use_n64_inputs):
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig, controllers, system):
+def setControllersConfig(iniConfig, controllers, system, wheels):
     nplayer = 1
 
     for playercontroller, pad in sorted(controllers.items()):
-        # Dynamic controller bindings
-        config = defineControllerKeys(nplayer, pad, system)
+        isWheel = False
+        if pad.dev in wheels and wheels[pad.dev]["isWheel"]:
+            isWheel = True
+        config = defineControllerKeys(nplayer, pad, system, isWheel)
         fillIniPlayer(nplayer, iniConfig, pad, config)
         nplayer += 1
 
@@ -93,7 +95,7 @@ def getJoystickDeadzone(default_peak, config_value, system):
         
     return f"{deadzone},{deadzone}"
     
-def defineControllerKeys(nplayer, controller, system):
+def defineControllerKeys(nplayer, controller, system, isWheel):
         # check for auto-config inputs by guid and name, or es settings
         if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
@@ -108,7 +110,10 @@ def defineControllerKeys(nplayer, controller, system):
         config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
 
         # Analog Deadzone
-        config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
+        if isWheel:
+            config['AnalogDeadzone'] = f"0,0"
+        else:
+            config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
         
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
