@@ -357,8 +357,9 @@ nds:
   extensions: [nds, bin, zip, 7z]
   emulators:
     libretro:
-      desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
-      melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
+      desmume:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      melonds:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
+      melondsds:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS_DS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
     drastic:
