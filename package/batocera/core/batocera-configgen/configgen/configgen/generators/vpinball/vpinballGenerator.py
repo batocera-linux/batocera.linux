@@ -6,6 +6,9 @@ import Command
 from generators.Generator import Generator
 import batoceraFiles
 import shutil
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 vpinballConfigPath = batoceraFiles.CONF + "/vpinball"
 vpinballConfigFile = vpinballConfigPath + "/VPinballX.ini"
@@ -14,12 +17,13 @@ class VPinballGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        # create vpinball config directory and config file
+        # create vpinball config directory
         if not os.path.exists(vpinballConfigPath):
             os.makedirs(vpinballConfigPath)
         
-        shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
-
+        if not os.path.exists(vpinballConfigFile):
+            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
+        
         #VideogetCurrentResolution to convert from percentage to pixel value
         #necessary because people can plug their 1080p laptop on a 4k TV
         def convertToPixel(total_size,percentage):
@@ -27,10 +31,18 @@ class VPinballGenerator(Generator):
             return pixel_value
 
         ## [ VPinballX.ini ] ##
-        vpinballSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        vpinballSettings.optionxform = str
-        vpinballSettings.read(vpinballConfigFile)
+        try:
+            vpinballSettings = configparser.ConfigParser(interpolation=None, allow_no_value=True)
+            vpinballSettings.optionxform = str
+            vpinballSettings.read(vpinballConfigFile)
+        except configparser.DuplicateOptionError as e:
+            eslog.debug(f"Error reading VPinballX.ini: {e}")
+            eslog.debug(f"*** Using default VPinballX.ini file ***")
+            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFile)
+            vpinballSettings = configparser.ConfigParser(interpolation=None, allow_no_value=True)
+            vpinballSettings.optionxform = str
+            vpinballSettings.read(vpinballConfigFile)
+        
         # Sections
         if not vpinballSettings.has_section("Standalone"):
             vpinballSettings.add_section("Standalone")
@@ -200,12 +212,11 @@ class VPinballGenerator(Generator):
             vpinballSettings.set("Standalone", "AltSound", system.config["vpinball_altsound"])
         else:
             vpinballSettings.set("Standalone", "AltSound","1")
-
-
+        
         # Save VPinballX.ini
         with open(vpinballConfigFile, 'w') as configfile:
             vpinballSettings.write(configfile)
-
+        
         # set the config path to be sure
         commandArray = [
             "/usr/bin/vpinball/VPinballX_GL",
