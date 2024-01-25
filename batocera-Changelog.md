@@ -40,6 +40,7 @@
 - Ayn Loki Zero: support for on-board LEDs (and light effect on retroachievements unlocked)
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
+- Content downloader: Batocera hosted content can now show thumbnails
 - Initial support for Retro Shooter Lightgun
   - Press and hold rear left button for 3s to start calibration
 - Added zramswap service
