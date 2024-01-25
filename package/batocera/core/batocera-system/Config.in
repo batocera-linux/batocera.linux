@@ -192,9 +192,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_USB_MODESWITCH                       # USB modeswitch support
     select BR2_PACKAGE_UMTOOL                               # command line tool for configuring Ultimarc arcade hardware
     select BR2_PACKAGE_PYTHON_HIDAPI                        # Communication with USB HID devices via Python
-    select BR2_PACKAGE_LEDSPICER                            # LED Manager for Linux
-    select BR2_PACKAGE_INNOEXTRACT			    # Extract InnoSetup files (useful for Wine and GOG games)
-    select BR2_PACKAGE_TREE				    # recursive directory listing (useful for generating documentation on rom directory structure)
+    select BR2_PACKAGE_LEDSPICER                            if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # LED Manager for Linux
+    select BR2_PACKAGE_INNOEXTRACT                          # Extract InnoSetup files (useful for Wine and GOG games)
+    select BR2_PACKAGE_TREE                                 # recursive directory listing (useful for generating documentation on rom directory structure)
 
     # Python and SSL
     select BR2_PACKAGE_HOST_PYTHON3
@@ -258,14 +258,14 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_XONE                                 if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
     select BR2_PACKAGE_XPAD_NOONE                           if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
     select BR2_PACKAGE_XPADNEO                              if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.18)
-    select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
-    select BR2_PACKAGE_WIIMOTES_RULES                       # wiimotes
-    select BR2_PACKAGE_WIIMOTE_3RDPARTY                     # some non official wiimotes
-    select BR2_PACKAGE_XWIIMOTE                             # a tool to analye wiimote events (mainly to debug, but helps and is funny)
+    select BR2_PACKAGE_WII_U_GC_ADAPTER                     if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # wii-u-gc-adapter
+    select BR2_PACKAGE_WIIMOTES_RULES                       if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # wiimotes
+    select BR2_PACKAGE_WIIMOTE_3RDPARTY                     if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # some non official wiimotes
+    select BR2_PACKAGE_XWIIMOTE                             if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # a tool to analye wiimote events (mainly to debug, but helps and is funny)
     select BR2_PACKAGE_BATOCERA_GUNS                        if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
     select BR2_PACKAGE_BATOCERA_WHEEL_CALIBRATOR
-    select BR2_PACKAGE_NEW_LG4FF                            if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4  # Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
-    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # updated nintendo switch controller driver, requires kernel > 4.4
+    select BR2_PACKAGE_NEW_LG4FF                            if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835# Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
+    select BR2_PACKAGE_HID_NX                               if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # updated nintendo switch controller driver, requires kernel > 4.4
     select BR2_PACKAGE_JOYCOND                              if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
     select BR2_PACKAGE_JAMMASD
 
