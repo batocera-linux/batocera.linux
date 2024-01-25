@@ -102,7 +102,7 @@ then
 
     if test "${PLAYER}" = "4"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:8 btn:1 --map yield key:w btn:5 --map yield key:x btn:6 --map yield key:u btn:7 --map yield key:v btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:8 btn:1 --map yield key:i btn:5 --map yield key:k btn:6 --map yield key:j btn:7 --map yield key:l btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
     fi
 
     echo $! > "${PIDFILE}"
