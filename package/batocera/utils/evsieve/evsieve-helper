@@ -25,9 +25,12 @@ def findChildren(ctx, parenthash, childtype, parenttype):
                     if cname[0:5] == "event":
                         event = evdev.InputDevice('/dev/input/' + cname)
                         children.append({ "event": "/dev/input/"+cname, "name": event.name })
-                elif childtye == "video":
+                elif childtype == "video":
                     if cname[0:5] == "video":
                         children.append({ "video": "/dev/"+cname})
+                elif childtype == "hidraw":
+                    if cname[0:6] == "hidraw":
+                        children.append({ "hidraw": "/dev/"+cname})
     return children
 
 def parent2hash(parent):
@@ -68,11 +71,11 @@ elif action == "children":
         for child in children:
             print("{}\t{}".format(child["event"], child["name"]))
         exit(0)
-    elif childtype == "video":
+    elif childtype == "video" or childtype == "hidraw":
         parenthash = sys.argv[2]
         children = findChildren(ctx, parenthash, childtype, parenttype)
         for child in children:
-            print("{}".format(child["video"]))
+            print("{}".format(child[childtype]))
         exit(0)
 else:
     do_help()

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+INPUT=$1
+
+EVNAME=$(evtest --info "${INPUT}" | grep -E '^Input device name:' | sed -e s+"^Input device name: \"\(.*\)\"$"+"\1"+)
+HIDRAW=$(echo "${EVNAME}" | sed -e s+"^[^[]* \[\(.*\)\]$"+'\1'+)
+
+if test -n "${HIDRAW}"
+then
+  nohup batocera-retroshooter-calibrator "${INPUT}" "${HIDRAW}" &
+fi

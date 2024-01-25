@@ -1,0 +1,160 @@
+#!/usr/bin/python
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2022 Nicolas Adenis-Lamarre.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+#
+
+import evdev
+from evdev import ecodes
+import select
+import sys
+import time
+import binascii
+
+if len(sys.argv) != 3:
+    print("mising device argument")
+    exit(1)
+
+bCalibration = ecodes.BTN_1
+
+# input
+devpath = sys.argv[1]
+hidpath = sys.argv[2]
+
+input = evdev.InputDevice(devpath)
+hidin = open(hidpath, "wb")
+
+absVals = [[0, 100], [0, 100]] # input rectangle
+for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
+    if code == ecodes.ABS_X:
+        absVals[0] = [inf.min, inf.max]
+    if code == ecodes.ABS_Y:
+        absVals[1] = [inf.min, inf.max]
+poll = select.poll()
+poll.register(input.fd, select.POLLIN)
+
+evkeys = [ecodes.KEY_CONFIG]
+for (code) in input.capabilities()[ecodes.EV_KEY]:
+    evkeys.append(code)
+
+target = evdev.UInput(name="Retro Shooter Lightgun", events={
+    ecodes.EV_ABS: [
+        (ecodes.ABS_X, evdev.AbsInfo(value=0, min=absVals[0][0], max=absVals[0][1], fuzz=0, flat=0, resolution=0)),
+        (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=absVals[1][0], max=absVals[1][1], fuzz=0, flat=0, resolution=0))
+    ],
+    ecodes.EV_KEY: evkeys})
+
+calibration_timeChecker = None
+calibration_mode = False
+calibration_step = 0
+
+def moveTargetTo(fromPosition, toPosition):
+    currentPosition = fromPosition
+    while fromPosition[0] != toPosition[0] or fromPosition[1] != toPosition[1] :
+        if currentPosition[0] < toPosition[0]:
+            currentPosition[0] = currentPosition[0] +1
+        if currentPosition[0] > toPosition[0]:
+            currentPosition[0] = currentPosition[0] -1
+        if currentPosition[1] < toPosition[1]:
+            currentPosition[1] = currentPosition[1] +1
+        if currentPosition[1] > toPosition[1]:
+            currentPosition[1] = currentPosition[1] -1
+        target.write(ecodes.EV_ABS, ecodes.ABS_X, currentPosition[0])
+        target.write(ecodes.EV_ABS, ecodes.ABS_Y, currentPosition[1])
+        target.syn()
+        time.sleep(0.001) # x1000 = 1 second
+
+try:
+        while True:
+            if poll.poll(1000):
+                if calibration_mode:
+                    ###
+                    # 1.              to center       : '\xaa\x66'
+                    # 2. center point to top left     : '\xaa\xb1'
+                    # 3. top left     to right bottom : '\xaa\xb2'
+                    # 4. right bottom to right top    : '\xaa\xb3'
+                    # 5. right top                    : '\xaa\xb4'
+                    #  . commit                       : '\xaa\xb5'
+                    #  . rollback                     : '\xaa\xb6'
+
+                    for event in input.read():
+                        if event.type == ecodes.EV_KEY and event.code == ecodes.BTN_LEFT and event.value == 1:
+                            if calibration_step == 1:
+                                hidin.write(binascii.unhexlify('AAB1'))
+                                hidin.flush()
+                                frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.5), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.5) ]
+                                topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.1), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
+                                moveTargetTo(frompos, topos)
+                                calibration_step = 2
+                            elif calibration_step == 2:
+                                hidin.write(binascii.unhexlify('AAB2'))
+                                hidin.flush()
+                                frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.1), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
+                                topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.9) ]
+                                moveTargetTo(frompos, topos)
+                                calibration_step = 3
+                            elif calibration_step == 3:
+                                hidin.write(binascii.unhexlify('AAB3'))
+                                hidin.flush()
+                                frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.9) ]
+                                topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.9), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.1) ]
+                                moveTargetTo(frompos, topos)
+                                calibration_step = 4
+                            elif calibration_step == 4:
+                                hidin.write(binascii.unhexlify('AAB4'))
+                                hidin.flush()
+                                hidin.write(binascii.unhexlify('AAB5'))
+                                hidin.flush()
+                                calibration_mode= False
+                                target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+                                target.syn()
+                else:
+                    if calibration_timeChecker is not None:
+                        if time.time() - calibration_timeChecker > 3: # 3 seconds
+                            calibration_mode = True
+                            calibration_timeChecker  = None
+                            calibration_step = 1
+                            target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 1)
+                            target.syn()
+
+                            frompos   = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.5), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.0) ]
+                            topos     = [ absVals[0][0] + round((absVals[0][1] - absVals[0][0]) * 0.5), absVals[1][0] + round((absVals[1][1] - absVals[1][0]) * 0.5) ]
+                            moveTargetTo(frompos, topos)
+                            hidin.write(binascii.unhexlify('AA66'))
+                            hidin.flush()
+
+                    # could be enabled by the timeChecker
+                    if calibration_mode is False:
+                        # normal event read
+                        for event in input.read():
+                            if event.type == ecodes.EV_SYN:
+                                target.syn()
+                            elif event.type == ecodes.EV_KEY and event.code == bCalibration:
+                                if event.value == 1:
+                                    calibration_timeChecker = time.time()
+                                    target.write(event.type, event.code, event.value)
+                                elif event.value == 0:
+                                    calibration_timeChecker = None
+                                    target.write(event.type, event.code, event.value)
+                            else:
+                                target.write(event.type, event.code, event.value)
+except KeyboardInterrupt:
+    poll.unregister(input.fd)
+    target.close()
+    hidin.close()
+except Exception as e:
+    import traceback
+    with open('/var/run/gun-retroshooter.crash', 'w') as fd:
+        fd.write(traceback.format_exc())
+    raise e

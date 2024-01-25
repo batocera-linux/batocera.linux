@@ -12,7 +12,7 @@ import controllersConfig
 class CitraGenerator(Generator):
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
 
         if os.path.exists('/usr/bin/citra-qt'):

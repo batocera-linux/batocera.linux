@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2024/01/02)\n"
+"Project-Id-Version: batocera-es v39beta(2024/01/21)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-02 17:45+0900\n"
+"PO-Revision-Date: 2024-01-21 16:29+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -37,6 +37,57 @@ msgstr "バランス"
 msgctxt "game_options"
 msgid "Power Saver"
 msgstr "パワーセーバー"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU "
+"based on it's default max value. Caution, setting wattage too high could "
+"damage your device."
+msgstr ""
+"標準の最大値に基づいて、Ryzen Mobile シリーズ CPU に提供される電力 (ワット) "
+"の割合を調整します。ワット数の設定が高すぎるとデバイスが損傷する可能性がある"
+"ので注意してください"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "RYZEN THERMAL DESIGN POWER"
+msgstr "RYZEN 熱設計電力"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "105% (Use caution)"
+msgstr "105% (注意してください)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "105% (Use caution"
+msgstr "105% (注意してください)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "110% (Use caution)"
+msgstr "110% (注意してください)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "115% (Use caution)"
+msgstr "115% (注意してください)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "120% (Are you crazy?)"
+msgstr "120％（正気か？）"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "125% (Yes, you're crazy)"
+msgstr "125％（はい、あなたはおかしいです）"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "130% (Nope, you're just insane!)"
+msgstr "130% (いや、君は正気じゃない！)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -83,7 +134,7 @@ msgstr "コア設定"
 #. TRANSLATION: shared, shared, libretro/mesen, libretro/gambatte
 msgctxt "game_options"
 msgid "Custom"
-msgstr "カスタム(ベゼル設定)"
+msgstr "カスタム構成"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -599,6 +650,20 @@ msgstr "ドット"
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "使用しない"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid ""
+"Automatically sets aspect ratio to 16/9 for games that natively support it. "
+"2D elements like HUD/UI may be stretched."
+msgstr ""
+"アスペクト比16/9 に対応するゲームでは、 16/9 に自動的に設定します。 HUD/UI な"
+"どの 2D 要素は引き伸ばされる可能性があります"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "AUTO WIDESCREEN"
+msgstr "自動ワイドスクリーン "
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -1931,12 +1996,12 @@ msgstr "ゲーム検出表示時に使用"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Set the deadzone of the joystick analog sticks."
-msgstr "アナログスティックのデッドゾーン(遊び幅)を設定します"
+msgstr "アナログスティックの遊び幅(デッドゾーン)を設定します"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "ANALOG JOYSTICK DEADZONE"
-msgstr "アナログスティックデッドゾーン"
+msgstr "アナログスティック遊び幅"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -1996,12 +2061,12 @@ msgstr "ジョイスティック 2(2軸,2ボタン)"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Type of emulated SoundBlaster card."
-msgstr "エミュレートされた SoundBlaster の種類"
+msgstr "エミュレートされた SoundBlaster タイプ"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "SOUNDBLASTER TYPE"
-msgstr "SOUNDBLASTER 種類"
+msgstr "SOUNDBLASTER タイプ"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -3211,7 +3276,7 @@ msgstr "Atari モニターを選択します"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "ATARI MONITOR TYPE"
-msgstr "Atari モニター種類"
+msgstr "Atari モニタータイプ"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3290,7 +3355,7 @@ msgstr "クロップ 1080p (270、540)"
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Choose your desired pause screen display type."
-msgstr "一時停止画面の表示種類を選択します"
+msgstr "一時停止画面の表示タイプを選択します"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -3410,7 +3475,7 @@ msgstr "BIOS 言語"
 #. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
 msgid "Use a custom MAME config, do not overwrite config on launch."
-msgstr "MAMEカスタム設定を使用する（起動時、構成を上書きしない）"
+msgstr "MAMEカスタム構成を使用する（起動時、設定を上書きしない）"
 
 #. TRANSLATION: libretro/same_cdi, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -3579,7 +3644,7 @@ msgstr "読み込むROMファイルの種類"
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
 msgid "MEDIA TYPE"
-msgstr "メディアの種類"
+msgstr "メディアタイプ"
 
 #. TRANSLATION: libretro/mame, libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -4998,6 +5063,48 @@ msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "振動パック"
 
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak (Automatic)"
+msgstr "振動パック (自動)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Use to eliminate joystick drift/unwanted input. Effects all controllers."
+msgstr ""
+"ジョイスティックのドリフトや不要な入力を排除するために使用します。全コント"
+"ローラーに影響を与えます"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "JOYSTICK DEADZONE"
+msgstr "ジョイスティック 遊び幅"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "15% (Default)"
+msgstr "15% (標準)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Use to make joystick movement more or less sensitive. Effects all "
+"controllers."
+msgstr ""
+"ジョイスティックの動きを敏感にするために使用します。全コントローラーに影響を"
+"与えます"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "JOYSTICK SENSITIVITY"
+msgstr "ジョイスティック 感度"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "100% (Default)"
+msgstr "100% (標準)"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "Full speed can break some games."
@@ -5964,15 +6071,11 @@ msgid "CPU SPEED"
 msgstr "CPU 速度"
 
 #. TRANSLATION: libretro/puae
-#| msgctxt "game_options"
-#| msgid "PAL 288x576px 50Hz"
 msgctxt "game_options"
 msgid "PAL 288x576px 50Hz (auto)"
 msgstr "PAL 288x576px 50Hz (auto)"
 
 #. TRANSLATION: libretro/puae
-#| msgctxt "game_options"
-#| msgid "NTSC 240x480px 60Hz"
 msgctxt "game_options"
 msgid "NTSC 240x480px 60Hz (auto)"
 msgstr "NTSC 240x480px 60Hz (auto)"
@@ -6362,7 +6465,7 @@ msgstr "カーソルが不動/移動/不要な入力を排除するために使�
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
 msgid "ANALOG DEADZONE"
-msgstr "アナログデッドゾーン"
+msgstr "アナログ遊び幅"
 
 #. TRANSLATION: libretro/scummvm
 msgctxt "game_options"
@@ -6647,7 +6750,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160fps"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, supermodel
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, openbor/openbor7530, ...
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "振動機能"
@@ -7480,7 +7583,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera で最初の音声デバイスに設定 (標準)"
 
-#. TRANSLATION: cemu, sonic2013, play, yuzu, demul, ...
+#. TRANSLATION: cemu, openbor/openbor7530, sonic2013, play, yuzu, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -8164,7 +8267,7 @@ msgstr "VBI(垂直ブランク割り込み) スキップ"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "Set joystick deadzone."
-msgstr "ジョイスティックの遊び幅を設定します"
+msgstr "ジョイスティックの遊び幅(デッドゾーン)を設定します"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin, mupen64plus, ...
 msgctxt "game_options"
@@ -8891,7 +8994,7 @@ msgstr "拡張子.hd ファイルの Atari ハード ドライブの種類を選
 #. TRANSLATION: hatari
 msgctxt "game_options"
 msgid "ATARI HARD DRIVE TYPE"
-msgstr "ATARI ハードドライブ種類"
+msgstr "ATARI ハードドライブタイプ"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -9385,7 +9488,22 @@ msgstr ""
 #. TRANSLATION: mupen64plus, mupen64plus, mupen64plus, mupen64plus
 msgctxt "game_options"
 msgid "1% (Default)"
-msgstr "1% (Default)"
+msgstr "1% (標準)"
+
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "Limit FPS to reduce high CPU usage."
+msgstr "FPS を制限して、高い CPU 使用率を削減します"
+
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "LIMIT FPS"
+msgstr "FPS 制限"
+
+#. TRANSLATION: openbor/openbor7530, supermodel
+msgctxt "game_options"
+msgid "Only some games feature rumble. Not compatible with all controllers."
+msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
 
 #. TRANSLATION: openbor
 msgctxt "game_options"
@@ -9842,8 +9960,6 @@ msgid "WHEEL MODEL"
 msgstr "ホイール(ハンドル)モデル"
 
 #. TRANSLATION: pcsx2
-#| msgctxt "game_options"
-#| msgid "Driving Force Pro"
 msgctxt "game_options"
 msgid "Driving Force"
 msgstr "Driving Force"
@@ -11006,11 +11122,6 @@ msgstr "P1 と P2"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
-msgid "Only some games feature rumble. Not compatible with all controllers."
-msgstr "一部のゲームのみが対応しています。互換性がなく動作しない場合もあります"
-
-#. TRANSLATION: supermodel
-msgctxt "game_options"
 msgid ""
 "Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down."
 msgstr ""
@@ -11669,6 +11780,63 @@ msgstr "64MB (標準)"
 msgctxt "game_options"
 msgid "128MiB"
 msgstr "128MB"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
+msgstr ""
+"xemu からインターネットに接続する Nat設定(システムリンク用の UDP) 標準 (自"
+"動) では、ネットワーク接続が無効になります"
+
+#. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
+msgctxt "game_options"
+msgid "NETWORK"
+msgstr "ネットワーク"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NETWORK TYPE"
+msgstr "ネットワークタイプ"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NAT"
+msgstr "NAT"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP Tunnel"
+msgstr "UDPトンネル"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Destination address and port to forward packets to. Leave this empty if you "
+"want to enter it manually in the xemu.toml configuration file."
+msgstr ""
+"パケットの転送先の宛先アドレスとポート。 xemu.toml 構成ファイルに手動で入力す"
+"る場合は、空のままにしておきます"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP REMOTE ADDRESS"
+msgstr "UDPリモートアドレス"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Local address and port to receive packets on. Leave this empty if you want "
+"to enter it manually in the xemu.toml configuration file."
+msgstr ""
+"パケットを受信するローカル アドレスとポート。 xemu.toml 構成ファイルに手動で"
+"入力する場合は、空のままにしておきます"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP BIND ADDRESS"
+msgstr "UDPバインドアドレス"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -12433,7 +12601,7 @@ msgstr "ディスク イメージに合ったメディアを選択します"
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "DISK TYPE"
-msgstr "ディスクの種類"
+msgstr "ディスクタイプ"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -12447,8 +12615,17 @@ msgstr "HDイメージ"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
-msgid "VKD3D (D3D12 to Vulkan)"
-msgstr "VKD3D (D3D12 - Vulkan)"
+msgid ""
+"Choose which graphics API library to use. D3D12 may yield better results "
+"with faster GPUs."
+msgstr ""
+"使用するグラフィック API を選択します。 D3D12 は、より高速な GPU を使用する"
+"と、より良くなる可能性があります"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "D3D12 (Default)"
+msgstr "D3D12 (標準)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -12673,6 +12850,318 @@ msgstr "ハードウェア (標準)"
 msgctxt "game_options"
 msgid "Vsync"
 msgstr "VSYNC(垂直同期)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Provides a ball trail to make the ball easier to follow."
+msgstr "ボールを追いやすくするためのボールの軌道を表示します"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BALL TRAIL STRENGTH"
+msgstr "ボール跡の強さ"
+
+#. TRANSLATION: vpinball
+#| msgctxt "game_options"
+#| msgid "100% (Default)"
+msgctxt "game_options"
+msgid "0% (Default)"
+msgstr "0% (標準)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Affects just the visual effect of nudging."
+msgstr "ナッジの視覚効果のみに影響します"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "VISUAL NUDGE STRENGTH"
+msgstr "視覚的なナッジの強さ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "0 (No Visual Effect)"
+msgstr "0 (視覚効果なし)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Framerate limiter to reduce CPU utilisation."
+msgstr "フレームレート リミッターでCPU 使用率を削減します"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "MAXIMUM FRAMERATE"
+msgstr "最大フレームレート"
+
+#. TRANSLATION: vpinball
+#| msgctxt "game_options"
+#| msgid "50 (Default)"
+msgctxt "game_options"
+msgid "0 (Defaults Unlimited)"
+msgstr "0 (標準は無制限)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, "
+"except for late frames (below target FPS) which are displayed immediately."
+msgstr ""
+"画面のティアリングを修正。Adaptive VSync (標準) は、すぐに表示される遅いフ"
+"レーム (ターゲット FPS を下回る) を除き、ビデオ同期で同期します。"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Vertical Sync"
+msgstr "垂直同期"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adaptive Sync (Default)"
+msgstr "Adaptive Sync (標準)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
+msgstr ""
+"VPinballX.ini ファイルを手動で編集して微調整することなく、動作を向上できるプ"
+"リセットを使用します"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PERFORMANCE PRESETS"
+msgstr "性能プリセット"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Default Performance Settings"
+msgstr "標準パフォーマンス設定"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Low-end Computer"
+msgstr "初心者向けコンピュータ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "High-end Computer"
+msgstr "ハイエンドコンピュータ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Manual (Default)"
+msgstr "手動 (標準)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Alternative Coloured Dot Matrix Display (needs additional file)."
+msgstr "代替カラードットマトリックス表示 (追加ファイルが必要)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "ALTCOLOR"
+msgstr "アルトカラー"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Extra DMD (Dot Matrix Display) window to display the score for tables with a "
+"pinmame rom."
+msgstr ""
+"pinmame rom を使用し、テーブルスコア表示用の追加 DMD (ドット マトリックス "
+"ディスプレイ) ウィンドウ"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "PINMAME DMD"
+msgstr "PINMAME DMD"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Horizontal position (in percentage of the screen width)."
+msgstr "水平位置 (画面幅のパーセンテージ)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD X"
+msgstr "PINMAME DMD X位置"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Vertical position (in percentage of the screen height)."
+msgstr "垂直位置 (画面の高さのパーセンテージ)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD Y"
+msgstr "PINMAME DMD Y位置"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Horizontal width (in percentage of the screen width)."
+msgstr "水平幅 (画面幅のパーセンテージ)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD WIDTH"
+msgstr "PINMAME DMD 幅"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Vertical height (in percentage of the screen height)."
+msgstr "垂直方向の高さ (画面の高さのパーセンテージ)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD HEIGHT"
+msgstr "PINMAME DMD 高さ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Extra DMD (Dot Matrix Display) window to display the score for tables "
+"without a rom."
+msgstr ""
+"ROM のないテーブルスコア表示用の追加 DMD (ドット マトリックス ディスプレイ) "
+"ウィンドウ"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "FLEX DMD"
+msgstr "FLEX DMD"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD X"
+msgstr "FLEX DMD X位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD Y"
+msgstr "FLEX DMD Y位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD WIDTH"
+msgstr "FLEX DMD 幅"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD HEIGHT"
+msgstr "FLEX DMD 高さ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Upright glass panel displaying some illuminated artwork."
+msgstr "ライトアップされたアートワークを表示する直立したガラス パネル"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "BACKGLASS (B2S)"
+msgstr "BACKGLASS (B2S)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS X"
+msgstr "BACKGLASS X位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS Y"
+msgstr "BACKGLASS Y位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS WIDTH"
+msgstr "BACKGLASS 幅"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS HEIGHT"
+msgstr "BACKGLASS 高さ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
+msgstr ""
+"バックガラスに組み込みの追加の DMD (ドット マトリックス ディスプレイ) を非表"
+"示にします"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS DMD HIDE"
+msgstr "BACKGLASS DMD 非表示"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD X"
+msgstr "B2S DMD X位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD Y"
+msgstr "B2S DMD Y位置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD WIDTH"
+msgstr "B2S DMD 幅"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD HEIGHT"
+msgstr "B2S DMD 高さ"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adjust the music volume. Some tables may have its own settings."
+msgstr ""
+"音楽の音量を調整します。一部のテーブルには独自の設定がある場合があります"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "MUSIC VOLUME"
+msgstr "音楽音量"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adjust the mechanical sounds of the table."
+msgstr "テーブルの機械音を調整します"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "SOUND VOLUME"
+msgstr "テーブル音量"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Alternative sounds for the table (needs additional files)."
+msgstr "テーブルの代替音を使用します(追加ファイルが必要)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "ALTERNATIVE SOUND"
+msgstr "代替音"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Per Table Folder requires all files to be in the associated rom table "
+"folder. If disabled, consult the Wiki for further details."
+msgstr ""
+"[テーブル フォルダーごと] では、すべてのファイルを関連する テーブル romフォル"
+"ダーに置く必要があります。無効の場合、詳細については Wiki を参照してください"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FOLDERS ORGANISATION"
+msgstr "フォルダー整理"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PER TABLE FOLDER"
+msgstr "テーブルフォルダーごと"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -13743,6 +14232,10 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
+
+#~ msgctxt "game_options"
+#~ msgid "VKD3D (D3D12 to Vulkan)"
+#~ msgstr "VKD3D (D3D12 - Vulkan)"
 
 #~ msgctxt "game_options"
 #~ msgid "Set the sensitivity of the joystick analog sticks."

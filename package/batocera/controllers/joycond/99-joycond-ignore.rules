@@ -1,0 +1,19 @@
+# ignore Switch Pro controller by overriding tags
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2009", TAG="uaccess"
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2009", TAG+="seat"
+
+# ignore NSO SNES controller by overriding tags
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2017", TAG="uaccess"
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2017", TAG+="seat"
+
+# ignore NSO N64 controller by overriding tags
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2019", TAG="uaccess"
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="2019", TAG+="seat"
+
+# ignore NSO Genesis controller by overriding tags
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="201e", TAG="uaccess"
+ACTION=="add", SUBSYSTEM=="input", ATTRS{id/vendor}=="057e", ATTRS{id/product}=="201e", TAG+="seat"
+
+# ignore NES Joy-Con by overriding tags
+ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="NES Controller*", TAG="uaccess"
+ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="NES Controller*", TAG+="seat"

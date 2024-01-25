@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-03 00:56+0800\n"
+"PO-Revision-Date: 2024-01-22 15:08+0800\n"
 "Last-Translator: wanger\n"
 "Language-Team: 王二\n"
 "Language: zh_CN\n"
@@ -42,6 +42,51 @@ msgstr "均衡"
 msgctxt "game_options"
 msgid "Power Saver"
 msgstr "节能优化"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid ""
+"Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU "
+"based on it's default max value. Caution, setting wattage too high could "
+"damage your device."
+msgstr ""
+"根据Ryzen笔记本CPU的默认最大值 调整提供给该CPU的功率百分比（瓦）. 注意，功率"
+"设置过高可能会损坏您的设备。"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "RYZEN THERMAL DESIGN POWER"
+msgstr "RYZEN热设计功率"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "105% (Use caution"
+msgstr "105% (小心)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "110% (Use caution)"
+msgstr "110% (小心)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "115% (Use caution)"
+msgstr "115% (小心)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "120% (Are you crazy?)"
+msgstr "120% (你疯了吗?)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "125% (Yes, you're crazy)"
+msgstr "125% (是的, 你疯了)"
+
+#. TRANSLATION: shared
+msgctxt "game_options"
+msgid "130% (Nope, you're just insane!)"
+msgstr "130% (你完全疯了!)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -595,6 +640,18 @@ msgstr "点"
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "禁用"
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid ""
+"Automatically sets aspect ratio to 16/9 for games that natively support it. "
+"2D elements like HUD/UI may be stretched."
+msgstr "支持的游戏将会把纵横比自动设置为16/9, HUD/UI等2D元素可能会被拉伸."
+
+#. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "AUTO WIDESCREEN"
+msgstr "自动宽屏"
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/beetle-saturn, libretro/yabasanshiro, libretro/yabasanshiro
 msgctxt "game_options"
@@ -4972,6 +5029,44 @@ msgctxt "game_options"
 msgid "Rumble Pak"
 msgstr "震动卡"
 
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
+msgctxt "game_options"
+msgid "Rumble Pak (Automatic)"
+msgstr "震动包(自动)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Use to eliminate joystick drift/unwanted input. Effects all controllers."
+msgstr "用于消除手柄漂移或不必要输入, 会影响所有控制器."
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "JOYSTICK DEADZONE"
+msgstr "摇杆死区"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "15% (Default)"
+msgstr "15% (默认)"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid ""
+"Use to make joystick movement more or less sensitive. Effects all "
+"controllers."
+msgstr "使手柄的移动更敏感或不敏感, 会影响所有控制器."
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "JOYSTICK SENSITIVITY"
+msgstr "摇杆灵敏度"
+
+#. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
+msgctxt "game_options"
+msgid "100% (Default)"
+msgstr "100% (默认)"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "Full speed can break some games."
@@ -6613,7 +6708,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160帧"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, supermodel
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, openbor/openbor7530, ...
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "震动反馈"
@@ -7443,7 +7538,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera设置第一个音频设备 (默认)"
 
-#. TRANSLATION: cemu, sonic2013, play, yuzu, demul, ...
+#. TRANSLATION: cemu, openbor/openbor7530, sonic2013, play, yuzu, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "修复屏幕撕裂."
@@ -9322,6 +9417,21 @@ msgctxt "game_options"
 msgid "1% (Default)"
 msgstr "1% (默认)"
 
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "Limit FPS to reduce high CPU usage."
+msgstr "限制FPS以减少高CPU使用率."
+
+#. TRANSLATION: openbor/openbor7530
+msgctxt "game_options"
+msgid "LIMIT FPS"
+msgstr "限制FPS"
+
+#. TRANSLATION: openbor/openbor7530, supermodel
+msgctxt "game_options"
+msgid "Only some games feature rumble. Not compatible with all controllers."
+msgstr "只有一些游戏具有震动功能。不兼容所有控制器。"
+
 #. TRANSLATION: openbor
 msgctxt "game_options"
 msgid "Stretch games to full-screen, but may distort the aspect ratio"
@@ -10908,11 +11018,6 @@ msgstr "P1 & P2"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
-msgid "Only some games feature rumble. Not compatible with all controllers."
-msgstr "只有一些游戏具有震动功能。不兼容所有控制器。"
-
-#. TRANSLATION: supermodel
-msgctxt "game_options"
 msgid ""
 "Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down."
 msgstr "使用L2/R2进行加速/制动，使用L1/R1或右摇杆上/下进行升档/降档."
@@ -11555,6 +11660,63 @@ msgstr "64MiB (默认)"
 msgctxt "game_options"
 msgid "128MiB"
 msgstr "128MiB"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
+msgstr ""
+"需要使用UDP协议进行系统链接, 并且如果要从xemu虚拟机访问互联网, 则要启用网络访"
+"问权限, 否则自动禁用网络访问."
+
+#. TRANSLATION: xemu, xemu, xemu, xemu, xemu, ...
+msgctxt "game_options"
+msgid "NETWORK"
+msgstr "网络"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NETWORK TYPE"
+msgstr "网络类型"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "NAT"
+msgstr "NAT (网络地址转换)"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP Tunnel"
+msgstr "UDP Tunnel (UDP隧道)"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Destination address and port to forward packets to. Leave this empty if you "
+"want to enter it manually in the xemu.toml configuration file."
+msgstr ""
+"如果想手动在xemu.toml配置文件中输入目标地址和端口, 请将此字段留空. 否则您可以"
+"在这里指定转发数据包的目标地址和端口."
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP REMOTE ADDRESS"
+msgstr "UDP远程地址"
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid ""
+"Local address and port to receive packets on. Leave this empty if you want "
+"to enter it manually in the xemu.toml configuration file."
+msgstr ""
+"如果想手动在xemu.toml配置文件中输入本地地址和端口来接收数据包, 请将此字段留"
+"空. 否则您可以在这里指定接收数据包的本地地址和端口."
+
+#. TRANSLATION: xemu
+msgctxt "game_options"
+msgid "UDP BIND ADDRESS"
+msgstr "UDP绑定地址"
 
 #. TRANSLATION: sonic2013
 msgctxt "game_options"
@@ -12325,8 +12487,15 @@ msgstr "硬盘映像"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
-msgid "VKD3D (D3D12 to Vulkan)"
-msgstr "VKD3D (D3D12 至 Vulkan)"
+msgid ""
+"Choose which graphics API library to use. D3D12 may yield better results "
+"with faster GPUs."
+msgstr "选择要使用的图形API库. D3D12可以用更快的GPU产生更好的结果."
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "D3D12 (Default)"
+msgstr "D3D12 (默认)"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -12543,6 +12712,305 @@ msgstr "硬件 (默认)"
 msgctxt "game_options"
 msgid "Vsync"
 msgstr "垂直同步"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Provides a ball trail to make the ball easier to follow."
+msgstr "提供一个球的轨迹, 使得球更容易被追踪."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BALL TRAIL STRENGTH"
+msgstr "球迹强度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "0% (Default)"
+msgstr "0% (默认)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Affects just the visual effect of nudging."
+msgstr "只影响轻推的可视化效果."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "VISUAL NUDGE STRENGTH"
+msgstr "可视化推动强度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "0 (No Visual Effect)"
+msgstr "0 (无可视化效果)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Framerate limiter to reduce CPU utilisation."
+msgstr "帧速率限制器可降低CPU利用率."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "MAXIMUM FRAMERATE"
+msgstr "最大帧速率"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "0 (Defaults Unlimited)"
+msgstr "0 (默认无限制)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, "
+"except for late frames (below target FPS) which are displayed immediately."
+msgstr ""
+"修复屏幕撕裂现象, 自适应同步(默认设置)会根据视频同步进行同步, 但对于低于目标"
+"帧率的延迟帧会立即显示."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Vertical Sync"
+msgstr "垂直同步"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adaptive Sync (Default)"
+msgstr "自适应同步(默认)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
+msgstr "可以提高性能的预设, 从而无需手动编辑VPinballX.ini文件来微调性能."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PERFORMANCE PRESETS"
+msgstr "性能预设"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Default Performance Settings"
+msgstr "默认性能设置"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Low-end Computer"
+msgstr "低端电脑"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "High-end Computer"
+msgstr "高端电脑"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Manual (Default)"
+msgstr "手动(默认)"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Alternative Coloured Dot Matrix Display (needs additional file)."
+msgstr "可选彩色点阵显示器(需要额外文件)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "ALTCOLOR"
+msgstr "备用颜色"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Extra DMD (Dot Matrix Display) window to display the score for tables with a "
+"pinmame rom."
+msgstr "在使用PinMAME ROM的桌面游戏中, 额外提供一个显示分数的DMD窗口."
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "PINMAME DMD"
+msgstr "PINMAME DMD点阵显示器"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Horizontal position (in percentage of the screen width)."
+msgstr "水平位置(以屏幕宽度的百分比表示)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD X"
+msgstr "PINMAME DMD X轴"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Vertical position (in percentage of the screen height)."
+msgstr "垂直位置(以屏幕高度的百分比表示)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD Y"
+msgstr "PINMAME DMD Y轴"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Horizontal width (in percentage of the screen width)."
+msgstr "水平宽度(以屏幕宽度的百分比表示)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD WIDTH"
+msgstr "PINMAME DMD宽度"
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+msgctxt "game_options"
+msgid "Vertical height (in percentage of the screen height)."
+msgstr "垂直高度(以屏幕高度的百分比表示)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PINMAME DMD HEIGHT"
+msgstr "PINMAME DMD高度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Extra DMD (Dot Matrix Display) window to display the score for tables "
+"without a rom."
+msgstr "额外DMD(点阵显示)窗口, 用于显示没有rom的表格的分数."
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "FLEX DMD"
+msgstr "FLEX DMD点阵显示器"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD X"
+msgstr "FLEX DMD X轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD Y"
+msgstr "FLEX DMD Y轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD WIDTH"
+msgstr "FLEX DMD宽度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FLEX DMD HEIGHT"
+msgstr "FLEX DMD高度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Upright glass panel displaying some illuminated artwork."
+msgstr "直立的玻璃面板, 展示一些发光的艺术品."
+
+#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+msgctxt "game_options"
+msgid "BACKGLASS (B2S)"
+msgstr "BACKGLASS (B2S)背景玻璃"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS X"
+msgstr "BACKGLASS X轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS Y"
+msgstr "BACKGLASS Y轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS WIDTH"
+msgstr "BACKGLASS宽度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS HEIGHT"
+msgstr "BACKGLASS高度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
+msgstr "隐藏集成在背面玻璃中的额外DMD(点阵显示器)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "BACKGLASS DMD HIDE"
+msgstr "隐藏BACKGLASS背景玻璃"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD X"
+msgstr "B2S DMD X轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD Y"
+msgstr "B2S DMD Y轴"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD WIDTH"
+msgstr "B2S DMD宽度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "B2S DMD HEIGHT"
+msgstr "B2S DMD高度"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adjust the music volume. Some tables may have its own settings."
+msgstr "调整音乐音量, 某些游戏桌可能具有自己的设置."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "MUSIC VOLUME"
+msgstr "音乐音量"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Adjust the mechanical sounds of the table."
+msgstr "调整桌子的机械声音."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "SOUND VOLUME"
+msgstr "声音音量"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "Alternative sounds for the table (needs additional files)."
+msgstr "针对游戏桌的替代音效(需要额外的文件)."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "ALTERNATIVE SOUND"
+msgstr "替代声音"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Per Table Folder requires all files to be in the associated rom table "
+"folder. If disabled, consult the Wiki for further details."
+msgstr ""
+"“每个表文件夹”要求所有文件都位于关联的rom表文件夹中, 如果已禁用, 请参阅Wiki以"
+"了解更多详细信息."
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "FOLDERS ORGANISATION"
+msgstr "文件夹组织"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PER TABLE FOLDER"
+msgstr "每个表文件夹"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -13615,6 +14083,10 @@ msgid "Graphics filtering on/off"
 msgstr "打开/关闭图形过滤"
 
 #~ msgctxt "game_options"
+#~ msgid "VKD3D (D3D12 to Vulkan)"
+#~ msgstr "VKD3D (D3D12 至 Vulkan)"
+
+#~ msgctxt "game_options"
 #~ msgid ""
 #~ "Stream texture to GPU in parrallel. Can improve performance on more "
 #~ "powerful GPU's."
@@ -13623,10 +14095,6 @@ msgstr "打开/关闭图形过滤"
 #~ msgctxt "game_options"
 #~ msgid "Set the sensitivity of the joystick analog sticks."
 #~ msgstr "设置操纵手柄模拟操纵杆的灵敏度."
-
-#~ msgctxt "game_options"
-#~ msgid "100% (Default)"
-#~ msgstr "100% (默认)"
 
 #~ msgctxt "game_options"
 #~ msgid "GAME DIFFICULATY"

@@ -2,6 +2,7 @@
 
 import os
 import configparser
+import controllersConfig
 from controllersConfig import Input
 from xml.dom import minidom
 
@@ -46,6 +47,7 @@ def getMupenMapping(use_n64_inputs):
 
 def setControllersConfig(iniConfig, controllers, system):
     nplayer = 1
+
     for playercontroller, pad in sorted(controllers.items()):
         # Dynamic controller bindings
         config = defineControllerKeys(nplayer, pad, system)
@@ -104,6 +106,8 @@ def defineControllerKeys(nplayer, controller, system):
 
         # determine joystick deadzone and peak       
         config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
+
+        # Analog Deadzone
         config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
         
         # z is important, in case l2 is not available for this pad, use l1

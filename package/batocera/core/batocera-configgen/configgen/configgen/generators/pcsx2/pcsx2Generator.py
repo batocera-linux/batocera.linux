@@ -30,29 +30,28 @@ class Pcsx2Generator(Generator):
             return 16/9
         return 4/3
 
-    def needWheelsMetadata(system, wheels):
+    def isPlayingWithWheel(system, wheels):
         return system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0
 
-    def useEmulatorWheels(wheelsmetadata, wheel_type):
-        # if wheelsmetadata it is because needWheelsMetadata returned false
-        if wheelsmetadata is None:
+    def useEmulatorWheels(playingWithWheel, wheel_type):
+        if playingWithWheel is False:
             return False
         # the virtual type is the virtual wheel that use a physical wheel to manipulate the pad
         return wheel_type != "Virtual"
 
-    def getWheelType(wheelsmetadata, config):
+    def getWheelType(metadata, playingWithWheel, config):
         wheel_type = "Virtual"
-        if wheelsmetadata is None:
+        if playingWithWheel is False:
             return wheel_type
-        if "wheel_type" in wheelsmetadata:
-            wheel_type = wheelsmetadata["wheel_type"]
+        if "wheel_type" in metadata:
+            wheel_type = metadata["wheel_type"]
         if "pcsx2_wheel_type" in config:
             wheel_type = config["pcsx2_wheel_type"]
         if wheel_type not in Pcsx2Generator.wheelTypeMapping:
             wheel_type = "Virtual"
         return wheel_type
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
         pcsx2BiosDir = batoceraFiles.BIOS + "/ps2"
         pcsx2Patches = pcsx2BiosDir + "/patches.zip"
@@ -65,14 +64,11 @@ class Pcsx2Generator(Generator):
             if os.path.exists(file_path):
                 os.remove(file_path)
 
-        # wheel metadata
-        wheelsmetadata = None
-        if Pcsx2Generator.needWheelsMetadata(system, wheels):
-            wheelsmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
+        playingWithWheel = Pcsx2Generator.isPlayingWithWheel(system, wheels)
 
         # Config files
         configureReg(pcsx2ConfigDir)
-        configureINI(pcsx2ConfigDir, pcsx2BiosDir, system, rom, playersControllers, guns, wheels, wheelsmetadata)
+        configureINI(pcsx2ConfigDir, pcsx2BiosDir, system, rom, playersControllers, metadata, guns, wheels, playingWithWheel)
         configureAudio(pcsx2ConfigDir)
 
         # write our own game_controller_db.txt file before launching the game
@@ -92,7 +88,8 @@ class Pcsx2Generator(Generator):
                   }
 
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
-        if not Pcsx2Generator.useEmulatorWheels(wheelsmetadata, Pcsx2Generator.getWheelType(wheelsmetadata, system.config)):
+        # wheel metadata
+        if not Pcsx2Generator.useEmulatorWheels(playingWithWheel, Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)):
             envcmd["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
         
         # ensure we have the patches.zip file to avoid message.
@@ -151,7 +148,7 @@ def configureAudio(config_directory):
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory, bios_directory, system, rom, controllers, guns, wheels, wheelsmetadata):
+def configureINI(config_directory, bios_directory, system, rom, controllers, metadata, guns, wheels, playingWithWheel):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2.ini")
 
     if not os.path.exists(config_directory + "/inis"):
@@ -456,8 +453,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
 
     # guns
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
-        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
-        gun1onport2 = len(guns) == 1 and "gun1port" in gunsmetadata and gunsmetadata["gun1port"] == "2"
+        gun1onport2 = len(guns) == 1 and "gun_gun1port" in metadata and metadata["gun_gun1port"] == "2"
 
         if len(guns) >= 1 and not gun1onport2:
             if not pcsx2INIConfig.has_section("USB1"):
@@ -512,9 +508,9 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                 os.remove(target_file_path)
 
     # wheels
-    wtype = Pcsx2Generator.getWheelType(wheelsmetadata, system.config)
+    wtype = Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)
     eslog.info("PS2 wheel type is {}".format(wtype));
-    if Pcsx2Generator.useEmulatorWheels(wheelsmetadata, wtype):
+    if Pcsx2Generator.useEmulatorWheels(playingWithWheel, wtype):
         if len(wheels) >= 1:
             wheelMapping = {
                 "DrivingForcePro": {
@@ -562,7 +558,7 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, gun
                         pcsx2INIConfig.add_section("USB{}".format(usbx))
                     pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")
 
-                    wheel_type = Pcsx2Generator.getWheelType(wheelsmetadata, system.config)
+                    wheel_type = Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", Pcsx2Generator.wheelTypeMapping[wheel_type])
 
                     if hasattr(pad, 'physdev'): # ffb on the real wheel

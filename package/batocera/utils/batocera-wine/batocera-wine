@@ -13,11 +13,11 @@ get_setting() {
 ## Wine detection
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
-WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo proton)"
+WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo ge-custom)"
 
 # Wine Folder
 wine_folder() {
-if test -e "/userdata/system/wine/proton" || test -e "/userdata/system/wine/lutris"; then
+if test -e "/userdata/system/wine/ge-custom"; then
     echo "/userdata/system/wine"
     else
     echo "/usr/wine"
@@ -32,17 +32,16 @@ WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
 MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
 WINETRICKS="${DIR}/winetricks"
-MF_INSTALL="${DIR}/mf/mf-install.sh"
 
 ## Folders
-G_SAVES_DIR="/userdata/saves/${SYSTEM}"
+WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
 G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
 export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine/i386-unix:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix"
 export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
-export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/i386-windows:${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows"
 # hum pw 0.2 and 0.3 are hardcoded, not nice
@@ -119,6 +118,8 @@ wine_options() {
     export VKD3D_SHADER_DEBUG=none
     test "${WINE_DEBUG}" = 1 && unset VKD3D_SHADER_DEBUG
 
+    export VKD3D_SHADER_CACHE_PATH="/userdata/system/cache"
+
     export WINE_FULLSCREEN_FSR=0
     test "${FSR}" = 1 && unset WINE_FULLSCREEN_FSR=1
 
@@ -156,11 +157,11 @@ wine_options() {
     export USE_BUILTIN_VKD3D=0
 
     # Nvidia variables
-    if test -e "/userdata/system/.cache"; then
-        export XDG_CACHE_HOME="/userdata/system/.cache"
+    if test -e "/userdata/system/cache"; then
+        export XDG_CACHE_HOME="/userdata/system/cache"
     else
-        mkdir -p "/userdata/system/.cache"
-        export XDG_CACHE_HOME="/userdata/system/.cache"
+        mkdir -p "/userdata/system/cache"
+        export XDG_CACHE_HOME="/userdata/system/cache"
     fi
     export __GL_SHADER_DISK_CACHE_SIZE=2147483648
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
@@ -171,26 +172,6 @@ wine_options() {
     fi
 
     setxkbmap "${KEYBOARD}"
-}
-
-mf_install() {
-    WINEPREFIX=$1
-    MF="$(get_setting mf "${SYSTEM}" "${ROMGAMENAME}")"
-
-    if test "${MF}" = 1
-    then
-        if test -e "/userdata/system/wine/mf"
-        then
-            chmod +x "${MF_INSTALL}" || return 1
-            WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-            /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
-        else
-            WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-            /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
-        fi
-    fi
-
-    return 0
 }
 
 redist_install() {
@@ -339,42 +320,38 @@ dxvk_install() {
     DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
     DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
 
-    if test "${DXVK_HUD}" = 1
-    then
+    if test "${DXVK_HUD}" = 1; then
 	    export DXVK_HUD=1
     fi
 
-    if test "${DXVK}" = 1
-    then
-	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	if test -e "/userdata/system/wine/dxvk"
-	then
-	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	else
-	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	fi
+    if test "${DXVK}" = 1; then
+        mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        if test -e "/userdata/system/wine/dxvk"; then
+            echo "Creating links using /userdata, Linux File System required !!!"
+            ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/userdata/system/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        else
+            echo "Creating links using /usr/wine/dxvk/, Linux File System required !!!"
+            ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        fi
     else
-	    echo "Creating links on /userdata, Linux File System required !!!"
+	    echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
 	    ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "${DIR}/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
-    if test "${DXVK}" = 1
-    then
+    if test "${DXVK}" = 1; then
         export DXVK_ASYNC=1
-        export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk/dxvk.conf"
+        export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk.conf"
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n"
+        export DXVK_STATE_CACHE_PATH="/userdata/system/cache"
     else
         export DXVK_ASYNC=0
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=b"
     fi
 
-    if test "${NVAPI}" = 1
-    then
+    if test "${NVAPI}" = 1; then
         export DXVK_ENABLE_NVAPI=1
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};nvapi,nvapi64=n"
     else
@@ -459,7 +436,6 @@ play_wine() {
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -476,14 +452,13 @@ play_wine() {
 
 play_pc() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${WINE_BOTTLE_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -522,7 +497,7 @@ trick_wine() {
 
 play_exe() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${WINE_BOTTLE_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
@@ -531,7 +506,6 @@ play_exe() {
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -542,7 +516,7 @@ play_exe() {
 
 play_winetgz() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${WINE_BOTTLE_DIR}/"$(basename "${GAMENAME}")".wine"
 
     wine_options "${WINEPOINT}"
     if ! test -e "${WINEPOINT}"
@@ -554,7 +528,6 @@ play_winetgz() {
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -576,8 +549,8 @@ play_squashfs() {
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
     wine_options "${WINEPOINT}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
-    SAVEPOINT="${G_SAVES_DIR}/${BASEGAMENAME}"
-    WORKPOINT="${G_SAVES_DIR}/${BASEGAMENAME}.work"
+    SAVEPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}"
+    WORKPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}.work"
 
     # ensure we clean before starting if wine was killed for some reason
     umount -f -R "${WINEPOINT}"
@@ -609,7 +582,6 @@ play_squashfs() {
     fi
     
     reg_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 

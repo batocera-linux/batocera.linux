@@ -6,7 +6,7 @@ from Emulator import Emulator
 import configparser
 import controllersConfig
 
-def setViceConfig(viceConfigFile, system, guns, rom):
+def setViceConfig(viceConfigFile, system, metadata, guns, rom):
     
     # Path
     viceController = viceConfigFile + "/sdl-joymap.vjm"
@@ -51,8 +51,7 @@ def setViceConfig(viceConfigFile, system, guns, rom):
         viceConfig.set(systemCore, "VICBorderMode",        "0")
     viceConfig.set(systemCore, "VICFullscreen",        "1")
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
-        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
-        if "gun" in gunsmetadata and gunsmetadata["gun"] == "stack_light_rifle":
+        if "gun_type" in metadata and metadata["gun_type"] == "stack_light_rifle":
             viceConfig.set(systemCore, "JoyPort1Device",             "15")
         else:
             viceConfig.set(systemCore, "JoyPort1Device",             "14")

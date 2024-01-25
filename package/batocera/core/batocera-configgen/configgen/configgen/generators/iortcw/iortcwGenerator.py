@@ -6,7 +6,7 @@ from Command import Command
 
 class IORTCWGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Config file path
         config_file_path = "/userdata/roms/iortcw/main/wolfconfig.cfg"

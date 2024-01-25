@@ -1,8 +1,8 @@
-From a9fc1d56916fbcf4e00a1dd7543c9f53d697477a Mon Sep 17 00:00:00 2001
+From 95d719fb5565ae6eac12af1b63bfda78d7028ef5 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Tue, 3 Aug 2021 18:42:55 +0000
-Subject: [PATCH 03/15] LOCAL: board: amlogic: odroid-n2: remove /amlogic/
- prefix for dtb path
+Subject: [PATCH 3/5] LOCAL: board: amlogic: odroid-n2: remove /amlogic/ prefix
+ for dtb path
 
 Remove the /amlogic/ prefix to align with current LE dtb locations.
 
@@ -25,5 +25,5 @@ index 2135457edd..ec1f4efc11 100644
  }
  
 -- 
-2.17.1
+2.34.1
 

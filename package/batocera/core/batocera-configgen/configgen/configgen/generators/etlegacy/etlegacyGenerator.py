@@ -8,7 +8,7 @@ import batoceraFiles
 
 class ETLegacyGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         etLegacyDir = "/userdata/roms/etlegacy/legacy"
         etLegacyFile = "/legacy_2.81-dirty.pk3"

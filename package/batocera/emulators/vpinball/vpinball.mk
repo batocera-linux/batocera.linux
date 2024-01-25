@@ -3,13 +3,13 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Dec 26, 2023
+# Version: Commits on Jan 16, 2024
 # uses standalone tree for now
-VPINBALL_VERSION = b884fb42d7d9183aba6f3d8c51e8866d83083218
+VPINBALL_VERSION = 66e694949031d4ebf61d728cbd527d7621e2ad18
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
-VPINBALL_DEPENDENCIES = libfreeimage libpinmame libserum libzedmd libaltsound sdl2 sdl2_image sdl2_ttf
+VPINBALL_DEPENDENCIES = host-libcurl libfreeimage libpinmame libaltsound libserialport libzedmd libserum libdmdutil sdl2 sdl2_image sdl2_ttf
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # handle supported target platforms
@@ -59,7 +59,7 @@ define VPINBALL_INSTALL_TARGET_CMDS
     cp -R $(@D)/buildroot-build/flexdmd $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/assets $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/scripts $(TARGET_DIR)/usr/bin/vpinball/
-    cp -R $(@D)/buildroot-build/shader $(TARGET_DIR)/usr/bin/vpinball/
+    cp -R $(@D)/buildroot-build/shader10.8.0 $(TARGET_DIR)/usr/bin/vpinball/
 endef
 
 define VPINBALL_EVMAPY

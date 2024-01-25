@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# set the final TDP value
+set_tdp() {
+    echo "Setting AMD Processor TDP to ${1}W"
+    /usr/bin/batocera-amd-tdp $1
+}
+
+# determine the new TDP value based on max TDP
+handle_tdp() {
+    TDP_PERCENTAGE=$1
+    MAX_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+    #round the value up or down to make bash happy
+    TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
+    set_tdp "${TDP_VALUE}"
+}
+
+case "$1" in
+    resume|thaw)
+        # check we have a max system TDP value
+        CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+        # if not, we exit as the CPU is not supported by the TDP values
+        if [ -z "$CPU_TDP" ]; then
+            echo "No CPU TDP value found."
+            exit 0
+        else
+            TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
+            if [ -z "${TDP_SETTING}" ]; then
+                TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
+                set_tdp "${TDP_SETTING}"
+                exit 0
+            else
+                handle_tdp "${TDP_SETTING}"
+            fi
+        fi
+        ;;
+esac

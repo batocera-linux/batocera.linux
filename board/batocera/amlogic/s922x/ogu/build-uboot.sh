@@ -5,12 +5,12 @@ BOARD_DIR=$2
 IMAGES_DIR=$3
 
 # Download U-Boot mainline
-wget "https://ftp.denx.de/pub/u-boot/u-boot-2023.10.tar.bz2"
-tar xf u-boot-2023.10.tar.bz2
-cd u-boot-2023.10
+wget "https://ftp.denx.de/pub/u-boot/u-boot-2024.01.tar.bz2"
+tar xf u-boot-2024.01.tar.bz2
+cd u-boot-2024.01
 
 # Apply patches
-PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/ogu/patches/uboot/*.patch"
+PATCHES="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/amlogic/s922x/patches/uboot/*.patch"
 for patch in $PATCHES
 do
 echo "Applying patch: $patch"

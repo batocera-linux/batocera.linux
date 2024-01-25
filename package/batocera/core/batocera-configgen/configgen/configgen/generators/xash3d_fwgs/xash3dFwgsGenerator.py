@@ -84,7 +84,7 @@ def _get_arch_suffix():
 
 class Xash3dFwgsGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         game = os.path.splitext(os.path.basename(rom))[0]
 
         arch_suffix = _get_arch_suffix()
@@ -110,10 +110,6 @@ class Xash3dFwgsGenerator(Generator):
 
         commandArray.append('+showfps')
         commandArray.append('1' if system.getOptBoolean('showFPS') == True else '0')
-
-        # https://github.com/FWGS/xash3d-fwgs/issues/307
-        commandArray.append('+sv_validate_changelevel')
-        commandArray.append('0')
 
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)

@@ -1,12 +1,20 @@
-# 2024/02/xx - batocera.linux 39 - Painted Lady
+# 2024/03/xx - batocera.linux 39 - Painted Lady
+### Special Notes
+- Emulators using Wine now use the Glorious Eggroll custom runner for latest capabilities and compatibility.
+  Your previously saved games are still maintained in `/userdata/saves/` in their associated bottle for the afftected emulators Xenia, BigPemu, FPinball & Model2Emu.
+  Future WINE bottles are now provisioned here: `/userdata/system/wine-bottles` under their respective system name. Xbox360 emulators (Xenia & Xenai-Canary) have now moved to support VKD3D (D3D12 to Vulkan) for exanded compatibility by default with the previous native Vulkan available as an option.
+  New saves will be in `/userdata/saves/xbox360` where you can transfer your previous saves to continue gaming where you left off. You can then free up space by removing your previous WINE bottles from `userdata/saves` respectively after starting each emulator and forming the new WINE bottle accordingly.
+  If you have used squashfs for your Windows games you can choose to unsquash & recreate the bottle with the new runner.
 ### Hardware
 - Initial support for the AYN Loki MiniPro (Speakers not working)
 - Initial support for the Anbernic RG353V
 - Initial support for the ASUS ROG Ally
 - Initial support for the Raspberry Pi 5
 - Initial support for the Steam Deck OLED
+- Support for Thunderbolt 3 / USB4 eGPU chassis
 ### Added
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
+- New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.
 - Additional ES controller settings for Dolphin.
 - DPLII/Surround Sound ES setting for Dolphin. Note there is a mild performance cost.
 - The Force Engine: Play Dark Forces with enhanced graphics.
@@ -17,20 +25,27 @@
 - Added RetroAchievements for Uzebox and NeoGeo CD
 - ETLegacy: play Wolfenstein: Enemy Territory online multiplayer game with enhanced graphics.
 - Konami Justifier / Hyper Blaster light gun in PCSX reARMed core
- - Not compatible with nuvee GunCon patch, use clean ROM.
+  - Not compatible with nuvee GunCon patch, use clean ROM.
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
- - Not compatible with nuvee GunCon patch, use clean ROM.
-- wheel support:
- - new supported wheels
- - n64, gamecube, wii, playstation better support
- - automatically set wheels on first players pads when playing wheel games
- - add support for wheel deadzones / min and max rotation by game / system
-- spinner support:
- - Atari Classic joystick: the rudder is seen as a spinner
+- New supported steering wheels:
+  - Logitech : Driving Force, G29, G920, Momo
+  - Thrustmaster : T300RS
+- More steering wheel support :
+  - Out of the box steering wheel optimization for Atomiswave, Dreamcast, N64, Naomi, Naomi 2, GameCube, PS2, Saturn
+  - Initial support for Wii, PSX, MAME, Xbox
+  - Automatically set wheels on first players pads when playing wheel games
+  - Add settings for wheel deadzones, maximum rotation angle, midzone per game and system
+- Spinner support:
+  - Atari Classic joystick: the rudder is seen as a spinner
 - Ayn Loki Zero: support for on-board LEDs (and light effect on retroachievements unlocked)
 - Sonic Mania port.
 - OpenBor 4 (7533 build)
 - Content downloader: Batocera hosted content can now show thumbnails
+- Initial support for Retro Shooter Lightgun
+  - Press and hold rear left button for 3s to start calibration
+- Added zramswap service
+- Enable swap on rpi through rpi3 to improve suppport for low-memory
+  variants e.g. Zero 2W
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
@@ -44,6 +59,8 @@
 - Initialization data was too large for /userdata on RAMdisk
 - Nvidia Prime defaulting to provider 1 when it could be another provider.
 - AMD Prime defaulting to provider 1 when it could be another provider.
+- Sinden Lightgun border not showing on 4K resolution in model2 gun games
+- ES script logs clobbering game logs #1666
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
@@ -54,9 +71,11 @@
 - Add wsdd for system discovery in "Network" panel on Windows without legacy SMB1 protocols
 - Send hostname to DHCP server, and allow for dynamically configured hostname from DHCP
 - Streamlined x86_64 Secure Boot support
+- Wii gun games now 100% playable with light guns (based on 5 buttons mapping)
+- Enable performance governor by default on Raspberry_Pi_Zero_2_W_Rev_1_0
 ### Updated
 - Retroarch to 1.16.0.3
-- GroovyMAME 0.261 - Switchres 2.002x
+- GroovyMAME 0.261 - Switchres 2.002z
 - DosBox-X to 2023.10.6
 - Libretro-FBNeo to Oct 9, 2023
 - DevilutionX to 1.5.1
@@ -66,8 +85,8 @@
 - Libretro-Genesis-Plus-GX to Sep 11, 2023
 - Libretro-PCSX-ReARMed to Oct 9, 2023
 - Fheroes2 to 1.0.9
-- BigPEmu to 1.092
-- Cemu to 2.0-61
+- BigPEmu to 1.094
+- Cemu to 2.0-65
 - Citra to nightly-2054
 - Dolphin to 5.0-20840
 - Flycast to 17th Dec build
@@ -77,13 +96,13 @@
 - Play! to Nov 30, 2023 build
 - Python Pygame2 to 2.5.2
 - Python Pyxel to v1.9.18
-- RPCS3 to 0.0.29-15838
+- RPCS3 to 0.0.30
 - Ruffle to nightly-2023-10-13
 - Solarus Engine to Oct 2, 2023
 - Vita3k to Dec 26 build
 - Xemu to v0.7.118
 - Xenia to v1.0.2808
-- Xenia Canary to a34944e (October 28 build)
+- Xenia Canary to 49d4460 (Jan 11 build)
 - ECWolf to 1.5pre
 - EDuke32 to Oct 07, 2023 build
 - Libretro-A5200 to Aug 18th build
@@ -98,7 +117,7 @@
 - Libretro-Beetle-WSwan to May 27, 2023 build
 - Libretro-Bluemsx to Apr 18, 2023 build
 - Libretro-Bsnes to Oct 20, 2023 build
-- Libretro-Cap32 to Jul 12, 2023 build
+- Libretro-Cap32 4.5.4
 - Libretro-ChaiLove to Sep 30, 2023 build
 - Libretro-Craft to May 28, 2023 build
 - Libretro-Desmume to Oct 6, 2023 build
@@ -138,10 +157,13 @@
 - Sonic 2013 to Dec 2, 2023 build
 - Duckstation to Dec 21, 2023 build
 - ScummVM to 2.8
+- Redream to 1.5.0-1093
+- Raze to 1.9.1
 ### System
-- Linux kernel to 6.7
-- Mesa to 23.3.2
-- Proton to 8.0-4c
+- Linux kernel to 6.7.1
+- Mesa to 23.3.3
+- Proton & Lutris replaced by the Glorious Eggroll customer WINE runner
+- Wine Tricks to 20240105
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
 - Nvidia legacy driver to 470.223.02
@@ -149,12 +171,13 @@
 - Sound Open Firmware to 2023.12
 - Bluez to 5.71
 - Added tree utility
-- VKD3D-Proton to 2.11
+- VKD3D-Proton to 2.11.1
 - Host-XA to 2.4.0
 - Pipewire to 1.0.0
 - Xorg Server to 21.1.10
 - XWayaland to 23.2.3
 - QT 6.6.1
+- Vulkan stack to support 1.3.275
 
 # 2023/10/16 - batocera.linux 38 - Blue Moon
 ### Hardware

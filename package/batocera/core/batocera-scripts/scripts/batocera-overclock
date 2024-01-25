@@ -183,7 +183,7 @@ setValue_rpi4PutVars() {
 }
 
 setValue_rpi5PutVars() {
-    over_voltage=$1
+    over_voltage_delta=$1
     arm_freq=$2
     gpu_freq=$3
 
@@ -195,7 +195,7 @@ setValue_rpi5PutVars() {
         echo >> "${GRPICONFFILE}"
         echo "[Overclock]" >> "${GRPICONFFILE}"
     fi
-    for entry in over_voltage arm_freq gpu_freq
+    for entry in over_voltage_delta arm_freq gpu_freq
     do
 	if ! grep -q "${entry}" "${GRPICONFFILE}"
 	then
@@ -207,7 +207,7 @@ setValue_rpi5PutVars() {
     done
 
     # put values
-    sed -i "s/#\?over_voltage_delta=.*/over_voltage_delta=${over_voltage}/g" "${GRPICONFFILE}" || return 1
+    sed -i "s/#\?over_voltage_delta=.*/over_voltage_delta=${over_voltage_delta}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?arm_freq=.*/arm_freq=${arm_freq}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g" "${GRPICONFFILE}" || return 1
 

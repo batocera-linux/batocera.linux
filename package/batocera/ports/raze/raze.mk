@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RAZE_VERSION = 1.8.1
+RAZE_VERSION = 1.9.1
 RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
 RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic
@@ -14,7 +14,12 @@ RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
 HOST_RAZE_DEPENDENCIES = zlib bzip2
 HOST_RAZE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 HOST_RAZE_CONF_OPTS += -DSKIP_INSTALL_ALL=ON
+
+# The TOOLS_ONLY=ON option is not implemented in Raze yet.
+# This does in fact build the entire engine, not just the build tools.
+# We disable Vulkan to avoid having to depend on `host-xlib_libX11`.
 HOST_RAZE_CONF_OPTS += -DTOOLS_ONLY=ON
+HOST_RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
 HOST_RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define HOST_RAZE_INSTALL_CMDS
@@ -30,8 +35,10 @@ ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
     RAZE_DEPENDENCIES += vulkan-headers vulkan-loader
     ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+        RAZE_DEPENDENCIES += xlib_libX11
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
     else ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
+        RAZE_DEPENDENCIES += wayland
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON
     endif
 else

@@ -18,7 +18,7 @@ eslog = get_logger(__name__)
 
 class CorsixTHGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Create corsixth config directory if needed
         if not os.path.exists(corsixthConfigPath):
             os.makedirs(corsixthConfigPath)

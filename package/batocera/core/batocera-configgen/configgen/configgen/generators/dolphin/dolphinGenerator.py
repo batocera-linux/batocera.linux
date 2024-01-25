@@ -12,7 +12,7 @@ import controllersConfig
 
 class DolphinGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
@@ -21,7 +21,7 @@ class DolphinGenerator(Generator):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
         
         # Generate the controller config(s)
-        dolphinControllers.generateControllerConfig(system, playersControllers, rom, guns)
+        dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 
         ## [ dolphin.ini ] ##
         dolphinSettings = configparser.ConfigParser(interpolation=None)
@@ -133,7 +133,11 @@ class DolphinGenerator(Generator):
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), value)
             else:
-                dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
+                # if the pad is a wheel and on gamecube, use it
+                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and str(i) in playersControllers and playersControllers[str(i)].dev in wheels:
+                    dolphinSettings.set("Core", "SIDevice" + str(i - 1), "8")
+                else:
+                    dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and controllersConfig.gunsNeedCrosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair' == True)):

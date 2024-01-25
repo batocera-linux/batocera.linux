@@ -68,11 +68,11 @@ def connected_to_internet():
     eslog.error(f"Not connected to the internet")
     return False
 
-def writeLibretroConfig(generator, retroconfig, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+def writeLibretroConfig(generator, retroconfig, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
 
     # retroarch-core-options.cfg
     retroarchCore = batoceraFiles.retroarchCoreCustom
@@ -88,7 +88,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
         coreSettings = UnixSettings(retroarchCore, separator=' ')
 
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns)
+    libretroOptions.generateCoreSettings(coreSettings, system, rom, guns, wheels)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
@@ -100,6 +100,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     retroarchConfig = dict()
     systemConfig = system.config
     renderConfig = system.renderconfig
+    systemCore = system.config['core']
 
     # Basic configuration
     retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
@@ -286,14 +287,13 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
 
         # wheel
         if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-            wheelssmetadata = controllersConfig.getGameWheelsMetaData(system.name, rom)
             deviceInfos = controllersConfig.getDevicesInformation()
             nplayer = 1
             for controller, pad in sorted(controllers.items()):
                 if pad.dev in deviceInfos:
                     if deviceInfos[pad.dev]["isWheel"]:
                         retroarchConfig['input_player' + str(nplayer) + '_analog_dpad_mode'] = '1'
-                        if "type" in wheelssmetadata and wheelssmetadata["type"] == "negcon" :
+                        if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 773 # Negcon
                         else:
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 517 # DualShock Controller
@@ -317,6 +317,10 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             retroarchConfig['input_libretro_device_p4'] = system.config['controller4_dc']
         else:
             retroarchConfig['input_libretro_device_p4'] = '1'
+
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            retroarchConfig['input_libretro_device_p1'] = '2049' # Race Controller
 
     ## Sega Megadrive controller
     if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':
@@ -391,6 +395,11 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_saturn']
         else:
             retroarchConfig['input_libretro_device_p2'] = '1' # Saturn pad
+
+    # wheel
+    if system.config['core'] == 'beetle-saturn' and system.name == 'saturn':
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            retroarchConfig['input_libretro_device_p1'] = '517' # Arcade Racer
 
     ## NEC PCEngine controller
     if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
@@ -563,17 +572,22 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
-    # Ratio option
+     # Ratio option
     retroarchConfig['aspect_ratio_index'] = ''              # reset in case config was changed (or for overlays)
     if defined('ratio', systemConfig):
+        index = '22'    # default value (core)
         if systemConfig['ratio'] in ratioIndexes:
-            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(systemConfig['ratio'])
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        elif systemConfig['ratio'] == "custom":
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        else:
-            retroarchConfig['video_aspect_ratio_auto'] = 'false'
-            retroarchConfig['aspect_ratio_index'] = '22'
+            index = ratioIndexes.index(systemConfig['ratio'])
+        # Check if game natively supports widescreen from metadata (not widescreen hack) (for easy scalability ensure all values for respective systems start with core name and end with "-autowidescreen")
+        elif system.isOptSet(f"{systemCore}-autowidescreen") and system.config[f"{systemCore}-autowidescreen"] == "True": 
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+            if metadata.get("video_widescreen") == "true":
+                index = str(ratioIndexes.index("16/9"))
+                # Easy way to disable bezels if setting to 16/9
+                bezel = None      
+        
+        retroarchConfig['video_aspect_ratio_auto'] = 'false'
+        retroarchConfig['aspect_ratio_index'] = index          
 
     # Rewind option
     retroarchConfig['rewind_enable'] = 'false'
@@ -845,14 +859,12 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                 ragunconf = gun_mapping[system.config['core']]["default"]
             raguncoreconf = {}
 
-            gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
-
             # overwrite configuration by gungames.xml
             if "gameDependant" in ragunconf:
                 for gd in ragunconf["gameDependant"]:
-                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
+                    if "gun_"+gd["key"] in metadata and metadata["gun_"+gd["key"]] == gd["value"] and "mapkey" in gd and "mapvalue" in gd:
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
-                    if gd["key"] in gunsmetadata and gunsmetadata[gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
+                    if "gun_"+gd["key"] in metadata and metadata["gun_"+gd["key"]] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
                         raguncoreconf[gd["mapcorekey"]] = gd["mapcorevalue"]
 
             for nplayer in range(1, 3+1):
@@ -864,7 +876,7 @@ def createLibretroConfig(generator, system, controllers, guns, rom, bezel, shade
                             retroarchConfig['input_libretro_device_p'+str(nplayer)] = ragunconf["device"]
                         else:
                             retroarchConfig['input_libretro_device_p'+str(nplayer)] = ""
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'], gunsmetadata)
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf["p"+str(nplayer)]], controllers, retroarchConfig, system.config['core'], metadata)
 
             # override core settings
             for key in raguncoreconf:
@@ -895,7 +907,7 @@ def clearGunInputsForPlayer(n, retroarchConfig):
         for type in ["btn", "mbtn"]:
             retroarchConfig['input_player{}_{}_{}'.format(n, key, type)] = ''
 
-def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, gunsmetadata):
+def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, metadata):
     # gun mapping
     retroarchConfig['input_player{}_mouse_index'            .format(n)] = gun["id_mouse"]
     retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = 1
@@ -914,7 +926,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, guns
     # custom mapping by core to match more with avaible gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
-        if "gun" in gunsmetadata and gunsmetadata["gun"] == "justifier":
+        if "gun_type" in metadata and metadata["gun_type"] == "justifier":
             retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
             retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
         else:

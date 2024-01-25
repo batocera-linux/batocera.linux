@@ -231,7 +231,7 @@ try:
                                 if val >= 0 and val <= outputSize[1]:
                                     target.write(ecodes.EV_ABS, ecodes.ABS_Y, val)
                                 needSync = True
-                            elif event.code == ecodes.EV_SYN:
+                            elif event.type == ecodes.EV_SYN:
                                 if needSync:
                                     target.syn()
                                     needSync = False
