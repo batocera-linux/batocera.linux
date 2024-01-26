@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Starts audio services
+#
+
+start_alsa() {
+	printf "Starting alsa: "
+	echo "OK"
+}
+
+stop_alsa() {
+	printf "Stopping alsa: "
+	mount -o remount,rw /boot
+	alsactl store -f /boot/asound.state
+	if [ -f /userdata/system/.asoundrc ]; then
+		cp /userdata/system/.asoundrc /boot/asoundrc
+	else
+		rm -f /boot/asoundrc
+	fi
+	mount -o remount,ro /boot
+	echo "OK"
+}
+
+restart() {
+	stop_alsa
+	start_alsa
+}
+
+case "$1" in
+ 	start)
+		start_alsa
+	;;
+ 	stop)
+		stop_alsa
+	;;
+ 	restart|reload)
+		restart
+	;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
