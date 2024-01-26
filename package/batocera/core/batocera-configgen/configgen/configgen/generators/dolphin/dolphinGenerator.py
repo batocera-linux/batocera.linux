@@ -103,9 +103,11 @@ class DolphinGenerator(Generator):
         else:
             dolphinSettings.set("Core", "SyncGPU", "False")
 
-        # Language
-        dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment())) # Wii
-        dolphinSettings.set("Core", "GameCubeLanguage", str(getGameCubeLangFromEnvironment())) # GC
+        # Gamecube Language
+        if system.isOptSet("gamecube_language"):
+            dolphinSettings.set("Core", "SelectedLanguage", system.config["gamecube_language"])
+        else:
+            dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment()))
 
         # Enable MMU
         if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
@@ -435,6 +437,7 @@ class DolphinGenerator(Generator):
 
         return 4/3
 
+# Get the language from the environment if user didn't set it in ES.
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
 # It may be used for something else, so set it anyway
 def getGameCubeLangFromEnvironment():

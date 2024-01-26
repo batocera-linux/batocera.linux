@@ -7201,6 +7201,17 @@ dolphin:
                 choices:
                     "Off": 0
                     "On":  1
+            gamecube_language:
+                group: ADVANCED OPTIONS
+                prompt: GAMECUBE LANGUAGE
+                description: Change the Gamecube system language.
+                choices:
+                    "English/Japanese":     0
+                    "German":               1
+                    "French":               2
+                    "Spanish":              3
+                    "Italian":              4
+                    "Dutch":                5
     wii:
         shared: [use_guns]
         cfeatures:
