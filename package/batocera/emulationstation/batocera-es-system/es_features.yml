@@ -10522,140 +10522,132 @@ wine:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode]
   cfeatures:
+        dxvk:
+            prompt: DXVK FEATURE
+            description: Converts DirectX 8/9/10/11/12 calls to Vulkan.
+            choices:
+                "Off": 0
+                "On":  1
+        fps_limit:
+            prompt: FPS LIMITER
+            description: Allows you to limit FPS to 60.
+            choices:
+                "Off": 0
+                "On":  1
+        force_mouse:
+            prompt: ENABLE MOUSE
+            description: Force mouse in games.
+            choices:
+                "Off": 0
+                "On":  1
         sdl_config:
             prompt: SDL CONFIG
             description: Choose whether to pass SDL Game Controller config to the Windows game. Disabling may help with some games.
             choices:
                 "Off":          0
                 "On (Default)": 1
-        dxvk:
-            group: ADVANCED OPTIONS
-            prompt:      DXVK FEATURE
-            description: Converts DirectX 8/9/10/11/12 calls to Vulkan.
-            choices:
-                "Off": 0
-                "On":  1
         dxvk_hud:
             group: ADVANCED OPTIONS
-            prompt:      DXVK HUD
+            prompt: DXVK HUD
             description: See your FPS and version of Vulkan API/driver.
             choices:
                 "Off": 0
                 "On":  1
         esync:
             group: ADVANCED OPTIONS
-            prompt:      ESYNC
+            prompt: ESYNC
             description: Can increase performance for games that stress the CPU.
             choices:
                 "Off": 0
                 "On":  1
         fsync:
             group: ADVANCED OPTIONS
-            prompt:      FSYNC
+            prompt: FSYNC
             description: Can improve frame rate and responsiveness.
             choices:
                 "Off": 0
                 "On":  1
         pba:
             group: ADVANCED OPTIONS
-            prompt:      PBA
+            prompt: PBA
             description: Vastly improves the speed of buffer maps.
             choices:
                 "Off": 0
                 "On":  1
         fsr:
             group: ADVANCED OPTIONS
-            prompt:      FIDELITY FX SUPER RESOLUTION
+            prompt: FIDELITY FX SUPER RESOLUTION
             description: Renders game at a lower res then upscales to increase FPS.
-            choices:
-                "Off": 0
-                "On":  1
-        fps_limit:
-            group: ADVANCED OPTIONS
-            prompt:      FPS LIMITER
-            description: Allows you to limit FPS to 60.
-            choices:
-                "Off": 0
-                "On":  1
-        mf:
-            group: ADVANCED OPTIONS
-            prompt:      INSTALL MEDIA FOUNDATION
             choices:
                 "Off": 0
                 "On":  1
         virtual_desktop:
             group: ADVANCED OPTIONS
-            prompt:      VIRTUAL DESKTOP
+            prompt: VIRTUAL DESKTOP
             description: Define the resolution and a new dedicated window.
-            choices:
-                "Off": 0
-                "On":  1
-        force_mouse:
-            group: ADVANCED OPTIONS
-            prompt:      ENABLE MOUSE
-            description: Force mouse in games.
             choices:
                 "Off": 0
                 "On":  1
         allow_xim:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE XIM
-            description: Enable XIM support.
+            prompt: ENABLE XIM
+            description: Enable support for Chinese, Japanese and Korean input methods.
             choices:
                 "Off": 0
                 "On":  1
         no_write_watch:
             group: ADVANCED OPTIONS
-            prompt:      NO WRITE WATCH
+            prompt: NO WRITE WATCH
             description: Disable support for memory write watches in ntdll.
             choices:
                 "Off": 0
                 "On":  1
         force_large_adress:
             group: ADVANCED OPTIONS
-            prompt:      FORCE LARGE ADDRESS
+            prompt: FORCE LARGE ADDRESS
             description: Force WINE to run games with large addresses.
             choices:
                 "Off": 0
                 "On":  1
         heap_delay_free:
             group: ADVANCED OPTIONS
-            prompt:      HEAP DELAY FREE
+            prompt: HEAP DELAY FREE
             description: Delay freeing some memory.
             choices:
                 "Off": 0
                 "On":  1
         hide_nvidia_gpu:
             group: ADVANCED OPTIONS
-            prompt:      HIDE NVIDIA GPU
-            description: Force Nvidia GPUs to always be reported as AMD GPUs.
+            prompt: HIDE NVIDIA GPU
+            description: Force Nvidia GPUs to always be reported as AMD GPUs to workaround game issues.
             choices:
                 "Off": 0
                 "On":  1
         enable_nvapi:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE NVAPI
+            prompt: ENABLE NVAPI
             description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU.
             choices:
                 "Off": 0
                 "On":  1
         dxvk_reset_cache:
             group: ADVANCED OPTIONS
-            prompt:      DXVK RESET CACHE
+            prompt: DXVK RESET CACHE
             description: Reset the cache can fix some crashes if your game was running under Batocera 29.
             choices:
                 "Off": 0
                 "On":  1
         wine_ntfs:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE NTFS MODE
+            prompt: ENABLE NTFS MODE
             description: Enable this mode if you have issue for run your game on NTFS storage (by default is better to use LinuxFS).
             choices:
                 "Off": 0
                 "On":  1
         wine_debug:
             group: ADVANCED OPTIONS
-            prompt:      ENABLE DEBUG
+            prompt: ENABLE DEBUG
+            description: Useful to troubleshoot when your Windows game won't start of crashes.
             choices:
                 "Off": 0
                 "On":  1
