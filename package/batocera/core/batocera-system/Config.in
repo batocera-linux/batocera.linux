@@ -300,7 +300,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 
     # vulkan
-    select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
+    select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
                                                 BR2_PACKAGE_BATOCERA_TARGET_RISCV
@@ -327,9 +327,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     # do NOT remove this one for OGA
-    select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_H3              && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3128		 && \
+    select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+                                            !BR2_PACKAGE_BATOCERA_TARGET_H3         && \
+                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3128     && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
     select BR2_PACKAGE_RTW89_TEMP       if  BR2_PACKAGE_BATOCERA_TARGET_RK3588
@@ -654,7 +654,7 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
     bool "batocera.linux game streaming support"
 
     # Game streaming
-    select BR2_PACKAGE_MOONLIGHT_EMBEDDED   if !BR2_PACKAGE_BATOCERA_TARGET_RK3128
+    select BR2_PACKAGE_MOONLIGHT_EMBEDDED   if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 || !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
@@ -1326,9 +1326,9 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     # Supermodel OpenGL ES port
     select BR2_PACKAGE_SUPERMODEL_ES        if	BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
-						BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
-						BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
-						BR2_PACKAGE_BATOCERA_TARGET_H616
+                                                BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # Apple 2
     select BR2_PACKAGE_APPLEWIN		    # ALL
@@ -1634,14 +1634,14 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 
     # Extra linux firmware
     select BR2_PACKAGE_EXTRALINUXFIRMWARES              if  BR2_PACKAGE_BATOCERA_TARGET_H616            || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_H6  || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_H6              || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RK3399
     # orangepi firmware
     select BR2_PACKAGE_FIRMWARE_ORANGEPI		if BR2_PACKAGE_BATOCERA_TARGET_H3   || \
-							   BR2_PACKAGE_BATOCERA_TARGET_H5   || \
-							   BR2_PACKAGE_BATOCERA_TARGET_H6   || \
-							   BR2_PACKAGE_BATOCERA_TARGET_H616
+                                                   BR2_PACKAGE_BATOCERA_TARGET_H5   || \
+                                                   BR2_PACKAGE_BATOCERA_TARGET_H6   || \
+                                                   BR2_PACKAGE_BATOCERA_TARGET_H616
 
 
 config BR2_PACKAGE_BATOCERA_SDL2
