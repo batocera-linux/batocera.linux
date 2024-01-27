@@ -665,8 +665,8 @@ msgid ""
 "Automatically sets aspect ratio to 16/9 for games that natively support it. "
 "2D elements like HUD/UI may be stretched."
 msgstr ""
-"Define automaticamente a proporção para 16/9 para jogos que a suportam nativamente. "
-"Elementos 2D como HUD/UI podem ser esticados."
+"Define automaticamente a proporção para 16/9 para jogos que a suportam "
+"nativamente. Elementos 2D como HUD/UI podem ser esticados."
 
 #. TRANSLATION: libretro/beetle-saturn, libretro/flycast, libretro/kronos, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -11554,6 +11554,31 @@ msgstr "EXTENSÃO DE DADOS"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
+msgid "Converts DirectX 8/9/10/11/12 calls to Vulkan."
+msgstr "Converte DirectX 8/9/10/11/12 para Vulkan."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "DXVK FEATURE"
+msgstr "RECURSO DXVK"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Allows you to limit FPS to 60."
+msgstr "Permite limitar o FPS a 60."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "FPS LIMITER"
+msgstr "LIMITADOR DE FPS"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Force mouse in games."
+msgstr "Forçar rato em jogos."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
 msgid ""
 "Choose whether to pass SDL Game Controller config to the Windows game. "
 "Disabling may help with some games."
@@ -11565,16 +11590,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "SDL CONFIG"
 msgstr "CONFIGURAÇÃO SDL"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Converts DirectX 8/9/10/11/12 calls to Vulkan."
-msgstr "Converte DirectX 8/9/10/11/12 para Vulkan."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "DXVK FEATURE"
-msgstr "RECURSO DXVK"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11628,21 +11643,6 @@ msgctxt "game_options"
 msgid "FIDELITY FX SUPER RESOLUTION"
 msgstr "FIDELITY FX SUPER RESOLUTION"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Allows you to limit FPS to 60."
-msgstr "Permite limitar o FPS a 60."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "FPS LIMITER"
-msgstr "LIMITADOR DE FPS"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "INSTALL MEDIA FOUNDATION"
-msgstr "INSTALAR MEDIA FOUNDATION"
-
 #. TRANSLATION: wine, mugen
 msgctxt "game_options"
 msgid "Define the resolution and a new dedicated window."
@@ -11655,13 +11655,8 @@ msgstr "AMBIENTE DE TRABALHO VIRTUAL"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
-msgid "Force mouse in games."
-msgstr "Forçar rato em jogos."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Enable XIM support."
-msgstr "Ativar o suporte XIM."
+msgid "Enable support for Chinese, Japanese and Korean input methods."
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11700,8 +11695,10 @@ msgstr "ATRASO NA LIBERTAÇÃO DE MEMÓRIA"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
-msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
-msgstr "Forçar GPUs da Nvidia a sempre serem relatados como GPUs da AMD."
+msgid ""
+"Force Nvidia GPUs to always be reported as AMD GPUs to workaround game "
+"issues."
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11748,6 +11745,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE NTFS MODE"
 msgstr "ATIVAR MODO NTFS"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Useful to troubleshoot when your Windows game won't start of crashes."
+msgstr ""
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -11952,8 +11954,8 @@ msgid ""
 "Destination address and port to forward packets to. Leave this empty if you "
 "want to enter it manually in the xemu.toml configuration file."
 msgstr ""
-"Endereço de destino e porta para onde encaminhar pacotes. Deixe isto vazio se "
-"deseja inseri-lo manualmente no arquivo de configuração xemu.toml."
+"Endereço de destino e porta para onde encaminhar pacotes. Deixe isto vazio "
+"se deseja inseri-lo manualmente no arquivo de configuração xemu.toml."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -11966,8 +11968,8 @@ msgid ""
 "Local address and port to receive packets on. Leave this empty if you want "
 "to enter it manually in the xemu.toml configuration file."
 msgstr ""
-"Endereço local e porta para receber pacotes. Deixe em branco se quiser "
-"para inseri-lo manualmente no arquivo de configuração xemu.toml."
+"Endereço local e porta para receber pacotes. Deixe em branco se quiser para "
+"inseri-lo manualmente no arquivo de configuração xemu.toml."
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -12759,8 +12761,8 @@ msgid ""
 "Choose which graphics API library to use. D3D12 may yield better results "
 "with faster GPUs."
 msgstr ""
-"Escolha qual biblioteca de API gráfica a usar. D3D12 pode produzir melhores resultados "
-"com GPUs mais rápidas."
+"Escolha qual biblioteca de API gráfica a usar. D3D12 pode produzir melhores "
+"resultados com GPUs mais rápidas."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13042,8 +13044,9 @@ msgid ""
 "Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, "
 "except for late frames (below target FPS) which are displayed immediately."
 msgstr ""
-"Corrigir o screen tearing. Adaptive Sync (Padrão) sincroniza na sincronização de vídeo, "
-"exceto para frames atrasados ​​(abaixo do FPS alvo) que são mostrados imediatamente."
+"Corrigir o screen tearing. Adaptive Sync (Padrão) sincroniza na "
+"sincronização de vídeo, exceto para frames atrasados ​​(abaixo do FPS alvo) "
+"que são mostrados imediatamente."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13061,8 +13064,8 @@ msgid ""
 "Presets which can improve performance without manually editing the VPinballX."
 "ini file to fine tune performance."
 msgstr ""
-"Predefinições que podem melhorar o desempenho sem editar manualmente o VPinballX."
-"ini para ajustar o desempenho."
+"Predefinições que podem melhorar o desempenho sem editar manualmente o "
+"VPinballX.ini para ajustar o desempenho."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13092,7 +13095,9 @@ msgstr "Manual (Padrão)"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Alternative Coloured Dot Matrix Display (needs additional file)."
-msgstr "Display alternativo de matriz de pontos coloridos (precisa de arquivo adicional)."
+msgstr ""
+"Display alternativo de matriz de pontos coloridos (precisa de arquivo "
+"adicional)."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13105,8 +13110,8 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables with a "
 "pinmame rom."
 msgstr ""
-"Janela extra DMD (Dot Matrix Display) para mostrar a pontuação das tabelas com um "
-"pinmame rom."
+"Janela extra DMD (Dot Matrix Display) para mostrar a pontuação das tabelas "
+"com um pinmame rom."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
@@ -13159,8 +13164,8 @@ msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables "
 "without a rom."
 msgstr ""
-"Janela extra DMD (Dot Matrix Display) para mostrar a pontuação das tabelas"
-"sem rom."
+"Janela extra DMD (Dot Matrix Display) para mostrar a pontuação das "
+"tabelassem rom."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
@@ -13250,7 +13255,9 @@ msgstr "ALTURA B2S DMD"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Adjust the music volume. Some tables may have its own settings."
-msgstr "Ajuste o volume da música. Algumas tabelas podem ter suas próprias configurações."
+msgstr ""
+"Ajuste o volume da música. Algumas tabelas podem ter suas próprias "
+"configurações."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13283,8 +13290,8 @@ msgid ""
 "Per Table Folder requires all files to be in the associated rom table "
 "folder. If disabled, consult the Wiki for further details."
 msgstr ""
-"Por pasta de tabela requer que todos os arquivos estejam na tabela rom associada "
-"pasta. Se desativado, consulte o Wiki para mais detalhes."
+"Por pasta de tabela requer que todos os arquivos estejam na tabela rom "
+"associada pasta. Se desativado, consulte o Wiki para mais detalhes."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -14367,4 +14374,14 @@ msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "Ligar/Desligar o filtro de gráficos"
 
+#~ msgctxt "game_options"
+#~ msgid "INSTALL MEDIA FOUNDATION"
+#~ msgstr "INSTALAR MEDIA FOUNDATION"
 
+#~ msgctxt "game_options"
+#~ msgid "Enable XIM support."
+#~ msgstr "Ativar o suporte XIM."
+
+#~ msgctxt "game_options"
+#~ msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
+#~ msgstr "Forçar GPUs da Nvidia a sempre serem relatados como GPUs da AMD."
