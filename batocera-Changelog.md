@@ -161,7 +161,7 @@
 - Sonic 2013 to Dec 2, 2023 build
 - Duckstation to Dec 21, 2023 build
 - ScummVM to 2.8
-- Redream to 1.5.0-1093
+- Redream to 1.5.0-1106
 - Raze to 1.9.1
 ### System
 - Linux kernel to 6.7.1
