@@ -1372,6 +1372,97 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         else:
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
 
+    if (system.config['core'] == 'melondsds'):
+        # System Settings
+        if system.isOptSet('melondsds_console_mode'):
+            coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
+        else:
+            coreSettings.save('melonds_console_mode', '"DS"')
+        
+        # Video Settings
+        if system.isOptSet('melondsds_render_mode'):
+            coreSettings.save('melonds_render_mode', '"' + system.config['melondsds_render_mode'] + '"')
+        else:
+            coreSettings.save('melonds_render_mode', '"software"')
+        if system.isOptSet('melondsds_resolution'):
+            coreSettings.save('melonds_opengl_resolution', '"' + system.config['melondsds_resolution'] + '"')
+        else:
+            coreSettings.save('melonds_render_mode', '"1"')
+        if system.isOptSet('melondsds_poygon'):
+            coreSettings.save('melonds_opengl_better_polygons', '"' + system.config['melondsds_poygon'] + '"')
+        else:
+            coreSettings.save('melonds_opengl_better_polygons', '"disabled"')
+        if system.isOptSet('melondsds_filtering'):
+            coreSettings.save('melonds_opengl_filtering', '"' + system.config['melondsds_filtering'] + '"')
+        else:
+            coreSettings.save('melonds_opengl_filtering', '"nearest"')
+        
+        # Screen Settings
+        if system.isOptSet('melondsds_cursor'):
+            coreSettings.save('melonds_show_cursor', '"' + system.config['melondsds_cursor'] + '"')
+        else:
+            coreSettings.save('melonds_show_cursor', '"nearest"')
+        if system.isOptSet('melondsds_cursor_timeout'):
+            coreSettings.save('melonds_cursor_timeout', '"' + system.config['melondsds_cursor_timeout'] + '"')
+        else:
+            coreSettings.save('melonds_cursor_timeout', '"3"')
+        if system.isOptSet('melondsds_touchmode'):
+            coreSettings.save('melonds_touch_mode', '"' + system.config['melondsds_touchmode'] + '"')
+        else:
+            coreSettings.save('melonds_touch_mode', '"auto"')
+        # set 1 screen for now top/botton
+        coreSettings.save('melonds_number_of_screen_layouts', '"1"')
+        coreSettings.save('melonds_screen_gap', '"0"')
+        coreSettings.save('melonds_screen_layout1', '"top-bottom"')
+        
+        # Firmware Settings
+        if system.isOptSet('melondsds_dns'):
+            coreSettings.save('melonds_firmware_wfc_dns', '"' + system.config['melondsds_dns'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_wfc_dns', '"178.62.43.212"')
+        if system.isOptSet('melondsds_language'):
+            coreSettings.save('melonds_firmware_language', '"' + system.config['melondsds_language'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_language', '"default"')
+        if system.isOptSet('melondsds_colour'):
+            coreSettings.save('melonds_firmware_favorite_color', '"' + system.config['melondsds_colour'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_favorite_color', '"default"')
+        if system.isOptSet('melondsds_month'):
+            coreSettings.save('melonds_firmware_birth_month', '"' + system.config['melondsds_month'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_birth_month', '"default"')
+        if system.isOptSet('melondsds_day'):
+            coreSettings.save('melonds_firmware_birth_day', '"' + system.config['melondsds_day'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_birth_day', '"default"')
+        
+        # Onscreen Display
+        if system.isOptSet('melondsds_show_unsupported'):
+            coreSettings.save('melonds_show_unsupported_features', '"' + system.config['melondsds_show_unsupported'] + '"')
+        else:
+            coreSettings.save('melonds_show_unsupported_features', '"disabled"')
+        if system.isOptSet('melondsds_show_bios'):
+            coreSettings.save('melonds_show_bios_warnings', '"' + system.config['melondsds_show_bios'] + '"')
+        else:
+            coreSettings.save('melonds_show_bios_warnings', '"disabled"')
+        if system.isOptSet('melondsds_show_layout'):
+            coreSettings.save('melonds_show_current_layout', '"' + system.config['melondsds_show_layout'] + '"')
+        else:
+            coreSettings.save('melonds_show_current_layout', '"disabled"')
+        if system.isOptSet('melondsds_show_mic'):
+            coreSettings.save('melonds_show_mic_state', '"' + system.config['melondsds_show_mic'] + '"')
+        else:
+            coreSettings.save('melonds_show_mic_state', '"disabled"')
+        if system.isOptSet('melondsds_show_camera'):
+            coreSettings.save('melonds_show_camera_state', '"' + system.config['melondsds_show_camera'] + '"')
+        else:
+            coreSettings.save('melonds_show_camera_state', '"disabled"')
+        if system.isOptSet('melondsds_show_lid'):
+            coreSettings.save('melonds_show_lid_state', '"' + system.config['melondsds_show_lid'] + '"')
+        else:
+            coreSettings.save('melonds_show_lid_state', '"disabled"')
+
     # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen)
     if (system.config['core'] == 'tgbdual'):
         # Emulates two Game Boy units
