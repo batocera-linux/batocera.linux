@@ -181,33 +181,38 @@ class XeniaGenerator(Generator):
         if system.isOptSet('xenia_api') and system.config['xenia_api'] == 'Vulkan':
             config['GPU'] = {
                 'depth_float24_convert_in_pixel_shader': True,
-                'vsync': True,
                 'gpu': 'vulkan',
                 'gpu_allow_invalid_fetch_constants': True,
-                'render_target_path_vulkan': 'any',
-                'vsync_fps': 60
+                'render_target_path_vulkan': 'any'
             }
         else:
             config['GPU'] = {
-                'clear_memory_page_state': True,
                 'depth_float24_convert_in_pixel_shader': True,
                 'gpu_allow_invalid_fetch_constants': True,
-                'vsync': True,
                 'gpu': 'd3d12',
-                'render_target_path_d3d12': 'rtv',
-                'texture_cache_memory_limit_hard': 3072,
-                'texture_cache_memory_limit_render_to_texture': 96,
-                'texture_cache_memory_limit_soft': 1536,
-                'texture_cache_memory_limit_soft_lifetime': 120,
-                'vsync_fps': 60,
-                'query_occlusion_fake_sample_count': 0
+                'render_target_path_d3d12': 'rtv'
             }
-                                
+        # vsync
+        config['GPU']['vsync'] = system.config.get('xenia_vsync', False)
+        config['GPU']['vsync_fps'] = int(system.config.get('xenia_vsync_fps', 60))
+        # page state
+        config['GPU']['clear_memory_page_state'] = system.config.get('xenia_page_state', False)
+        # render target path
+        config['GPU']['render_target_path_d3d12'] = system.config.get('xenia_target_path', 'rtv')
+        # query occlusion
+        config['GPU']['query_occlusion_fake_sample_count'] = int(system.config.get('xenia_query_occlusion', 1000))
+        # readback resolve
+        config['GPU']['d3d12_readback_resolve'] = system.config.get('xenia_readback_resolve', False)
+        # cache
+        config['GPU']['texture_cache_memory_limit_hard'] = int(system.config.get('xenia_limit_hard', 768))
+        config['GPU']['texture_cache_memory_limit_render_to_texture'] = int(system.config.get('xenia_limit_render_to_texture', 24))
+        config['GPU']['texture_cache_memory_limit_soft'] = int(system.config.get('xenia_limit_soft', 384))
+        config['GPU']['texture_cache_memory_limit_soft_lifetime'] = int(system.config.get('xenia_limit_soft_lifetime', 30))
         # add node General
         if 'General' not in config:
             config['General'] = {}
         # disable discord
-        config['General'] = {'discord': False}
+        config['General']['discord'] = False
         # patches
         if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':
             config['General'] = {'apply_patches': True}
@@ -237,10 +242,12 @@ class XeniaGenerator(Generator):
         config['Storage'] = {
             'cache_root': xeniaCache,
             'content_root': xeniaSaves,
-            'mount_cache': True,
             'mount_scratch': True,
             'storage_root': xeniaConfig
             }
+        # mount cache
+        config['Storage']['mount_cache'] = system.config.get('xenia_cache', False)
+
         # add node UI
         if 'UI' not in config:
             config['UI'] = {}
