@@ -460,7 +460,7 @@ def getDevicesInformation():
   return res
 
 def getAssociatedMouse(devicesInformation, dev):
-    if dev not in devicesInformation:
+    if dev not in devicesInformation or devicesInformation[dev]["associatedDevices"] is None:
         return None
     for candidate in devicesInformation[dev]["associatedDevices"]:
         if devicesInformation[candidate]["isMouse"]:
