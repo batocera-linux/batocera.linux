@@ -1,0 +1,38 @@
+From 63377f9080cfcdbc8129fa969c1758c5086df61b Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Mon, 11 Sep 2023 17:45:39 +0200
+Subject: [PATCH 16/41] FROMGIT(6.7): arm64: dts: meson: u200: add spdifout b
+ routes
+
+spdifout B remains untested as it can only feed the HDMI controller, which
+does not support spdif ATM.
+
+Still if the u200 has spdifout b, the routes to it should be set.
+
+Fixes: cfae4eadb7cd ("arm64: dts: meson: add audio playback to u200")
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20230911154541.471484-4-jbrunet@baylibre.com
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index 2380d237d220..921b62c5ab33 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -166,7 +166,10 @@ sound {
+ 				"TDM_B Playback", "TDMOUT_B OUT",
+ 				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+ 				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3";
++				"SPDIFOUT IN 2", "FRDDR_C OUT 3",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+-- 
+2.34.1
+

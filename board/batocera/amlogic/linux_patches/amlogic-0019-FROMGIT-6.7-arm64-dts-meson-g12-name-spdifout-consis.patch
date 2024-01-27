@@ -1,0 +1,187 @@
+From 45299195b2d6efb09decf03fb29540085584d627 Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Mon, 25 Sep 2023 15:53:26 +0200
+Subject: [PATCH 19/41] FROMGIT(6.7): arm64: dts: meson: g12: name spdifout
+ consistently
+
+g12 and sm1 are fairly similar when it comes to audio.
+Both have 2 spdif outputs. While the 2nd output is named "spdifout_b" for
+both, the 1st one is named 'spdifout' for g12 and 'spdifout_a' for sm1.
+
+Use 'spdifout_a' for both instead.
+
+This change does not fix any particular problem. The intent is just to make
+it easier to have a common card definitions for platform designs using both
+SoC families, when spdifout is used.
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12.dtsi           |  4 ++--
+ arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts      | 10 +++++-----
+ arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts   | 10 +++++-----
+ arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts    | 10 +++++-----
+ arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts | 10 +++++-----
+ 5 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
+index 6a1f4dcf6488..9b9d0d2863aa 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
+@@ -272,12 +272,12 @@ spdifin: audio-controller@400 {
+ 			status = "disabled";
+ 		};
+ 
+-		spdifout: audio-controller@480 {
++		spdifout_a: audio-controller@480 {
+ 			compatible = "amlogic,g12a-spdifout",
+ 				     "amlogic,axg-spdifout";
+ 			reg = <0x0 0x480 0x0 0x50>;
+ 			#sound-dai-cells = <0>;
+-			sound-name-prefix = "SPDIFOUT";
++			sound-name-prefix = "SPDIFOUT_A";
+ 			clocks = <&clkc_audio AUD_CLKID_SPDIFOUT>,
+ 				 <&clkc_audio AUD_CLKID_SPDIFOUT_CLK>;
+ 			clock-names = "pclk", "mclk";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index 7310e192efe7..8355ddd7e9ae 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -189,9 +189,9 @@ sound {
+ 				"TDMOUT_C IN 1", "FRDDR_B OUT 2",
+ 				"TDMOUT_C IN 2", "FRDDR_C OUT 2",
+ 				"TDM_C Playback", "TDMOUT_C OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3",
++				"SPDIFOUT_A IN 0", "FRDDR_A OUT 3",
++				"SPDIFOUT_A IN 1", "FRDDR_B OUT 3",
++				"SPDIFOUT_A IN 2", "FRDDR_C OUT 3",
+ 				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
+ 				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
+ 				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4",
+@@ -324,7 +324,7 @@ codec-1 {
+ 
+ 		/* spdif hdmi and coax output */
+ 		dai-link-9 {
+-			sound-dai = <&spdifout>;
++			sound-dai = <&spdifout_a>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+@@ -546,7 +546,7 @@ &spdifin {
+ 	status = "okay";
+ };
+ 
+-&spdifout {
++&spdifout_a {
+ 	pinctrl-0 = <&spdif_ao_out_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+index 7ca904f5acbb..4969a76460fa 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+@@ -155,9 +155,9 @@ sound {
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+ 				"TDM_B Playback", "TDMOUT_B OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3";
++				"SPDIFOUT_A IN 0", "FRDDR_A OUT 3",
++				"SPDIFOUT_A IN 1", "FRDDR_B OUT 3",
++				"SPDIFOUT_A IN 2", "FRDDR_C OUT 3";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -196,7 +196,7 @@ codec {
+ 
+ 		/* spdif hdmi or toslink interface */
+ 		dai-link-4 {
+-			sound-dai = <&spdifout>;
++			sound-dai = <&spdifout_a>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+@@ -456,7 +456,7 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&flash_1v8>;
+ };
+ 
+-&spdifout {
++&spdifout_a {
+ 	pinctrl-0 = <&spdif_out_h_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+index 3e826095e792..8fc2e143cb54 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+@@ -34,9 +34,9 @@ sound {
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+ 				"TDM_B Playback", "TDMOUT_B OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3";
++				"SPDIFOUT_A IN 0", "FRDDR_A OUT 3",
++				"SPDIFOUT_A IN 1", "FRDDR_B OUT 3",
++				"SPDIFOUT_A IN 2", "FRDDR_C OUT 3";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -75,7 +75,7 @@ codec {
+ 
+ 		/* spdif hdmi or toslink interface */
+ 		dai-link-4 {
+-			sound-dai = <&spdifout>;
++			sound-dai = <&spdifout_a>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+@@ -139,7 +139,7 @@ rtc: rtc@51 {
+ 	};
+ };
+ 
+-&spdifout {
++&spdifout_a {
+ 	pinctrl-0 = <&spdif_out_h_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+index 098a3af6d381..ce548b373296 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+@@ -29,9 +29,9 @@ sound {
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+ 				"TDM_B Playback", "TDMOUT_B OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3";
++				"SPDIFOUT_A IN 0", "FRDDR_A OUT 3",
++				"SPDIFOUT_A IN 1", "FRDDR_B OUT 3",
++				"SPDIFOUT_A IN 2", "FRDDR_C OUT 3";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -70,7 +70,7 @@ codec {
+ 
+ 		/* spdif hdmi or toslink interface */
+ 		dai-link-4 {
+-			sound-dai = <&spdifout>;
++			sound-dai = <&spdifout_a>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+@@ -125,7 +125,7 @@ &ir {
+ 	linux,rc-map-name = "rc-khadas";
+ };
+ 
+-&spdifout {
++&spdifout_a {
+ 	pinctrl-0 = <&spdif_out_h_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+-- 
+2.34.1
+

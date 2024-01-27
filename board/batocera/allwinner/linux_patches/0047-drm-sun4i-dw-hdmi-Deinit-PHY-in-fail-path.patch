@@ -1,0 +1,31 @@
+From 519b9e72303cabcb87f4d5b8792069ca20b7f13b Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 23 Sep 2023 10:23:45 +0200
+Subject: [PATCH 01/23] drm/sun4i: dw-hdmi: Deinit PHY in fail path
+
+Commit 9bf3797796f5 ("drm/sun4i: dw-hdmi: Make HDMI PHY into a platform
+device") removed code for PHY deinitialization in fail path.
+
+Add it back.
+
+Fixes: 9bf3797796f5 ("drm/sun4i: dw-hdmi: Make HDMI PHY into a platform device")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+index 4727dfaa8fb9..0b647b030b15 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+@@ -203,6 +203,7 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 
+ cleanup_encoder:
+ 	drm_encoder_cleanup(encoder);
++	sun8i_hdmi_phy_deinit(hdmi->phy);
+ err_disable_clk_tmds:
+ 	clk_disable_unprepare(hdmi->clk_tmds);
+ err_assert_ctrl_reset:
+-- 
+2.42.0
+

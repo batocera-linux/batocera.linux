@@ -1,0 +1,31 @@
+From b6516692a447924f5aca081ca5ec5645a88cfc99 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Date: Mon, 16 Oct 2023 10:02:04 +0200
+Subject: [PATCH 33/41] FROMLIST(v1): pmdomain: amlogic: Fix mask for the
+ second NNA mem PD domain
+
+Without this change, the NPU hangs when the 8th NN core is used.
+
+It matches what the out-of-tree driver does.
+
+Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+---
+ drivers/pmdomain/amlogic/meson-ee-pwrc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pmdomain/amlogic/meson-ee-pwrc.c b/drivers/pmdomain/amlogic/meson-ee-pwrc.c
+index cfb796d40d9d..0dd71cd814c5 100644
+--- a/drivers/pmdomain/amlogic/meson-ee-pwrc.c
++++ b/drivers/pmdomain/amlogic/meson-ee-pwrc.c
+@@ -228,7 +228,7 @@ static struct meson_ee_pwrc_mem_domain sm1_pwrc_mem_audio[] = {
+ 
+ static struct meson_ee_pwrc_mem_domain g12a_pwrc_mem_nna[] = {
+ 	{ G12A_HHI_NANOQ_MEM_PD_REG0, GENMASK(31, 0) },
+-	{ G12A_HHI_NANOQ_MEM_PD_REG1, GENMASK(23, 0) },
++	{ G12A_HHI_NANOQ_MEM_PD_REG1, GENMASK(31, 0) },
+ };
+ 
+ #define VPU_PD(__name, __top_pd, __mem, __is_pwr_off, __resets, __clks)	\
+-- 
+2.34.1
+

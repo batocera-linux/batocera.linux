@@ -5,11 +5,11 @@ Subject: [PATCH] [DO NOT MERGE] ARM: dts: sunxi: h3/h5: Protect SCP clocks
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- arch/arm/boot/dts/sunxi-h3-h5.dtsi | 2 ++
+ arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi | 2 ++
  1 file changed, 2 insertions(+)
 
---- a/arch/arm/boot/dts/sunxi-h3-h5.dtsi
-+++ b/arch/arm/boot/dts/sunxi-h3-h5.dtsi
+--- a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
++++ b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
 @@ -388,6 +388,7 @@
  			reg = <0x01c20000 0x400>;
  			clocks = <&osc24M>, <&rtc 0>;

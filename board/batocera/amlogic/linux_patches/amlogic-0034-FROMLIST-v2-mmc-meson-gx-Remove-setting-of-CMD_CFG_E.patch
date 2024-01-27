@@ -1,0 +1,34 @@
+From dc37a4f15253cd5a88c973ab041c56ad1e3166a7 Mon Sep 17 00:00:00 2001
+From: Rong Chen <rong.chen@amlogic.com>
+Date: Thu, 26 Oct 2023 15:31:56 +0800
+Subject: [PATCH 34/41] FROMLIST(v2): mmc: meson-gx: Remove setting of
+ CMD_CFG_ERROR
+
+For the t7 and older SoC families, the CMD_CFG_ERROR has no effect.
+Starting from SoC family C3, setting this bit without SG LINK data
+address will cause the controller to generate an IRQ and stop working.
+
+To fix it, don't set the bit CMD_CFG_ERROR anymore.
+
+Fixes: 18f92bc02f17 ("mmc: meson-gx: make sure the descriptor is stopped on errors")
+Signed-off-by: Rong Chen <rong.chen@amlogic.com>
+Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ drivers/mmc/host/meson-gx-mmc.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
+index 9837dab096e6..c7c067b9415a 100644
+--- a/drivers/mmc/host/meson-gx-mmc.c
++++ b/drivers/mmc/host/meson-gx-mmc.c
+@@ -801,7 +801,6 @@ static void meson_mmc_start_cmd(struct mmc_host *mmc, struct mmc_command *cmd)
+ 
+ 	cmd_cfg |= FIELD_PREP(CMD_CFG_CMD_INDEX_MASK, cmd->opcode);
+ 	cmd_cfg |= CMD_CFG_OWNER;  /* owned by CPU */
+-	cmd_cfg |= CMD_CFG_ERROR; /* stop in case of error */
+ 
+ 	meson_mmc_set_response_bits(cmd, &cmd_cfg);
+ 
+-- 
+2.34.1
+
