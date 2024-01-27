@@ -29,7 +29,9 @@
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
 - New supported steering wheels:
   - Logitech : Driving Force, G29, G920, Momo
-  - Thrustmaster : T300RS
+  - Thrustmaster T300RS
+  - HORI Racing Wheel APEX
+  - MOZA Racing R9
 - More steering wheel support :
   - Out of the box steering wheel optimization for Atomiswave, Dreamcast, N64, Naomi, Naomi 2, GameCube, PS2, Saturn
   - Initial support for Wii, PSX, MAME, Xbox
@@ -46,6 +48,8 @@
 - Added zramswap service
 - Enable swap on rpi through rpi3 to improve suppport for low-memory
   variants e.g. Zero 2W
+- Support for third-party Wiimotes
+  - Enable the wiimote3rdparty service in SYSTEM -> SERVICES
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
