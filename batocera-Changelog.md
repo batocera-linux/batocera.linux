@@ -166,7 +166,7 @@
 ### System
 - Linux kernel to 6.7.2
 - Mesa to 23.3.4
-- Proton & Lutris replaced by the Glorious Eggroll customer WINE runner
+- Proton & Lutris replaced by the Glorious Eggroll custom WINE runner
 - Wine Tricks to 20240105
 - FAudio to 23.10
 - Nvidia production driver to 545.29.06
