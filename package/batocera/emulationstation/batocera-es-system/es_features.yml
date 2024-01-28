@@ -12160,6 +12160,16 @@ vpinball:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+    vpinball_enableconfiggen:
+      group: EXPERT SETTINGS
+      prompt: ENABLE EMULATIONSTATION CONFIGURATION
+      description: Turn on to configure settings from this GUI (Recommended). If disabled, you have to manually edit the Config File (Experts only - not recommended).
+      preset: switchon  
+    vpinball_folders:
+      group: EXPERT SETTINGS
+      prompt: PER TABLE FOLDER
+      description: Per Table Folder requires all files to be in the associated rom table folder. If disabled, consult the Wiki for further details.
+      preset: switchon
     vpinball_balltrail:
       group: DISPLAY
       prompt: BALL TRAIL STRENGTH
@@ -12214,126 +12224,47 @@ vpinball:
       prompt: ALTCOLOR
       description: Alternative Coloured Dot Matrix Display (needs additional file).
       preset: switchon
-    vpinball_pinmamewindow:
+    vpinball_pinmame:
       group: DISPLAY
-      submenu: PINMAME DMD
       prompt: PINMAME DMD
-      description: Extra DMD (Dot Matrix Display) window to display the score for tables with a pinmame rom.
-      preset: switch
-    vpinball_pinmamewindowx:
+      description: Extra DMD (Dot Matrix Display) window to display the score for tables with a pinmame rom. By default, settings come from the VPinballX.ini configuration file.
+      choices:              
+        "Top-Right Position, Small": "pinmame_topright_small"
+        "Top-Right Position, Medium": "pinmame_topright_medium"
+        "Top-Right Position, Large": "pinmame_topright_large"        
+        "Top-Left Position, Small": "pinmame_topleft_small"
+        "Top-Left Position, Medium": "pinmame_topleft_medium"
+        "Top-Left Position, Large": "pinmame_topleft_large"        
+        "PinMAME DMD disabled": "pinmame_disabled"
+    vpinball_flexdmd:
       group: DISPLAY
-      submenu: PINMAME DMD
-      prompt: PINMAME DMD X
-      description: Horizontal position (in percentage of the screen width).
-      preset: input
-    vpinball_pinmamewindowy:
-      group: DISPLAY
-      submenu: PINMAME DMD
-      prompt: PINMAME DMD Y
-      description: Vertical position (in percentage of the screen height).
-      preset: input
-    vpinball_pinmamewindowwidth:
-      group: DISPLAY
-      submenu: PINMAME DMD
-      prompt: PINMAME DMD WIDTH
-      description: Horizontal width (in percentage of the screen width).
-      preset: input
-    vpinball_pinmamewindowheight:
-      group: DISPLAY
-      submenu: PINMAME DMD
-      prompt: PINMAME DMD HEIGHT
-      description: Vertical height (in percentage of the screen height).
-      preset: input
-    vpinball_flexdmdwindow:
-      group: DISPLAY
-      submenu: FLEX DMD
       prompt: FLEX DMD
-      description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom.
-      preset: switch
-    vpinball_flexdmdwindowx:
+      description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom. By default, settings come from the VPinballX.ini configuration file.
+      choices:      
+        "Top-Right Position, Small": "flexdmd_topright_small"
+        "Top-Right Position, Medium": "flexdmd_topright_medium"
+        "Top-Right Position, Large": "flexdmd_topright_large"        
+        "Top-Left Position, Small": "flexdmd_topleft_small"
+        "Top-Left Position, Medium": "flexdmd_topleft_medium"
+        "Top-Left Position, Large": "flexdmd_topleft_large"        
+        "FlexDMD disabled": "flexdmd_disabled"
+    vpinball_b2s:
       group: DISPLAY
-      submenu: FLEX DMD
-      prompt: FLEX DMD X
-      description: Horizontal position (in percentage of the screen width).
-      preset: input
-    vpinball_flexdmdwindowy:
-      group: DISPLAY
-      submenu: FLEX DMD
-      prompt: FLEX DMD Y
-      description: Vertical position (in percentage of the screen height).
-      preset: input
-    vpinball_flexdmdwindowwidth:
-      group: DISPLAY
-      submenu: FLEX DMD
-      prompt: FLEX DMD WIDTH
-      description: Horizontal width (in percentage of the screen width).
-      preset: input
-    vpinball_flexdmdwindowheight:
-      group: DISPLAY
-      submenu: FLEX DMD
-      prompt: FLEX DMD HEIGHT
-      description: Vertical height (in percentage of the screen height).
-      preset: input
-    vpinball_b2swindows:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
       prompt: BACKGLASS (B2S)
-      description: Upright glass panel displaying some illuminated artwork.
+      description: Upright glass panel displaying some illuminated artwork. By default, settings come from the VPinballX.ini configuration file.
+      choices:      
+        "Top-Right Position, Small": "b2s_topright_small"
+        "Top-Right Position, Medium": "b2s_topright_medium"
+        "Top-Right Position, Large": "b2s_topright_large"        
+        "Top-Left Position, Small": "b2s_topleft_small"
+        "Top-Left Position, Medium": "b2s_topleft_medium"
+        "Top-Left Position, Large": "b2s_topleft_large"        
+        "Backglass disabled": "b2s_disabled"
+    vpinball_b2sdmd:
+      group: DISPLAY
+      prompt: DISPLAY BACKGLASS DMD
+      description: When the Backglass is activated, display the small additional part with the scores.
       preset: switchon
-    vpinball_b2sbackglassx:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: BACKGLASS X
-      description: Horizontal position (in percentage of the screen width).
-      preset: input
-    vpinball_b2sbackglassy:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: BACKGLASS Y
-      description: Vertical position (in percentage of the screen height).
-      preset: input
-    vpinball_b2sbackglasswidth:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: BACKGLASS WIDTH
-      description: Horizontal width (in percentage of the screen width).
-      preset: input
-    vpinball_b2sbackglassheight:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: BACKGLASS HEIGHT
-      description: Vertical height (in percentage of the screen height).
-      preset: input
-    vpinball_b2shidedmd:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: BACKGLASS DMD HIDE
-      description: Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass.
-      preset: switchon
-    vpinball_b2sdmdx:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: B2S DMD X
-      description: Horizontal position (in percentage of the screen width).
-      preset: input
-    vpinball_b2sdmdy:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: B2S DMD Y
-      description: Vertical position (in percentage of the screen height).
-      preset: input
-    vpinball_b2sdmdwidth:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: B2S DMD WIDTH
-      description: Horizontal width (in percentage of the screen width).
-      preset: input
-    vpinball_b2sdmdheight:
-      group: DISPLAY
-      submenu: BACKGLASS (B2S)
-      prompt: B2S DMD HEIGHT
-      description: Vertical height (in percentage of the screen height).
-      preset: input
     vpinball_musicvolume:
       group: AUDIO
       prompt: MUSIC VOLUME
@@ -12372,11 +12303,6 @@ vpinball:
       group: AUDIO
       prompt: ALTERNATIVE SOUND
       description: Alternative sounds for the table (needs additional files).
-      preset: switchon
-    vpinball_folders:
-      group: FOLDERS ORGANISATION
-      prompt: PER TABLE FOLDER
-      description: Per Table Folder requires all files to be in the associated rom table folder. If disabled, consult the Wiki for further details.
       preset: switchon
 
 theforceengine:
