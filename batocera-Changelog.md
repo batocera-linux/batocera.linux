@@ -164,8 +164,8 @@
 - Redream to 1.5.0-1106
 - Raze to 1.9.1
 ### System
-- Linux kernel to 6.7.1
-- Mesa to 23.3.3
+- Linux kernel to 6.7.2
+- Mesa to 23.3.4
 - Proton & Lutris replaced by the Glorious Eggroll customer WINE runner
 - Wine Tricks to 20240105
 - FAudio to 23.10
