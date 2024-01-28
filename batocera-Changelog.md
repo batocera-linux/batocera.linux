@@ -91,6 +91,7 @@
 - ANYEXTERNAL storage was not functioning in certain scenarios #3455
 - Hostname was not sent to DHCP server and hostnames from DHCP were not	honored #7502
 - Fixed retroachivements for pcsx2 and duckstation
+- Restore missing /sbin/hwclock binary
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
