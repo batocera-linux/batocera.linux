@@ -11679,6 +11679,12 @@ xenia:
             choices:
                 "D3D12 (Default)": D3D12
                 "Native Vulkan":   Vulkan
+        xenia_vsync:
+            prompt: VSYNC
+            description: Fix screen tearing.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
         xeniaLicense:
             prompt: XBOX LIVE ARCADE
             description: This option enables the ability to play Xbox Live Arcacde games. May cause compatibility issues with non-XBLA games.
@@ -11711,6 +11717,90 @@ xenia:
                 "Turkish":           14
                 "Norwegian":         15
                 "Dutch":             16
+        xenia_page_state:
+            group: ADVANCED OPTIONS
+            prompt: CLEAR MEMORY PAGE STATE
+            description: Refresh state of memory pages to enable gpu written data. (Use for 'Team Ninja' Games to fix missing character models).
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
+        xenia_target_path:
+            group: ADVANCED OPTIONS
+            prompt: RENDER TARGET PATH
+            description: Render target emulation path to use on Direct3D 12. Try changing if you have render issues.
+            choices:
+                "Any":           "any"
+                "RTV (Default)": "rtv"
+                "ROV":           "rov"
+        xenia_query_occlusion:
+            group: ADVANCED OPTIONS
+            prompt: QUERY OCCLUSION
+            description: The sample count of every tile will be incremented on every EVENT_WRITE_ZPD by this number. Setting this to 0 means everything is reported as occluded.
+            choices:
+                "0":              0
+                "10":             10
+                "50":             50
+                "100":            100
+                "250":            250
+                "500":            500
+                "750":            750
+                "1000 (Default)": 1000
+        xenia_readback_resolve:
+            group: ADVANCED OPTIONS
+            prompt: READBACK RESOLVE
+            description: D3D12, read render-to-texture results on the CPU. Needed in some games, but causes mid-frame synchronization, so it has a huge performance impact.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
+        xenia_limit_hard:
+            group: ADVANCED OPTIONS
+            prompt: HARD TEXTURE CACHE MEMORY LIMIT
+            description: Maximum host texture memory usage (in megabytes) above which textures will be destroyed as soon as possible.
+            choices:
+                "768MB (Default)": 768
+                "1536MB":          1536
+                "2304MB":          2034
+                "3072MB":          3072
+                "3840MB":          3840
+                "4096MB":          4096
+                "5120MB":          5120
+                "6144MB":          6144
+        xenia_limit_render_to_texture:
+            group: ADVANCED OPTIONS
+            prompt: TEXTURE MEMORY SCALE SIZE
+            description: Part of the host texture memory budget (in megabytes) that will be scaled by the current drawing resolution scale.
+            choices:
+                "24MB (Default)": 24
+                "48MB":           48
+                "72MB":           72
+                "96MB":           96
+        xenia_limit_soft:
+            group: ADVANCED OPTIONS
+            prompt: SOFT TEXTURE CACHE MEMORY LIMIT
+            description: Maximum host texture memory usage (in megabytes) above which old textures will be destroyed. Set below hard limit.
+            choices:
+                "384MB (Default)": 384
+                "768MB":           768
+                "1536MB":          1536
+                "2048MB":          2048
+                "3072MB":          3072
+                "4096MB":          4096
+        xenia_limit_soft_lifetime:
+            group: ADVANCED OPTIONS
+            prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
+            description: Seconds a texture should be unused to be considered old enough to be deleted if texture memory usage exceeds Soft Texture Cache limit.
+            choices:
+                "15s":           15
+                "30s (Default)": 30
+                "45s":           45
+                "15s":           60
+        xenia_cache:
+            group: ADVANCED OPTIONS
+            prompt: MOUNT CACHE
+            description: Enable cache mount. Can improve performance and compatibility in some games.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
 
 xenia-canary:
   features: []
@@ -11749,6 +11839,21 @@ xenia-canary:
             choices:
                 "D3D12 (Default)": D3D12
                 "Native Vulkan":   Vulkan
+        xenia_vsync:
+            prompt: VSYNC
+            description: Fix screen tearing. With Some games you need to turn VSync on in the games options.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
+        xenia_vsync_fps:
+            prompt: VSYNC FPS
+            description: Manually set VSYNC frames per second. Ideally this should match your monitor refresh rate.
+            choices:
+                "50fps":            50
+                "60fps (Default)":  60
+                "120fps":           120
+                "144fps":           144
+                "165fps":           165
         xeniaHeadless:
             prompt: UI PROMPTS
             description: Choose to display UI prompts or accept defaults.
@@ -11780,6 +11885,90 @@ xenia-canary:
             choices:
                 "Disabled (Default)": false
                 "Enabled": true
+        xenia_page_state:
+            group: ADVANCED OPTIONS
+            prompt: CLEAR MEMORY PAGE STATE
+            description: Refresh state of memory pages to enable gpu written data. (Use for 'Team Ninja' Games to fix missing character models).
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
+        xenia_target_path:
+            group: ADVANCED OPTIONS
+            prompt: RENDER TARGET PATH
+            description: Render target emulation path to use on Direct3D 12. Try changing if you have render issues.
+            choices:
+                "Any":           "any"
+                "RTV (Default)": "rtv"
+                "ROV":           "rov"
+        xenia_query_occlusion:
+            group: ADVANCED OPTIONS
+            prompt: QUERY OCCLUSION
+            description: The sample count of every tile will be incremented on every EVENT_WRITE_ZPD by this number. Setting this to 0 means everything is reported as occluded.
+            choices:
+                "0":              0
+                "10":             10
+                "50":             50
+                "100":            100
+                "250":            250
+                "500":            500
+                "750":            750
+                "1000 (Default)": 1000
+        xenia_readback_resolve:
+            group: ADVANCED OPTIONS
+            prompt: READBACK RESOLVE
+            description: D3D12, read render-to-texture results on the CPU. Needed in some games, but causes mid-frame synchronization, so it has a huge performance impact.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
+        xenia_limit_hard:
+            group: ADVANCED OPTIONS
+            prompt: HARD TEXTURE CACHE MEMORY LIMIT
+            description: Maximum host texture memory usage (in megabytes) above which textures will be destroyed as soon as possible.
+            choices:
+                "768MB (Default)": 768
+                "1536MB":          1536
+                "2304MB":          2034
+                "3072MB":          3072
+                "3840MB":          3840
+                "4096MB":          4096
+                "5120MB":          5120
+                "6144MB":          6144
+        xenia_limit_render_to_texture:
+            group: ADVANCED OPTIONS
+            prompt: TEXTURE MEMORY SCALE SIZE
+            description: Part of the host texture memory budget (in megabytes) that will be scaled by the current drawing resolution scale.
+            choices:
+                "24MB (Default)": 24
+                "48MB":           48
+                "72MB":           72
+                "96MB":           96
+        xenia_limit_soft:
+            group: ADVANCED OPTIONS
+            prompt: SOFT TEXTURE CACHE MEMORY LIMIT
+            description: Maximum host texture memory usage (in megabytes) above which old textures will be destroyed. Set below hard limit.
+            choices:
+                "384MB (Default)": 384
+                "768MB":           768
+                "1536MB":          1536
+                "2048MB":          2048
+                "3072MB":          3072
+                "4096MB":          4096
+        xenia_limit_soft_lifetime:
+            group: ADVANCED OPTIONS
+            prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
+            description: Seconds a texture should be unused to be considered old enough to be deleted if texture memory usage exceeds Soft Texture Cache limit.
+            choices:
+                "15s":           15
+                "30s (Default)": 30
+                "45s":           45
+                "15s":           60           
+        xenia_cache:
+            group: ADVANCED OPTIONS
+            prompt: MOUNT CACHE
+            description: Enable cache mount. Can improve performance and compatibility in some games.
+            choices:
+                "Disabled": "false"
+                "Enabled":  "true"
 
 eka2l1:
   features: []
