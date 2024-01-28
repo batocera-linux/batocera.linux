@@ -11,6 +11,7 @@ LIBGRAPHENE_LICENSE = MIT
 LIBGRAPHENE_LICENSE_FILES = LICENSE
 LIBGRAPHENE_INSTALL_STAGING = YES
 
-LIBGRAPHENE_CONF_OPTS = -Dtests=false -Dinstalled_tests=false
+# disable neon to workaround segfaults with some boards
+LIBGRAPHENE_CONF_OPTS = -Dtests=false -Dinstalled_tests=false -Darm_neon=false
 
 $(eval $(meson-package))
