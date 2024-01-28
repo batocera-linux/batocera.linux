@@ -50,6 +50,7 @@
   variants e.g. Zero 2W
 - Support for third-party Wiimotes
   - Enable the wiimote3rdparty service in SYSTEM -> SERVICES
+- Hotkey+south padtokey for pcsx2 OSD menu
 ### Fixed
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
