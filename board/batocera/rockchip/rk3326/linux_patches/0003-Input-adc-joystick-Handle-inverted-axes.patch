@@ -1,0 +1,105 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: linux-input@vger.kernel.org
+Cc: contact@artur-rojek.eu, hdegoede@redhat.com,
+	paul@crapouillou.net, peter.hutterer@who-t.net, svv@google.com,
+	biswarupp@google.com, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V4] Input: adc-joystick: Handle inverted axes
+Date: Wed, 24 Jan 2024 14:47:54 -0600	[thread overview]
+Message-ID: <20240124204754.43982-1-macroalpha82@gmail.com> (raw)
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+When one or more axes are inverted, (where min > max), normalize the
+data so that min < max and invert the values reported to the input
+stack.
+
+This ensures we can continue defining the device correctly in the
+device tree while not breaking downstream assumptions that min is
+always less than max.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+Changes since V3:
+ - Add include for minmax.h.
+ - Use swap() instead of min_array()/max_array().
+ - Dropped Ack due to change.
+Changes since V2:
+ - Explicitly set bool value to "true" instead of "1".
+ - Split adc_joystick_invert() function definition to 2 lines.
+ - Corrected changes message location.
+Changes since V1:
+ - Moved proposed helper for inversion from input stack to adc-joystick
+   driver.
+
+ drivers/input/joystick/adc-joystick.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/drivers/input/joystick/adc-joystick.c b/drivers/input/joystick/adc-joystick.c
+index c0deff5d4282..3b05b2e413d0 100644
+--- a/drivers/input/joystick/adc-joystick.c
++++ b/drivers/input/joystick/adc-joystick.c
+@@ -7,6 +7,7 @@
+ #include <linux/input.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/consumer.h>
++#include <linux/minmax.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+@@ -18,6 +19,7 @@ struct adc_joystick_axis {
+ 	s32 range[2];
+ 	s32 fuzz;
+ 	s32 flat;
++	bool inverted;
+ };
+
+ struct adc_joystick {
+@@ -29,6 +31,15 @@ struct adc_joystick {
+ 	bool polled;
+ };
+
++static int adc_joystick_invert(struct input_dev *dev,
++			       unsigned int axis, int val)
++{
++	int min = dev->absinfo[axis].minimum;
++	int max = dev->absinfo[axis].maximum;
++
++	return (max + min) - val;
++}
++
+ static void adc_joystick_poll(struct input_dev *input)
+ {
+ 	struct adc_joystick *joy = input_get_drvdata(input);
+@@ -38,6 +49,8 @@ static void adc_joystick_poll(struct input_dev *input)
+ 		ret = iio_read_channel_raw(&joy->chans[i], &val);
+ 		if (ret < 0)
+ 			return;
++		if (joy->axes[i].inverted)
++			val = adc_joystick_invert(input, i, val);
+ 		input_report_abs(input, joy->axes[i].code, val);
+ 	}
+ 	input_sync(input);
+@@ -86,6 +99,8 @@ static int adc_joystick_handle(const void *data, void *private)
+ 			val = sign_extend32(val, msb);
+ 		else
+ 			val &= GENMASK(msb, 0);
++		if (joy->axes[i].inverted)
++			val = adc_joystick_invert(joy->input, i, val);
+ 		input_report_abs(joy->input, joy->axes[i].code, val);
+ 	}
+
+@@ -168,6 +183,12 @@ static int adc_joystick_set_axes(struct device *dev, struct adc_joystick *joy)
+ 			goto err_fwnode_put;
+ 		}
+
++		if (axes[i].range[0] > axes[i].range[1]) {
++			dev_dbg(dev, "abs-axis %d inverted\n", i);
++			axes[i].inverted = true;
++			swap(axes[i].range[0], axes[i].range[1]);
++		}
++
+ 		fwnode_property_read_u32(child, "abs-fuzz", &axes[i].fuzz);
+ 		fwnode_property_read_u32(child, "abs-flat", &axes[i].flat);
+
+--
+2.34.1
