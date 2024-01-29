@@ -3,9 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Jan 16, 2024
+# Version: Commits on Jan 28, 2024
 # uses standalone tree for now
-VPINBALL_VERSION = 66e694949031d4ebf61d728cbd527d7621e2ad18
+VPINBALL_VERSION = 0d0dcff884f71eecab96111b63db6b5586ae4b2c
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -49,6 +49,7 @@ endef
 
 VPINBALL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 VPINBALL_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+VPINBALL_CONF_OPTS += -DPOST_BUILD_COPY_EXT_LIBS=OFF
 
 define VPINBALL_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/vpinball
