@@ -1,0 +1,34 @@
+From d7d9b528e9cf79f8c49e9dc9c15c43f9a0e559a7 Mon Sep 17 00:00:00 2001
+From: Julilano Dorigão <jdorigao@gmail.com>
+Date: Mon, 29 Jan 2024 14:00:48 -0400
+Subject: [PATCH] rename rk817 battery
+
+---
+ drivers/power/supply/rk817_charger.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/supply/rk817_charger.c b/drivers/power/supply/rk817_charger.c
+index 7ca91739c..b933271fe 100644
+--- a/drivers/power/supply/rk817_charger.c
++++ b/drivers/power/supply/rk817_charger.c
+@@ -679,7 +679,7 @@ static enum power_supply_usb_type rk817_usb_type[] = {
+ };
+ 
+ static const struct power_supply_desc rk817_bat_desc = {
+-	.name = "rk817-battery",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = rk817_bat_props,
+ 	.num_properties = ARRAY_SIZE(rk817_bat_props),
+@@ -687,7 +687,7 @@ static const struct power_supply_desc rk817_bat_desc = {
+ };
+ 
+ static const struct power_supply_desc rk817_chg_desc = {
+-	.name = "rk817-charger",
++	.name = "charger",
+ 	.type = POWER_SUPPLY_TYPE_USB,
+ 	.usb_types = rk817_usb_type,
+ 	.num_usb_types = ARRAY_SIZE(rk817_usb_type),
+-- 
+2.43.0
+
