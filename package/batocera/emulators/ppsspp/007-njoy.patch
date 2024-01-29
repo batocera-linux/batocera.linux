@@ -64,12 +64,14 @@ index d7494f8..173a865 100644
  	~SDLJoystick();
  
  	void registerEventHandler();
-@@ -30,4 +30,5 @@ class SDLJoystick{
+@@ -31,6 +31,7 @@ class SDLJoystick{
  	bool registeredAsEventHandler;
  	std::vector<SDL_GameController *> controllers;
  	std::map<int, int> controllerDeviceMap;
 +	int _njoy;
- };
+ 
+ 	// Deduplicate axis events. Pair is device, axis.
+ 	std::map<std::pair<InputDeviceID, InputAxis>, float> prevAxisValue_;
 diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
 index d7a1b3a..b251904 100644
 --- a/SDL/SDLMain.cpp
