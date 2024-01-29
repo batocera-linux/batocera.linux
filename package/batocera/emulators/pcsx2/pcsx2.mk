@@ -52,6 +52,7 @@ define PCSX2_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/buildroot-build/bin/pcsx2-qt \
         $(TARGET_DIR)/usr/pcsx2/bin/pcsx2-qt
 	cp -pr  $(@D)/bin/resources $(TARGET_DIR)/usr/pcsx2/bin/
+    cp -pr  $(@D)/buildroot-build/bin/translations $(TARGET_DIR)/usr/pcsx2/bin/
     # use our SDL config
     rm $(TARGET_DIR)/usr/pcsx2/bin/resources/game_controller_db.txt
 endef
