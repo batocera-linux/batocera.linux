@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Dec 18, 2023
-PCSX2_VERSION = v1.7.5309
+#Version: Commits on Jan 29, 2024
+PCSX2_VERSION = v1.7.5531
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -19,15 +19,8 @@ PCSX2_DEPENDENCIES += libsamplerate fmt wxwidgets libgtk3 qt6base qt6tools qt6sv
 
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
-PCSX2_CONF_OPTS += -DPCSX2_TARGET_ARCHITECTURES=x86_64
-PCSX2_CONF_OPTS += -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE
-PCSX2_CONF_OPTS += -DQT_BUILD=TRUE
 PCSX2_CONF_OPTS += -DENABLE_TESTS=OFF
 PCSX2_CONF_OPTS += -DUSE_SYSTEM_LIBS=AUTO
-PCSX2_CONF_OPTS += -DUSE_VTUNE=OFF
-PCSX2_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
-PCSX2_CONF_OPTS += -DLTO_PCSX2_CORE=ON
-PCSX2_CONF_OPTS += -DUSE_ACHIEVEMENTS=ON
 # The following flag is misleading and *needed* ON to avoid doing -march=native
 PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
 
@@ -79,9 +72,10 @@ endef
 
 # Download and copy PCSX2 patches.zip to BIOS folder
 define PCSX2_PATCHES
-        mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/ps2
-        $(HOST_DIR)/bin/curl -L https://github.com/PCSX2/pcsx2_patches/releases/download/latest/patches.zip -o \
-            $(TARGET_DIR)/usr/share/batocera/datainit/bios/ps2/patches.zip
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/ps2
+    $(HOST_DIR)/bin/curl -L \
+        https://github.com/PCSX2/pcsx2_patches/releases/download/latest/patches.zip -o \
+        $(TARGET_DIR)/usr/share/batocera/datainit/bios/ps2/patches.zip
 endef
 
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_TEXTURES
