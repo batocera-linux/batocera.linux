@@ -592,14 +592,14 @@ multivision:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 psp:
-  name:       PlayStation Portable
+  name: PlayStation Portable
   manufacturer: Sony
   release: 2004
   hardware: portable
-  extensions: [iso, cso, pbp]
+  extensions: [iso, cso, pbp, chd]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP] }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
   comment_en: |
