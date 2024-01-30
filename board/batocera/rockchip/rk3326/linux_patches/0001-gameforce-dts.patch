@@ -1,12 +1,12 @@
-From a5d9adb6c6f3dc697702b24a21aba8b073d406e7 Mon Sep 17 00:00:00 2001
+From fd4a5b785ebbc6307f718a0cc1f2a4543d9ee950 Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Sun, 28 Jan 2024 18:23:17 -0400
+Date: Tue, 30 Jan 2024 13:01:51 -0400
 Subject: [PATCH] rk3326: gameforce dts
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3326-gameforce.dts    | 736 ++++++++++++++++++
- 2 files changed, 737 insertions(+)
+ .../boot/dts/rockchip/rk3326-gameforce.dts    | 733 ++++++++++++++++++
+ 2 files changed, 734 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -23,18 +23,21 @@ index a18f33bf0..4320586e2 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-odroid-go3.dtb
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts b/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
 new file mode 100644
-index 000000000..584bfb689
+index 000000000..6be7ec31b
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
-@@ -0,0 +1,736 @@
+@@ -0,0 +1,733 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
-+ * Copyright (c) 2020 Hardkernel Co., Ltd
++ * Copyright (c) 2019 Hardkernel Co., Ltd
++ * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
++ * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
 + */
 +
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
 +#include <dt-bindings/pinctrl/rockchip.h>
 +#include "rk3326.dtsi"
 +
@@ -56,43 +59,36 @@ index 000000000..584bfb689
 +		pwms = <&pwm1 0 25000 0>;
 +	};
 +
-+	adc-keys {
-+		compatible = "volume-keys";
-+		keyup-threshold-microvolt = <1800000>;
++	analog_sticks: adc-joystick {
++		compatible = "adc-joystick";
++		io-channels = 	<&saradc 0>,
++			      		<&saradc 1>;
++		poll-interval = <60>;
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+		button-1 {
-+			press-threshold-microvolt = <15000>;
-+			label = "volume down";
-+			linux,code = <BTN_TRIGGER_HAPPY1>;
++		axis@0 {
++			reg = <0>;
++			abs-flat = <10>;
++			abs-fuzz = <10>;
++			abs-range = <172 772>;
++			linux,code = <ABS_X>;
 +		};
 +
-+		button-2 {
-+			press-threshold-microvolt = <300000>;
-+			label = "volume up";
-+			linux,code = <BTN_TRIGGER_HAPPY2>;
++		axis@1 {
++			reg = <1>;
++			abs-flat = <10>;
++			abs-fuzz = <10>;
++			abs-range = <278 815>;
++			linux,code = <ABS_Y>;
 +		};
 +	};
 +
-+    joypad: gameforce-gamepad {
-+		compatible = "gameforce-gamepad";
++	builtin_gamepad: gpio-keys {
++		compatible = "gpio-keys";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&btn_pins>;
-+
-+		io-channel-names = "joy_x", "joy_y", "volume-buttons";
-+		io-channels = <&saradc 0>, <&saradc 1>, <&saradc 2>;
-+
-+		button-adc-count = <2>;
-+		button-adc-scale = <2>;
-+		button-adc-deadzone = <20>;
-+
-+		button-adc-x-range = <1800>;
-+		button-adc-y-range = <1800>;
-+
-+		button-adc-fuzz = <32>;
-+		button-adc-flat = <32>;
-+
-+		poll-interval = <10>;
-+
++		
 +		button-sw1 {
 +			gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
 +			label = "DPAD-UP";
@@ -193,7 +189,6 @@ index 000000000..584bfb689
 +
 +    leds: gpio_leds {
 +        compatible = "gpio-leds";
-+
 +        pinctrl-names = "led_pins";
 +        pinctrl-0 = <&led_pins>;
 +
@@ -320,14 +315,12 @@ index 000000000..584bfb689
 +	assigned-clocks = <&cru PLL_NPLL>,
 +		<&cru ACLK_BUS_PRE>, <&cru ACLK_PERI_PRE>,
 +		<&cru HCLK_BUS_PRE>, <&cru HCLK_PERI_PRE>,
-+		<&cru PCLK_BUS_PRE>, <&cru SCLK_GPU>,
-+		<&cru PLL_CPLL>;
++		<&cru PCLK_BUS_PRE>, <&cru SCLK_GPU>;
 +
 +	assigned-clock-rates = <1188000000>,
 +		<200000000>, <200000000>,
 +		<150000000>, <150000000>,
-+		<100000000>, <200000000>,
-+		<17000000>;
++		<100000000>, <200000000>;
 +};
 +
 +&display_subsystem {
@@ -351,10 +344,10 @@ index 000000000..584bfb689
 +        compatible = "gameforce,st7703";
 +        reg = <0>;
 +        backlight = <&backlight>;
-+        iovcc-supply = <&vcc_lcd>;
 +        reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
 +        rotation = <0>;
-+        vdd-supply = <&vcc_lcd>;
++        iovcc-supply = <&vcc_lcd>;
++		vdd-supply = <&vcc_lcd>;
 +
 +        port {
 +            mipi_in_panel: endpoint {
@@ -593,6 +586,10 @@ index 000000000..584bfb689
 +};
 +
 +&pwm1 {
++	status = "okay";
++};
++
++&pwm3 {
 +	status = "okay";
 +};
 +
