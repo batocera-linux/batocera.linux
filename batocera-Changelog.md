@@ -164,6 +164,7 @@
 - ScummVM to 2.8
 - Redream to 1.5.0-1106
 - Raze to 1.9.1
+- Amiberry to 5.6.6
 ### System
 - Linux kernel to 6.7.2
 - Mesa to 23.3.4
