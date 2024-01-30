@@ -29,7 +29,7 @@ then
       modprobe amdgpu
     else
       # Logging
-      echo "No matching PCI ID found in islands.list." >> "$log"
+      echo "No matching PCI ID of $vid_pid found in islands.list." >> "$log"
       echo "Using Mesa driver defaults..." >> "$log"
     fi
   else
