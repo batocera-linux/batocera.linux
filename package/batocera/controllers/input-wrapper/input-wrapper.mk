@@ -14,8 +14,12 @@ endef
 
 define INPUT_WRAPPER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin      $(TARGET_DIR)/etc/init.d
+    mkdir -p $(TARGET_DIR)/usr/bin      $(TARGET_DIR)/etc/udev/rules.d
+
 	$(INSTALL) $(@D)/virtual_controller $(TARGET_DIR)/usr/bin/virtual_controller
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/input-wrapper/S60input-wrapper $(TARGET_DIR)/etc/init.d
+
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/input-wrapper/sysconfigs/S60input-wrapper         $(TARGET_DIR)/etc/init.d
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/input-wrapper/sysconfigs/99-input-wrapper.rules   $(TARGET_DIR)/etc/udev/rules.d
 endef
 
 $(eval $(generic-package))
