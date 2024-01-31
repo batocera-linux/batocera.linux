@@ -15,7 +15,7 @@ body:
     attributes:
       label: Batocera build version
       description: Batocera version used (be precise if using butterfly).
-      placeholder: Current stable is v38 2023/10/14 21:43
+      placeholder: Current x86_64 stable is 38 2023/10/14 21:43
     validations:
       required: true
   - type: input
@@ -30,10 +30,10 @@ body:
     id: gpu_type
     attributes:
       label: Your Graphic Processor Unit (GPU)
-      description: Is your GPU integrated or dedicated?
+      description: Is your GPU integrated or discrete?
       options:
         - Integrated (e.g. Intel HD 550; RX Vega 8)
-        - Dedicated (e.g. GTX 1050; Radeon R9 380)
+        - Discrete (e.g. GTX 1050; Radeon R9 380)
   - type: dropdown
     id: gpu_brand
     attributes:
@@ -43,6 +43,7 @@ body:
         - Intel
         - Nvidia
         - AMD
+        - Other
     validations:
       required: false
   - type: textarea
@@ -74,7 +75,7 @@ body:
     id: logs_and_data
     attributes:
       label: Logs and data
-      description: Provide all the relevant logs and information relevant to the issue. Include any information about the stable versions of Batocera the issue is present/not present on, whether the issue is present on a fresh install or not, etc.
+      description: Provide all the relevant logs and information relevant to the issue. Include any information about the stable versions of Batocera the issue is present/not present on, whether the issue is present on a fresh install or not, etc. Many useful logs are collected in a [Batocera support file](https://wiki.batocera.org/troubleshooting#create_a_batocera_support_file) which may be posted in your report.
       placeholder: Be very clear.
     validations:
       required: false
