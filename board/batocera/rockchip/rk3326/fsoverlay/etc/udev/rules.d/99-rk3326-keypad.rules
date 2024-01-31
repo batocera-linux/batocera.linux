@@ -1,2 +1,3 @@
+SUBSYSTEM=="input", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0"
 SUBSYSTEM=="input", ATTRS{name}=="adc-joystick", ENV{ID_INPUT_JOYSTICK}="0"
 SUBSYSTEM=="input", ATTRS{name}=="gpio-keys", ENV{ID_INPUT_JOYSTICK}="0"
