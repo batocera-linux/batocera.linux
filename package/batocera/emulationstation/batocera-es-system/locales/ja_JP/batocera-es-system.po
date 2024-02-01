@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2024/01/27)\n"
+"Project-Id-Version: batocera-es v39beta(2024/01/29)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-27 19:15+0900\n"
+"PO-Revision-Date: 2024-01-31 15:40+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -45,9 +45,8 @@ msgid ""
 "based on it's default max value. Caution, setting wattage too high could "
 "damage your device."
 msgstr ""
-"標準の最大値に基づいて、Ryzen Mobile シリーズ CPU に提供される電力 (ワット) "
-"の割合を調整します。ワット数の設定が高すぎるとデバイスが損傷する可能性がある"
-"ので注意してください"
+"Ryzen Mobile シリーズ CPU に提供される電力 (ワット) の割合を調整します。ワッ"
+"ト数の設定が高すぎるとデバイスが損傷する可能性があります"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1413,57 +1412,41 @@ msgid "Degree in which 3D graphics are scaled up. OpenGL renderer only."
 msgstr "3Dグラフィックスを拡大する度合い(OpenGL レンダラーのみ)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "1x native (256 x 192)"
 msgstr "1x 標準 (256 x 192)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "2x native (512 x 384)"
 msgstr "2x 標準 (512 x 384)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "3x native (768 x 576)"
 msgstr "3x 標準 (768 x 576)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "4x native (1024 x 768)"
 msgstr "4x 標準 (1024 x 768)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (320x240)"
 msgctxt "game_options"
 msgid "5x native (1280 x 960)"
 msgstr "5x 標準 (1280 x 960)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "6x native (1536 x 1152)"
 msgstr "6x 標準 (1536 x 1152)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (320x240)"
 msgctxt "game_options"
 msgid "7x native (1792 x 1344)"
 msgstr "7x 標準 (1792 x 1344)"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "1x native (640x528)"
 msgctxt "game_options"
 msgid "8x native (2048 x 1536)"
 msgstr "8x 標準 (2048 x 1536)"
@@ -1695,8 +1678,6 @@ msgid "Gray"
 msgstr "グレー"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "GBC - Brown"
 msgctxt "game_options"
 msgid "Brown"
 msgstr "茶色"
@@ -1752,8 +1733,6 @@ msgid "Blue"
 msgstr "青"
 
 #. TRANSLATION: libretro/melondsds
-#| msgctxt "game_options"
-#| msgid "GBC - Dark Blue"
 msgctxt "game_options"
 msgid "Dark Blue"
 msgstr "ダークブルー"
@@ -2093,7 +2072,7 @@ msgctxt "game_options"
 msgid "Wii NAND's language setting."
 msgstr "Wii NAND の言語設定"
 
-#. TRANSLATION: libretro/dolphin, cemu, play, yuzu, ryujinx, ...
+#. TRANSLATION: libretro/dolphin, cemu, dolphin/uzem, play, yuzu, ...
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "オランダ語"
@@ -2453,7 +2432,7 @@ msgctxt "game_options"
 msgid "32MB"
 msgstr "32MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2, xenia, xenia-canary
 msgctxt "game_options"
 msgid "48MB"
 msgstr "48MB"
@@ -2463,7 +2442,7 @@ msgctxt "game_options"
 msgid "64MB"
 msgstr "64MB"
 
-#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2
+#. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2, xenia, xenia-canary
 msgctxt "game_options"
 msgid "96MB"
 msgstr "96 MB"
@@ -6155,7 +6134,7 @@ msgctxt "game_options"
 msgid "30fps"
 msgstr "30fps"
 
-#. TRANSLATION: libretro/openlara
+#. TRANSLATION: libretro/openlara, xenia-canary
 msgctxt "game_options"
 msgid "60fps (Default)"
 msgstr "60fps（標準）"
@@ -6190,12 +6169,12 @@ msgctxt "game_options"
 msgid "119fps"
 msgstr "119fps"
 
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
+#. TRANSLATION: libretro/openlara, libretro/tyrquake, xenia-canary
 msgctxt "game_options"
 msgid "120fps"
 msgstr "120fps"
 
-#. TRANSLATION: libretro/openlara, libretro/tyrquake
+#. TRANSLATION: libretro/openlara, libretro/tyrquake, xenia-canary
 msgctxt "game_options"
 msgid "144fps"
 msgstr "144fps"
@@ -7405,7 +7384,7 @@ msgctxt "game_options"
 msgid "40fps"
 msgstr "40fps"
 
-#. TRANSLATION: libretro/tyrquake
+#. TRANSLATION: libretro/tyrquake, xenia-canary
 msgctxt "game_options"
 msgid "50fps"
 msgstr "50fps"
@@ -8615,6 +8594,21 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE BOOT ANIMATION"
 msgstr "ブートアニメを有効"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Change the Gamecube system language."
+msgstr "Gamecube のシステム言語を変更します"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "GAMECUBE LANGUAGE"
+msgstr "GAMECUBE 言語"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "English/Japanese"
+msgstr "英語/日本語"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -11521,7 +11515,7 @@ msgstr "レンダラー"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "OpenGL with Shaders"
-msgstr "OpenGL　と　シェーダー"
+msgstr "OpenGL と シェーダー"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -13357,6 +13351,246 @@ msgctxt "game_options"
 msgid "Norwegian"
 msgstr "ノルウェイ語"
 
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Refresh state of memory pages to enable gpu written data. (Use for 'Team "
+"Ninja' Games to fix missing character models)."
+msgstr ""
+"メモリ ページの状態を更新して、GPU に書き込まれたデータを有効にします (「チー"
+"ム忍者」の不足しているキャラクター モデルを修正します)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "CLEAR MEMORY PAGE STATE"
+msgstr "メモリページの状態クリア"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Render target emulation path to use on Direct3D 12. Try changing if you have "
+"render issues."
+msgstr ""
+"Direct3D 12 で使用するレンダー ターゲット のパス。レンダリングの問題がある場"
+"合は、変更してみてください"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "RENDER TARGET PATH"
+msgstr "レンダー ターゲットパス"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "Any"
+msgstr "任意"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "VGA (Default)"
+msgctxt "game_options"
+msgid "RTV (Default)"
+msgstr "RTV (標準)"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "ROC"
+msgctxt "game_options"
+msgid "ROV"
+msgstr "ROV"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"The sample count of every tile will be incremented on every EVENT_WRITE_ZPD "
+"by this number. Setting this to 0 means everything is reported as occluded."
+msgstr ""
+"すべてのタイルのサンプル数は、EVENT_WRITE_ZPD ごとにこの数値だけ増加します。"
+"これを 0 に設定すると、すべてが遮蔽されているとして報告されます"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "QUERY OCCLUSION"
+msgstr "クエリオクルージョン"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "1000 (Default)"
+msgstr "1000 (標準)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"D3D12, read render-to-texture results on the CPU. Needed in some games, but "
+"causes mid-frame synchronization, so it has a huge performance impact."
+msgstr ""
+"D3D12,CPU 上でレンダリングからテクスチャへの結果を読み取ります。一部のゲーム"
+"では\n必要ですが、中間フレーム同期が発生するため、動作に大きな影響を与えます"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "READBACK RESOLVE"
+msgstr "リードバックリゾルブ"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Maximum host texture memory usage (in megabytes) above which textures will "
+"be destroyed as soon as possible."
+msgstr ""
+"ホスト テクスチャ メモリの最大使用量 (メガバイト単位)これを超えると、テクス"
+"チャはできるだけ早く破棄されます"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "HARD TEXTURE CACHE MEMORY LIMIT"
+msgstr "ハード テクスチャ キャッシュ メモリ制限"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "256MB (Default)"
+msgctxt "game_options"
+msgid "768MB (Default)"
+msgstr "768MB (標準)"
+
+#. TRANSLATION: xenia, xenia, xenia-canary, xenia-canary
+msgctxt "game_options"
+msgid "1536MB"
+msgstr "1536MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "2304MB"
+msgstr "2304MB"
+
+#. TRANSLATION: xenia, xenia, xenia-canary, xenia-canary
+msgctxt "game_options"
+msgid "3072MB"
+msgstr "3072MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "3840MB"
+msgstr "3840MB"
+
+#. TRANSLATION: xenia, xenia, xenia-canary, xenia-canary
+#| msgctxt "game_options"
+#| msgid "96MB"
+msgctxt "game_options"
+msgid "4096MB"
+msgstr "4096MB"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "120MB"
+msgctxt "game_options"
+msgid "5120MB"
+msgstr "5120MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "6144MB"
+msgstr "6144MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Part of the host texture memory budget (in megabytes) that will be scaled by "
+"the current drawing resolution scale."
+msgstr ""
+"現在の図面解像度スケールによって拡大縮小されるホスト テクスチャ メモリ バ"
+"ジェットの一部(メガバイト単位)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "TEXTURE MEMORY SCALE SIZE"
+msgstr "テクスチャメモリスケールサイズ"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "256MB (Default)"
+msgctxt "game_options"
+msgid "24MB (Default)"
+msgstr "24MB (標準)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "72MB"
+msgstr "72MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Maximum host texture memory usage (in megabytes) above which old textures "
+"will be destroyed. Set below hard limit."
+msgstr ""
+"ホスト テクスチャ メモリの最大使用量 (メガバイト単位)\nこれを超えると古いテクス"
+"チャが破棄されます。実装容量以下に設定してください"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "SOFT TEXTURE CACHE MEMORY LIMIT"
+msgstr "ソフト テクスチャ キャッシュ メモリ制限"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "64MiB (Default)"
+msgctxt "game_options"
+msgid "384MB (Default)"
+msgstr "384MB (標準)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "768MB"
+msgstr "768MB"
+
+#. TRANSLATION: xenia, xenia-canary
+#| msgctxt "game_options"
+#| msgid "48MB"
+msgctxt "game_options"
+msgid "2048MB"
+msgstr "2048MB"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Seconds a texture should be unused to be considered old enough to be deleted "
+"if texture memory usage exceeds Soft Texture Cache limit."
+msgstr ""
+"テクスチャ メモリの使用量がソフト テクスチャ キャッシュの制限を超えた場合に、"
+"次のテクスチャが未使用の必要がある秒数"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "SOFT TEXTURE CACHE MEMORY TIMEOUT"
+msgstr "ソフト テクスチャ キャッシュ メモリ タイムアウト"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "15s"
+msgstr "15秒"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "30s (Default)"
+msgstr "30 秒 (標準)"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "45s"
+msgstr "45秒"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid ""
+"Enable cache mount. Can improve performance and compatibility in some games."
+msgstr ""
+"キャッシュマウントを有効にします。一部のゲームの動作と互換性が向上します"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "MOUNT CACHE"
+msgstr "キャッシュマウント"
+
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
 msgid ""
@@ -13369,7 +13603,39 @@ msgstr ""
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
 msgid "INTERNAL DISPLAY RESOLUTION"
-msgstr "内部ディスプレイの解像度"
+msgstr "内部ディスプレイ解像度"
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid ""
+"Fix screen tearing. With Some games you need to turn VSync on in the games "
+"options."
+msgstr ""
+"画面のティアリングを修正。一部のゲームでは、オプションで VSync を有効にする必"
+"要があります"
+
+#. TRANSLATION: xenia-canary
+msgctxt "game_options"
+msgid ""
+"Manually set VSYNC frames per second. Ideally this should match your monitor "
+"refresh rate."
+msgstr ""
+"垂直同期 フレーム/秒を手動で設定します。モニターのリフレッシュ レートと一致す"
+"る必要があります"
+
+#. TRANSLATION: xenia-canary
+#| msgctxt "game_options"
+#| msgid "VSYNC"
+msgctxt "game_options"
+msgid "VSYNC FPS"
+msgstr "VSYNC FPS"
+
+#. TRANSLATION: xenia-canary
+#| msgctxt "game_options"
+#| msgid "15fps"
+msgctxt "game_options"
+msgid "165fps"
+msgstr "165fps"
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
@@ -13377,8 +13643,8 @@ msgid ""
 "Enable or disable Xenia patches. These patches can fix graphics problems in "
 "some games."
 msgstr ""
-"Xenia パッチを有効/無効にします。これらのパッチは、一部のゲームのグラフィック"
-"スの問題を修正します"
+"Xeniaパッチを有効/無効にします。一部のゲームグラフィックスを修正します"
+
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
@@ -13519,6 +13785,39 @@ msgstr "VSYNC(垂直同期)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
+msgid ""
+"Turn on to configure settings from this GUI (Recommended). If disabled, you "
+"have to manually edit the Config File (Experts only - not recommended)."
+msgstr ""
+"この GUI から設定を行う場合はオンにします (推奨)無効にした場合は、構成ファイ"
+"ルを手動で編集する必要があります (エキスパートのみ - 推奨されません)"
+
+#. TRANSLATION: vpinball, vpinball
+msgctxt "game_options"
+msgid "EXPERT SETTINGS"
+msgstr "エキスパート設定"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "ENABLE EMULATIONSTATION CONFIGURATION"
+msgstr "EMULATIONSTATION構成を有効"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid ""
+"Per Table Folder requires all files to be in the associated rom table "
+"folder. If disabled, consult the Wiki for further details."
+msgstr ""
+"[テーブル フォルダーごと] では、すべてのファイルを関連する テーブル romフォル"
+"ダーに置く必要があります。無効の場合、詳細については Wiki を参照してください"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
+msgid "PER TABLE FOLDER"
+msgstr "テーブルフォルダーごと"
+
+#. TRANSLATION: vpinball
+msgctxt "game_options"
 msgid "Provides a ball trail to make the ball easier to follow."
 msgstr "ボールを追いやすくするためのボールの軌道を表示します"
 
@@ -13629,151 +13928,106 @@ msgstr "アルトカラー"
 msgctxt "game_options"
 msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables with a "
-"pinmame rom."
+"pinmame rom. By default, settings come from the VPinballX.ini configuration "
+"file."
 msgstr ""
-"pinmame rom を使用し、テーブルスコア表示用の追加 DMD (ドット マトリックス "
-"ディスプレイ) ウィンドウ"
+"pinmame rom を使用したテーブルスコアを表示するための追加の DMD (ドット マト"
+"リックス ディスプレイ) ウィンドウ。通常、設定は VPinballX.ini 構成ファイルか"
+"ら取得します。"
 
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+#. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PINMAME DMD"
-msgstr "PINMAME DMD"
+msgstr "PinMAME DMD"
 
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "Horizontal position (in percentage of the screen width)."
-msgstr "水平位置 (画面幅のパーセンテージ)"
+msgid "Top-Right Position, Small"
+msgstr "右上位置、小"
 
-#. TRANSLATION: vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "PINMAME DMD X"
-msgstr "PINMAME DMD X位置"
+msgid "Top-Right Position, Medium"
+msgstr "右上位置、中"
 
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "Vertical position (in percentage of the screen height)."
-msgstr "垂直位置 (画面の高さのパーセンテージ)"
+msgid "Top-Right Position, Large"
+msgstr "右上位置、大"
 
-#. TRANSLATION: vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "PINMAME DMD Y"
-msgstr "PINMAME DMD Y位置"
+msgid "Top-Left Position, Small"
+msgstr "左上位置、小"
 
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "Horizontal width (in percentage of the screen width)."
-msgstr "水平幅 (画面幅のパーセンテージ)"
+msgid "Top-Left Position, Medium"
+msgstr "左上位置、中"
 
-#. TRANSLATION: vpinball
+#. TRANSLATION: vpinball, vpinball, vpinball
 msgctxt "game_options"
-msgid "PINMAME DMD WIDTH"
-msgstr "PINMAME DMD 幅"
-
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball
-msgctxt "game_options"
-msgid "Vertical height (in percentage of the screen height)."
-msgstr "垂直方向の高さ (画面の高さのパーセンテージ)"
+msgid "Top-Left Position, Large"
+msgstr "左上位置、大"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
-msgid "PINMAME DMD HEIGHT"
-msgstr "PINMAME DMD 高さ"
+msgid "PinMAME DMD disabled"
+msgstr "PinMAME DMD 無効"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
 "Extra DMD (Dot Matrix Display) window to display the score for tables "
-"without a rom."
+"without a rom. By default, settings come from the VPinballX.ini "
+"configuration file."
 msgstr ""
-"ROM のないテーブルスコア表示用の追加 DMD (ドット マトリックス ディスプレイ) "
-"ウィンドウ"
+"ROM のないテーブルのスコアを表示するための追加の DMD (ドット マトリックス "
+"ディスプレイ) ウィンドウ。通常、設定は VPinballX.ini 構成ファイルから取得しま"
+"す。"
 
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
+#. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FLEX DMD"
 msgstr "FLEX DMD"
 
 #. TRANSLATION: vpinball
+#| msgctxt "game_options"
+#| msgid "Disabled"
 msgctxt "game_options"
-msgid "FLEX DMD X"
-msgstr "FLEX DMD X位置"
+msgid "FlexDMD disabled"
+msgstr "FlexDMD 無効"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
-msgid "FLEX DMD Y"
-msgstr "FLEX DMD Y位置"
+msgid ""
+"Upright glass panel displaying some illuminated artwork. By default, "
+"settings come from the VPinballX.ini configuration file."
+msgstr ""
+"直立ガラス パネルをライトアップしたアートワークを表示します。通常、設定は "
+"VPinballX.ini 構成ファイルから取得します。"
 
 #. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "FLEX DMD WIDTH"
-msgstr "FLEX DMD 幅"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "FLEX DMD HEIGHT"
-msgstr "FLEX DMD 高さ"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "Upright glass panel displaying some illuminated artwork."
-msgstr "ライトアップされたアートワークを表示する直立したガラス パネル"
-
-#. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "BACKGLASS (B2S)"
 msgstr "BACKGLASS (B2S)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
-msgid "BACKGLASS X"
-msgstr "BACKGLASS X位置"
+msgid "Backglass disabled"
+msgstr "BACKGLASS 無効"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
-msgid "BACKGLASS Y"
-msgstr "BACKGLASS Y位置"
+msgid ""
+"When the Backglass is activated, display the small additional part with the "
+"scores."
+msgstr "BACKGLASS が有効の場合、小さな追加部分をスコアとともに表示します"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
-msgid "BACKGLASS WIDTH"
-msgstr "BACKGLASS 幅"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "BACKGLASS HEIGHT"
-msgstr "BACKGLASS 高さ"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
-msgstr ""
-"バックガラスに組み込みの追加の DMD (ドット マトリックス ディスプレイ) を非表"
-"示にします"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "BACKGLASS DMD HIDE"
-msgstr "BACKGLASS DMD 非表示"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "B2S DMD X"
-msgstr "B2S DMD X位置"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "B2S DMD Y"
-msgstr "B2S DMD Y位置"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "B2S DMD WIDTH"
-msgstr "B2S DMD 幅"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "B2S DMD HEIGHT"
-msgstr "B2S DMD 高さ"
+msgid "DISPLAY BACKGLASS DMD"
+msgstr "BACKGLASS DMD 表示"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13784,7 +14038,7 @@ msgstr ""
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "MUSIC VOLUME"
-msgstr "音楽音量"
+msgstr "BGM音量"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13794,7 +14048,7 @@ msgstr "テーブルの機械音を調整します"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SOUND VOLUME"
-msgstr "テーブル音量"
+msgstr "作動音量"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13805,25 +14059,6 @@ msgstr "テーブルの代替音を使用します(追加ファイルが必要)"
 msgctxt "game_options"
 msgid "ALTERNATIVE SOUND"
 msgstr "代替音"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid ""
-"Per Table Folder requires all files to be in the associated rom table "
-"folder. If disabled, consult the Wiki for further details."
-msgstr ""
-"[テーブル フォルダーごと] では、すべてのファイルを関連する テーブル romフォル"
-"ダーに置く必要があります。無効の場合、詳細については Wiki を参照してください"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "FOLDERS ORGANISATION"
-msgstr "フォルダー整理"
-
-#. TRANSLATION: vpinball
-msgctxt "game_options"
-msgid "PER TABLE FOLDER"
-msgstr "テーブルフォルダーごと"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14053,7 +14288,7 @@ msgstr "標準 OpenGL (標準)"
 #. TRANSLATION: iortcw
 msgctxt "game_options"
 msgid "Enhanced OpenGL"
-msgstr "Enhanced OpenGL"
+msgstr "強化された OpenGL"
 
 #. TRANSLATION: iortcw
 msgctxt "game_options"
@@ -14894,6 +15129,101 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
+
+#~ msgctxt "game_options"
+#~ msgid "Horizontal position (in percentage of the screen width)."
+#~ msgstr "水平位置 (画面幅のパーセンテージ)"
+
+#~ msgctxt "game_options"
+#~ msgid "Vertical position (in percentage of the screen height)."
+#~ msgstr "垂直位置 (画面の高さのパーセンテージ)"
+
+#~ msgctxt "game_options"
+#~ msgid "PINMAME DMD Y"
+#~ msgstr "PINMAME DMD Y位置"
+
+#~ msgctxt "game_options"
+#~ msgid "Horizontal width (in percentage of the screen width)."
+#~ msgstr "水平幅 (画面幅のパーセンテージ)"
+
+#~ msgctxt "game_options"
+#~ msgid "PINMAME DMD WIDTH"
+#~ msgstr "PINMAME DMD 幅"
+
+#~ msgctxt "game_options"
+#~ msgid "Vertical height (in percentage of the screen height)."
+#~ msgstr "垂直方向の高さ (画面の高さのパーセンテージ)"
+
+#~ msgctxt "game_options"
+#~ msgid "PINMAME DMD HEIGHT"
+#~ msgstr "PINMAME DMD 高さ"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Extra DMD (Dot Matrix Display) window to display the score for tables "
+#~ "without a rom."
+#~ msgstr ""
+#~ "ROM のないテーブルスコア表示用の追加 DMD (ドット マトリックス ディスプレ"
+#~ "イ) ウィンドウ"
+
+#~ msgctxt "game_options"
+#~ msgid "FLEX DMD X"
+#~ msgstr "FLEX DMD X位置"
+
+#~ msgctxt "game_options"
+#~ msgid "FLEX DMD Y"
+#~ msgstr "FLEX DMD Y位置"
+
+#~ msgctxt "game_options"
+#~ msgid "FLEX DMD WIDTH"
+#~ msgstr "FLEX DMD 幅"
+
+#~ msgctxt "game_options"
+#~ msgid "FLEX DMD HEIGHT"
+#~ msgstr "FLEX DMD 高さ"
+
+#~ msgctxt "game_options"
+#~ msgid "BACKGLASS X"
+#~ msgstr "BACKGLASS X位置"
+
+#~ msgctxt "game_options"
+#~ msgid "BACKGLASS Y"
+#~ msgstr "BACKGLASS Y位置"
+
+#~ msgctxt "game_options"
+#~ msgid "BACKGLASS WIDTH"
+#~ msgstr "BACKGLASS 幅"
+
+#~ msgctxt "game_options"
+#~ msgid "BACKGLASS HEIGHT"
+#~ msgstr "BACKGLASS 高さ"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Hides the Extra DMD (Dot Matrix Display) integrated in the Backglass."
+#~ msgstr ""
+#~ "バックガラスに組み込みの追加の DMD (ドット マトリックス ディスプレイ) を非"
+#~ "表示にします"
+
+#~ msgctxt "game_options"
+#~ msgid "B2S DMD X"
+#~ msgstr "B2S DMD X位置"
+
+#~ msgctxt "game_options"
+#~ msgid "B2S DMD Y"
+#~ msgstr "B2S DMD Y位置"
+
+#~ msgctxt "game_options"
+#~ msgid "B2S DMD WIDTH"
+#~ msgstr "B2S DMD 幅"
+
+#~ msgctxt "game_options"
+#~ msgid "B2S DMD HEIGHT"
+#~ msgstr "B2S DMD 高さ"
+
+#~ msgctxt "game_options"
+#~ msgid "FOLDERS ORGANISATION"
+#~ msgstr "フォルダー整理"
 
 #~ msgctxt "game_options"
 #~ msgid "INSTALL MEDIA FOUNDATION"
