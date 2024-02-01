@@ -536,6 +536,7 @@ def generateControllerConfig_wheel(f, pad, nplayer):
     eslog.debug("configuring wheel for pad {}".format(pad.realName))
     
     f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
+    f.write(f"Rumble/Motor/Range = -100.\n")
     f.write(f"Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
 
     for x in pad.inputs:
