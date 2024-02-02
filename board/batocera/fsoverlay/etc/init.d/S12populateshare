@@ -102,13 +102,24 @@ for FILE in music bios extractions kodi library saves screenshots splash \
             roms/iortcw/main \
             bios/ps2
 do
-    # update if newer also
-    if test -e "${IN}/${FILE}" && (test ! -e "${OUT}/${FILE}" || test "${IN}/${FILE}" -nt "${OUT}/${FILE}"); then
-        mkdir -p "$(dirname "${OUT}/${FILE}")"
-        echo "Updating $OUT/$FILE"
-        cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
+    # Skip updating specific files
+    if [[ "$FILE" == "system/configs/emulationstation/es_settings.cfg" || "$FILE" == "system/configs/emulationstation/es_input.cfg" || "$FILE" == "system/batocera.conf" ]]; then
+        # Check if the file doesn't exist, then create it
+        if [ ! -e "${OUT}/${FILE}" ]; then
+            mkdir -p "$(dirname "${OUT}/${FILE}")"
+            echo "Creating $OUT/$FILE"
+            cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
+        fi
+    else
+        # Update if newer
+        if test -e "${IN}/${FILE}" && (test ! -e "${OUT}/${FILE}" || test "${IN}/${FILE}" -nt "${OUT}/${FILE}"); then
+            mkdir -p "$(dirname "${OUT}/${FILE}")"
+            echo "Updating $OUT/$FILE"
+            cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
+        fi
     fi
 done
+
 
 ### specific directories
 # decorations - copy only the readme file
