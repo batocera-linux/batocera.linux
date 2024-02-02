@@ -128,7 +128,7 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, wheels
         wiiMapping['joystick2left'] = 'Tilt/Left'
 
     # n
-    if (".ni." in rom or ".ns." in rom or ".nt." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in'):
+    if (".ni." in rom or ".ns." in rom or ".nt." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in') or (system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True):
         extraOptions['Extension']   = 'Nunchuk'
         wiiMapping['l2'] = 'Nunchuk/Buttons/C'
         wiiMapping['r2'] = 'Nunchuk/Buttons/Z'
@@ -506,12 +506,12 @@ def generateControllerConfig_any(system, playersControllers, wheels, filename, a
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad, system):
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
+                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
         else:
             if pad.dev in wheels:
                 generateControllerConfig_wheel(f, pad, nplayer)
             else:
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer)
+                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
 
         nplayer += 1
     f.write
@@ -551,7 +551,7 @@ def generateControllerConfig_wheel(f, pad, nplayer):
                 write_key(f, wheelMapping["joystick1right"], input.type, input.id, input.value, pad.nbaxes, True, None, None)
 
 
-def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer):
+def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad):
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
     
@@ -595,19 +595,19 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None, None)
         # DualShock Motion control
         if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
-            f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
-            f.write("IMUGyroscope/Pitch Down = `Gyro X+`\n")
-            f.write("IMUGyroscope/Roll Left = `Gyro Z-`\n")
-            f.write("IMUGyroscope/Roll Right = `Gyro Z+`\n")
-            f.write("IMUGyroscope/Yaw Left = `Gyro Y-`\n")
-            f.write("IMUGyroscope/Yaw Right = `Gyro Y+`\n")
+            f.write("IMUGyroscope/Pitch Up = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro X-`\n")
+            f.write("IMUGyroscope/Pitch Down = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro X+`\n")
+            f.write("IMUGyroscope/Roll Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Z-`\n")
+            f.write("IMUGyroscope/Roll Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Z+`\n")
+            f.write("IMUGyroscope/Yaw Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Y-`\n")
+            f.write("IMUGyroscope/Yaw Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Y+`\n")
             f.write("IMUIR/Recenter = `Button 10`\n")
-            f.write("IMUAccelerometer/Left = `Accel X-`\n")
-            f.write("IMUAccelerometer/Right = `Accel X+`\n")
-            f.write("IMUAccelerometer/Forward = `Accel Z-`\n")
-            f.write("IMUAccelerometer/Backward = `Accel Z+`\n")
-            f.write("IMUAccelerometer/Up = `Accel Y-`\n")
-            f.write("IMUAccelerometer/Down = `Accel Y+`\n")
+            f.write("IMUAccelerometer/Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel X-`\n")
+            f.write("IMUAccelerometer/Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel X+`\n")
+            f.write("IMUAccelerometer/Forward = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Z-`\n")
+            f.write("IMUAccelerometer/Backward = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Z+`\n")
+            f.write("IMUAccelerometer/Up = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Y-`\n")
+            f.write("IMUAccelerometer/Down = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Y+`\n")
         # Mouse to emulate Wiimote
         if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
             f.write("IR/Up = `Cursor Y-`\n")

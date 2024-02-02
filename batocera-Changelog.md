@@ -66,6 +66,7 @@
 - AMD Prime defaulting to provider 1 when it could be another provider.
 - Sinden Lightgun border not showing on 4K resolution in model2 gun games
 - ES script logs clobbering game logs #1666
+- Dolphin does not use Motion Control on DualSense controllers when selected in ES.
 ### Changed
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
