@@ -525,6 +525,10 @@ def generateControllerConfig_wheel(f, pad, nplayer):
         "down":           "D-Pad/Down",
         "left":           "D-Pad/Left",
         "right":          "D-Pad/Right",
+        "a":              "Buttons/A",
+        "b":              "Buttons/B",
+        "x":              "Buttons/X",
+        "y":              "Buttons/Y",
         "pageup":         "Triggers/L-Analog",
         "pagedown":       "Triggers/R-Analog",
         "r2":             "Main Stick/Up",
@@ -536,7 +540,7 @@ def generateControllerConfig_wheel(f, pad, nplayer):
     eslog.debug("configuring wheel for pad {}".format(pad.realName))
     
     f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
-    f.write(f"Rumble/Motor/Range = -100.\n")
+    f.write(f"Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
     f.write(f"Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
 
     for x in pad.inputs:
