@@ -167,6 +167,8 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
 
     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
 
+    retroarchConfig['sort_savefiles_enable'] = 'false'     # ensure we don't save system.name + core
+    retroarchConfig['sort_savestates_enable'] = 'false'    # ensure we don't save system.name + core
     retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
     retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
 
