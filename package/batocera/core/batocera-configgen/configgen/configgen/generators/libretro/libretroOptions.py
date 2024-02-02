@@ -1526,7 +1526,13 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mgba_skip_bios', '"ON"')
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
-
+        
+        # Rumble
+        if system.isOptSet('rumble_gain') and system.config['rumble_gain'] != "1":
+            coreSettings.save('mgba_force_gbp', '"ON"')
+        else:
+            coreSettings.save('mgba_force_gbp', '"OFF"')
+        
         if (system.name != 'gba'):
             # GB / GBC: Use Super Game Boy borders
             if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
