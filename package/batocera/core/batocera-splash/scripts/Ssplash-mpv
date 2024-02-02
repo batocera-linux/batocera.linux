@@ -150,6 +150,10 @@ do_videostart ()
         echo "No preferred display chosen, letting MPV use default" > $log
     fi
 
+    # set the sound again due to drm init causing some cards to default to 40% volume
+    VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
+    batocera-audio setSystemVolume "${VOLUME}"
+
     if [ -n "$drm_connector" ] && [ -n "$card_path" ]; then
         start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --drm-mode=$drm_mode --drm-connector=$drm_connector --drm-device=$card_path --log-file=/userdata/system/logs/mpv.log $mpv_audio $mpv_video "$video"
     else
