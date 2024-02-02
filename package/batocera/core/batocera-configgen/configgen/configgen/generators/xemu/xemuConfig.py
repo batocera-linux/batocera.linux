@@ -93,8 +93,11 @@ def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
     window_res = format(gameResolution["width"]) + "x" + format(gameResolution["height"])
     iniConfig.set("display.window", "startup_size", '"' + window_res + '"')
 
-    # turn vsync on, doesn't improve framerate when off
-    iniConfig.set("display.window", "vsync", "true")
+    # Vsync
+    if system.isOptSet("xemu_vsync"):
+        iniConfig.set("display.window", "vsync", system.config["xemu_vsync"])
+    else:      
+        iniConfig.set("display.window", "vsync", "true")
 
     # don't show the menubar
     iniConfig.set("display.ui", "show_menubar", "false")
