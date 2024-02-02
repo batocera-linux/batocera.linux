@@ -115,7 +115,7 @@ if [ "$MODE" = "production" ]; then
     echo "Using NVIDIA Production driver - ${BATOCERA_NVIDIA_DRIVER_VERSION}" >> $log
     echo
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
-    echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
+    echo "options nvidia-drm modeset=1 fbdev=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
     # [symbolic link 64-bit library files]
     mkdir -p /var/run/nvidia/lib
     # libGLX_nvidia.so

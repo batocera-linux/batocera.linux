@@ -184,7 +184,7 @@
 - Proton & Lutris replaced by the Glorious Eggroll custom WINE runner
 - Wine Tricks to 20240105
 - FAudio to 23.10
-- Nvidia production driver to 545.29.06
+- Nvidia production driver to 550.40.07 (beta)
 - Nvidia legacy driver to 470.223.02
 - SDL2 to 2.28.5
 - Sound Open Firmware to 2023.12
