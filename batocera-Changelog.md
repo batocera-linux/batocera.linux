@@ -78,7 +78,7 @@
 - Sinden Lightgun border not showing on 4K resolution in model2 gun games
 - ES script logs clobbering game logs #1666
 - Dolphin does not use Motion Control on DualSense controllers when selected in ES.
-- Supermodel guns games when playing with not enough controllers
+- Supermodel gun games failing when number of guns were more than the number of controllers
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
