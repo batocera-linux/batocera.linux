@@ -1173,7 +1173,10 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         if system.isOptSet('mupen64plus-deadzone'):
             coreSettings.save('mupen64plus-astick-deadzone', '"' + system.config['mupen64plus-deadzone'] + '"')
         else:
-            coreSettings.save('mupen64plus-astick-deadzone', '"15"')
+            if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+                coreSettings.save('mupen64plus-astick-deadzone', '"0"')
+            else:
+                coreSettings.save('mupen64plus-astick-deadzone', '"15"')
             
         # Joystick sensitivity
         if system.isOptSet('mupen64plus-sensitivity'):
@@ -1275,7 +1278,10 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         if system.isOptSet('parallel-n64-deadzone'):
             coreSettings.save('parallel-n64-astick-deadzone', '"' + system.config['parallel-n64-deadzone'] + '"')
         else:
-            coreSettings.save('parallel-n64-astick-deadzone', '"15"')
+            if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+                coreSettings.save('parallel-n64-astick-deadzone', '"0"')
+            else:
+                coreSettings.save('parallel-n64-astick-deadzone', '"15"')
             
         # Joystick sensitivity
         if system.isOptSet('parallel-n64-sensitivity'):
