@@ -103,7 +103,7 @@ for FILE in music bios extractions kodi library saves screenshots splash \
             bios/ps2
 do
     # Skip updating specific files
-    if [[ "$FILE" == "system/configs/emulationstation/es_settings.cfg" || "$FILE" == "system/configs/emulationstation/es_input.cfg" || "$FILE" == "system/batocera.conf" ]]; then
+    if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/configs/emulationstation/es_input.cfg" ] || [ "$FILE" = "system/batocera.conf" ]; then
         # Check if the file doesn't exist, then create it
         if [ ! -e "${OUT}/${FILE}" ]; then
             mkdir -p "$(dirname "${OUT}/${FILE}")"
@@ -112,14 +112,13 @@ do
         fi
     else
         # Update if newer
-        if test -e "${IN}/${FILE}" && (test ! -e "${OUT}/${FILE}" || test "${IN}/${FILE}" -nt "${OUT}/${FILE}"); then
+        if [ -e "${IN}/${FILE}" ] && { [ ! -e "${OUT}/${FILE}" ] || [ "${IN}/${FILE}" -nt "${OUT}/${FILE}" ]; }; then
             mkdir -p "$(dirname "${OUT}/${FILE}")"
             echo "Updating $OUT/$FILE"
             cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
         fi
     fi
 done
-
 
 ### specific directories
 # decorations - copy only the readme file
