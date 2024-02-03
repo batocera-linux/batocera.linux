@@ -11015,6 +11015,12 @@ xemu:
                 "8x (5120x3840)":   8
                 "9x (5760x4320)":   9
                 "10x (6400x4800)":  10
+        xemu_vsync:
+            prompt:      VSYNC
+            description: Fix screen tearing.
+            choices:
+                "Off":          "false"
+                "On (Default)": "true"       
         xemu_bootanim:
             prompt:      SHOW BIOS BOOTLOGO
             description: Enhancement.

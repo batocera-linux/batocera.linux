@@ -8237,7 +8237,7 @@ msgctxt "game_options"
 msgid "Batocera sets first audio device (Default)"
 msgstr "Batocera で最初の音声デバイスに設定 (標準)"
 
-#. TRANSLATION: cemu, openbor/openbor7530, sonic2013, play, yuzu, ...
+#. TRANSLATION: cemu, openbor/openbor7530, xemu, sonic2013, play, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -13385,15 +13385,11 @@ msgid "Any"
 msgstr "任意"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "VGA (Default)"
 msgctxt "game_options"
 msgid "RTV (Default)"
 msgstr "RTV (標準)"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "ROC"
 msgctxt "game_options"
 msgid "ROV"
 msgstr "ROV"
@@ -13424,7 +13420,8 @@ msgid ""
 "causes mid-frame synchronization, so it has a huge performance impact."
 msgstr ""
 "D3D12,CPU 上でレンダリングからテクスチャへの結果を読み取ります。一部のゲーム"
-"では\n必要ですが、中間フレーム同期が発生するため、動作に大きな影響を与えます"
+"では\n"
+"必要ですが、中間フレーム同期が発生するため、動作に大きな影響を与えます"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13446,8 +13443,6 @@ msgid "HARD TEXTURE CACHE MEMORY LIMIT"
 msgstr "ハード テクスチャ キャッシュ メモリ制限"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "256MB (Default)"
 msgctxt "game_options"
 msgid "768MB (Default)"
 msgstr "768MB (標準)"
@@ -13473,15 +13468,11 @@ msgid "3840MB"
 msgstr "3840MB"
 
 #. TRANSLATION: xenia, xenia, xenia-canary, xenia-canary
-#| msgctxt "game_options"
-#| msgid "96MB"
 msgctxt "game_options"
 msgid "4096MB"
 msgstr "4096MB"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "120MB"
 msgctxt "game_options"
 msgid "5120MB"
 msgstr "5120MB"
@@ -13506,8 +13497,6 @@ msgid "TEXTURE MEMORY SCALE SIZE"
 msgstr "テクスチャメモリスケールサイズ"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "256MB (Default)"
 msgctxt "game_options"
 msgid "24MB (Default)"
 msgstr "24MB (標準)"
@@ -13523,8 +13512,8 @@ msgid ""
 "Maximum host texture memory usage (in megabytes) above which old textures "
 "will be destroyed. Set below hard limit."
 msgstr ""
-"ホスト テクスチャ メモリの最大使用量 (メガバイト単位)\nこれを超えると古いテクス"
-"チャが破棄されます。実装容量以下に設定してください"
+"ホスト テクスチャ メモリの最大使用量 (メガバイト単位)\n"
+"これを超えると古いテクスチャが破棄されます。実装容量以下に設定してください"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13532,8 +13521,6 @@ msgid "SOFT TEXTURE CACHE MEMORY LIMIT"
 msgstr "ソフト テクスチャ キャッシュ メモリ制限"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "64MiB (Default)"
 msgctxt "game_options"
 msgid "384MB (Default)"
 msgstr "384MB (標準)"
@@ -13544,8 +13531,6 @@ msgid "768MB"
 msgstr "768MB"
 
 #. TRANSLATION: xenia, xenia-canary
-#| msgctxt "game_options"
-#| msgid "48MB"
 msgctxt "game_options"
 msgid "2048MB"
 msgstr "2048MB"
@@ -13624,15 +13609,11 @@ msgstr ""
 "る必要があります"
 
 #. TRANSLATION: xenia-canary
-#| msgctxt "game_options"
-#| msgid "VSYNC"
 msgctxt "game_options"
 msgid "VSYNC FPS"
 msgstr "VSYNC FPS"
 
 #. TRANSLATION: xenia-canary
-#| msgctxt "game_options"
-#| msgid "15fps"
 msgctxt "game_options"
 msgid "165fps"
 msgstr "165fps"
@@ -13642,9 +13623,7 @@ msgctxt "game_options"
 msgid ""
 "Enable or disable Xenia patches. These patches can fix graphics problems in "
 "some games."
-msgstr ""
-"Xeniaパッチを有効/無効にします。一部のゲームグラフィックスを修正します"
-
+msgstr "Xeniaパッチを有効/無効にします。一部のゲームグラフィックスを修正します"
 
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
@@ -13992,8 +13971,6 @@ msgid "FLEX DMD"
 msgstr "FLEX DMD"
 
 #. TRANSLATION: vpinball
-#| msgctxt "game_options"
-#| msgid "Disabled"
 msgctxt "game_options"
 msgid "FlexDMD disabled"
 msgstr "FlexDMD 無効"

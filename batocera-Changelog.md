@@ -13,6 +13,13 @@
 - Initial support for the Steam Deck OLED
 - Support for Thunderbolt 3 / USB4 eGPU chassis
 ### Added
+- XEMU ES seting for Vsync.
+- ES setting to automatically detect and enable 16:9 aspect ratio for libretro cores if game suports it.
+- N64 ES setting to automatically detect and enable rumble pak if game supports it.
+- Additional sound ES settings for sega libretro cores.
+- Automatically remap inputs by guid/device name for n64 style controllers and 6 face button controllers.
+- Added auto-mapping ES setting for 6 face button style controllers for genesisplusgx and picodrive libretro cores. 
+- Additional frame limit options to RPCS3. 
 - New Powermode ES setting. Adjusts cpu governor/system power usage while in-game.
 - New TDP setting to adjust TDP wattage values of supported Ryzen Mobile Series CPU's per system or globally.
 - Additional ES controller settings for Dolphin.
@@ -51,7 +58,11 @@
 - Support for third-party Wiimotes
   - Enable the wiimote3rdparty service in SYSTEM -> SERVICES
 - Hotkey+south padtokey for pcsx2 OSD menu
+- Language: Vietnamese
 ### Fixed
+- Yabasanshiro input mapping fix. 
+- RPCS3 Async texture ES setting was not being applied.
+- Dolphin bug preventing wii pad profiles working. 
 - Dolphin bug that prevented full range of analog trigger axis being used.
 - Flycast per pixel sorting option if renderer not explicitly set
 - Bug preventing scraping of msx-family systems
@@ -66,7 +77,10 @@
 - AMD Prime defaulting to provider 1 when it could be another provider.
 - Sinden Lightgun border not showing on 4K resolution in model2 gun games
 - ES script logs clobbering game logs #1666
+- Dolphin does not use Motion Control on DualSense controllers when selected in ES.
 ### Changed
+- RPCS3 SPU cache enabled by default.
+- Changes made to Mupen64plus joystick sensitivity and deadzone.
 - L|R activate in-game "Z" input in Dolphin for GC controllers/GC games if controller has L+R inputs mapped.
 - PS2 BIOS files should be put in /userdata/bios/ps2
 - Migrated C-Dogs SDL (cdogs) assets to content downloader
