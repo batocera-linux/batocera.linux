@@ -22,8 +22,10 @@ wheelMapping = {
 # partial mapping between real pads buttons and batocera pads
 emulatorMapping = {
     "dreamcast": {
-        "lt": "l2",
-        "rt": "r2"
+        "lt":   "l2",
+        "rt":   "r2",
+        "up":   "pageup",
+        "down": "pagedown"
     },
     "gamecube": {
         "lt": "l2",
@@ -32,6 +34,17 @@ emulatorMapping = {
         "b":  "b",
         "x":  "x",
         "y":  "y"
+    },
+    "saturn": {
+        "l":      "l2",
+        "r":      "r2",
+        "a":      "b",
+        "b":      "a",
+        "c":      "pagedown",
+        "x":      "y",
+        "y":      "x",
+        "z":      "pageup",
+        "start":  "start"
     },
     "n64": {
         "l":     "pageup",
