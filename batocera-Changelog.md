@@ -36,7 +36,7 @@
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
 - New supported steering wheels:
   - Logitech : Driving Force, G29, G920, G923 (PS4), Momo
-  - Thrustmaster T300RS
+  - Thrustmaster : T300RS, Ferrari 458 Spider
   - HORI Racing Wheel APEX
   - MOZA Racing R9
 - More steering wheel support :
@@ -78,6 +78,7 @@
 - Sinden Lightgun border not showing on 4K resolution in model2 gun games
 - ES script logs clobbering game logs #1666
 - Dolphin does not use Motion Control on DualSense controllers when selected in ES.
+- Supermodel guns games when playing with not enough controllers
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
