@@ -48,7 +48,11 @@ class UnixSettings():
         fp.close()
 
     def save(self, name, value):
-        eslog.debug(f"Writing {name} = {value} to {self.settingsFile}")
+        # at least for cheevos_password
+        if "password" in name.lower():
+            eslog.debug(f"Writing {name} = ******** to {self.settingsFile}")
+        else:
+            eslog.debug(f"Writing {name} = {value} to {self.settingsFile}")
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
 
