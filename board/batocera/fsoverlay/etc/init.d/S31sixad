@@ -3,7 +3,8 @@
 case "$1" in
     start)
         enabled="$(/usr/bin/batocera-settings-get controllers.ps3.enabled)"
-        if [ "$enabled" = "1" ]; then
+        bt_enabled="$(/usr/bin/batocera-settings-get controllers.bluetooth.enabled)"
+        if [ "$enabled" = "1" ] && [ "$bt_enabled" = "1" ]; then
             settings_version="$(/usr/bin/batocera-settings-get controllers.ps3.driver)"
             [ "$settings_version" = "bluez" ] && exit 0
             if [ "$settings_version" = "" ]; then
