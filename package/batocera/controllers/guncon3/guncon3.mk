@@ -15,6 +15,10 @@ define GUNCON3_INSTALL_TARGET_CMDS
         $(TARGET_DIR)/etc/udev/rules.d/99-guncon3.rules
     $(INSTALL) -m 0755 -D $(GUNCON3_SOURCE_PATH)/guncon3-add \
         $(TARGET_DIR)/usr/bin/guncon3-add
+    $(INSTALL) -m 0755 -D $(GUNCON3_SOURCE_PATH)/batocera-guncon3-calibrator \
+        $(TARGET_DIR)/usr/bin/batocera-guncon3-calibrator
+    $(INSTALL) -m 0755 -D $(GUNCON3_SOURCE_PATH)/batocera-guncon3-calibrator-daemon \
+        $(TARGET_DIR)/usr/bin/batocera-guncon3-calibrator-daemon
 endef
 
 $(eval $(kernel-module))
