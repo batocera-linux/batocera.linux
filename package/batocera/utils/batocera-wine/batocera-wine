@@ -14,6 +14,10 @@ get_setting() {
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
 WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo ge-custom)"
+# to help with the transition from previous runners.
+if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
+    WINE_VERSION="ge-custom"
+fi
 
 # Wine Folder
 wine_folder() {
