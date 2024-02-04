@@ -67,6 +67,7 @@
 - Hotkey+south padtokey for pcsx2 OSD menu
 - Language: Vietnamese
 - Support CONFIGS@ mount point in S11share
+- Calibration for GunCon3 (press and hold B2 for 3 seconds)
 ### Fixed
 - Yabasanshiro input mapping fix.
 - RPCS3 Async texture ES setting was not being applied.
@@ -92,6 +93,7 @@
 - Hostname was not sent to DHCP server and hostnames from DHCP were not	honored #7502
 - Fixed retroachivements for pcsx2 and duckstation
 - Restore missing /sbin/hwclock binary
+- Daphne symlink failing
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
