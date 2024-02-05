@@ -346,6 +346,8 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
         # 8bitdo m30 modkit
         "03000000c82d00000150000011010000",
         "05000000c82d00000151000000010000",
+        # Retrobit bt saturn
+        "0500000049190000020400001b010000",        
         ]
         
         valid_megadrive_controller_names = [
@@ -353,6 +355,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
         "8Bitdo  8BitDo M30 gamepad",
         "8BitDo M30 Modkit",
         "8Bitdo  8BitDo M30 Modkit",
+        "Retro Bit Bluetooth Controller",
         ]
         
         def update_megadrive_controller_config(controller_number):
