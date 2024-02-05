@@ -462,7 +462,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "znver2"																		if BR2_PACKAGE_BATOCERA_TARGET_ZNVER2
     default "qualcomm/sd845/odin"															if BR2_PACKAGE_BATOCERA_TARGET_ODIN
     default "riscv/visionfive2"													            if BR2_PACKAGE_BATOCERA_TARGET_RISCV
-    default "amlogic/s922x/gtking amlogic/s922x/gtkingpro amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2 amlogic/s922x/ogu" \
+    default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S922X
     default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S905
