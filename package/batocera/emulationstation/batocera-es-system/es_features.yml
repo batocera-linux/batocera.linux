@@ -454,7 +454,7 @@ libretro:
                             "On":      enabled
     beetle-saturn:
       features: [netplay, cheevos]
-      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
           beetle-saturn_crosshair:
                 group: LIGHT GUN
@@ -1062,7 +1062,7 @@ libretro:
                     "Disabled": "disabled"
                     "Enabled":  "enabled"
     dolphin:
-      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
                     wii_resolution:
                         prompt: RENDERING RESOLUTION
@@ -1398,7 +1398,7 @@ libretro:
                     "Off":                              "disabled"
     swanstation:
       features: [cheevos]
-      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             swanstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1487,7 +1487,7 @@ libretro:
                     "PlayStation Mouse":             258
     duckstation:
       features: [cheevos]
-      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             swanstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1577,7 +1577,7 @@ libretro:
     #easyrpg:
     fbneo:
       features: [netplay, cheevos]
-      shared: [rewind, autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [rewind, autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 group: ADVANCED OPTIONS
@@ -1725,7 +1725,7 @@ libretro:
                     "Arkanoid paddle":      514
     flycast:
       features: [cheevos]
-      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             reicast_synchronous_rendering:
                 group: ADVANCED OPTIONS
@@ -3739,7 +3739,7 @@ libretro:
       shared: [rewind, autosave]
     mednafen_psx:
       features: [cheevos]
-      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             beetle_psx_hw_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -3966,7 +3966,7 @@ libretro:
                     "On":     ON
     mupen64plus-next:
       features: [cheevos]
-      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             mupen64plus-43screensize:
                 prompt:      4:3 RENDERING RESOLUTION
@@ -4564,7 +4564,7 @@ libretro:
                     "Per Game": per game
     parallel_n64:
       features: [cheevos]
-      shared: [autosave, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             parallel-n64-gfxplugin:
                 prompt: GRAPHICS PLUGIN
@@ -4758,7 +4758,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pcsx2:
-      shared: [use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             lr_pcsx2_fast_boot:
                 prompt: BIOS FAST BOOT
@@ -4768,7 +4768,7 @@ libretro:
                     "Enabled":  enabled
     pcsx_rearmed:
       features: [cheevos]
-      shared: [autosave, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -6774,7 +6774,7 @@ cannonball:
                 "On":  1
 
 cemu:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         cemu_gfxbackend:
             prompt:      GRAPHICS API
@@ -7073,7 +7073,7 @@ devilutionx:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 dolphin:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         dolphin_aspect_ratio:
             submenu: DISPLAY
@@ -7608,7 +7608,7 @@ dosbox-x:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 duckstation:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         duckstation_clocking:
             submenu: EMULATION
@@ -7908,7 +7908,7 @@ duckstation:
                 "32x SSAA":           "32-ssaa"
 
 flycast:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
     flycast_ratio:
       prompt:      GAME ASPECT RATIO
@@ -8262,7 +8262,7 @@ moonlight:
                 "7.1": "7.1"
 
 mupen64plus:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         mupen64plus_ratio:
             prompt:      GAME ASPECT RATIO
@@ -8553,7 +8553,7 @@ openbor:
 pcsx2:
   cores:
     'pcsx2':
-      shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+      shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       features: [cheevos]
       cfeatures:
         pcsx2_osd_messages:
@@ -8894,7 +8894,7 @@ reicast:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
 
 rpcs3:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         rpcs3_ppudecoder:
             submenu: CPU
@@ -9404,7 +9404,7 @@ superbroswar:
 
 supermodel:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         engine3D:
             group: ADVANCED OPTIONS
@@ -9547,7 +9547,7 @@ tsugaru:
 
 mame:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         video:
             prompt:      VIDEO MODE
@@ -11282,7 +11282,7 @@ gsplus:
 
 play:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
       play_api:
           prompt: GRAPHICS API
@@ -11655,7 +11655,7 @@ openmsx:
                 "Hard Disk Image":   "hda"
 
 demul:
-  shared: [powermode, tdp, videomode, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         demulRatio:
             prompt:      GAME ASPECT RATIO
@@ -12703,4 +12703,4 @@ sonic-mania:
         "Traditional Chinese": "8"
 
 fba2x:
-  shared: [videomode, use_wheels, wheel_rotation_angle, wheel_deadzone, wheel_midzone]
+  shared: [videomode, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
