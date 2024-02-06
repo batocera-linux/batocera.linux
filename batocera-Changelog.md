@@ -42,7 +42,7 @@
   - Not compatible with nuvee GunCon patch, use clean ROM.
 - Sonic 3 A.I.R. (Angel Island Revisited) port.
 - New supported steering wheels:
-  - Logitech : Driving Force, G29, G920, G923 (PS4), Momo
+  - Logitech : Driving Force, G27, G29, G920, G923 (PS4), Momo
   - Thrustmaster : T300RS, Ferrari 458 Spider
   - HORI Racing Wheel APEX
   - MOZA Racing R9
