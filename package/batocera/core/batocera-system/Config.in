@@ -1092,10 +1092,13 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
     select BR2_PACKAGE_BATOCERA_SEGADC
 
     # PSX
-    select BR2_PACKAGE_DUCKSTATION                  if  BR2_PACKAGE_BATOCERA_GLES3 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4 # newer versions of duckstation are stricter on OpenGL 3.1
+    select BR2_PACKAGE_DUCKSTATION                  if  BR2_PACKAGE_BATOCERA_GLES3          && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_XU4 # newer versions of duckstation are stricter on OpenGL 3.1
 
-    select BR2_PACKAGE_DUCKSTATION_LEGACY           if  !BR2_PACKAGE_BATOCERA_GLES3 && \
-                                                        !BR2_riscv && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
+    select BR2_PACKAGE_DUCKSTATION_LEGACY           if  !BR2_PACKAGE_BATOCERA_GLES3             && \
+                                                        !BR2_riscv                              && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_BCM2835    && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_H3         && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3128
@@ -1315,13 +1318,28 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     select BR2_PACKAGE_FHEROES2             # ALL
 
     # HoMM3 open source engine
-    select BR2_PACKAGE_VCMI                 # ALL
+    select BR2_PACKAGE_VCMI                 if  BR2_x86_64                          || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # Amstrad CPC emulator
-    select BR2_PACKAGE_SUGARBOX             if BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3
+    select BR2_PACKAGE_SUGARBOX             if  BR2_x86_64                          || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # Symbian OS / Nokia N-Gage emulator
-    select BR2_PACKAGE_EKA2L1		    if !BR2_riscv && (BR2_x86_64 || BR2_PACKAGE_BATOCERA_GLES3)
+    select BR2_PACKAGE_EKA2L1		    if  BR2_x86_64                          || \
+                                            BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+                                            BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
+                                            BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+                                            BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+                                            BR2_PACKAGE_BATOCERA_TARGET_H616
 
     # Supermodel OpenGL ES port
     select BR2_PACKAGE_SUPERMODEL_ES        if	BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
@@ -1337,7 +1355,12 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     select BR2_PACKAGE_BATOCERA_STELLA	    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
     # Standalone SNES9X (Qt6)
-    select BR2_PACKAGE_SNES9X	            if BR2_x86_64 || BR2_PACKAGE_BATOCERA_WAYLAND
+    select BR2_PACKAGE_SNES9X	            if  BR2_x86_64                          || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H616
 
     help
         Emulators under development (Experimental)
