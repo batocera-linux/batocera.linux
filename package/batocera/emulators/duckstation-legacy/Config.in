@@ -1,6 +1,6 @@
 config BR2_PACKAGE_DUCKSTATION_LEGACY
 	bool "duckstation-legacy"
-	select BR2_PACKAGE_BATOCERA_QT6      if BR2_x86_64 || BR2_PACKAGE_SWAY       
+	select BR2_PACKAGE_BATOCERA_QT6      if BR2_x86_64
 	select BR2_PACKAGE_FMT
 	select BR2_PACKAGE_BOOST
 	select BR2_PACKAGE_FFMPEG
