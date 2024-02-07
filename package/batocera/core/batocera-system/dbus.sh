@@ -2,6 +2,14 @@
 
 STARTDBUS=
 DBUSLAUNCH=/usr/bin/dbus-launch
+VERBOSE=$1
+
+if test -z "${VERBOSE}"
+then
+	EXTRA=""
+else
+	EXTRA="--verbose"
+fi
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && [ -x "$DBUSLAUNCH" ]; then
   STARTDBUS=yes
@@ -23,7 +31,7 @@ if [ -n "$DBUS_SESSION_BUS_ADDRESS" ] && \
     # tell dbus-daemon --session
     # to put the Xsession's environment in activated services'
     # environments
-    dbus-update-activation-environment --verbose --all
+    dbus-update-activation-environment ${EXTRA} --all
   )
 fi
 

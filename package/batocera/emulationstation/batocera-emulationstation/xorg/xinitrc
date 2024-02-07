@@ -7,7 +7,9 @@ display_log="/userdata/system/logs/display.log"
 nvidia_log="/var/log/nvidia.log"
 amd_log="/userdata/system/logs/amd.log"
 
-. /etc/profile.d/dbus.sh
+# Always start with a new dbus-launch session
+unset DBUS_SESSION_BUS_ADDRESS
+. /etc/profile.d/dbus.sh verbose
 
 # hide mouse cursor
 unclutter --noevents -b
