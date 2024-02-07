@@ -1,9 +1,6 @@
 #!/bin/sh
 BOOTCONF="/boot/batocera-boot.conf"
 
-. /etc/profile.d/xdg.sh
-. /etc/profile.d/dbus.sh
-
 case "$1" in
 	start)
 	    enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"

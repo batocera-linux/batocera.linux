@@ -158,9 +158,6 @@ do
     # save the current output in which es is started (used to switch screen, when unplugged)
     batocera-resolution currentOutput > "/var/run/switch_screen_current"
 
-    # dbus launch is required for the gio/gvfs/trash:///...
-    eval "$(dbus-launch --sh-syntax --exit-with-session)"
-
     cd /userdata # es need a PWD
     %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 
