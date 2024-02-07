@@ -33,6 +33,7 @@ define FIRMWARE_RADXA_RKWIFIBT_INSTALL_TARGET_CMDS
 	# install the AP6275P BT firmware
 	mkdir -p $(TARGET_DIR)/lib/firmware/brcm
 	$(INSTALL) -m 0644 -D $(@D)/firmware/broadcom/AP6275P/bt/BCM4362A2.hcd $(TARGET_DIR)/lib/firmware/brcm
+	ln -sf /lib/firmware/brcm/BCM4362A2.hcd $(TARGET_DIR)/lib/firmware/ap6275p/BCM4362A2.hcd
 endef
 
 $(eval $(generic-package))
