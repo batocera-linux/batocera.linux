@@ -1,16 +1,16 @@
-From cb63275c7b963fc765631a49aac29a00ba8d2191 Mon Sep 17 00:00:00 2001
+From 41897aaac46346852296c31911c4ad3216f1a99c Mon Sep 17 00:00:00 2001
 From: Demetris Ierokipides <ierokipides.dem@gmail.com>
-Date: Wed, 7 Feb 2024 17:24:51 -0400
+Date: Thu, 8 Feb 2024 10:14:48 -0400
 Subject: [PATCH] rk3326: dts adjustments (odroid-go)
 
 ---
- .../boot/dts/rockchip/rk3326-odroid-go.dtsi   | 36 +++++++++++++++++
- .../dts/rockchip/rk3326-odroid-go2-v11.dts    | 31 ++++++++++++---
- .../boot/dts/rockchip/rk3326-odroid-go2.dts   | 39 +++++++++++++++++++
- 3 files changed, 100 insertions(+), 6 deletions(-)
+ .../boot/dts/rockchip/rk3326-odroid-go.dtsi   | 36 +++++++++++++++++++
+ .../dts/rockchip/rk3326-odroid-go2-v11.dts    | 13 +++----
+ .../boot/dts/rockchip/rk3326-odroid-go2.dts   | 21 +++++++++++
+ 3 files changed, 64 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
-index 1e21c8c..e58a380 100644
+index 1e21c8c4d..e58a3804a 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go.dtsi
 @@ -25,6 +25,41 @@ backlight: backlight {
@@ -64,35 +64,10 @@ index 1e21c8c..e58a380 100644
  		#clock-cells = <1>;
  		#sound-dai-cells = <0>;
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
-index 0a65170..3ceb6db 100644
+index 0a6517051..11489a7a1 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
-@@ -16,6 +16,24 @@ aliases {
- 		mmc1 = &sdio;
- 	};
- 
-+	gpio_keys: volume-keys {
-+		compatible = "gpio-keys-polled";
-+		poll-interval = <5>;
-+		autorepeat;
-+
-+		volume-up-button {
-+			label = "VOLUME-UP";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
-+
-+		};
-+		volume-down-button {
-+			label = "VOLUME-DOWN";
-+			linux,code = <KEY_VOLUMEDOWN>;
-+			gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
- 	joypad: odroidgo2-joypad {
- 			compatible = "odroidgo2-joypad";
- 
-@@ -216,6 +234,8 @@ wifi_pwrseq: wifi-pwrseq {
+@@ -216,6 +216,8 @@ wifi_pwrseq: wifi-pwrseq {
  		pinctrl-names = "default";
  		pinctrl-0 = <&wifi_pwrseq_pins>;
  		reset-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
@@ -101,7 +76,7 @@ index 0a65170..3ceb6db 100644
  	};
  };
  
-@@ -231,9 +251,11 @@ vcc_wifi: LDO_REG9 {
+@@ -231,9 +233,11 @@ vcc_wifi: LDO_REG9 {
  			regulator-name = "vcc_wifi";
  			regulator-min-microvolt = <3300000>;
  			regulator-max-microvolt = <3300000>;
@@ -114,7 +89,7 @@ index 0a65170..3ceb6db 100644
  				regulator-suspend-microvolt = <3300000>;
  			};
  		};
-@@ -250,16 +272,15 @@ &sdio {
+@@ -250,16 +254,15 @@ &sdio {
  	cap-sdio-irq;
  	disable-wp;
  	keep-power-in-suspend;
@@ -133,7 +108,7 @@ index 0a65170..3ceb6db 100644
  	};
  };
  
-@@ -276,8 +297,6 @@ btn_pins: btn-pins {
+@@ -276,8 +279,6 @@ btn_pins: btn-pins {
  					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
  					<2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
  					<2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>,
@@ -143,35 +118,10 @@ index 0a65170..3ceb6db 100644
  					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
  					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-index 0723949..60e0394 100644
+index 072394983..c9fb9db30 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-@@ -12,6 +12,24 @@ / {
- 	model = "ODROID-GO Advance";
- 	compatible = "hardkernel,rk3326-odroid-go2", "rockchip,rk3326";
- 
-+	gpio_keys: volume-keys {
-+		compatible = "gpio-keys-polled";
-+		poll-interval = <5>;
-+		autorepeat;
-+
-+		volume-up-button {
-+			label = "VOLUME-UP";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		volume-down-button {
-+			label = "VOLUME-DOWN";
-+			linux,code = <KEY_VOLUMEDOWN>;
-+			gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
- 	joypad: odroidgo2-joypad {
- 			compatible = "odroidgo2-joypad";
- 
-@@ -206,3 +224,24 @@ &internal_display {
+@@ -206,3 +206,24 @@ &internal_display {
  &rk817_charger {
  	monitored-battery = <&battery>;
  };
@@ -196,7 +146,6 @@ index 0723949..60e0394 100644
 +				};
 +		};
 +};
-\ No newline at end of file
 -- 
 2.43.0
 
