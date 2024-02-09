@@ -61,7 +61,7 @@ fi
 ###
 
 V_BOARD=$(cat /boot/boot/batocera.board)
-V_CPUNB=$(lscpu | grep 'Core(s) per socket' | awk '{print $4}')
+V_CPUNB=$(lscpu | grep 'Core(s) per socket' | awk '{print $4}' | head -n 1)
 V_CPUMAXNB=$(lscpu | grep '^CPU(s):' | awk '{print $2}')
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
