@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PIXELCADE_VERSION = 5bf13124c2a8ca0392284f791952383ebc7e4a8f
+PIXELCADE_VERSION = 47b2997fca6f99daa55ffa3d97bbcfb6d2005b9d
 PIXELCADE_SITE = $(call github,alinke,pixelcade-linux-builds,$(PIXELCADE_VERSION))
 
 ifeq ($(BR2_x86_64),y)
