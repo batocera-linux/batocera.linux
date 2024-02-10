@@ -1,0 +1,19 @@
+diff --git a/Makefile b/Makefile
+index 8674929..db24c91 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,12 @@
+ .SILENT: all install clean
+-C=gcc
++CC:=gcc
+ CFLAGS=-Os -std=gnu11 -Wall -Wextra -Wformat-security -Werror
+ SECURITY_FLAGS=-Wstack-protector -Wstack-protector --param ssp-buffer-size=4 \
+ 	       --param ssp-buffer-size=4 -fstack-protector-strong \
+ 	       -fstack-clash-protection -pie -fPIE -D_FORTIFY_SOURCE=2
+ 
+ all: virtual_controller.c
+-	$(C) $(CFLAGS) $(SECURITY_FLAGS) virtual_controller.c -o virtual_controller
++	$(CC) $(CFLAGS) $(SECURITY_FLAGS) virtual_controller.c -o virtual_controller
+ 
+ install:
+ 	strip --strip-unneeded virtual_controller
