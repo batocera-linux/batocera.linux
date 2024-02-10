@@ -464,7 +464,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "riscv/visionfive2"													            if BR2_PACKAGE_BATOCERA_TARGET_RISCV
     default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S922X
-    default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201" \
+    default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201 amlogic/s905/lepotatov2" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_S905
     default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/rg552 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4" \
                                                                                             if BR2_PACKAGE_BATOCERA_TARGET_RK3399
