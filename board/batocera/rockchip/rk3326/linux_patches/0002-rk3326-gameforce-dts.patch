@@ -1,12 +1,12 @@
-From 9cf248c6615a017faa2fa9ab050b0c8162b82156 Mon Sep 17 00:00:00 2001
+From 69336eb081d0cb5f11be20ba8df1692c8b38ec3a Mon Sep 17 00:00:00 2001
 From: Juliano Dorigão <jdorigao@gmail.com>
-Date: Sat, 10 Feb 2024 17:38:55 -0400
+Date: Sun, 11 Feb 2024 08:42:44 -0400
 Subject: [PATCH] rk3326: gameforce dts
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../boot/dts/rockchip/rk3326-gameforce.dts    | 823 ++++++++++++++++++
- 2 files changed, 824 insertions(+)
+ .../boot/dts/rockchip/rk3326-gameforce.dts    | 814 ++++++++++++++++++
+ 2 files changed, 815 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -23,10 +23,10 @@ index a18f33bf0..4320586e2 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-odroid-go3.dtb
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts b/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
 new file mode 100644
-index 000000000..09582bd61
+index 000000000..a91a44232
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-gameforce.dts
-@@ -0,0 +1,823 @@
+@@ -0,0 +1,814 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2019 Hardkernel Co., Ltd
@@ -603,11 +603,6 @@ index 000000000..09582bd61
 +				regulator-always-on;
 +				regulator-boot-on;
 +			};
-+
-+			otg_switch: OTG_SWITCH {
-+				regulator-boot-on;
-+				regulator-name = "otg_switch";
-+			};
 +		};
 +
 +		rk817_charger: charger {
@@ -740,12 +735,8 @@ index 000000000..09582bd61
 +	};
 +
 +	u2phy_otg: otg-port {
-+		status = "okay";
++		status = "disable";
 +	};
-+};
-+
-+&usb20_otg {
-+	status = "okay";
 +};
 +/*
 +&uart0 {
