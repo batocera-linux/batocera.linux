@@ -56,7 +56,7 @@ done
 # add a loop to update newer files if necessary
 for DIR in roms roms/mame/mame2003
 do
-    find "$IN""/""$DIR" -mindepth 1 -maxdepth 2 -type f |
+    find "$IN""/""$DIR" -mindepth 1 -maxdepth 2 -type f -name "_info.txt" |
         while read FILE
         do
             RELATIVE_PATH="${FILE#$IN/}"
