@@ -7,75 +7,93 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-        Bug reports are NOT for feature requests or for help with coding or compiling.
-        If you need real-time help, join us on Discord - https://discord.gg/bPKRgsVzAR
+        Thanks for taking the time to fill out this bug report. We appreciate you taking the time & effort.
+        Note: Bug reports are NOT for feature requests or for help with coding or compiling.
+        If you need real-time help or need to discuss Batocera, join us on Discord - https://discord.gg/bPKRgsVzAR
   - type: input
     id: batocera_build
     attributes:
       label: Batocera build version
-      description: Batocera version used (be precise if using butterfly).
-      placeholder: Current x86_64 stable is 38 2023/10/14 21:43
+      description: |
+        Batocera version used.
+        GUI: SYSTEM SETTINGS -> INFORMATION
+        Terminal: cat /usr/share/vatocera/batocera.version
+        Or details can be obtained from batocera-info in your support file. (See logs below)
+      placeholder: 39-dev-2da5edeea0 2024/02/03 03:28
     validations:
       required: true
   - type: input
     id: arch
     attributes:
       label: Your architecture
-      description: Architecture on which Batocera is running.
-      placeholder: Rasperry Pi 4 B, PC, Steam Deck, Odroid C4, Orange Pi 5, etc.
+      description: |
+        Architecture and board type on which Batocera is running.
+        Outline if the device is a handheld or a laptop or a Single Board Computer (SBC).
+      placeholder: Rasperry Pi 4 B, X86_64, Steam Deck, Odroid C4, Orange Pi 5, etc.
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: gpu_type
     attributes:
-      label: Your Graphic Processor Unit (GPU)
-      description: Is your GPU integrated or discrete?
-      options:
-        - Integrated (e.g. Intel HD 550; RX Vega 8)
-        - Discrete (e.g. GTX 1050; Radeon R9 380)
-  - type: dropdown
-    id: gpu_brand
-    attributes:
-      label: Graphical brand
-      description: What is the brand of your GPU?
-      options:
-        - Intel
-        - Nvidia
-        - AMD
-        - Other
+      label: Your Graphic Processor Unit(s) (GPU)
+      description: |
+        Details of your GPU and whether it is integrated or discrete.
+        If you have a laptop or PC with two GPU's. Provide both details.
+      placeholder: Integrated Intel 630 and Nvidia GT1650 discrete GPU
     validations:
-      required: false
+      required: true
   - type: textarea
     id: issue_description
     attributes:
       label: Issue description
-      description: A laconic explanation of the issue. Keep this to a single sentence.
+      description: A brief explanation of the issue. Keep this concise. We don't need your life story.
       placeholder: I have a black screen after the splash screen when booting Batocera.
     validations:
       required: true
   - type: textarea
-    id: expected_result
-    attributes:
-      label: Expected result
-      description: What the intended behavior should have been instead.
-    validations:
-      required: false
-  - type: textarea
     id: reproduce_issue
     attributes:
-      label: Reproduction steps
+      label: Detailed reproduction steps
       description: |
-        1. Note the steps in the order they are required to be done in order to successfully reproduce this issue.
+        1. Note the detailed steps in the order they are required to be done in order to successfully reproduce this issue.
         2. Include any "but only when" conditions you have discovered.
         3. Describe what happens when the issue occurs, anything to look out for, anything to check the issue has indeed occurred.
+      placeholder: |
+        I installed Batocera on a USB using Etcher.
+        I plugged the USB into my laptops USB port.
+        The I booted my PC and changed the BIOS boot order to boot off the USB.
+        When Batcoera attempts to boot I see a resizing screen with a progess bar.
+        The annother screen with a intro video.
+        After that is goes blank.
+        I heve no video or sound, just a balnk screen.
+    validations:
+      required: true
+  - type: textarea
+    id: tried_fixes
+    attributes:
+      label: Details of any attempts to fix this yourself
+      description: |
+        1. Details of what you have tried to fix this yourself.
+        2. i.e. Set the resolution to 1920 x 1080 using batocera.conf file
+        3. Tried these instructions from the wiki here...
+      placeholder: |
+        I spoke to someone on discord and they told me to change this file.
+  - type: textarea
+    id: any_mods
+    attributes:
+      label: Details of any modifications you have made to Batocera.
+      description: If you have modified Batocera in any way. Please let us know.
+      placeholder: I have installed a third-party package from ...
     validations:
       required: true
   - type: textarea
     id: logs_and_data
     attributes:
       label: Logs and data
-      description: Provide all the relevant logs and information relevant to the issue. Include any information about the stable versions of Batocera the issue is present/not present on, whether the issue is present on a fresh install or not, etc. Many useful logs are collected in a [Batocera support file](https://wiki.batocera.org/troubleshooting#create_a_batocera_support_file) which may be posted in your report.
-      placeholder: Be very clear.
+      description: |
+        Provide all the relevant logs and information relevant to the issue.
+        Include any information about the stable versions of Batocera the issue is present/not present on, whether the issue is present on a fresh install or not.
+        Many useful logs are collected in a [Batocera support file](https://wiki.batocera.org/troubleshooting#create_a_batocera_support_file) which should be attached in your report.
+      placeholder: Attach logs and don't paste the content.
     validations:
       required: false
