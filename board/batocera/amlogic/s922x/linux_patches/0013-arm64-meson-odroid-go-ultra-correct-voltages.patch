@@ -1,0 +1,70 @@
+From 3c44ee308121e22458f60d6406707de93a220fd8 Mon Sep 17 00:00:00 2001
+From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
+Date: Tue, 23 Jan 2024 23:53:24 +0000
+Subject: [PATCH 13/52] arm64: meson: odroid-go-ultra: correct voltages
+
+---
+ .../dts/amlogic/meson-g12b-odroid-go-ultra.dts   | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index 6844b906fbcd..571a0393e148 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -420,7 +420,7 @@ vdd_ee: DCDC_REG2 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-min-microvolt = <875000>;
+-				regulator-max-microvolt = <1250000>;
++				regulator-max-microvolt = <900000>;
+ 				regulator-ramp-delay = <6001>;
+ 				regulator-state-mem {
+ 					regulator-on-in-suspend;
+@@ -440,12 +440,12 @@ regulator-state-mem {
+ 			vddao_3v3: DCDC_REG4 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
++				regulator-min-microvolt = <3000000>;
++				regulator-max-microvolt = <3000000>;
+ 				regulator-name = "vddao_3v3";
+ 				regulator-state-mem {
+ 					regulator-on-in-suspend;
+-					regulator-suspend-microvolt = <3300000>;
++					regulator-suspend-microvolt = <3000000>;
+ 				};
+ 			};
+ 
+@@ -500,8 +500,6 @@ vcc_sd: SWITCH_REG {
+ 				regulator-name = "vcc_sd";
+ 				regulator-always-on;
+ 				regulator-boot-on;
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
+ 				regulator-state-mem {
+ 					regulator-on-in-suspend;
+ 				};
+@@ -550,7 +548,7 @@ vddcpu_b: DCDC_REG2 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-min-microvolt = <737500>;
+-				regulator-max-microvolt = <1012500>;
++				regulator-max-microvolt = <1050000>;
+ 				regulator-ramp-delay = <6001>;
+ 				regulator-initial-mode = <0x2>;
+ 				regulator-name = "vddcpu_b";
+@@ -586,8 +584,8 @@ regulator-state-mem {
+ 			vcc_lcd: LDO_REG8 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
++				regulator-min-microvolt = <3000000>;
++				regulator-max-microvolt = <3000000>;
+ 				regulator-name = "vcc_lcd";
+ 				regulator-state-mem {
+ 					regulator-off-in-suspend;
+-- 
+2.34.1
+

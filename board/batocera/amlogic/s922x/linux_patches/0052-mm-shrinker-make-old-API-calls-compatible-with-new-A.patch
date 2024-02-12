@@ -1,0 +1,70 @@
+From 1364f98938fdcb0436c25e384a6101a6d81b7333 Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Sun, 4 Feb 2024 15:09:17 +0000
+Subject: [PATCH 52/52] mm: shrinker: make old API calls compatible with new
+ API
+
+---
+ mm/shrinker.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/mm/shrinker.c b/mm/shrinker.c
+index 6f57e31036b8..5ad0fea1fe9e 100644
+--- a/mm/shrinker.c
++++ b/mm/shrinker.c
+@@ -817,7 +817,7 @@ static int __prealloc_shrinker(struct shrinker *shrinker)
+ 	int err;
+ 
+ 	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
+-		err = prealloc_memcg_shrinker(shrinker);
++		err = shrinker_memcg_alloc(shrinker);
+ 		if (err != -ENOSYS)
+ 			return err;
+ 
+@@ -869,9 +869,9 @@ void free_prealloced_shrinker(struct shrinker *shrinker)
+ 	shrinker->name = NULL;
+ #endif
+ 	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
+-		down_write(&shrinker_rwsem);
+-		unregister_memcg_shrinker(shrinker);
+-		up_write(&shrinker_rwsem);
++		mutex_lock(&shrinker_mutex);
++		shrinker_memcg_remove(shrinker);
++		mutex_unlock(&shrinker_mutex);
+ 		return;
+ 	}
+ 
+@@ -881,11 +881,11 @@ void free_prealloced_shrinker(struct shrinker *shrinker)
+ 
+ void register_shrinker_prepared(struct shrinker *shrinker)
+ {
+-	down_write(&shrinker_rwsem);
++	mutex_lock(&shrinker_mutex);
+ 	list_add_tail(&shrinker->list, &shrinker_list);
+ 	shrinker->flags |= SHRINKER_REGISTERED;
+ 	shrinker_debugfs_add(shrinker);
+-	up_write(&shrinker_rwsem);
++	mutex_unlock(&shrinker_mutex);
+ }
+ 
+ static int __register_shrinker(struct shrinker *shrinker)
+@@ -936,13 +936,13 @@ void unregister_shrinker(struct shrinker *shrinker)
+ 	if (!(shrinker->flags & SHRINKER_REGISTERED))
+ 		return;
+ 
+-	down_write(&shrinker_rwsem);
++	mutex_lock(&shrinker_mutex);
+ 	list_del(&shrinker->list);
+ 	shrinker->flags &= ~SHRINKER_REGISTERED;
+ 	if (shrinker->flags & SHRINKER_MEMCG_AWARE)
+-		unregister_memcg_shrinker(shrinker);
++		shrinker_memcg_remove(shrinker);
+ 	debugfs_entry = shrinker_debugfs_detach(shrinker, &debugfs_id);
+-	up_write(&shrinker_rwsem);
++	mutex_unlock(&shrinker_mutex);
+ 
+ 	shrinker_debugfs_remove(debugfs_entry, debugfs_id);
+ 
+-- 
+2.34.1
+

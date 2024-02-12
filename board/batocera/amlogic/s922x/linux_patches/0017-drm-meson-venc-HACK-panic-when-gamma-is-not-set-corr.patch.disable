@@ -1,0 +1,47 @@
+From 845048f145884967c58711c7e30010646737d529 Mon Sep 17 00:00:00 2001
+From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+Date: Wed, 24 Jan 2024 16:18:45 +0000
+Subject: [PATCH 17/52] drm: meson: venc: HACK: panic when gamma is not set
+ correctly
+
+---
+ drivers/gpu/drm/meson/meson_venc.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_venc.c b/drivers/gpu/drm/meson/meson_venc.c
+index 3bf0d6e4fc30..ace2e6c21f69 100644
+--- a/drivers/gpu/drm/meson/meson_venc.c
++++ b/drivers/gpu/drm/meson/meson_venc.c
+@@ -1590,7 +1590,8 @@ static void meson_encl_set_gamma_table(struct meson_drm *priv, u16 *data,
+ 	ret = readl_relaxed_poll_timeout(priv->io_base + _REG(L_GAMMA_CNTL_PORT),
+ 					 reg, reg & L_GAMMA_CNTL_PORT_ADR_RDY, 10, 10000);
+ 	if (ret)
+-		pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++		//pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++		panic("NOT ENOUGH SALT, GAMMA NOT SET");
+ 
+ 	writel_relaxed(L_GAMMA_ADDR_PORT_AUTO_INC | rgb_mask |
+ 		       FIELD_PREP(L_GAMMA_ADDR_PORT_ADDR, 0),
+@@ -1601,7 +1602,8 @@ static void meson_encl_set_gamma_table(struct meson_drm *priv, u16 *data,
+ 						 reg, reg & L_GAMMA_CNTL_PORT_WR_RDY,
+ 						 10, 10000);
+ 		if (ret)
+-			pr_warn_once("%s: GAMMA WR_RDY timeout\n", __func__);
++			//pr_warn_once("%s: GAMMA WR_RDY timeout\n", __func__);
++			panic("NOT ENOUGH SALT, GAMMA NOT SET");
+ 
+ 		writel_relaxed(data[i], priv->io_base + _REG(L_GAMMA_DATA_PORT));
+ 	}
+@@ -1609,7 +1611,8 @@ static void meson_encl_set_gamma_table(struct meson_drm *priv, u16 *data,
+ 	ret = readl_relaxed_poll_timeout(priv->io_base + _REG(L_GAMMA_CNTL_PORT),
+ 					 reg, reg & L_GAMMA_CNTL_PORT_ADR_RDY, 10, 10000);
+ 	if (ret)
+-		pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++		//pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++		panic("NOT ENOUGH SALT, GAMMA NOT SET");
+ 
+ 	writel_relaxed(L_GAMMA_ADDR_PORT_AUTO_INC | rgb_mask |
+ 		       FIELD_PREP(L_GAMMA_ADDR_PORT_ADDR, 0x23),
+-- 
+2.34.1
+

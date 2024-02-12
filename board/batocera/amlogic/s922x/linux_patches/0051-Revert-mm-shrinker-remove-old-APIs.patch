@@ -1,0 +1,184 @@
+From 6c3f66e3566566f6069d1f59bf11b28d2f8c8bbe Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Sun, 4 Feb 2024 14:53:38 +0000
+Subject: [PATCH 51/52] Revert "mm: shrinker: remove old APIs"
+
+This reverts commit f2383e01507eeee8a1c1283d61a117a97d6c4ebe.
+---
+ include/linux/shrinker.h |   8 +++
+ mm/shrinker.c            | 143 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 151 insertions(+)
+
+diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
+index 1a00be90d93a..bc7df2850456 100644
+--- a/include/linux/shrinker.h
++++ b/include/linux/shrinker.h
+@@ -147,6 +147,14 @@ static inline void shrinker_put(struct shrinker *shrinker)
+ 		complete(&shrinker->done);
+ }
+ 
++extern int __printf(2, 3) prealloc_shrinker(struct shrinker *shrinker,
++					    const char *fmt, ...);
++extern void register_shrinker_prepared(struct shrinker *shrinker);
++extern int __printf(2, 3) register_shrinker(struct shrinker *shrinker,
++					    const char *fmt, ...);
++extern void unregister_shrinker(struct shrinker *shrinker);
++extern void free_prealloced_shrinker(struct shrinker *shrinker);
++
+ #ifdef CONFIG_SHRINKER_DEBUG
+ extern int __printf(2, 3) shrinker_debugfs_rename(struct shrinker *shrinker,
+ 						  const char *fmt, ...);
+diff --git a/mm/shrinker.c b/mm/shrinker.c
+index dc5d2a6fcfc4..6f57e31036b8 100644
+--- a/mm/shrinker.c
++++ b/mm/shrinker.c
+@@ -807,3 +807,146 @@ void shrinker_free(struct shrinker *shrinker)
+ 	call_rcu(&shrinker->rcu, shrinker_free_rcu_cb);
+ }
+ EXPORT_SYMBOL_GPL(shrinker_free);
++
++/*
++ * Add a shrinker callback to be called from the vm.
++ */
++static int __prealloc_shrinker(struct shrinker *shrinker)
++{
++	unsigned int size;
++	int err;
++
++	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
++		err = prealloc_memcg_shrinker(shrinker);
++		if (err != -ENOSYS)
++			return err;
++
++		shrinker->flags &= ~SHRINKER_MEMCG_AWARE;
++	}
++
++	size = sizeof(*shrinker->nr_deferred);
++	if (shrinker->flags & SHRINKER_NUMA_AWARE)
++		size *= nr_node_ids;
++
++	shrinker->nr_deferred = kzalloc(size, GFP_KERNEL);
++	if (!shrinker->nr_deferred)
++		return -ENOMEM;
++
++	return 0;
++}
++
++#ifdef CONFIG_SHRINKER_DEBUG
++int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...)
++{
++	va_list ap;
++	int err;
++
++	va_start(ap, fmt);
++	shrinker->name = kvasprintf_const(GFP_KERNEL, fmt, ap);
++	va_end(ap);
++	if (!shrinker->name)
++		return -ENOMEM;
++
++	err = __prealloc_shrinker(shrinker);
++	if (err) {
++		kfree_const(shrinker->name);
++		shrinker->name = NULL;
++	}
++
++	return err;
++}
++#else
++int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...)
++{
++	return __prealloc_shrinker(shrinker);
++}
++#endif
++
++void free_prealloced_shrinker(struct shrinker *shrinker)
++{
++#ifdef CONFIG_SHRINKER_DEBUG
++	kfree_const(shrinker->name);
++	shrinker->name = NULL;
++#endif
++	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
++		down_write(&shrinker_rwsem);
++		unregister_memcg_shrinker(shrinker);
++		up_write(&shrinker_rwsem);
++		return;
++	}
++
++	kfree(shrinker->nr_deferred);
++	shrinker->nr_deferred = NULL;
++}
++
++void register_shrinker_prepared(struct shrinker *shrinker)
++{
++	down_write(&shrinker_rwsem);
++	list_add_tail(&shrinker->list, &shrinker_list);
++	shrinker->flags |= SHRINKER_REGISTERED;
++	shrinker_debugfs_add(shrinker);
++	up_write(&shrinker_rwsem);
++}
++
++static int __register_shrinker(struct shrinker *shrinker)
++{
++	int err = __prealloc_shrinker(shrinker);
++
++	if (err)
++		return err;
++	register_shrinker_prepared(shrinker);
++	return 0;
++}
++
++#ifdef CONFIG_SHRINKER_DEBUG
++int register_shrinker(struct shrinker *shrinker, const char *fmt, ...)
++{
++	va_list ap;
++	int err;
++
++	va_start(ap, fmt);
++	shrinker->name = kvasprintf_const(GFP_KERNEL, fmt, ap);
++	va_end(ap);
++	if (!shrinker->name)
++		return -ENOMEM;
++
++	err = __register_shrinker(shrinker);
++	if (err) {
++		kfree_const(shrinker->name);
++		shrinker->name = NULL;
++	}
++	return err;
++}
++#else
++int register_shrinker(struct shrinker *shrinker, const char *fmt, ...)
++{
++	return __register_shrinker(shrinker);
++}
++#endif
++EXPORT_SYMBOL(register_shrinker);
++
++/*
++ * Remove one
++ */
++void unregister_shrinker(struct shrinker *shrinker)
++{
++	struct dentry *debugfs_entry;
++	int debugfs_id;
++
++	if (!(shrinker->flags & SHRINKER_REGISTERED))
++		return;
++
++	down_write(&shrinker_rwsem);
++	list_del(&shrinker->list);
++	shrinker->flags &= ~SHRINKER_REGISTERED;
++	if (shrinker->flags & SHRINKER_MEMCG_AWARE)
++		unregister_memcg_shrinker(shrinker);
++	debugfs_entry = shrinker_debugfs_detach(shrinker, &debugfs_id);
++	up_write(&shrinker_rwsem);
++
++	shrinker_debugfs_remove(debugfs_entry, debugfs_id);
++
++	kfree(shrinker->nr_deferred);
++	shrinker->nr_deferred = NULL;
++}
++EXPORT_SYMBOL(unregister_shrinker);
+-- 
+2.34.1
+

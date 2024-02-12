@@ -1,0 +1,107 @@
+From 3a888febbad27e83fb7ee5ca3cc42e21c6f03e70 Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Tue, 23 Jan 2024 23:41:40 +0000
+Subject: [PATCH 11/52] arm64: meson: odroid-go-ultra: add DSI panel
+
+---
+ .../amlogic/meson-g12b-odroid-go-ultra.dts    | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index eed2a23047ca..6844b906fbcd 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -196,6 +196,14 @@ emmc_pwrseq: emmc-pwrseq {
+ 		reset-gpios = <&gpio BOOT_12 GPIO_ACTIVE_LOW>;
+ 	};
+ 
++	panel_backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm_ef 1 40000 0>;
++		brightness-levels = <0 255>;
++		num-interpolated-steps = <255>;
++		default-brightness-level = <255>;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -576,6 +584,8 @@ regulator-state-mem {
+ 			};
+ 
+ 			vcc_lcd: LDO_REG8 {
++				regulator-always-on;
++				regulator-boot-on;
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc_lcd";
+@@ -634,6 +644,12 @@ mux {
+ 	};
+ };
+ 
++&pwm_ef {
++	status = "okay";
++	pinctrl-0 = <&pwm_f_h_pins>;
++	pinctrl-names = "default";
++};
++
+ &saradc {
+ 	status = "okay";
+ 	vref-supply = <&vddio_ao1v8>;
+@@ -720,3 +736,53 @@ &usb2_phy1 {
+ 	status = "okay";
+ 	phy-supply = <&usb_host>;
+ };
++
++&mipi_dsi {
++	status = "okay";
++
++	assigned-clocks =	 <&clkc CLKID_GP0_PLL>,
++				 <&clkc CLKID_MIPI_DSI_PXCLK_SEL>,
++				 <&clkc CLKID_MIPI_DSI_PXCLK>,
++				 <&clkc CLKID_CTS_ENCL_SEL>,
++				 <&clkc CLKID_VCLK2_SEL>;
++	assigned-clock-parents = <0>,
++				 <&clkc CLKID_GP0_PLL>,
++				 <0>,
++				 <&clkc CLKID_VCLK2_DIV1>,
++				 <&clkc CLKID_GP0_PLL>;
++	assigned-clock-rates =	 <344976000>,
++				 <0>,
++				 <344976000>,
++				 <0>,
++				 <0>;
++
++	panel@0 {
++		compatible = "odroid,go-ultra-panel", "sitronix,st7701";
++		reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_HIGH>;
++		IOVCC-supply = <&vcc_lcd>;
++		VCC-supply = <&vcc_lcd>;
++		backlight = <&panel_backlight>;
++		rotation = <270>;
++		reg = <0>;
++
++		port {
++			mipi_in_panel: endpoint {
++				remote-endpoint = <&mipi_out_panel>;
++			};
++		};
++	};
++};
++
++&mipi_analog_dphy {
++	status = "okay";
++};
++
++&mipi_dphy {
++	status = "okay";
++};
++
++&mipi_dsi_panel_port {
++	mipi_out_panel: endpoint {
++		remote-endpoint = <&mipi_in_panel>;
++	};
++};
+-- 
+2.34.1
+

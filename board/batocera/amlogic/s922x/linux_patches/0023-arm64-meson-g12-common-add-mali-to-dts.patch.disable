@@ -1,0 +1,57 @@
+From 2b8cc5ce6a09e843344b088625812c98ec96b765 Mon Sep 17 00:00:00 2001
+From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+Date: Wed, 24 Jan 2024 23:56:58 +0000
+Subject: [PATCH 23/52] arm64: meson: g12-common: add mali to dts
+
+---
+ .../arm64/boot/dts/amlogic/meson-g12-common.dtsi | 16 +++++++++++-----
+ arch/arm64/boot/dts/amlogic/meson-g12b.dtsi      |  3 ++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 7300408262d5..b31b077bd891 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -2476,14 +2476,20 @@ dwc3: usb@ff500000 {
+ 		};
+ 
+ 		mali: gpu@ffe40000 {
+-			compatible = "amlogic,meson-g12a-mali", "arm,mali-bifrost";
+-			reg = <0x0 0xffe40000 0x0 0x40000>;
++			compatible = "arm,mali-midgard";
++			reg = <0x0 0xffe40000 0x0 0x40000>,
++                    <0 0xFFD01000 0 0x01000>,
++                    <0 0xFF800000 0 0x01000>,
++                    <0 0xFF63c000 0 0x01000>,
++                    <0 0xFFD01000 0 0x01000>;
++
+ 			interrupt-parent = <&gic>;
+-			interrupts = <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "job", "mmu", "gpu";
++				     <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "GPU", "MMU", "JOB";
+ 			clocks = <&clkc CLKID_MALI>;
++			clock-names = "clk_mali";
+ 			resets = <&reset RESET_DVALIN_CAPB3>, <&reset RESET_DVALIN>;
+ 			operating-points-v2 = <&gpu_opp_table>;
+ 			#cooling-cells = <2>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+index 86e6ceb31d5e..f22c27a1472c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+@@ -139,7 +139,8 @@ map1 {
+ };
+ 
+ &mali {
+-	dma-coherent;
++	system-coherency = <0>;
++	power_policy = "always_on";
+ };
+ 
+ &pmu {
+-- 
+2.34.1
+

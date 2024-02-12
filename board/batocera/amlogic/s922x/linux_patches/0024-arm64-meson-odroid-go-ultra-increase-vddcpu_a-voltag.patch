@@ -1,0 +1,26 @@
+From 8462fc8605c995ab5d1f3da2435c38969943337d Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Thu, 25 Jan 2024 00:32:40 +0000
+Subject: [PATCH 24/52] arm64: meson: odroid-go-ultra: increase vddcpu_a
+ voltage for overclock
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index 40820c49aacc..05b3f3fe3867 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -418,7 +418,7 @@ vddcpu_a: DCDC_REG1 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-min-microvolt = <775000>;
+-				regulator-max-microvolt = <1025000>;
++				regulator-max-microvolt = <1050000>;
+ 				regulator-ramp-delay = <6001>;
+ 				regulator-state-mem {
+ 					regulator-on-in-suspend;
+-- 
+2.34.1
+
