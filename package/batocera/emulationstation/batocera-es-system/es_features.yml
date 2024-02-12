@@ -11,6 +11,7 @@ shared:
         "Balanced": balanced
         "Power Saver": powersaver
     tdp:
+      archs_include: [x86_64]
       prompt: RYZEN THERMAL DESIGN POWER
       description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
       choices:
