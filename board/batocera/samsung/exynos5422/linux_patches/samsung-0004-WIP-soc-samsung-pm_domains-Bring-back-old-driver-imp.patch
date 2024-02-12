@@ -9,36 +9,36 @@ Using new implementation decreases Mali GPU performance significantly
 
 Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
 ---
- drivers/soc/samsung/pm_domains.c | 97 ++++++++++++++++----------------
+ drivers/pmdomain/samsung/exynos-pm-domains.c | 97 ++++++++++++++++----------------
  1 file changed, 49 insertions(+), 48 deletions(-)
 
-diff --git a/drivers/soc/samsung/pm_domains.c b/drivers/soc/samsung/pm_domains.c
+diff --git a/drivers/pmdomain/samsung/exynos-pm-domains.c b/drivers/pmdomain/samsung/exynos-pm-domains.c
 index d07f3c9d6903..1022d40eb700 100644
---- a/drivers/soc/samsung/pm_domains.c
-+++ b/drivers/soc/samsung/pm_domains.c
+--- a/drivers/pmdomain/samsung/exynos-pm-domains.c
++++ b/drivers/pmdomain/samsung/exynos-pm-domains.c
 @@ -16,7 +16,7 @@
  #include <linux/delay.h>
+ #include <linux/of.h>
  #include <linux/of_address.h>
- #include <linux/of_platform.h>
 -#include <linux/pm_runtime.h>
 +#include <linux/sched.h>
- 
+
  struct exynos_pm_domain_config {
  	/* Value for LOCAL_PWR_CFG and STATUS fields for each domain */
 @@ -72,15 +72,15 @@ static int exynos_pd_power_off(struct generic_pm_domain *domain)
  	return exynos_pd_power(domain, false);
  }
- 
+
 -static const struct exynos_pm_domain_config exynos4210_cfg = {
 +static const struct exynos_pm_domain_config exynos4210_cfg __initconst = {
  	.local_pwr_cfg		= 0x7,
  };
- 
+
 -static const struct exynos_pm_domain_config exynos5433_cfg = {
 +static const struct exynos_pm_domain_config exynos5433_cfg __initconst = {
  	.local_pwr_cfg		= 0xf,
  };
- 
+
 -static const struct of_device_id exynos_pm_domain_of_match[] = {
 +static const struct of_device_id exynos_pm_domain_of_match[] __initconst = {
  	{
@@ -47,16 +47,16 @@ index d07f3c9d6903..1022d40eb700 100644
 @@ -91,7 +91,7 @@ static const struct of_device_id exynos_pm_domain_of_match[] = {
  	{ },
  };
- 
+
 -static const char *exynos_get_domain_name(struct device_node *node)
 +static __init const char *exynos_get_domain_name(struct device_node *node)
  {
  	const char *name;
- 
+
 @@ -100,44 +100,60 @@ static const char *exynos_get_domain_name(struct device_node *node)
  	return kstrdup_const(name, GFP_KERNEL);
  }
- 
+
 -static int exynos_pd_probe(struct platform_device *pdev)
 +static __init int exynos4_pm_init_power_domain(void)
  {
@@ -68,7 +68,7 @@ index d07f3c9d6903..1022d40eb700 100644
 -	int on, ret;
 +	struct device_node *np;
 +	const struct of_device_id *match;
- 
+
 -	pm_domain_cfg = of_device_get_match_data(dev);
 -	pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
 -	if (!pd)
@@ -77,12 +77,12 @@ index d07f3c9d6903..1022d40eb700 100644
 +		const struct exynos_pm_domain_config *pm_domain_cfg;
 +		struct exynos_pm_domain *pd;
 +		int on;
- 
+
 -	pd->pd.name = exynos_get_domain_name(np);
 -	if (!pd->pd.name)
 -		return -ENOMEM;
 +		pm_domain_cfg = match->data;
- 
+
 -	pd->base = of_iomap(np, 0);
 -	if (!pd->base) {
 -		kfree_const(pd->pd.name);
@@ -99,7 +99,7 @@ index d07f3c9d6903..1022d40eb700 100644
 +			of_node_put(np);
 +			return -ENOMEM;
 +		}
- 
+
 -	pd->pd.power_off = exynos_pd_power_off;
 -	pd->pd.power_on = exynos_pd_power_on;
 -	pd->local_pwr_cfg = pm_domain_cfg->local_pwr_cfg;
@@ -114,25 +114,25 @@ index d07f3c9d6903..1022d40eb700 100644
 +		pd->pd.power_off = exynos_pd_power_off;
 +		pd->pd.power_on = exynos_pd_power_on;
 +		pd->local_pwr_cfg = pm_domain_cfg->local_pwr_cfg;
- 
+
 -	on = readl_relaxed(pd->base + 0x4) & pd->local_pwr_cfg;
 +		on = readl_relaxed(pd->base + 0x4) & pd->local_pwr_cfg;
 +
 +		pm_genpd_init(&pd->pd, NULL, !on);
 +		of_genpd_add_provider_simple(np, &pd->pd);
 +	}
- 
+
 -	pm_genpd_init(&pd->pd, NULL, !on);
 -	ret = of_genpd_add_provider_simple(np, &pd->pd);
 +	/* Assign the child power domains to their parents */
 +	for_each_matching_node(np, exynos_pm_domain_of_match) {
 +		struct of_phandle_args child, parent;
- 
+
 -	if (ret == 0 && of_parse_phandle_with_args(np, "power-domains",
 -				      "#power-domain-cells", 0, &parent) == 0) {
  		child.np = np;
  		child.args_count = 0;
- 
+
 +		if (of_parse_phandle_with_args(np, "power-domains",
 +					       "#power-domain-cells", 0,
 +					       &parent) != 0)
@@ -144,7 +144,7 @@ index d07f3c9d6903..1022d40eb700 100644
 @@ -146,21 +162,6 @@ static int exynos_pd_probe(struct platform_device *pdev)
  				parent.np, child.np);
  	}
- 
+
 -	pm_runtime_enable(dev);
 -	return ret;
 -}
@@ -164,6 +164,5 @@ index d07f3c9d6903..1022d40eb700 100644
 +	return 0;
  }
  core_initcall(exynos4_pm_init_power_domain);
--- 
+--
 2.17.1
-
