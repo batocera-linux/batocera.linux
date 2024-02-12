@@ -94,6 +94,8 @@
 - Fixed retroachivements for pcsx2 and duckstation
 - Restore missing /sbin/hwclock binary
 - Daphne symlink failing
+- Cemu not automatically choosing the optimal vulkan GPU
+- Cemu failing if no Vulkan capable GPU is in the system. We now fallback to OpenGL
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
