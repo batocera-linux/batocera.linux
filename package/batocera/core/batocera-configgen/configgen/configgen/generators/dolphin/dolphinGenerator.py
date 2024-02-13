@@ -9,6 +9,10 @@ import configparser
 from . import dolphinControllers
 from . import dolphinSYSCONF
 import controllersConfig
+import subprocess
+
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 class DolphinGenerator(Generator):
 
@@ -116,11 +120,19 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "MMU", "False")
 
         # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
+        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
             dolphinSettings.set("Core", "GFXBackend", "Vulkan")
+            # Check Vulkan
+            try:
+                have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+                if have_vulkan != "true":
+                    eslog.debug("Vulkan driver is not available on the system. Using OpenGL instead.")
+                    dolphinSettings.set("Core", "GFXBackend", "OGL")
+            except subprocess.CalledProcessError:
+                eslog.debug("Error checking for discrete GPU.")
         else:
             dolphinSettings.set("Core", "GFXBackend", "OGL")
-
+        
         # Wiimote scanning
         dolphinSettings.set("Core", "WiimoteContinuousScanning", "True")
 
@@ -194,7 +206,32 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.add_section("Enhancements")
         if not dolphinGFXSettings.has_section("Hardware"):
             dolphinGFXSettings.add_section("Hardware")
-
+        
+        # Set Vulkan adapter
+        try:
+            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+            if have_vulkan == "true":
+                eslog.debug("Vulkan driver is available on the system.")
+                try:
+                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
+                    if have_discrete == "true":
+                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                        try:
+                            discrete_index = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteIndex"], text=True).strip()
+                            if discrete_index != "":
+                                eslog.debug("Using Discrete GPU Index: {} for Dolphin".format(discrete_index))
+                                dolphinGFXSettings.set("Hardware", "Adapter", discrete_index)
+                            else:
+                                eslog.debug("Couldn't get discrete GPU index")
+                        except subprocess.CalledProcessError:
+                            eslog.debug("Error getting discrete GPU index")
+                    else:
+                        eslog.debug("Discrete GPU is not available on the system. Using default.")
+                except subprocess.CalledProcessError:
+                    eslog.debug("Error checking for discrete GPU.")
+        except subprocess.CalledProcessError:
+            eslog.debug("Error executing batocera-vulkan script.")
+        
         # Graphics setting Aspect Ratio
         if system.isOptSet('dolphin_aspect_ratio'):
             dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
