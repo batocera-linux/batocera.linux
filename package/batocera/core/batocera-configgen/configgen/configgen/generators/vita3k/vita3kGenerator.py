@@ -9,6 +9,7 @@ from os import path
 import ruamel.yaml
 import ruamel.yaml.util
 from distutils.dir_util import copy_tree
+import shutil
 
 vitaConfig = batoceraFiles.CONF + '/vita3k'
 vitaSaves = batoceraFiles.SAVES + '/psvita'
@@ -28,6 +29,16 @@ class Vita3kGenerator(Generator):
         if not path.isdir(vitaSaves):
             os.mkdir(vitaSaves)
         
+        # Move saves if necessary
+        if os.path.isdir(os.path.join(vitaConfig, 'ux0')):
+            merge_directories(source_dir, dest_dir)
+            # Move all folders from vitaConfig to vitaSaves except "data", "lang", and "shaders-builtin"
+            for item in os.listdir(vitaConfig):
+                if item not in ['data', 'lang', 'shaders-builtin']:
+                    item_path = os.path.join(vitaConfig, item)
+                    if os.path.isdir(item_path):
+                        shutil.move(item_path, vitaSaves)
+        
         # Create the config.yml file if it doesn't exist
         vita3kymlconfig = {}
         if os.path.isfile(vitaConfigFile):
@@ -37,6 +48,9 @@ class Vita3kGenerator(Generator):
         if vita3kymlconfig is None:
             vita3kymlconfig = {}
         
+        # ensure the correct path is set
+        vita3kymlconfig["pref-path"] = vitaSaves
+
         # Set the renderer
         if system.isOptSet("vita3k_gfxbackend"):
             vita3kymlconfig["backend-renderer"] = system.config["vita3k_gfxbackend"]
@@ -95,7 +109,8 @@ class Vita3kGenerator(Generator):
             array=commandArray,
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
-            })
+            }
+        )
     
     # Show mouse for touchscreen actions
     def getMouseMode(self, config, rom):
