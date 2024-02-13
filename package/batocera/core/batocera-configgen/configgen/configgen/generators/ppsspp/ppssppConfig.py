@@ -7,6 +7,10 @@ import batoceraFiles
 import settings
 from Emulator import Emulator
 import configparser
+import subprocess
+
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 ppssppConf     = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
 ppssppConfig   = ppssppConf + '/ppsspp.ini'
@@ -41,7 +45,36 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("Graphics", "GraphicsBackend", system.config["gfxbackend"])
     else:
         iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
-
+    # If Vulkan
+    if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "3 (VULKAN)":
+        # Check if we have a discrete GPU & if so, set the Name
+        try:
+            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+            if have_vulkan == "true":
+                eslog.debug("Vulkan driver is available on the system.")
+                try:
+                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
+                    if have_discrete == "true":
+                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                        try:
+                            discrete_name = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteName"], text=True).strip()
+                            if discrete_name != "":
+                                eslog.debug("Using Discrete GPU Name: {} for PPSSPP".format(discrete_name))
+                                iniConfig.set("Graphics", "VulkanDevice", discrete_name)
+                            else:
+                                eslog.debug("Couldn't get discrete GPU Name")
+                        except subprocess.CalledProcessError:
+                            eslog.debug("Error getting discrete GPU Name")
+                    else:
+                        eslog.debug("Discrete GPU is not available on the system. Using default.")
+                except subprocess.CalledProcessError:
+                    eslog.debug("Error checking for discrete GPU.")
+            else:
+                eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+                iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
+        except subprocess.CalledProcessError:
+            eslog.debug("Error executing batocera-vulkan script.")
+    
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
         iniConfig.set("Graphics", "ShowFPSCounter", "3") # 1 for Speed%, 2 for FPS, 3 for both
