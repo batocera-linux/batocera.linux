@@ -25,7 +25,7 @@ snes-msu1:
   manufacturer: Nintendo
   release: 1991
   hardware: console
-  extensions: [smc, sfc]
+  extensions: [smc, sfc, squashfs]
   group:      snes
   emulators:
     libretro:
@@ -2134,7 +2134,7 @@ satellaview:
   manufacturer: Nintendo
   release: 1995
   hardware: console
-  extensions: [bs, smc, sfc, zip, 7z]
+  extensions: [bs, smc, sfc, zip, 7z, squashfs]
   group:      snes
   emulators:
     libretro:

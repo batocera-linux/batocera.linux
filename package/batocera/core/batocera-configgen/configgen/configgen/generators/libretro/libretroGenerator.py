@@ -14,6 +14,7 @@ from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 import utils.videoMode as videoMode
 import shutil
+import glob
 
 eslog = get_logger(__name__)
 
@@ -331,6 +332,16 @@ class LibretroGenerator(Generator):
         if system.name == 'daphne':
             romName = os.path.splitext(os.path.basename(rom))[0]
             rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
+
+        if system.name == 'snes-msu1':
+            if "squashfs" in rom:
+                romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc') 
+                rom = romsInDir[0]
+
+        if system.name == 'satellaview':
+            if "squashfs" in rom:
+                romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc') 
+                rom = romsInDir[0]
 
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
