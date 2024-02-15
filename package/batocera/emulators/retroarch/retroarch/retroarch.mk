@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RETROARCH_VERSION = v1.16.0.3
+RETROARCH_VERSION = v1.17.0
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-fonts
@@ -137,13 +137,8 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
 	endif
 endif
 
-ifeq ($(BR2_PACKAGE_WAYLAND),y)
-    ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-        RETROARCH_CONF_OPTS += --enable-wayland
-        RETROARCH_DEPENDENCIES += wayland
-    else
-        RETROARCH_CONF_OPTS += --disable-wayland
-    endif
+ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
+    RETROARCH_CONF_OPTS += --enable-wayland
 else
     RETROARCH_CONF_OPTS += --disable-wayland
 endif
