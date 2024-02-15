@@ -806,7 +806,11 @@ def md5sum(filename, blocksize=65536):
 
 def checkInsideZip(container, fileName, md5sum):
     # Check inside Zip files
-    archive = zipfile.ZipFile(container)
+    try:
+        archive = zipfile.ZipFile(container)
+    except Exception as e:
+        print ('Error opening file {}: {}.'.format(container, e))
+        return False
     blocksize = 1024**2  #1M chunks
     for fname in archive.namelist():
         # Only check if the file matches
