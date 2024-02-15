@@ -57,6 +57,12 @@
         };
     };
 
+    vibrator {
+		compatible = "pwm-vibrator";
+		pwms = <&pwm0 0 1000000 0>;
+		pwm-names = "enable";
+	};
+
     adc-keys {
         compatible = "adc-keys";
         io-channels = <&saradc 1>;
