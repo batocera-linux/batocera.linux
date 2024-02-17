@@ -1,13 +1,21 @@
-From 9e13abcfa443b471bffc814606d19469fc609640 Mon Sep 17 00:00:00 2001
+From 56a6cd66511f41b9f030533f58f50adf9863f4d4 Mon Sep 17 00:00:00 2001
 From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Fri, 16 Feb 2024 23:08:46 -0400
+Date: Sat, 17 Feb 2024 18:23:27 -0400
 Subject: [PATCH] clk: meson: g12a: add CTS_ENCL & CTS_ENCL_SEL clocks
 
 ---
- .../boot/dts/amlogic/meson-g12-common.dtsi    | 70 +++++++++++++++++++
- drivers/clk/meson/g12a.c                      | 40 +++++++++++
- include/dt-bindings/clock/g12a-clkc.h         |  8 +++
- 3 files changed, 118 insertions(+)
+ .../boot/dts/amlogic/meson-g12-common.dtsi    |  70 +++++++
+ drivers/clk/meson/Kconfig                     |   5 +
+ drivers/clk/meson/Makefile                    |   1 +
+ drivers/clk/meson/g12a.c                      | 181 ++++++++++++++++--
+ drivers/clk/meson/g12a.h                      |   1 +
+ drivers/clk/meson/vclk.c                      | 141 ++++++++++++++
+ drivers/clk/meson/vclk.h                      |  51 +++++
+ drivers/gpu/drm/meson/meson_dw_mipi_dsi.c     |   7 +
+ include/dt-bindings/clock/g12a-clkc.h         |   8 +
+ 9 files changed, 445 insertions(+), 20 deletions(-)
+ create mode 100644 drivers/clk/meson/vclk.c
+ create mode 100644 drivers/clk/meson/vclk.h
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
 index f7f8df88d..8925226b0 100644
@@ -107,11 +115,218 @@ index f7f8df88d..8925226b0 100644
  			watchdog: watchdog@f0d0 {
  				compatible = "amlogic,meson-gxbb-wdt";
  				reg = <0x0 0xf0d0 0x0 0x10>;
+diff --git a/drivers/clk/meson/Kconfig b/drivers/clk/meson/Kconfig
+index 29ffd14d2..59a40a49f 100644
+--- a/drivers/clk/meson/Kconfig
++++ b/drivers/clk/meson/Kconfig
+@@ -30,6 +30,10 @@ config COMMON_CLK_MESON_VID_PLL_DIV
+ 	tristate
+ 	select COMMON_CLK_MESON_REGMAP
+ 
++config COMMON_CLK_MESON_VCLK
++	tristate
++	select COMMON_CLK_MESON_REGMAP
++
+ config COMMON_CLK_MESON_CLKC_UTILS
+ 	tristate
+ 
+@@ -140,6 +144,7 @@ config COMMON_CLK_G12A
+ 	select COMMON_CLK_MESON_EE_CLKC
+ 	select COMMON_CLK_MESON_CPU_DYNDIV
+ 	select COMMON_CLK_MESON_VID_PLL_DIV
++	select COMMON_CLK_MESON_VCLK
+ 	select MFD_SYSCON
+ 	help
+ 	  Support for the clock controller on Amlogic S905D2, S905X2 and S905Y2
+diff --git a/drivers/clk/meson/Makefile b/drivers/clk/meson/Makefile
+index 9ee4b954c..9ba43fe7a 100644
+--- a/drivers/clk/meson/Makefile
++++ b/drivers/clk/meson/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_COMMON_CLK_MESON_PLL) += clk-pll.o
+ obj-$(CONFIG_COMMON_CLK_MESON_REGMAP) += clk-regmap.o
+ obj-$(CONFIG_COMMON_CLK_MESON_SCLK_DIV) += sclk-div.o
+ obj-$(CONFIG_COMMON_CLK_MESON_VID_PLL_DIV) += vid-pll-div.o
++obj-$(CONFIG_COMMON_CLK_MESON_VCLK) += vclk.o
+ 
+ # Amlogic Clock controllers
+ 
 diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
-index f373a8d48..cadd82433 100644
+index f373a8d48..078ef5cd0 100644
 --- a/drivers/clk/meson/g12a.c
 +++ b/drivers/clk/meson/g12a.c
-@@ -3549,6 +3549,22 @@ static struct clk_regmap g12a_cts_encp_sel = {
+@@ -22,6 +22,7 @@
+ #include "clk-regmap.h"
+ #include "clk-cpu-dyndiv.h"
+ #include "vid-pll-div.h"
++#include "vclk.h"
+ #include "meson-eeclk.h"
+ #include "g12a.h"
+ 
+@@ -3165,7 +3166,7 @@ static struct clk_regmap g12a_vclk2_sel = {
+ 		.ops = &clk_regmap_mux_ops,
+ 		.parent_hws = g12a_vclk_parent_hws,
+ 		.num_parents = ARRAY_SIZE(g12a_vclk_parent_hws),
+-		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
+ 	},
+ };
+ 
+@@ -3193,7 +3194,7 @@ static struct clk_regmap g12a_vclk2_input = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2_sel.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3215,19 +3216,32 @@ static struct clk_regmap g12a_vclk_div = {
+ };
+ 
+ static struct clk_regmap g12a_vclk2_div = {
+-	.data = &(struct clk_regmap_div_data){
+-		.offset = HHI_VIID_CLK_DIV,
+-		.shift = 0,
+-		.width = 8,
++	.data = &(struct clk_regmap_vclk_div_data){
++		.div = {
++			.reg_off = HHI_VIID_CLK_DIV,
++			.shift   = 0,
++			.width   = 8,
++		},
++		.enable = {
++			.reg_off = HHI_VIID_CLK_DIV,
++			.shift   = 16,
++			.width   = 1,
++		},
++		.reset = {
++			.reg_off = HHI_VIID_CLK_DIV,
++			.shift   = 17,
++			.width   = 1,
++		},
++		.flags = CLK_DIVIDER_ROUND_CLOSEST,
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "vclk2_div",
+-		.ops = &clk_regmap_divider_ops,
++		.ops = &clk_regmap_vclk_div_ops,
+ 		.parent_hws = (const struct clk_hw *[]) {
+ 			&g12a_vclk2_input.hw
+ 		},
+ 		.num_parents = 1,
+-		.flags = CLK_GET_RATE_NOCACHE,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_GATE,
+ 	},
+ };
+ 
+@@ -3246,16 +3260,24 @@ static struct clk_regmap g12a_vclk = {
+ };
+ 
+ static struct clk_regmap g12a_vclk2 = {
+-	.data = &(struct clk_regmap_gate_data){
+-		.offset = HHI_VIID_CLK_CNTL,
+-		.bit_idx = 19,
++	.data = &(struct clk_regmap_vclk_data){
++		.enable = {
++			.reg_off = HHI_VIID_CLK_CNTL,
++			.shift   = 19,
++			.width   = 1,
++		},
++		.reset = {
++			.reg_off = HHI_VIID_CLK_CNTL,
++			.shift   = 15,
++			.width   = 1,
++		},
+ 	},
+ 	.hw.init = &(struct clk_init_data) {
+ 		.name = "vclk2",
+-		.ops = &clk_regmap_gate_ops,
++		.ops = &clk_regmap_vclk_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2_div.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_GATE,
+ 	},
+ };
+ 
+@@ -3339,7 +3361,7 @@ static struct clk_regmap g12a_vclk2_div1 = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3353,7 +3375,7 @@ static struct clk_regmap g12a_vclk2_div2_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3367,7 +3389,7 @@ static struct clk_regmap g12a_vclk2_div4_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3381,7 +3403,7 @@ static struct clk_regmap g12a_vclk2_div6_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3395,7 +3417,7 @@ static struct clk_regmap g12a_vclk2_div12_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3461,6 +3483,7 @@ static struct clk_fixed_factor g12a_vclk2_div2 = {
+ 			&g12a_vclk2_div2_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3474,6 +3497,7 @@ static struct clk_fixed_factor g12a_vclk2_div4 = {
+ 			&g12a_vclk2_div4_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3487,6 +3511,7 @@ static struct clk_fixed_factor g12a_vclk2_div6 = {
+ 			&g12a_vclk2_div6_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3500,6 +3525,7 @@ static struct clk_fixed_factor g12a_vclk2_div12 = {
+ 			&g12a_vclk2_div12_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3549,6 +3575,22 @@ static struct clk_regmap g12a_cts_encp_sel = {
  	},
  };
  
@@ -127,14 +342,14 @@ index f373a8d48..cadd82433 100644
 +		.ops = &clk_regmap_mux_ops,
 +		.parent_hws = g12a_cts_parent_hws,
 +		.num_parents = ARRAY_SIZE(g12a_cts_parent_hws),
-+		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
 +	},
 +};
 +
  static struct clk_regmap g12a_cts_vdac_sel = {
  	.data = &(struct clk_regmap_mux_data){
  		.offset = HHI_VIID_CLK_DIV,
-@@ -3628,6 +3644,22 @@ static struct clk_regmap g12a_cts_encp = {
+@@ -3628,6 +3670,22 @@ static struct clk_regmap g12a_cts_encp = {
  	},
  };
  
@@ -157,7 +372,105 @@ index f373a8d48..cadd82433 100644
  static struct clk_regmap g12a_cts_vdac = {
  	.data = &(struct clk_regmap_gate_data){
  		.offset = HHI_VID_CLK_CNTL2,
-@@ -4407,10 +4439,12 @@ static struct clk_hw *g12a_hw_clks[] = {
+@@ -3685,7 +3743,7 @@ static struct clk_regmap g12a_mipi_dsi_pxclk_sel = {
+ 		.ops = &clk_regmap_mux_ops,
+ 		.parent_hws = g12a_mipi_dsi_pxclk_parent_hws,
+ 		.num_parents = ARRAY_SIZE(g12a_mipi_dsi_pxclk_parent_hws),
+-		.flags = CLK_SET_RATE_NO_REPARENT,
++		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
+ 	},
+ };
+ 
+@@ -3697,7 +3755,7 @@ static struct clk_regmap g12a_mipi_dsi_pxclk_div = {
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "mipi_dsi_pxclk_div",
+-		.ops = &clk_regmap_divider_ops,
++		.ops = &clk_regmap_divider_ro_ops,
+ 		.parent_hws = (const struct clk_hw *[]) {
+ 			&g12a_mipi_dsi_pxclk_sel.hw
+ 		},
+@@ -3722,6 +3780,66 @@ static struct clk_regmap g12a_mipi_dsi_pxclk = {
+ 	},
+ };
+ 
++/* MIPI ISP Clocks */
++
++static const struct clk_parent_data g12b_mipi_isp_parent_data[] = {
++	{ .fw_name = "xtal", },
++	{ .hw = &g12a_gp0_pll.hw },
++	{ .hw = &g12a_hifi_pll.hw },
++	{ .hw = &g12a_fclk_div2p5.hw },
++	{ .hw = &g12a_fclk_div3.hw },
++	{ .hw = &g12a_fclk_div4.hw },
++	{ .hw = &g12a_fclk_div5.hw },
++	{ .hw = &g12a_fclk_div7.hw },
++};
++
++static struct clk_regmap g12b_mipi_isp_sel = {
++	.data = &(struct clk_regmap_mux_data){
++		.offset = HHI_ISP_CLK_CNTL,
++		.mask = 7,
++		.shift = 9,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "mipi_isp_sel",
++		.ops = &clk_regmap_mux_ops,
++		.parent_data = g12b_mipi_isp_parent_data,
++		.num_parents = ARRAY_SIZE(g12b_mipi_isp_parent_data),
++	},
++};
++
++static struct clk_regmap g12b_mipi_isp_div = {
++	.data = &(struct clk_regmap_div_data){
++		.offset = HHI_ISP_CLK_CNTL,
++		.shift = 0,
++		.width = 7,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "mipi_isp_div",
++		.ops = &clk_regmap_divider_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12b_mipi_isp_sel.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
++static struct clk_regmap g12b_mipi_isp = {
++	.data = &(struct clk_regmap_gate_data){
++		.offset = HHI_ISP_CLK_CNTL,
++		.bit_idx = 8,
++	},
++	.hw.init = &(struct clk_init_data) {
++		.name = "mipi_isp",
++		.ops = &clk_regmap_gate_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12b_mipi_isp_div.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
+ /* HDMI Clocks */
+ 
+ static const struct clk_parent_data g12a_hdmi_parent_data[] = {
+@@ -4214,9 +4332,12 @@ static MESON_GATE(g12a_htx_hdcp22,		HHI_GCLK_MPEG2,	3);
+ static MESON_GATE(g12a_htx_pclk,		HHI_GCLK_MPEG2,	4);
+ static MESON_GATE(g12a_bt656,			HHI_GCLK_MPEG2,	6);
+ static MESON_GATE(g12a_usb1_to_ddr,		HHI_GCLK_MPEG2,	8);
++static MESON_GATE(g12b_mipi_isp_gate,		HHI_GCLK_MPEG2,	17);
+ static MESON_GATE(g12a_mmc_pclk,		HHI_GCLK_MPEG2,	11);
+ static MESON_GATE(g12a_uart2,			HHI_GCLK_MPEG2,	15);
+ static MESON_GATE(g12a_vpu_intr,		HHI_GCLK_MPEG2,	25);
++static MESON_GATE(g12b_csi_phy1,		HHI_GCLK_MPEG2,	28);
++static MESON_GATE(g12b_csi_phy0,		HHI_GCLK_MPEG2,	29);
+ static MESON_GATE(g12a_gic,			HHI_GCLK_MPEG2,	30);
+ 
+ static MESON_GATE(g12a_vclk2_venci0,		HHI_GCLK_OTHER,	1);
+@@ -4407,10 +4528,12 @@ static struct clk_hw *g12a_hw_clks[] = {
  	[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
  	[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
  	[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
@@ -170,7 +483,7 @@ index f373a8d48..cadd82433 100644
  	[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
  	[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
  	[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
-@@ -4632,10 +4666,12 @@ static struct clk_hw *g12b_hw_clks[] = {
+@@ -4632,10 +4755,12 @@ static struct clk_hw *g12b_hw_clks[] = {
  	[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
  	[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
  	[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
@@ -183,7 +496,20 @@ index f373a8d48..cadd82433 100644
  	[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
  	[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
  	[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
-@@ -4892,10 +4928,12 @@ static struct clk_hw *sm1_hw_clks[] = {
+@@ -4729,6 +4854,12 @@ static struct clk_hw *g12b_hw_clks[] = {
+ 	[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+ 	[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 	[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
++	[CLKID_MIPI_ISP_SEL]		= &g12b_mipi_isp_sel.hw,
++	[CLKID_MIPI_ISP_DIV]		= &g12b_mipi_isp_div.hw,
++	[CLKID_MIPI_ISP]		= &g12b_mipi_isp.hw,
++	[CLKID_MIPI_ISP_GATE]		= &g12b_mipi_isp_gate.hw,
++	[CLKID_MIPI_ISP_CSI_PHY0]	= &g12b_csi_phy0.hw,
++	[CLKID_MIPI_ISP_CSI_PHY1]	= &g12b_csi_phy1.hw,
+ };
+ 
+ static struct clk_hw *sm1_hw_clks[] = {
+@@ -4892,10 +5023,12 @@ static struct clk_hw *sm1_hw_clks[] = {
  	[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
  	[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
  	[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
@@ -196,7 +522,7 @@ index f373a8d48..cadd82433 100644
  	[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
  	[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
  	[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
-@@ -5123,10 +5161,12 @@ static struct clk_regmap *const g12a_clk_regmaps[] = {
+@@ -5123,10 +5256,12 @@ static struct clk_regmap *const g12a_clk_regmaps[] = {
  	&g12a_vclk2_div12_en,
  	&g12a_cts_enci_sel,
  	&g12a_cts_encp_sel,
@@ -209,6 +535,260 @@ index f373a8d48..cadd82433 100644
  	&g12a_cts_vdac,
  	&g12a_hdmi_tx,
  	&g12a_hdmi_sel,
+@@ -5221,6 +5356,12 @@ static struct clk_regmap *const g12a_clk_regmaps[] = {
+ 	&g12a_mipi_dsi_pxclk_sel,
+ 	&g12a_mipi_dsi_pxclk_div,
+ 	&g12a_mipi_dsi_pxclk,
++	&g12b_mipi_isp_sel,
++	&g12b_mipi_isp_div,
++	&g12b_mipi_isp,
++	&g12b_mipi_isp_gate,
++	&g12b_csi_phy1,
++	&g12b_csi_phy0,
+ };
+ 
+ static const struct reg_sequence g12a_init_regs[] = {
+diff --git a/drivers/clk/meson/g12a.h b/drivers/clk/meson/g12a.h
+index f11ee3c59..27df99c45 100644
+--- a/drivers/clk/meson/g12a.h
++++ b/drivers/clk/meson/g12a.h
+@@ -70,6 +70,7 @@
+ #define HHI_MALI_CLK_CNTL		0x1b0
+ #define HHI_VPU_CLKC_CNTL		0x1b4
+ #define HHI_VPU_CLK_CNTL		0x1bC
++#define HHI_ISP_CLK_CNTL		0x1C0
+ #define HHI_NNA_CLK_CNTL		0x1C8
+ #define HHI_HDMI_CLK_CNTL		0x1CC
+ #define HHI_VDEC_CLK_CNTL		0x1E0
+diff --git a/drivers/clk/meson/vclk.c b/drivers/clk/meson/vclk.c
+new file mode 100644
+index 000000000..47f08a52b
+--- /dev/null
++++ b/drivers/clk/meson/vclk.c
+@@ -0,0 +1,141 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2023 Neil Armstrong <neil.armstrong@linaro.org>
++ */
++
++#include <linux/module.h>
++#include "vclk.h"
++
++/* The VCLK gate has a supplementary reset bit to pulse after ungating */
++
++static inline struct clk_regmap_vclk_data *
++clk_get_regmap_vclk_data(struct clk_regmap *clk)
++{
++	return (struct clk_regmap_vclk_data *)clk->data;
++}
++
++static int clk_regmap_vclk_enable(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_data *vclk = clk_get_regmap_vclk_data(clk);
++
++	meson_parm_write(clk->map, &vclk->enable, 1);
++
++	/* Do a reset pulse */
++	meson_parm_write(clk->map, &vclk->reset, 1);
++	meson_parm_write(clk->map, &vclk->reset, 0);
++
++	return 0;
++}
++
++static void clk_regmap_vclk_disable(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_data *vclk = clk_get_regmap_vclk_data(clk);
++
++	meson_parm_write(clk->map, &vclk->enable, 0);
++}
++
++static int clk_regmap_vclk_is_enabled(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_data *vclk = clk_get_regmap_vclk_data(clk);
++
++	return meson_parm_read(clk->map, &vclk->enable);
++}
++
++const struct clk_ops clk_regmap_vclk_ops = {
++	.enable = clk_regmap_vclk_enable,
++	.disable = clk_regmap_vclk_disable,
++	.is_enabled = clk_regmap_vclk_is_enabled,
++};
++EXPORT_SYMBOL_GPL(clk_regmap_vclk_ops);
++
++/* The VCLK Divider has supplementary reset & enable bits */
++
++static inline struct clk_regmap_vclk_div_data *
++clk_get_regmap_vclk_div_data(struct clk_regmap *clk)
++{
++	return (struct clk_regmap_vclk_div_data *)clk->data;
++}
++
++static unsigned long clk_regmap_vclk_div_recalc_rate(struct clk_hw *hw,
++						     unsigned long prate)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++
++	return divider_recalc_rate(hw, prate, meson_parm_read(clk->map, &vclk->div),
++				   vclk->table, vclk->flags, vclk->div.width);
++}
++
++static int clk_regmap_vclk_div_determine_rate(struct clk_hw *hw,
++					      struct clk_rate_request *req)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++
++	return divider_determine_rate(hw, req, vclk->table, vclk->div.width,
++				      vclk->flags);
++}
++
++static int clk_regmap_vclk_div_set_rate(struct clk_hw *hw, unsigned long rate,
++					unsigned long parent_rate)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++	int ret;
++
++	ret = divider_get_val(rate, parent_rate, vclk->table, vclk->div.width,
++			      vclk->flags);
++	if (ret < 0)
++		return ret;
++
++	meson_parm_write(clk->map, &vclk->div, ret);
++
++	return 0;
++};
++
++static int clk_regmap_vclk_div_enable(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++
++	/* Unreset the divider when ungating */
++	meson_parm_write(clk->map, &vclk->reset, 0);
++	meson_parm_write(clk->map, &vclk->enable, 1);
++
++	return 0;
++}
++
++static void clk_regmap_vclk_div_disable(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++
++	/* Reset the divider when gating */
++	meson_parm_write(clk->map, &vclk->enable, 0);
++	meson_parm_write(clk->map, &vclk->reset, 1);
++}
++
++static int clk_regmap_vclk_div_is_enabled(struct clk_hw *hw)
++{
++	struct clk_regmap *clk = to_clk_regmap(hw);
++	struct clk_regmap_vclk_div_data *vclk = clk_get_regmap_vclk_div_data(clk);
++
++	return meson_parm_read(clk->map, &vclk->enable);
++}
++
++const struct clk_ops clk_regmap_vclk_div_ops = {
++	.recalc_rate = clk_regmap_vclk_div_recalc_rate,
++	.determine_rate = clk_regmap_vclk_div_determine_rate,
++	.set_rate = clk_regmap_vclk_div_set_rate,
++	.enable = clk_regmap_vclk_div_enable,
++	.disable = clk_regmap_vclk_div_disable,
++	.is_enabled = clk_regmap_vclk_div_is_enabled,
++};
++EXPORT_SYMBOL_GPL(clk_regmap_vclk_div_ops);
++
++MODULE_DESCRIPTION("Amlogic vclk clock driver");
++MODULE_AUTHOR("Neil Armstrong <neil.armstrong@linaro.org>");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/clk/meson/vclk.h b/drivers/clk/meson/vclk.h
+new file mode 100644
+index 000000000..4f25d7ad2
+--- /dev/null
++++ b/drivers/clk/meson/vclk.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2023 Neil Armstrong <neil.armstrong@linaro.org>
++ */
++
++#ifndef __VCLK_H
++#define __VCLK_H
++
++#include "clk-regmap.h"
++#include "parm.h"
++
++/**
++ * struct clk_regmap_vclk_data - vclk regmap backed specific data
++ *
++ * @enable:	vclk enable field
++ * @reset:	vclk reset field
++ * @flags:	hardware-specific flags
++ *
++ * Flags:
++ * Same as clk_gate except CLK_GATE_HIWORD_MASK which is ignored
++ */
++struct clk_regmap_vclk_data {
++	struct parm enable;
++	struct parm reset;
++	u8 flags;
++};
++
++extern const struct clk_ops clk_regmap_vclk_ops;
++
++/**
++ * struct clk_regmap_vclk_div_data - vclk_div regmap back specific data
++ *
++ * @div:	divider field
++ * @enable:	vclk divider enable field
++ * @reset:	vclk divider reset field
++ * @table:	array of value/divider pairs, last entry should have div = 0
++ *
++ * Flags:
++ * Same as clk_divider except CLK_DIVIDER_HIWORD_MASK which is ignored
++ */
++struct clk_regmap_vclk_div_data {
++	struct parm div;
++	struct parm enable;
++	struct parm reset;
++	const struct clk_div_table *table;
++	u8 flags;
++};
++
++extern const struct clk_ops clk_regmap_vclk_div_ops;
++
++#endif /* __VCLK_H */
+diff --git a/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c
+index e5fe4e994..72abe2057 100644
+--- a/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c
++++ b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c
+@@ -95,6 +95,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
+ 		return ret;
+ 	}
+ 
++	clk_disable_unprepare(mipi_dsi->px_clk);
+ 	ret = clk_set_rate(mipi_dsi->px_clk, mipi_dsi->mode->clock * 1000);
+ 
+ 	if (ret) {
+@@ -103,6 +104,12 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
+ 		return ret;
+ 	}
+ 
++	ret = clk_prepare_enable(mipi_dsi->px_clk);
++	if (ret) {
++		dev_err(mipi_dsi->dev, "Failed to enable DSI Pixel clock (ret %d)\n", ret);
++		return ret;
++	}
++
+ 	switch (mipi_dsi->dsi_device->format) {
+ 	case MIPI_DSI_FMT_RGB888:
+ 		dpi_data_format = DPI_COLOR_24BIT;
 diff --git a/include/dt-bindings/clock/g12a-clkc.h b/include/dt-bindings/clock/g12a-clkc.h
 index 387767f4e..fd09819da 100644
 --- a/include/dt-bindings/clock/g12a-clkc.h
