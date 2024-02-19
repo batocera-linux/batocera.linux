@@ -346,7 +346,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
             retroarchConfig['input_libretro_device_p4'] = '1'
 
         # wheel
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
             retroarchConfig['input_libretro_device_p1'] = '2049' # Race Controller
 
     ## Sega Megadrive controller
