@@ -378,6 +378,8 @@ sandboxing_prefix() {
     echo "Remove Symblink"
     # replace some links by folders. 
     # don't create all folders in case links doesn't exist to not create both Music and My Music at the same time (old wine uses My Music, new wine uses Musics)
+    local DIR=""
+
     for DIR in "Downloads" "Documents" "My Documents" "Music" "My Music" "Pictures" "My Pictures" "Videos" "My Videos" "Templates"
     do
         if test -L "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}"; then
