@@ -1,26 +1,17 @@
-From 73ed5c6e36b985e4a85b25613c4df38ee4d182bc Mon Sep 17 00:00:00 2001
+From 3c44ee308121e22458f60d6406707de93a220fd8 Mon Sep 17 00:00:00 2001
 From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
-Date: Fri, 16 Feb 2024 21:29:22 -0400
-Subject: [PATCH] arm64: meson: odroid-go-ultra: correct voltages
+Date: Tue, 23 Jan 2024 23:53:24 +0000
+Subject: [PATCH 13/52] arm64: meson: odroid-go-ultra: correct voltages
 
 ---
- .../amlogic/meson-g12b-odroid-go-ultra.dts    | 22 +++++++++----------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ .../dts/amlogic/meson-g12b-odroid-go-ultra.dts   | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-index 526ac859b..00435ec7e 100644
+index 6844b906fbcd..571a0393e148 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-@@ -403,7 +403,7 @@ rk818: pmic@1c {
- 		vcc6-supply = <&vdd_sys>;
- 		vcc7-supply = <&vcc_2v3>;
- 		vcc8-supply = <&vcc_2v3>;
--		vcc9-supply = <&vddao_3v3>;
-+		vcc9-supply = <&vddao_3v0>;
- 		boost-supply = <&vdd_sys>;
- 
- 		battery {
-@@ -457,7 +457,7 @@ vdd_ee: DCDC_REG2 {
+@@ -420,7 +420,7 @@ vdd_ee: DCDC_REG2 {
  				regulator-always-on;
  				regulator-boot-on;
  				regulator-min-microvolt = <875000>;
@@ -29,20 +20,15 @@ index 526ac859b..00435ec7e 100644
  				regulator-ramp-delay = <6001>;
  				regulator-state-mem {
  					regulator-on-in-suspend;
-@@ -474,15 +474,15 @@ regulator-state-mem {
- 				};
- 			};
- 
--			vddao_3v3: DCDC_REG4 {
-+			vddao_3v0: DCDC_REG4 {
+@@ -440,12 +440,12 @@ regulator-state-mem {
+ 			vddao_3v3: DCDC_REG4 {
  				regulator-always-on;
  				regulator-boot-on;
 -				regulator-min-microvolt = <3300000>;
 -				regulator-max-microvolt = <3300000>;
--				regulator-name = "vddao_3v3";
 +				regulator-min-microvolt = <3000000>;
 +				regulator-max-microvolt = <3000000>;
-+				regulator-name = "vddao_3v0";
+ 				regulator-name = "vddao_3v3";
  				regulator-state-mem {
  					regulator-on-in-suspend;
 -					regulator-suspend-microvolt = <3300000>;
@@ -50,7 +36,7 @@ index 526ac859b..00435ec7e 100644
  				};
  			};
  
-@@ -537,8 +537,6 @@ vcc_sd: SWITCH_REG {
+@@ -500,8 +500,6 @@ vcc_sd: SWITCH_REG {
  				regulator-name = "vcc_sd";
  				regulator-always-on;
  				regulator-boot-on;
@@ -59,7 +45,7 @@ index 526ac859b..00435ec7e 100644
  				regulator-state-mem {
  					regulator-on-in-suspend;
  				};
-@@ -587,7 +585,7 @@ vddcpu_b: DCDC_REG2 {
+@@ -550,7 +548,7 @@ vddcpu_b: DCDC_REG2 {
  				regulator-always-on;
  				regulator-boot-on;
  				regulator-min-microvolt = <737500>;
@@ -68,10 +54,10 @@ index 526ac859b..00435ec7e 100644
  				regulator-ramp-delay = <6001>;
  				regulator-initial-mode = <0x2>;
  				regulator-name = "vddcpu_b";
-@@ -621,8 +619,8 @@ regulator-state-mem {
- 			};
- 
+@@ -586,8 +584,8 @@ regulator-state-mem {
  			vcc_lcd: LDO_REG8 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
 -				regulator-min-microvolt = <3300000>;
 -				regulator-max-microvolt = <3300000>;
 +				regulator-min-microvolt = <3000000>;
@@ -80,5 +66,5 @@ index 526ac859b..00435ec7e 100644
  				regulator-state-mem {
  					regulator-off-in-suspend;
 -- 
-2.43.2
+2.34.1
 
