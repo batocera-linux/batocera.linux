@@ -38,7 +38,7 @@ define SWITCHRES_INSTALL_STAGING_CMDS
 endef
 
 define SWITCHRES_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0644 $(@D)/libswitchres.so.2.2.0 $(TARGET_DIR)/usr/lib/libswitchres.so.2.1.0
+	$(INSTALL) -D -m 0644 $(@D)/libswitchres.so.2.2.0 $(TARGET_DIR)/usr/lib/libswitchres.so.2.2.0
 	ln -sf $(TARGET_DIR)/usr/lib/libswitchres.so.2.2.0 $(TARGET_DIR)/usr/lib/libswitchres.so.2
 	ln -sf $(TARGET_DIR)/usr/lib/libswitchres.so.2 $(TARGET_DIR)/usr/lib/libswitchres.so
 	$(INSTALL) -D -m 0755 $(@D)/switchres $(TARGET_DIR)/usr/bin/switchres
