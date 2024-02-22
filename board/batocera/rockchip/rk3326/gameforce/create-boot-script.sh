@@ -21,7 +21,7 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot" || exit 1
 cp "${BINARIES_DIR}/uInitrd"                    "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"            || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs"            "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"    || exit 1
 
-cp "${BINARIES_DIR}/rk3326-chi-gameforce.dtb"   "${BATOCERA_BINARIES_DIR}/boot/boot/"                   || exit 1
+cp "${BINARIES_DIR}/rk3326-gameforce-chi.dtb"   "${BATOCERA_BINARIES_DIR}/boot/boot/"                   || exit 1
 cp "${BOARD_DIR}/boot/boot.ini"                 "${BATOCERA_BINARIES_DIR}/boot/"                        || exit 1
 
 exit 0
