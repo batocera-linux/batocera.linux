@@ -9014,19 +9014,22 @@ rpcs3:
                 "High (Default)": High
                 "Low":            Low
                 "Automatic":      Auto
-        rpcs3_resolution:
+        rpcs3_resolution_scale:
             submenu: VIDEO
-            prompt: RENDER RESOLUTION
+            prompt: RENDER RESOLUTION (SCALING)
             description: Choose your preferred render resolution.
             choices:
-                "720x480":            720x480
-                "720x576":            720x576
-                "1280x720 (Default)": 1280x720
-                "960x1080":           960x1080
-                "1280x1080":          1280x1080
-                "1440x1080":          1440x1080
-                "1600x1080":          1600x1080
-                "1920x1080":          1920x1080
+                "640x360":            50
+                "960x540":            75
+                "1280x720 (Default)": 100
+                "1600x900":           125
+                "1920x1080":          150
+                "2240x1260":          175
+                "2560x1440":          200
+                "3200x1800":          225
+                "3840x2160":          250
+                "4480x2520":          275
+                "5120x2880":          300
         rpcs3_scaling:
             submenu: RENDER
             prompt: OUTPUT SCALING
