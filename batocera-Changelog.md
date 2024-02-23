@@ -1,3 +1,19 @@
+# 2024/xx/xx - batocera.linux 40 - 
+### Special Notes
+
+### Hardware
+
+### Added
+
+### Fixed
+
+### Changed
+
+### Updated
+
+### System
+
+
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
 - Emulators using Wine now use the Glorious Eggroll custom runner for latest capabilities and compatibility.
