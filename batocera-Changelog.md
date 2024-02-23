@@ -10,7 +10,8 @@
 ### Changed
 
 ### Updated
-
+Nvidia Production driver to 550.54.14
+Nvidia Legacy driver to 470.239.06
 ### System
 
 
