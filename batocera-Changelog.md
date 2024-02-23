@@ -6,14 +6,28 @@
 ### Added
 
 ### Fixed
+- RG552 Splash-screen rotation
+- RG552 Vibrator enabled
+- GameForce Vibrator enabled
 
 ### Changed
+- RK3326 Replaced the mali-G31 driver with mesa3d
 
 ### Updated
-Nvidia Production driver to 550.54.14
-Nvidia Legacy driver to 470.239.06
-### System
+- Retroarch to 1.17.0
 
+### System
+- Nvidia Production driver to 550.54.14
+- Nvidia Legacy driver to 470.239.06
+- wayland-protocols to 1.33
+- wlroots to 0.17.1
+- sway to 1.9-rc4
+- mesa3d to 24.0.1
+- RPI kernel to 6.1.77
+- RK3326 kernel to 6.7.5
+- RK3399 kernel to 6.1.78
+- S922X kernel to 6.7.5
+- Odroid-XU4 kernel to 6.6.16
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
