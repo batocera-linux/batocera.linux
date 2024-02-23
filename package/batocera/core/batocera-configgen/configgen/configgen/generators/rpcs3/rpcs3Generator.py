@@ -198,11 +198,13 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Shader Precision"] = system.config["rpcs3_shader"]
         else:
             rpcs3ymlconfig["Video"]["Shader Precision"] = "High"
-        # Resolution
-        if system.isOptSet("rpcs3_resolution"):
-            rpcs3ymlconfig["Video"]["Resolution"] = system.config["rpcs3_resolution"]
+        # Internal resolution (CHANGE AT YOUR OWN RISK)
+            rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"        
+        # Resolution scaling
+        if system.isOptSet("rpcs3_resolution_scale"):
+            rpcs3ymlconfig["Video"]["Resolution Scale"] = system.config["rpcs3_resolution_scale"]
         else:
-            rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
+            rpcs3ymlconfig["Video"]["Resolution Scale"] = "100"
         # Output Scaling
         if system.isOptSet("rpcs3_scaling"):
             rpcs3ymlconfig["Video"]["Output Scaling Mode"] = system.config["rpcs3_scaling"]
