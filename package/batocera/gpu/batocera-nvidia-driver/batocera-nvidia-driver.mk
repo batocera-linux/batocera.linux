@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_DRIVER_VERSION = 545.29.06
+BATOCERA_NVIDIA_DRIVER_VERSION = 550.54.14
 BATOCERA_NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_DRIVER_VERSION)
 BATOCERA_NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_DRIVER_VERSION).run
@@ -50,8 +50,8 @@ BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-api.so.1 \
 	libnvidia-cfg.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-egl-gbm.so.1.1.0 \
-	libnvidia-egl-wayland.so.1.1.12 \
+	libnvidia-egl-gbm.so.1.1.1 \
+	libnvidia-egl-wayland.so.1.1.13 \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
