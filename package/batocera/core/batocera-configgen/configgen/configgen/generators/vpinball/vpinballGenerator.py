@@ -7,6 +7,7 @@ from generators.Generator import Generator
 import batoceraFiles
 import shutil
 from utils.logger import get_logger
+import controllersConfig
 
 eslog = get_logger(__name__)
 
@@ -289,7 +290,7 @@ class VPinballGenerator(Generator):
                 "-Play", rom
             ]
             
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
