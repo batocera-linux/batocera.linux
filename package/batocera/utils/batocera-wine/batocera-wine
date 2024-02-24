@@ -45,7 +45,7 @@ G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
 export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine/i386-unix:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix"
 export GST_PLUGIN_SYSTEM_PATH_1_0="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
-export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/i386-windows:${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows"
 # hum pw 0.2 and 0.3 are hardcoded, not nice
