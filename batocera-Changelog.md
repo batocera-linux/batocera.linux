@@ -27,6 +27,16 @@ Add support for the Pironman case with RPI4 devices.
 - ppsspp: bump to 1.17.1
 - duckstation: bump to Feb 06, 2024 build
 - libretro-ppsspp: bump to 1.17.1
+- libretro-81: bump to Nov 1, 2023 build
+- libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
+- libretro-genesisplusgx: bump to Feb 23, 2024 build
+- libretro-mame2003-plus: bump to Feb 21, 2024 build
+- libretro-mupen64plus-next: bump to Feb 6, 2024 build
+- libretro-neocd: bump to Feb 1, 2024 build
+- libretro-opera: bump to Jan 13, 2024 build
+- libretro-stella: bump to Jan 2, 2024 build
+- libretro-swanstation: bump to Jan 25, 2024 build
+- libretro-pcsx: bump to Feb 14, 2024 build
 
 ### System
 - Nvidia Production driver to 550.54.14
